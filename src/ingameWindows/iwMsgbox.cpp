@@ -54,7 +54,6 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     glArchivItem_Bitmap* icon = LOADER.GetImageN(iconFile, iconIdx);
     if(icon)
         AddImage(ID_ICON, contentOffset.x + 30, contentOffset.y + 20, icon);
-    const unsigned short paddingX = 15;
     unsigned short textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetX(false) + paddingX : contentOffset.x + paddingX;
     ctrlMultiline* multiline = AddMultiline(ID_TEXT, textX, contentOffset.y + 5, std::max<int>(minTextWidth, GetIwRightBoundary() - textX - paddingX), maxTextHeight, TC_GREEN2, NormalFont);
     multiline->ShowBackground(false);
@@ -109,7 +108,6 @@ void iwMsgbox::MoveIcon(int x, int y)
         icon->Move(std::max(0, x), std::max(0, y));
         DrawPoint iconPos(icon->GetX(false) - icon->GetImage()->getNx(), icon->GetY(false) - icon->GetImage()->getNy());
         DrawPoint textPos, textMaxSize;
-        const unsigned short paddingX = 15;
         if(iconPos.x < 100){
             // icon left
             textPos.x = iconPos.x + icon->GetImage()->getWidth() + paddingX;

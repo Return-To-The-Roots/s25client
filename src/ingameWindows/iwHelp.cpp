@@ -42,9 +42,3 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
     MoveNextToMouse();
 }
 
-bool iwHelp::Draw_()
-{
-    IngameWindow::Draw_();
-    DrawRectangle(contentOffset, GetIwWidth(), 10, COLOR_YELLOW);
-    return true;
-}

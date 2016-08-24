@@ -195,7 +195,9 @@ void ctrlMultiline::Resize(unsigned short width, unsigned short height)
     // Recalc only if:
     // - we increased the size or decreased beyond content width
     // - scrollbar requirement has changed (e.g. now need one but did not need it before)
-    if(GetWidth() > oldSize.x || GetWidth() < GetContentWidth() || (maxNumVisibleLines < drawLines.size() != oldMaxNumVisLines < drawLines.size()))
+    const bool oldNeedScrollbar = oldMaxNumVisLines < drawLines.size();
+    const bool newNeedScrollbar = maxNumVisibleLines < drawLines.size();
+    if(oldNeedScrollbar != newNeedScrollbar || GetWidth() > oldSize.x || GetWidth() < GetContentWidth())
         RecalcWrappedLines();
 }
 
