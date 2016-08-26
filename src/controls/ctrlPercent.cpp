@@ -45,19 +45,19 @@ bool ctrlPercent::Draw_()
     // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
     unsigned short percentage = (this->percentage_ ?  *this->percentage_ : 0);
 
-    // Farbe herausfinden
-    unsigned int color = 0xFFFF0000;
-
     if(percentage > 100)
         percentage = 100;
 
     // Farbe wählen je nachdem wie viel Prozent
+    unsigned color;
     if(percentage >= 60)
-        color = 0xFF00E000;
+        color = COLOR_60_PERCENT;
     else if(percentage >= 30)
-        color = 0xFFFFFF00;
+        color = COLOR_30_PERCENT;
     else if(percentage >= 20)
-        color = 0xFFFF8000;
+        color = COLOR_20_PERCENT;
+    else
+        color = COLOR_0_PERCENT;
 
     // Box zeichnen
     Draw3D(GetDrawPos(), width_, height_, tc, 2);

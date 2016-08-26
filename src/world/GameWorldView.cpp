@@ -382,7 +382,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     {
         const nobUsual& n = static_cast<const nobUsual&>(no);
         std::string text;
-        unsigned int color = COLOR_RED;
+        unsigned int color = COLOR_0_PERCENT;
 
         if(!n.HasWorker())
             text = _("(House unoccupied)");
@@ -397,11 +397,11 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
             unsigned short p = n.GetProductivity();
             text = helpers::toString(p) + " %";
             if(p >= 60)
-                color = 0xFF00E000;
+                color = COLOR_60_PERCENT;
             else if(p >= 30)
-                color = 0xFFFFFF00;
+                color = COLOR_30_PERCENT;
             else if(p >= 20)
-                color = 0xFFFF8000;
+                color = COLOR_20_PERCENT;
         }
         SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
     }else if(got == GOT_NOB_MILITARY)
