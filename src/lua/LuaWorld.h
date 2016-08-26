@@ -18,6 +18,7 @@
 #ifndef LuaWorld_h__
 #define LuaWorld_h__
 
+#include "gameTypes/AnimalTypes.h"
 #include <kaguya/kaguya.hpp>
 
 class GameWorldGame;
@@ -30,6 +31,7 @@ public:
     static void Register(kaguya::State& state);
     bool AddEnvObject(int x, int y, unsigned id, unsigned file = 0xFFFF);
     bool AddStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 1);
+    void AddAnimal(int x, int y, Species species);
 };
 
 #endif // LuaWorld_h__

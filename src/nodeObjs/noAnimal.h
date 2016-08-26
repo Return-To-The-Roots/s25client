@@ -75,6 +75,7 @@ class noAnimal : public noMovable
     public:     void Destroy() override { Destroy_noAnimal(); }
 
         GO_Type GetGOT() const override { return GOT_ANIMAL; }
+        Species GetSpecies() const { return species; }
 
         // An x,y zeichnen
         void Draw(DrawPoint drawPt) override;
