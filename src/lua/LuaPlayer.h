@@ -50,6 +50,7 @@ public:
     unsigned GetPeopleCount(Job job);
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
     void ModifyHQ(bool isTent);
+    void Surrender(bool destroyBlds);
     kaguya::standard::tuple<unsigned, unsigned> GetHQPos();
 };
 

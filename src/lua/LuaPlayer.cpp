@@ -54,7 +54,8 @@ void LuaPlayer::Register(kaguya::State& state)
         .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
         .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
         .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
-        );
+        .addFunction("Surrender", &LuaPlayer::Surrender)
+    );
 }
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
@@ -260,6 +261,13 @@ void LuaPlayer::ModifyHQ(bool isTent)
         if(hq)
             hq->SetIsTent(isTent);
     }
+}
+
+void LuaPlayer::Surrender(bool destroyBlds)
+{
+    player.Surrender();
+    if(destroyBlds)
+        player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
 kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()

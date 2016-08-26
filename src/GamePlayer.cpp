@@ -1532,17 +1532,14 @@ void GamePlayer::TestDefeat()
     // Nicht schon besiegt?
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
     if(!isDefeated && military_buildings.empty() && warehouses.empty())
-    {
-        isDefeated = true;
-
-        // GUI Bescheid sagen
-		if(gwg->GetGameInterface())
-			gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
-    }
+        Surrender();
 }
 
 void GamePlayer::Surrender()
 {
+    if(isDefeated)
+        return;
+
     isDefeated = true;
 
     // GUI Bescheid sagen

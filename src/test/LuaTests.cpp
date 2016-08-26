@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     initWorld();
 
     const GamePlayer& player = world.GetPlayer(1);
-    const nobHQ* hq = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
+    const nobHQ* hq = world.GetSpecObj<nobHQ>(player.GetHQPos());
     executeLua("player = rttr:GetPlayer(1)\nassert(player)");
 
     BOOST_REQUIRE(player.IsBuildingEnabled(BLD_WOODCUTTER));
@@ -427,6 +427,16 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("assert(player:AddPeople(people) == false)");
     // ModifyHQ does not crash
     executeLua("player:ModifyHQ(true)");
+
+    const GamePlayer& player0 = world.GetPlayer(0);
+    MapPoint hqPos = player0.GetHQPos();
+    BOOST_REQUIRE(hqPos.isValid() && world.GetSpecObj<nobHQ>(hqPos));
+    BOOST_REQUIRE(!player0.IsDefeated());
+    executeLua("player = rttr:GetPlayer(0)\n player:Surrender(false)");
+    BOOST_REQUIRE(player0.IsDefeated());
+    BOOST_REQUIRE(player0.GetHQPos().isValid() && world.GetSpecObj<nobHQ>(hqPos));
+    executeLua("player:Surrender(true)");
+    BOOST_REQUIRE(!player0.GetHQPos().isValid() && !world.GetSpecObj<nobHQ>(hqPos));
 }
 
 BOOST_AUTO_TEST_CASE(RestrictedArea)
