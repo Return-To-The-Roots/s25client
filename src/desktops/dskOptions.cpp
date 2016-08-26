@@ -336,11 +336,14 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->SetSelection( (SETTINGS.sound.effekte ? 68 : 69) );
 
     // }
+
+    // Load game settings
+    ggs.LoadSettings();
 }
 
 dskOptions::~dskOptions()
 {
-    // Save settings
+    // Save game settings
     ggs.SaveSettings();
 }
 
@@ -586,11 +589,8 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
             WINDOWMANAGER.Switch(new dskMainMenu);
         } break;
         case 14: // Addons
-        {
-            ggs.LoadSettings();
             WINDOWMANAGER.Show(new iwAddons(ggs));
-
-        } break;
+            break;
     }
 }
 
