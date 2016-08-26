@@ -23,6 +23,7 @@
 #include "buildings/nobHQ.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
+#include "nodeObjs/noAnimal.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsg.h"
 #include "gameTypes/Resource.h"
@@ -88,15 +89,13 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     // Wrong version
     executeLua("function getRequiredLuaVersion()\n return 0\n end");
     BOOST_REQUIRE(!lua.CheckScriptVersion());
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (lua.GetVersion().first + 1));
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (lua.GetVersion() + 1));
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     // Correct version
-    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion().first);
+    executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
-    executeLua("vMajor, vMinor = rttr:GetVersion()");
-    BOOST_CHECK(isLuaEqual("vMajor", helpers::toString(lua.GetVersion().first)));
-    BOOST_CHECK(isLuaEqual("vMinor", helpers::toString(lua.GetVersion().second)));
+    BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", helpers::toString(lua.GetFeatureLevel())));
 
     // (Invalid) connect to set params
     BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, true, false));
@@ -548,6 +547,20 @@ BOOST_AUTO_TEST_CASE(World)
     obj2 = world.GetSpecObj<noStaticObject>(envPt);
     BOOST_REQUIRE(obj2);
     BOOST_REQUIRE_EQUAL(obj2->GetGOT(), GOT_ENVOBJECT);
+
+    MapPoint animalPos(20, 12);
+    const std::list<noBase*>& figs = world.GetFigures(animalPos);
+    BOOST_REQUIRE(figs.empty());
+    executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_DEER)") % animalPos.x % animalPos.y);
+    BOOST_REQUIRE_EQUAL(figs.size(), 1u);
+    const noAnimal* animal = dynamic_cast<noAnimal*>(figs.front());
+    BOOST_REQUIRE(animal);
+    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_DEER);
+    executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_FOX)") % animalPos.x % animalPos.y);
+    BOOST_REQUIRE_EQUAL(figs.size(), 2u);
+    animal = dynamic_cast<noAnimal*>(figs.back());
+    BOOST_REQUIRE(animal);
+    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_FOX);
 }
 
 BOOST_AUTO_TEST_CASE(WorldEvents)

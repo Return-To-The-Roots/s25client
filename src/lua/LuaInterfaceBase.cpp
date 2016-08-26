@@ -40,9 +40,14 @@ namespace kaguya{
     };
 }
 
-std::pair<unsigned, unsigned> LuaInterfaceBase::GetVersion()
+unsigned LuaInterfaceBase::GetVersion()
 {
-    return std::pair<unsigned, unsigned>(1, 0);
+    return 1;
+}
+
+unsigned LuaInterfaceBase::GetFeatureLevel()
+{
+    return 1;
 }
 
 LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
@@ -62,7 +67,7 @@ LuaInterfaceBase::~LuaInterfaceBase()
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
-        .addStaticFunction("GetVersion", &LuaInterfaceBase::GetVersion)
+        .addStaticFunction("GetFeatureLevel", &LuaInterfaceBase::GetFeatureLevel)
         .addFunction("Log", &LuaInterfaceBase::Log)
         .addFunction("IsHost", &LuaInterfaceBase::IsHost)
         .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
@@ -120,11 +125,11 @@ bool LuaInterfaceBase::CheckScriptVersion()
     if(func.type() == LUA_TFUNCTION)
     {
         const unsigned scriptVersion = func.call<unsigned>();
-        if(scriptVersion == GetVersion().first)
+        if(scriptVersion == GetVersion())
             return true;
         else
         {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion().first % GetVersion().second;
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion() % GetFeatureLevel();
             return false;
         }
     } else

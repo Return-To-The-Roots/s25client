@@ -36,9 +36,10 @@ public:
 
     bool CheckScriptVersion();
 
-    /// Return major and minor version of the interface
-    /// Major version changes reflect breaking changes while minor version changes reflect only added features
-    static std::pair<unsigned, unsigned> GetVersion();
+    /// Return version of the interface. Changes here reflect breaking changes
+    static unsigned GetVersion();
+    /// Get the feature level of this version. Reset on Version increase, increase for added features
+    static unsigned GetFeatureLevel();
 
 protected:
     kaguya::State lua;
