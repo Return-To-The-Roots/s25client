@@ -43,7 +43,11 @@ void AIResourceMap::Init()
         for (pt.x = 0; pt.x < width; ++pt.x)
         {
             unsigned i = aii->GetIdx(pt);
-            if ((*nodes)[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
+            if ((*nodes)[i].res == res && res == AIJH::FISH)
+            {
+                Change(pt, 1);
+            }
+            else if ((*nodes)[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
             {
                 Change(pt, 1);
             }
