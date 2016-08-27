@@ -26,14 +26,13 @@ class LobbyServerInfo;
 class iwLobbyServerInfo : public IngameWindow
 {
     private:
-        const LobbyServerInfo* serverinfo;
-        unsigned int server;
+        unsigned serverId_;
 
     public:
-        iwLobbyServerInfo();
+        iwLobbyServerInfo(unsigned serverId);
 
-        void Set(const LobbyServerInfo* serverinfo, unsigned int server);
-        unsigned int GetNr() { return server; }
+        void SetServerId(unsigned serverId);
+        unsigned GetServerId() const { return serverId_; }
 
     protected:
         void UpdateServerInfo();

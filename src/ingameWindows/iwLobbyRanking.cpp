@@ -28,20 +28,20 @@
  */
 void iwLobbyRanking::UpdateRankings(bool first)
 {
-    if(LOBBYCLIENT.refreshrankinglist)
+    if(LOBBYCLIENT.receivedNewRankingList)
     {
-        const LobbyPlayerList* rankinglist = LOBBYCLIENT.GetRankingList();
+        const LobbyPlayerList& rankinglist = LOBBYCLIENT.GetRankingList();
         ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
 
         rankingtable->DeleteAllItems();
 
-        LOBBYCLIENT.refreshrankinglist = false;
+        LOBBYCLIENT.receivedNewRankingList = false;
 
-        if(rankinglist->getCount() > 0)
+        if(rankinglist.getCount() > 0)
         {
-            for(unsigned int i = 0; i < rankinglist->getCount() && i < 10; ++i)
+            for(unsigned int i = 0; i < rankinglist.getCount() && i < 10; ++i)
             {
-                const LobbyPlayerInfo& rankInfo = *rankinglist->getElement(i);
+                const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
                 std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
                 std::string numLost = boost::lexical_cast<std::string>(rankInfo.getVerloren());
                 std::string numWon = boost::lexical_cast<std::string>(rankInfo.getGewonnen());

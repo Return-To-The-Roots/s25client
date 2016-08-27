@@ -1577,13 +1577,7 @@ void GameClient::ServerLost()
     if(ci)
         ci->CI_Error(CE_CONNECTIONLOST);
 
-
-    if(state != CS_STOPPED)
-        LOG.write("client forced to stop\n");
-
-    state = CS_STOPPED;
-
-    socket.Close();
+    Stop();
 }
 
 /**

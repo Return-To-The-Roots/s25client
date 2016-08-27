@@ -41,7 +41,7 @@
 #include <boost/lexical_cast.hpp>
 #include <set>
 
-dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL), servercreate(NULL)
+dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL)
 {
     // Version
     AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
@@ -70,6 +70,10 @@ dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverinfo(NULL
     AddEdit(21, 20, 530, 500, 22, TC_GREY, NormalFont);
 
     AddTimer(30, 5000);
+
+    // If we came from an active game, tell the server we quit
+    if(LOBBYCLIENT.IsIngame())
+        LOBBYCLIENT.SendLeaveServer();
 
     UpdateServerList(true);
     UpdatePlayerList(true);
@@ -123,9 +127,9 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
                 WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
             {
-                servercreate = new iwDirectIPCreate(ServerType::LOBBY);
-                servercreate->SetParent(this);
-                WINDOWMANAGER.Show(servercreate, true);
+                createServerWnd = new iwDirectIPCreate(ServerType::LOBBY);
+                createServerWnd->SetParent(this);
+                WINDOWMANAGER.Show(createServerWnd, true);
             }
         } break;
     }
@@ -155,21 +159,18 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const int select
 
             if(atoi(item.c_str()) != 0)
             {
-                if(serverinfo)
+                if(serverInfoWnd)
                 {
-                    if(serverinfo->GetNr() == (unsigned int)atoi(item.c_str()))
-                        break; // raus
+                    if(serverInfoWnd->GetServerId() == (unsigned)atoi(item.c_str()))
+                        return; // raus
 
-                    WINDOWMANAGER.Close(serverinfo);
+                    WINDOWMANAGER.Close(serverInfoWnd);
                 }
 
-                serverinfo = new iwLobbyServerInfo();
-                serverinfo->SetParent(this);
-                serverinfo->Set(NULL, atoi(item.c_str()));
-                serverinfo->SetTitle(table->GetItemText(selection, 1));
-
-                LOBBYCLIENT.SendServerInfoRequest(atoi(item.c_str()));
-                WINDOWMANAGER.Show(serverinfo, true);
+                serverInfoWnd = new iwLobbyServerInfo(atoi(item.c_str()));
+                serverInfoWnd->SetParent(this);
+                serverInfoWnd->SetTitle(table->GetItemText(selection, 1));
+                WINDOWMANAGER.Show(serverInfoWnd, true);
             }
         } break;
     }
@@ -183,16 +184,16 @@ void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned select
 
 void dskLobby::UpdatePlayerList(bool first)
 {
-    playerlist = LOBBYCLIENT.GetPlayerList();
+    playerlist = &LOBBYCLIENT.GetPlayerList();
     if(!playerlist)
         return;
 
     ctrlTable* playertable = GetCtrl<ctrlTable>(11);
 
-    if(!LOBBYCLIENT.refreshplayerlist)
+    if(!LOBBYCLIENT.receivedNewPlayerList)
         return;
 
-    LOBBYCLIENT.refreshplayerlist = false;
+    LOBBYCLIENT.receivedNewPlayerList = false;
 
     if ((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
     {
@@ -231,16 +232,16 @@ void dskLobby::UpdatePlayerList(bool first)
 
 void dskLobby::UpdateServerList(bool first)
 {
-    serverlist = LOBBYCLIENT.GetServerList();
+    serverlist = &LOBBYCLIENT.GetServerList();
     if(!serverlist)
         return;
 
     ctrlTable* servertable = GetCtrl<ctrlTable>(10);
 
-    if(!LOBBYCLIENT.refreshserverlist)
+    if(!LOBBYCLIENT.receivedNewServerList)
         return;
 
-    LOBBYCLIENT.refreshserverlist = false;
+    LOBBYCLIENT.receivedNewServerList = false;
 
     unsigned int selection = servertable->GetSelection();
     if(selection == 0xFFFF)
@@ -330,8 +331,8 @@ void dskLobby::LC_Status_IncompleteMessage()
  */
 void dskLobby::LC_Status_Error(const std::string& error)
 {
-    if(servercreate)
-        servercreate->LC_Status_Error(error);
+    if(createServerWnd)
+        createServerWnd->LC_Status_Error(error);
 }
 
 /**

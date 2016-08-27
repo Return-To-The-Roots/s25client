@@ -37,8 +37,8 @@ class dskLobby :
     private:
         const LobbyServerList* serverlist;
         const LobbyPlayerList* playerlist;
-        iwLobbyServerInfo* serverinfo;
-        iwDirectIPCreate* servercreate;
+        iwLobbyServerInfo* serverInfoWnd;
+        iwDirectIPCreate* createServerWnd;
 
     public:
         dskLobby();
