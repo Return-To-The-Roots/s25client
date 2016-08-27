@@ -35,7 +35,7 @@
 
 WindowManager::WindowManager()
     : disable_mouse(false),
-      mouseCoords(NULL), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
+      lastMousePos(Point<int>::Invalid()), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
 {
 }
 
@@ -256,7 +256,6 @@ void WindowManager::Show(IngameWindow* window, bool mouse)
 void WindowManager::ShowAfterSwitch(IngameWindow* window)
 {
     RTTR_Assert(window);
-    RTTR_Assert(nextdesktop); // Only usefull if we are about to switch, otherwise use regular Show function
     nextWnds.push_back(window);
 }
 
@@ -648,7 +647,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
-    this->mouseCoords = &mc;
+    lastMousePos = Point<int>(mc.x, mc.y);
 
     // ist unser Desktop gültig?
     if(!curDesktop)
@@ -757,6 +756,15 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     }
 }
 
+
+const Window* WindowManager::GetTopMostWindow() const
+{
+    if(windows.empty())
+        return NULL;
+    else
+        return windows.back();
+}
+
 struct IsWindowId
 {
     const unsigned id;
@@ -768,12 +776,7 @@ struct IsWindowId
     }
 };
 
-/**
- *  schliesst ein IngameWindow und entfernt es aus der Fensterliste.
- *
- *  @param[in] it Iterator auf das Fenster in der Fensterliste
- */
-void WindowManager::Close(IngameWindow* window)
+void WindowManager::Close(const IngameWindow* window)
 {
     // ist das Fenster gültig?
     if(!window)
@@ -833,8 +836,7 @@ void WindowManager::Close(unsigned int id)
 void WindowManager::Switch()
 {
     RTTR_Assert(nextdesktop);
-    // einmal richtig clearen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    VIDEODRIVER.ClearScreen();
 
     SetToolTip(NULL, "");
 
@@ -885,16 +887,16 @@ void WindowManager::SetToolTip(const Window* ttw, const std::string& tooltip)
 void WindowManager::DrawToolTip()
 {
     // Tooltip zeichnen
-    if(curTooltip.length() && mouseCoords)
+    if(curTooltip.length() && lastMousePos.isValid())
     {
         const unsigned spacing = 30;
         unsigned text_width = NormalFont->getWidth(curTooltip);
-        DrawPoint ttPos = DrawPoint(mouseCoords->x + spacing, mouseCoords->y);
+        DrawPoint ttPos = DrawPoint(lastMousePos.x + spacing, lastMousePos.y);
         unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
-            ttPos.x = mouseCoords->x - spacing - text_width;
+            ttPos.x = lastMousePos.x - spacing - text_width;
 
         unsigned int numLines = 1;
         size_t pos = curTooltip.find('\n');

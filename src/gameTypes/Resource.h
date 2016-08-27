@@ -19,7 +19,7 @@
 #define Resource_h__
 
 enum Resource{
-    RES_IRON_ORE = 0,
+    RES_IRON = 0,
     RES_GOLD = 1,
     RES_COAL = 2,
     RES_GRANITE = 3,

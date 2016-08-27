@@ -537,26 +537,6 @@ void VideoWinAPI::SetMousePos(int x, int y)
 }
 
 /**
- *  Funktion zum Setzen der X-Koordinate der Maus.
- *
- *  @param[in] x X-Koordinate
- */
-void VideoWinAPI::SetMousePosX(int x)
-{
-    SetMousePos(x, mouse_xy.y);
-}
-
-/**
- *  Funktion zum Setzen der Y-Koordinate der Maus.
- *
- *  @param[in] y Y-Koordinate
- */
-void VideoWinAPI::SetMousePosY(int y)
-{
-    SetMousePos(mouse_xy.x, y);
-}
-
-/**
  *  Funktion zum Senden einer gedrückten Taste.
  *
  *  @param[in] c Tastencode

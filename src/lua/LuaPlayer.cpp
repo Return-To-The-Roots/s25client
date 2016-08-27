@@ -38,23 +38,24 @@ const BasePlayerInfo& LuaPlayer::GetPlayer() const
 void LuaPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
-    state["Player"].setClass(kaguya::ClassMetatable<LuaPlayer, LuaPlayerBase>()
-        .addMemberFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
-        .addMemberFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
-        .addMemberFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
-        .addMemberFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
-        .addMemberFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
-        .addMemberFunction("ClearResources", &LuaPlayer::ClearResources)
-        .addMemberFunction("AddWares", &LuaPlayer::AddWares)
-        .addMemberFunction("AddPeople", &LuaPlayer::AddPeople)
-        .addMemberFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
-        .addMemberFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
-        .addMemberFunction("GetWareCount", &LuaPlayer::GetWareCount)
-        .addMemberFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
-        .addMemberFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
-        .addMemberFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
-        .addMemberFunction("GetHQPos", &LuaPlayer::GetHQPos)
-        );
+    state["Player"].setClass(kaguya::UserdataMetatable<LuaPlayer, LuaPlayerBase>()
+        .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
+        .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
+        .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
+        .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
+        .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
+        .addFunction("ClearResources", &LuaPlayer::ClearResources)
+        .addFunction("AddWares", &LuaPlayer::AddWares)
+        .addFunction("AddPeople", &LuaPlayer::AddPeople)
+        .addFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
+        .addFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
+        .addFunction("GetWareCount", &LuaPlayer::GetWareCount)
+        .addFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
+        .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
+        .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
+        .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
+        .addFunction("Surrender", &LuaPlayer::Surrender)
+    );
 }
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
@@ -260,6 +261,13 @@ void LuaPlayer::ModifyHQ(bool isTent)
         if(hq)
             hq->SetIsTent(isTent);
     }
+}
+
+void LuaPlayer::Surrender(bool destroyBlds)
+{
+    player.Surrender();
+    if(destroyBlds)
+        player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
 kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()

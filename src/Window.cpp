@@ -259,6 +259,18 @@ bool Window::IsMessageRelayAllowed() const
     return true;
 }
 
+void Window::DeleteCtrl(unsigned int id)
+{
+    std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
+
+    if(it == childIdToWnd_.end())
+        return;
+
+    delete it->second;
+
+    childIdToWnd_.erase(it);
+}
+
 /**
  *  fügt ein BuildingIcon hinzu.
  */
@@ -548,7 +560,7 @@ ctrlMultiline* Window::AddMultiline(unsigned int id,
         height = ScaleY(height);
     }
 
-    return AddCtrl(id, new ctrlMultiline(this, id, x, y, width, height, tc, font, format));
+    return AddCtrl(id, new ctrlMultiline(this, id, DrawPoint(x, y), width, height, tc, font, format));
 }
 
 /**

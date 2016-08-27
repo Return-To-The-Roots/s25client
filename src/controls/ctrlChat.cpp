@@ -265,15 +265,10 @@ bool ctrlChat::Msg_LeftUp(const MouseCoords& mc)
 
 bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 {
-    // Forward to ScrollBar, if mouse over control
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 2, height_ - 4))
     {
-        // Simulate three Button Clicks
-        scrollbar->Msg_ButtonClick(0);
-        scrollbar->Msg_ButtonClick(0);
-        scrollbar->Msg_ButtonClick(0);
+        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        scrollbar->Scroll(-3);
         return true;
     }
     else
@@ -283,15 +278,10 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
 
 bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 {
-    // Forward to ScrollBar, if mouse over control
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 2, height_ - 4))
     {
-        // Simulate three Button Clicks
-        scrollbar->Msg_ButtonClick(1);
-        scrollbar->Msg_ButtonClick(1);
-        scrollbar->Msg_ButtonClick(1);
+        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        scrollbar->Scroll(+3);
         return true;
     }
     else

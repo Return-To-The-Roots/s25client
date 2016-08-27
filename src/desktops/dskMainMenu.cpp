@@ -85,17 +85,12 @@ void dskMainMenu::Msg_Timer(const unsigned int ctrl_id)
 
 void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
-    // Sollen alle Replays gel<F6>scht werden?
     if (msgbox_id == 100)
     {
         if (mbr == MSR_YES)
-        {
             SETTINGS.global.submit_debug_data = 1;
-        }
         else
-        {
             SETTINGS.global.submit_debug_data = 2;
-        }
 
         SETTINGS.Save();
     }

@@ -33,5 +33,3 @@ DRIVERDLLAPI unsigned int GetDriverAPIVersion(void)
 {
     return DRIVERAPIVERSION;
 }
-
-

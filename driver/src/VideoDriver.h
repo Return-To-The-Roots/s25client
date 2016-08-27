@@ -36,25 +36,19 @@ class VideoDriver: public IVideoDriver
         /// Funktion zum Auslesen der Mauskoordinaten.
         void GetMousePos(int& x, int& y) const override;
 
-        /// Funktion zum Auslesen der X-Koordinate der Maus.
-        int GetMousePosX() const override;
-
-        /// Funktion zum Auslesen der Y-Koordinate der Maus.
-        int GetMousePosY() const override;
-
         /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
         bool GetMouseStateL() const override;
 
         /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
         bool GetMouseStateR() const override;
 
-        //
         unsigned short GetScreenWidth()  const override { return screenWidth;  }
         unsigned short GetScreenHeight() const override { return screenHeight; }
         bool IsFullscreen() const override { return isFullscreen_; }
 
         /// prüft auf Initialisierung.
         bool IsInitialized() override { return initialized; }
+        bool IsOpenGL() override { return true; }
 
     protected:
         VideoDriverLoaderInterface* CallBack;  /// Das DriverCallback für Rückmeldungen.

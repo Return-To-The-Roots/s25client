@@ -27,4 +27,8 @@ void doInitGameRNG(unsigned defaultValue = 1337, const char* fileName = "", unsi
 // Would work in C++11
 //#define initGameRNG(defaultValue) doInitGameRNG(__VA_ARGS__ + 0, __FILE__, __LINE__);
 
+/// Initializes data required for GUI tests:
+/// Mockup VideoDriver loaded, Dummy files in LOADER, Dummy Desktop activated
+void initGUITests();
+
 #endif // testHelpers_h__

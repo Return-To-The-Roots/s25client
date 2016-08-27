@@ -33,13 +33,14 @@ PostManager::~PostManager()
         delete postBoxes[i];
 }
 
-void PostManager::AddPostBox(unsigned player)
+PostBox* PostManager::AddPostBox(unsigned player)
 {
     if(player >= postBoxes.size())
         throw std::out_of_range("Invalid player for new postbox");
     if(GetPostBox(player))
         throw std::logic_error("Postbox already exists");
     postBoxes[player] = new PostBox();
+    return postBoxes[player];
 }
 
 PostBox* PostManager::GetPostBox(unsigned player) const
@@ -59,4 +60,11 @@ void PostManager::SendMsg(unsigned player, PostMsg* msg)
         box->AddMsg(msg);
     else
         deletePtr(msg);
+}
+
+void PostManager::SetMissionGoal(unsigned player, const std::string& newGoal)
+{
+    PostBox* box = GetPostBox(player);
+    if(box)
+        box->SetCurrentMissionGoal(newGoal);
 }

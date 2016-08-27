@@ -36,6 +36,7 @@
 #include "gameData/GameConsts.h"
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
+#include <boost/foreach.hpp>
 
 GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em):
     roadPathFinder(new RoadPathFinder(*this)),
@@ -79,6 +80,22 @@ const GamePlayer& GameWorldBase::GetPlayer(const unsigned id) const
 unsigned GameWorldBase::GetPlayerCount() const
 {
     return players.size();
+}
+
+bool GameWorldBase::IsSinglePlayer() const
+{
+    bool foundPlayer = false;
+    BOOST_FOREACH(const PlayerInfo& player, players)
+    {
+        if(player.ps == PS_OCCUPIED)
+        {
+            if(foundPlayer)
+                return false;
+            else
+                foundPlayer = true;
+        }
+    }
+    return true;
 }
 
 bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) const

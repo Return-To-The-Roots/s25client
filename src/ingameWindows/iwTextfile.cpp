@@ -39,13 +39,12 @@
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("resource", 41))
 {
+    ctrlMultiline* text = AddMultiline(2, 10, 20, width_ - 20, 450, TC_GREEN1, NormalFont);
+
     // Pfad mit gewählter Sprache auswählen
     std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;
 
     std::ifstream file(path.c_str());
-
-    ctrlMultiline* text = AddMultiline(2, 10, 20, width_ - 20, 450, TC_GREEN1, NormalFont, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP);
-
     if(!file.good())
     {
         // lokalisierte Vresion nicht gefunden, Standard öffnen
@@ -56,27 +55,14 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
         {
             // immer noch nichts gefunden? --> Dann Fehlermeldung
             text->AddString(_("The readme file was not found!"), COLOR_RED, false);
-            // und raus
             return;
         }
     }
 
     std::string line; // buffer for one line
-    unsigned short max_line_width = 0; // use this to find max length of lines, to set window width
-    unsigned short current_line_width;
-
-    while(!file.eof())
-    {
-        std::getline(file, line); // get next line
+    while(std::getline(file, line))
         text->AddString(line, COLOR_YELLOW, false); // add this line to the window contents
-        current_line_width = NormalFont->getWidth(line); // get the width of line in normal font
-        if (current_line_width > max_line_width) // if wider than max, re-set max
-        {
-            max_line_width = current_line_width;
-        }
-    }
-    file.close();
 
-    SetWidth(max_line_width + 20 + 30); // set window width to our determined max width
-    text->SetWidth(max_line_width + 30);
+    text->SetWidth(text->GetContentWidth());
+    SetIwWidth(text->GetWidth());
 }

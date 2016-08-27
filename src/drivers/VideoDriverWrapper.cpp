@@ -33,7 +33,7 @@
 #   include <valgrind/memcheck.h>
 #endif
 
-VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), texture_pos(0), texture_current(0)
+VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), isOglEnabled_(false), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
@@ -53,27 +53,33 @@ VideoDriverWrapper::~VideoDriverWrapper()
  *
  *  @return liefert @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoDriverWrapper::LoadDriver()
+bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 {
+    if(!existingDriver)
+    {
 #ifdef _WIN32
-    // unter Windows standardmäßig WinAPI prüfen
-    if(SETTINGS.driver.video.empty())
-        SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
+        // unter Windows standardmäßig WinAPI prüfen
+        if(SETTINGS.driver.video.empty())
+            SETTINGS.driver.video = "(WinAPI) OpenGL via the glorious WinAPI";
 #endif
 
-    // DLL laden
-    if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
-        return false;
+        // DLL laden
+        if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
+            return false;
 
-    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+        PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
-    // Instanz erzeugen
-    videodriver = CreateVideoInstance(&WINDOWMANAGER);
-    if(!videodriver)
-        return false;
+        // Instanz erzeugen
+        videodriver = CreateVideoInstance(&WINDOWMANAGER);
+        if(!videodriver)
+            return false;
+    } else
+        videodriver = existingDriver;
 
     if(!videodriver->Initialize())
         return false;
+
+    isOglEnabled_ = videodriver->IsOpenGL();
 
     return true;
 }
@@ -207,7 +213,7 @@ bool VideoDriverWrapper::DestroyScreen()
 bool VideoDriverWrapper::hasExtension(const std::string& extension)
 {
     // Extension mit Leerzeichen gibts nich
-    if( extension.empty() || extension.find(' ') != std::string::npos)
+    if(!isOglEnabled_ || extension.empty() || extension.find(' ') != std::string::npos)
         return false;
 
     // ermittle Extensions String
@@ -237,7 +243,8 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-    glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
+    if(isOglEnabled_)
+        glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
 
     std::fill(texture_list.begin(), texture_list.end(), 0);
     texture_pos = 0;
@@ -267,7 +274,8 @@ void VideoDriverWrapper::BindTexture(unsigned int t)
     if (t != texture_current)
     {
         texture_current = t;
-        glBindTexture(GL_TEXTURE_2D, t);
+        if(isOglEnabled_)
+            glBindTexture(GL_TEXTURE_2D, t);
     }
 }
 
@@ -275,7 +283,8 @@ void VideoDriverWrapper::DeleteTexture(unsigned int t)
 {
     if (t == texture_current)
         texture_current = 0;
-    glDeleteTextures(1, &t);
+    if(isOglEnabled_)
+        glDeleteTextures(1, &t);
 }
 
 KeyEvent VideoDriverWrapper::GetModKeyState() const
@@ -297,6 +306,12 @@ bool VideoDriverWrapper::SwapBuffers()
     return videodriver->SwapBuffers();
 }
 
+void VideoDriverWrapper::ClearScreen()
+{
+    if(isOglEnabled_)
+        glClear(GL_COLOR_BUFFER_BIT);
+}
+
 bool VideoDriverWrapper::Run()
 {
     if(!videodriver)
@@ -310,10 +325,13 @@ bool VideoDriverWrapper::Run()
 
 bool VideoDriverWrapper::Initialize()
 {
+    if(!isOglEnabled_)
+        return true;
+
     RenewViewport();
 
     // Depthbuffer und Colorbuffer einstellen
-    glClearColor(0.0, 0.0, 0.0, 0.5);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
     // Smooth - Shading aktivieren
     glShadeModel(GL_SMOOTH);
@@ -345,8 +363,7 @@ bool VideoDriverWrapper::Initialize()
     if(!LoadAllExtensions())
         return false;
 
-    // Puffer leeren
-    glClear(GL_COLOR_BUFFER_BIT);
+    ClearScreen();
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -454,18 +471,12 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
 
 int VideoDriverWrapper::GetMouseX() const
 {
-    if(!videodriver)
-        return 0;
-
-    return videodriver->GetMousePosX();
+    return GetMousePos().x;
 }
 
 int VideoDriverWrapper::GetMouseY() const
 {
-    if(!videodriver)
-        return 0;
-
-    return videodriver->GetMousePosY();
+    return GetMousePos().y;
 }
 
 Point<int> VideoDriverWrapper::GetMousePos() const

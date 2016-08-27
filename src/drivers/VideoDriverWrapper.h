@@ -35,26 +35,28 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         VideoDriverWrapper();
         ~VideoDriverWrapper() override;
 
-        /// Läd den Treiber
-        bool LoadDriver();
+        /// Loads a new driver. Takes the existing one, if given
+        bool LoadDriver(IVideoDriver* existingDriver = NULL);
 
         /// Erstellt das Fenster.
         bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
         /// Verändert Auflösung, Fenster/Fullscreen
         bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
-        // Viewport (neu) setzen
+        /// Viewport (neu) setzen
         void RenewViewport(bool onlyRenew = false);
-        // zerstört das Fenster.
+        /// zerstört das Fenster.
         bool DestroyScreen();
-        // räumt die Texturen auf
+        /// räumt die Texturen auf
         void CleanUp();
-        // erstellt eine Textur
+        /// erstellt eine Textur
         unsigned int GenerateTexture();
         void BindTexture(unsigned int t);
         void DeleteTexture(unsigned int t);
 
-        // Swapped den Buffer
+        /// Swapped den Buffer
         bool SwapBuffers();
+        /// Clears the screen (glClear)
+        void ClearScreen();
         // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
         // benutzen!!!)
         int GetMouseX() const;
@@ -105,6 +107,8 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
 
         DriverWrapper driver_wrapper;
         IVideoDriver* videodriver;
+        /// (Some) OpenGL can be disabled for testing
+        bool isOglEnabled_;
 
         boost::array<unsigned int, 100000> texture_list;
         unsigned int texture_pos;

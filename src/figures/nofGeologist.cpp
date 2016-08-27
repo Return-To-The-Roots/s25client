@@ -411,7 +411,7 @@ void nofGeologist::SetSign(const unsigned char resources)
     }
     else if(resources >= 0x49 && resources <= 0x4F)
     {
-        type = RES_IRON_ORE;
+        type = RES_IRON;
         quantity = (resources - 0x48) / 3;
     }
     else if(resources >= 0x51 && resources <= 0x57)
@@ -448,7 +448,7 @@ void nofGeologist::SetSign(const unsigned char resources)
         const char* msg;
         switch(type)
         {
-        case RES_IRON_ORE:
+        case RES_IRON:
             msg = _("Found iron ore");
             break;
         case RES_GOLD:

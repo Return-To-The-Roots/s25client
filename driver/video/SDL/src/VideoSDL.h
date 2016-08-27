@@ -68,12 +68,6 @@ class VideoSDL : public VideoDriver
         /// Funktion zum Setzen der Mauskoordinaten.
         void SetMousePos(int x, int y) override;
 
-        /// Funktion zum Setzen der X-Koordinate der Maus.
-        void SetMousePosX(int x) override;
-
-        /// Funktion zum Setzen der Y-Koordinate der Maus.
-        void SetMousePosY(int y) override;
-
         /// Get state of the modifier keys
         KeyEvent GetModKeyState() const override;
 

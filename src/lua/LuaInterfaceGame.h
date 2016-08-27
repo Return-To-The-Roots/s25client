@@ -42,18 +42,22 @@ public:
     void EventOccupied(unsigned player, const MapPoint pt);
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned number);
-    void EventResourceFound(unsigned char player, const MapPoint pt, const unsigned char type, const unsigned char quantity);
+    void EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type, unsigned char quantity);
 
-private:
-    GameWorldGame& gw;
-
+    // Callable from Lua
     void ClearResources();
     unsigned GetGF();
     unsigned GetPlayerCount();
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
+    void MissionStatementWithImg(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
+    void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
     void PostMessageLua(unsigned playerIdx, const std::string& msg);
     void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);
+
+private:
+    GameWorldGame& gw;
+
     LuaPlayer GetPlayer(unsigned playerIdx);
     LuaWorld GetWorld();
 };

@@ -370,20 +370,20 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
  *
  *  @return Breite des Textes in Pixeln
  */
-unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned max_width, unsigned* max) const
+unsigned short glArchivItem_Font::getWidth(const ucString& text, unsigned length, unsigned max_width, unsigned* maxNumChars) const
 {
     if(length == 0)
         length = unsigned(text.length());
 
-    return getWidthInternal(text.begin(), text.begin() + length, max_width, max);
+    return getWidthInternal(text.begin(), text.begin() + length, max_width, maxNumChars);
 }
 
-unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned* max) const
+unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned length, unsigned max_width, unsigned* maxNumChars) const
 {
     if(length == 0)
         length = unsigned(text.length());
 
-    return getWidthInternal(text.begin(), text.begin() + length, max_width, max);
+    return getWidthInternal(text.begin(), text.begin() + length, max_width, maxNumChars);
 }
 
 /**
@@ -425,7 +425,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
         initFont();
 
     RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
-                                                           
+    
     // Current line width
     unsigned line_width = 0;
     // Width of current word
@@ -438,6 +438,8 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     utf8Iterator it(text.begin(), text.begin(), text.end());
     utf8Iterator itEnd(text.end(), text.begin(), text.end());
     utf8Iterator itWordStart = it;
+
+    const unsigned spaceWidth = CharWidth(' ');
 
     uint32_t curChar = 1;
     for(;; ++it)
@@ -486,7 +488,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
             {
                 // Set up this line if we are going to continue it (not at line break or text end)
                 // Line contains word and whitespace
-                line_width += word_width + CharWidth(' ');
+                line_width += word_width + spaceWidth;
                 word_width = 0;
                 itWordStart = nextIt(it);
             }else if(curChar == '\n')

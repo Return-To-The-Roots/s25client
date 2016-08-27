@@ -1724,18 +1724,7 @@ GamePlayer& GameClient::GetPlayer(const unsigned id)
 bool GameClient::IsSinglePlayer() const
 {
     RTTR_Assert(state == CS_LOADING || state == CS_GAME);
-    bool foundPlayer = false;
-    for(unsigned i = 0; i < gw->GetPlayerCount(); i++)
-    {
-        if(gw->GetPlayer(i).ps == PS_OCCUPIED)
-        {
-            if(foundPlayer)
-                return false;
-            else
-                foundPlayer = true;
-        }
-    }
-    return true;
+    return gw->IsSinglePlayer();
 }
 
 /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)

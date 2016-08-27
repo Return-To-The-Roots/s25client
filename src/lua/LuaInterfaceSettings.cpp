@@ -38,17 +38,16 @@ LuaInterfaceSettings::~LuaInterfaceSettings()
 
 void LuaInterfaceSettings::Register(kaguya::State& state)
 {
-    state["RTTRSettings"].setClass(kaguya::ClassMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
-        .addMemberFunction("GetPlayerCount", &LuaInterfaceSettings::GetPlayerCount)
-        .addMemberFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
-        .addMemberFunction("SetAddon", &LuaInterfaceSettings::SetAddon)
-        .addMemberFunction("SetAddon", &LuaInterfaceSettings::SetBoolAddon)
-        .addMemberFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
-        .addMemberFunction("ResetGameSettings", &LuaInterfaceSettings::ResetGameSettings)
-        .addMemberFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
+    state["RTTRSettings"].setClass(kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
+        .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetPlayerCount)
+        .addFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
+        .addOverloadedFunctions("SetAddon", &LuaInterfaceSettings::SetAddon, &LuaInterfaceSettings::SetBoolAddon)
+        .addFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
+        .addFunction("ResetGameSettings", &LuaInterfaceSettings::ResetGameSettings)
+        .addFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
     );
 
-    state["AddonId"].setClass(kaguya::ClassMetatable<AddonId>());
+    state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
 
     for(unsigned i = 0; i < AddonId::count_; ++i)
     {

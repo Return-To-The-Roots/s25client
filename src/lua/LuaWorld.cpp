@@ -17,20 +17,35 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaWorld.h"
+#include "lua/LuaHelpers.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/MapTypes.h"
+#include "nodeObjs/noAnimal.h"
+
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObject, 3, 5)
 
 void LuaWorld::Register(kaguya::State& state)
 {
-    state["World"].setClass(kaguya::ClassMetatable<LuaWorld>()
-        .addMemberFunction("AddEnvObject", &LuaWorld::AddEnvObject)
-        .addMemberFunction("AddEnvObject", &LuaWorld::AddEnvObject2)
-        .addMemberFunction("AddStaticObject", &LuaWorld::AddStaticObject)
-        .addMemberFunction("AddStaticObject", &LuaWorld::AddStaticObject2)
-        .addMemberFunction("AddStaticObject", &LuaWorld::AddStaticObject3)
-        );
+#pragma region ConstDefs
+#define ADD_LUA_CONST(name) state[#name] = name
+    ADD_LUA_CONST(SPEC_RABBITWHITE);
+    ADD_LUA_CONST(SPEC_RABBITGREY);
+    ADD_LUA_CONST(SPEC_FOX);
+    ADD_LUA_CONST(SPEC_STAG);
+    ADD_LUA_CONST(SPEC_DEER);
+    ADD_LUA_CONST(SPEC_DUCK);
+    ADD_LUA_CONST(SPEC_SHEEP);
+#undef ADD_LUA_CONST
+#pragma endregion ConstDefs
+
+    state["World"].setClass(kaguya::UserdataMetatable<LuaWorld>()
+        .addFunction("AddEnvObject", AddEnvObjectWrapper())
+        .addFunction("AddStaticObject", AddStaticObjectWrapper())
+        .addFunction("AddAnimal", &LuaWorld::AddAnimal)
+    );
 }
 
 bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
@@ -51,10 +66,9 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
     return true;
 }
 
-bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 0 */)
+bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
 {
-    if(size > 2)
-        throw std::runtime_error("Invalid size");
+    lua::assertTrue(size <= 2, "Invalid size");
     
     MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
     noBase* obj = gw.GetNode(pt).obj;
@@ -70,4 +84,13 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
     gw.SetNO(pt, new noStaticObject(pt, id, file, size));
     gw.RecalcBQAroundPoint(pt);
     return true;
+}
+
+void LuaWorld::AddAnimal(int x, int y, Species species)
+{
+    lua::assertTrue(static_cast<unsigned>(species) < SPEC_COUNT, "Invalid animal species");
+    MapPoint pos = gw.MakeMapPoint(Point<int>(x, y));
+    noAnimal* animal = new noAnimal(species, pos);
+    gw.AddFigure(animal, pos);
+    animal->StartLiving();
 }

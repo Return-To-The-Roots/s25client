@@ -440,26 +440,6 @@ void VideoSDL::SetMousePos(int x, int y)
 }
 
 /**
- *  Funktion zum Setzen der X-Koordinate der Maus.
- *
- *  @param[in] x X-Koordinate
- */
-void VideoSDL::SetMousePosX(int x)
-{
-    SetMousePos(x, mouse_xy.y);
-}
-
-/**
- *  Funktion zum Setzen der Y-Koordinate der Maus.
- *
- *  @param[in] y Y-Koordinate
- */
-void VideoSDL::SetMousePosY(int y)
-{
-    SetMousePos(mouse_xy.x, y);
-}
-
-/**
  *  Get state of the modifier keys
  */
 KeyEvent VideoSDL::GetModKeyState() const

@@ -326,14 +326,11 @@ int ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
 
 bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 {
-    // Forward to ScrollBar
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-
     // If mouse in list or scrollbar
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
-        // Simulate Button Click
-        scrollbar->Msg_ButtonClick(0);
+        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        scrollbar->Scroll(-1);
         return true;
     }
     else
@@ -342,14 +339,10 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 
 bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 {
-    // Forward to ScrollBar
-    ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-
-    // If mouse in list
     if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
-        // Simulate Button Click
-        scrollbar->Msg_ButtonClick(1);
+        ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
+        scrollbar->Scroll(+1);
         return true;
     }
     else

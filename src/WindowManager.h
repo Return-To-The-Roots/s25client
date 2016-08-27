@@ -61,7 +61,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Registers a window to be shown after a desktop switch
         void ShowAfterSwitch(IngameWindow* window);
         /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
-        void Close(IngameWindow* window);
+        void Close(const IngameWindow* window);
         /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
         void Close(unsigned int id);
         /// merkt einen Desktop zum Wechsel vor.
@@ -91,6 +91,9 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
         void Msg_ScreenResize(unsigned short width, unsigned short height);
 
+        /// Return the window currently on the top (probably active)
+        const Window* GetTopMostWindow() const;
+
     protected:
         void DrawToolTip();
         IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
@@ -107,7 +110,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Windows that will be shown after desktop switch
         /// Otherwise the window will not be shown, if it was added after a switch request
         std::vector<IngameWindow*> nextWnds;
-        const MouseCoords* mouseCoords;
+        Point<int> lastMousePos;
         std::string curTooltip;
         unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
         unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe

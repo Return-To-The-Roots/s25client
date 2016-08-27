@@ -22,16 +22,16 @@
 
 void LuaPlayerBase::Register(kaguya::State& state)
 {
-    state["PlayerBase"].setClass(kaguya::ClassMetatable<LuaPlayerBase>()
-        .addMemberFunction("GetName", &LuaPlayerBase::GetName)
-        .addMemberFunction("GetNation", &LuaPlayerBase::GetNation)
-        .addMemberFunction("GetTeam", &LuaPlayerBase::GetTeam)
-        .addMemberFunction("GetColor", &LuaPlayerBase::GetColor)
-        .addMemberFunction("IsFree", &LuaPlayerBase::IsFree)
-        .addMemberFunction("IsHuman", &LuaPlayerBase::IsHuman)
-        .addMemberFunction("IsAI", &LuaPlayerBase::IsAI)
-        .addMemberFunction("IsClosed", &LuaPlayerBase::IsClosed)
-        .addMemberFunction("GetAILevel", &LuaPlayerBase::GetAILevel)
+    state["PlayerBase"].setClass(kaguya::UserdataMetatable<LuaPlayerBase>()
+        .addFunction("GetName", &LuaPlayerBase::GetName)
+        .addFunction("GetNation", &LuaPlayerBase::GetNation)
+        .addFunction("GetTeam", &LuaPlayerBase::GetTeam)
+        .addFunction("GetColor", &LuaPlayerBase::GetColor)
+        .addFunction("IsFree", &LuaPlayerBase::IsFree)
+        .addFunction("IsHuman", &LuaPlayerBase::IsHuman)
+        .addFunction("IsAI", &LuaPlayerBase::IsAI)
+        .addFunction("IsClosed", &LuaPlayerBase::IsClosed)
+        .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel)
         );
 
 #pragma region ConstDefs

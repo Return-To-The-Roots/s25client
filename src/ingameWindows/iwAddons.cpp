@@ -193,23 +193,14 @@ void iwAddons::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned 
 
 bool iwAddons::Msg_WheelUp(const MouseCoords&  /*mc*/)
 {
-    // Forward to ScrollBar
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
-
-    // Simulate two Button Clicks
-    scrollbar->Msg_ButtonClick(0);
-    scrollbar->Msg_ButtonClick(0);
+    scrollbar->Scroll(-2);
     return true;
 }
 
 bool iwAddons::Msg_WheelDown(const MouseCoords&  /*mc*/)
 {
-    // Forward to ScrollBar
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
-
-    // Simulate two Button Clicks
-    scrollbar->Msg_ButtonClick(1);
-    scrollbar->Msg_ButtonClick(1);
+    scrollbar->Scroll(+2);
     return true;
 }
-

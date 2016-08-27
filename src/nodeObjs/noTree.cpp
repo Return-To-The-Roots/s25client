@@ -30,6 +30,7 @@
 #include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 #include "addons/const_addons.h"
+#include <boost/array.hpp>
 
 unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;
@@ -233,26 +234,23 @@ void noTree::FallSoon()
 void noTree::DontFall()
 {
     if(state == STATE_FALLING_WAIT)
-    {
         GetEvMgr().RemoveEvent(event);
-        event = 0;
-    }
 }
 
 
 void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
-    Species possible_species[6] =
-    {
+    static const boost::array<Species, 6> possibleSpecies =
+    {{
         SPEC_RABBITWHITE,
         SPEC_RABBITGREY,
         SPEC_FOX,
         SPEC_STAG,
         SPEC_DEER,
         SPEC_SHEEP
-    };
-    noAnimal* animal = new noAnimal(possible_species[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)], pos);
+    }};
+    noAnimal* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen
     gwg->AddFigure(animal, pos);
     // Und ihm die Pforten geben..

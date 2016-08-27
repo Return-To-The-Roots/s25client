@@ -24,6 +24,7 @@
 #include "controls/ctrlMultiline.h"
 #include "postSystem/PostMsg.h"
 #include "postSystem/DiplomacyPostQuestion.h"
+#include "ingameWindows/iwMissionStatement.h"
 #include "driver/src/KeyEvent.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -41,11 +42,11 @@ namespace{
     enum ButtonIds{
         ID_FIRST_FREE = 1,
         ID_SHOW_ALL,
-        ID_SHOW_GEN,
+        ID_SHOW_GOAL,
         ID_SHOW_MIL,
         ID_SHOW_GEO,
         ID_SHOW_ECO,
-        ID_SHOW_DIPLO,
+        ID_SHOW_GEN,
         ID_HELP,
         ID_GO_START,
         ID_GO_BACK,
@@ -63,14 +64,14 @@ namespace{
 
 iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL)
+    gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL), lastHasMissionGoal(true)
 {
     AddImageButton(ID_SHOW_ALL,    18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
     AddImageButton(ID_SHOW_MIL,    56, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 30));  // Viewer:  31 - Soldat
     AddImageButton(ID_SHOW_GEO,    91, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 20));  // Viewer:  21 - Geologe
     AddImageButton(ID_SHOW_ECO,   126, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
-    AddImageButton(ID_SHOW_DIPLO, 161, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
-    AddImageButton(ID_SHOW_GEN,   199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
+    AddImageButton(ID_SHOW_GEN, 161, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
+    AddImageButton(ID_SHOW_GOAL,   199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
     AddImage(0,                   126, 151, LOADER.GetImageN("io", 228));
     AddImageButton(ID_HELP,        18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
     AddImageButton(ID_GO_START,    51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
@@ -88,12 +89,9 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     AddImage(ID_IMG, 127, 155, LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 120, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
-    text->EnableBox(false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
-    text->AddString("", COLOR_WINDOWBROWN, false);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 0, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+    text->SetNumVisibleLines(4);
+    text->ShowBackground(false);
 
     // Button with OK and deny sign (tick and cross) for contracts
     AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
@@ -120,8 +118,9 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             curMsgId = curMsgIdxs.size();
             DisplayPostMessage();
             break;
-        case ID_SHOW_GEN:
-            SwitchCategory(PostCategory::General);
+        case ID_SHOW_GOAL:
+            if(!postBox.GetCurrentMissionGoal().empty())
+                WINDOWMANAGER.Show(new iwMissionStatement(_("Diary"), postBox.GetCurrentMissionGoal(), false, iwMissionStatement::IM_AVATAR9));
             break;
         case ID_SHOW_MIL:
             SwitchCategory(PostCategory::Military);
@@ -132,8 +131,8 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         case ID_SHOW_ECO:
             SwitchCategory(PostCategory::Economy);
             break;
-        case ID_SHOW_DIPLO:
-            SwitchCategory(PostCategory::Diplomacy);
+        case ID_SHOW_GEN:
+            SwitchCategory(PostCategory::General);
             break;
         case ID_GO_START:
             // To oldest
@@ -206,6 +205,11 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwPostWindow::Msg_PaintBefore()
 {
     ValidateMessages();
+    if(lastHasMissionGoal != !postBox.GetCurrentMissionGoal().empty())
+    {
+        lastHasMissionGoal = !postBox.GetCurrentMissionGoal().empty();
+        GetCtrl<Window>(ID_SHOW_GOAL)->SetVisible(lastHasMissionGoal);
+    }
 }
 
 /**
@@ -313,16 +317,8 @@ void iwPostWindow::DisplayPostMessage()
 void iwPostWindow::SetMessageText(const std::string& message)
 {
     ctrlMultiline* text = GetCtrl<ctrlMultiline>(ID_TEXT);
-
-    glArchivItem_Font::WrapInfo wi = NormalFont->GetWrapInfo(message, 190, 190);
-    std::vector<std::string> lines = wi.CreateSingleStrings(message);
-    for(unsigned i = 0; i < text->GetLineCount(); ++i)
-    {
-        if (i < lines.size())
-            text->SetLine(i, lines[i], COLOR_WINDOWBROWN);
-        else
-            text->SetLine(i, "", COLOR_WINDOWBROWN);
-    }
+    text->Clear();
+    text->AddString(message, COLOR_WINDOWBROWN);
 }
 
 void iwPostWindow::FilterMessages()
@@ -331,8 +327,15 @@ void iwPostWindow::FilterMessages()
     lastMsgCt = postBox.GetNumMsgs();
     for(unsigned i=0; i<lastMsgCt; i++)
     {
-        if(showAll || postBox.GetMsg(i)->GetCategory() == curCategory)
+        if(showAll)
             curMsgIdxs.push_back(i);
+        else
+        {
+            const PostCategory msgCat = postBox.GetMsg(i)->GetCategory();
+            // We sort diplomacy messages to general messages as we don't have another button
+            if(msgCat == curCategory || (curCategory == PostCategory::General && msgCat == PostCategory::Diplomacy))
+                curMsgIdxs.push_back(i);
+        }
     }
 }
 

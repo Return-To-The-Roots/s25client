@@ -18,9 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 
 #include "Random.h"
+#include "ogl/glAllocator.h"
 #include "test/testHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
+#include "libsiedler2.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
@@ -32,17 +34,6 @@
 #include <ctime>
 
 namespace bfs = boost::filesystem;
-
-void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
-{
-#ifdef RTTR_RAND_TEST
-    RANDOM.Init(rand() + defaultValue);
-#else
-    RANDOM.Init(defaultValue);
-#endif
-    if(fileName && fileName[0])
-        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentRandomValue() << std::endl;
-}
 
 struct TestSetup
 {
@@ -70,6 +61,11 @@ struct TestSetup
             }
         }
         srand(static_cast<unsigned>(time(NULL)));
+        libsiedler2::setAllocator(new GlAllocator());
+    }
+    ~TestSetup()
+    {
+        libsiedler2::setAllocator(NULL);
     }
 };
 

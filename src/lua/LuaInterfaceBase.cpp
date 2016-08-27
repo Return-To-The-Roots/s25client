@@ -40,18 +40,23 @@ namespace kaguya{
     };
 }
 
-std::pair<unsigned, unsigned> LuaInterfaceBase::GetVersion()
+unsigned LuaInterfaceBase::GetVersion()
 {
-    return std::pair<unsigned, unsigned>(1, 0);
+    return 1;
+}
+
+unsigned LuaInterfaceBase::GetFeatureLevel()
+{
+    return 1;
 }
 
 LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
 {
-    luaopen_base(lua.state());
-    luaopen_package(lua.state());
-    luaopen_string(lua.state());
-    luaopen_table(lua.state());
-    luaopen_math(lua.state());
+    lua.openlib("base", luaopen_base);
+    lua.openlib("package", luaopen_package);
+    lua.openlib("string", luaopen_string);
+    lua.openlib("table", luaopen_table);
+    lua.openlib("math", luaopen_math);
 
     Register(lua);
 }
@@ -61,15 +66,13 @@ LuaInterfaceBase::~LuaInterfaceBase()
 
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
-    state["RTTRBase"].setClass(kaguya::ClassMetatable<LuaInterfaceBase>()
-        .addStaticFunction("GetVersion", &LuaInterfaceBase::GetVersion)
-        .addMemberFunction("Log", &LuaInterfaceBase::Log)
-        .addMemberFunction("IsHost", &LuaInterfaceBase::IsHost)
-        .addMemberFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
-        .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox)
-        .addMemberFunction("MsgBox", &LuaInterfaceBase::MsgBox2)
-        .addMemberFunction("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx)
-        .addMemberFunction("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx2)
+    state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
+        .addStaticFunction("GetFeatureLevel", &LuaInterfaceBase::GetFeatureLevel)
+        .addFunction("Log", &LuaInterfaceBase::Log)
+        .addFunction("IsHost", &LuaInterfaceBase::IsHost)
+        .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
+        .addOverloadedFunctions("MsgBox", &LuaInterfaceBase::MsgBox, &LuaInterfaceBase::MsgBox2)
+        .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2)
         );
     state.setErrorHandler(ErrorHandler);
 }
@@ -122,11 +125,11 @@ bool LuaInterfaceBase::CheckScriptVersion()
     if(func.type() == LUA_TFUNCTION)
     {
         const unsigned scriptVersion = func.call<unsigned>();
-        if(scriptVersion == GetVersion().first)
+        if(scriptVersion == GetVersion())
             return true;
         else
         {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion().first % GetVersion().second;
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion() % GetFeatureLevel();
             return false;
         }
     } else
