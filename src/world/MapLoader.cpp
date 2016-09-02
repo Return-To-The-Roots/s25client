@@ -255,7 +255,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 obj = new noStaticObject(pt, 20 + (lc - 0x1F) * 2, 1);
             // Gerippe (mis1bobs)
             else if(lc == 0x21)
-                obj = new noEnvObject(pt, 30, 1);
+                obj = new noStaticObject(pt, 30, 1);
             // Objekte aus der map.lst
             else if(lc >= 0x22 && lc <= 0x27)
                 obj = new noEnvObject(pt, 550 + lc - 0x22);
