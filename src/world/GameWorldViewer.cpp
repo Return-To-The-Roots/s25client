@@ -285,10 +285,10 @@ void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<
     for(unsigned i = 0; i < route.size(); ++i)
     {
         SetVisiblePointRoad(curPt, Direction::fromInt(route[i]), 0);
-        RecalcBQ(curPt);
+        RecalcBQForRoad(curPt);
         curPt = GetWorld().GetNeighbour(curPt, route[i]);
     }
-    RecalcBQ(curPt);
+    RecalcBQForRoad(curPt);
 }
 
 bool GameWorldViewer::IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const

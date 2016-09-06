@@ -18,6 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "buildings/nobBaseMilitary.h"
+#include "GameMessages.h"
+#include "GameClient.h"
+#include "nodeObjs/noStaticObject.h"
+#include "world/GameWorldViewer.h"
 #include "RTTR_AssertError.h"
 #include "test/BQOutput.h"
 #include "test/PointOutput.h"
@@ -25,7 +29,8 @@
 #include "test/CreateEmptyWorld.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
-#include "nodeObjs/noStaticObject.h"
+#include "desktops/dskGameInterface.h"
+#include "testHelpers.h"
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)
@@ -159,9 +164,9 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     for(unsigned i = 0; i < 6; i++)
     {
         roadPts.push_back(curPt);
-        world.SetPointRoad(curPt, 4, 1);
+        world.SetPointRoad(curPt, Direction::SOUTHEAST, 1);
         world.RecalcBQForRoad(curPt);
-        curPt = world.GetNeighbour(curPt, 4);
+        curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
     }
     // Final pt still belongs to road
     roadPts.push_back(curPt);
@@ -178,6 +183,120 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
         BuildingQuality leftBQ = (pt == roadPts[0]) ? BQ_CASTLE : BQ_HOUSE;
         BOOST_REQUIRE_EQUAL(world.GetNode(pt - MapPoint(1, 0)).bq, leftBQ);
         BOOST_REQUIRE_EQUAL(world.GetNode(pt + MapPoint(1, 0)).bq, BQ_HOUSE);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1P){
+    initGUITests();
+    // Init BQ
+    world.InitAfterLoad();
+    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        world.SetOwner(pt, 1);
+        
+    // Set player
+    static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(0));
+
+    dskGameInterface gameDesktop(world);
+    const GameWorldViewer& gwv = gameDesktop.GetViewer();
+    // Start at a position a bit away from the HQ so all points are castles
+    const MapPoint roadPt(0, 0);
+    const std::vector<MapPoint> roadRadiusPts = world.GetPointsInRadiusWithCenter(roadPt, 6);
+    BOOST_FOREACH(const MapPoint& pt, roadRadiusPts)
+    {
+        BuildingQuality bq = world.GetNode(pt).bq;
+        BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt.x << "," << pt.y);
+        bq = gwv.GetBQ(pt);
+        BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt.x << "," << pt.y);
+    }
+    gameDesktop.SetSelectedMapPoint(roadPt);
+    gameDesktop.GI_SetRoadBuildMode(RM_NORMAL);
+    BOOST_REQUIRE_EQUAL(gameDesktop.GetRoadMode(), RM_NORMAL);
+
+    std::vector<MapPoint> roadPts;
+    MapPoint curPt = roadPt;
+    for(unsigned i = 0; i < 6; i++)
+    {
+        roadPts.push_back(curPt);
+        curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
+    }
+    // Final pt still belongs to road
+    roadPts.push_back(curPt);
+
+    MapPoint curRoadEndPt = curPt;
+    gameDesktop.BuildRoadPart(curRoadEndPt);
+    BOOST_REQUIRE_EQUAL(curRoadEndPt, curPt);
+
+    BOOST_FOREACH(MapPoint pt, roadPts)
+    {
+        BOOST_REQUIRE(gwv.IsOnRoad(pt));
+        // On the road we only allow flags
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(pt), BQ_FLAG);
+        // Next to the road should be houses
+        // But left to first point is still a castle
+        BuildingQuality leftBQ = (pt == roadPts[0]) ? BQ_CASTLE : BQ_HOUSE;
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::WEST)), leftBQ);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::EAST)), BQ_HOUSE);
+    }
+    // Destroy road partially
+    // The first point (after start) must have ID 2
+    BOOST_REQUIRE_EQUAL(gameDesktop.GetIdInCurBuildRoad(roadPts[1]), 2u);
+    gameDesktop.DemolishRoad(2);
+    BOOST_REQUIRE(gwv.IsOnRoad(roadPts[0]));
+    BOOST_REQUIRE(gwv.IsOnRoad(roadPts[1]));
+    for(unsigned i=2; i<roadPts.size(); i++)
+        BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[i]));
+    // Remove rest
+    gameDesktop.GI_SetRoadBuildMode(RM_DISABLED);
+    BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[0]));
+    BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[1]));
+    // BQ should be restored
+    BOOST_FOREACH(const MapPoint& pt, roadRadiusPts)
+    {
+        BuildingQuality bq = gwv.GetBQ(pt);
+        BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt.x << "," << pt.y);
+    }
+
+    BOOST_REQUIRE_EQUAL(gameDesktop.GetRoadMode(), RM_DISABLED);
+    gameDesktop.SetSelectedMapPoint(roadPt);
+    gameDesktop.GI_SetRoadBuildMode(RM_NORMAL);
+    BOOST_REQUIRE_EQUAL(gameDesktop.GetRoadMode(), RM_NORMAL);
+    // Build horizontal road
+    roadPts.clear();
+    curPt = roadPt;
+    for(unsigned i = 0; i < 6; i++)
+    {
+        roadPts.push_back(curPt);
+        curPt = world.GetNeighbour(curPt, Direction::EAST);
+    }
+    // Final pt still belongs to road
+    roadPts.push_back(curPt);
+
+    curRoadEndPt = curPt;
+    gameDesktop.BuildRoadPart(curRoadEndPt);
+    BOOST_REQUIRE_EQUAL(curRoadEndPt, curPt);
+
+    BOOST_FOREACH(MapPoint pt, roadPts)
+    {
+        BOOST_REQUIRE(gwv.IsOnRoad(pt));
+        // On the road we only allow flags
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(pt), BQ_FLAG);
+        // Above should be castles
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::NORTHWEST)), BQ_CASTLE);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::NORTHEAST)), BQ_CASTLE);
+        // Below should be big houses
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::SOUTHWEST)), BQ_HOUSE);
+        BOOST_REQUIRE_EQUAL(gwv.GetBQ(world.GetNeighbour(pt, Direction::SOUTHEAST)), BQ_HOUSE);
+    }
+
+    // Destroy road
+    gameDesktop.GI_SetRoadBuildMode(RM_DISABLED);
+    BOOST_FOREACH(MapPoint pt, roadPts)
+        BOOST_REQUIRE(!gwv.IsOnRoad(pt));
+    // BQ should be restored
+    BOOST_FOREACH(const MapPoint& pt, roadRadiusPts)
+    {
+        BuildingQuality bq = gwv.GetBQ(pt);
+        BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt.x << "," << pt.y);
     }
 }
 
