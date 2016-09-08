@@ -33,6 +33,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
+#include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "ogl/glAllocator.h"
@@ -367,7 +368,14 @@ void Loader::LoadDummyGUIFiles()
     // GUI elements
     libsiedler2::ArchivInfo& resource = files_["resource"].archiv;
     resource.alloc(57);
-    for(unsigned id = 4; id < 57; id++)
+    for(unsigned id = 4; id < 36; id++)
+    {
+        glArchivItem_Bitmap_RLE* bmp = new glArchivItem_Bitmap_RLE();
+        const uint32_t buffer = SetAlpha(0, 255);
+        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        resource.set(id, bmp);
+    }
+    for(unsigned id = 36; id < 57; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
         const uint32_t buffer = SetAlpha(0, 255);

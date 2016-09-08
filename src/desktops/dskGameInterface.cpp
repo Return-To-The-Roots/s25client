@@ -980,6 +980,11 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     WINDOWMANAGER.Show(actionwindow, true);
 }
 
+void dskGameInterface::SetSelectedMapPoint(const MapPoint pt)
+{
+    selected = pt;
+}
+
 void dskGameInterface::GI_BuildRoad()
 {
     gameClient.BuildRoad(road.start, road.mode == RM_BOAT, road.route);

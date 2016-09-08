@@ -128,21 +128,22 @@ class dskGameInterface :
         // Return the id (index + 1) of the point in the currently build road (1 = startPt)
         // If pt is not on the road, return 0
         unsigned GetIdInCurBuildRoad(const MapPoint pt);
+        /// Baut Weg zurück von Ende bis zu start_id
+        void DemolishRoad(const unsigned start_id);
         // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
         // ansonsten gibt's nur nen Button zum Abbrechen
         void ShowRoadWindow(int mouse_x, int mouse_y);
         /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
         void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
 
+        const GameWorldViewer& GetViewer() const { return worldViewer; }
+        void SetSelectedMapPoint(const MapPoint pt);
     private:
         /// Initializes player specific stuff after start or player swap
         void InitPlayer();
 
         /// Lässt das Spiel laufen (zeichnen)
         void Run();
-
-        /// Baut Weg zurück von Ende bis zu start_id
-        void DemolishRoad(const unsigned start_id);
 
         /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
         void UpdatePostIcon(const unsigned postmessages_count, bool showPigeon);
