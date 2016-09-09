@@ -42,6 +42,10 @@
 //	set game directory (normal $(datadir)/s25rttr/S2)
 //#define RTTR_GAMEDIR RTTR_DATADIR"/S2"
 
+//	set lib directory (normal $(datadir)/s25rttr)
+//#define RTTR_LIBDIR RTTR_DATADIR
+#cmakedefine RTTR_LIBDIR "${RTTR_LIBDIR}"
+
 //	set driver directory (normal $(libdir)/driver)
 //#define RTTR_DRIVERDIR RTTR_LIBDIR"/driver"
 #cmakedefine RTTR_DRIVERDIR "${RTTR_DRIVERDIR}"
