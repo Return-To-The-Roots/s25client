@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,27 +25,27 @@ class BinaryFile;
 
 class Savegame : public SavedFile
 {
-    public:
-        Savegame();
-        ~Savegame() override;
+public:
+    Savegame();
+    ~Savegame() override;
 
-        /// Schreibst Savegame oder Teile davon
-        bool Save(const std::string& filename);
-        bool Save(BinaryFile& file);
+    /// Schreibst Savegame oder Teile davon
+    bool Save(const std::string& filename);
+    bool Save(BinaryFile& file);
 
-        /// Lädt Savegame oder Teile davon
-        bool Load(const std::string& filename, const bool load_players, const bool load_sgd);
-        bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
+    /// Lädt Savegame oder Teile davon
+    bool Load(const std::string& filename, const bool load_players, const bool load_sgd);
+    bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
 
-    public:
-        /// Start-GF
-        unsigned int start_gf;
-        /// Serialisierte Spieldaten
-        SerializedGameData sgd;
+    /// Start-GF
+    unsigned int start_gf;
+    /// Serialisierte Spieldaten
+    SerializedGameData sgd;
 
-    private:
-        static const unsigned short SAVE_VERSION;
-        static const char SAVE_SIGNATURE[8];
+protected:
+    std::string GetSignature() const override;
+    uint16_t GetVersion() const override;
+
 };
 
 #endif //!GAMESAVEGAME_H_INCLUDED

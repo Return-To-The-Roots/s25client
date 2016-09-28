@@ -45,6 +45,7 @@
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libsiedler2/src/prototypen.h"
 #include "libutil/src/ucString.h"
+#include <boost/filesystem.hpp>
 
 /** @class dskSelectMap
  *
@@ -132,7 +133,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
     // Tabelle leeren
     table->DeleteAllItems();
 
-    static const unsigned int ids[] = { 39, 40, 41, 42, 43, 52, 91, 93, 48 };
+    // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
+    static const boost::array<unsigned, 9> ids = {{ 39, 40, 41, 42, 43, 52, 91, 93, 48 }};
 
     // Und wieder füllen lassen
     FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "swd"));
@@ -289,16 +291,18 @@ void dskSelectMap::CI_Error(const ClientError ce)
         case CE_CONNECTIONLOST:
         case CE_WRONGMAP:
         {
-            // Verbindung zu Server/Lobby abgebrochen
-            const std::string errors[] =
-            {
+            // Error messages, CE_* values cannot be gotten here but are added to avoid memory access errors
+            const boost::array<std::string, 8> errors =
+            {{
                 _("Incomplete message was received!"),
-                "",
-                "",
+                "CE_SERVERFULL",
+                "CE_WRONGPW",
                 _("Lost connection to server!"),
-                "",
-                _("Map transmission was corrupt!")
-            };
+                "CE_INVALIDSERVERTYPE",
+                _("Map transmission was corrupt!"),
+                "CE_WRONGVERSION",
+                "CE_LOBBYFULL"
+            }};
 
             WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, 0));
         } break;
@@ -340,6 +344,9 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         if(header->getPlayer() > MAX_PLAYERS)
             continue;
 
+        const std::string luaFilepath = it->substr(0, it->length() - 3) + "lua";
+        const bool hasLua = bfs::is_regular_file(luaFilepath);
+
         // Und Zeilen vorbereiten
         char players[64], size[32];
         snprintf(players, 64, _("%d Player"), header->getPlayer());
@@ -354,6 +361,8 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         };
 
         std::string name = cvStringToUTF8(header->getName());
+        if(hasLua)
+            name += " (*)";
         std::string author = cvStringToUTF8(header->getAuthor());
 
         table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, it->c_str());

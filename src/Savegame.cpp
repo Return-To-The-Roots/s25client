@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,13 +18,21 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Savegame.h"
 #include "BinaryFile.h"
-#include "Log.h"
 #include "libendian/src/ConvertEndianess.h"
 
-/// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
-const char Savegame::SAVE_SIGNATURE[8] = {'R', 'T', 'T', 'R', 'S', 'A', 'V', 'E'};
-/// Version des Savegame-Formates
-const unsigned short Savegame::SAVE_VERSION = 36;
+std::string Savegame::GetSignature() const
+{
+    /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
+    return "RTTRSAVE";
+}
+
+uint16_t Savegame::GetVersion() const
+{
+    /// Version des Savegame-Formates
+    return 36;
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 Savegame::Savegame() : SavedFile(), start_gf(0)
 {
@@ -38,20 +46,13 @@ bool Savegame::Save(const std::string& filename)
 {
     BinaryFile file;
 
-    if(!file.Open(filename, OFM_WRITE))
-        return false;
-
-    bool ret = Save(file);
-
-    file.Close();
-
-    return ret;
+    return file.Open(filename, OFM_WRITE) &&  Save(file);
 }
 
 bool Savegame::Save(BinaryFile& file)
 {
     // Versionszeug schreiben
-    WriteVersion(file, 8, SAVE_SIGNATURE, SAVE_VERSION);
+    WriteFileHeader(file);
 
     // Timestamp der Aufzeichnung
     unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
@@ -76,20 +77,13 @@ bool Savegame::Load(const std::string& filePath, const bool load_players, const 
 {
     BinaryFile file;
 
-    if(!file.Open(filePath, OFM_READ))
-        return false;
-
-    bool ret = Load(file, load_players, load_sgd);
-
-    file.Close();
-
-    return ret;
+    return file.Open(filePath, OFM_READ) && Load(file, load_players, load_sgd);
 }
 
 bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_sgd)
 {
     // Signatur und Version einlesen
-    if(!ValidateFile(file, sizeof(SAVE_SIGNATURE), SAVE_SIGNATURE, SAVE_VERSION))
+    if(!ReadFileHeader(file))
         return false;
 
     // Zeitstempel
