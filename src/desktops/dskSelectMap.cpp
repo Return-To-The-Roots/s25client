@@ -133,7 +133,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
     // Tabelle leeren
     table->DeleteAllItems();
 
-    static const unsigned int ids[] = { 39, 40, 41, 42, 43, 52, 91, 93, 48 };
+    // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
+    static const boost::array<unsigned, 9> ids = {{ 39, 40, 41, 42, 43, 52, 91, 93, 48 }};
 
     // Und wieder füllen lassen
     FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "swd"));
