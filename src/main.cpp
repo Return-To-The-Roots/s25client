@@ -286,7 +286,7 @@ bool InitProgram()
 bool InitDirectories()
 {
     // Note: Do not use logger yet. Filepath may not exist
-    const std::string curPath = boost::filesystem::current_path().string();
+    const std::string curPath = bfs::current_path().string();
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
@@ -300,14 +300,30 @@ bool InitDirectories()
 #elif defined(__APPLE__)
     oldSettingsDir = GetFilePath("~/.s25rttr");
 #endif
-    if(!oldSettingsDir.empty() && boost::filesystem::is_directory(oldSettingsDir))
-        boost::filesystem::rename(oldSettingsDir, newSettingsDir);
+    if(!oldSettingsDir.empty() && bfs::is_directory(oldSettingsDir))
+    {
+        if(bfs::exists(newSettingsDir))
+        {
+            s25Util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")+ oldSettingsDir
+                + "\nNew: " + newSettingsDir);
+            return false;
+        }
+        boost::system::error_code ec;
+        bfs::rename(oldSettingsDir, newSettingsDir, ec);
+        if(ec != boost::system::errc::success)
+        {
+            s25Util::error(std::string("Old settings directory found at ") + oldSettingsDir + "\n Renaming to new name failed: " + newSettingsDir
+                + "\nError: " + ec.message()
+                + "\nRename it yourself and/or make sure the directory is writable!");
+            return false;
+        }
+    }
 
     BOOST_FOREACH(unsigned dirIdx, dirs)
     {
         std::string dir = GetFilePath(FILE_PATHS[dirIdx]);
         boost::system::error_code ec;
-        boost::filesystem::create_directories(dir, ec);
+        bfs::create_directories(dir, ec);
         if(ec != boost::system::errc::success)
         {
             // This writes to the log. If the log folder or file could not be created, an exception is thrown
@@ -319,7 +335,6 @@ bool InitDirectories()
             {
                 LOG.write("Additional error: %1%\n", LogTarget::Stderr) % error.what();
             }
-            WaitForEnter();
             return false;
         }
     }
@@ -338,7 +353,6 @@ bool InitGame()
     {
         s25Util::error("Could not init sockets!");
         s25Util::error("Failed to start the game");
-        WaitForEnter();
         return false;
     }
 
@@ -346,7 +360,6 @@ bool InitGame()
     if(!GAMEMANAGER.Start())
     {
         s25Util::error("Failed to start the game");
-        WaitForEnter();
         return false;
     }
     return true;
@@ -438,7 +451,9 @@ int main(int argc, char** argv)
                 result = 1;
         } else
             std::cout << std::endl << std::endl << "Test passed!" << std::endl;
-    }    
+    }
+    if(result)
+        WaitForEnter();
 
     return result;
 }
