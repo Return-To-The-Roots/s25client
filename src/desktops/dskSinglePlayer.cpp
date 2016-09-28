@@ -31,6 +31,7 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "controls/ctrlButton.h"
 #include "ogl/glArchivItem_Font.h"
 #include "fileFuncs.h"
 #include "files.h"
@@ -50,18 +51,15 @@ dskSinglePlayer::dskSinglePlayer() : Desktop(LOADER.GetImageN("menu", 0))
     // Copyright
     AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
-    // "Letztes Spiel fortsetzen"
     AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Resume last game"), NormalFont);
-    // "Replay abspielen"
-    AddTextButton(4, 115, 220, 220, 22, TC_GREEN2, _("Play Replay"), NormalFont);
-    // "Kampagne"
-    AddTextButton(5, 115, 260, 220, 22, TC_GREEN2, _("Campaign"), NormalFont);
-    // "Freies Spiel"
-    AddTextButton(6, 115, 290, 220, 22, TC_GREEN2, _("Unlimited Play"), NormalFont);
-    // "Spiel laden"
-    AddTextButton(7, 115, 320, 220, 22, TC_GREEN2, _("Load game"), NormalFont);
-    // "Zurück"
-    AddTextButton(8, 115, 360, 220, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(7, 115, 210, 220, 22, TC_GREEN2, _("Load game"), NormalFont);
+
+    AddTextButton(5, 115, 250, 220, 22, TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)->Enable(false);
+    AddTextButton(6, 115, 280, 220, 22, TC_GREEN2, _("Unlimited Play"), NormalFont);
+
+    AddTextButton(4, 115, 320, 220, 22, TC_GREEN2, _("Play Replay"), NormalFont);
+
+    AddTextButton(8, 115, 390, 220, 22, TC_RED1, _("Back"), NormalFont);
 
     AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
 }
