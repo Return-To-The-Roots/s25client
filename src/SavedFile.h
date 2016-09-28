@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -35,10 +35,15 @@ public:
     virtual ~SavedFile();
 
 protected:
+    /// Return the file signature. Must be at most 32 bytes
+    virtual std::string GetSignature() const = 0;
+    /// Return the file format version
+    virtual uint16_t GetVersion() const = 0;
+
     /// Schreibt Signatur und Version der Datei
-    void WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
-    /// Überprüft Signatur und Version der Datei
-    bool ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version);
+    void WriteFileHeader(BinaryFile& file);
+    /// Reads and validates the file header. On error false is returned and lastErrorMsg is set
+    bool ReadFileHeader(BinaryFile& file);
 
     /// Schreibt Spielerdaten
     void WritePlayerData(BinaryFile& file);
@@ -63,9 +68,17 @@ public:
     unsigned GetPlayerCount();
     void AddPlayer(const BasePlayerInfo& player);
     void ClearPlayers();
+    std::string GetLastErrorMsg() const;
+    std::string GetRevision() const;
+
+protected:
+    /// Last error message during loading
+    std::string lastErrorMsg;
 
 private:
     std::vector<BasePlayerInfo> players;
+    /// Revision as saved in the file
+    boost::array<char, 8> revision;
 };
 
 #endif // !GAMEFILES_H_INCLUDED

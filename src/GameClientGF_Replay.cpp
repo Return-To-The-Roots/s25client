@@ -42,9 +42,9 @@ void GameClient::ExecuteGameFrame_Replay()
 
         if(rc == Replay::RC_CHAT)
         {
-            unsigned char player, dest;
+            uint8_t player, dest;
             std::string message;
-            replayinfo.replay.ReadChatCommand(&player, &dest, message);
+            replayinfo.replay.ReadChatCommand(player, dest, message);
 
             if(ci)
                 ci->CI_Chat(player, ChatDestination(dest), message);

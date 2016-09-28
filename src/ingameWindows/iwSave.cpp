@@ -36,6 +36,7 @@
 #include "gameData/const_gui_ids.h"
 #include "Settings.h"
 #include "helpers/converters.h"
+#include "libutil/src/Log.h"
 #include <boost/filesystem.hpp>
 
 
@@ -70,6 +71,8 @@ void iwSaveLoad::Msg_TableSelectItem(const unsigned int  /*ctrl_id*/, const int 
 
 void iwSaveLoad::RefreshTable()
 {
+    static bool loadedOnce = false;
+
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
     std::vector<std::string> saveFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
@@ -79,7 +82,16 @@ void iwSaveLoad::RefreshTable()
 
         // Datei öffnen
         if(!save.Load(*it, false, false))
+        {
+            // Show errors only first time this is loaded
+            if(!loadedOnce)
+            {
+                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n"))
+                    % *it
+                    % (save.GetLastErrorMsg().empty() ? _("Unknown") : save.GetLastErrorMsg());
+            }
             continue;
+        }
 
         // Zeitstring erstellen
         std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
@@ -104,6 +116,7 @@ void iwSaveLoad::RefreshTable()
     // Nach Zeit Sortieren
     bool bFalse = false;
     GetCtrl<ctrlTable>(0)->SortRows(2, &bFalse);
+    loadedOnce = true;
 }
 
 void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)

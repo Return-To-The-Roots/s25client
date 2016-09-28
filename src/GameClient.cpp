@@ -1442,7 +1442,9 @@ bool GameClient::StartReplay(const std::string& path)
 
     if(!replayinfo.replay.LoadHeader(path, &mapinfo))
     {
-        LOG.write(_("Invalid Replay!"));
+        LOG.write(_("Invalid Replay %1%! Reason: %2%\n"))
+            % path
+            % (replayinfo.replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo.replay.GetLastErrorMsg());
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
         return false;

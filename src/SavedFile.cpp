@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,57 +16,64 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "SavedFile.h"
 #include <build_version.h>
 #include "BinaryFile.h"
-#include "SavedFile.h"
 #include "BasePlayerInfo.h"
-#include "helpers/Deleter.h"
 #include "libutil/src/Serializer.h"
-#include "libutil/src/Log.h"
-#include <cstring>
+#include <boost/format.hpp>
+#include <algorithm>
+#include <stdexcept>
 
 SavedFile::SavedFile() : save_time(0)
 {
+    const char* rev = GetWindowRevision();
+    std::copy(rev, rev + revision.size(), revision.begin());
 }
 
 SavedFile::~SavedFile()
 {}
 
-void SavedFile::WriteVersion(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version)
+void SavedFile::WriteFileHeader(BinaryFile& file)
 {
     // Signatur schreiben
-    file.WriteRawData(signature, signature_length);
+    const std::string signature = GetSignature();
+    file.WriteRawData(signature.c_str(), signature.length());
 
-    // Version vom Programm reinschreiben (mal 0 mit reinschreiben, damits ne runde 8 ergibt!)
-    file.WriteRawData(GetWindowRevision(), 8);
+    // Version vom Programm reinschreiben
+    file.WriteRawData(&revision[0], revision.size());
 
     // Version des Save-Formats
-    file.WriteUnsignedShort(version);
+    file.WriteUnsignedShort(GetVersion());
 }
 
-bool SavedFile::ValidateFile(BinaryFile& file, unsigned int signature_length, const char* signature, unsigned short version)
+bool SavedFile::ReadFileHeader(BinaryFile& file)
 {
-    char read_signature[32];
+    lastErrorMsg = "";
 
-    file.ReadRawData(read_signature, signature_length);
+    const std::string signature = GetSignature();
+    boost::array<char, 32> read_signature;
+    if(signature.size() > read_signature.size())
+        throw std::range_error("Program signature is to long!");
+    file.ReadRawData(&read_signature[0], signature.size());
 
     // Signatur überprüfen
-    if(memcmp(read_signature, signature, signature_length) != 0)
+    if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
     {
-        // unterscheiden sich! --> raus
-        LOG.write("Error: File is not in a valid format! File path: %s\n") % file.getFilePath();
+        lastErrorMsg = _("File is not in a valid format!");
         return false;
     }
 
-    // Programmversion überspringen
-    file.Seek(8, SEEK_CUR);
+    file.ReadRawData(&revision[0], revision.size());
 
     // Version überprüfen
-    unsigned short read_version = file.ReadUnsignedShort();
-    if(read_version != version)
+    uint16_t read_version = file.ReadUnsignedShort();
+    if(read_version != GetVersion())
     {
-        // anderes Dateiformat --> raus
-        LOG.write("Warning: File has an old version and cannot be used (version: %u; expected: %u, file path: %s)!\n") % read_version % version % file.getFilePath();
+        boost::format fmt = boost::format((read_version < GetVersion()) ?
+            _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
+            _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
+        lastErrorMsg = (fmt % read_version % GetVersion()).str();
         return false;
     }
 
@@ -132,4 +139,14 @@ void SavedFile::AddPlayer(const BasePlayerInfo& player)
 void SavedFile::ClearPlayers()
 {
     players.clear();
+}
+
+std::string SavedFile::GetLastErrorMsg() const
+{
+    return lastErrorMsg;
+}
+
+std::string SavedFile::GetRevision() const
+{
+    return std::string(revision.begin(), revision.end());
 }

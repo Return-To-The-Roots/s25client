@@ -34,6 +34,7 @@
 #include "BasePlayerInfo.h"
 #include "gameData/const_gui_ids.h"
 #include "helpers/converters.h"
+#include "libutil/src/Log.h"
 #include <boost/filesystem.hpp>
 
 class SwitchOnStart: public ClientInterface
@@ -81,6 +82,8 @@ iwPlayReplay::iwPlayReplay()
 
 void iwPlayReplay::PopulateTable()
 {
+    static bool loadedOnce = false;
+
     ctrlTable* table = GetCtrl<ctrlTable>(0);
     unsigned short sortCol = table->GetSortColumn();
     if(sortCol == 0xFFFF)
@@ -98,6 +101,13 @@ void iwPlayReplay::PopulateTable()
         // Datei laden
         if(!replay.LoadHeader(*it))
         {
+            // Show errors only first time this is loaded
+            if(!loadedOnce)
+            {
+                LOG.write(_("Invalid Replay %1%! Reason: %2%\n"))
+                    % *it
+                    % (replay.GetLastErrorMsg().empty() ? _("Unknown") : replay.GetLastErrorMsg());
+            }
             numInvalid++;
             continue;
         }
@@ -145,6 +155,7 @@ void iwPlayReplay::PopulateTable()
         snprintf(text, 255, _("Delete Invalid (%u)"), numInvalid);
         btDelInvalid->SetText(text);
     }
+    loadedOnce = true;
 }
 
 void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)

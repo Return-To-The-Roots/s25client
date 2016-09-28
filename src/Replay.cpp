@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,14 +19,23 @@
 #include "Replay.h"
 #include "Savegame.h"
 #include "gameTypes/MapInfo.h"
-#include "Log.h"
 #include "libendian/src/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
 
-/// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
-const char Replay::REPLAY_SIGNATURE[6] = {'R', 'T', 'T', 'R', 'R', 'P'};
-/// Version des Replay-Formates
-const unsigned short Replay::REPLAY_VERSION = 31;
+
+std::string Replay::GetSignature() const
+{
+    /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
+    return "RTTRRP";
+}
+
+uint16_t Replay::GetVersion() const
+{
+    /// Version des Replay-Formates
+    return 31;
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 Replay::Replay() : nwf_length(0), random_init(0),
                    lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
@@ -56,7 +65,7 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
     Replay::fileName_ = filename;
 
     // Versionszeug schreiben
-    WriteVersion(file, 6, REPLAY_SIGNATURE, REPLAY_VERSION);
+    WriteFileHeader(file);
     unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
     file.WriteRawData(&tmpTime, sizeof(tmpTime));
     /// NWF-Länge
@@ -120,11 +129,13 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
     this->fileName_ = filename;
     // Datei öffnen
     if(!file.Open(filename, OFM_READ))
+    {
+        lastErrorMsg = _("File could not be opened.");
         return false;
+    }
 
-    // Version überprüfen
-    // Signatur und Version einlesen
-    if(!ValidateFile(file, sizeof(REPLAY_SIGNATURE), REPLAY_SIGNATURE, REPLAY_VERSION))
+    // Check file header
+    if(!ReadFileHeader(file))
         return false;
 
     // Zeitstempel
@@ -167,7 +178,10 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
                 // Load savegame
                 mapInfo->savegame.reset(new Savegame);
                 if(!mapInfo->savegame->Load(file, true, true))
+                {
+                    lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo->savegame->GetLastErrorMsg();
                     return false;
+                }
             } break;
         }
 
@@ -180,7 +194,10 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
         // Validate savegame
         Savegame save;
         if(!save.Load(file, false, false))
+        {
+            lastErrorMsg = std::string(_("Savegame error: ")) + save.GetLastErrorMsg();
             return false;
+        }
     }
 
     return true;
@@ -277,10 +294,10 @@ Replay::ReplayCommand Replay::ReadRCType()
     return ReplayCommand(file.ReadUnsignedChar());
 }
 
-void Replay::ReadChatCommand(unsigned char* player, unsigned char*   dest, std::string& str)
+void Replay::ReadChatCommand(uint8_t& player, uint8_t& dest, std::string& str)
 {
-    *player = file.ReadUnsignedChar();
-    *dest = file.ReadUnsignedChar();
+    player = file.ReadUnsignedChar();
+    dest = file.ReadUnsignedChar();
     str = file.ReadLongString();
 }
 
