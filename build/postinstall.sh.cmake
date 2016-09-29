@@ -10,7 +10,7 @@ if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
 	exit 1
 fi
 
-if [ ! -z "@RTTR_SRCDIR@" ] ; then
+if [ -z "@RTTR_SRCDIR@" ] ; then
 	echo "RTTR_SRCDIR was not set" >&2
 	exit 1
 fi
