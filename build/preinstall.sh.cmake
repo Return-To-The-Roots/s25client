@@ -10,11 +10,6 @@ if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
 	exit 1
 fi
 
-if [ -z "@RTTR_SRCDIR@" ] ; then
-	echo "RTTR_SRCDIR was not set by cmake" >&2
-	exit 1
-fi
-
 ###############################################################################
 
 mecho()
@@ -32,6 +27,13 @@ RTTR_BINDIR=@RTTR_BINDIR@
 RTTR_DATADIR=@RTTR_DATADIR@
 RTTR_LIBDIR=@RTTR_LIBDIR@
 RTTR_DRIVERDIR=@RTTR_DRIVERDIR@
+
+RTTR_SRCDIR=@RTTR_SRCDIR@
+
+if [ -z "${RTTR_SRCDIR}" ] ; then
+	echo "RTTR_SRCDIR was not set by cmake" >&2
+	exit 1
+fi
 
 ###############################################################################
 
