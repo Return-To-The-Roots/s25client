@@ -34,7 +34,15 @@ struct PathConditionHuman
     {
         // Feld passierbar?
         const BlockingManner bm = gwb.GetNO(pt)->GetBM();
-        return bm == BlockingManner::None || bm == BlockingManner::Tree || bm == BlockingManner::Flag;
+        if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
+            return false;
+        // If no terrain around this is usable, we can't go here
+        for(unsigned i = 0; i < 6; ++i)
+        {
+            if(TerrainData::IsUseable(gwb.GetTerrainAround(pt, i)))
+                return true;
+        }
+        return false;
     }
 
     // Called for every node
