@@ -10,8 +10,8 @@ if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
 	exit 1
 fi
 
-if [ ! -z "@RTTR_SRCDIR@" ] ; then
-	echo "RTTR_SRCDIR was not set" >&2
+if [ -z "@RTTR_SRCDIR@" ] ; then
+	echo "RTTR_SRCDIR was not set by cmake" >&2
 	exit 1
 fi
 
