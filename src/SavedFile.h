@@ -24,6 +24,8 @@
 #include "../libutil/src/MyTime.h"
 #include <string>
 
+#include <boost/cstdint.hpp>
+
 struct BasePlayerInfo;
 class BinaryFile;
 
