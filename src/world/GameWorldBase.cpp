@@ -234,12 +234,10 @@ bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir)
     if(road && road != RoadSegment::RT_BOAT + 1)
         return true;
 
-    // Nicht über Wasser, Lava, Sümpfe gehen
-    // Als Boot dürfen wir das natürlich
-    TerrainType t1 = GetWalkingTerrain1(pt, dir), 
-        t2 = GetWalkingTerrain2(pt, dir);
-
-    return (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2));
+    TerrainBQ bq1 = TerrainData::GetBuildingQuality(GetWalkingTerrain1(pt, dir)),
+        bq2 = TerrainData::GetBuildingQuality(GetWalkingTerrain2(pt, dir));
+    // Don't go next to danger terrain
+    return (bq1 != TerrainBQ::DANGER && bq2 != TerrainBQ::DANGER);
 }
 
 noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir)
