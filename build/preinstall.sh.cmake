@@ -11,11 +11,8 @@ if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
 fi
 
 if [ ! -z "@RTTR_SRCDIR@" ] ; then
-	RTTR_SRCDIR=@RTTR_SRCDIR@
-fi
-
-if [ -z "$RTTR_SRCDIR" ] ; then
-	RTTR_SRCDIR="$(dirname "$0")/.."
+	echo "RTTR_SRCDIR was not set" >&2
+	exit 1
 fi
 
 ###############################################################################
@@ -34,6 +31,7 @@ RTTR_PREFIX=@RTTR_PREFIX@
 RTTR_BINDIR=@RTTR_BINDIR@
 RTTR_DATADIR=@RTTR_DATADIR@
 RTTR_LIBDIR=@RTTR_LIBDIR@
+RTTR_DRIVERDIR=@RTTR_DRIVERDIR@
 
 ###############################################################################
 
@@ -62,8 +60,8 @@ mkdir -vp ${DESTDIR}${RTTR_DATADIR} || exit 1
 mkdir -vp ${DESTDIR}${RTTR_DATADIR}/S2 || exit 1
 mkdir -vp ${DESTDIR}${RTTR_DATADIR}/RTTR || exit 1
 mkdir -vp ${DESTDIR}${RTTR_LIBDIR} || exit 1
-mkdir -vp ${DESTDIR}${RTTR_LIBDIR}/driver/video || exit 1
-mkdir -vp ${DESTDIR}${RTTR_LIBDIR}/driver/audio || exit 1
+mkdir -vp ${DESTDIR}${RTTR_DRIVERDIR}/video || exit 1
+mkdir -vp ${DESTDIR}${RTTR_DRIVERDIR}/audio || exit 1
 mkdir -vp ${DESTDIR}${RTTR_DATADIR}/../doc/s25rttr || exit 1
 
 mecho --blue "## Installing binaries"

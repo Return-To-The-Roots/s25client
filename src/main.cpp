@@ -339,6 +339,7 @@ bool InitDirectories()
         }
     }
     // Write this to file too, after folders are created
+    LOG.setLogFilepath(GetFilePath(FILE_PATHS[47]));
     LOG.write("Starting in %s\n", LogTarget::File) % curPath;
     return true;
 }

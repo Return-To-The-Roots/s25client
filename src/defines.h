@@ -67,10 +67,6 @@
 #   include <cassert>
 #endif // !_WIN32
 
-#ifndef NO_BUILD_PATHS
-#   include <build_paths.h>
-#endif
-
 #include "macros.h"
 #include "RTTR_Assert.h"
 

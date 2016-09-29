@@ -11,11 +11,8 @@ if [ -z "$(type -p $CMAKE_COMMAND)" ] ; then
 fi
 
 if [ ! -z "@RTTR_SRCDIR@" ] ; then
-	RTTR_SRCDIR=@RTTR_SRCDIR@
-fi
-
-if [ -z "$RTTR_SRCDIR" ] ; then
-	RTTR_SRCDIR="$(dirname "$0")/.."
+	echo "RTTR_SRCDIR was not set" >&2
+	exit 1
 fi
 
 ###############################################################################
@@ -36,6 +33,7 @@ RTTR_PREFIX=@RTTR_PREFIX@
 RTTR_BINDIR=@RTTR_BINDIR@
 RTTR_DATADIR=@RTTR_DATADIR@
 RTTR_LIBDIR=@RTTR_LIBDIR@
+RTTR_DRIVERDIR=@RTTR_DRIVERDIR@
 
 echo "## Installing for \"${SYSTEM_NAME}\""
 echo "## Using Path-Prefix \"${RTTR_PREFIX}\""
@@ -57,8 +55,8 @@ fi
 ###############################################################################
 
 mecho --blue "## Removing files which are unused (but installed by cmake)"
-rm -vf ${DESTDIR}${RTTR_LIBDIR}/driver/video/libvideo*.{a,lib}
-rm -vf ${DESTDIR}${RTTR_LIBDIR}/driver/audio/libaudio*.{a,lib}
+rm -vf ${DESTDIR}${RTTR_DRIVERDIR}/video/libvideo*.{a,lib}
+rm -vf ${DESTDIR}${RTTR_DRIVERDIR}/audio/libaudio*.{a,lib}
 
 extract_debug_symbols()
 {
