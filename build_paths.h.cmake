@@ -1,8 +1,7 @@
-#ifndef LOCAL_H_INCLUDED
-#define LOCAL_H_INCLUDED
+#ifndef BUILD_PATHS_H_INCLUDED
+#define BUILD_PATHS_H_INCLUDED
 
 #ifdef _WIN32
-///////////////////////////////////////////////////////////////////////////////
 //	Windows Dependant-Configuration
 
 //	disable Memory Leak Detection (comment it out to enable it)
@@ -20,41 +19,26 @@
 //	directory will be used to search the files and paths
 //	(the s25rttr-files must be in the SETTLERS II installation folder)
 
-//
-///////////////////////////////////////////////////////////////////////////////
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-//	Other Configuration
 
 //	set global prefix (normal /usr/local)
-//#define RTTR_PREFIX "/usr/local"
-#cmakedefine RTTR_PREFIX "${RTTR_PREFIX}"
+#cmakedefine RTTR_PREFIX "@RTTR_PREFIX@"
 
-//	set binary directory (normal $(prefix)/bin)
-//#define RTTR_BINDIR RTTR_PREFIX"/bin"
-#cmakedefine RTTR_BINDIR "${RTTR_BINDIR}"
+//	set binary directory (normal RTTR_PREFIX/bin)
+#cmakedefine RTTR_BINDIR "@RTTR_BINDIR@"
 
-//	set data directory (normal $(datadir)/s25rttr)
-//#define RTTR_DATADIR RTTR_PREFIX"/share/s25rttr"
-#cmakedefine RTTR_DATADIR "${RTTR_DATADIR}"
+//	set data directory (normal RTTR_PREFIX/share/s25rttr)
+#cmakedefine RTTR_DATADIR "@RTTR_DATADIR@"
 
-//	set game directory (normal $(datadir)/s25rttr/S2)
-//#define RTTR_GAMEDIR RTTR_DATADIR"/S2"
-#cmakedefine RTTR_GAMEDIR "${RTTR_GAMEDIR}"
+//	set game directory (normal RTTR_DATADIR/S2)
+#cmakedefine RTTR_GAMEDIR "@RTTR_GAMEDIR@"
 
-//	set lib directory (normal $(datadir)/s25rttr)
-//#define RTTR_LIBDIR RTTR_DATADIR
-#cmakedefine RTTR_LIBDIR "${RTTR_LIBDIR}"
+//	set lib directory (normal RTTR_DATADIR)
+#cmakedefine RTTR_LIBDIR "$@RTTR_LIBDIR@"
 
-//	set driver directory (normal $(libdir)/driver)
-//#define RTTR_DRIVERDIR RTTR_LIBDIR"/driver"
-#cmakedefine RTTR_DRIVERDIR "${RTTR_DRIVERDIR}"
+//	set driver directory (normal RTTR_LIBDIR/driver)
+#cmakedefine RTTR_DRIVERDIR "@RTTR_DRIVERDIR@"
 
-//	set settings directory (normal $HOME/.s25rttr)
-//#define RTTR_SETTINGSDIR "~/.s25rttr"
-
-//
-///////////////////////////////////////////////////////////////////////////////
-
-#endif // !LOCAL_H_INCLUDED
+#endif // !BUILD_PATHS_H_INCLUDED

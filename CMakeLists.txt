@@ -180,6 +180,7 @@ SET(RTTR_DATADIR ${RTTR_DATADIR} CACHE STRING "Data directory")
 SET(RTTR_GAMEDIR ${RTTR_GAMEDIR} CACHE STRING "Game data directory")
 SET(RTTR_LIBDIR ${RTTR_LIBDIR} CACHE STRING "Directory for shared binaries")
 SET(RTTR_DRIVERDIR ${RTTR_DRIVERDIR} CACHE STRING "Directory for driver objects")
+SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
 
 IF (NOT "${RTTR_PREFIX}" STREQUAL "" AND "${RTTR_BINDIR}" STREQUAL "")
 	SET(RTTR_BINDIR ${RTTR_PREFIX}/bin CACHE STRING "Directory for the binaries" FORCE)
@@ -334,11 +335,11 @@ endif()
 ################################################################################
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
-			   build_paths.h)
+			   build_paths.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
-			   build_version.h)
+			   build_version.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
-			   build_version_defines.h)
+			   build_version_defines.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/preinstall.sh.cmake"
 			   preinstall.sh @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
