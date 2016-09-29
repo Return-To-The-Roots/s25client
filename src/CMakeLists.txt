@@ -172,7 +172,11 @@ ENDIF ( NOT EXISTS "${LUA_LIB}" )
 
 MESSAGE(STATUS "Using LUA library from ${LUA_LIB}")
 
-INCLUDE_DIRECTORIES(SYSTEM "${LUA_DIR}/include")
+IF(NOT DEFINED LUA_INCLUDE)
+	INCLUDE_DIRECTORIES(SYSTEM "${LUA_DIR}/include")
+ELSE()
+	INCLUDE_DIRECTORIES(SYSTEM "${LUA_INCLUDE}")
+ENDIF()
 
 SET(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
 IF("${RTTR_Assert_Enabled}" EQUAL 0)
