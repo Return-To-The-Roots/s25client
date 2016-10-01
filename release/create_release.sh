@@ -78,7 +78,7 @@ if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
 fi
 
 # get savegame version
-SAVEGAMEVERSION=$(grep Savegame::SAVE_VERSION $SRCDIR/src/Savegame.cpp | cut -d ' ' -f 6 | cut -d \; -f 1)
+SAVEGAMEVERSION=$(grep "; // SaveGameVersion -- " $SRCDIR/src/Savegame.cpp | cut -d " " -f 6 | cut -d \; -f 1)
 
 echo "Current version is: $VERSION-$REVISION"
 echo "Savegame version:   $SAVEGAMEVERSION"

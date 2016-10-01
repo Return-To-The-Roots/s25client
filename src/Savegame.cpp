@@ -28,8 +28,7 @@ std::string Savegame::GetSignature() const
 
 uint16_t Savegame::GetVersion() const
 {
-    /// Version des Savegame-Formates
-    return 36;
+    return 36; // SaveGameVersion -- Updater signature, do NOT remove
 }
 
 //////////////////////////////////////////////////////////////////////////
