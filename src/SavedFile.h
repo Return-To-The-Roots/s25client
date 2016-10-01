@@ -23,8 +23,7 @@
 #include "GlobalGameSettings.h"
 #include "../libutil/src/MyTime.h"
 #include <string>
-
-#include <boost/cstdint.hpp>
+#include <stdint.h>
 
 struct BasePlayerInfo;
 class BinaryFile;

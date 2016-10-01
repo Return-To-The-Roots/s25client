@@ -36,7 +36,7 @@
 #cmakedefine RTTR_GAMEDIR "@RTTR_GAMEDIR@"
 
 //	set lib directory (normal RTTR_DATADIR)
-#cmakedefine RTTR_LIBDIR "$@RTTR_LIBDIR@"
+#cmakedefine RTTR_LIBDIR "@RTTR_LIBDIR@"
 
 //	set driver directory (normal RTTR_LIBDIR/driver)
 #cmakedefine RTTR_DRIVERDIR "@RTTR_DRIVERDIR@"
