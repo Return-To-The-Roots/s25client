@@ -46,6 +46,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/bind.hpp>
+#include <boost/foreach.hpp>
 #include <list>
 #include <algorithm>
 #include <stdexcept>
@@ -1051,44 +1052,80 @@ void AIPlayerJH::CheckNewMilitaryBuildings()
 
 void AIPlayerJH::DistributeGoodsByBlocking(const GoodType good, unsigned limit)
 {
-    bool validgoalexists = false;
     const std::list<nobBaseWarehouse*>& storehouses = aii.GetStorehouses();
-    if (aii.GetHarbors().size() < (storehouses.size() / 2)) //dont distribute on maps that are mostly sea maps - harbors are too difficult to defend and have to handle quite a lot of traffic already
+    if(aii.GetHarbors().size() >= storehouses.size() / 2)
     {
-        for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
+        //dont distribute on maps that are mostly sea maps - harbors are too difficult to defend and have to handle quite a lot of traffic already
+        // So unblock everywhere
+        BOOST_FOREACH(nobBaseWarehouse* wh, storehouses)
         {
-            if ((*it)->GetInventory().goods[good] <= limit)
+            if(wh->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
+                aii.SetInventorySetting(wh->GetPos(), good, wh->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
+        }
+        return;
+    }
+
+    RTTR_Assert(storehouses.size() >= 2); // Should be assured by condition above
+    // We can only distribute between reachable warehouses, so divide them
+    std::vector<std::vector<const nobBaseWarehouse*> > whsByReachability;
+    BOOST_FOREACH(const nobBaseWarehouse* wh, storehouses)
+    {
+        // See to which other whs this is connected
+        bool foundConnectedWh = false;
+        BOOST_FOREACH(std::vector<const nobBaseWarehouse*>& whGroup, whsByReachability)
+        {
+            if(aii.FindPathOnRoads(*wh, *whGroup.front()))
             {
-                validgoalexists = true;
+                whGroup.push_back(wh);
+                foundConnectedWh = true;
                 break;
             }
         }
+        // Not connected to any other -> Add new group
+        if(!foundConnectedWh)
+            whsByReachability.push_back(std::vector<const nobBaseWarehouse*>(1, wh));
     }
-    if (!validgoalexists) // more than limit everywhere (or sea map) -> unblock everywhere
+
+    // Now check each group individually
+    BOOST_FOREACH(const std::vector<const nobBaseWarehouse*>& whGroup, whsByReachability)
     {
-        for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
+        // First check if all WHs have more than limit goods (or better: if one does not)
+        bool allWHsHaveLimit = true;
+        BOOST_FOREACH(const nobBaseWarehouse* wh, whGroup)
         {
-            if((*it)->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
-                aii.SetInventorySetting((*it)->GetPos(), good, (*it)->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
-        }
-    }
-    else // valid goal exists -> block where at least limit goods are stored and unblock the others
-    {
-        for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
-        {
-            if((*it)->GetInventory().goods[good] <= limit) //not at limit - unblock it
+            if (wh->GetVisualWaresCount(good) <= limit)
             {
-                if((*it)->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
-                    aii.SetInventorySetting((*it)->GetPos(), good, (*it)->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
+                allWHsHaveLimit = false;
+                break;
             }
-            else // at limit - block it
+        }
+        if(allWHsHaveLimit)
+        {
+            // So unblock everywhere
+            BOOST_FOREACH(const nobBaseWarehouse* wh, whGroup)
             {
-                if(!(*it)->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
-                    aii.SetInventorySetting((*it)->GetPos(), good, (*it)->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
+                if(wh->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
+                    aii.SetInventorySetting(wh->GetPos(), good, wh->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
+            }
+        } else
+        {
+            // At least 1 WH needs wares
+            BOOST_FOREACH(const nobBaseWarehouse* wh, whGroup)
+            {
+                if(wh->GetVisualWaresCount(good) <= limit) //not at limit - unblock it
+                {
+                    if(wh->IsInventorySetting(good, EInventorySetting::STOP)) //not unblocked then issue command to unblock
+                        aii.SetInventorySetting(wh->GetPos(), good, wh->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
+                } else // at limit - block it
+                {
+                    if(!wh->IsInventorySetting(good, EInventorySetting::STOP)) //not blocked then issue command to block
+                        aii.SetInventorySetting(wh->GetPos(), good, wh->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
+                }
             }
         }
     }
 }
+
 void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit,nobBaseWarehouse* upwh)
 {
     const std::list<nobBaseWarehouse*>& storehouses = aii.GetStorehouses();
