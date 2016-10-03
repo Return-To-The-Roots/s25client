@@ -28,6 +28,7 @@
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -40,7 +41,8 @@ struct TestSetup
 {
     TestSetup()
     {
-        InitLocale();
+        if(!InitLocale())
+            throw std::runtime_error("Could not init locale");
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
 
@@ -104,4 +106,12 @@ BOOST_AUTO_TEST_CASE(RandomTest)
         BOOST_REQUIRE_GT(resultCt13[i], numSamples / resultCt13.size() * 70u / 100u);
     for(unsigned i = 0; i < resultCt28.size(); i++)
         BOOST_REQUIRE_GT(resultCt28[i], numSamples / resultCt28.size() * 70u / 100u);
+}
+
+BOOST_AUTO_TEST_CASE(LocaleFormatTest)
+{
+    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234), "1234");
+    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234.5), "1234.5");
+    BOOST_CHECK_EQUAL(boost::lexical_cast<float>("1234.5"), 1234.5);
+    BOOST_CHECK_EQUAL(boost::lexical_cast<int>("1234"), 1234);
 }

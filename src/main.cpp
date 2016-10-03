@@ -257,7 +257,8 @@ bool InitProgram()
     SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
 
     // Set UTF-8 console charset
-    SetConsoleOutputCP(CP_UTF8);
+    if(!SetConsoleOutputCP(CP_UTF8))
+        std::cout << "Could not set UTF-8 codepage for console. Expect distorted output" << std::endl;
 #endif // _WIN32
 
     InstallSignalHandlers();
