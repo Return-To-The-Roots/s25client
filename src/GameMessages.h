@@ -448,7 +448,7 @@ public:
     GameMessage_Player_Set_State(): GameMessage(NMS_PLAYER_SETSTATE) { }
     GameMessage_Player_Set_State(const unsigned char player, PlayerState ps, AI::Info aiInfo): GameMessage(NMS_PLAYER_SETSTATE, player), ps(ps), aiInfo(aiInfo)
 	{
-		LOG.writeToFile(">>> NMS_PLAYER_SETSTATE(%d)\n") % player;
+		LOG.writeToFile(">>> NMS_PLAYER_SETSTATE(%d)\n") % unsigned(player);
 	}
 
     void Serialize(Serializer& ser) const override
@@ -469,7 +469,7 @@ public:
 
 	void Run(MessageInterface* callback) override
 	{
-		LOG.writeToFile("<<< NMS_PLAYER_SETSTATE(%d)\n") % player;
+		LOG.writeToFile("<<< NMS_PLAYER_SETSTATE(%d)\n") % unsigned(player);
 		GetInterface(callback)->OnGameMessage(*this);
 	}
 };
