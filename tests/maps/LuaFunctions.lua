@@ -4,6 +4,10 @@ isSavegame = false
 
 rttr:Log("LUA: Test Log from Lua")
 
+function getRequiredLuaVersion()
+	return 1
+end
+
 function getAllowedAddons()
 	return {ADDON_LIMIT_CATAPULTS, ADDON_CHARBURNER, ADDON_TRADE}
 end
