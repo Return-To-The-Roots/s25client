@@ -45,6 +45,7 @@
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libsiedler2/src/prototypen.h"
 #include "libutil/src/ucString.h"
+#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 
 /** @class dskSelectMap
@@ -331,11 +332,11 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(1);
 
-    for(std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+    BOOST_FOREACH(const std::string& filePath, files)
     {
         // Karteninformationen laden
         libsiedler2::ArchivInfo map;
-        if(libsiedler2::loader::LoadMAP(*it, map, true) != 0)
+        if(libsiedler2::loader::LoadMAP(filePath, map, true) != 0)
             continue;
 
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
@@ -344,7 +345,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         if(header->getPlayer() > MAX_PLAYERS)
             continue;
 
-        const std::string luaFilepath = it->substr(0, it->length() - 3) + "lua";
+        const bfs::path luaFilepath = bfs::path(filePath).replace_extension("lua");
         const bool hasLua = bfs::is_regular_file(luaFilepath);
 
         // Und Zeilen vorbereiten
@@ -365,7 +366,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
             name += " (*)";
         std::string author = cvStringToUTF8(header->getAuthor());
 
-        table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, it->c_str());
+        table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filePath.c_str());
     }
 }
 

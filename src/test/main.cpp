@@ -19,6 +19,7 @@
 
 #include "Random.h"
 #include "ogl/glAllocator.h"
+#include "ProgramInitHelpers.h"
 #include "test/testHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
@@ -39,6 +40,7 @@ struct TestSetup
 {
     TestSetup()
     {
+        InitLocale();
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
 

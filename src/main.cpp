@@ -26,6 +26,7 @@
 #   include <csignal>
 #endif
 
+#include "ProgramInitHelpers.h"
 #include "SignalHandler.h"
 
 #include "GameManager.h"
@@ -235,31 +236,12 @@ void ExitHandler()
 #endif
 }
 
+
+
 bool InitProgram()
 {
-    // Check and set locale (avoids errors caused by invalid locales later like #420)
-    try{
-        // Check for errors and use classic locale to avoid e.g. thousand separator in int2string conversions via streams
-        std::locale::global(std::locale::classic());
-    }catch(std::exception& e){
-        std::cerr << "Error initializing your locale setting. ";
-#ifdef _WIN32
-        std::cerr << "Check your system language configuration!";
-#else
-        char* lcAll = getenv("LC_ALL");
-        char* lcLang = getenv("LC_LANG");
-        std::cerr << "Check your environment for invalid settings (e.g. LC_ALL";
-        if(lcAll)
-            std::cerr << "=" << lcAll;
-        std::cerr << " or LC_LANG";
-        if(lcLang)
-            std::cerr << "=" << lcLang;
-        std::cerr << ")";
-#endif
-        std::cerr << std::endl;
-        std::cerr << e.what() << std::endl;
+    if(!InitLocale())
         return false;
-    }
 
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
     _set_se_translator(ExceptionHandler);
