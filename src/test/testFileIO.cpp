@@ -31,13 +31,17 @@ struct FileOpenFixture
     FileOpenFixture()
     {
         tmpPath = bfs::absolute(bfs::unique_path());
+        BOOST_TEST_CHECKPOINT("Creating special filenames");
         fileNormal = bfs::path(L"1Normal.txt");
         fileUmlaut = bfs::path(L"2Um\u00E4\u00F6\u00FCLaut.txt");
         fileSpecial = bfs::path(L"3Spe\u0139\u00D4cial.txt");
+        BOOST_TEST_CHECKPOINT("Creating tmp path" << tmpPath);
         bfs::create_directories(tmpPath);
+        BOOST_TEST_CHECKPOINT("Creating files");
         bfs::ofstream fNormal(tmpPath / fileNormal);
         bfs::ofstream fUmlaut(tmpPath / fileUmlaut);
         bfs::ofstream fSpecial(tmpPath / fileSpecial);
+        BOOST_TEST_CHECKPOINT("Filling files");
         fNormal << "OK";
         fUmlaut << "OK";
         fSpecial << "OK";
