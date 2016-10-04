@@ -32,9 +32,17 @@ struct FileOpenFixture
     {
         tmpPath = bfs::absolute(bfs::unique_path());
         BOOST_TEST_CHECKPOINT("Creating special filenames");
+#ifdef _WIN32
+        // Widestring UCS2 path
         fileNormal = bfs::path(L"1Normal.txt");
         fileUmlaut = bfs::path(L"2Um\u00E4\u00F6\u00FCLaut.txt");
         fileSpecial = bfs::path(L"3Spe\u0139\u00D4cial.txt");
+#else
+        // Use UTF8 (widestring not portable, either 16 or 32 bit)
+        fileNormal = bfs::path("1Normal.txt");
+        fileUmlaut = bfs::path("2Um\xC3\xA4\xC3\xB6\xC3\xBC""Laut.txt");
+        fileSpecial = bfs::path("3Spe\xC4\xB9\xC3\x94""cial.txt");
+#endif
         BOOST_TEST_CHECKPOINT("Creating tmp path" << tmpPath);
         bfs::create_directories(tmpPath);
         BOOST_TEST_CHECKPOINT("Creating files");
