@@ -26,13 +26,13 @@ bool InitLocale()
         std::cerr << "Check your system language configuration!";
 #else
         char* lcAll = getenv("LC_ALL");
-        char* lcLang = getenv("LC_LANG");
+        char* lang = getenv("LANG");
         std::cerr << "Check your environment for invalid settings (e.g. LC_ALL";
         if(lcAll)
             std::cerr << "=" << lcAll;
-        std::cerr << " or LC_LANG";
-        if(lcLang)
-            std::cerr << "=" << lcLang;
+        std::cerr << " or LANG";
+        if(lang)
+            std::cerr << "=" << lang;
         std::cerr << ")";
 #endif
         std::cerr << std::endl;

@@ -243,22 +243,19 @@ bool InitProgram()
     if(!InitLocale())
         return false;
 
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-    _set_se_translator(ExceptionHandler);
-#endif // _WIN32 && _DEBUG && !NOHWETRANS
-
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
-    // Enable Memory-Leak-Detection
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
-#endif // _WIN32 && _DEBUG && !NOCRTDBG
-
 #ifdef _WIN32
+#   if defined _DEBUG && defined _MSC_VER
+#       ifndef NOHWETRANS
+            _set_se_translator(ExceptionHandler);
+#       endif // !NOHWETRANS
+#       ifndef NOCRTDBG
+            // Enable Memory-Leak-Detection
+            _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
+#       endif //  !NOCRTDBG
+#   endif // _DEBUG && _MSC_VER
+
     // set console window icon
     SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
-
-    // Set UTF-8 console charset
-    if(!SetConsoleOutputCP(CP_UTF8))
-        std::cout << "Could not set UTF-8 codepage for console. Expect distorted output" << std::endl;
 #endif // _WIN32
 
     InstallSignalHandlers();
