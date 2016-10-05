@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,7 +17,9 @@
 
 // This test the implementation of the helpers
 
-#include "defines.h" // IWYU pragma: keep
+#ifndef helperTests_h__
+#define helperTests_h__
+
 #include "helpers/traits.h"
 
 #include <boost/container/flat_set.hpp>
@@ -48,3 +50,5 @@ namespace{
     BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator< boost::container::flat_set<int> >::value);
 
 }
+
+#endif // helperTests_h__

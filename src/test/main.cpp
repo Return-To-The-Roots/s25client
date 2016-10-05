@@ -21,6 +21,8 @@
 #include "ogl/glAllocator.h"
 #include "ProgramInitHelpers.h"
 #include "test/testHelpers.h"
+// Test helpers. Header only 
+#include "helpers/helperTests.hpp" // IWYU pragma: keep
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
 #include "libsiedler2.h"
