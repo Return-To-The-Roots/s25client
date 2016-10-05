@@ -300,13 +300,16 @@ if(NOT MSVC)
 	endif()
 endif()
 
-# avoid lhs-path bug in windows
 IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	# avoid lhs-path bug in windows
 	SET(RTTR_BINDIR "." CACHE STRING "" FORCE)
 	SET(RTTR_DATADIR "." CACHE STRING "" FORCE)
 	SET(RTTR_GAMEDIR "." CACHE STRING "" FORCE)
 	SET(RTTR_LIBDIR "." CACHE STRING "" FORCE)
 	SET(RTTR_DRIVERDIR "./driver" CACHE STRING "" FORCE)
+	# Enforce unicode
+	ADD_DEFINITIONS(-DUNICODE)
+	ADD_DEFINITIONS(-D_UNICODE)
 ENDIF()
 
 # add build directory to compiler search path
