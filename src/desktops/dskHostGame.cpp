@@ -76,11 +76,11 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         lua.reset(new LuaInterfaceSettings(GAMESERVER.GetInterface()));
         if(!lua->LoadScript(GAMECLIENT.GetLuaFilePath()))
         {
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
         } else if(!lua->CheckScriptVersion())
         {
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+            WINDOWMANAGER.ShowAfterSwitch(new iwMsgbox(_("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
             lua.reset();
         } else if(!lua->EventSettingsInit(serverType == ServerType::LOCAL, GAMECLIENT.IsSavegame()))
         {

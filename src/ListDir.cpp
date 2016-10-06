@@ -57,7 +57,6 @@ std::vector<std::string> ListDir(const std::string& path, std::string extension,
             if(curExt != extension)
                 continue;
         }
-
         result.push_back(curPath.string());
     }
 

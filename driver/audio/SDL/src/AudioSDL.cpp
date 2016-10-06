@@ -337,8 +337,6 @@ void AudioSDL::SetMasterEffectVolume(unsigned char volume)
 {
     master_effects_volume = volume;
     //Mix_SetPanning(MIX_CHANNEL_POST, volume2, volume2);
-
-    std::cout << Mix_GetError() << std::endl;
 }
 
 void AudioSDL::SetMasterMusicVolume(unsigned char volume)

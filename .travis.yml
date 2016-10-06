@@ -29,6 +29,7 @@ addons:
             - libboost-program-options1.55-dev
             - libboost-system1.55-dev
             - libboost-test1.55-dev
+            - libboost-locale1.55-dev
             - g++-4.8
             - clang-3.5
             - llvm-3.5
