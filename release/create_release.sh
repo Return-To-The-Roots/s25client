@@ -34,8 +34,8 @@ RELEASEDEF=$SRCDIR/release/release.$TYPE.def
 source $RELEASEDEF || error
 
 if [ ! -d "$TARGET" ] ; then
-	echo "WARN: $RELEASEDEF does not contain TARGET, using $(pwd)"
-	TARGET=$(pwd)
+	echo "ERROR: $RELEASEDEF does not contain TARGET"
+	error
 fi
 
 # get arch
@@ -46,7 +46,6 @@ ARCHDIR=$TARGET/$ARCH
 ARCHNEWDIR=$TARGET/$ARCH.new
 
 rm -rf $ARCHNEWDIR
-mkdir -p $ARCHNEWDIR
 mkdir -p $ARCHNEWDIR/packed
 mkdir -p $ARCHNEWDIR/unpacked
 mkdir -p $ARCHNEWDIR/updater
@@ -88,18 +87,16 @@ make install DESTDIR=$DESTDIR || error
 
 # do they differ?
 CHANGED=1
-if [ ! "$FORCE" = "1" ] && [ -d $ARCHDIR/unpacked/s25rttr_$VERSION ] ; then
+if [ "$FORCE" = "1" ] ; then
+	echo "FORCE is set - forcing update"
+elif [ -d $ARCHDIR/unpacked/s25rttr_$VERSION ] ; then
 	diff -qrN $ARCHDIR/unpacked/s25rttr_$VERSION $DESTDIR
 	CHANGED=$?
 fi
 
-if [ "$FORCE" = "1" ] ; then
-	echo "FORCE is set - forcing update"
-fi
-
 FORMAT=".tar.bz2"
 if [[ "$ARCH" =~ windows.* ]] ; then
-	FORMAT=.zip
+	FORMAT=".zip"
 fi
 
 # create packed data and updater

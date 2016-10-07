@@ -20,6 +20,9 @@
 #ifndef ProgramInitHelpers_h__
 #define ProgramInitHelpers_h__
 
+#include <string>
+
 bool InitLocale();
+bool InitWorkingDirectory(const std::string& exeFilepath);
 
 #endif // ProgramInitHelpers_h__

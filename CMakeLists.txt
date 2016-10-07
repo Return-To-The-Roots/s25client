@@ -69,7 +69,7 @@ ELSE()
 	ENDIF()
 ENDIF()
 # Fill cache for post-processing tools
-SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE STRING "Do not change" FORCE)
+SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE INTERNAL "Do not change")
 
 MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
 
@@ -110,7 +110,11 @@ else(Boost_USE_STATIC_LIBS)
 endif(Boost_USE_STATIC_LIBS)
 
 # For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
-SET(Boost_ADDITIONAL_VERSIONS "1.60.0" "1.60" "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
+SET(TMP_VERSIONS "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
+foreach(I_VERSION ${TMP_VERSIONS})
+	list(APPEND Boost_ADDITIONAL_VERSIONS "${I_VERSION}.0" "${I_VERSION}")
+endforeach()
+UNSET(TMP_VERSIONS)
 
 IF (MSVC)
 	SET(RTTR_CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
@@ -159,74 +163,61 @@ ELSE()
 ENDIF()
 UNSET(TMP_BOOST_VERSION)
 
-# avoid lhs-path bug in windows
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
-ENDIF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-
 ################################################################################
-
-IF ("${RTTR_PREFIX}" STREQUAL "")
-    IF ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
-        SET(RTTR_PREFIX .)
-    ELSE()
-        SET(RTTR_PREFIX ${CMAKE_INSTALL_PREFIX})
-    ENDIF()
+# Set paths
+# All paths are relative to the install-prefix.
+# Example: BINDIR="bin", DATADIR="data" executed in "/foo/bar/bin/rttr.exe" -> FULL_DATADIR=/foo/bar/data
+IF(NOT "${RTTR_PREFIX}" STREQUAL "")
+	MESSAGE(FATAL_ERROR "Using RTTR_PREFIX was removed and the meaning of the paths have changed. Clear RTTR_PREFIX to disable this warning")
 ENDIF()
 
-SET(RTTR_PREFIX ${RTTR_PREFIX} CACHE STRING "Path prefix")
-SET(RTTR_BINDIR ${RTTR_BINDIR} CACHE STRING "Directory for the binaries")
-SET(RTTR_DATADIR ${RTTR_DATADIR} CACHE STRING "Data directory")
-SET(RTTR_GAMEDIR ${RTTR_GAMEDIR} CACHE STRING "Game data directory")
-SET(RTTR_LIBDIR ${RTTR_LIBDIR} CACHE STRING "Directory for shared binaries")
-SET(RTTR_DRIVERDIR ${RTTR_DRIVERDIR} CACHE STRING "Directory for driver objects")
-SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
-
-IF (NOT "${RTTR_PREFIX}" STREQUAL "" AND "${RTTR_BINDIR}" STREQUAL "")
-	SET(RTTR_BINDIR ${RTTR_PREFIX}/bin CACHE STRING "Directory for the binaries" FORCE)
-	MESSAGE(STATUS "Set RTTR_BINDIR to ${RTTR_BINDIR}")
-ENDIF ()
-
-IF (NOT "${RTTR_PREFIX}" STREQUAL "" AND "${RTTR_DATADIR}" STREQUAL "")
-	SET(RTTR_DATADIR ${RTTR_PREFIX}/share/s25rttr CACHE STRING "Data directory" FORCE)
-	MESSAGE(STATUS "Set RTTR_DATADIR to ${RTTR_DATADIR}")
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	# Windows uses one directory only
+	SET(RTTR_BINDIR "." CACHE INTERNAL "")
+	SET(RTTR_DATADIR "." CACHE INTERNAL "")
+	SET(RTTR_GAMEDIR "." CACHE INTERNAL "")
+	SET(RTTR_LIBDIR "." CACHE INTERNAL "")
+	SET(RTTR_DOCDIR "." CACHE INTERNAL "")
+	SET(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
+ELSE()
+	include(GNUInstallDirs)
+	SET(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
+	SET(RTTR_DATADIR "${CMAKE_INSTALL_DATAROOTDIR}/s25rttr" CACHE STRING "Data directory")
+	if("${RTTR_DATADIR}" STREQUAL "")
+		# Avoid using absolute path accidentally
+		SET(DEFAULT_GAMEDIR "S2")
+	else()
+		SET(DEFAULT_GAMEDIR "${RTTR_DATADIR}/S2")
+	endif()
+	SET(RTTR_GAMEDIR "${DEFAULT_GAMEDIR}" CACHE STRING "(Original) Settlers 2 data directory")
+	SET(RTTR_LIBDIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Directory for shared binaries")
+	# The default contains PROJECTNAME which would be "s25client"
+	string(REPLACE "${PROJECT_NAME}" "s25rttr" DEFAULT_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
+	SET(RTTR_DOCDIR "${DEFAULT_DOCDIR}" CACHE STRING "Directory for documentation files")
+	if("${RTTR_LIBDIR}" STREQUAL "")
+		# Avoid using absolute path accidentally
+		SET(DEFAULT_DRIVERDIR "driver")
+	else()
+		SET(DEFAULT_DRIVERDIR "${RTTR_LIBDIR}/driver")
+	endif()
+	SET(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
 ENDIF()
+# Ensure relative paths
+foreach(curDirVar RTTR_BINDIR RTTR_DATADIR RTTR_GAMEDIR RTTR_LIBDIR RTTR_DOCDIR RTTR_DRIVERDIR)
+	if(IS_ABSOLUTE ${${curDirVar}})
+		message(FATAL_ERROR "All RTTR_*DIR variables must be relative paths. ${curDirVar} is absolute: ${${curDirVar}}")
+	endif()
+endforeach()
 
-IF (NOT "${RTTR_DATADIR}" STREQUAL "" AND "${RTTR_GAMEDIR}" STREQUAL "")
-	SET(RTTR_GAMEDIR ${RTTR_DATADIR} CACHE STRING "Game data directory" FORCE)
-	MESSAGE(STATUS "Set RTTR_GAMEDIR to ${RTTR_DATADIR}")
-ENDIF()
-
-IF (NOT "${RTTR_DATADIR}" STREQUAL "" AND "${RTTR_LIBDIR}" STREQUAL "")
-	SET(RTTR_LIBDIR ${RTTR_DATADIR} CACHE STRING "Directory for shared binaries" FORCE)
-	MESSAGE(STATUS "Set RTTR_LIBDIR to ${RTTR_LIBDIR}")
-ENDIF()
-
-IF (NOT "${RTTR_LIBDIR}" STREQUAL "" AND "${RTTR_DRIVERDIR}" STREQUAL "")
-	SET(RTTR_DRIVERDIR "${RTTR_LIBDIR}/driver" CACHE STRING "Directory for driver objects" FORCE)
-	MESSAGE(STATUS "Set RTTR_DRIVERDIR to ${RTTR_DRIVERDIR}")
-ENDIF()
-
-# Change DESTDIR if required. Note: This is a variable used by cmake and install, do not rename!
-# -> https://cmake.org/cmake/help/v3.0/variable/CMAKE_INSTALL_PREFIX.html
-IF(NOT "$ENV{CMAKE_INSTALL_PREFIX}" STREQUAL "")
-	SET(ENV{DESTDIR} "$ENV{CMAKE_INSTALL_PREFIX}" CACHE STRING "" FORCE)
-	MESSAGE(STATUS "Set DESTDIR to $ENV{DESTDIR}")
-ENDIF()
-
-IF(NOT "$ENV{DESTDIR}" STREQUAL "")
-	SET(ENV{DESTDIR} "$ENV{DESTDIR}/" CACHE STRING "" FORCE)
-	SET(CMAKE_INSTALL_PREFIX "" CACHE STRING "" FORCE)
-	MESSAGE(STATUS "Corrected DESTDIR to $ENV{DESTDIR}")
-ENDIF()
+SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Path to source files. Used for some shell scripts")
+set(RTTR_S2_PLACEHOLDER_PATH "${CMAKE_BINARY_DIR}/${RTTR_GAMEDIR}/put your S2-Installation in here")
+file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 # ensure out of source build
 ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Please go to the build directory and run './cmake.sh [options]' there.")
 
-# Build lobby client
-SET (LOBBY_C TRUE)
-
 ################################################################################
+# Definitions and flags
 
 INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(CheckCCompilerFlag)
@@ -301,19 +292,10 @@ if(NOT MSVC)
 endif()
 
 IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	# avoid lhs-path bug in windows
-	SET(RTTR_BINDIR "." CACHE STRING "" FORCE)
-	SET(RTTR_DATADIR "." CACHE STRING "" FORCE)
-	SET(RTTR_GAMEDIR "." CACHE STRING "" FORCE)
-	SET(RTTR_LIBDIR "." CACHE STRING "" FORCE)
-	SET(RTTR_DRIVERDIR "./driver" CACHE STRING "" FORCE)
 	# Enforce unicode
 	ADD_DEFINITIONS(-DUNICODE)
 	ADD_DEFINITIONS(-D_UNICODE)
 ENDIF()
-
-# add build directory to compiler search path
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 INCLUDE(CMakeDetectCxxFeatures)
 IF (NOT CXX_HAVE_OVERRIDE)
@@ -344,10 +326,11 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
 			   build_version.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
 			   build_version_defines.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/preinstall.sh.cmake"
-			   preinstall.sh @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
 			   postinstall.sh @ONLY)
+
+# add build directory to compiler search path
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 ################################################################################
 # Create symlinks
@@ -379,11 +362,13 @@ IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ENDIF()
 ELSE()
 	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
+	file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CMAKE_BINARY_DIR}/RTTR")
 ENDIF()
 
 enable_testing()
 
 ################################################################################
+# Add version generater first
 
 ADD_SUBDIRECTORY(version)
 
@@ -393,49 +378,66 @@ ADD_CUSTOM_TARGET(updateversion ALL
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 	
-IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	ADD_CUSTOM_TARGET(mrproper
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
-					  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-	)
-
-	ADD_CUSTOM_TARGET(create_nightly
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
-					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-	)
-
-	ADD_CUSTOM_TARGET(create_stable
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
-					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-	)
-
-	# preinstall script
-	INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/preinstall.cmake")
-ENDIF()
-
 ################################################################################
+# Then add all other dependencies
 
 ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)
 ADD_SUBDIRECTORY(libsiedler2)
 ADD_SUBDIRECTORY(libutil)
+# Build lobby client
+SET(LOBBY_C TRUE)
 ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
 ADD_SUBDIRECTORY(s25update)
 ADD_SUBDIRECTORY(src)
 
 ################################################################################
+# Install
 
-# postinstall script-bug workaround, including sub-install-scripts manually
-INSTALL(CODE "INCLUDE(driver/cmake_install.cmake)")
-INSTALL(CODE "INCLUDE(libsiedler2/cmake_install.cmake)")
-INSTALL(CODE "INCLUDE(s-c/cmake_install.cmake)")
-INSTALL(CODE "INCLUDE(s25update/cmake_install.cmake)")
-INSTALL(CODE "INCLUDE(src/cmake_install.cmake)")
+# Start script
+IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	install(PROGRAMS "release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+ELSEIF("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" OR "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
+	install(PROGRAMS "release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
+ELSEIF(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
+ENDIF()
 
-# and then dont let him install anything
-INSTALL(CODE "SET(CMAKE_INSTALL_LOCAL_ONLY 1)")
+# RTTR directory, but exclude language input files
+install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
+		PATTERN "*.po" EXCLUDE
+		PATTERN "*.pot" EXCLUDE
+)
+
+# Documentation. TODO: Avoid recursive entries?
+install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
+		FILES_MATCHING PATTERN "*.txt"
+)
+
+# Placeholder for S2 installation
+install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
+
+IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	# Special cleanup command "make mrproper"
+	ADD_CUSTOM_TARGET(mrproper
+					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
+					  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+	)
+
+	# Create nightly release
+	ADD_CUSTOM_TARGET(create_nightly
+					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
+					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
+
+	# Create stable release
+	ADD_CUSTOM_TARGET(create_stable
+					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
+					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
+ENDIF()
   
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	# postinstall script
