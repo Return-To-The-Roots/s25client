@@ -40,8 +40,7 @@
 /build/src
 /build/version
 /build/WORLDS
-/build/S2/DATA
-/build/S2/GFX
+/build/S2
 /build/Debug
 /build/Release
 /build/Win32
