@@ -9,7 +9,7 @@ fi
 
 echo "Cleaning up $PWD"
 rm -vf CMakeCache.txt cmake_install.cmake Makefile install_manifest.txt
-rm -vrf CMakeFiles build_paths.h build_version.h build_version_defines.h postinstall.sh preinstall.sh
+rm -vrf CMakeFiles Testing build_paths.h build_version.h build_version_defines.h postinstall.sh CTestTestfile.cmake
 rm -vf *.bak *~ .DS_Store
 
 # Unterverzeichnisse entfernen

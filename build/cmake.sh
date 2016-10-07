@@ -37,7 +37,7 @@ fi
 
 ###############################################################################
 
-RTTR_PREFIX=/usr/local
+RTTR_INSTALL_PREFIX=/usr/local
 RTTR_BINDIR=
 RTTR_DATADIR=
 RTTR_LIBDIR=
@@ -71,9 +71,9 @@ while test $# != 0 ; do
 	esac
 
 	case $ac_option in
-		-RTTR_PREFIX | --RTTR_PREFIX | -prefix | --prefix)
+		-prefix | --prefix)
 			$ac_shift
-			RTTR_PREFIX=$ac_optarg
+			RTTR_INSTALL_PREFIX=$ac_optarg
 		;;
 		-RTTR_BINDIR | --RTTR_BINDIR)
 			$ac_shift
@@ -139,22 +139,10 @@ while test $# != 0 ; do
 	shift
 done
 
-if [ -z "$RTTR_BINDIR" ] ; then
-	RTTR_BINDIR=$RTTR_PREFIX/bin
-fi
-
-if [ -z "$RTTR_DATADIR" ] ; then
-	RTTR_DATADIR=$RTTR_PREFIX/share/s25rttr
-fi
-
-if [ -z "$RTTR_LIBDIR" ] ; then
-	RTTR_LIBDIR=$RTTR_DATADIR
-fi
-
 ###############################################################################
 
-echo "Setting Path-Prefix to \"$RTTR_PREFIX\""
-PARAMS="$PARAMS -DRTTR_PREFIX=$RTTR_PREFIX"
+echo "Setting Install-Prefix to \"$RTTR_INSTALL_PREFIX\""
+PARAMS="$PARAMS -DCMAKE_INSTALL_PREFIX=$RTTR_INSTALL_PREFIX"
 
 case "$RTTR_TOOL_CHAIN" in
 	*local*)
@@ -167,14 +155,20 @@ if [ ! -z "$RTTR_TOOL_CHAIN" ] ; then
     PARAMS="$PARAMS -DCMAKE_TOOLCHAIN_FILE=${RTTR_SRCDIR}/cmake/toolchains/$RTTR_TOOL_CHAIN.cmake"	
 fi
 
-echo "Setting Binary Dir to \"$RTTR_BINDIR\""
-PARAMS="$PARAMS -DRTTR_BINDIR=$RTTR_BINDIR"
+if [ ! -z "$RTTR_BINDIR" ]; then
+    echo "Setting Binary Dir to \"$RTTR_BINDIR\""
+    PARAMS="$PARAMS -DRTTR_BINDIR=$RTTR_BINDIR"
+fi
 
-echo "Setting Data Dir to \"$RTTR_DATADIR\""
-PARAMS="$PARAMS -DRTTR_DATADIR=$RTTR_DATADIR"
+if [ ! -z "$RTTR_DATADIR" ]; then
+    echo "Setting Data Dir to \"$RTTR_DATADIR\""
+    PARAMS="$PARAMS -DRTTR_DATADIR=$RTTR_DATADIR"
+fi
 
-echo "Setting Library Dir to \"$RTTR_LIBDIR\""
-PARAMS="$PARAMS -DRTTR_LIBDIR=$RTTR_LIBDIR"
+if [ ! -z "$RTTR_LIBDIR" ]; then
+    echo "Setting Library Dir to \"$RTTR_LIBDIR\""
+    PARAMS="$PARAMS -DRTTR_LIBDIR=$RTTR_LIBDIR"
+fi
 
 if [ ! -z "$RTTR_NOARCH" ] ; then
     echo "Disabling build of \"$RTTR_NOARCH\""
@@ -221,8 +215,8 @@ fi
 
 echo "Generating files for \"$GENERATOR\""
 
-mecho --blue "Running \"cmake -G '$GENERATOR' -DCMAKE_INSTALL_PREFIX= ${PARAMS} '${RTTR_SRCDIR}'\""
-$CMAKE_COMMAND -G "$GENERATOR" -DCMAKE_INSTALL_PREFIX= $PARAMS "${RTTR_SRCDIR}"
+mecho --blue "Running \"cmake -G '$GENERATOR' ${PARAMS} '${RTTR_SRCDIR}'\""
+$CMAKE_COMMAND -G "$GENERATOR" $PARAMS "${RTTR_SRCDIR}"
 
 if [ $? != 0 ] ; then
 	mecho --red "An error occured - please check above!"
