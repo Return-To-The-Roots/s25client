@@ -211,7 +211,6 @@ endforeach()
 
 SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Path to source files. Used for some shell scripts")
 set(RTTR_S2_PLACEHOLDER_PATH "${CMAKE_BINARY_DIR}/${RTTR_GAMEDIR}/put your S2-Installation in here")
-file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 # ensure out of source build
 ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Please go to the build directory and run './cmake.sh [options]' there.")
@@ -319,6 +318,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
 endif()
 
 ################################################################################
+# Configure files
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
 			   build_paths.h @ONLY)
@@ -326,8 +326,14 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
 			   build_version.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
 			   build_version_defines.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build/postinstall.sh.cmake"
-			   postinstall.sh @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
+			   prepareRelease.sh @ONLY)
+IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake"
+			   start.sh @ONLY)
+ENDIF()
+file(COPY "bugle" DESTINATION ".")
+file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 # add build directory to compiler search path
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
@@ -420,6 +426,8 @@ install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
 install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
+	install(PROGRAMS "${CMAKE_BINARY_DIR}/prepareRelease.sh" DESTINATION ".")
+
 	# Special cleanup command "make mrproper"
 	ADD_CUSTOM_TARGET(mrproper
 					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
@@ -438,12 +446,3 @@ IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 ENDIF()
-  
-IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	# postinstall script
-	INSTALL(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/postinstall.cmake")
-ENDIF()
-
-INSTALL(CODE "MESSAGE(STATUS \"Installation is now complete\")")
-
-################################################################################

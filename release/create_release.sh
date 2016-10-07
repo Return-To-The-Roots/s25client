@@ -84,6 +84,11 @@ echo "Savegame version:   $SAVEGAMEVERSION"
 
 DESTDIR=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
 make install DESTDIR=$DESTDIR || error
+DESTDIR=$DESTDIR $DESTDIR/prepareRelease.sh
+if [ ! $? = 0 ]; then
+	echo "error: Could not prepare release (strip executables etc.)"
+	error
+fi
 
 # do they differ?
 CHANGED=1
