@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
     BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
     mapFile.close();
     outMap.GetStream().close();
-    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath.c_str()), CalcChecksumOfFile(outMap.filePath.c_str()));
+    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
 }
 
 namespace{

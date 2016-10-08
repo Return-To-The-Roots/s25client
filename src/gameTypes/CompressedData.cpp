@@ -21,14 +21,14 @@
 #include "libutil/src/Log.h"
 #include <bzlib.h>
 #include <boost/smart_ptr/scoped_array.hpp>
-#include <fstream>
+#include <boost/filesystem/fstream.hpp>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
 
 bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* checksum)
 {
-    std::ofstream file(filePath.c_str(), std::ios::binary);
+    bfs::ofstream file(filePath, std::ios::binary);
 
     if(!file)
     {
@@ -67,7 +67,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
 bool CompressedData::CompressFromFile(const std::string& filePath, unsigned* checksum /* = NULL */)
 {
-    std::ifstream file(filePath.c_str(), std::ios::binary | std::ios::ate);
+    bfs::ifstream file(filePath, std::ios::binary | std::ios::ate);
     length = static_cast<unsigned>(file.tellg());
     data.resize(static_cast<int>(std::ceil(length * 1.1)) + 600); // Buffer should be at most 1% bigger + 600 Bytes according to docu
     file.seekg(0);

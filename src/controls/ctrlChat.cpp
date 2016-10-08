@@ -290,7 +290,7 @@ bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 
 unsigned ctrlChat::CalcUniqueColor(const std::string& name)
 {
-    unsigned checksum = CalcChecksumOfBuffer(name.c_str(), unsigned(name.length())) * name.length();
+    unsigned checksum = CalcChecksumOfBuffer(name.c_str(), name.length()) * name.length();
     unsigned color = checksum | (checksum << 12) | 0xff000000;
     return color;
 }

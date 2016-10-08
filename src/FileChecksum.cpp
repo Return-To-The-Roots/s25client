@@ -17,39 +17,29 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "FileChecksum.h"
-#include <cstdio>
+#include <boost/filesystem/fstream.hpp>
 
-unsigned int CalcChecksumOfFile(const char* const path)
+uint32_t CalcChecksumOfFile(const std::string& path)
 {
-    FILE* dat = fopen(path, "rb");
-    if(!dat)
+    bfs::ifstream file(path);
+    if(!file)
         return 0;
 
-    fseek(dat, 0, SEEK_END);
-    unsigned int length = (int)ftell(dat);
-    fseek(dat, 0, SEEK_SET);
-
-    unsigned int checksum = 0;
-
-    for(unsigned int i = 0; i < length; ++i)
-        checksum += fgetc(dat);
-
-    fclose(dat);
+    uint32_t checksum = 0;
+    for(std::istreambuf_iterator<char> it(file), e; it != e; ++it)
+        checksum += static_cast<uint8_t>(*it);
 
     return checksum;
 }
 
-unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size)
+uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size)
 {
     if(!buffer || size == 0)
         return 0;
 
-    unsigned int checksum = 0;
+    uint32_t checksum = 0;
     for(unsigned int i = 0; i < size; ++i)
-    {
-        //LOG.write(("%d - %d\n", i, checksum);
-        checksum += (unsigned int)buffer[i];
-    }
+        checksum += buffer[i];
     return checksum;
 }
 

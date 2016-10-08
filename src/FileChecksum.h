@@ -19,9 +19,20 @@
 
 #pragma once
 
-unsigned int CalcChecksumOfFile(const char* const path);
-unsigned int CalcChecksumOfBuffer(const unsigned char* buffer, unsigned int size);
+#include <string>
+#include <stddef.h>
 
-inline unsigned int CalcChecksumOfBuffer(const char* buffer, unsigned int size) { return CalcChecksumOfBuffer((const unsigned char*)buffer, size); }
+uint32_t CalcChecksumOfFile(const std::string& path);
+uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size);
+
+inline uint32_t CalcChecksumOfBuffer(const int8_t* buffer, size_t size)
+{
+    return CalcChecksumOfBuffer(reinterpret_cast<const uint8_t*>(buffer), size);
+}
+
+inline uint32_t CalcChecksumOfBuffer(const char* buffer, size_t size)
+{
+    return CalcChecksumOfBuffer(reinterpret_cast<const uint8_t*>(buffer), size);
+}
 
 #endif // !FILECHECKSUM_H_INCLUDED
