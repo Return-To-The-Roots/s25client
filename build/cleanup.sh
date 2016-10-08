@@ -3,7 +3,7 @@
 SRCDIR=$PWD
 
 echo "Cleaning up $PWD"
-rm -vf CMakeCache.txt cmake_install.cmake Makefile install_manifest.txt prepareRelease.sh
+rm -vf CMakeCache.txt cmake_install.cmake Makefile install_manifest.txt prepareRelease.sh start.sh
 rm -vrf CMakeFiles Testing bugle build_paths.h build_version.h build_version_defines.h postinstall.sh CTestTestfile.cmake
 rm -vf *.bak *~ .DS_Store
 # Symlinks

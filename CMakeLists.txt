@@ -316,28 +316,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES Clang)
 endif()
 
 ################################################################################
-# Configure files
-
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
-			   build_paths.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
-			   build_version.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
-			   build_version_defines.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
-			   prepareRelease.sh @ONLY)
-IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
-	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake"
-			   start.sh @ONLY)
-ENDIF()
-file(COPY "bugle" DESTINATION ".")
-file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
-
-# add build directory to compiler search path
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
-
-################################################################################
-# Create symlinks
+# Create symlinks for easier debugging
 
 MACRO(symlinkFolder dst symLinkPath)
 	IF(NOT EXISTS "${symLinkPath}")
@@ -355,7 +334,12 @@ MACRO(symlinkFolder dst symLinkPath)
 ENDMACRO(symlinkFolder)
 
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	symlinkFolder("${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")
+	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/${RTTR_DATADIR}")
+	symlinkFolder("${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/${RTTR_DATADIR}/RTTR")
+	if(NOT EXISTS "${CMAKE_SOURCE_DIR}/S2")
+		file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/S2")
+	endif()
+	symlinkFolder("${CMAKE_SOURCE_DIR}/S2" "${CMAKE_BINARY_DIR}/${RTTR_GAMEDIR}")
 ELSE()
 	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
 	file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CMAKE_BINARY_DIR}"
@@ -364,6 +348,31 @@ ELSE()
 		 PATTERN ".*" EXCLUDE
 	)
 ENDIF()
+
+################################################################################
+# Configure files
+
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
+			   build_paths.h @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
+			   build_version.h @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
+			   build_version_defines.h @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
+			   prepareRelease.sh @ONLY)
+IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake"
+			   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh @ONLY)
+	file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh
+		DESTINATION "."
+		FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
+  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+ENDIF()
+file(COPY "bugle" DESTINATION ".")
+file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
+
+# add build directory to compiler search path
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 enable_testing()
 
@@ -424,7 +433,7 @@ IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	# Special cleanup command "make mrproper"
 	ADD_CUSTOM_TARGET(mrproper
 					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
-					  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 
 	# Create nightly release

@@ -20,6 +20,7 @@
 #include "Random.h"
 #include "ogl/glAllocator.h"
 #include "ProgramInitHelpers.h"
+#include "files.h"
 #include "test/testHelpers.h"
 // Test helpers. Header only 
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
@@ -59,7 +60,7 @@ struct TestSetup
         possiblePaths.push_back("../../../../build");
         for(std::vector<std::string>::const_iterator it = possiblePaths.begin(); it != possiblePaths.end(); ++it)
         {
-            if(bfs::is_directory(*it + "/RTTR"))
+            if(bfs::is_directory(*it + "/" + RTTRDIR))
             {
                 std::cout << "Changing to " << *it << std::endl;
                 bfs::current_path(*it);
