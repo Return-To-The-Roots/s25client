@@ -20,7 +20,7 @@
 #pragma once
 
 #include <string>
-#include <stddef.h>
+#include <stdint.h>
 
 uint32_t CalcChecksumOfFile(const std::string& path);
 uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size);
