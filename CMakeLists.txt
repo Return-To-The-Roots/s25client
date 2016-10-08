@@ -358,14 +358,6 @@ ENDMACRO(symlinkFolder)
 
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	symlinkFolder("${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")
-	
-	# do not create debug-run symlinks on jenkins (too many levels of symbolic links "bug")
-	IF("$ENV{JENKINS_URL}" STREQUAL "")
-		symlinkFolder("${CMAKE_BINARY_DIR}" "${CMAKE_BINARY_DIR}/bin")
-		symlinkFolder("${CMAKE_BINARY_DIR}" "${CMAKE_BINARY_DIR}/share")
-		symlinkFolder("${CMAKE_BINARY_DIR}" "${CMAKE_BINARY_DIR}/s25rttr")
-		symlinkFolder("${CMAKE_SOURCE_DIR}/S2" "${CMAKE_BINARY_DIR}/S2")
-	ENDIF()
 ELSE()
 	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
 	file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CMAKE_BINARY_DIR}"
