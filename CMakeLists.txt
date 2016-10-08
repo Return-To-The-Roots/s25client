@@ -368,7 +368,11 @@ IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ENDIF()
 ELSE()
 	message(STATUS "Host system is ${CMAKE_HOST_SYSTEM_NAME}. Will use copies instead of symlinks")
-	file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CMAKE_BINARY_DIR}/RTTR")
+	file(COPY "${CMAKE_SOURCE_DIR}/RTTR" DESTINATION "${CMAKE_BINARY_DIR}"
+		 PATTERN "*.po" EXCLUDE
+		 PATTERN "*.pot" EXCLUDE
+		 PATTERN ".*" EXCLUDE
+	)
 ENDIF()
 
 enable_testing()

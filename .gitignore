@@ -6,6 +6,8 @@
 *.suo
 *.cproject
 *.project
+/build/*.psess
+/build/*.vsp
 /build/*.vcxproj
 /build/*.filters
 /build/*.lib
@@ -13,6 +15,7 @@
 /build/*.exp
 /build/LICENSE.*
 /build/callgrind.out.*
+/build/bugle
 /build/Testing
 /build/CTestTestfile.cmake
 /build/s25client.VC.opendb
@@ -31,8 +34,7 @@
 /build/libsiedler2
 /build/libutil
 /build/mygettext
-/build/postinstall.sh
-/build/preinstall.sh
+/build/prepareRelease.sh
 /build/RTTR
 /build/s-c
 /build/s25client.sln
