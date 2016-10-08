@@ -48,7 +48,7 @@ endif()
 ################################################################################
 
 STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
-SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE STRING "Do not change" FORCE)
+SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE INTERNAL "Do not change")
 
 # Set PLATFORM_ARCH
 IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -70,8 +70,6 @@ ELSE()
 ENDIF()
 # Fill cache for post-processing tools
 SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE INTERNAL "Do not change")
-
-MARK_AS_ADVANCED(PLATFORM_NAME PLATFORM_ARCH)
 
 IF (CMAKE_CROSSCOMPILING)
 	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
@@ -411,6 +409,7 @@ ENDIF()
 install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
 		PATTERN "*.po" EXCLUDE
 		PATTERN "*.pot" EXCLUDE
+		PATTERN ".*" EXCLUDE
 )
 
 # Documentation. TODO: Avoid recursive entries?
@@ -422,8 +421,6 @@ install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
 install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 
 IF(NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
-	install(PROGRAMS "${CMAKE_BINARY_DIR}/prepareRelease.sh" DESTINATION ".")
-
 	# Special cleanup command "make mrproper"
 	ADD_CUSTOM_TARGET(mrproper
 					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"

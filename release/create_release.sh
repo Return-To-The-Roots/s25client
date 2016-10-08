@@ -39,7 +39,17 @@ if [ ! -d "$TARGET" ] ; then
 fi
 
 # get arch
-ARCH="$(grep PLATFORM_NAME CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep PLATFORM_ARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
+PLATFORM_NAME="$(grep PLATFORM_NAME:INTERNAL= CMakeCache.txt | head -n 1 | cut -d '=' -f 2)"
+PLATFORM_ARCH="$(grep PLATFORM_ARCH:INTERNAL= CMakeCache.txt | head -n 1 | cut -d '=' -f 2)"
+if [[ -z ${PLATFORM_NAME} ]]; then
+	echo "ERROR: PLATFORM_NAME not found"
+	error
+fi
+if [[ -z ${PLATFORM_ARCH} ]]; then
+	echo "ERROR: PLATFORM_ARCH not found"
+	error
+fi
+ARCH="${PLATFORM_NAME}.${PLATFORM_ARCH}"
 
 # current and new package directory
 ARCHDIR=$TARGET/$ARCH
@@ -82,9 +92,11 @@ SAVEGAMEVERSION=$(grep "; // SaveGameVersion -- " $SRCDIR/src/Savegame.cpp | cut
 echo "Current version is: $VERSION-$REVISION"
 echo "Savegame version:   $SAVEGAMEVERSION"
 
-DESTDIR=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
-make install DESTDIR=$DESTDIR || error
-DESTDIR=$DESTDIR $DESTDIR/prepareRelease.sh
+unpackedPath=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
+# Install into this folder
+cmake . -DCMAKE_INSTALL_PREFIX="${unpackedPath}" || error
+make install || error
+DESTDIR="${unpackedPath}" ./prepareRelease.sh
 if [ ! $? = 0 ]; then
 	echo "error: Could not prepare release (strip executables etc.)"
 	error
