@@ -29,6 +29,7 @@
 /build/cmake_install.cmake
 /build/driver
 /build/ipch
+/build/install_manifest.txt
 /build/libendian
 /build/liblobby
 /build/libsiedler2
@@ -53,6 +54,7 @@
 /build/share
 /build/Makefile
 /build/bin
+/build/start.sh
 /build/*.dll
 /build/*.exe
 /build/*.pdb

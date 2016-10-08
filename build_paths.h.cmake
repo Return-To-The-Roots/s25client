@@ -23,13 +23,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//	set global prefix (normal /usr/local)
-#cmakedefine RTTR_PREFIX "@RTTR_PREFIX@"
-
-//	set binary directory (normal RTTR_PREFIX/bin)
+//	set binary directory (normal ./bin)
 #cmakedefine RTTR_BINDIR "@RTTR_BINDIR@"
 
-//	set data directory (normal RTTR_PREFIX/share/s25rttr)
+//	set data directory (normal ./share/s25rttr)
 #cmakedefine RTTR_DATADIR "@RTTR_DATADIR@"
 
 //	set game directory (normal RTTR_DATADIR/S2)

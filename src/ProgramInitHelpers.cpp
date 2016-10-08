@@ -73,7 +73,7 @@ bool InitWorkingDirectory(const std::string& exeFilepath)
 
     // Determine install prefix
     bfs::path prefixPath;
-    // Allow overwrite with RTTR_PREFIXDIR
+    // Allow overwrite with RTTR_PREFIX_DIR
     const char* rttrPrefixDir = getenv("RTTR_PREFIX_DIR");
     if(rttrPrefixDir)
     {
