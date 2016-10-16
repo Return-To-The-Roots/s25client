@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,6 +24,9 @@
 #include <string>
 
 // Expected: RTTR_BINDIR, RTTR_DATADIR, RTTR_GAMEDIR, RTTR_LIBDIR, RTTR_DRIVERDIR
+#if !(defined(RTTR_BINDIR) && defined(RTTR_DATADIR) && defined(RTTR_GAMEDIR) && defined(RTTR_LIBDIR) && defined(RTTR_DRIVERDIR))
+#   error "At least one of the RTTR_*DIR is undefined!"
+#endif
 
 #ifndef RTTRDIR
 #   define RTTRDIR RTTR_DATADIR"/RTTR"

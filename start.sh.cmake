@@ -5,7 +5,7 @@ export EF_ALLOW_MALLOC_0=1
 export EF_PROTECT_FREE=0
 export EF_FREE_WIPES=1
 
-BIN=src/s25client
+BIN=@RTTR_BINDIR@/s25client
 CMD=
 ARGS=
 BINARGS=

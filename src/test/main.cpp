@@ -20,6 +20,7 @@
 #include "Random.h"
 #include "ogl/glAllocator.h"
 #include "ProgramInitHelpers.h"
+#include "files.h"
 #include "test/testHelpers.h"
 // Test helpers. Header only 
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
@@ -49,7 +50,7 @@ struct TestSetup
         LOG.open(new StringStreamWriter);
 
         // Make sure we have the RTTR folder in our current working directory
-        std::vector<std::string> possiblePaths;
+        std::vector<bfs::path> possiblePaths;
         possiblePaths.push_back(".");
         // Might be test folder
         possiblePaths.push_back("..");
@@ -57,9 +58,9 @@ struct TestSetup
         possiblePaths.push_back("../../../build");
         // VS style build setup (additional Debug sub folder)
         possiblePaths.push_back("../../../../build");
-        for(std::vector<std::string>::const_iterator it = possiblePaths.begin(); it != possiblePaths.end(); ++it)
+        for(std::vector<bfs::path>::const_iterator it = possiblePaths.begin(); it != possiblePaths.end(); ++it)
         {
-            if(bfs::is_directory(*it + "/RTTR"))
+            if(bfs::is_directory(*it / RTTRDIR))
             {
                 std::cout << "Changing to " << *it << std::endl;
                 bfs::current_path(*it);

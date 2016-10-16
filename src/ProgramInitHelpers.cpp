@@ -1,10 +1,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
+#include <build_paths.h>
+
 #include <boost/locale.hpp>
-#include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <stdexcept>
+#ifdef _WIN32
+#   include <windows.h>
+#   include <shellapi.h>
+#endif // _WIN32
+
 
 bool InitLocale()
 {
@@ -39,5 +46,62 @@ bool InitLocale()
         std::cerr << e.what() << std::endl;
         return false;
     }
+    return true;
+}
+
+bool InitWorkingDirectory(const std::string& exeFilepath)
+{
+    bfs::path fullExeFilepath = exeFilepath;
+#ifdef _WIN32
+    // For windows we may be run in a path with special chars. So get the wide-char version of the filepath
+    int nArgs;
+    wchar_t** argList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+    if(!argList || nArgs < 1)
+    {
+        std::cerr << "Could not get command line!" << std::endl;
+        return false;
+    }
+    fullExeFilepath = argList[0];
+    LocalFree(argList);
+#endif // _WIN32
+    fullExeFilepath = bfs::absolute(fullExeFilepath);
+    if(!bfs::exists(fullExeFilepath))
+    {
+        std::cerr << "Executable not at '" << fullExeFilepath << "'" << std::endl;
+        return false;
+    }
+
+    // Determine install prefix
+    bfs::path prefixPath;
+    // Allow overwrite with RTTR_PREFIX_DIR
+    const char* rttrPrefixDir = getenv("RTTR_PREFIX_DIR");
+    if(rttrPrefixDir)
+    {
+        prefixPath = rttrPrefixDir;
+        std::cout << "Note: Prefix path manually set to " << prefixPath << std::endl;
+    } else
+    {
+        const bfs::path curBinDir = fullExeFilepath.parent_path();
+        const bfs::path cfgBinDir = RTTR_BINDIR;
+        // Go up one level for each entry (folder) in cfgBinDir
+        prefixPath = curBinDir;
+        for(bfs::path::const_iterator it = cfgBinDir.begin(); it != cfgBinDir.end(); ++it)
+        {
+            if(*it == ".")
+                continue;
+            prefixPath = prefixPath.parent_path();
+        }
+        if(!bfs::equivalent(curBinDir, prefixPath / cfgBinDir))
+        {
+            std::cerr << "Could not find install prefix." << std::endl
+                << "Current binary dir: " << curBinDir << std::endl
+                << "Best guess for prefixed binary dir: " << (prefixPath / cfgBinDir) << std::endl
+                << "Configured binary dir: " << cfgBinDir << std::endl;
+            return false;
+        }
+    }
+
+    // Make the prefix path our working directory as all other paths are relative to that
+    bfs::current_path(prefixPath);
     return true;
 }

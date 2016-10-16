@@ -238,11 +238,8 @@ void ExitHandler()
 
 
 
-bool InitProgram()
+void SetAppSymbol()
 {
-    if(!InitLocale())
-        return false;
-
 #ifdef _WIN32
 #   if defined _DEBUG && defined _MSC_VER
 #       ifndef NOHWETRANS
@@ -257,10 +254,6 @@ bool InitProgram()
     // set console window icon
     SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
 #endif // _WIN32
-
-    InstallSignalHandlers();
-
-    return true;
 }
 
 bool InitDirectories()
@@ -346,10 +339,14 @@ bool InitGame()
     return true;
 }
 
-int RunProgram(po::variables_map& options)
+int RunProgram(const std::string& exeFilepath, po::variables_map& options)
 {
-    if(!InitProgram())
+    if(!InitLocale())
         return 1;
+    if(!InitWorkingDirectory(exeFilepath))
+        return 1;
+    SetAppSymbol();
+    InstallSignalHandlers();
     if(!InitDirectories())
         return 1;
 
@@ -422,7 +419,7 @@ int main(int argc, char** argv)
     GLOBALVARS.isTest = options.count("test") > 0;
     GLOBALVARS.errorOccured = false;
 
-    int result = RunProgram(options);
+    int result = RunProgram(argv[0], options);
     if(GLOBALVARS.isTest)
     {
         if(result || GLOBALVARS.errorOccured)

@@ -206,7 +206,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #endif
         std::string nameOrError;
         if(!CheckLibrary(path, dt, nameOrError))
-            LOG.write(_("Skipping %s: %s")) % path % nameOrError;
+            LOG.write(_("Skipping %s: %s\n")) % path % nameOrError;
         else
             driver_list.push_back(DriverItem(path, nameOrError));
     }

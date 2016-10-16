@@ -24,7 +24,6 @@ mecho()
 SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
 SYSTEM_ARCH=@PLATFORM_ARCH@
 IS_CROSS_COMPILE=@CMAKE_CROSSCOMPILING@
-RTTR_PREFIX=@RTTR_PREFIX@
 RTTR_BINDIR=@RTTR_BINDIR@
 RTTR_DATADIR=@RTTR_DATADIR@
 RTTR_LIBDIR=@RTTR_LIBDIR@
@@ -38,7 +37,6 @@ if [ -z "${RTTR_SRCDIR}" ] ; then
 fi
 
 echo "## Installing for \"${SYSTEM_NAME}\""
-echo "## Using Path-Prefix \"${RTTR_PREFIX}\""
 echo "## Using Binary Dir \"${RTTR_BINDIR}\""
 echo "## Using Data Dir \"${RTTR_DATADIR}\""
 echo "## Using Library Dir \"${RTTR_LIBDIR}\""
@@ -280,8 +278,8 @@ case "$SYSTEM_NAME" in
 		esac
 
 		if [ -f $miniupnpc ] ; then
-			mkdir -p ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
-			cp -rv $miniupnpc* ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
+			mkdir -p ${DESTDIR}/lib/ || exit 1
+			cp -rv $miniupnpc* ${DESTDIR}/lib/ || exit 1
 		else
 			echo "libminiupnpc.so not found at $miniupnpc" >&2
 			echo "will not bundle it in your installation" >&2
@@ -291,8 +289,8 @@ case "$SYSTEM_NAME" in
 	FreeBSD)
 		miniupnpc=/usr/local/lib/libminiupnpc.so
 		if [ -f $miniupnpc ] ; then
-			mkdir -p ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
-			cp -rv ${miniupnpc}* ${DESTDIR}${RTTR_PREFIX}/lib/ || exit 1
+			mkdir -p ${DESTDIR}/lib/ || exit 1
+			cp -rv ${miniupnpc}* ${DESTDIR}/lib/ || exit 1
 		else
 			echo "libminiupnpc.so not found at $miniupnpc" >&2
 			echo "will not bundle it in your installation" >&2

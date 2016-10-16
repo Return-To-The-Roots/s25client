@@ -34,19 +34,28 @@ RELEASEDEF=$SRCDIR/release/release.$TYPE.def
 source $RELEASEDEF || error
 
 if [ ! -d "$TARGET" ] ; then
-	echo "WARN: $RELEASEDEF does not contain TARGET, using $(pwd)"
-	TARGET=$(pwd)
+	echo "ERROR: $RELEASEDEF does not contain TARGET"
+	error
 fi
 
 # get arch
-ARCH="$(grep PLATFORM_NAME CMakeCache.txt | cut -d '=' -f 2 | head -n 1).$(grep PLATFORM_ARCH CMakeCache.txt | cut -d '=' -f 2 | head -n 1)"
+PLATFORM_NAME="$(grep PLATFORM_NAME:INTERNAL= CMakeCache.txt | head -n 1 | cut -d '=' -f 2)"
+PLATFORM_ARCH="$(grep PLATFORM_ARCH:INTERNAL= CMakeCache.txt | head -n 1 | cut -d '=' -f 2)"
+if [[ -z ${PLATFORM_NAME} ]]; then
+	echo "ERROR: PLATFORM_NAME not found"
+	error
+fi
+if [[ -z ${PLATFORM_ARCH} ]]; then
+	echo "ERROR: PLATFORM_ARCH not found"
+	error
+fi
+ARCH="${PLATFORM_NAME}.${PLATFORM_ARCH}"
 
 # current and new package directory
 ARCHDIR=$TARGET/$ARCH
 ARCHNEWDIR=$TARGET/$ARCH.new
 
 rm -rf $ARCHNEWDIR
-mkdir -p $ARCHNEWDIR
 mkdir -p $ARCHNEWDIR/packed
 mkdir -p $ARCHNEWDIR/unpacked
 mkdir -p $ARCHNEWDIR/updater
@@ -83,23 +92,28 @@ SAVEGAMEVERSION=$(grep "; // SaveGameVersion -- " $SRCDIR/src/Savegame.cpp | cut
 echo "Current version is: $VERSION-$REVISION"
 echo "Savegame version:   $SAVEGAMEVERSION"
 
-DESTDIR=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
-make install DESTDIR=$DESTDIR || error
+unpackedPath=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
+# Install into this folder
+cmake . -DCMAKE_INSTALL_PREFIX="${unpackedPath}" || error
+make install || error
+DESTDIR="${unpackedPath}" ./prepareRelease.sh
+if [ ! $? = 0 ]; then
+	echo "error: Could not prepare release (strip executables etc.)"
+	error
+fi
 
 # do they differ?
 CHANGED=1
-if [ ! "$FORCE" = "1" ] && [ -d $ARCHDIR/unpacked/s25rttr_$VERSION ] ; then
+if [ "$FORCE" = "1" ] ; then
+	echo "FORCE is set - forcing update"
+elif [ -d $ARCHDIR/unpacked/s25rttr_$VERSION ] ; then
 	diff -qrN $ARCHDIR/unpacked/s25rttr_$VERSION $DESTDIR
 	CHANGED=$?
 fi
 
-if [ "$FORCE" = "1" ] ; then
-	echo "FORCE is set - forcing update"
-fi
-
 FORMAT=".tar.bz2"
 if [[ "$ARCH" =~ windows.* ]] ; then
-	FORMAT=.zip
+	FORMAT=".zip"
 fi
 
 # create packed data and updater

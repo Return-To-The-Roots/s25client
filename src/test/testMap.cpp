@@ -26,6 +26,7 @@
 #include "PlayerInfo.h"
 #include "ogl/glArchivItem_Map.h"
 #include "FileChecksum.h"
+#include "files.h"
 #include "test/WorldFixture.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/BQOutput.h"
@@ -35,24 +36,24 @@
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/foreach.hpp>
-#include <fstream>
+#include <boost/filesystem/fstream.hpp>
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
 
-const char* testMapPath = "RTTR/MAPS/NEW/Bergruft.swd";
+const std::string testMapPath = std::string(FILE_PATHS[52]) + "Bergruft.swd";
 
 BOOST_AUTO_TEST_CASE(LoadSaveMap)
 {
     // Check that loading and saving a map does not alter it
     glArchivItem_Map map;
-    std::ifstream mapFile(testMapPath, std::ios::binary);
+    bfs::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     TmpFile outMap(".swd");
     BOOST_REQUIRE(outMap.IsValid());
     BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
     mapFile.close();
     outMap.GetStream().close();
-    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath.c_str()));
+    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
 }
 
 namespace{
@@ -71,7 +72,7 @@ namespace{
         LoadWorldFromFileCreator(unsigned w, unsigned h, unsigned numPlayers): numPlayers_(numPlayers){}
         bool operator()(GameWorldBase& world)
         {
-            std::ifstream mapFile(testMapPath, std::ios::binary);
+            bfs::ifstream mapFile(testMapPath, std::ios::binary);
             BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
             std::vector<Nation> nations;
             for(unsigned i = 0; i < numPlayers_; i++)
@@ -97,7 +98,7 @@ namespace{
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 {
     glArchivItem_Map map;
-    std::ifstream mapFile(testMapPath, std::ios::binary);
+    bfs::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
     BOOST_CHECK_EQUAL(header.getWidth(), 176);
