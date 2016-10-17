@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #include "RTTR_AssertError.h"
 #include <iostream>
 #include <sstream>
-#ifdef __WIN32__
+#ifdef _WIN32
 #   include <windows.h>
 #endif
 
@@ -41,8 +41,8 @@ void RTTR_AssertFailure(const char* condition, const char* file, const int line,
     sMsg << " at " << filePath << "#" << line << ": " << condition;
     std::string msg = sMsg.str();
     std::cerr << msg << std::endl;
-#ifdef __WIN32__
-    OutputDebugString(msg.c_str());
+#ifdef _WIN32
+    OutputDebugStringA(msg.c_str());
 #endif
     throw RTTR_AssertError(msg);
 }
