@@ -165,8 +165,8 @@ bool DebugInfo::SendStackTrace()
     CONTEXT context;
     LPCONTEXT ctx = NULL;
 
-    HMODULE kernel32 = LoadLibrary("kernel32.dll");
-    HMODULE dbghelp = LoadLibrary("dbghelp.dll");
+    HMODULE kernel32 = LoadLibraryA("kernel32.dll");
+    HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
 
     if ((!kernel32) || (!dbghelp))
     {
