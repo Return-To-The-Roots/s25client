@@ -427,9 +427,11 @@ install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
 )
 
 # Documentation. TODO: Avoid recursive entries?
-install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
-		FILES_MATCHING PATTERN "*.txt"
-)
+IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
+			FILES_MATCHING PATTERN "*.txt"
+	)
+ENDIF()
 
 # Placeholder for S2 installation
 install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
