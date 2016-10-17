@@ -107,7 +107,7 @@ CHANGED=1
 if [ "$FORCE" = "1" ] ; then
 	echo "FORCE is set - forcing update"
 elif [ -d $ARCHDIR/unpacked/s25rttr_$VERSION ] ; then
-	diff -qrN $ARCHDIR/unpacked/s25rttr_$VERSION $DESTDIR
+	diff -qrN $ARCHDIR/unpacked/s25rttr_$VERSION $unpackedPath
 	CHANGED=$?
 fi
 
