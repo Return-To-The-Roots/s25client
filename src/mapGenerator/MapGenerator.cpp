@@ -38,7 +38,7 @@ MapGenerator::~MapGenerator()
 void MapGenerator::Create(const std::string& filePath)
 {
     MapWriter* writer = new MapWriter();
-    mgMap* map = CreateEmptyMap(128, 128, 0, TRIANGLE_TEXTURE_MEADOW1); // TODO create random map
+    mgMap* map = CreateEmptyMap(TRIANGLE_TEXTURE_MEADOW1); // TODO create random map
     
     if (!writer->Write(filePath, map))
     {
@@ -93,8 +93,8 @@ mgMap* MapGenerator::CreateEmptyMap(int texture)
         if (i < myMap->player)
         {
             // compute headquater position
-            uint16_t x = uint16_t( (width / (2 * myMap->player)) * (i+1));
-            uint16_t y = uint16_t( (height / (2 * myMap->player)) * (i+1));
+            uint16_t x = uint16_t( (_width / (2 * myMap->player)) * (i+1));
+            uint16_t y = uint16_t( (_height / (2 * myMap->player)) * (i+1));
 
             // x-position of headerquater for player i
             myMap->HQx[i] = x;
