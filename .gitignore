@@ -21,6 +21,7 @@
 /build/s25client.VC.opendb
 /build/CMakeCache.txt
 /build/CMakeFiles
+/build/CMakeScripts
 /build/Win32/Debug
 /build/Win32/Release
 /build/build_paths.h
@@ -30,6 +31,7 @@
 /build/driver
 /build/ipch
 /build/install_manifest.txt
+/build/lib
 /build/libendian
 /build/liblobby
 /build/libsiedler2
@@ -39,6 +41,8 @@
 /build/RTTR
 /build/s-c
 /build/s25client.sln
+/build/s25client.build
+/build/s25client.xcodeproj
 /build/s25update
 /build/src
 /build/version
@@ -72,3 +76,5 @@
 /Testing
 build_version_defines.h
 /build/put your S2-Installation in here
+/S2
+
