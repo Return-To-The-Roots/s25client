@@ -35,6 +35,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "desktops/dskLAN.h"
+#include "mapGenerator/MapGenerator.h"
 
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwSave.h"
@@ -91,6 +92,8 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     AddTextButton(4, 590, 530, 200, 22, TC_GREEN2, _("Load game..."), NormalFont);
     // "Weiter"
     AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
+    // random map generation
+    AddTextButton(6, 380, 530, 200, 22, TC_GREEN2, _("Random"), NormalFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
     // "Alte"
@@ -219,6 +222,10 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             StartServer();
         } break;
+        case 6: // random map
+        {
+            StartRandomMap();
+        } break;
     }
 }
 
@@ -226,6 +233,40 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 {
     // Doppelklick auf bestimmte Map -> weiter
     StartServer();
+}
+
+void dskSelectMap::StartRandomMap()
+{
+    // create a new "please wait" window to indicate loading process
+    iwPleaseWait* waitWindow = new iwPleaseWait;
+    
+    // display "please wait" window while the map is being generated
+    WINDOWMANAGER.Show(waitWindow);
+    
+    // create new map generator
+    MapGenerator* mapGenerator = new MapGenerator(3, 128, 128, 0x00);
+
+    // setup filepath for the random map
+    map_path = GetFilePath(FILE_PATHS[105]);
+    map_path.append("Random.SWD");
+
+    // create a random map and save filepath
+    mapGenerator->Create(map_path);
+    
+    // cleanup world generator
+    delete mapGenerator;
+    
+    // close & cleanup "please wait" window
+    WINDOWMANAGER.Close(waitWindow);
+    
+    if(!GAMESERVER.TryToStart(csi, map_path, MAPTYPE_OLDMAP))
+    {
+        GoBack();
+    }
+    else
+    {
+        WINDOWMANAGER.Show(new iwPleaseWait);
+    }
 }
 
 /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle

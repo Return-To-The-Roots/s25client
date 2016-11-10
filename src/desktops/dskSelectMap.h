@@ -57,6 +57,7 @@ class dskSelectMap :
         /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
         void StartServer();
         void GoBack();
+        void StartRandomMap();
 
     private:
         CreateServerInfo csi;
