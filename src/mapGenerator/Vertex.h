@@ -15,29 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapGenerator_h__
-#define MapGenerator_h__
+#ifndef Point_h__
+#define Point_h__
 
 #pragma once
 
-#include <string>
-#include "mapGenerator/RandomMapType.h"
-#include "mapGenerator/MapSettings.h"
+#include <stdio.h>
 
-/**
- * The MapGenerator is a utility to generate a large variaty of different worlds.
- */
-class MapGenerator
+struct Vertex
 {
-    public:
-
-    /**
-     * Create and saves a new map.
-     * @param filePath path for the ouput file
-     * @param mapType type of map to generate
-     * @param settings used to generate the random map
-     */
-    void Create(const std::string& filePath, RandomMapType mapType, const MapSettings& settings);
+    int z;              // height value of the point
+    uint8_t rsuTexture; // texture data
+    uint8_t usdTexture;
+    uint8_t road;
+    uint8_t objectType;
+    uint8_t objectInfo;
+    uint8_t animal;
+    uint8_t unknown1;
+    uint8_t build;
+    uint8_t unknown2;
+    uint8_t unknown3;
+    uint8_t resource;
+    uint8_t shading;
+    uint8_t unknown5;
 };
 
-#endif // MapGenerator_h__
+#endif // Point_h__

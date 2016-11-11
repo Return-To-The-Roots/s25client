@@ -19,17 +19,7 @@
 
 #include "mapGenerator/MapWriter.h"
 
-MapWriter::MapWriter()
-{
-    
-}
-
-MapWriter::~MapWriter()
-{
-    
-}
-
-bool MapWriter::Write(const std::string& filePath, mgMap* map)
+bool MapWriter::Write(const std::string& filePath, Map* map)
 {
     if (map == NULL)
     {
@@ -45,7 +35,7 @@ bool MapWriter::Write(const std::string& filePath, mgMap* map)
     
     char zero = 0; //to fill bytes
     char temp = 0; //to fill bytes
-    mgMap *myMap = map;
+    Map *myMap = map;
     char map_version[11] = "WORLD_V1.0";
     char map_data_header[16];
 
@@ -71,16 +61,16 @@ bool MapWriter::Write(const std::string& filePath, mgMap* map)
     fwrite(myMap->name, 1, 20, file);
     
     // old width
-    fwrite(&myMap->width_old, 2, 1, file);
+    fwrite(&myMap->width, 2, 1, file);
     
     // old height
-    fwrite(&myMap->height_old, 2, 1, file);
+    fwrite(&myMap->height, 2, 1, file);
     
     // type
     fwrite(&myMap->type, 1, 1, file);
     
     // players
-    fwrite(&myMap->player, 1, 1, file);
+    fwrite(&myMap->players, 1, 1, file);
     
     // author
     fwrite(myMap->author, 1, 20, file);

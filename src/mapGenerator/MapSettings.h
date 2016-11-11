@@ -15,29 +15,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapGenerator_h__
-#define MapGenerator_h__
-
-#pragma once
-
-#include <string>
-#include "mapGenerator/RandomMapType.h"
-#include "mapGenerator/MapSettings.h"
+#ifndef MapSettings_h__
+#define MapSettings_h__
 
 /**
- * The MapGenerator is a utility to generate a large variaty of different worlds.
+ * Settings used for map generation.
  */
-class MapGenerator
+struct MapSettings
 {
-    public:
+    /**
+     * Number of players.
+     */
+    int players;
+    
+    /**
+     * Minimum distance between each player.
+     */
+    int distance;
+    
+    /**
+     * Map width in vertices.
+     */
+    int width;
 
     /**
-     * Create and saves a new map.
-     * @param filePath path for the ouput file
-     * @param mapType type of map to generate
-     * @param settings used to generate the random map
+     * Map height in vertices.
      */
-    void Create(const std::string& filePath, RandomMapType mapType, const MapSettings& settings);
+    int height;
+    
+    /**
+     * Landscape type used for map generation.
+     */
+    int type;
 };
 
-#endif // MapGenerator_h__
+#endif // MapSettings_h__

@@ -15,54 +15,68 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Datatypes_h__
-#define Datatypes_h__
+#ifndef Map_h__
+#define Map_h__
 
 #pragma once
 
-#include <stdio.h>
+#include "mapGenerator/MapHeader.h"
+#include "mapGenerator/Vertex.h"
 
-struct mgMapHeader
+/**
+ * Data type for reading, writing and generating maps.
+ */
+struct Map
 {
-    uint8_t type;     //land or water (snow, swamp and lava are not counted)
-    uint16_t x;
-    uint16_t y;
-    uint32_t area;    //number of vertices this area has
-};
-
-struct mgPoint
-{
-    int z;              // height value of the point
-    uint8_t rsuTexture; // texture data
-    uint8_t usdTexture;
-    uint8_t road;
-    uint8_t objectType;
-    uint8_t objectInfo;
-    uint8_t animal;
-    uint8_t unknown1;
-    uint8_t build;
-    uint8_t unknown2;
-    uint8_t unknown3;
-    uint8_t resource;
-    uint8_t shading;
-    uint8_t unknown5;
-};
-
-
-struct mgMap
-{
+    /**
+     * Name of the map.
+     */
     char name[20];
+
+    /**
+     * Height of the map in vertices.
+     */
     uint16_t height;
-    uint16_t height_old;
+
+    /**
+     * Width of the map in vertices.
+     */
     uint16_t width;
-    uint16_t width_old;
+
+    /**
+     * Landscape type of the map.
+     */
     uint8_t type;
-    uint8_t player;
+    
+    /**
+     * Number of players.
+     */
+    uint8_t players;
+    
+    /**
+     * X-positions for all headquaters. 0xFF if the player is not available.
+     */
     uint16_t HQx[7];
+
+    /**
+     * Y-positions for all headquaters. 0xFF if the player is not available.
+     */
     uint16_t HQy[7];
+    
+    /**
+     * Name of the map author.
+     */
     char author[20];
-    mgMapHeader header[250];
-    struct mgPoint* vertex;
+    
+    /**
+     * Header data for the map.
+     */
+    MapHeader header[250];
+    
+    /**
+     * The actual map data per vertex.
+     */
+    struct Vertex* vertex;
 };
 
-#endif // Datatypes_h__
+#endif // Map_h__

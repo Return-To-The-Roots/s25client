@@ -15,29 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapGenerator_h__
-#define MapGenerator_h__
+#ifndef GreenlandGenerator_h__
+#define GreenlandGenerator_h__
 
 #pragma once
 
-#include <string>
-#include "mapGenerator/RandomMapType.h"
-#include "mapGenerator/MapSettings.h"
+#include "mapGenerator/Generator.h"
 
 /**
- * The MapGenerator is a utility to generate a large variaty of different worlds.
+ * Random map generator for Greenland.
  */
-class MapGenerator
+class GreenlandGenerator : public Generator
 {
-    public:
-
+    protected:
+    
     /**
-     * Create and saves a new map.
-     * @param filePath path for the ouput file
-     * @param mapType type of map to generate
-     * @param settings used to generate the random map
+     * Generates a new random map with the specified settings.
+     * @param settings settings used to generate the random map
      */
-    void Create(const std::string& filePath, RandomMapType mapType, const MapSettings& settings);
-};
+    Map* GenerateMap(const MapSettings& settings);
+ };
 
-#endif // MapGenerator_h__
+#endif // GreenlandGenerator_h__
