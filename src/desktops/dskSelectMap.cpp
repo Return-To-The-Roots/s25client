@@ -35,7 +35,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "desktops/dskLAN.h"
-#include "mapGenerator/MapGenerator.h"
+#include "mapGenerator/Includes.h"
 
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwSave.h"
@@ -48,6 +48,7 @@
 #include "libutil/src/ucString.h"
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+#include <memory>
 
 /** @class dskSelectMap
  *
@@ -242,19 +243,24 @@ void dskSelectMap::StartRandomMap()
     
     // display "please wait" window while the map is being generated
     WINDOWMANAGER.Show(waitWindow);
-    
-    // create new map generator
-    MapGenerator* mapGenerator = new MapGenerator(3, 128, 128, 0x00);
 
+    // setup map generation parameters
+    MapSettings settings;
+    settings.players = 5;
+    settings.height = 128;
+    settings.width = 128;
+    settings.type = 0x00;
+    settings.distance = 30;
+
+    // create new map generator
+    std::unique_ptr<MapGenerator> generator(new MapGenerator);
+    
     // setup filepath for the random map
     map_path = GetFilePath(FILE_PATHS[105]);
     map_path.append("Random.SWD");
 
     // create a random map and save filepath
-    mapGenerator->Create(map_path);
-    
-    // cleanup world generator
-    delete mapGenerator;
+    generator->Create(map_path, RandomMapType::Greenland, settings);
     
     // close & cleanup "please wait" window
     WINDOWMANAGER.Close(waitWindow);

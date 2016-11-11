@@ -15,29 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapGenerator_h__
-#define MapGenerator_h__
-
-#pragma once
-
-#include <string>
-#include "mapGenerator/RandomMapType.h"
-#include "mapGenerator/MapSettings.h"
+#ifndef RandomMapType_h__
+#define RandomMapType_h__
 
 /**
- * The MapGenerator is a utility to generate a large variaty of different worlds.
+ * Random map types for map generation. A map type describes the basic high-level look of a map.
  */
-class MapGenerator
+enum RandomMapType
 {
-    public:
-
     /**
-     * Create and saves a new map.
-     * @param filePath path for the ouput file
-     * @param mapType type of map to generate
-     * @param settings used to generate the random map
+     * Greenland consists moslty of green area, small lakes, trees, stones and rather small mountains.
      */
-    void Create(const std::string& filePath, RandomMapType mapType, const MapSettings& settings);
+    Greenland,
+    
+    /**
+     * Riverland is similar to Greenland with additional rivers crossing the map.
+     */
+    Riverland,
+    
+    /**
+     * Each player starts on its own island. There're also uninhabited islands around the map.
+     */
+    Islands,
+    
+    /**
+     * All players start on the same island.
+     */
+    Contient
 };
 
-#endif // MapGenerator_h__
+#endif // RandomMapType_h__

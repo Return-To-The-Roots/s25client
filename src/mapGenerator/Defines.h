@@ -20,6 +20,19 @@
 
 #pragma once
 
+// http://settlers2.net/documentation/world-map-file-format-wldswd/
+
+// map types
+#define TYPE_GREENLAND                          0x00
+#define TYPE_WASTELAND                          0x01
+#define TYPE_WINTER                             0x02
+
+// object indices
+#define OBJECT_INFO_STONE1                      0x02
+#define OBJECT_INFO_STONE2                      0x03
+#define OBJECT_INFO_STONE3                      0x04
+
+// texture types
 #define TRIANGLE_TEXTURE_STEPPE_MEADOW1         0x00
 #define TRIANGLE_TEXTURE_STEPPE_MEADOW1_HARBOUR 0x40
 #define TRIANGLE_TEXTURE_MINING1                0x01

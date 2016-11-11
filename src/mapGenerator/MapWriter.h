@@ -21,25 +21,20 @@
 #pragma once
 
 #include <string>
-#include "mapGenerator/Datatypes.h"
+#include "mapGenerator/Map.h"
 
 // The MapWriter is used to write mgMap instances to a file.
 class MapWriter
 {
-    
-public:
+    public:
 
-    // Creates a new instance of MapWriter.
-    MapWriter();
-    
-    // Releases this MapWriter.
-    virtual ~MapWriter();
-    
-    // Writes the specified map to a file.
-    // @param filePath output file to save the map to
-    // @param map map instance to save to a file
-    // @return true if map is written to the file path successfully, false otherwise
-    bool Write(const std::string& filePath, mgMap* map);
+    /**
+     * Writes the specified map to a file.
+     * @param filePath output file to save the map to
+     * @param map map instance to save to a file
+     * @return true if map is written to the file path successfully, false otherwise
+     */
+    bool Write(const std::string& filePath, Map* map);
 };
 
 #endif // MapWriter_h__
