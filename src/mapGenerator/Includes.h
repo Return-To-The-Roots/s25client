@@ -18,7 +18,7 @@
 #ifndef Includes_h__
 #define Includes_h__
 
-#include "mapGenerator/RandomMapType.h"
+#include "mapGenerator/Style.h"
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/MapSettings.h"
 
