@@ -53,6 +53,7 @@ class Generator
      */
     virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
+    void SetWater(Map* map, const Vec2& center, const float radius);
     void SetTrees(Map* map, const Vec2& center, const float radius);
     void SetStone(Map* map, const Vec2& center, const float radius);
     

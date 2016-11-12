@@ -20,9 +20,31 @@
 #include <cmath>
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/MapWriter.h"
+#include "mapGenerator/Defines.h"
 
 #ifndef PI
 #define PI 3.14159265
+#endif
+
+// define function to iterator over a rectangle around a center point and compute the
+// distance of each point to the center
+// @param r integer radius (maximum distance to the center in one direction)
+// @param cx x coordinate of the center point
+// @param cy y coordinate of the center point
+// @param w width of the entire map (to escape map overflow)
+// @param h height of the entire map (to escape map overflow)
+#ifndef ITER_RECT_BEGIN
+#define ITER_RECT_BEGIN(r, cx, cy, w, h) \
+    for (int x = cx - r; x < cx + r; x++) { \
+        for (int y = cy - r; y <cy + r; y++) { \
+            if (x < 0) x = w - x; \
+            if (y < 0) y = h - y; \
+            int diff_x = cx - x; \
+            int diff_y = cy - y; \
+            float dist = (float)std::sqrt(diff_x * diff_x + diff_y * diff_y);
+#define ITER_RECT_END \
+        } \
+    }
 #endif
 
 void Generator::Create(const std::string& filePath, const MapSettings& settings)
@@ -48,83 +70,65 @@ void Generator::Create(const std::string& filePath, const MapSettings& settings)
     delete writer;
 }
 
+void Generator::SetWater(Map* map, const Vec2& center, const float radius)
+{
+    ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
+    
+    // check if the current point is inside of the radius
+    if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
+    {
+        map->vertex[y * map->width + x].rsuTexture = TRIANGLE_TEXTURE_WATER;
+        map->vertex[y * map->width + x].usdTexture = TRIANGLE_TEXTURE_WATER;
+    }
+    
+    ITER_RECT_END
+}
+
 void Generator::SetTrees(Map* map, const Vec2& center, const float radius)
 {
-    // cast radius to integer for performance in loop
-    int iRadius = (int)radius + 1;
+    ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
     
-    for (int x = center.x - iRadius; x < center.x + iRadius; x++)
+    // check if the current point is inside of the radius
+    if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
     {
-        for (int y = center.y - iRadius; y < center.y + iRadius; y++)
+        float f = (1.0F - dist / radius);
+        int p = std::max(1, (int)(100 * f * f));
+        if (rand() % p > 10)
         {
-            // check for edge of the map reached
-            if (x < 0) x = map->width - x;
-            if (y < 0) y = map->height - y;
-            
-            // compute difference to center point
-            int diff_x = center.x - x;
-            int diff_y = center.y - y;
-            
-            // compute distance to center point
-            float dist = (float)std::sqrt(diff_x * diff_x + diff_y * diff_y);
-            
-            // check if the current point is inside of the radius
-            if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
+            int treeType;
+            int rnd = rand()%3;
+            switch (rnd)
             {
-                float f = (1.0F - dist / radius);
-                int p = std::max(1, (int)(100 * f * f));
-                if (rand() % p > 10)
-                {
-                    int treeType;
-                    int rnd = rand()%3;
-                    switch (rnd)
-                    {
-                        case 0: treeType = 0x30; break;
-                        case 1: treeType = 0x70; break;
-                        case 2: treeType = 0xB0; break;
-                    }
-                    
-                    // set object type & info to a random tree object
-                    map->vertex[y * map->width + x].objectType = treeType + rand() % 8;
-                    map->vertex[y * map->width + x].objectInfo = 0xC4;
-                }
+                case 0: treeType = 0x30; break;
+                case 1: treeType = 0x70; break;
+                case 2: treeType = 0xB0; break;
             }
+            
+            // set object type & info to a random tree object
+            map->vertex[y * map->width + x].objectType = treeType + rand() % 8;
+            map->vertex[y * map->width + x].objectInfo = 0xC4;
         }
     }
+    
+    ITER_RECT_END
 }
 
 void Generator::SetStone(Map* map, const Vec2& center, const float radius)
 {
-    // cast radius to integer for performance in loop
-    int iRadius = (int)radius + 1;
+    ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
     
-    for (int x = center.x - iRadius; x < center.x + iRadius; x++)
+    // check if the current point is inside of the radius
+    if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
     {
-        for (int y = center.y - iRadius; y < center.y + iRadius; y++)
-        {
-            // check for edge of the map reached
-            if (x < 0) x = map->width - x;
-            if (y < 0) y = map->height - y;
-  
-            // compute difference to center point
-            int diff_x = center.x - x;
-            int diff_y = center.y - y;
-            
-            // compute distance to center point
-            float dist = (float)std::sqrt(diff_x * diff_x + diff_y * diff_y);
-            
-            // check if the current point is inside of the radius
-            if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
-            {
-                float scale = 1.0F - dist / radius;
-                int f = std::min(5, std::max((int)(scale * 4.49) + 1, 0));
-                
-                // set object type & info to a random stone object
-                map->vertex[y * map->width + x].objectType = 0x01 + f;
-                map->vertex[y * map->width + x].objectInfo = 0xCC + rand() % 2;
-            }
-        }
+        float scale = 1.0F - dist / radius;
+        int f = std::min(5, std::max((int)(scale * 4.49) + 1, 0));
+        
+        // set object type & info to a random stone object
+        map->vertex[y * map->width + x].objectType = 0x01 + f;
+        map->vertex[y * map->width + x].objectInfo = 0xCC + rand() % 2;
     }
+
+    ITER_RECT_END
 }
 
 Vec2 Generator::PointOnCircle(const int index, const int points, const Vec2& center, const float radius)
