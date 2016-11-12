@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RandomMapType_h__
-#define RandomMapType_h__
+#ifndef Style_h__
+#define Style_h__
 
 /**
  * Random map types for map generation. A map type describes the basic high-level look of a map.
  */
-enum RandomMapType
+enum Style
 {
     /**
      * Greenland consists moslty of green area, small lakes, trees, stones and rather small mountains.
@@ -44,4 +44,4 @@ enum RandomMapType
     Contient
 };
 
-#endif // RandomMapType_h__
+#endif // Style_h__

@@ -260,7 +260,7 @@ void dskSelectMap::StartRandomMap()
     map_path.append("Random.SWD");
 
     // create a random map and save filepath
-    generator->Create(map_path, RandomMapType::Greenland, settings);
+    generator->Create(map_path, Style::Greenland, settings);
     
     // close & cleanup "please wait" window
     WINDOWMANAGER.Close(waitWindow);
