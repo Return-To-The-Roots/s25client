@@ -21,7 +21,7 @@
 #pragma once
 
 #include <string>
-#include "mapGenerator/RandomMapType.h"
+#include "mapGenerator/Style.h"
 #include "mapGenerator/MapSettings.h"
 
 /**
@@ -34,10 +34,10 @@ class MapGenerator
     /**
      * Create and saves a new map.
      * @param filePath path for the ouput file
-     * @param mapType type of map to generate
+     * @param style map style
      * @param settings used to generate the random map
      */
-    void Create(const std::string& filePath, RandomMapType mapType, const MapSettings& settings);
+    void Create(const std::string& filePath, Style style, const MapSettings& settings);
 };
 
 #endif // MapGenerator_h__

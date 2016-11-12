@@ -21,11 +21,11 @@
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/GreenlandGenerator.h"
 
-void MapGenerator::Create(const std::string& filePath, RandomMapType mapType, const MapSettings& settings)
+void MapGenerator::Create(const std::string& filePath, Style style, const MapSettings& settings)
 {
     std::unique_ptr<Generator> generator;
     
-    switch (mapType)
+    switch (style)
     {
         case Greenland:
             generator = std::unique_ptr<Generator>(new GreenlandGenerator());
@@ -46,7 +46,7 @@ void MapGenerator::Create(const std::string& filePath, RandomMapType mapType, co
     
     if (generator.get() == NULL)
     {
-        throw new std::invalid_argument("RandomMapType not supported");
+        throw new std::invalid_argument("Style not supported");
     }
     
     generator->Create(filePath, settings);
