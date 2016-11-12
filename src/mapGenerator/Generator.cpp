@@ -131,7 +131,10 @@ void Generator::SetStone(Map* map, const Vec2& center, const float radius)
     ITER_RECT_END
 }
 
-Vec2 Generator::PointOnCircle(const int index, const int points, const Vec2& center, const float radius)
+Vec2 Generator::ComputePointOnCircle(const int index,
+                                     const int points,
+                                     const Vec2& center,
+                                     const float radius)
 {
     Vec2 point;
     

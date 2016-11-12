@@ -53,8 +53,30 @@ class Generator
      */
     virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
+    /**
+     * Sets water on the map around the specified center within the specified radius.
+     * @param map map to modify the terrain for
+     * @param center center point for water placement
+     * @param radius radius around the center to place water in
+     */
     void SetWater(Map* map, const Vec2& center, const float radius);
+    
+    /**
+     * Sets trees on the map around the specified center within the specified radius.
+     * The further away the trees are from the center the lower the likelyhood for placement.
+     * @param map map to modify the terrain for
+     * @param center center point for tree placement
+     * @param radius radius around the center to place trees in
+     */
     void SetTrees(Map* map, const Vec2& center, const float radius);
+    
+    /**
+     * Sets stone on the map around the specified center within the specified radius.
+     * The further away the stone is from the center the smaller it is.
+     * @param map map to modify the terrain for
+     * @param center center point for stone placement
+     * @param radius radius around the center to place stone in
+     */
     void SetStone(Map* map, const Vec2& center, const float radius);
     
     /**
@@ -66,8 +88,7 @@ class Generator
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    Vec2 PointOnCircle(const int index, const int points, const Vec2& center, const float radius);
-    
+    Vec2 ComputePointOnCircle(const int index, const int points, const Vec2& center, const float radius);
 };
 
 #endif // Generator_h__

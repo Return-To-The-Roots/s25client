@@ -77,7 +77,7 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
         if (i < players)
         {
             // compute headquater position
-            Vec2 position = PointOnCircle(i, players, center, distance + rand() % offset);
+            Vec2 position = ComputePointOnCircle(i, players, center, distance + rand() % offset);
             
             // apply position of the headquater
             myMap->HQx[i] = position.x;
@@ -136,7 +136,9 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
             
             for (std::vector<std::pair<int, int> >::iterator it = res.begin(); it != res.end(); ++it)
             {
-                pos = PointOnCircle(rand() % (360 / res.size()) + circle_offset, 360, playerPos, it->second);
+                pos = ComputePointOnCircle(
+                                           rand() % (360 / res.size()) + circle_offset,
+                                           360, playerPos, it->second);
 
                 switch (it->first)
                 {
