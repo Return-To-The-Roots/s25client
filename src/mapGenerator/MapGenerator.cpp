@@ -28,7 +28,7 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
     switch (style)
     {
         case Greenland:
-            generator = std::unique_ptr<Generator>(new GreenlandGenerator());
+            generator = std::unique_ptr<Generator>(new GreenlandGenerator);
             break;
         case Riverland:
             generator = std::unique_ptr<Generator>(NULL);

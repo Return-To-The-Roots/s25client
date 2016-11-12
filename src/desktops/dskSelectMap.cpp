@@ -247,9 +247,9 @@ void dskSelectMap::StartRandomMap()
     // setup map generation parameters
     MapSettings settings;
     settings.players = 5;
-    settings.height = 128;
-    settings.width = 128;
-    settings.type = 0x00;
+    settings.height = 256;
+    settings.width = 256;
+    settings.type = 0x01;
     settings.distance = 30;
 
     // create new map generator
