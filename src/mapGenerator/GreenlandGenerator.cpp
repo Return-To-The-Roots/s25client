@@ -15,7 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include <vector>
 #include <random>
+#include <utility>
 #include "mapGenerator/Defines.h"
 #include "mapGenerator/GreenlandGenerator.h"
 
@@ -104,30 +106,63 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
     // forest in the center
     SetTrees(myMap, center, centerRadius + rand() % std::max(1, distance / 2));
     
-    int stoneRadius = std::min(12, std::min(width, height));
-    int treeRadius1 = std::min(10, std::min(width, height));
-    int treeRadius2 = std::min(16, std::min(width, height));
-    
-    // player headquarters for the players
+    // resources for each player
     for (int i = 0; i < 7; i++)
     {
         if (i < players)
         {
+            // store current player position
             Vec2 playerPos;
             playerPos.x = myMap->HQx[i];
             playerPos.y = myMap->HQy[i];
-         
-            // generate stone
-            Vec2 pos = PointOnCircle(rand() % 90, 360, playerPos, stoneRadius);
-            SetStone(myMap, pos, 2.0F);
-            pos = PointOnCircle(rand() % 90 + 180, 360, playerPos, stoneRadius);
-            SetStone(myMap, pos, 2.7F);
+
+            // intialize list of different resources identified by indices
+            std::vector<std::pair<int, int> > res; // resource index + distance to player
+            res.push_back(std::pair<int, int>(0, 12)); // stone
+            res.push_back(std::pair<int, int>(1, 12)); // stone
+            res.push_back(std::pair<int, int>(2, 10)); // trees
+            res.push_back(std::pair<int, int>(3, 16)); // trees
+            res.push_back(std::pair<int, int>(4, 16)); // water
+            res.push_back(std::pair<int, int>(5, 22)); // trees
+            res.push_back(std::pair<int, int>(5, 25)); // trees
             
-            // generate trees
-            pos = PointOnCircle(rand() % 90 + 90, 360, playerPos, treeRadius1);
-            SetTrees(myMap, pos, 5.5F);
-            pos = PointOnCircle(rand() % 90 + 270, 360, playerPos, treeRadius2);
-            SetTrees(myMap, pos, 8.7F);
+            // put resource placement into random order to generate more interesting maps
+            std::random_shuffle(res.begin(), res.end());
+            
+            // stores the current offset of the current resource position on an imaginary cycle
+            // to avoid overlapping resources during placement
+            int circle_offset = 0;
+            Vec2 pos;
+            
+            for (std::vector<std::pair<int, int> >::iterator it = res.begin(); it != res.end(); ++it)
+            {
+                pos = PointOnCircle(rand() % (360 / res.size()) + circle_offset, 360, playerPos, it->second);
+
+                switch (it->first)
+                {
+                    case 0:
+                        SetStone(myMap, pos, 2.0F);
+                        break;
+                    case 1:
+                        SetStone(myMap, pos, 2.7F);
+                        break;
+                    case 2:
+                        SetTrees(myMap, pos, 5.5F);
+                        break;
+                    case 3:
+                        SetTrees(myMap, pos, 8.7F);
+                        break;
+                    case 4:
+                        SetWater(myMap, pos, 4.0F + (float)(rand() % 5));
+                        break;
+                    case 5:
+                        SetTrees(myMap, pos, 3.3F);
+                        break;
+                }
+                
+                // iteration about a circle in degree
+                circle_offset = (circle_offset + 360 / res.size()) % 360;
+            }
         }
     }
     
