@@ -23,14 +23,15 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
-#define MIN_DISTANCE_WATER      20.0
+#define MIN_DISTANCE_WATER      15.0
 #define MIN_DISTANCE_RES        10.0
 #define MIN_DISTANCE_MOUNTAIN   20.0
 #define MIN_DISTANCE_TREES      6.0
 #define LEVEL_WATER             1
-#define LEVEL_MOUNTAIN          8
-#define LEVEL_MAXIMUM           12
-#define HILL_LIKELYHOOD_MAX     2 // percentage
+#define LEVEL_MOUNTAIN          9
+#define LEVEL_SNOW              12
+#define LEVEL_MAXIMUM           13
+#define HILL_LIKELYHOOD_MAX     3 // percentage
 #define HILL_LIKELYHOOD_MED     4 // percentage
 #define HILL_LIKELYHOOD_MIN     15 // percentage
 
@@ -241,6 +242,10 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                     map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_FLOWER);
                     map->vertex[index].animal = (rand() % 15 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
                 }
+            }
+            else if (map->vertex[index].z >= LEVEL_SNOW)
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_SNOW);
             }
             else if (map->vertex[index].z >= LEVEL_MOUNTAIN)
             {
