@@ -23,6 +23,18 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
+#define MIN_DISTANCE_WATER      20.0
+#define MIN_DISTANCE_RES        10.0
+#define MIN_DISTANCE_MOUNTAIN   20.0
+#define MIN_DISTANCE_TREES      6.0
+#define LEVEL_WATER             1
+#define LEVEL_MOUNTAIN          8
+#define LEVEL_MAXIMUM           12
+#define HILL_LIKELYHOOD_MAX     2 // percentage
+#define HILL_LIKELYHOOD_MED     4 // percentage
+#define HILL_LIKELYHOOD_MIN     15 // percentage
+
+
 void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
@@ -85,14 +97,11 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
     {
         // intialize list of different resources identified by indices
         std::vector<std::pair<int, int> > res; // resource index + distance to player
-        res.push_back(std::pair<int, int>(0, 12)); // stone
-        res.push_back(std::pair<int, int>(1, 12)); // stone
-        res.push_back(std::pair<int, int>(2, 10)); // trees
-        res.push_back(std::pair<int, int>(3, 16)); // trees
-        res.push_back(std::pair<int, int>(4, 26)); // water
-        res.push_back(std::pair<int, int>(5, 22)); // trees
-        res.push_back(std::pair<int, int>(5, 25)); // trees
-            
+        res.push_back(std::pair<int, int>(0, (int)MIN_DISTANCE_RES + rand() % 2)); // stone
+        res.push_back(std::pair<int, int>(1, (int)MIN_DISTANCE_RES + rand() % 2)); // stone
+        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % 2)); // trees
+        res.push_back(std::pair<int, int>(3, (int)MIN_DISTANCE_RES + rand() % 6)); // trees
+        
         // put resource placement into random order to generate more interesting maps
         std::random_shuffle(res.begin(), res.end());
             
@@ -119,12 +128,6 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
                     break;
                 case 3:
                     SetTrees(map, pos, 8.7F);
-                    break;
-                case 4:
-                    SetWater(map, pos, 4.0F + (float)(rand() % 5));
-                    break;
-                case 5:
-                    SetTrees(map, pos, 3.3F);
                     break;
             }
                 
@@ -155,27 +158,26 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
             }
             
             int max = 0, pr = 10;
-            if (distanceToPlayer > 20.0)
+            if (distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
             {
-                max = 9; pr = 5;
+                max = LEVEL_MAXIMUM;
+                pr = HILL_LIKELYHOOD_MAX;
             }
-            else if (distanceToPlayer > 15.0)
+            else if (distanceToPlayer > MIN_DISTANCE_RES)
             {
                 max = 4;
+                pr = HILL_LIKELYHOOD_MIN;
             }
-            else if (distanceToPlayer > 10.0)
+            else if (distanceToPlayer > MIN_DISTANCE_RES / 2)
             {
                 max = 2;
-            }
-            else if (distanceToPlayer > 3.0)
-            {
-                max = 1;
+                pr = HILL_LIKELYHOOD_MIN;
             }
             
             if (max > 0 && rand() % 100 < pr)
             {
                 int z = rand() % max + 1;
-                if (z == 6) z--; // avoid pre-mountains without mountains
+                if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
                 
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, (double)z);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
@@ -221,10 +223,11 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             /// texturing & animals
             ////////
             
-            if (map->vertex[index].z == 0)
+            if (map->vertex[index].z <= LEVEL_WATER)
             {
-                if (distanceToPlayer > 30.0)
+                if (distanceToPlayer > MIN_DISTANCE_WATER)
                 {
+                    map->vertex[index].z = 0;
                     SetWater(map, Vec2(x,y), 1.0F);
                 }
             }
@@ -239,7 +242,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                     map->vertex[index].animal = (rand() % 15 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
                 }
             }
-            else if (map->vertex[index].z > 6)
+            else if (map->vertex[index].z >= LEVEL_MOUNTAIN)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING1);
                 const int rnd = rand() % 100;
@@ -250,7 +253,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                 else                resource = 0x59; // 15% granite
                 map->vertex[index].resource = resource + rand() % 7;
             }
-            else if (map->vertex[index].z > 5)
+            else if (map->vertex[index].z >= LEVEL_MOUNTAIN - 1)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING_MEADOW);
             }
@@ -263,19 +266,15 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             /// random trees & stones
             ////////
             
-            if (distanceToPlayer > 24.0)
+            if (distanceToPlayer > MIN_DISTANCE_TREES * 2)
             {
                 int type = rand() % 20;
                 if (type == 5)  SetStone(map, Vec2(x,y));
                 if (type >= 15) SetTree(map, Vec2(x,y));
             }
-            else if (distanceToPlayer > 12.0)
+            else if (distanceToPlayer > MIN_DISTANCE_TREES)
             {
-                if (rand() % 10 == 1) SetTree(map, Vec2(x,y));
-            }
-            else if (distanceToPlayer > 6.0)
-            {
-                if (rand() % 20 == 1) SetTree(map, Vec2(x,y));
+                if (rand() % 5 == 1) SetTree(map, Vec2(x,y));
             }
         }
     }
