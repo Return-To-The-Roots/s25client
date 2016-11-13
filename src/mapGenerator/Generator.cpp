@@ -85,7 +85,7 @@ void Generator::SmoothTextures(Map* map)
             const int texBottom = map->vertex[VertexUtility::GetIndexOf(x, y + 1, width, height)].texture.second;
             const int tex = map->vertex[index].texture.first;
             
-            if (tex != texLeft && tex != texBottom && texLeft == texBottom)
+            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != TRIANGLE_TEXTURE_WATER)
             {
                 map->vertex[index].texture.first = texBottom;
             }
@@ -101,7 +101,7 @@ void Generator::SmoothTextures(Map* map)
             const int texTop = map->vertex[VertexUtility::GetIndexOf(x, y - 1, width, height)].texture.first;
             const int tex = map->vertex[index].texture.second;
 
-            if (tex != texTop && tex != texRight && texTop == texRight)
+            if (tex != texTop && tex != texRight && texTop == texRight && texTop != TRIANGLE_TEXTURE_WATER)
             {
                 map->vertex[index].texture.second = texTop;
             }

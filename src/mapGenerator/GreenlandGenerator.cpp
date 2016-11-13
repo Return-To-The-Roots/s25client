@@ -27,14 +27,17 @@
 #define MIN_DISTANCE_WATER      15.0
 #define MIN_DISTANCE_RES        10.0
 #define MIN_DISTANCE_MOUNTAIN   20.0
-#define MIN_DISTANCE_TREES      6.0
+#define MIN_DISTANCE_TREES      4.0
+#define TREE_LIKELYHOOD_MED     20
+#define TREE_LIKELYHOOD_MIN     8
+#define STONE_LIKELYHOOD        5
 #define LEVEL_WATER             1
-#define LEVEL_MOUNTAIN          9
-#define LEVEL_SNOW              12
-#define LEVEL_MAXIMUM           13
-#define HILL_LIKELYHOOD_MAX     3 // percentage
-#define HILL_LIKELYHOOD_MED     4 // percentage
-#define HILL_LIKELYHOOD_MIN     15 // percentage
+#define LEVEL_MOUNTAIN          11
+#define LEVEL_SNOW              13
+#define LEVEL_MAXIMUM           14
+#define HILL_LIKELYHOOD_MAX     1
+#define HILL_LIKELYHOOD_MED     2
+#define HILL_LIKELYHOOD_MIN     25
 
 
 void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
@@ -99,8 +102,11 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
         std::vector<std::pair<int, int> > res; // resource index + distance to player
         res.push_back(std::pair<int, int>(0, (int)MIN_DISTANCE_RES + rand() % 2)); // stone
         res.push_back(std::pair<int, int>(1, (int)MIN_DISTANCE_RES + rand() % 2)); // stone
-        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % 2)); // trees
-        res.push_back(std::pair<int, int>(3, (int)MIN_DISTANCE_RES + rand() % 6)); // trees
+        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
+        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
+        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
+        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
+        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
         
         // put resource placement into random order to generate more interesting maps
         std::random_shuffle(res.begin(), res.end());
@@ -124,10 +130,7 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
                     SetStones(map, pos, 2.7F);
                     break;
                 case 2:
-                    SetTrees(map, pos, 5.5F);
-                    break;
-                case 3:
-                    SetTrees(map, pos, 8.7F);
+                    SetTrees(map, pos, 1.0F + (float)(rand() % 2));
                     break;
             }
                 
@@ -277,13 +280,18 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             
             if (distanceToPlayer > MIN_DISTANCE_TREES * 2)
             {
-                int type = rand() % 20;
-                if (type == 5)  SetStone(map, Vec2(x,y));
-                if (type >= 15) SetTree(map, Vec2(x,y));
+                if (rand() % 100 <= TREE_LIKELYHOOD_MED)
+                {
+                    SetTree(map, Vec2(x,y));
+                }
+                else if (rand() % 100 <= STONE_LIKELYHOOD)
+                {
+                    SetStone(map, Vec2(x,y));
+                }
             }
             else if (distanceToPlayer > MIN_DISTANCE_TREES)
             {
-                if (rand() % 5 == 1) SetTree(map, Vec2(x,y));
+                if (rand() % 100 <= TREE_LIKELYHOOD_MIN) SetTree(map, Vec2(x,y));
             }
         }
     }
