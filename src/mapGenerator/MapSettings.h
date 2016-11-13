@@ -29,11 +29,6 @@ struct MapSettings
     int players;
     
     /**
-     * Minimum distance between each player.
-     */
-    int distance;
-    
-    /**
      * Map width in vertices.
      */
     int width;

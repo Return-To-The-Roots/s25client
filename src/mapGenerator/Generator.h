@@ -44,7 +44,11 @@ class Generator
      * @param settings settings used for the map generation
      */
     void Create(const std::string& filePath, const MapSettings& settings);
-        
+    
+    private:
+    
+    void SmoothTextures(Map* map);
+    
     protected:
     
     /**

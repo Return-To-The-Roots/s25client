@@ -23,6 +23,7 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
+#define MIN_DISTANCE_PLAYERS    25
 #define MIN_DISTANCE_WATER      15.0
 #define MIN_DISTANCE_RES        10.0
 #define MIN_DISTANCE_MOUNTAIN   20.0
@@ -71,8 +72,8 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     Vec2 center(width / 2, height / 2);
 
     // radius for player distribution
-    int max = (int) (0.9F * std::min(width / 2, height / 2));
-    int offset = std::max(max - settings.distance, 1);
+    const int rMin = MIN_DISTANCE_PLAYERS;
+    const int rMax = std::max(1, (int) (0.9F * std::min(width / 2, height / 2)));
     
     // initialize randomize timer
     srand(time(NULL));
@@ -81,10 +82,8 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     for (int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        Vec2 position = ComputePointOnCircle(i,
-                                            settings.players,
-                                            center,
-                                            settings.distance + rand() % offset);
+        Vec2 position = ComputePointOnCircle(i, settings.players, center,
+                                            rMin + rand() % (rMax - rMin));
 
         // create headquarter
         map->positions[i] = position;
@@ -186,7 +185,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                     Vec2 p1(x, y), p2(*it % width, *it / width);
                     const int h = z - (int)VertexUtility::Distance(p1, p2);
                     
-                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TRIANGLE_TEXTURE_MEADOW1) &&
+                    if (!ObjectGenerator::IsTexture(map->vertex[*it].texture, TRIANGLE_TEXTURE_WATER) &&
                         map->vertex[*it].z < h)
                     {
                         map->vertex[*it].z = h;
@@ -232,7 +231,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                     SetWater(map, Vec2(x,y), 1.0F);
                 }
             }
-            else if (map->vertex[index].z == 1)
+            else if (map->vertex[index].z == LEVEL_WATER + 1)
             {
                 if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW1) &&
                     !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW2) &&

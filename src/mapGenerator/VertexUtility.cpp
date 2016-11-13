@@ -30,7 +30,7 @@ int VertexUtility::GetIndexOf(const Vec2& pos, const int width, const int height
 
 int VertexUtility::GetIndexOf(const int x, const int y, const int width, const int height)
 {
-    return (y % height) * width + (x % width);
+    return (x & (width - 1)) + (y & (height - 1)) * width;
 }
 
 std::vector<int> VertexUtility::GetNeighbors(const Vec2& pos, int width, int height, float radius)
@@ -47,9 +47,9 @@ std::vector<int> VertexUtility::GetNeighbors(const int x,
     std::vector<int> neighbors;
     const int r = (int)radius;
     
-    for (int nx = x - r; nx < x + r; nx++)
+    for (int nx = x - r; nx <= x + r; nx++)
     {
-        for (int ny = y - r; ny < y + r; ny++)
+        for (int ny = y - r; ny <= y + r; ny++)
         {
             double dist = std::sqrt((nx - x) * (nx - x) + (ny - y) * (ny - y));
             

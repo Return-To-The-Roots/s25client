@@ -35,7 +35,7 @@ struct Vertex
     uint8_t resource;
     uint8_t shading;
     uint8_t unknown5;
-    std::pair<uint8_t, uint8_t> texture; // rsu / usd
+    std::pair<uint8_t, uint8_t> texture; // bottom left / top right
     std::pair<uint8_t, uint8_t> object; // type, info
 };
 

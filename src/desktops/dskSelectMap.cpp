@@ -246,11 +246,10 @@ void dskSelectMap::StartRandomMap()
 
     // setup map generation parameters
     MapSettings settings;
-    settings.players = 5;
+    settings.players = 4;
     settings.height = 256;
     settings.width = 256;
     settings.type = 0x00;
-    settings.distance = 30;
 
     // create new map generator
     std::unique_ptr<MapGenerator> generator(new MapGenerator);
