@@ -85,14 +85,29 @@ class VertexUtility
 
     /**
      * Checks whether or not two vertices are within the specified distance.
-     * @param pos1 position of the first vertex
-     * @param pos2 position of the second vertex
+     * @param x1 x-coordinate of the first vertex
+     * @param y1 y-coordinate of the first vertex
+     * @param x2 x-coordinate of the second vertex
+     * @param y2 y-coordinate of the second vertex
+     * @param width map width
+     * @param height map height
      * @param distance maximum distance of both vertices
      * @return true if both vertices are within the specified distance, false otherwise
      */
-    static bool IsInDistanceOf(const Vec2& pos1, const Vec2& pos2, const float distance);
+    static bool IsInDistanceOf(const int x1,
+                               const int y1,
+                               const int x2,
+                               const int y2,
+                               const int width,
+                               const int height,
+                               const float distance);
     
-    static double Distance(const Vec2& v1, const Vec2& v2);
+    static double Distance(const int x1,
+                           const int y1,
+                           const int x2,
+                           const int y2,
+                           const int width,
+                           const int height);
 };
 
 #endif // VertexUtility_h__

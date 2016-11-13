@@ -63,14 +63,33 @@ std::vector<int> VertexUtility::GetNeighbors(const int x,
     return neighbors;
 }
 
-bool VertexUtility::IsInDistanceOf(const Vec2& pos1, const Vec2& pos2, const float distance)
+bool VertexUtility::IsInDistanceOf(const int x1,
+                                   const int y1,
+                                   const int x2,
+                                   const int y2,
+                                   const int width,
+                                   const int height,
+                                   const float distance)
 {
-    return Distance(pos1, pos2) < distance;
+    return Distance(x1, y1, x2, y2, width, height) < distance;
 }
 
-double VertexUtility::Distance(const Vec2& v1, const Vec2& v2)
+double VertexUtility::Distance(const int x1,
+                               const int y1,
+                               const int x2,
+                               const int y2,
+                               const int width,
+                               const int height)
 {
-    return std::sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y));
+    int dx = (x1 - x2);
+    if (dx < 0) dx *= -1;
+    if (dx > width / 2) dx = width - dx;
+    
+    int dy = (y1 - y2);
+    if (dy < 0) dy *= -1;
+    if (dy > height / 2) dy = height - dy;
+
+    return std::sqrt(dx * dx + dy * dy);
 }
 
 

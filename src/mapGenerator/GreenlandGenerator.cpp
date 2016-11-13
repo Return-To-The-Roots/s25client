@@ -151,10 +151,13 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
             
             for (int i = 0; i < players; i++)
             {
-                Vec2 p(map->positions[i]);
-                Vec2 v(x, y);
-                
-                distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(v, p));
+                distanceToPlayer = std::min(distanceToPlayer,
+                                            VertexUtility::Distance(x,
+                                                                    y,
+                                                                    map->positions[i].x,
+                                                                    map->positions[i].y,
+                                                                    width,
+                                                                    height));
             }
             
             int max = 0, pr = 10;
@@ -182,8 +185,8 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, (double)z);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
-                    Vec2 p1(x, y), p2(*it % width, *it / width);
-                    const int h = z - (int)VertexUtility::Distance(p1, p2);
+                    int x2 = *it % width, y2 = *it / width;
+                    const int h = z - (int)VertexUtility::Distance(x, y, x2, y2, width, height);
                     
                     if (!ObjectGenerator::IsTexture(map->vertex[*it].texture, TRIANGLE_TEXTURE_WATER) &&
                         map->vertex[*it].z < h)
@@ -210,11 +213,13 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
 
             for (int i = 0; i < players; i++)
             {
-                Vec2 p(map->positions[i]);
-                Vec2 v(x, y);
-                
                 distanceToPlayer = std::min(distanceToPlayer,
-                                   std::sqrt((p.x - v.x) * (p.x - v.x) + (p.y - v.y) * (p.y - v.y)));
+                                            VertexUtility::Distance(x,
+                                                                    y,
+                                                                    map->positions[i].x,
+                                                                    map->positions[i].y,
+                                                                    width,
+                                                                    height));
             }
             
             const int index = y * width + x;

@@ -41,9 +41,7 @@
         for (int y = cy - r; y <cy + r; y++) { \
             if (x < 0) x = w - x; \
             if (y < 0) y = h - y; \
-            int diff_x = cx - x; \
-            int diff_y = cy - y; \
-            float dist = (float)std::sqrt(diff_x * diff_x + diff_y * diff_y);
+            float dist = (float)VertexUtility::Distance(cx, cy, x, y, w, h);
 #define ITER_RECT_END \
         } \
     }
