@@ -15,21 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Point_h__
-#define Point_h__
+#ifndef Vertex_h__
+#define Vertex_h__
 
 #pragma once
 
+#include <utility>
 #include <stdio.h>
 
 struct Vertex
 {
     int z;              // height value of the point
-    uint8_t rsuTexture; // texture data
-    uint8_t usdTexture;
     uint8_t road;
-    uint8_t objectType;
-    uint8_t objectInfo;
     uint8_t animal;
     uint8_t unknown1;
     uint8_t build;
@@ -38,6 +35,8 @@ struct Vertex
     uint8_t resource;
     uint8_t shading;
     uint8_t unknown5;
+    std::pair<uint8_t, uint8_t> texture; // rsu / usd
+    std::pair<uint8_t, uint8_t> object; // type, info
 };
 
-#endif // Point_h__
+#endif // Vertex_h__

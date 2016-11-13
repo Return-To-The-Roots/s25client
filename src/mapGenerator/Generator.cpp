@@ -21,6 +21,8 @@
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/MapWriter.h"
 #include "mapGenerator/Defines.h"
+#include "mapGenerator/VertexUtility.h"
+#include "mapGenerator/ObjectGenerator.h"
 
 #ifndef PI
 #define PI 3.14159265
@@ -72,13 +74,63 @@ void Generator::Create(const std::string& filePath, const MapSettings& settings)
 
 void Generator::SetWater(Map* map, const Vec2& center, const float radius)
 {
-    ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
+    ITER_RECT_BEGIN((int)(radius + 4), center.x, center.y, map->width, map->height)
+    
+    const int index = VertexUtility::GetIndexOf(x, y, map->width, map->height);
+
+    // handle coastline
+    if (dist < radius + 4.0 && dist >= radius)
+    {
+        if (dist >= radius + 3.0F)
+        {
+            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW2) &&
+                !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE) &&
+                !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW1);
+            }
+        }
+        else if (dist >= radius + 2.0F)
+        {
+            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE) &&
+                !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW2);
+            }
+        }
+        else
+        {
+            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE);
+            }
+        }
+        
+        // replace trees depending on terrain
+        if (ObjectGenerator::IsTree(map->vertex[index].object))
+        {
+            map->vertex[index].object = ObjectGenerator::CreateEmpty();
+            SetTree(map, Vec2(x,y));
+        }
+    }
     
     // check if the current point is inside of the radius
-    if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
+    if (dist < radius)
     {
-        map->vertex[y * map->width + x].rsuTexture = TRIANGLE_TEXTURE_WATER;
-        map->vertex[y * map->width + x].usdTexture = TRIANGLE_TEXTURE_WATER;
+        if (!ObjectGenerator::IsEmpty(map->vertex[index].object))
+        {
+            map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE);
+            if (ObjectGenerator::IsTree(map->vertex[index].object))
+            {
+                map->vertex[index].object = ObjectGenerator::CreateEmpty();
+                SetTree(map, Vec2(x,y));
+            }
+        }
+        else
+        {
+            map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_WATER);
+            map->vertex[index].animal = (rand() % 10 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
+        }
     }
     
     ITER_RECT_END
@@ -88,47 +140,65 @@ void Generator::SetTrees(Map* map, const Vec2& center, const float radius)
 {
     ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
     
-    // check if the current point is inside of the radius
-    if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
+    if (dist < radius)
     {
+        // compute value representing distance to center
         float f = (1.0F - dist / radius);
         int p = std::max(1, (int)(100 * f * f));
+        
+        // lower likelyhood for tree placement with increasing distance to center
         if (rand() % p > 10)
         {
-            int treeType;
-            int rnd = rand()%3;
-            switch (rnd)
-            {
-                case 0: treeType = 0x30; break;
-                case 1: treeType = 0x70; break;
-                case 2: treeType = 0xB0; break;
-            }
-            
-            // set object type & info to a random tree object
-            map->vertex[y * map->width + x].objectType = treeType + rand() % 8;
-            map->vertex[y * map->width + x].objectInfo = 0xC4;
+            SetTree(map, Vec2(x, y));
         }
     }
     
     ITER_RECT_END
 }
 
-void Generator::SetStone(Map* map, const Vec2& center, const float radius)
+void Generator::SetTree(Map* map, const Vec2& position)
+{
+    const int index = VertexUtility::GetIndexOf(position, map->width, map->height);
+    
+    if (ObjectGenerator::IsEmpty(map->vertex[index].object))
+    {
+        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE))
+        {
+            map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
+        }
+        else if (ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW1) ||
+                 ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW2))
+        {
+            map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
+        }
+        else if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+        {
+            map->vertex[index].object = ObjectGenerator::CreateRandomTree();
+        }
+    }
+}
+
+void Generator::SetStones(Map* map, const Vec2& center, const float radius)
 {
     ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
     
-    // check if the current point is inside of the radius
-    if (dist < radius && map->vertex[y * map->width + x].objectType == 0x00)
+    if (dist < radius)
     {
-        float scale = 1.0F - dist / radius;
-        int f = std::min(5, std::max((int)(scale * 4.49) + 1, 0));
-        
-        // set object type & info to a random stone object
-        map->vertex[y * map->width + x].objectType = 0x01 + f;
-        map->vertex[y * map->width + x].objectInfo = 0xCC + rand() % 2;
+        SetStone(map, Vec2(x, y));
     }
 
     ITER_RECT_END
+}
+
+void Generator::SetStone(Map* map, const Vec2& position)
+{
+    const int index = VertexUtility::GetIndexOf(position, map->width, map->height);
+    
+    if (ObjectGenerator::IsEmpty(map->vertex[index].object) &&
+        !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+    {
+        map->vertex[index].object = ObjectGenerator::CreateRandomStone();
+    }
 }
 
 Vec2 Generator::ComputePointOnCircle(const int index,

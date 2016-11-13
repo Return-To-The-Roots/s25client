@@ -71,13 +71,27 @@ class Generator
     void SetTrees(Map* map, const Vec2& center, const float radius);
     
     /**
+     * Places a tree to the specified position if possible.
+     * @param map map to modify the terrain for
+     * @param position position of the tree
+     */
+    void SetTree(Map* map, const Vec2& position);
+    
+    /**
      * Sets stone on the map around the specified center within the specified radius.
      * The further away the stone is from the center the smaller it is.
      * @param map map to modify the terrain for
      * @param center center point for stone placement
      * @param radius radius around the center to place stone in
      */
-    void SetStone(Map* map, const Vec2& center, const float radius);
+    void SetStones(Map* map, const Vec2& center, const float radius);
+
+    /**
+     * Places a stone to the specified position if possible.
+     * @param map map to modify the terrain for
+     * @param position position of the stone
+     */
+    void SetStone(Map* map, const Vec2& position);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.

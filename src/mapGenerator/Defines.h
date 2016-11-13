@@ -27,15 +27,15 @@
 #define TYPE_WASTELAND                          0x01
 #define TYPE_WINTER                             0x02
 
-// object indices
-#define OBJECT_INFO_STONE1                      0x02
-#define OBJECT_INFO_STONE2                      0x03
-#define OBJECT_INFO_STONE3                      0x04
-
 // texture types
 #define TRIANGLE_TEXTURE_STEPPE_MEADOW1         0x00
 #define TRIANGLE_TEXTURE_STEPPE_MEADOW1_HARBOUR 0x40
 #define TRIANGLE_TEXTURE_MINING1                0x01
+#define TRIANGLE_TEXTURE_MINING2                0x0B
+#define TRIANGLE_TEXTURE_MINING3                0x0C
+#define TRIANGLE_TEXTURE_MINING4                0x0D
+#define TRIANGLE_TEXTURE_MINING_MEADOW          0x12
+#define TRIANGLE_TEXTURE_MINING_MEADOW_HARBOUR  0x52
 #define TRIANGLE_TEXTURE_SNOW                   0x02
 #define TRIANGLE_TEXTURE_SWAMP                  0x03
 #define TRIANGLE_TEXTURE_STEPPE                 0x04
@@ -48,17 +48,12 @@
 #define TRIANGLE_TEXTURE_MEADOW2_HARBOUR        0x49
 #define TRIANGLE_TEXTURE_MEADOW3                0x0A
 #define TRIANGLE_TEXTURE_MEADOW3_HARBOUR        0x4A
-#define TRIANGLE_TEXTURE_MINING2                0x0B
-#define TRIANGLE_TEXTURE_MINING3                0x0C
-#define TRIANGLE_TEXTURE_MINING4                0x0D
 #define TRIANGLE_TEXTURE_STEPPE_MEADOW2         0x0E
 #define TRIANGLE_TEXTURE_STEPPE_MEADOW2_HARBOUR 0x4E
 #define TRIANGLE_TEXTURE_FLOWER                 0x0F
 #define TRIANGLE_TEXTURE_FLOWER_HARBOUR         0x4F
 #define TRIANGLE_TEXTURE_LAVA                   0x10
 #define TRIANGLE_TEXTURE_COLOR                  0x11
-#define TRIANGLE_TEXTURE_MINING_MEADOW          0x12
-#define TRIANGLE_TEXTURE_MINING_MEADOW_HARBOUR  0x52
 #define TRIANGLE_TEXTURE_WATER__                0x13
 #define TRIANGLE_TEXTURE_STEPPE__               0x80
 #define TRIANGLE_TEXTURE_STEPPE___              0x84

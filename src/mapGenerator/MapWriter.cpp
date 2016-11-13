@@ -76,10 +76,12 @@ bool MapWriter::Write(const std::string& filePath, Map* map)
     fwrite(myMap->author, 1, 20, file);
         
     // headquarters x
-    fwrite(myMap->HQx, 2, 7, file);
+    for (int i = 0; i < 7; i++)
+        fwrite(&myMap->positions[i].x, 2, 1, file);
     
     // headquarters y
-    fwrite(myMap->HQy, 2, 7, file);
+    for (int i = 0; i < 7; i++)
+        fwrite(&myMap->positions[i].y, 2, 1, file);
     
     // unknown data (8 Bytes)
     for (int i = 0; i < 8; i++)
@@ -135,7 +137,7 @@ bool MapWriter::Write(const std::string& filePath, Map* map)
     {
         for (int i = 0; i < myMap->width; i++)
         {
-            fwrite(&myMap->vertex[j*myMap->width+i].rsuTexture, 1, 1, file);
+            fwrite(&myMap->vertex[j*myMap->width+i].texture.first, 1, 1, file);
         }
     }
     
@@ -146,7 +148,7 @@ bool MapWriter::Write(const std::string& filePath, Map* map)
     {
         for (int i = 0; i < myMap->width; i++)
         {
-            fwrite(&myMap->vertex[j*myMap->width+i].usdTexture, 1, 1, file);
+            fwrite(&myMap->vertex[j*myMap->width+i].texture.second, 1, 1, file);
         }
     }
     
@@ -168,7 +170,7 @@ bool MapWriter::Write(const std::string& filePath, Map* map)
     {
         for (int i = 0; i < myMap->width; i++)
         {
-            fwrite(&myMap->vertex[j*myMap->width+i].objectType, 1, 1, file);
+            fwrite(&myMap->vertex[j*myMap->width+i].object.first, 1, 1, file);
         }
     }
     
@@ -179,7 +181,7 @@ bool MapWriter::Write(const std::string& filePath, Map* map)
     {
         for (int i = 0; i < myMap->width; i++)
         {
-            fwrite(&myMap->vertex[j*myMap->width+i].objectInfo, 1, 1, file);
+            fwrite(&myMap->vertex[j*myMap->width+i].object.second, 1, 1, file);
         }
     }
     

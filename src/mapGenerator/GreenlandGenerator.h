@@ -34,6 +34,14 @@ class GreenlandGenerator : public Generator
      * @param settings settings used to generate the random map
      */
     Map* GenerateMap(const MapSettings& settings);
+    
+    private:
+    
+    void CreateEmptyTerrain(const MapSettings& settings, Map* map);
+    void PlacePlayers(const MapSettings& settings, Map* map);
+    void PlacePlayerResources(const MapSettings& settings, Map* map);
+    void FillRemainingTerrain(const MapSettings& settings, Map* map);
+    void CreateHills(const MapSettings& settings, Map* map);
  };
 
 #endif // GreenlandGenerator_h__

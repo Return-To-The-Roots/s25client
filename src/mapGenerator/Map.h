@@ -22,12 +22,25 @@
 
 #include "mapGenerator/MapHeader.h"
 #include "mapGenerator/Vertex.h"
+#include "mapGenerator/Vec2.h"
 
 /**
  * Data type for reading, writing and generating maps.
  */
 struct Map
 {
+    /**
+     * Creates a new instance of map with initial player positions set to 0xFF (= not set).
+     */
+    Map()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            positions[i].x = 0xFF;
+            positions[i].y = 0xFF;
+        }
+    }
+    
     /**
      * Name of the map.
      */
@@ -54,14 +67,9 @@ struct Map
     uint8_t players;
     
     /**
-     * X-positions for all headquaters. 0xFF if the player is not available.
+     * Positions of the players' headquarters.
      */
-    uint16_t HQx[7];
-
-    /**
-     * Y-positions for all headquaters. 0xFF if the player is not available.
-     */
-    uint16_t HQy[7];
+    Vec2 positions[7];
     
     /**
      * Name of the map author.
