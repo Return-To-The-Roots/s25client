@@ -151,7 +151,6 @@ const char* const FILE_PATHS[] =
     /*102 */RTTR_GAMEDIR "/GFX/PICS/SETUP013.LBM",    // Optionen
     /*103 */RTTR_GAMEDIR "/GFX/PICS/SETUP015.LBM",    // Freies Spiel
     /*104 */RTTRDIR "/splash.bmp",                    // Splash
-    /*105 */RTTR_SETTINGSDIR "/RANDOM/"              // Storage of (in-game) generated random maps
 };
 
 const std::string UNIT_DATA_DIR = RTTRDIR "/Data/";  // Location with the data for all game units/objects (xml files)

@@ -255,7 +255,7 @@ void dskSelectMap::StartRandomMap()
     std::unique_ptr<MapGenerator> generator(new MapGenerator);
     
     // setup filepath for the random map
-    map_path = GetFilePath(FILE_PATHS[105]);
+    map_path = GetFilePath(FILE_PATHS[48]);
     map_path.append("Random.SWD");
 
     // create a random map and save filepath
