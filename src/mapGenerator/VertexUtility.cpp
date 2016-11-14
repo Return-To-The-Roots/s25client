@@ -51,9 +51,7 @@ std::vector<int> VertexUtility::GetNeighbors(const int x,
     {
         for (int ny = y - r; ny <= y + r; ny++)
         {
-            double dist = std::sqrt((nx - x) * (nx - x) + (ny - y) * (ny - y));
-            
-            if (dist <= radius)
+            if (VertexUtility::Distance(x, y, nx, ny, width, height) <= radius)
             {
                 neighbors.push_back(VertexUtility::GetIndexOf(nx, ny, width, height));
             }
@@ -81,11 +79,11 @@ double VertexUtility::Distance(const int x1,
                                const int width,
                                const int height)
 {
-    int dx = (x1 - x2);
+    int dx = (x1 % width - x2 % width);
     if (dx < 0) dx *= -1;
     if (dx > width / 2) dx = width - dx;
     
-    int dy = (y1 - y2);
+    int dy = (y1 % height - y2 % height);
     if (dy < 0) dy *= -1;
     if (dy > height / 2) dy = height - dy;
 
