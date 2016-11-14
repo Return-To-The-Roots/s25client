@@ -235,7 +235,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 if (distanceToPlayer > MIN_DISTANCE_WATER)
                 {
-                    map->vertex[index].z = 0;
+                    map->vertex[index].z = LEVEL_WATER;
                     SetWater(map, Vec2(x,y), 1.0F);
                 }
             }
