@@ -39,9 +39,7 @@
 #define ITER_RECT_BEGIN(r, cx, cy, w, h) \
     for (int x = cx - r; x < cx + r; x++) { \
         for (int y = cy - r; y <cy + r; y++) { \
-            if (x < 0) x = w - x; \
-            if (y < 0) y = h - y; \
-            float dist = (float)VertexUtility::Distance(cx, cy, x, y, w, h);
+            double dist = VertexUtility::Distance(cx, cy, x, y, w, h);
 #define ITER_RECT_END \
         } \
     }
@@ -195,7 +193,7 @@ void Generator::SetTrees(Map* map, const Vec2& center, const float radius)
 
 void Generator::SetTree(Map* map, const Vec2& position)
 {
-    const int index = VertexUtility::GetIndexOf(position, map->width, map->height);
+    const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
     if (ObjectGenerator::IsEmpty(map->vertex[index].object))
     {
@@ -229,7 +227,7 @@ void Generator::SetStones(Map* map, const Vec2& center, const float radius)
 
 void Generator::SetStone(Map* map, const Vec2& position)
 {
-    const int index = VertexUtility::GetIndexOf(position, map->width, map->height);
+    const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
     if (ObjectGenerator::IsEmpty(map->vertex[index].object) &&
         !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))

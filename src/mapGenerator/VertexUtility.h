@@ -37,16 +37,6 @@ class VertexUtility
     /**
      * Computes the index of a vertex on the map. If the position is outside of the map's boundary, the
      * coordinates are continuing on the other side of the map again (fluent boundaries).
-     * @param pos position of the vertex on the map
-     * @param width map width
-     * @param height map height
-     * @return the index of the vertex
-     */
-    static int GetIndexOf(const Vec2& pos, const int width, const int height);
-    
-    /**
-     * Computes the index of a vertex on the map. If the position is outside of the map's boundary, the
-     * coordinates are continuing on the other side of the map again (fluent boundaries).
      * @param x x-coordinate of the position of the vertex on the map
      * @param y y-coordinate of the position of the vertex on the map
      * @param width map width
@@ -55,19 +45,6 @@ class VertexUtility
      */
     static int GetIndexOf(const int x, const int y, const int width, const int height);
 
-    /**
-     * Computes indices of neighboring vertices within the specified radius around the position.
-     * @param pos center position to collect neighboring vertices around
-     * @param width map width
-     * @param height map height
-     * @param radius radius for collecting neighbor vertices
-     * @return vector of indices for neighbor vertices
-     */
-    static std::vector<int> GetNeighbors(const Vec2& pos,
-                                         const int width,
-                                         const int height,
-                                         const float radius);
-    
     /**
      * Computes indices of neighboring vertices within the specified radius around the position.
      * @param pos x x-coordinate of the center position to collect neighboring vertices around
@@ -81,27 +58,18 @@ class VertexUtility
                                          const int y,
                                          const int width,
                                          const int height,
-                                         const float radius);
+                                         const int radius);
 
     /**
-     * Checks whether or not two vertices are within the specified distance.
+     * Computes the distance between two vertices.
      * @param x1 x-coordinate of the first vertex
      * @param y1 y-coordinate of the first vertex
      * @param x2 x-coordinate of the second vertex
      * @param y2 y-coordinate of the second vertex
      * @param width map width
      * @param height map height
-     * @param distance maximum distance of both vertices
-     * @return true if both vertices are within the specified distance, false otherwise
+     * @return the distance between the two vertices
      */
-    static bool IsInDistanceOf(const int x1,
-                               const int y1,
-                               const int x2,
-                               const int y2,
-                               const int width,
-                               const int height,
-                               const float distance);
-    
     static double Distance(const int x1,
                            const int y1,
                            const int x2,

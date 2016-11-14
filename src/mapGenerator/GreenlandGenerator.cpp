@@ -155,12 +155,10 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
             for (int i = 0; i < players; i++)
             {
                 distanceToPlayer = std::min(distanceToPlayer,
-                                            VertexUtility::Distance(x,
-                                                                    y,
+                                            VertexUtility::Distance(x, y,
                                                                     map->positions[i].x,
                                                                     map->positions[i].y,
-                                                                    width,
-                                                                    height));
+                                                                    width, height));
             }
             
             int max = 0, pr = 10;
@@ -185,17 +183,12 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                 int z = rand() % max + 1;
                 if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
                 
-                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, (double)z);
+                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, z);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
-                    int x2 = *it % width, y2 = *it / width;
-                    const int h = z - (int)VertexUtility::Distance(x, y, x2, y2, width, height);
-                    
-                    if (!ObjectGenerator::IsTexture(map->vertex[*it].texture, TRIANGLE_TEXTURE_WATER) &&
-                        map->vertex[*it].z < h)
-                    {
-                        map->vertex[*it].z = h;
-                    }
+                    const int x2 = *it % width, y2 = *it / width;
+                    const int dist = (int)(z - VertexUtility::Distance(x, y, x2, y2, width, height));
+                    map->vertex[*it].z = std::max(dist, map->vertex[*it].z);
                 }
             }
         }

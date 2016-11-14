@@ -22,34 +22,23 @@ Vec2 VertexUtility::GetPosition(const int index, const int width, const int heig
 {
     return Vec2(index % width, index / width);
 }
-    
-int VertexUtility::GetIndexOf(const Vec2& pos, const int width, const int height)
-{
-    return VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
-}
 
 int VertexUtility::GetIndexOf(const int x, const int y, const int width, const int height)
 {
     return (x & (width - 1)) + (y & (height - 1)) * width;
 }
 
-std::vector<int> VertexUtility::GetNeighbors(const Vec2& pos, int width, int height, float radius)
-{
-    return VertexUtility::GetNeighbors(pos.x, pos.y, width, height, radius);
-}
-
 std::vector<int> VertexUtility::GetNeighbors(const int x,
                                              const int y,
                                              const int width,
                                              const int height,
-                                             const float radius)
+                                             const int radius)
 {
     std::vector<int> neighbors;
-    const int r = (int)radius;
-    
-    for (int nx = x - r; nx <= x + r; nx++)
+
+    for (int nx = x - radius; nx <= x + radius; nx++)
     {
-        for (int ny = y - r; ny <= y + r; ny++)
+        for (int ny = y - radius; ny <= y + radius; ny++)
         {
             if (VertexUtility::Distance(x, y, nx, ny, width, height) <= radius)
             {
@@ -61,17 +50,6 @@ std::vector<int> VertexUtility::GetNeighbors(const int x,
     return neighbors;
 }
 
-bool VertexUtility::IsInDistanceOf(const int x1,
-                                   const int y1,
-                                   const int x2,
-                                   const int y2,
-                                   const int width,
-                                   const int height,
-                                   const float distance)
-{
-    return Distance(x1, y1, x2, y2, width, height) < distance;
-}
-
 double VertexUtility::Distance(const int x1,
                                const int y1,
                                const int x2,
@@ -79,14 +57,9 @@ double VertexUtility::Distance(const int x1,
                                const int width,
                                const int height)
 {
-    int dx = (x1 % width - x2 % width);
-    if (dx < 0) dx *= -1;
-    if (dx > width / 2) dx = width - dx;
+    const int dx = (std::max(x1, x2) - std::min(x1, x2)) % (width / 2);
+    const int dy = (std::max(y1, y2) - std::min(y1, y2)) % (height / 2);
     
-    int dy = (y1 % height - y2 % height);
-    if (dy < 0) dy *= -1;
-    if (dy > height / 2) dy = height - dy;
-
     return std::sqrt(dx * dx + dy * dy);
 }
 
