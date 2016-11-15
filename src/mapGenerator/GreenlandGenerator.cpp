@@ -18,6 +18,7 @@
 #include <vector>
 #include <random>
 #include <utility>
+#include <boost/range/algorithm.hpp>
 #include "mapGenerator/Defines.h"
 #include "mapGenerator/GreenlandGenerator.h"
 #include "mapGenerator/VertexUtility.h"
@@ -120,7 +121,7 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
         res.push_back(std::pair<int, int>(1, (int)MIN_DISTANCE_STONE + rand() % 2)); // stone
         
         // put resource placement into random order to generate more interesting maps
-        std::random_shuffle(res.begin(), res.end());
+        boost::random_shuffle(res);
             
         // stores the current offset of the current resource position on an imaginary cycle
         // to avoid overlapping resources during placement
@@ -383,8 +384,16 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
     Map* map = new Map();
     
     // configuration of the map header
-    strcpy(map->name, "Random");
-    strcpy(map->author, "auto");
+    std::string name("Random");
+    for (int i = 0; i < name.length(); i++)
+    {
+        map->name[i] = name[i];
+    }
+    std::string author("auto");
+    for (int i = 0; i < author.length(); i++)
+    {
+        map->author[i] = author[i];
+    }
     
     // configuration of the map settings
     map->width = settings.width;
