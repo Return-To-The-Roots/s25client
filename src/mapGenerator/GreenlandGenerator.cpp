@@ -23,21 +23,12 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
-#define RADIUS_PLAYER_MIN       0.4
-#define RADIUS_PLAYER_MAX       0.8
-#define RADIUS_LAND_INNER       0.1
-#define RADIUS_ISLANDS          2.0
-#define RADIUS_ISLANDS_SMALL    2.0
+#define RADIUS_PLAYER_MIN       0.5
+#define RADIUS_PLAYER_MAX       0.7
+#define RADIUS_LAND_INNER       0.3
+#define RADIUS_ISLANDS          2.5
+#define RADIUS_ISLANDS_SMALL    2.5
 #define RADIUS_WATER            2.5
-
-#define MIN_DISTANCE_WATER      15.0
-#define MIN_DISTANCE_MOUNTAIN   15.0
-#define MIN_DISTANCE_TREES      6.0
-#define MIN_DISTANCE_STONE      10.0
-
-#define LIKELYHOOD_STONE        5
-#define LIKELYHOOD_TREES        20
-#define LIKELYHOOD_HILL         2
 
 #define LEVEL_WATER             3
 #define LEVEL_DESSERT           4
@@ -48,10 +39,24 @@
 #define LEVEL_GRASS2            10
 #define LEVEL_PREMOUNTAIN       11
 #define LEVEL_MOUNTAIN          14
-#define LEVEL_MAXIMUM           15
-#define LEVEL_MAXIMUM_          17
-#define LEVEL_MAXIMUM__         23
 
+#define MAX_LEVEL_ISLANDS_SMALL 7
+#define MAX_LEVEL_ISLANDS       15
+#define MAX_LEVEL_LAND          15
+#define MAX_LEVEL_LAND_INNER    23
+
+#define MIN_DISTANCE_WATER      15.0
+#define MIN_DISTANCE_MOUNTAIN   15.0
+#define MIN_DISTANCE_TREES      6.0
+#define MIN_DISTANCE_STONE      10.0
+
+#define LIKELYHOOD_STONE        5
+#define LIKELYHOOD_TREES        20
+
+#define LIKELYHOOD_HILL_LAND            2.0
+#define LIKELYHOOD_HILL_LAND_INNER      1.0
+#define LIKELYHOOD_HILL_ISLANDS         0.1
+#define LIKELYHOOD_HILL_ISLANDS_SMALL   0.1
 
 void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
 {
@@ -168,49 +173,51 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                                                                     width, height));
             }
             
-            int max = 0, min = 0, pr = 0, rnd = rand() % 100;
-
-            if (distanceToPlayer <= 3.0)
+            int max = 0, min = 0;
+            double likelyhood = 0.0;
+            
+            if (distanceToPlayer <= 3.0) // plane land around headquarter
             {
                 min = LEVEL_GRASS;
                 max = LEVEL_GRASS;
-                pr = 100; rnd = 0;
+                likelyhood = 100.0;
             }
             else
-            if (distanceToPlayer <= MIN_DISTANCE_MOUNTAIN)
+            if (distanceToPlayer <= MIN_DISTANCE_MOUNTAIN) // low hills around player
             {
                 min = LEVEL_STEPPE;
                 max = LEVEL_GRASS2;
-                pr = 100; rnd = 0;
+                likelyhood = 100.0;
             }
             else
             if (distanceToCenter <= RADIUS_LAND_INNER * length)
             {
-                max = LEVEL_MAXIMUM__;
-                pr = LIKELYHOOD_HILL;
+                max = MAX_LEVEL_LAND_INNER;
+                likelyhood = LIKELYHOOD_HILL_LAND_INNER;
             }
             else
             if (distanceToCenter <= RADIUS_ISLANDS * length)
             {
-                max = LEVEL_MAXIMUM_;
-                pr = LIKELYHOOD_HILL;
+                max = MAX_LEVEL_LAND;
+                likelyhood = LIKELYHOOD_HILL_LAND;
             }
             else
             if (distanceToCenter <= RADIUS_ISLANDS_SMALL * length)
             {
-                max = LEVEL_MAXIMUM;
-                pr = LIKELYHOOD_HILL;
-                rnd = rand() % 800;
+                max = MAX_LEVEL_ISLANDS;
+                likelyhood = LIKELYHOOD_HILL_ISLANDS;
             }
             else
             if (distanceToCenter <= RADIUS_WATER * length)
             {
-                max = LEVEL_GRASS;
-                pr = LIKELYHOOD_HILL;
-                rnd = rand() % 800;
+                max = MAX_LEVEL_ISLANDS_SMALL;
+                likelyhood = LIKELYHOOD_HILL_ISLANDS_SMALL;
             }
 
-            if (max > 0 && rnd < pr)
+            const int pr = (int)likelyhood;
+            const int rnd = pr > 0 ? (rand() % 100 + 1) : (rand() % (int)(100.0 / likelyhood));
+            
+            if (max > 0 && rnd <= pr)
             {
                 int z = min + rand() % (max - min + 1);
                 if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
