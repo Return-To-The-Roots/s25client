@@ -23,6 +23,10 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
+// definition of specific land areas
+// unit: radius around the center of the map
+//       1.0 = min(width/2, height/2) = edge of the map (if map is squared)
+//       0.0 = center point
 #define RADIUS_PLAYER_MIN       0.5
 #define RADIUS_PLAYER_MAX       0.7
 #define RADIUS_LAND_INNER       0.3
@@ -30,6 +34,7 @@
 #define RADIUS_ISLANDS_SMALL    2.5
 #define RADIUS_WATER            2.5
 
+// texture definition through height-map
 #define LEVEL_WATER             3
 #define LEVEL_DESSERT           4
 #define LEVEL_STEPPE            5
@@ -40,19 +45,23 @@
 #define LEVEL_PREMOUNTAIN       11
 #define LEVEL_MOUNTAIN          14
 
+// maximum height for specific land areas
 #define MAX_LEVEL_ISLANDS_SMALL 7
 #define MAX_LEVEL_ISLANDS       15
 #define MAX_LEVEL_LAND          15
 #define MAX_LEVEL_LAND_INNER    23
 
+// minimum distance from each player
 #define MIN_DISTANCE_WATER      15.0
 #define MIN_DISTANCE_MOUNTAIN   15.0
 #define MIN_DISTANCE_TREES      6.0
 #define MIN_DISTANCE_STONE      10.0
 
+// likelyhood for random resources
 #define LIKELYHOOD_STONE        5
 #define LIKELYHOOD_TREES        20
 
+// likelyhood for hill-generation for specific land areas
 #define LIKELYHOOD_HILL_LAND            2.0
 #define LIKELYHOOD_HILL_LAND_INNER      1.0
 #define LIKELYHOOD_HILL_ISLANDS         0.1
