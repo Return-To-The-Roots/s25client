@@ -32,7 +32,6 @@
 #define MAX(x, y) x > y ? x : y
 #endif
 
-
 // texture definition through height-map
 #define LEVEL_WATER             3
 #define LEVEL_DESSERT           4

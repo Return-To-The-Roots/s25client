@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include <random>
+#include <stdexcept>
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/MapWriter.h"
 #include "mapGenerator/Defines.h"
