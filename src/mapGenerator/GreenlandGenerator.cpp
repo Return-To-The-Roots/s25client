@@ -385,12 +385,12 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
     
     // configuration of the map header
     std::string name("Random");
-    for (uint i = 0; i < name.length(); i++)
+    for (unsigned int i = 0; i < name.length(); i++)
     {
         map->name[i] = name[i];
     }
     std::string author("auto");
-    for (uint i = 0; i < author.length(); i++)
+    for (unsigned int i = 0; i < author.length(); i++)
     {
         map->author[i] = author[i];
     }
