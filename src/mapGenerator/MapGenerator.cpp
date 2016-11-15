@@ -24,6 +24,7 @@
 void MapGenerator::Create(const std::string& filePath, Style style, const MapSettings& settings)
 {
     std::unique_ptr<Generator> generator;
+    
      //GreenlandGenerator(
      //   radiusPlayerMin,
      //   radiusPlayerMax,
@@ -40,10 +41,8 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
             generator = std::unique_ptr<Generator>(new GreenlandGenerator());
             break;
         case Riverland:
-            generator = std::unique_ptr<Generator>(NULL);
             break;
         case Islands:
-            generator = std::unique_ptr<Generator>(NULL);
             break;
         case Contient:
             generator = std::unique_ptr<Generator>(new GreenlandGenerator(0.5, 0.7, 0.3, 0.6, 0.6, 0.9));
@@ -52,18 +51,10 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
             generator = std::unique_ptr<Generator>(new GreenlandGenerator(0.7, 0.75, 0.2, 0.4, 0.6, 2.0));
             break;
         case Random:
-            generator = std::unique_ptr<Generator>(new GreenlandGenerator(
-                                                                          DRand(0.3, 0.5),
-                                                                          DRand(0.5, 0.8),
-                                                                          DRand(0.0, 0.5),
-                                                                          DRand(0.3, 2.0),
-                                                                          DRand(0.4, 2.1),
-                                                                          DRand(0.8, 2.5),
-                                                                          1 + rand() % 8,
-                                                                          5 + rand() % 30));
-            break;
-        default:
-            generator = std::unique_ptr<Generator>(NULL);
+            generator = std::unique_ptr<Generator>(new GreenlandGenerator(DRand(0.3, 0.5), DRand(0.5, 0.8),
+                                                                          DRand(0.0, 0.5), DRand(0.3, 2.0),
+                                                                          DRand(0.4, 2.1), DRand(0.8, 2.5),
+                                                                          1 + rand() % 8, 5 + rand() % 30));
             break;
     }
     

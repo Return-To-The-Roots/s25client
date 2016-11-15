@@ -57,8 +57,11 @@ double VertexUtility::Distance(const int x1,
                                const int width,
                                const int height)
 {
-    int dx = (std::max(x1, x2) - std::min(x1, x2));
-    int dy = (std::max(y1, y2) - std::min(y1, y2));
+    int min_x = x1 < x2 ? x1 : x2, min_y = y1 < y2 ? y1 : y2;
+    int max_x = x1 > x2 ? x1 : x2, max_y = y1 > y2 ? y1 : y2;
+    
+    int dx = (max_x - min_x);
+    int dy = (max_y - min_y);
     
     if (dx > width / 2)  dx = width - dx;
     if (dy > height / 2) dy = height - dy;

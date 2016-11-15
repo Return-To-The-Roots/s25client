@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
-
 #include "mapGenerator/MapWriter.h"
 
 bool MapWriter::Write(const std::string& filePath, Map* map)

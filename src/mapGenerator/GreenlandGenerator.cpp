@@ -17,12 +17,21 @@
 
 #include <vector>
 #include <random>
-#include <utility>
 #include <boost/range/algorithm.hpp>
+
 #include "mapGenerator/Defines.h"
 #include "mapGenerator/GreenlandGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
+
+#ifndef MIN
+#define MIN(x, y) x < y ? x : y
+#endif
+
+#ifndef MAX
+#define MAX(x, y) x > y ? x : y
+#endif
+
 
 // texture definition through height-map
 #define LEVEL_WATER             3
@@ -87,23 +96,21 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
     const int height = map->height;
-
+    const int length = MIN(width / 2, height / 2);
+    
     // compute center of the map
     Vec2 center(width / 2, height / 2);
 
     // radius for player distribution
-    const int rMin = (int)(_radiusPlayerMin * std::min(width / 2, height / 2));;
-    const int rMax = (int)(_radiusPlayerMax * std::min(width / 2, height / 2));
-    
-    // initialize randomize timer
-    srand(time(NULL));
+    const int rMin = (int)(_radiusPlayerMin * length);;
+    const int rMax = (int)(_radiusPlayerMax * length);
     
     // player headquarters for the players
     for (int i = 0; i < settings.players; i++)
     {
         // compute headquater position
         Vec2 position = ComputePointOnCircle(i, settings.players, center,
-                                            rMin + rand() % (rMax - rMin));
+                                             (double)(rMin + rand() % (rMax - rMin)));
 
         // create headquarter
         map->positions[i] = position;
@@ -131,7 +138,7 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
         for (std::vector<std::pair<int, int> >::iterator it = res.begin(); it != res.end(); ++it)
         {
             pos = ComputePointOnCircle(rand() % (360 / res.size()) + circle_offset,
-                                        360, map->positions[i], it->second);
+                                        360, map->positions[i], (double)it->second);
                 
             switch (it->first)
             {
@@ -154,7 +161,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
     const int width = map->width;
     const int height = map->height;
     const int players = settings.players;
-    const int length = std::min(width / 2, height / 2);
+    const int length = MIN(width / 2, height / 2);
     
     for (int x = 0; x < width; x++)
     {
@@ -165,11 +172,11 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
             
             for (int i = 0; i < players; i++)
             {
-                distanceToPlayer = std::min(distanceToPlayer,
-                                            VertexUtility::Distance(x, y,
-                                                                    map->positions[i].x,
-                                                                    map->positions[i].y,
-                                                                    width, height));
+                distanceToPlayer = MIN(distanceToPlayer,
+                                       VertexUtility::Distance(x, y,
+                                                               map->positions[i].x,
+                                                               map->positions[i].y,
+                                                               width, height));
             }
             
             int max = 0, min = 0;
@@ -226,7 +233,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                 {
                     const int x2 = *it % width, y2 = *it / width;
                     const int dist = (int)(z - VertexUtility::Distance(x, y, x2, y2, width, height));
-                    map->vertex[*it].z = std::max(dist, map->vertex[*it].z);
+                    map->vertex[*it].z = MAX(dist, map->vertex[*it].z);
                 }
             }
         }
@@ -248,13 +255,12 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             // compute distance to the closest player
             for (int i = 0; i < players; i++)
             {
-                distanceToPlayer = std::min(distanceToPlayer,
-                                            VertexUtility::Distance(x,
-                                                                    y,
-                                                                    map->positions[i].x,
-                                                                    map->positions[i].y,
-                                                                    width,
-                                                                    height));
+                distanceToPlayer = MIN(distanceToPlayer,
+                                       VertexUtility::Distance(x, y,
+                                                               map->positions[i].x,
+                                                               map->positions[i].y,
+                                                               width,
+                                                               height));
             }
             
             ////////
@@ -360,12 +366,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                 double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
                 for (std::vector<Vec2>::iterator it = harbors.begin(); it != harbors.end(); ++it)
                 {
-                    closestHarbor = std::min(closestHarbor, VertexUtility::Distance(x,
-                                                                                    y,
-                                                                                    it->x,
-                                                                                    it->y,
-                                                                                    width,
-                                                                                    height));
+                    closestHarbor = MIN(closestHarbor, VertexUtility::Distance(x, y, it->x, it->y, width, height));
                 }
                 
                 // setup harbor position

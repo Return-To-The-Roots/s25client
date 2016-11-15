@@ -18,8 +18,6 @@
 #ifndef MapWriter_h__
 #define MapWriter_h__
 
-#pragma once
-
 #include <string>
 #include "mapGenerator/Map.h"
 

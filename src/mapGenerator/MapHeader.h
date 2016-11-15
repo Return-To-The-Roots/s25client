@@ -18,8 +18,6 @@
 #ifndef MapHeader_h__
 #define MapHeader_h__
 
-#pragma once
-
 #include <stdio.h>
 
 struct MapHeader

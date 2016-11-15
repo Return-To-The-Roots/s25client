@@ -15,9 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include <algorithm>
 #include <random>
-#include <cmath>
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/MapWriter.h"
 #include "mapGenerator/Defines.h"
@@ -135,7 +133,7 @@ void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
     }
 }
 
-void Generator::SetTrees(Map* map, const Vec2& center, const float radius)
+void Generator::SetTrees(Map* map, const Vec2& center, const double radius)
 {
     ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
     
@@ -143,10 +141,10 @@ void Generator::SetTrees(Map* map, const Vec2& center, const float radius)
     {
         // compute value representing distance to center
         float f = (1.0F - dist / radius);
-        int p = std::max(1, (int)(100 * f * f));
+        int p = (int)(100 * f * f);
         
         // lower likelyhood for tree placement with increasing distance to center
-        if (rand() % p > 10)
+        if (p > 0 && rand() % p > 10)
         {
             SetTree(map, Vec2(x, y));
         }
@@ -177,7 +175,7 @@ void Generator::SetTree(Map* map, const Vec2& position)
     }
 }
 
-void Generator::SetStones(Map* map, const Vec2& center, const float radius)
+void Generator::SetStones(Map* map, const Vec2& center, const double radius)
 {
     ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
     
@@ -203,7 +201,7 @@ void Generator::SetStone(Map* map, const Vec2& position)
 Vec2 Generator::ComputePointOnCircle(const int index,
                                      const int points,
                                      const Vec2& center,
-                                     const float radius)
+                                     const double radius)
 {
     Vec2 point;
     

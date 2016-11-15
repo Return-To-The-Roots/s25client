@@ -73,7 +73,7 @@ class Generator
      * @param center center point for tree placement
      * @param radius radius around the center to place trees in
      */
-    void SetTrees(Map* map, const Vec2& center, const float radius);
+    void SetTrees(Map* map, const Vec2& center, const double radius);
     
     /**
      * Places a tree to the specified position if possible.
@@ -89,7 +89,7 @@ class Generator
      * @param center center point for stone placement
      * @param radius radius around the center to place stone in
      */
-    void SetStones(Map* map, const Vec2& center, const float radius);
+    void SetStones(Map* map, const Vec2& center, const double radius);
 
     /**
      * Places a stone to the specified position if possible.
@@ -107,7 +107,7 @@ class Generator
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    Vec2 ComputePointOnCircle(const int index, const int points, const Vec2& center, const float radius);
+    Vec2 ComputePointOnCircle(const int index, const int points, const Vec2& center, const double radius);
 };
 
 #endif // Generator_h__

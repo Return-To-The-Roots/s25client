@@ -18,8 +18,6 @@
 #ifndef Vertex_h__
 #define Vertex_h__
 
-#pragma once
-
 #include <utility>
 #include <stdio.h>
 
