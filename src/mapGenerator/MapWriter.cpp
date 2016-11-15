@@ -33,7 +33,7 @@ bool MapWriter::Write(const std::string& filePath, Map* map)
     }
     
     char zero = 0; //to fill bytes
-    char temp = 0; //to fill bytes
+    unsigned char temp = 0; //to fill bytes
     Map *myMap = map;
     char map_version[11] = "WORLD_V1.0";
     char map_data_header[16];
