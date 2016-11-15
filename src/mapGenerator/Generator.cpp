@@ -141,7 +141,7 @@ void Generator::SetTrees(Map* map, const Vec2& center, const double radius)
     if (dist < radius)
     {
         // compute value representing distance to center
-        float f = (1.0F - dist / radius);
+        double f = (1.0F - dist / radius);
         int p = (int)(100 * f * f);
         
         // lower likelyhood for tree placement with increasing distance to center
