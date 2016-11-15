@@ -23,7 +23,13 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
-#define MIN_DISTANCE_PLAYERS    25
+#define RADIUS_PLAYER_MIN       0.4
+#define RADIUS_PLAYER_MAX       0.8
+#define RADIUS_LAND_INNER       0.1
+#define RADIUS_ISLANDS          2.0
+#define RADIUS_ISLANDS_SMALL    2.0
+#define RADIUS_WATER            2.5
+
 #define MIN_DISTANCE_WATER      15.0
 #define MIN_DISTANCE_MOUNTAIN   15.0
 #define MIN_DISTANCE_TREES      6.0
@@ -42,7 +48,9 @@
 #define LEVEL_GRASS2            10
 #define LEVEL_PREMOUNTAIN       11
 #define LEVEL_MOUNTAIN          14
-#define LEVEL_MAXIMUM           16
+#define LEVEL_MAXIMUM           15
+#define LEVEL_MAXIMUM_          17
+#define LEVEL_MAXIMUM__         23
 
 
 void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
@@ -80,8 +88,8 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     Vec2 center(width / 2, height / 2);
 
     // radius for player distribution
-    const int rMin = MIN_DISTANCE_PLAYERS;
-    const int rMax = std::max(1, (int) (0.9F * std::min(width / 2, height / 2)));
+    const int rMin = (int)(RADIUS_PLAYER_MIN * std::min(width / 2, height / 2));;
+    const int rMax = (int)(RADIUS_PLAYER_MAX * std::min(width / 2, height / 2));
     
     // initialize randomize timer
     srand(time(NULL));
@@ -142,11 +150,13 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
     const int width = map->width;
     const int height = map->height;
     const int players = settings.players;
+    const int length = std::min(width / 2, height / 2);
     
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
+            double distanceToCenter = VertexUtility::Distance(width / 2, height / 2, x, y, width, height);
             double distanceToPlayer = (double)(width + height);
             
             for (int i = 0; i < players; i++)
@@ -158,20 +168,49 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                                                                     width, height));
             }
             
-            int max = 0, min = 0, pr = 0;
-            if (distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
+            int max = 0, min = 0, pr = 0, rnd = rand() % 100;
+
+            if (distanceToPlayer <= 3.0)
             {
-                max = LEVEL_MAXIMUM;
-                pr = LIKELYHOOD_HILL;
+                min = LEVEL_GRASS;
+                max = LEVEL_GRASS;
+                pr = 100; rnd = 0;
             }
-            else if (distanceToPlayer > 3.0)
+            else
+            if (distanceToPlayer <= MIN_DISTANCE_MOUNTAIN)
             {
                 min = LEVEL_STEPPE;
                 max = LEVEL_GRASS2;
-                pr = 100;
+                pr = 100; rnd = 0;
             }
-            
-            if (max > 0 && rand() % 100 < pr)
+            else
+            if (distanceToCenter <= RADIUS_LAND_INNER * length)
+            {
+                max = LEVEL_MAXIMUM__;
+                pr = LIKELYHOOD_HILL;
+            }
+            else
+            if (distanceToCenter <= RADIUS_ISLANDS * length)
+            {
+                max = LEVEL_MAXIMUM_;
+                pr = LIKELYHOOD_HILL;
+            }
+            else
+            if (distanceToCenter <= RADIUS_ISLANDS_SMALL * length)
+            {
+                max = LEVEL_MAXIMUM;
+                pr = LIKELYHOOD_HILL;
+                rnd = rand() % 800;
+            }
+            else
+            if (distanceToCenter <= RADIUS_WATER * length)
+            {
+                max = LEVEL_GRASS;
+                pr = LIKELYHOOD_HILL;
+                rnd = rand() % 800;
+            }
+
+            if (max > 0 && rnd < pr)
             {
                 int z = min + rand() % (max - min + 1);
                 if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
@@ -280,9 +319,10 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 SetTree(map, Vec2(x,y));
             }
-            else if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < LIKELYHOOD_TREES + LIKELYHOOD_STONE)
+            else
+            if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < LIKELYHOOD_TREES + LIKELYHOOD_STONE)
             {
-                SetTree(map, Vec2(x,y));
+                SetStone(map, Vec2(x,y));
             }
         }
     }
