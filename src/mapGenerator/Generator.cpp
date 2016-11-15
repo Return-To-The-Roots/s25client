@@ -24,10 +24,6 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
-#ifndef PI
-#define PI 3.14159265
-#endif
-
 // Function for iterating over a rectangle around a center point and compute the
 // distance of each point to the center.
 // @param r integer radius (maximum distance to the center in one direction)
@@ -208,7 +204,7 @@ Vec2 Generator::ComputePointOnCircle(const int index,
     Vec2 point;
     
     // compute angle according to index
-    double angle = index * 2.0 * PI / points;
+    double angle = index * 2.0 * M_PI / points;
     
     // compute point position via cos/sin
     point.x = center.x + (int) (radius * cos(angle));
