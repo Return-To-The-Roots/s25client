@@ -60,6 +60,7 @@
 // likelyhood for random resources
 #define LIKELYHOOD_STONE        5
 #define LIKELYHOOD_TREES        20
+#define LIKELYHOOD_HARBOR       2
 
 // likelyhood for hill-generation for specific land areas
 #define LIKELYHOOD_HILL_LAND            2.0
@@ -277,7 +278,8 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 map->vertex[index].z = LEVEL_WATER;
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_WATER);
-                map->vertex[index].animal = (rand() % 25 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
+                map->vertex[index].animal = (rand() % 30 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
+                map->vertex[index].resource = 0x87; // fish
             }
             else if (level <= LEVEL_DESSERT && distanceToPlayer > MIN_DISTANCE_WATER)
             {
@@ -299,7 +301,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             else if (level <= LEVEL_GRASS_FLOWERS)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_FLOWER);
-                map->vertex[index].animal = (rand() % 15 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
+                map->vertex[index].animal = (rand() % 19 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
             }
             else if (level <= LEVEL_GRASS2)
             {
@@ -310,21 +312,16 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING_MEADOW);
             }
-            else if (level <= LEVEL_MOUNTAIN && distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
+            else if (level <= LEVEL_MOUNTAIN)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING1);
                 map->vertex[index].resource = ObjectGenerator::CreateRandomResource();
             }
-            else if (distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
+            else
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_SNOW);
             }
-            else
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MEADOW1);
-                map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
-            }
-            
+
             ////////
             /// random resources
             ////////
@@ -339,6 +336,35 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < LIKELYHOOD_TREES + LIKELYHOOD_STONE)
             {
                 SetStone(map, Vec2(x,y));
+            }
+        }
+    }
+    
+    ///////
+    /// Harbour placement
+    ///////
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE))
+            {
+                bool waterNeighbor = false;
+                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
+                for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+                {
+                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TRIANGLE_TEXTURE_WATER))
+                    {
+                        waterNeighbor = true;
+                        break;
+                    }
+                }
+
+                if (waterNeighbor && rand() % 100 < LIKELYHOOD_HARBOR)
+                {
+                    SetHarbour(map, Vec2(x, y), LEVEL_WATER);
+                }
             }
         }
     }

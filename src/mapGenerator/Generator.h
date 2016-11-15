@@ -57,6 +57,8 @@ class Generator
      */
     virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
+    void SetHarbour(Map* map, const Vec2& center, const int waterLevel);
+    
     /**
      * Sets trees on the map around the specified center within the specified radius.
      * The further away the trees are from the center the lower the likelyhood for placement.

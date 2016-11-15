@@ -107,6 +107,34 @@ void Generator::SmoothTextures(Map* map)
     }
 }
 
+void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
+{
+    for (int x = center.x - 2; x <= center.x + 2; x++)
+    {
+        for (int y = center.y - 2; y <= center.y + 2; y++)
+        {
+            const int index = VertexUtility::GetIndexOf(x, y, map->width, map->height);
+            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+            {
+                if ((x - center.x) * (x - center.x) <= 1 && (y - center.y) * (y - center.y) <= 1)
+                {
+                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW1_HARBOUR);
+                    map->vertex[index].z = waterLevel;
+                    map->vertex[index].object = ObjectGenerator::CreateEmpty();
+                    map->vertex[index].resource = 0x00;
+                }
+                else
+                {
+                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW2);
+                    map->vertex[index].z = waterLevel;
+                    map->vertex[index].object = ObjectGenerator::CreateEmpty();
+                    map->vertex[index].resource = 0x00;
+                }
+            }
+        }
+    }
+}
+
 void Generator::SetTrees(Map* map, const Vec2& center, const float radius)
 {
     ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
