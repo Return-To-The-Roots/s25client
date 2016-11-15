@@ -20,10 +20,6 @@
 
 #pragma once
 
-#ifndef PI
-#define PI 3.14159265
-#endif
-
 #include <string>
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
@@ -47,6 +43,10 @@ class Generator
     
     private:
     
+    /**
+     * Smoothes the textures of the map for better visual appearance.
+     * @param map map to smooth textures for
+     */
     void SmoothTextures(Map* map);
     
     protected:
@@ -57,6 +57,13 @@ class Generator
      */
     virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
+    /**
+     * Sets up a harbor position at the specified center. The surounding area is flattened an textures
+     * are replaced to enable harbor building.
+     * @param map map to modify the terrain for
+     * @param center center point for the harbor position
+     * @param waterLevel the height level of the surounding water
+     */
     void SetHarbour(Map* map, const Vec2& center, const int waterLevel);
     
     /**

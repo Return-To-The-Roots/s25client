@@ -27,6 +27,37 @@
  */
 class GreenlandGenerator : public Generator
 {
+    public:
+    
+    /**
+     * Creates a new GreenlandGenerator with the specified landscape properties.
+     * The radius is measured in map length: min(width/2, height/2).
+     * @param radiusPlayerMin minimum radius each player must be placed away from the center point of the map
+     * @param radiusPlayerMax maximum radius each player can be placed away from the center point of the map
+     * @param radiusInnerLand maximum radius from the map's center point to consider land as "inner land"
+     * @param radiusIslands minimum radius from the map's center point to consider land for the generation of islands
+     * @üaram radiusSmallIslands minimum radius from the map's center point to consider land for the generation of smaller islands
+     * @param radiusWaterOnly minimum radius from the map's center point to consider land for water only
+     * @param likelyhoodStone likelyhood in percentage that a stone pile is generated for a vertex
+     * @param likelyhoodTree likelyhood in percentage that a tree is generated for a vertex
+     */
+    GreenlandGenerator(double radiusPlayerMin   = 0.5,
+                       double radiusPlayerMax   = 0.7,
+                       double radiusInnerLand   = 0.3,
+                       double radiusIslands     = 2.5,
+                       double radiusSmallIslands= 2.5,
+                       double radiusWaterOnly   = 2.5,
+                       int likelyhoodStone      = 5,
+                       int likelyhoodTree       = 20) :
+    _radiusPlayerMin(radiusPlayerMin),
+    _radiusPlayerMax(radiusPlayerMax),
+    _radiusInnerLand(radiusInnerLand),
+    _radiusIslands(radiusIslands),
+    _radiusSmallIslands(radiusSmallIslands),
+    _radiusWaterOnly(radiusWaterOnly),
+    _likelyhoodStone(likelyhoodStone),
+    _likelyhoodTree(likelyhoodTree){}
+    
     protected:
     
     /**
@@ -37,11 +68,87 @@ class GreenlandGenerator : public Generator
     
     private:
     
+    /**
+     * Minimum radius each player must be placed away from the center point of the map.
+     * The radius is measured in map length: min(width/2, height/2).
+     */
+    double _radiusPlayerMin;
+    
+    /**
+     * Maximum radius each player can be placed away from the center point of the map.
+     * The radius is measured in map length: min(width/2, height/2).
+     */
+    double _radiusPlayerMax;
+    
+    /**
+     * Maximum radius from the map's center point to consider land as "inner land" (higher hills).
+     * The radius is measured in map length: min(width/2, height/2).
+     */
+    double _radiusInnerLand;
+    
+    /**
+     * Minimum radius from the map's center point to consider land for the generation of islands.
+     * The radius is measured in map length: min(width/2, height/2).
+     */
+    double _radiusIslands;
+    
+    /**
+     * Minimum radius from the map's center point to consider land for the generation of smaller islands.
+     * The radius is measured in map length: min(width/2, height/2).
+     */
+    double _radiusSmallIslands;
+    
+    /**
+     * Minimum radius from the map's center point to consider land for water only.
+     * The radius is measured in map length: min(width/2, height/2).
+     */
+    double _radiusWaterOnly;
+    
+    /**
+     * Likelyhood in percentage that a stone pile is generated for a vertex.
+     */
+    int _likelyhoodStone;
+    
+    /**
+     * Likelyhood in percentage that a tree is generated for a vertex.
+     */
+    int _likelyhoodTree;
+    
+    /**
+     * Create a new, empty terain for the specified map.
+     * @param settings settings used for map generation
+     * @param map map to modify
+     */
     void CreateEmptyTerrain(const MapSettings& settings, Map* map);
+    
+    /**
+     * Create player positions (headquarters) for the specified map.
+     * @param settings settings used for map generation
+     * @param map map to modify
+     */
     void PlacePlayers(const MapSettings& settings, Map* map);
+
+    /**
+     * Create standard resoures for each player.
+     * @param settings settings used for map generation
+     * @param map map to modify
+     */
     void PlacePlayerResources(const MapSettings& settings, Map* map);
-    void FillRemainingTerrain(const MapSettings& settings, Map* map);
+    
+    /**
+     * Create a elevation (hills) for the specified map.
+     * @param settings settings used for map generation
+     * @param map map to modify
+     */
     void CreateHills(const MapSettings& settings, Map* map);
+    
+    /**
+     * Fill the remaining terrain (apart from the player positions) according to the generated hills.
+     * @param settings settings used for map generation
+     * @param map map to modify
+     */
+    void FillRemainingTerrain(const MapSettings& settings, Map* map);
+
  };
 
 #endif // GreenlandGenerator_h__

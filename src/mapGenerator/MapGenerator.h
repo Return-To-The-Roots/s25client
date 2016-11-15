@@ -21,6 +21,7 @@
 #pragma once
 
 #include <string>
+#include <random>
 #include "mapGenerator/Style.h"
 #include "mapGenerator/MapSettings.h"
 
@@ -38,6 +39,18 @@ class MapGenerator
      * @param settings used to generate the random map
      */
     void Create(const std::string& filePath, Style style, const MapSettings& settings);
+    
+    private:
+    
+    /**
+     * Generates a random number between min and max.
+     * @param min minimum values
+     * @param max maximum value
+     */
+    double DRand(const double min, const double max)
+    {
+        return min + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX/(max - min)));
+    }
 };
 
 #endif // MapGenerator_h__

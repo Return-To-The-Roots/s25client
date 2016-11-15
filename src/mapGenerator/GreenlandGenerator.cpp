@@ -23,17 +23,6 @@
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 
-// definition of specific land areas
-// unit: radius around the center of the map
-//       1.0 = min(width/2, height/2) = edge of the map (if map is squared)
-//       0.0 = center point
-#define RADIUS_PLAYER_MIN       0.5
-#define RADIUS_PLAYER_MAX       0.7
-#define RADIUS_LAND_INNER       0.3
-#define RADIUS_ISLANDS          2.5
-#define RADIUS_ISLANDS_SMALL    2.5
-#define RADIUS_WATER            2.5
-
 // texture definition through height-map
 #define LEVEL_WATER             3
 #define LEVEL_DESSERT           4
@@ -57,9 +46,7 @@
 #define MIN_DISTANCE_TREES      6.0
 #define MIN_DISTANCE_STONE      10.0
 
-// likelyhood for random resources
-#define LIKELYHOOD_STONE        5
-#define LIKELYHOOD_TREES        20
+// harbor placement
 #define LIKELYHOOD_HARBOR       10
 #define MIN_HARBOR_DISTANCE     20.0
 
@@ -104,8 +91,8 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     Vec2 center(width / 2, height / 2);
 
     // radius for player distribution
-    const int rMin = (int)(RADIUS_PLAYER_MIN * std::min(width / 2, height / 2));;
-    const int rMax = (int)(RADIUS_PLAYER_MAX * std::min(width / 2, height / 2));
+    const int rMin = (int)(_radiusPlayerMin * std::min(width / 2, height / 2));;
+    const int rMax = (int)(_radiusPlayerMax * std::min(width / 2, height / 2));
     
     // initialize randomize timer
     srand(time(NULL));
@@ -201,25 +188,25 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                 likelyhood = 100.0;
             }
             else
-            if (distanceToCenter <= RADIUS_LAND_INNER * length)
+            if (distanceToCenter <= _radiusInnerLand * length)
             {
                 max = MAX_LEVEL_LAND_INNER;
                 likelyhood = LIKELYHOOD_HILL_LAND_INNER;
             }
             else
-            if (distanceToCenter <= RADIUS_ISLANDS * length)
+            if (distanceToCenter <= _radiusIslands * length)
             {
                 max = MAX_LEVEL_LAND;
                 likelyhood = LIKELYHOOD_HILL_LAND;
             }
             else
-            if (distanceToCenter <= RADIUS_ISLANDS_SMALL * length)
+            if (distanceToCenter <= _radiusSmallIslands * length)
             {
                 max = MAX_LEVEL_ISLANDS;
                 likelyhood = LIKELYHOOD_HILL_ISLANDS;
             }
             else
-            if (distanceToCenter <= RADIUS_WATER * length)
+            if (distanceToCenter <= _radiusWaterOnly * length)
             {
                 max = MAX_LEVEL_ISLANDS_SMALL;
                 likelyhood = LIKELYHOOD_HILL_ISLANDS_SMALL;
@@ -257,6 +244,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
         {
             double distanceToPlayer = (double)(width + height);
 
+            // compute distance to the closest player
             for (int i = 0; i < players; i++)
             {
                 distanceToPlayer = std::min(distanceToPlayer,
@@ -269,7 +257,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             }
             
             ////////
-            /// texturing
+            /// texturing, animals and mountain resources
             ////////
             
             const int index = y * width + x;
@@ -329,12 +317,12 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             
             const int rnd = rand() % 100;
             
-            if (distanceToPlayer > MIN_DISTANCE_TREES && rnd < LIKELYHOOD_TREES)
+            if (distanceToPlayer > MIN_DISTANCE_TREES && rnd < _likelyhoodTree)
             {
                 SetTree(map, Vec2(x,y));
             }
             else
-            if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < LIKELYHOOD_TREES + LIKELYHOOD_STONE)
+            if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < _likelyhoodTree + _likelyhoodStone)
             {
                 SetStone(map, Vec2(x,y));
             }
@@ -351,8 +339,11 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            
+            // under certain circumstances replace dessert texture by harbor position
             if (ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE))
             {
+                // ensure there's water close to the dessert texture
                 bool waterNeighbor = false;
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
@@ -364,6 +355,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                     }
                 }
                 
+                // ensure there's no other harbor nearby
                 double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
                 for (std::vector<Vec2>::iterator it = harbors.begin(); it != harbors.end(); ++it)
                 {
@@ -375,6 +367,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                                                                                     height));
                 }
                 
+                // setup harbor position
                 if (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor && rand() % 100 < LIKELYHOOD_HARBOR)
                 {
                     SetHarbour(map, Vec2(x, y), LEVEL_WATER);
@@ -389,14 +382,18 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
 {
     Map* map = new Map();
     
+    // configuration of the map header
     strcpy(map->name, "Random");
-    strcpy(map->author, "generator");
+    strcpy(map->author, "auto");
+    
+    // configuration of the map settings
     map->width = settings.width;
     map->height = settings.height;
     map->type = settings.type;
     map->players = settings.players;
     map->vertex = new Vertex[settings.width * settings.height];
-    
+
+    // the actual map generation
     CreateEmptyTerrain(settings, map);
     PlacePlayers(settings, map);
     PlacePlayerResources(settings, map);

@@ -28,8 +28,8 @@
 #define PI 3.14159265
 #endif
 
-// define function to iterator over a rectangle around a center point and compute the
-// distance of each point to the center
+// Function for iterating over a rectangle around a center point and compute the
+// distance of each point to the center.
 // @param r integer radius (maximum distance to the center in one direction)
 // @param cx x coordinate of the center point
 // @param cy y coordinate of the center point

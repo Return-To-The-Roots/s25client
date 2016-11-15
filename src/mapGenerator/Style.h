@@ -41,7 +41,18 @@ enum Style
     /**
      * All players start on the same island.
      */
-    Contient
+    Contient,
+    
+    /**
+     * All players start on their own, small island. There's one big island in the center of the map
+     * with lots of resources and mountains.
+     */
+    Migration,
+    
+    /**
+     * Mega random!
+     */
+    Random
 };
 
 #endif // Style_h__
