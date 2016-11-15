@@ -58,14 +58,6 @@ class Generator
     virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
     /**
-     * Sets water on the map around the specified center within the specified radius.
-     * @param map map to modify the terrain for
-     * @param center center point for water placement
-     * @param radius radius around the center to place water in
-     */
-    void SetWater(Map* map, const Vec2& center, const float radius);
-    
-    /**
      * Sets trees on the map around the specified center within the specified radius.
      * The further away the trees are from the center the lower the likelyhood for placement.
      * @param map map to modify the terrain for

@@ -75,6 +75,17 @@ class ObjectGenerator
         }
     }
     
+    static uint8_t CreateRandomResource()
+    {
+        const int rnd = rand() % 100;
+        int resource = 0x00;
+        if (rnd <= 9)       resource = 0x51; // 9% gold
+        else if (rnd <= 45) resource = 0x49; // 36% iron
+        else if (rnd <= 85) resource = 0x41; // 40% coal
+        else                resource = 0x59; // 15% granite
+        return resource + rand() % 7;
+    }
+    
     static uint8_t CreateRandomAnimal()
     {
         const int animal = rand() % 5;

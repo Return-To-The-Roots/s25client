@@ -25,19 +25,24 @@
 
 #define MIN_DISTANCE_PLAYERS    25
 #define MIN_DISTANCE_WATER      15.0
-#define MIN_DISTANCE_RES        10.0
-#define MIN_DISTANCE_MOUNTAIN   20.0
-#define MIN_DISTANCE_TREES      4.0
-#define TREE_LIKELYHOOD_MED     20
-#define TREE_LIKELYHOOD_MIN     8
-#define STONE_LIKELYHOOD        5
-#define LEVEL_WATER             1
-#define LEVEL_MOUNTAIN          11
-#define LEVEL_SNOW              13
-#define LEVEL_MAXIMUM           14
-#define HILL_LIKELYHOOD_MAX     1
-#define HILL_LIKELYHOOD_MED     2
-#define HILL_LIKELYHOOD_MIN     25
+#define MIN_DISTANCE_MOUNTAIN   15.0
+#define MIN_DISTANCE_TREES      6.0
+#define MIN_DISTANCE_STONE      10.0
+
+#define LIKELYHOOD_STONE        5
+#define LIKELYHOOD_TREES        20
+#define LIKELYHOOD_HILL         2
+
+#define LEVEL_WATER             3
+#define LEVEL_DESSERT           4
+#define LEVEL_STEPPE            5
+#define LEVEL_GRASSYSTEPPE      6
+#define LEVEL_GRASS             7
+#define LEVEL_GRASS_FLOWERS     8
+#define LEVEL_GRASS2            10
+#define LEVEL_PREMOUNTAIN       11
+#define LEVEL_MOUNTAIN          14
+#define LEVEL_MAXIMUM           16
 
 
 void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
@@ -100,13 +105,8 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
     {
         // intialize list of different resources identified by indices
         std::vector<std::pair<int, int> > res; // resource index + distance to player
-        res.push_back(std::pair<int, int>(0, (int)MIN_DISTANCE_RES + rand() % 2)); // stone
-        res.push_back(std::pair<int, int>(1, (int)MIN_DISTANCE_RES + rand() % 2)); // stone
-        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
-        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
-        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
-        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
-        res.push_back(std::pair<int, int>(2, (int)MIN_DISTANCE_RES + rand() % (int)MIN_DISTANCE_WATER)); // tree
+        res.push_back(std::pair<int, int>(0, (int)MIN_DISTANCE_STONE + rand() % 2)); // stone
+        res.push_back(std::pair<int, int>(1, (int)MIN_DISTANCE_STONE + rand() % 2)); // stone
         
         // put resource placement into random order to generate more interesting maps
         std::random_shuffle(res.begin(), res.end());
@@ -128,9 +128,6 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
                     break;
                 case 1:
                     SetStones(map, pos, 2.7F);
-                    break;
-                case 2:
-                    SetTrees(map, pos, 1.0F + (float)(rand() % 2));
                     break;
             }
                 
@@ -161,26 +158,22 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                                                                     width, height));
             }
             
-            int max = 0, pr = 10;
+            int max = 0, min = 0, pr = 0;
             if (distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
             {
                 max = LEVEL_MAXIMUM;
-                pr = HILL_LIKELYHOOD_MAX;
+                pr = LIKELYHOOD_HILL;
             }
-            else if (distanceToPlayer > MIN_DISTANCE_RES)
+            else if (distanceToPlayer > 3.0)
             {
-                max = 4;
-                pr = HILL_LIKELYHOOD_MIN;
-            }
-            else if (distanceToPlayer > MIN_DISTANCE_RES / 2)
-            {
-                max = 2;
-                pr = HILL_LIKELYHOOD_MIN;
+                min = LEVEL_STEPPE;
+                max = LEVEL_GRASS2;
+                pr = 100;
             }
             
             if (max > 0 && rand() % 100 < pr)
             {
-                int z = rand() % max + 1;
+                int z = min + rand() % (max - min + 1);
                 if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
                 
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, z);
@@ -218,73 +211,78 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                                                                     height));
             }
             
+            ////////
+            /// texturing
+            ////////
+            
             const int index = y * width + x;
+            const int level = map->vertex[index].z;
             
-            ////////
-            /// texturing & animals
-            ////////
-            
-            if (map->vertex[index].z <= LEVEL_WATER)
+            if (level <= LEVEL_WATER && distanceToPlayer > MIN_DISTANCE_WATER)
             {
-                if (distanceToPlayer > MIN_DISTANCE_WATER)
-                {
-                    map->vertex[index].z = LEVEL_WATER;
-                    SetWater(map, Vec2(x,y), 1.0F);
-                }
+                map->vertex[index].z = LEVEL_WATER;
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_WATER);
+                map->vertex[index].animal = (rand() % 25 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
             }
-            else if (map->vertex[index].z == LEVEL_WATER + 1)
+            else if (level <= LEVEL_DESSERT && distanceToPlayer > MIN_DISTANCE_WATER)
             {
-                if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW1) &&
-                    !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW2) &&
-                    !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE) &&
-                    !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
-                {
-                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_FLOWER);
-                    map->vertex[index].animal = (rand() % 15 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
-                }
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE);
             }
-            else if (map->vertex[index].z >= LEVEL_SNOW)
+            else if (level <= LEVEL_STEPPE)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_SNOW);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW2);
             }
-            else if (map->vertex[index].z >= LEVEL_MOUNTAIN)
+            else if (level <= LEVEL_GRASSYSTEPPE)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING1);
-                const int rnd = rand() % 100;
-                int resource = 0x00;
-                if (rnd <= 9)       resource = 0x51; // 9% gold
-                else if (rnd <= 45) resource = 0x49; // 36% iron
-                else if (rnd <= 85) resource = 0x41; // 40% coal
-                else                resource = 0x59; // 15% granite
-                map->vertex[index].resource = resource + rand() % 7;
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW1);
             }
-            else if (map->vertex[index].z >= LEVEL_MOUNTAIN - 1)
+            else if (level <= LEVEL_GRASS)
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MEADOW1);
+                map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
+            }
+            else if (level <= LEVEL_GRASS_FLOWERS)
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_FLOWER);
+                map->vertex[index].animal = (rand() % 15 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
+            }
+            else if (level <= LEVEL_GRASS2)
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MEADOW2);
+                map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
+            }
+            else if (level <= LEVEL_PREMOUNTAIN)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING_MEADOW);
             }
+            else if (level <= LEVEL_MOUNTAIN && distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MINING1);
+                map->vertex[index].resource = ObjectGenerator::CreateRandomResource();
+            }
+            else if (distanceToPlayer > MIN_DISTANCE_MOUNTAIN)
+            {
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_SNOW);
+            }
             else
             {
-                map->vertex[index].animal = (rand() % 25 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_MEADOW1);
+                map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             
             ////////
-            /// random trees & stones
+            /// random resources
             ////////
             
-            if (distanceToPlayer > MIN_DISTANCE_TREES * 2)
+            const int rnd = rand() % 100;
+            
+            if (distanceToPlayer > MIN_DISTANCE_TREES && rnd < LIKELYHOOD_TREES)
             {
-                if (rand() % 100 <= TREE_LIKELYHOOD_MED)
-                {
-                    SetTree(map, Vec2(x,y));
-                }
-                else if (rand() % 100 <= STONE_LIKELYHOOD)
-                {
-                    SetStone(map, Vec2(x,y));
-                }
+                SetTree(map, Vec2(x,y));
             }
-            else if (distanceToPlayer > MIN_DISTANCE_TREES)
+            else if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < LIKELYHOOD_TREES + LIKELYHOOD_STONE)
             {
-                if (rand() % 100 <= TREE_LIKELYHOOD_MIN) SetTree(map, Vec2(x,y));
+                SetTree(map, Vec2(x,y));
             }
         }
     }
