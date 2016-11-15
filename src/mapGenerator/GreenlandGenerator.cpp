@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
-#include <random>
+#include <cstdlib>
 #include <boost/range/algorithm.hpp>
 
 #include "mapGenerator/Defines.h"

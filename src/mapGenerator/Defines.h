@@ -18,8 +18,6 @@
 #ifndef Defines_h__
 #define Defines_h__
 
-#pragma once
-
 // http://settlers2.net/documentation/world-map-file-format-wldswd/
 
 // map types

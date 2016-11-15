@@ -18,10 +18,8 @@
 #ifndef MapGenerator_h__
 #define MapGenerator_h__
 
-#pragma once
-
 #include <string>
-#include <random>
+#include <cstdlib>
 #include "mapGenerator/Style.h"
 #include "mapGenerator/MapSettings.h"
 
