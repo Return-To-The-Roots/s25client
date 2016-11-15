@@ -18,6 +18,8 @@
 #ifndef Vec2_h__
 #define Vec2_h__
 
+#include "stdint.h"
+
 /**
  * Two dimensional 16-bit integer vector.
  */
