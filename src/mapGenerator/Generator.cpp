@@ -83,7 +83,7 @@ void Generator::SmoothTextures(Map* map)
             const int texBottom = map->vertex[VertexUtility::GetIndexOf(x, y + 1, width, height)].texture.second;
             const int tex = map->vertex[index].texture.first;
             
-            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != TRIANGLE_TEXTURE_WATER)
+            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != TEXTURE_WATER)
             {
                 map->vertex[index].texture.first = texBottom;
             }
@@ -99,7 +99,7 @@ void Generator::SmoothTextures(Map* map)
             const int texTop = map->vertex[VertexUtility::GetIndexOf(x, y - 1, width, height)].texture.first;
             const int tex = map->vertex[index].texture.second;
 
-            if (tex != texTop && tex != texRight && texTop == texRight && texTop != TRIANGLE_TEXTURE_WATER)
+            if (tex != texTop && tex != texRight && texTop == texRight && texTop != TEXTURE_WATER)
             {
                 map->vertex[index].texture.second = texTop;
             }
@@ -114,18 +114,18 @@ void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
         for (int y = center.y - 2; y <= center.y + 2; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, map->width, map->height);
-            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_WATER))
             {
                 if ((x - center.x) * (x - center.x) <= 1 && (y - center.y) * (y - center.y) <= 1)
                 {
-                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW1_HARBOUR);
+                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_STEPPE_MEADOW1_HARBOUR);
                     map->vertex[index].z = waterLevel;
                     map->vertex[index].object = ObjectGenerator::CreateEmpty();
                     map->vertex[index].resource = 0x00;
                 }
                 else
                 {
-                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TRIANGLE_TEXTURE_STEPPE_MEADOW2);
+                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_STEPPE_MEADOW2);
                     map->vertex[index].z = waterLevel;
                     map->vertex[index].object = ObjectGenerator::CreateEmpty();
                     map->vertex[index].resource = 0x00;
@@ -161,16 +161,16 @@ void Generator::SetTree(Map* map, const Vec2& position)
     
     if (ObjectGenerator::IsEmpty(map->vertex[index].object))
     {
-        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE))
+        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_STEPPE))
         {
             map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
         }
-        else if (ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW1) ||
-                 ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_STEPPE_MEADOW2))
+        else if (ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_STEPPE_MEADOW1) ||
+                 ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_STEPPE_MEADOW2))
         {
             map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
         }
-        else if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+        else if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_WATER))
         {
             map->vertex[index].object = ObjectGenerator::CreateRandomTree();
         }
@@ -194,7 +194,7 @@ void Generator::SetStone(Map* map, const Vec2& position)
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
     if (ObjectGenerator::IsEmpty(map->vertex[index].object) &&
-        !ObjectGenerator::IsTexture(map->vertex[index].texture, TRIANGLE_TEXTURE_WATER))
+        !ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_WATER))
     {
         map->vertex[index].object = ObjectGenerator::CreateRandomStone();
     }
