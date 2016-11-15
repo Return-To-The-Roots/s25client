@@ -60,7 +60,8 @@
 // likelyhood for random resources
 #define LIKELYHOOD_STONE        5
 #define LIKELYHOOD_TREES        20
-#define LIKELYHOOD_HARBOR       2
+#define LIKELYHOOD_HARBOR       10
+#define MIN_HARBOR_DISTANCE     20.0
 
 // likelyhood for hill-generation for specific land areas
 #define LIKELYHOOD_HILL_LAND            2.0
@@ -343,6 +344,8 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
     ///////
     /// Harbour placement
     ///////
+    std::vector<Vec2> harbors;
+    
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
@@ -360,10 +363,22 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                         break;
                     }
                 }
-
-                if (waterNeighbor && rand() % 100 < LIKELYHOOD_HARBOR)
+                
+                double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
+                for (std::vector<Vec2>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+                {
+                    closestHarbor = std::min(closestHarbor, VertexUtility::Distance(x,
+                                                                                    y,
+                                                                                    it->x,
+                                                                                    it->y,
+                                                                                    width,
+                                                                                    height));
+                }
+                
+                if (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor && rand() % 100 < LIKELYHOOD_HARBOR)
                 {
                     SetHarbour(map, Vec2(x, y), LEVEL_WATER);
+                    harbors.push_back(Vec2(x,y));
                 }
             }
         }
