@@ -17,20 +17,12 @@
 
 #include <vector>
 #include <cstdlib>
+#include <cmath>
 #include <boost/range/algorithm.hpp>
 
-#include "mapGenerator/Defines.h"
 #include "mapGenerator/GreenlandGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
-
-#ifndef MIN
-#define MIN(x, y) x < y ? x : y
-#endif
-
-#ifndef MAX
-#define MAX(x, y) x > y ? x : y
-#endif
 
 // texture definition through height-map
 #define LEVEL_WATER             3
@@ -75,7 +67,7 @@ void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* ma
         for (int i = 0; i < width; i++)
         {
             map->vertex[j * width + i].z = 0;
-            map->vertex[j * width + i].texture = ObjectGenerator::CreateTexture(TEXTURE_MEADOW1);
+            map->vertex[j * width + i].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW1);
             map->vertex[j * width + i].build = 0x04;
             map->vertex[j * width + i].shading = 0x80;
             map->vertex[j * width + i].resource = 0x00;
@@ -95,7 +87,7 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
     const int height = map->height;
-    const int length = MIN(width / 2, height / 2);
+    const int length = std::min(width / 2, height / 2);
     
     // compute center of the map
     Vec2 center(width / 2, height / 2);
@@ -160,7 +152,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
     const int width = map->width;
     const int height = map->height;
     const int players = settings.players;
-    const int length = MIN(width / 2, height / 2);
+    const int length = std::min(width / 2, height / 2);
     
     for (int x = 0; x < width; x++)
     {
@@ -171,7 +163,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
             
             for (int i = 0; i < players; i++)
             {
-                distanceToPlayer = MIN(distanceToPlayer,
+                distanceToPlayer = std::min(distanceToPlayer,
                                        VertexUtility::Distance(x, y,
                                                                map->positions[i].x,
                                                                map->positions[i].y,
@@ -232,7 +224,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                 {
                     const int x2 = *it % width, y2 = *it / width;
                     const int dist = (int)(z - VertexUtility::Distance(x, y, x2, y2, width, height));
-                    map->vertex[*it].z = MAX(dist, map->vertex[*it].z);
+                    map->vertex[*it].z = std::max(dist, map->vertex[*it].z);
                 }
             }
         }
@@ -254,7 +246,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             // compute distance to the closest player
             for (int i = 0; i < players; i++)
             {
-                distanceToPlayer = MIN(distanceToPlayer,
+                distanceToPlayer = std::min(distanceToPlayer,
                                        VertexUtility::Distance(x, y,
                                                                map->positions[i].x,
                                                                map->positions[i].y,
@@ -272,49 +264,49 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             if (level <= LEVEL_WATER && distanceToPlayer > MIN_DISTANCE_WATER)
             {
                 map->vertex[index].z = LEVEL_WATER;
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_WATER);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_WATER);
                 map->vertex[index].animal = (rand() % 30 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
                 map->vertex[index].resource = 0x87; // fish
             }
             else if (level <= LEVEL_DESSERT && distanceToPlayer > MIN_DISTANCE_WATER)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_STEPPE);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_DESERT);
             }
             else if (level <= LEVEL_STEPPE)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_STEPPE_MEADOW2);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_STEPPE);
             }
             else if (level <= LEVEL_GRASSYSTEPPE)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_STEPPE_MEADOW1);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_SAVANNAH);
             }
             else if (level <= LEVEL_GRASS)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_MEADOW1);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW1);
                 map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             else if (level <= LEVEL_GRASS_FLOWERS)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_FLOWER);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW_FLOWERS);
                 map->vertex[index].animal = (rand() % 19 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
             }
             else if (level <= LEVEL_GRASS2)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_MEADOW2);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW2);
                 map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             else if (level <= LEVEL_PREMOUNTAIN)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_MINING_MEADOW);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MOUNTAINMEADOW);
             }
             else if (level <= LEVEL_MOUNTAIN)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_MINING1);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MOUNTAIN1);
                 map->vertex[index].resource = ObjectGenerator::CreateRandomResource();
             }
             else
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TEXTURE_SNOW);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_SNOW);
             }
 
             ////////
@@ -347,14 +339,14 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
             
             // under certain circumstances replace dessert texture by harbor position
-            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TEXTURE_STEPPE))
+            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TerrainType::TT_DESERT))
             {
                 // ensure there's water close to the dessert texture
                 bool waterNeighbor = false;
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
-                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TEXTURE_WATER))
+                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TerrainType::TT_WATER))
                     {
                         waterNeighbor = true;
                         break;
@@ -365,7 +357,8 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                 double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
                 for (std::vector<Vec2>::iterator it = harbors.begin(); it != harbors.end(); ++it)
                 {
-                    closestHarbor = MIN(closestHarbor, VertexUtility::Distance(x, y, it->x, it->y, width, height));
+                    closestHarbor = std::min(closestHarbor,
+                                             VertexUtility::Distance(x, y, it->x, it->y, width, height));
                 }
                 
                 // setup harbor position

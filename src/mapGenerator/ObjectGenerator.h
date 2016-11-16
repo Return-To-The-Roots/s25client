@@ -18,120 +18,56 @@
 #ifndef ObjectGenerator_h__
 #define ObjectGenerator_h__
 
-#ifndef IntPair
-#define IntPair std::pair<uint8_t, uint8_t>
-#endif
-
 #include <utility>
+#include "stdint.h"
+#include "gameTypes/MapTypes.h"
+
+typedef std::pair<uint8_t, uint8_t> IntPair;
 
 class ObjectGenerator
 {
     public:
     
-    static IntPair CreateTexture(int id)
-    {
-        return IntPair(id, id);
-    }
+    /**
+     * Creates a new texture for the specified terrain type.
+     * @param harbor whether or not enable harbor placement on the texture. To enable the player to
+     *      place a harbor at the position of the texture, it need to be close to water. Also keep 
+     *      in mind, only terrain types which allow buildings also support harbor placement.
+     * @return the new texture, including two triangles for right-side-up and right-side-down
+     */
+    static IntPair CreateTexture(TerrainType terrain, const bool harbor = false);
     
-    static bool IsTexture(const IntPair& texture, int id)
-    {
-        return texture.first == id || texture.second == id;
-    }
+    static bool IsTexture(const IntPair& texture, TerrainType terrain);
     
-    static IntPair CreateEmpty()
-    {
-        return IntPair(0x00, 0x00);
-    }
+    static IntPair CreateEmpty();
     
-    static IntPair CreateHeadquarter(int i)
-    {
-        return IntPair(i, 0x80);
-    }
+    static IntPair CreateHeadquarter(const int i);
 
-    static bool IsEmpty(const IntPair& object)
-    {
-        return object.first == 0x00 && object.second == 0x00;
-    }
+    static bool IsEmpty(const IntPair& object);
     
-    static uint8_t CreateDuck()
-    {
-        return 0x05;
-    }
+    static uint8_t CreateDuck();
     
-    static uint8_t CreateSheep()
-    {
-        return 0x06;
-    }
+    static uint8_t CreateSheep();
     
-    static uint8_t CreateRandomForestAnimal()
-    {
-        const int animal = rand() % 4;
-        switch (animal)
-        {
-            case 0: return 0x01; // rabbit
-            case 1: return 0x02; // fox
-            case 2: return 0x03; // stag
-            default: return 0x04; // roe
-        }
-    }
+    static uint8_t CreateRandomForestAnimal();
     
-    static uint8_t CreateRandomResource()
-    {
-        const int rnd = rand() % 100;
-        int resource = 0x00;
-        if (rnd <= 9)       resource = 0x51; // 9% gold
-        else if (rnd <= 45) resource = 0x49; // 36% iron
-        else if (rnd <= 85) resource = 0x41; // 40% coal
-        else                resource = 0x59; // 15% granite
-        return resource + rand() % 7;
-    }
+    static uint8_t CreateRandomResource();
     
-    static uint8_t CreateRandomAnimal()
-    {
-        const int animal = rand() % 5;
-        switch (animal)
-        {
-            case 0: return 0x01; // rabbit
-            case 1: return 0x02; // fox
-            case 2: return 0x03; // stag
-            case 3: return 0x04; // roe
-            default: return 0x06; // sheep
-        }
-    }
+    static uint8_t CreateRandomAnimal();
     
-    static bool IsTree(const IntPair& object)
-    {
-        return object.second == 0xC5 || object.second == 0xC4;
-    }
+    static bool IsTree(const IntPair& object);
     
-    static IntPair CreateRandomTree()
-    {        
-        IntPair tree;
-        
-        switch (rand() % 3)
-        {
-            case 0: tree.first = 0x30 + rand() % 8; break;
-            case 1: tree.first = 0x70 + rand() % 8; break;
-            case 2: tree.first = 0xB0 + rand() % 8; break;
-        }
-        tree.second = 0xC4;
-        return tree;
-    }
+    static IntPair CreateRandomTree();
     
-    static IntPair CreateRandomPalm()
-    {
-        return (rand() % 2 == 0) ? IntPair(0x30 + rand() % 8, 0xC5) : IntPair(0xF0 + rand() % 8, 0xC4);
-    }
+    static IntPair CreateRandomPalm();
     
-    static IntPair CreateRandomMixedTree()
-    {
-        return (rand() % 2 == 0) ? CreateRandomTree() : CreateRandomPalm();
-    }
+    static IntPair CreateRandomMixedTree();
     
-    static IntPair CreateRandomStone()
-    {
-        return IntPair(0x01 + rand() % 6, 0xCC + rand() % 2);
-    }
+    static IntPair CreateRandomStone();
+    
+    static uint8_t GetTextureId(TerrainType terrain);
+    
+    static bool IsHarborAllowed(TerrainType terrain);
 };
 
 #endif // ObjectGenerator_h__
