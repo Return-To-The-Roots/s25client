@@ -109,10 +109,10 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 {
-    const int x = 2;
-    const int y = 3;
-    const int width = 2 * x;
-    const int height = 2 * y;
+    const int x = 4;
+    const int y = 2;
+    const int width = x * x;
+    const int height = y * y;
     const int index = VertexUtility::GetIndexOf(x, y, width, height);
     
     BOOST_REQUIRE_EQUAL(index, y * width + x);
@@ -121,20 +121,9 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 BOOST_AUTO_TEST_SUITE_END()
 
 /*
- TODO
-
- std::vector<int> VertexUtility::GetNeighbors(const int x,
-                                             const int y,
-                                             const int width,
-                                             const int height,
-                                             const int radius);
-
- double VertexUtility::Distance(const int x1,
-                               const int y1,
-                               const int x2,
-                               const int y2,
-                               const int width,
-                               const int height)
+ TODO:
+ std::vector<int> VertexUtility::GetNeighbors(const int x, const int y, const int width, const int height, const int radius);
+ double VertexUtility::Distance(const int x1, const int y1, const int x2, const int y2, const int width, const int height)
 */
 
 

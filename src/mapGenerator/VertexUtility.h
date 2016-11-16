@@ -39,8 +39,8 @@ class VertexUtility
      * coordinates are continuing on the other side of the map again (fluent boundaries).
      * @param x x-coordinate of the position of the vertex on the map
      * @param y y-coordinate of the position of the vertex on the map
-     * @param width map width
-     * @param height map height
+     * @param width map width (MUST be of the power of 2)
+     * @param height map height (MUST be of the power of 2)
      * @return the index of the vertex
      */
     static int GetIndexOf(const int x, const int y, const int width, const int height);
