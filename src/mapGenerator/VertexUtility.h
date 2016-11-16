@@ -18,8 +18,8 @@
 #ifndef VertexUtility_h__
 #define VertexUtility_h__
 
-#include <vector>
 #include "mapGenerator/Vec2.h"
+#include <vector>
 
 class VertexUtility
 {

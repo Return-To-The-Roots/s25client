@@ -18,12 +18,11 @@
 #ifndef Generator_h__
 #define Generator_h__
 
-#pragma once
-
-#include <string>
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/Vec2.h"
+
+#include <string>
 
 /**
  * The Generator is an abstract class which defines the basic input and output for map 

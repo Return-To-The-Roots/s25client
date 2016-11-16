@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/ObjectGenerator.h"
+
 #include <cstdlib>
 
 uint8_t ObjectGenerator::GetTextureId(TerrainType terrain)

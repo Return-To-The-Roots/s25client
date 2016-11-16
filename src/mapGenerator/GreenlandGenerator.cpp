@@ -15,14 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "mapGenerator/GreenlandGenerator.h"
+#include "mapGenerator/ObjectGenerator.h"
+#include "mapGenerator/VertexUtility.h"
+
+#include <boost/range/algorithm.hpp>
+
 #include <vector>
 #include <cstdlib>
 #include <cmath>
-#include <boost/range/algorithm.hpp>
-
-#include "mapGenerator/GreenlandGenerator.h"
-#include "mapGenerator/VertexUtility.h"
-#include "mapGenerator/ObjectGenerator.h"
 
 // texture definition through height-map
 #define LEVEL_WATER             3

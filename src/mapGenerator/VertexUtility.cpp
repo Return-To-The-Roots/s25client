@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include <cmath>
 #include "mapGenerator/VertexUtility.h"
+#include <cmath>
 
 Vec2 VertexUtility::GetPosition(const int index, const int width, const int height)
 {

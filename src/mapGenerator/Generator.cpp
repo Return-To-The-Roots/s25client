@@ -15,14 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "mapGenerator/Generator.h"
+#include "mapGenerator/MapWriter.h"
+#include "mapGenerator/ObjectGenerator.h"
+#include "mapGenerator/VertexUtility.h"
+
 #define _USE_MATH_DEFINES
+
 #include <cmath>
 #include <cstdlib>
 #include <stdexcept>
-#include "mapGenerator/Generator.h"
-#include "mapGenerator/MapWriter.h"
-#include "mapGenerator/VertexUtility.h"
-#include "mapGenerator/ObjectGenerator.h"
 
 // Function for iterating over a rectangle around a center point and compute the
 // distance of each point to the center.

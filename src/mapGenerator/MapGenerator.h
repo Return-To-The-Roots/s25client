@@ -18,10 +18,11 @@
 #ifndef MapGenerator_h__
 #define MapGenerator_h__
 
-#include <string>
-#include <cstdlib>
 #include "mapGenerator/Style.h"
 #include "mapGenerator/MapSettings.h"
+
+#include <string>
+#include <cstdlib>
 
 /**
  * The MapGenerator is a utility to generate a large variaty of different worlds.

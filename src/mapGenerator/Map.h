@@ -18,11 +18,9 @@
 #ifndef Map_h__
 #define Map_h__
 
-#pragma once
-
 #include "mapGenerator/MapHeader.h"
-#include "mapGenerator/Vertex.h"
 #include "mapGenerator/Vec2.h"
+#include "mapGenerator/Vertex.h"
 
 /**
  * Data type for reading, writing and generating maps.

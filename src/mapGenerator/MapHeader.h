@@ -18,7 +18,7 @@
 #ifndef MapHeader_h__
 #define MapHeader_h__
 
-#include <stdio.h>
+#include "stdint.h"
 
 struct MapHeader
 {

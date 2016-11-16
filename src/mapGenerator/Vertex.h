@@ -18,8 +18,8 @@
 #ifndef Vertex_h__
 #define Vertex_h__
 
-#include <utility>
 #include <stdio.h>
+#include <utility>
 
 struct Vertex
 {

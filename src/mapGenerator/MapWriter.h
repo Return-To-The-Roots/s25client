@@ -18,8 +18,9 @@
 #ifndef MapWriter_h__
 #define MapWriter_h__
 
-#include <string>
 #include "mapGenerator/Map.h"
+
+#include <string>
 
 // The MapWriter is used to write mgMap instances to a file.
 class MapWriter

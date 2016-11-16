@@ -18,8 +18,6 @@
 #ifndef GreenlandGenerator_h__
 #define GreenlandGenerator_h__
 
-#pragma once
-
 #include "mapGenerator/Generator.h"
 
 /**

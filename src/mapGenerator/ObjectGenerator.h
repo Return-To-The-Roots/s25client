@@ -18,12 +18,16 @@
 #ifndef ObjectGenerator_h__
 #define ObjectGenerator_h__
 
-#include <utility>
-#include "stdint.h"
 #include "gameTypes/MapTypes.h"
+#include "stdint.h"
+#include <utility>
 
 typedef std::pair<uint8_t, uint8_t> IntPair;
 
+/**
+ * TODO: probably handles to much (textures are not objects)
+ * Object generator for map generation.
+ */
 class ObjectGenerator
 {
     public:
@@ -37,37 +41,108 @@ class ObjectGenerator
      */
     static IntPair CreateTexture(TerrainType terrain, const bool harbor = false);
     
+    /**
+     * Checks whether or not the specified texture is representing the specified terrain.
+     * @param texture input texture to check
+     * @param terrain terrain to compare the input texture to
+     * @return true if at least one of the texture-triangles matches the terrain, false otherwise
+     */
     static bool IsTexture(const IntPair& texture, TerrainType terrain);
     
-    static IntPair CreateEmpty();
-    
-    static IntPair CreateHeadquarter(const int i);
-
-    static bool IsEmpty(const IntPair& object);
-    
-    static uint8_t CreateDuck();
-    
-    static uint8_t CreateSheep();
-    
-    static uint8_t CreateRandomForestAnimal();
-    
-    static uint8_t CreateRandomResource();
-    
-    static uint8_t CreateRandomAnimal();
-    
-    static bool IsTree(const IntPair& object);
-    
-    static IntPair CreateRandomTree();
-    
-    static IntPair CreateRandomPalm();
-    
-    static IntPair CreateRandomMixedTree();
-    
-    static IntPair CreateRandomStone();
-    
+    /**
+     * Converts the input terrain into a texture id which can be stored in the original s2 map format. 
+     * @param terrain terrain to get the texture id for
+     * @return texture id of the terrain type
+     */
     static uint8_t GetTextureId(TerrainType terrain);
     
+    /**
+     * Checks whether or not it is allowed to build a harbor on the specified terrain.
+     * @param terrain terrain to check
+     * @return true of it is allowed to build a harbor on the terrain
+     */
     static bool IsHarborAllowed(TerrainType terrain);
+
+    /**
+     * Creates a new, empty object.
+     * @return empty object
+     */
+    static IntPair CreateEmpty();
+
+    /**
+     * Creates a new headquarter for the specified player.
+     * @param i player number
+     * @return a new headquarter object
+     */
+    static IntPair CreateHeadquarter(const int i);
+
+    /**
+     * Checks whether or not the specified object is empty.
+     * @param object object to check
+     * @return true if the object is empty, false otherwise
+     */
+    static bool IsEmpty(const IntPair& object);
+
+    /**
+     * Creates a new duck.
+     * @return a new duck animal
+     */
+    static uint8_t CreateDuck();
+
+    /**
+     * Creates a new sheep.
+     * @return a new sheep animal
+     */
+    static uint8_t CreateSheep();
+
+    /**
+     * Creates a new, random animal to be placed inside of a forest.
+     * @return a new forest animal
+     */
+    static uint8_t CreateRandomForestAnimal();
+    
+    /**
+     * Creates a new random mountain resources (gold, coal, granite, iron).
+     * @return random piles of gold, coal, granite or iron
+     */
+    static uint8_t CreateRandomResource();
+
+    /**
+     * Creates a new, random ground animal.
+     * @return a new ground animal
+     */
+    static uint8_t CreateRandomAnimal();
+    
+    /**
+     * Checks whether or not the specified object is a tree.
+     * @param object object to check
+     * @return true if the specified object is a tree, false otherwise
+     */
+    static bool IsTree(const IntPair& object);
+
+    /**
+     * Creates a new, random tree (excluding palm trees).
+     * @return a new tree object
+     */
+    static IntPair CreateRandomTree();
+
+    /**
+     * Creates a new, random palm.
+     * @return a new palm object
+     */
+    static IntPair CreateRandomPalm();
+    
+    /**
+     * Creates a new, random tree (including palm trees).
+     * @return a new tree object
+     */
+    static IntPair CreateRandomMixedTree();
+    
+    /**
+     * Creates a random amount of stone.
+     * @return a new stone object
+     */
+    static IntPair CreateRandomStone();
 };
 
 #endif // ObjectGenerator_h__

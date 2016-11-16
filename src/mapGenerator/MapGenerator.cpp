@@ -15,26 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include <memory>
-#include <stdexcept>
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/GreenlandGenerator.h"
+
+#include <memory>
+#include <stdexcept>
 
 void MapGenerator::Create(const std::string& filePath, Style style, const MapSettings& settings)
 {
     std::unique_ptr<Generator> generator;
     
-     //GreenlandGenerator(
-     //   radiusPlayerMin,
-     //   radiusPlayerMax,
-     //   radiusInnerLand,
-     //   radiusIslands,
-     //   radiusSmallIslands,
-     //   radiusWaterOnly,
-     //   likelyhoodStone,
-     //   likelyhoodTree)
-     
     switch (style)
     {
         case Greenland:
