@@ -48,7 +48,6 @@
 #include "libutil/src/ucString.h"
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/move/unique_ptr.hpp>
 
 /** @class dskSelectMap
  *
@@ -252,7 +251,7 @@ void dskSelectMap::StartRandomMap()
     settings.type = 0x00;
 
     // create new map generator
-    boost::movelib::unique_ptr<MapGenerator> generator(new MapGenerator);
+    MapGenerator* generator = new MapGenerator();
     
     // setup filepath for the random map
     map_path = GetFilePath(FILE_PATHS[48]);
@@ -260,6 +259,9 @@ void dskSelectMap::StartRandomMap()
 
     // create a random map and save filepath
     generator->Create(map_path, Style::Random, settings);
+    
+    // memory cleanup
+    delete generator; generator = NULL;
     
     // close & cleanup "please wait" window
     WINDOWMANAGER.Close(waitWindow);
