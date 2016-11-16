@@ -67,13 +67,13 @@ bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
 
 IntPair ObjectGenerator::CreateTexture(TerrainType terrain, const bool harbor)
 {
-    u_int8_t textureId = harbor && IsHarborAllowed(terrain) ? GetTextureId(terrain) | 0x40 : GetTextureId(terrain);
+    uint8_t textureId = harbor && IsHarborAllowed(terrain) ? GetTextureId(terrain) | 0x40 : GetTextureId(terrain);
     return IntPair(textureId, textureId);
 }
     
 bool ObjectGenerator::IsTexture(const IntPair& texture, TerrainType terrain)
 {
-    u_int8_t textureId = GetTextureId(terrain);
+    uint8_t textureId = GetTextureId(terrain);
     return texture.first == textureId || texture.second == textureId;
 }
     
