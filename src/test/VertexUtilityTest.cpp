@@ -17,6 +17,7 @@
 
 #include "mapGenerator/VertexUtility.h"
 #include <boost/test/unit_test.hpp>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(VertexUtilityTest)
 
@@ -118,12 +119,27 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
     BOOST_REQUIRE_EQUAL(index, y * width + x);
 }
 
+/**
+ * Tests the VertexUtility::GetNeighbors function for neighbors outside of the bounds given
+ * by width and height. The resulting neighbor indices must contain the ones from the other
+ * side of the map.
+ */
+BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
+{
+    std::vector<int> neighbors = VertexUtility::GetNeighbors(0, 0, 10, 10, 1);
+    
+    BOOST_REQUIRE_EQUAL(neighbors.size(), 5);
+}
+
+/**
+ * Tests the VertexUtility::Distance function for neighboring vertices at the map's boundaries.
+ */
+BOOST_FIXTURE_TEST_CASE(Distance_BoundaryNeighbors, VertexUtility)
+{
+    const double distance = VertexUtility::Distance(0, 0, 0, 9, 10, 10);
+    
+    BOOST_REQUIRE_LT(distance, 2.0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
-
-/*
- TODO:
- std::vector<int> VertexUtility::GetNeighbors(const int x, const int y, const int width, const int height, const int radius);
- double VertexUtility::Distance(const int x1, const int y1, const int x2, const int y2, const int width, const int height)
-*/
-
 
