@@ -35,7 +35,9 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "desktops/dskLAN.h"
-#include "mapGenerator/Includes.h"
+#include "mapGenerator/Style.h"
+#include "mapGenerator/MapGenerator.h"
+#include "mapGenerator/MapSettings.h"
 
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwSave.h"
