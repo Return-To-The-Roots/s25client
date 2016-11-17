@@ -48,28 +48,31 @@ class GreenlandGenerator : public Generator
                        double radiusWaterOnly,
                        int likelyhoodStone,
                        int likelyhoodTree) :
-    _radiusPlayerMin(radiusPlayerMin),
-    _radiusPlayerMax(radiusPlayerMax),
-    _radiusInnerLand(radiusInnerLand),
-    _radiusIslands(radiusIslands),
-    _radiusSmallIslands(radiusSmallIslands),
-    _radiusWaterOnly(radiusWaterOnly),
-    _likelyhoodStone(likelyhoodStone),
-    _likelyhoodTree(likelyhoodTree){}
+        _radiusPlayerMin    (radiusPlayerMin),
+        _radiusPlayerMax    (radiusPlayerMax),
+        _radiusInnerLand    (radiusInnerLand),
+        _radiusIslands      (radiusIslands),
+        _radiusSmallIslands (radiusSmallIslands),
+        _radiusWaterOnly    (radiusWaterOnly),
+        _likelyhoodStone    (likelyhoodStone),
+        _likelyhoodTree     (likelyhoodTree)
+    {
+        
+    }
     
     /**
      * Creates a new GreenlandGenerator with random landscape properties.
      */
     GreenlandGenerator()
     {
-        _radiusPlayerMin = DRand(0.3, 0.5);
-        _radiusPlayerMax = DRand(_radiusPlayerMin, _radiusPlayerMin + 0.2);
-        _radiusInnerLand = DRand(0.0, 0.5);
-        _radiusIslands = DRand(_radiusInnerLand, _radiusInnerLand + 1.8);
-        _radiusSmallIslands = DRand(_radiusIslands, _radiusIslands + 1.0);
-        _radiusWaterOnly = DRand(_radiusSmallIslands, _radiusSmallIslands + 0.5);
-        _likelyhoodStone = 1 + rand() % 8;
-        _likelyhoodTree = 5 + rand() % 30;
+        _radiusPlayerMin    = DRand(0.3, 0.5);
+        _radiusPlayerMax    = DRand(0.5, 0.8);
+        _radiusInnerLand    = DRand(0.0, 0.5);
+        _radiusIslands      = DRand(0.3, 2.0);
+        _radiusSmallIslands = DRand(0.4, 2.1);
+        _radiusWaterOnly    = DRand(0.8, 2.5);
+        _likelyhoodStone    = 1 + rand() % 8;
+        _likelyhoodTree     = 5 + rand() % 30;
     }
     
     protected:

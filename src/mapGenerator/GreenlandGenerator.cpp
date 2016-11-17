@@ -190,7 +190,8 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
 
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
             const int pr = (int)likelyhood;
-            const int rnd = RANDOM.Rand(__FILE__, __LINE__, index, pr > 0 ? 101 : (int)(100.0 / likelyhood));
+            const int rnd = rand() % (pr > 0 ? 101 : (int)(100.0 / likelyhood));
+            //RANDOM.Rand(__FILE__, __LINE__, index, pr > 0 ? 101 : (int)(100.0 / likelyhood));
 
             if (max > 0 && rnd <= pr)
             {
@@ -295,7 +296,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             ////////
             /// random resources
             ////////
-            const int rnd = RANDOM.Rand(__FILE__, __LINE__, index, 100);
+            const int rnd = rand() % 100;// RANDOM.Rand(__FILE__, __LINE__, index, 100);
             
             if (distanceToPlayer > MIN_DISTANCE_TREES && rnd < _likelyhoodTree)
             {
