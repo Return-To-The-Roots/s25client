@@ -19,6 +19,7 @@
 #define GreenlandGenerator_h__
 
 #include "mapGenerator/Generator.h"
+#include <cstdlib>
 
 /**
  * Random map generator for Greenland.
@@ -39,14 +40,14 @@ class GreenlandGenerator : public Generator
      * @param likelyhoodStone likelyhood in percentage that a stone pile is generated for a vertex
      * @param likelyhoodTree likelyhood in percentage that a tree is generated for a vertex
      */
-    GreenlandGenerator(double radiusPlayerMin   = 0.5,
-                       double radiusPlayerMax   = 0.7,
-                       double radiusInnerLand   = 0.3,
-                       double radiusIslands     = 2.5,
-                       double radiusSmallIslands= 2.5,
-                       double radiusWaterOnly   = 2.5,
-                       int likelyhoodStone      = 5,
-                       int likelyhoodTree       = 20) :
+    GreenlandGenerator(double radiusPlayerMin,
+                       double radiusPlayerMax,
+                       double radiusInnerLand,
+                       double radiusIslands,
+                       double radiusSmallIslands,
+                       double radiusWaterOnly,
+                       int likelyhoodStone,
+                       int likelyhoodTree) :
     _radiusPlayerMin(radiusPlayerMin),
     _radiusPlayerMax(radiusPlayerMax),
     _radiusInnerLand(radiusInnerLand),
@@ -55,6 +56,21 @@ class GreenlandGenerator : public Generator
     _radiusWaterOnly(radiusWaterOnly),
     _likelyhoodStone(likelyhoodStone),
     _likelyhoodTree(likelyhoodTree){}
+    
+    /**
+     * Creates a new GreenlandGenerator with random landscape properties.
+     */
+    GreenlandGenerator()
+    {
+        _radiusPlayerMin = DRand(0.3, 0.5);
+        _radiusPlayerMax = DRand(_radiusPlayerMin, _radiusPlayerMin + 0.2);
+        _radiusInnerLand = DRand(0.0, 0.5);
+        _radiusIslands = DRand(_radiusInnerLand, _radiusInnerLand + 1.8);
+        _radiusSmallIslands = DRand(_radiusIslands, _radiusIslands + 1.0);
+        _radiusWaterOnly = DRand(_radiusSmallIslands, _radiusSmallIslands + 0.5);
+        _likelyhoodStone = 1 + rand() % 8;
+        _likelyhoodTree = 5 + rand() % 30;
+    }
     
     protected:
     
@@ -147,6 +163,15 @@ class GreenlandGenerator : public Generator
      */
     void FillRemainingTerrain(const MapSettings& settings, Map* map);
 
+    /**
+     * Generates a random number between min and max.
+     * @param min minimum values
+     * @param max maximum value
+     */
+    double DRand(const double min, const double max)
+    {
+        return min + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX/(max - min)));
+    }
  };
 
 #endif // GreenlandGenerator_h__

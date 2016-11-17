@@ -22,30 +22,29 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <stdexcept>
 
+typedef boost::interprocess::unique_ptr<Generator, Deleter<Generator> > GeneratorPtr;
+
 void MapGenerator::Create(const std::string& filePath, Style style, const MapSettings& settings)
 {
-    boost::interprocess::unique_ptr<Generator, Deleter<Generator> > generator;
-    
+    GeneratorPtr generator;
+
     switch (style)
     {
         case Greenland:
-            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator());
+            generator = GeneratorPtr(new GreenlandGenerator(0.5, 0.7, 0.3, 2.5, 2.5, 2.5, 5, 20));
             break;
         case Riverland:
             break;
         case Islands:
             break;
         case Contient:
-            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator(0.5, 0.7, 0.3, 0.6, 0.6, 0.9));
+            generator = GeneratorPtr(new GreenlandGenerator(0.5, 0.7, 0.3, 0.6, 0.6, 0.9, 5, 20));
             break;
         case Migration:
-            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator(0.7, 0.75, 0.2, 0.4, 0.6, 2.0));
+            generator = GeneratorPtr(new GreenlandGenerator(0.7, 0.75, 0.2, 0.4, 0.6, 2.0, 5, 20));
             break;
         case Random:
-            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator(DRand(0.3, 0.5), DRand(0.5, 0.8),
-                                                                          DRand(0.0, 0.5), DRand(0.3, 2.0),
-                                                                          DRand(0.4, 2.1), DRand(0.8, 2.5),
-                                                                          1 + rand() % 8, 5 + rand() % 30));
+            generator = GeneratorPtr(new GreenlandGenerator());
             break;
     }
     

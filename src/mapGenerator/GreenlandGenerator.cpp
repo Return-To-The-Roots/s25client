@@ -15,11 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
+
 #include "mapGenerator/GreenlandGenerator.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 
-#include <boost/range/algorithm.hpp>
+#include "Random.h"
 
 #include <vector>
 #include <cstdlib>
@@ -101,8 +103,8 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     for (int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        Vec2 position = ComputePointOnCircle(i, settings.players, center,
-                                             (double)(rMin + rand() % (rMax - rMin)));
+        const int rnd = RANDOM.Rand(__FILE__, __LINE__, i, rMax - rMin);
+        Vec2 position = ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
 
         // create headquarter
         map->positions[i] = position;
@@ -114,37 +116,11 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
 {
     for (int i = 0; i < settings.players; i++)
     {
-        // intialize list of different resources identified by indices
-        std::vector<std::pair<int, int> > res; // resource index + distance to player
-        res.push_back(std::pair<int, int>(0, (int)MIN_DISTANCE_STONE + rand() % 2)); // stone
-        res.push_back(std::pair<int, int>(1, (int)MIN_DISTANCE_STONE + rand() % 2)); // stone
-        
-        // put resource placement into random order to generate more interesting maps
-        boost::random_shuffle(res);
-            
-        // stores the current offset of the current resource position on an imaginary cycle
-        // to avoid overlapping resources during placement
-        int circle_offset = 0;
-        Vec2 pos;
-        
-        for (std::vector<std::pair<int, int> >::iterator it = res.begin(); it != res.end(); ++it)
-        {
-            pos = ComputePointOnCircle(rand() % (360 / res.size()) + circle_offset,
-                                        360, map->positions[i], (double)it->second);
-                
-            switch (it->first)
-            {
-                case 0:
-                    SetStones(map, pos, 2.0F);
-                    break;
-                case 1:
-                    SetStones(map, pos, 2.7F);
-                    break;
-            }
-                
-            // iteration about a circle in degree
-            circle_offset = (circle_offset + 360 / res.size()) % 360;
-        }
+        const int offset1 = RANDOM.Rand(__FILE__, __LINE__, i, 180);
+        const int offset2 = RANDOM.Rand(__FILE__, __LINE__, i, 180) + 180;
+
+        SetStones(map, ComputePointOnCircle(offset1, 360, map->positions[i], MIN_DISTANCE_STONE), 2.0F);
+        SetStones(map, ComputePointOnCircle(offset2, 360, map->positions[i], MIN_DISTANCE_STONE), 2.7F);
     }
 }
 
@@ -212,12 +188,14 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                 likelyhood = LIKELYHOOD_HILL_ISLANDS_SMALL;
             }
 
+            const int index = VertexUtility::GetIndexOf(x, y, width, height);
             const int pr = (int)likelyhood;
-            const int rnd = pr > 0 ? (rand() % 100 + 1) : (rand() % (int)(100.0 / likelyhood));
-            
+            const int rnd = RANDOM.Rand(__FILE__, __LINE__, index, pr > 0 ? 101 : (int)(100.0 / likelyhood));
+
             if (max > 0 && rnd <= pr)
             {
-                int z = min + rand() % (max - min + 1);
+                const int rndHeight = RANDOM.Rand(__FILE__, __LINE__, index, max - min + 1);
+                int z = min + rndHeight;
                 if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
                 
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, z);
@@ -266,7 +244,8 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 map->vertex[index].z = LEVEL_WATER;
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_WATER);
-                map->vertex[index].animal = (rand() % 30 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
+                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 30) == 0) ?
+                                                ObjectGenerator::CreateDuck() : 0x00;
                 map->vertex[index].resource = 0x87; // fish
             }
             else if (level <= LEVEL_DESSERT && distanceToPlayer > MIN_DISTANCE_WATER)
@@ -284,17 +263,20 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             else if (level <= LEVEL_GRASS)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW1);
-                map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
+                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 20) == 0) ?
+                                                ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             else if (level <= LEVEL_GRASS_FLOWERS)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW_FLOWERS);
-                map->vertex[index].animal = (rand() % 19 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
+                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 19) == 0) ?
+                                                ObjectGenerator::CreateSheep() : 0x00;
             }
             else if (level <= LEVEL_GRASS2)
             {
                 map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW2);
-                map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
+                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 20) == 0) ?
+                                                ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             else if (level <= LEVEL_PREMOUNTAIN)
             {
@@ -313,8 +295,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             ////////
             /// random resources
             ////////
-            
-            const int rnd = rand() % 100;
+            const int rnd = RANDOM.Rand(__FILE__, __LINE__, index, 100);
             
             if (distanceToPlayer > MIN_DISTANCE_TREES && rnd < _likelyhoodTree)
             {
@@ -362,8 +343,10 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                                              VertexUtility::Distance(x, y, it->x, it->y, width, height));
                 }
                 
+                const int rnd = RANDOM.Rand(__FILE__, __LINE__, index, 100);
+
                 // setup harbor position
-                if (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor && rand() % 100 < LIKELYHOOD_HARBOR)
+                if (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor && rnd < LIKELYHOOD_HARBOR)
                 {
                     SetHarbour(map, Vec2(x, y), LEVEL_WATER);
                     harbors.push_back(Vec2(x,y));
@@ -375,6 +358,8 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
 
 Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
 {
+    RANDOM.Init(0);
+    
     Map* map = new Map();
     
     // configuration of the map header

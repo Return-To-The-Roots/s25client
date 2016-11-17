@@ -127,8 +127,9 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
 {
     std::vector<int> neighbors = VertexUtility::GetNeighbors(0, 0, 10, 10, 1);
+    const unsigned int expectedSize = 5;
     
-    BOOST_REQUIRE_EQUAL(neighbors.size(), 5);
+    BOOST_REQUIRE_EQUAL(neighbors.size(), expectedSize);
 }
 
 /**
