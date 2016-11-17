@@ -94,7 +94,7 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_WaterOnly, GreenlandGenerator)
     settings.players = 4;
     settings.type = 0x0;
 
-    GreenlandGenerator* generator = new GreenlandGenerator(0.3, 0.8, 0.0, 0.0, 0.0, 2.0, 5, 20);
+    GreenlandGenerator* generator = new GreenlandGenerator(0.3, 0.8, 0.0, 0.0, 0.0, 0.0, 5, 20);
     Map* map = generator->Create(settings);
     
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
