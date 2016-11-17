@@ -21,8 +21,8 @@
 #include "mapGenerator/VertexUtility.h"
 
 #define _USE_MATH_DEFINES
-#include <cmath>
-#include <cstdlib>
+#include <math.h>
+#include <stdlib.h>
 #include <stdexcept>
 
 // Function for iterating over a rectangle around a center point and compute the
