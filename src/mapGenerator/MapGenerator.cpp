@@ -18,31 +18,31 @@
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/GreenlandGenerator.h"
-
-#include <memory>
+#include "helpers/Deleter.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <stdexcept>
 
 void MapGenerator::Create(const std::string& filePath, Style style, const MapSettings& settings)
 {
-    std::unique_ptr<Generator> generator;
+    boost::interprocess::unique_ptr<Generator, Deleter<Generator> > generator;
     
     switch (style)
     {
         case Greenland:
-            generator = std::unique_ptr<Generator>(new GreenlandGenerator());
+            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator());
             break;
         case Riverland:
             break;
         case Islands:
             break;
         case Contient:
-            generator = std::unique_ptr<Generator>(new GreenlandGenerator(0.5, 0.7, 0.3, 0.6, 0.6, 0.9));
+            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator(0.5, 0.7, 0.3, 0.6, 0.6, 0.9));
             break;
         case Migration:
-            generator = std::unique_ptr<Generator>(new GreenlandGenerator(0.7, 0.75, 0.2, 0.4, 0.6, 2.0));
+            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator(0.7, 0.75, 0.2, 0.4, 0.6, 2.0));
             break;
         case Random:
-            generator = std::unique_ptr<Generator>(new GreenlandGenerator(DRand(0.3, 0.5), DRand(0.5, 0.8),
+            generator = boost::interprocess::unique_ptr<Generator, Deleter<Generator> >(new GreenlandGenerator(DRand(0.3, 0.5), DRand(0.5, 0.8),
                                                                           DRand(0.0, 0.5), DRand(0.3, 2.0),
                                                                           DRand(0.4, 2.1), DRand(0.8, 2.5),
                                                                           1 + rand() % 8, 5 + rand() % 30));

@@ -32,6 +32,8 @@ class Generator
 {
     public:
     
+    virtual ~Generator() {}
+    
     /**
      * Generates a new random map with the specified settings and saves the new map to the 
      * specified file path.

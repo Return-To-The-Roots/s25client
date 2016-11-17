@@ -43,6 +43,7 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "helpers/Deleter.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
@@ -50,6 +51,7 @@
 #include "libutil/src/ucString.h"
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 /** @class dskSelectMap
  *
@@ -253,7 +255,7 @@ void dskSelectMap::StartRandomMap()
     settings.type = 0x00;
 
     // create new map generator
-    MapGenerator* generator = new MapGenerator();
+    boost::interprocess::unique_ptr<MapGenerator, Deleter<MapGenerator> > generator(new MapGenerator());
     
     // setup filepath for the random map
     map_path = GetFilePath(FILE_PATHS[48]);
@@ -261,9 +263,6 @@ void dskSelectMap::StartRandomMap()
 
     // create a random map and save filepath
     generator->Create(map_path, Random, settings);
-    
-    // memory cleanup
-    delete generator; generator = NULL;
     
     // close & cleanup "please wait" window
     WINDOWMANAGER.Close(waitWindow);
