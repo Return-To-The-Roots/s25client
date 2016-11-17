@@ -133,26 +133,6 @@ void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
     }
 }
 
-void Generator::SetTrees(Map* map, const Vec2& center, const double radius)
-{
-    ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
-    
-    if (dist < radius)
-    {
-        // compute value representing distance to center
-        double f = (1.0F - dist / radius);
-        int p = (int)(100 * f * f);
-        
-        // lower likelyhood for tree placement with increasing distance to center
-        if (p > 0 && rand() % p > 10)
-        {
-            SetTree(map, Vec2(x, y));
-        }
-    }
-    
-    ITER_RECT_END
-}
-
 void Generator::SetTree(Map* map, const Vec2& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);

@@ -68,15 +68,6 @@ class Generator
     void SetHarbour(Map* map, const Vec2& center, const int waterLevel);
     
     /**
-     * Sets trees on the map around the specified center within the specified radius.
-     * The further away the trees are from the center the lower the likelyhood for placement.
-     * @param map map to modify the terrain for
-     * @param center center point for tree placement
-     * @param radius radius around the center to place trees in
-     */
-    void SetTrees(Map* map, const Vec2& center, const double radius);
-    
-    /**
      * Places a tree to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the tree
