@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_Headquarters, GreenlandGenerator)
         
         const Vertex v = map->vertex[p.y * settings.width + p.x];
         BOOST_REQUIRE_EQUAL(v.object.first, i);
-        BOOST_REQUIRE_EQUAL(v.object.second, 0x80);        
+        BOOST_REQUIRE_EQUAL(v.object.second, 0x80);
     }
 
     for (unsigned int i = settings.players; i < 7; i++)

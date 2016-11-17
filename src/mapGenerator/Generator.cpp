@@ -24,23 +24,6 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-// Function for iterating over a rectangle around a center point and compute the
-// distance of each point to the center.
-// @param r integer radius (maximum distance to the center in one direction)
-// @param cx x coordinate of the center point
-// @param cy y coordinate of the center point
-// @param w width of the entire map (to escape map overflow)
-// @param h height of the entire map (to escape map overflow)
-#ifndef ITER_RECT_BEGIN
-#define ITER_RECT_BEGIN(r, cx, cy, w, h) \
-    for (int x = cx - r; x < cx + r; x++) { \
-        for (int y = cy - r; y <cy + r; y++) { \
-            double dist = VertexUtility::Distance(cx, cy, x, y, w, h);
-#define ITER_RECT_END \
-        } \
-    }
-#endif
-
 Map* Generator::Create(const MapSettings& settings)
 {
     // generate a new random map
@@ -143,14 +126,20 @@ void Generator::SetTree(Map* map, const Vec2& position)
 
 void Generator::SetStones(Map* map, const Vec2& center, const double radius)
 {
-    ITER_RECT_BEGIN((int)radius, center.x, center.y, map->width, map->height)
+    const int width = map->width;
+    const int height = map->height;
+    const int cx = center.x, cy = center.y, r = (int)radius;
     
-    if (dist < radius)
+    for (int x = cx - r; x < cx + r; x++)
     {
-        SetStone(map, Vec2(x, y));
+        for (int y = cy - r; y <cy + r; y++)
+        {
+            if (VertexUtility::Distance(cx, cy, x, y, width, height) < radius)
+            {
+                SetStone(map, Vec2(x, y));
+            }
+        }
     }
-
-    ITER_RECT_END
 }
 
 void Generator::SetStone(Map* map, const Vec2& position)
