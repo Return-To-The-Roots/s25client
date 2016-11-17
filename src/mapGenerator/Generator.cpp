@@ -159,7 +159,7 @@ void Generator::SetTree(Map* map, const Vec2& position)
     
     if (ObjectGenerator::IsEmpty(map->vertex[index].object))
     {
-        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TerrainType::TT_DESERT))
+        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_DESERT))
         {
             map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
         }
