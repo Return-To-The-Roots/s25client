@@ -35,12 +35,10 @@ class Generator
     virtual ~Generator() {}
     
     /**
-     * Generates a new random map with the specified settings and saves the new map to the 
-     * specified file path.
-     * @param filePath path for the ouput file
+     * Generates a new random map with the specified settings.
      * @param settings settings used for the map generation
      */
-    void Create(const std::string& filePath, const MapSettings& settings);
+    Map* Create(const MapSettings& settings);
     
     private:
     

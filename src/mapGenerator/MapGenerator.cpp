@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/MapGenerator.h"
+#include "mapGenerator/MapWriter.h"
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/GreenlandGenerator.h"
 #include "helpers/Deleter.h"
@@ -28,6 +29,7 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
 {
     GeneratorPtr generator;
 
+    // create a random map generator based on the map style
     switch (style)
     {
         case Greenland:
@@ -52,6 +54,24 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
     {
         throw new std::invalid_argument("Style not supported");
     }
+
+    // generate the random map
+    Map* map = generator->Create(settings);
+
+    // create a map writer
+    MapWriter* writer = new MapWriter();
     
-    generator->Create(filePath, settings);
+    // try to write the generated map to a file
+    if (!writer->Write(filePath, map))
+    {
+        // cleanup memory if failed
+        delete map;
+        delete writer;
+        
+        throw std::invalid_argument("Failed to write the random map to the filePath");
+    }
+    
+    // cleanup map and writer
+    delete map;
+    delete writer;
 }

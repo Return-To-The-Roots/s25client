@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/Generator.h"
-#include "mapGenerator/MapWriter.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 
@@ -42,28 +41,15 @@
     }
 #endif
 
-void Generator::Create(const std::string& filePath, const MapSettings& settings)
+Map* Generator::Create(const MapSettings& settings)
 {
     // generate a new random map
     Map* map = GenerateMap(settings);
+
+    // smooth textures for visual appeal
     SmoothTextures(map);
 
-    // create a map writer
-    MapWriter* writer = new MapWriter();
-
-    // try to write the generated map to a file
-    if (!writer->Write(filePath, map))
-    {
-        // cleanup memory if failed
-        delete map;
-        delete writer;
-        
-        throw std::invalid_argument("Failed to write the random map to the filePath");
-    }
-    
-    // cleanup map and writer
-    delete map;
-    delete writer;
+    return map;
 }
 
 void Generator::SmoothTextures(Map* map)
