@@ -260,7 +260,7 @@ void dskSelectMap::StartRandomMap()
     map_path.append("Random.SWD");
 
     // create a random map and save filepath
-    generator->Create(map_path, Style::Random, settings);
+    generator->Create(map_path, Random, settings);
     
     // memory cleanup
     delete generator; generator = NULL;

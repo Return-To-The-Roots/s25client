@@ -68,7 +68,7 @@ void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* ma
         for (int i = 0; i < width; i++)
         {
             map->vertex[j * width + i].z = 0;
-            map->vertex[j * width + i].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW1);
+            map->vertex[j * width + i].texture = ObjectGenerator::CreateTexture(TT_MEADOW1);
             map->vertex[j * width + i].build = 0x04;
             map->vertex[j * width + i].shading = 0x80;
             map->vertex[j * width + i].resource = 0x00;
@@ -265,49 +265,49 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             if (level <= LEVEL_WATER && distanceToPlayer > MIN_DISTANCE_WATER)
             {
                 map->vertex[index].z = LEVEL_WATER;
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_WATER);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_WATER);
                 map->vertex[index].animal = (rand() % 30 == 0) ? ObjectGenerator::CreateDuck() : 0x00;
                 map->vertex[index].resource = 0x87; // fish
             }
             else if (level <= LEVEL_DESSERT && distanceToPlayer > MIN_DISTANCE_WATER)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_DESERT);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_DESERT);
             }
             else if (level <= LEVEL_STEPPE)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_STEPPE);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_STEPPE);
             }
             else if (level <= LEVEL_GRASSYSTEPPE)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_SAVANNAH);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_SAVANNAH);
             }
             else if (level <= LEVEL_GRASS)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW1);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW1);
                 map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             else if (level <= LEVEL_GRASS_FLOWERS)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW_FLOWERS);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW_FLOWERS);
                 map->vertex[index].animal = (rand() % 19 == 0) ? ObjectGenerator::CreateSheep() : 0x00;
             }
             else if (level <= LEVEL_GRASS2)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MEADOW2);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW2);
                 map->vertex[index].animal = (rand() % 20 == 0) ? ObjectGenerator::CreateRandomForestAnimal() : 0x00;
             }
             else if (level <= LEVEL_PREMOUNTAIN)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MOUNTAINMEADOW);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MOUNTAINMEADOW);
             }
             else if (level <= LEVEL_MOUNTAIN)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_MOUNTAIN1);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MOUNTAIN1);
                 map->vertex[index].resource = ObjectGenerator::CreateRandomResource();
             }
             else
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TerrainType::TT_SNOW);
+                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_SNOW);
             }
 
             ////////
@@ -340,14 +340,14 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
             
             // under certain circumstances replace dessert texture by harbor position
-            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TerrainType::TT_DESERT))
+            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_DESERT))
             {
                 // ensure there's water close to the dessert texture
                 bool waterNeighbor = false;
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
-                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TerrainType::TT_WATER))
+                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TT_WATER))
                     {
                         waterNeighbor = true;
                         break;
