@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_Headquarters, GreenlandGenerator)
         BOOST_REQUIRE_EQUAL(v.object.second, 0x80);
     }
 
-    for (unsigned int i = settings.players; i < 7; i++)
+    for (int i = settings.players; i < 7; i++)
     {
         BOOST_REQUIRE_EQUAL(map->positions[i].x, 0xFF);
         BOOST_REQUIRE_EQUAL(map->positions[i].y, 0xFF);
