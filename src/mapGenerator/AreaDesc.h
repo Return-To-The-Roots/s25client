@@ -105,7 +105,7 @@ struct AreaDesc
         const double distance = VertexUtility::Distance(x, y,
                                                         (int)(width * centerX),
                                                         (int)(height * centerY),
-                                                        width, height) / std::min(width / 2, height / 2);
+                                                        width, height) / min(width / 2, height / 2);
         
         if (maxPlayerDistance <= 0)
         {
