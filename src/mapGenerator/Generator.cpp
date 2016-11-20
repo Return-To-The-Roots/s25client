@@ -50,7 +50,7 @@ void Generator::SetHill(Map* map, const Vec2& center, int z)
     }
 }
 
-unsigned int Generator::ComputeWaterSize(Map* map, const Vec2& position, const int max)
+unsigned int Generator::ComputeWaterSize(Map* map, const Vec2& position, const unsigned int max)
 {
     const int width = map->width;
     const int height = map->height;

@@ -103,7 +103,7 @@ class Generator
      * @param max the maximum number of tiles to check for (performance)
      * @return the number of vertices in a connected water area around the position
      */
-    unsigned int ComputeWaterSize(Map* map, const Vec2& position, const int max);
+    unsigned int ComputeWaterSize(Map* map, const Vec2& position, const unsigned int max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.
