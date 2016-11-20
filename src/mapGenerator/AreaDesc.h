@@ -20,7 +20,7 @@
 
 #include "mapGenerator/Vec2.h"
 #include "mapGenerator/VertexUtility.h"
-#include <cmath>
+#include <cstdlib>
 
 struct AreaDesc
 {
