@@ -92,18 +92,19 @@ bool ObjectGenerator::IsEmpty(const IntPair& object)
     return object.first == 0x00 && object.second == 0x00;
 }
     
-uint8_t ObjectGenerator::CreateDuck()
+uint8_t ObjectGenerator::CreateDuck(const int likelyhood)
 {
-    return 0x05;
+    return rand() % 100 < likelyhood ? 0x05 : 0x00;
 }
     
-uint8_t ObjectGenerator::CreateSheep()
+uint8_t ObjectGenerator::CreateSheep(const int likelyhood)
 {
-    return 0x06;
+    return (rand() % 100 < likelyhood) ? 0x06 : 0x00;
 }
     
-uint8_t ObjectGenerator::CreateRandomForestAnimal()
+uint8_t ObjectGenerator::CreateRandomForestAnimal(const int likelyhood)
 {
+    if (rand() % 100 >= likelyhood) return 0x00;
     const int animal = rand() % 4;
     switch (animal)
     {
@@ -125,8 +126,9 @@ uint8_t ObjectGenerator::CreateRandomResource()
     return resource + rand() % 7;
 }
     
-uint8_t ObjectGenerator::CreateRandomAnimal()
+uint8_t ObjectGenerator::CreateRandomAnimal(const int likelyhood)
 {
+    if (rand() % 100 >= likelyhood) return 0x00;
     const int animal = rand() % 5;
     switch (animal)
     {

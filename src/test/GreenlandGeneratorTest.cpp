@@ -81,44 +81,5 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_Headquarters, GreenlandGenerator)
     delete generator;
 }
 
-/**
- * Tests the GreenlandGenerator.GenerateMap method. The generated map must contain the
- * the same number of headquarters as the number of players in the settings - even if the
- * constructor settings indicate a water-only map.
- */
-BOOST_FIXTURE_TEST_CASE(GenerateMap_WaterOnly, GreenlandGenerator)
-{
-    MapSettings settings;
-    settings.width = 64;
-    settings.height = 64;
-    settings.players = 4;
-    settings.type = 0x0;
-
-    GreenlandGenerator* generator = new GreenlandGenerator(0.3, 0.8, 0.0, 0.0, 0.0, 0.0, 5, 20);
-    Map* map = generator->Create(settings);
-    
-    BOOST_REQUIRE_EQUAL(map->players, settings.players);
-    
-    for (int i = 0; i < settings.players; i++)
-    {
-        const Vec2 p = map->positions[i];
-        BOOST_REQUIRE_NE(p.x, 0xFF);
-        BOOST_REQUIRE_NE(p.y, 0xFF);
-        
-        const Vertex v = map->vertex[p.y * settings.width + p.x];
-        BOOST_REQUIRE_EQUAL(v.object.first, (unsigned int)i);
-        BOOST_REQUIRE_EQUAL(v.object.second, 0x80);
-    }
-    
-    for (int i = settings.players; i < 7; i++)
-    {
-        BOOST_REQUIRE_EQUAL(map->positions[i].x, 0xFF);
-        BOOST_REQUIRE_EQUAL(map->positions[i].y, 0xFF);
-    }
-    
-    delete map;
-    delete generator;
-}
-
 BOOST_AUTO_TEST_SUITE_END()
 

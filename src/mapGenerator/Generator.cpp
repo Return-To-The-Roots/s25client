@@ -21,6 +21,10 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <queue>
+#include <list>
+#include <vector>
+#include <algorithm>
 #include <stdlib.h>
 #include <stdexcept>
 
@@ -35,12 +39,55 @@ Map* Generator::Create(const MapSettings& settings)
     return map;
 }
 
+void Generator::SetHill(Map* map, const Vec2& center, int z)
+{
+    std::vector<int> neighbors = VertexUtility::GetNeighbors(center.x, center.y, map->width, map->height, z);
+    for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+    {
+        const int x2 = *it % map->width, y2 = *it / map->width;
+        const double d = VertexUtility::Distance(center.x, center.y, x2, y2, map->width, map->height);
+        map->vertex[*it].z = std::max((int)(z - d), map->vertex[*it].z);
+    }
+}
+
+unsigned int Generator::ComputeWaterSize(Map* map, const Vec2& position, const int max)
+{
+    const int width = map->width;
+    const int height = map->height;
+    
+    std::queue<Vec2> searchRoom;
+    std::list<Vec2> water;
+    
+    searchRoom.push(Vec2(position.x, position.y));
+    
+    while (!searchRoom.empty() && water.size() < max)
+    {
+        Vec2 pos = searchRoom.front(); searchRoom.pop();
+        const int index = VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
+        
+        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_WATER)
+            && std::find(water.begin(), water.end(), pos) == water.end())
+        {
+            water.push_back(pos);
+            
+            searchRoom.push(Vec2(pos.x+1, pos.y));
+            searchRoom.push(Vec2(pos.x, pos.y+1));
+            searchRoom.push(Vec2(pos.x-1, pos.y));
+            searchRoom.push(Vec2(pos.x, pos.y-1));
+        }
+    }
+    
+    return water.size();
+}
+
+
 void Generator::SmoothTextures(Map* map)
 {
     const int waterId = ObjectGenerator::GetTextureId(TT_WATER);
     const int width = map->width;
     const int height = map->height;
     
+    // fixed broken textures
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
@@ -69,6 +116,46 @@ void Generator::SmoothTextures(Map* map)
             if (tex != texTop && tex != texRight && texTop == texRight && texTop != waterId)
             {
                 map->vertex[index].texture.second = texTop;
+            }
+        }
+    }
+    
+    // increase elevation of mountains to visually outline height of mountains
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_MOUNTAIN1) ||
+                ObjectGenerator::IsTexture(map->vertex[index].texture, TT_SNOW))
+            {
+                map->vertex[index].z = (int)(1.33 * map->vertex[index].z);
+            }
+        }
+    }
+
+    // replace mountain-meadow without mountain by meadow
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_MOUNTAINMEADOW))
+            {
+                bool mountainNeighbor = false;
+                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
+                for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+                {
+                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TT_MOUNTAIN1))
+                    {
+                        mountainNeighbor = true; break;
+                    }
+                }
+                
+                if (!mountainNeighbor)
+                {
+                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW1);
+                }
             }
         }
     }

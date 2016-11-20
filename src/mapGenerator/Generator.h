@@ -57,6 +57,14 @@ class Generator
     virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
     /**
+     * Creates a hill at the specified center with the specified height.
+     * @param map map to create the hill on
+     * @param center center point of the hill (highest elevation)
+     * @param z maximum height (elevation) of the hill
+     */
+    void SetHill(Map* map, const Vec2& center, int z);
+    
+    /**
      * Sets up a harbor position at the specified center. The surounding area is flattened an textures
      * are replaced to enable harbor building.
      * @param map map to modify the terrain for
@@ -87,6 +95,15 @@ class Generator
      * @param position position of the stone
      */
     void SetStone(Map* map, const Vec2& position);
+    
+    /**
+     * Computes the size of the water area starting from the specified position.
+     * @param map map to evaluate
+     * @param position position of the intial area to check for water
+     * @param max the maximum number of tiles to check for (performance)
+     * @return the number of vertices in a connected water area around the position
+     */
+    unsigned int ComputeWaterSize(Map* map, const Vec2& position, const int max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.

@@ -33,17 +33,14 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
     switch (style)
     {
         case Greenland:
-            generator = GeneratorPtr(new GreenlandGenerator(0.5, 0.7, 0.3, 2.5, 2.5, 2.5, 5, 20));
             break;
         case Riverland:
             break;
         case Islands:
             break;
         case Contient:
-            generator = GeneratorPtr(new GreenlandGenerator(0.5, 0.7, 0.3, 0.6, 0.6, 0.9, 5, 20));
             break;
         case Migration:
-            generator = GeneratorPtr(new GreenlandGenerator(0.7, 0.75, 0.2, 0.4, 0.6, 2.0, 5, 20));
             break;
         case Random:
             generator = GeneratorPtr(new GreenlandGenerator());

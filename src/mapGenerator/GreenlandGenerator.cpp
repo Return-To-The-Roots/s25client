@@ -27,38 +27,51 @@
 #include <cstdlib>
 #include <cmath>
 
-// texture definition through height-map
-#define LEVEL_WATER             3
-#define LEVEL_DESSERT           4
-#define LEVEL_STEPPE            5
-#define LEVEL_GRASSYSTEPPE      6
-#define LEVEL_GRASS             7
-#define LEVEL_GRASS_FLOWERS     8
-#define LEVEL_GRASS2            10
-#define LEVEL_PREMOUNTAIN       11
-#define LEVEL_MOUNTAIN          14
-
-// maximum height for specific land areas
-#define MAX_LEVEL_ISLANDS_SMALL 7
-#define MAX_LEVEL_ISLANDS       15
-#define MAX_LEVEL_LAND          15
-#define MAX_LEVEL_LAND_INNER    23
-
-// minimum distance from each player
-#define MIN_DISTANCE_WATER      15.0
-#define MIN_DISTANCE_MOUNTAIN   15.0
-#define MIN_DISTANCE_TREES      6.0
-#define MIN_DISTANCE_STONE      10.0
-
 // harbor placement
-#define LIKELYHOOD_HARBOR       10
-#define MIN_HARBOR_DISTANCE     20.0
+#define MIN_HARBOR_DISTANCE     35.0
+#define MIN_HARBOR_WATER        200
 
-// likelyhood for hill-generation for specific land areas
-#define LIKELYHOOD_HILL_LAND            2.0
-#define LIKELYHOOD_HILL_LAND_INNER      1.0
-#define LIKELYHOOD_HILL_ISLANDS         0.1
-#define LIKELYHOOD_HILL_ISLANDS_SMALL   0.1
+TerrainType GreenlandGenerator::Textures[MAXIMUM_HEIGHT] =
+{
+    TT_WATER, TT_WATER, TT_WATER, TT_WATER,     // 0-3
+    TT_DESERT,                                  // 4
+    TT_STEPPE,                                  // 5
+    TT_SAVANNAH,                                // 6
+    TT_MEADOW1,                                 // 7
+    TT_MEADOW_FLOWERS,                          // 8
+    TT_MEADOW2, TT_MEADOW2,                     // 9-10
+    TT_MOUNTAINMEADOW,                          // 11
+    TT_MOUNTAIN1, TT_MOUNTAIN1, TT_MOUNTAIN1,   // 12-14
+    TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW,
+    TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW // 15-24
+};
+
+int GreenlandGenerator::GetMaxTerrainHeight(const TerrainType terrain)
+{
+    int maxHeight = -1;
+    for (int i = 0; i < MAXIMUM_HEIGHT; i++)
+    {
+        if (Textures[i] == terrain)
+        {
+            maxHeight = i;
+        }
+    }
+    
+    return maxHeight;
+}
+
+int GreenlandGenerator::GetMinTerrainHeight(const TerrainType terrain)
+{
+    for (int i = 0; i < MAXIMUM_HEIGHT; i++)
+    {
+        if (Textures[i] == terrain)
+        {
+            return i;
+        }
+    }
+    
+    return -1;
+}
 
 void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
 {
@@ -96,14 +109,14 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     Vec2 center(width / 2, height / 2);
 
     // radius for player distribution
-    const int rMin = (int)(_radiusPlayerMin * length);;
-    const int rMax = (int)(_radiusPlayerMax * length);
+    const int rMin = (int)(0.3 * length);;
+    const int rMax = (int)(0.8 * length);
+    const int rnd = RANDOM.Rand(__FILE__, __LINE__, 0, rMax - rMin);
     
     // player headquarters for the players
     for (int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        const int rnd = RANDOM.Rand(__FILE__, __LINE__, i, rMax - rMin);
         Vec2 position = ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
 
         // create headquarter
@@ -119,8 +132,8 @@ void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
         const int offset1 = RANDOM.Rand(__FILE__, __LINE__, i, 180);
         const int offset2 = RANDOM.Rand(__FILE__, __LINE__, i, 180) + 180;
 
-        SetStones(map, ComputePointOnCircle(offset1, 360, map->positions[i], MIN_DISTANCE_STONE), 2.0F);
-        SetStones(map, ComputePointOnCircle(offset2, 360, map->positions[i], MIN_DISTANCE_STONE), 2.7F);
+        SetStones(map, ComputePointOnCircle(offset1, 360, map->positions[i], 12), 2.0F);
+        SetStones(map, ComputePointOnCircle(offset2, 360, map->positions[i], 12), 2.7F);
     }
 }
 
@@ -129,13 +142,11 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
     const int width = map->width;
     const int height = map->height;
     const int players = settings.players;
-    const int length = std::min(width / 2, height / 2);
     
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
-            double distanceToCenter = VertexUtility::Distance(width / 2, height / 2, x, y, width, height);
             double distanceToPlayer = (double)(width + height);
             
             for (int i = 0; i < players; i++)
@@ -147,64 +158,21 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                                                                width, height));
             }
             
-            int max = 0, min = 0;
-            double likelyhood = 0.0;
-            
-            if (distanceToPlayer <= 3.0) // plane land around headquarter
+            for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
             {
-                min = LEVEL_GRASS;
-                max = LEVEL_GRASS;
-                likelyhood = 100.0;
-            }
-            else
-            if (distanceToPlayer <= MIN_DISTANCE_MOUNTAIN) // low hills around player
-            {
-                min = LEVEL_STEPPE;
-                max = LEVEL_GRASS2;
-                likelyhood = 100.0;
-            }
-            else
-            if (distanceToCenter <= _radiusInnerLand * length)
-            {
-                max = MAX_LEVEL_LAND_INNER;
-                likelyhood = LIKELYHOOD_HILL_LAND_INNER;
-            }
-            else
-            if (distanceToCenter <= _radiusIslands * length)
-            {
-                max = MAX_LEVEL_LAND;
-                likelyhood = LIKELYHOOD_HILL_LAND;
-            }
-            else
-            if (distanceToCenter <= _radiusSmallIslands * length)
-            {
-                max = MAX_LEVEL_ISLANDS;
-                likelyhood = LIKELYHOOD_HILL_ISLANDS;
-            }
-            else
-            if (distanceToCenter <= _radiusWaterOnly * length)
-            {
-                max = MAX_LEVEL_ISLANDS_SMALL;
-                likelyhood = LIKELYHOOD_HILL_ISLANDS_SMALL;
-            }
-
-            const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int pr = (int)likelyhood;
-            const int rnd = rand() % (pr > 0 ? 101 : (int)(100.0 / likelyhood));
-            //RANDOM.Rand(__FILE__, __LINE__, index, pr > 0 ? 101 : (int)(100.0 / likelyhood));
-
-            if (max > 0 && rnd <= pr)
-            {
-                const int rndHeight = RANDOM.Rand(__FILE__, __LINE__, index, max - min + 1);
-                int z = min + rndHeight;
-                if (z == LEVEL_MOUNTAIN - 1) z--; // avoid pre-mountains without mountains
                 
-                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, z);
-                for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
+                if (it->IsInArea(x, y, distanceToPlayer, width, height))
                 {
-                    const int x2 = *it % width, y2 = *it / width;
-                    const int dist = (int)(z - VertexUtility::Distance(x, y, x2, y2, width, height));
-                    map->vertex[*it].z = std::max(dist, map->vertex[*it].z);
+                    const int pr = (int)(*it).likelyhoodHill;
+                    const int rnd = rand() % (pr > 0 ? 101 : (int)(100.0 / (*it).likelyhoodHill));
+                    const int minZ = (*it).minElevation;
+                    const int maxZ = (*it).maxElevation;
+                    
+                    if (maxZ > 0 && rnd <= pr)
+                    {
+                        int z = minZ + rand() % (maxZ - minZ + 1);
+                        SetHill(map, Vec2(x, y), z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
+                    }
                 }
             }
         }
@@ -216,96 +184,62 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
     const int width = map->width;
     const int height = map->height;
     const int players = settings.players;
-    
+
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
-            double distanceToPlayer = (double)(width + height);
-
-            // compute distance to the closest player
-            for (int i = 0; i < players; i++)
-            {
-                distanceToPlayer = std::min(distanceToPlayer,
-                                       VertexUtility::Distance(x, y,
-                                                               map->positions[i].x,
-                                                               map->positions[i].y,
-                                                               width,
-                                                               height));
-            }
-            
-            ////////
-            /// texturing, animals and mountain resources
-            ////////
-            
             const int index = y * width + x;
             const int level = map->vertex[index].z;
             
-            if (level <= LEVEL_WATER && distanceToPlayer > MIN_DISTANCE_WATER)
+            // create texture for current height value
+            map->vertex[index].texture = ObjectGenerator::CreateTexture(Textures[level]);
+            
+            // post-processing of texture (add animals, adapt height, ...)
+            switch (Textures[level])
             {
-                map->vertex[index].z = LEVEL_WATER;
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_WATER);
-                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 30) == 0) ?
-                                                ObjectGenerator::CreateDuck() : 0x00;
-                map->vertex[index].resource = 0x87; // fish
+                case TT_WATER:
+                    map->vertex[index].z = GetMaxTerrainHeight(TT_WATER);
+                    map->vertex[index].animal = ObjectGenerator::CreateDuck(3);
+                    map->vertex[index].resource = 0x87; // fish
+                    break;
+                case TT_MEADOW1:
+                    map->vertex[index].animal = ObjectGenerator::CreateRandomForestAnimal(4);
+                    break;
+                case TT_MEADOW_FLOWERS:
+                    map->vertex[index].animal = ObjectGenerator::CreateSheep(4);
+                    break;
+                case TT_MOUNTAIN1:
+                    map->vertex[index].resource = ObjectGenerator::CreateRandomResource();
+                    break;
+                default:
+                    break;
             }
-            else if (level <= LEVEL_DESSERT && distanceToPlayer > MIN_DISTANCE_WATER)
+            
+            double distanceToPlayer = (double)(width + height);
+            for (int i = 0; i < players; i++)
             {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_DESERT);
-            }
-            else if (level <= LEVEL_STEPPE)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_STEPPE);
-            }
-            else if (level <= LEVEL_GRASSYSTEPPE)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_SAVANNAH);
-            }
-            else if (level <= LEVEL_GRASS)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW1);
-                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 20) == 0) ?
-                                                ObjectGenerator::CreateRandomForestAnimal() : 0x00;
-            }
-            else if (level <= LEVEL_GRASS_FLOWERS)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW_FLOWERS);
-                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 19) == 0) ?
-                                                ObjectGenerator::CreateSheep() : 0x00;
-            }
-            else if (level <= LEVEL_GRASS2)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW2);
-                map->vertex[index].animal = (RANDOM.Rand(__FILE__, __LINE__, index, 20) == 0) ?
-                                                ObjectGenerator::CreateRandomForestAnimal() : 0x00;
-            }
-            else if (level <= LEVEL_PREMOUNTAIN)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MOUNTAINMEADOW);
-            }
-            else if (level <= LEVEL_MOUNTAIN)
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MOUNTAIN1);
-                map->vertex[index].resource = ObjectGenerator::CreateRandomResource();
-            }
-            else
-            {
-                map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_SNOW);
+                distanceToPlayer = std::min(distanceToPlayer,
+                                            VertexUtility::Distance(x, y,
+                                                                    map->positions[i].x,
+                                                                    map->positions[i].y,
+                                                                    width,
+                                                                    height));
             }
 
-            ////////
-            /// random resources
-            ////////
-            const int rnd = rand() % 100;// RANDOM.Rand(__FILE__, __LINE__, index, 100);
-            
-            if (distanceToPlayer > MIN_DISTANCE_TREES && rnd < _likelyhoodTree)
+            for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
             {
-                SetTree(map, Vec2(x,y));
-            }
-            else
-            if (distanceToPlayer > MIN_DISTANCE_STONE && rnd < _likelyhoodTree + _likelyhoodStone)
-            {
-                SetStone(map, Vec2(x,y));
+                if (it->IsInArea(x, y, distanceToPlayer, width, height))
+                {
+                    if (rand() % 100 < (*it).likelyhoodTree)
+                    {
+                        SetTree(map, Vec2(x,y));
+                    }
+                    else if (rand() % 100 < (*it).likelyhoodStone)
+                    {
+                        SetStone(map, Vec2(x,y));
+                    }
+                }
             }
         }
     }
@@ -322,6 +256,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
             
             // under certain circumstances replace dessert texture by harbor position
+            Vec2 water(0,0);
             if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_DESERT))
             {
                 // ensure there's water close to the dessert texture
@@ -332,6 +267,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                     if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TT_WATER))
                     {
                         waterNeighbor = true;
+                        water = Vec2(*it % width, *it / width);
                         break;
                     }
                 }
@@ -344,12 +280,13 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                                              VertexUtility::Distance(x, y, it->x, it->y, width, height));
                 }
                 
-                const int rnd = RANDOM.Rand(__FILE__, __LINE__, index, 100);
+                const int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor)
+                                        ? ComputeWaterSize(map, water, MIN_HARBOR_WATER) : 0;
 
                 // setup harbor position
-                if (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor && rnd < LIKELYHOOD_HARBOR)
+                if (waterTiles >= MIN_HARBOR_WATER)
                 {
-                    SetHarbour(map, Vec2(x, y), LEVEL_WATER);
+                    SetHarbour(map, Vec2(x, y), GetMaxTerrainHeight(TT_WATER));
                     harbors.push_back(Vec2(x,y));
                 }
             }

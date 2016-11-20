@@ -85,21 +85,24 @@ class ObjectGenerator
 
     /**
      * Creates a new duck.
+     * @param likelyhood likelyhood for object generation in percent
      * @return a new duck animal
      */
-    static uint8_t CreateDuck();
+    static uint8_t CreateDuck(const int likelyhood);
 
     /**
      * Creates a new sheep.
+     * @param likelyhood likelyhood for object generation in percent
      * @return a new sheep animal
      */
-    static uint8_t CreateSheep();
+    static uint8_t CreateSheep(const int likelyhood);
 
     /**
      * Creates a new, random animal to be placed inside of a forest.
+     * @param likelyhood likelyhood for object generation in percent
      * @return a new forest animal
      */
-    static uint8_t CreateRandomForestAnimal();
+    static uint8_t CreateRandomForestAnimal(const int likelyhood);
     
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
@@ -109,9 +112,10 @@ class ObjectGenerator
 
     /**
      * Creates a new, random ground animal.
+     * @param likelyhood likelyhood for object generation in percent
      * @return a new ground animal
      */
-    static uint8_t CreateRandomAnimal();
+    static uint8_t CreateRandomAnimal(const int likelyhood);
     
     /**
      * Checks whether or not the specified object is a tree.

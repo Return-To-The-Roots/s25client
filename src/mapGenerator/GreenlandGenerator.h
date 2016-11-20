@@ -18,8 +18,13 @@
 #ifndef GreenlandGenerator_h__
 #define GreenlandGenerator_h__
 
+#include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/Generator.h"
+#include "gameTypes/MapTypes.h"
+#include <vector>
 #include <cstdlib>
+
+#define MAXIMUM_HEIGHT 25
 
 /**
  * Random map generator for Greenland.
@@ -29,50 +34,24 @@ class GreenlandGenerator : public Generator
     public:
     
     /**
-     * Creates a new GreenlandGenerator with the specified landscape properties.
-     * The radius is measured in map length: min(width/2, height/2).
-     * @param radiusPlayerMin minimum radius each player must be placed away from the center point of the map
-     * @param radiusPlayerMax maximum radius each player can be placed away from the center point of the map
-     * @param radiusInnerLand maximum radius from the map's center point to consider land as "inner land"
-     * @param radiusIslands minimum radius from the map's center point to consider land for the generation of islands
-     * @üaram radiusSmallIslands minimum radius from the map's center point to consider land for the generation of smaller islands
-     * @param radiusWaterOnly minimum radius from the map's center point to consider land for water only
-     * @param likelyhoodStone likelyhood in percentage that a stone pile is generated for a vertex
-     * @param likelyhoodTree likelyhood in percentage that a tree is generated for a vertex
-     */
-    GreenlandGenerator(double radiusPlayerMin,
-                       double radiusPlayerMax,
-                       double radiusInnerLand,
-                       double radiusIslands,
-                       double radiusSmallIslands,
-                       double radiusWaterOnly,
-                       int likelyhoodStone,
-                       int likelyhoodTree) :
-        _radiusPlayerMin    (radiusPlayerMin),
-        _radiusPlayerMax    (radiusPlayerMax),
-        _radiusInnerLand    (radiusInnerLand),
-        _radiusIslands      (radiusIslands),
-        _radiusSmallIslands (radiusSmallIslands),
-        _radiusWaterOnly    (radiusWaterOnly),
-        _likelyhoodStone    (likelyhoodStone),
-        _likelyhoodTree     (likelyhoodTree)
-    {
-        
-    }
-    
-    /**
      * Creates a new GreenlandGenerator with random landscape properties.
      */
     GreenlandGenerator()
     {
-        _radiusPlayerMin    = DRand(0.3, 0.5);
-        _radiusPlayerMax    = DRand(0.5, 0.8);
-        _radiusInnerLand    = DRand(0.0, 0.5);
-        _radiusIslands      = DRand(0.3, 2.0);
-        _radiusSmallIslands = DRand(0.4, 2.1);
-        _radiusWaterOnly    = DRand(0.8, 2.5);
-        _likelyhoodStone    = 1 + rand() % 8;
-        _likelyhoodTree     = 5 + rand() % 30;
+        const double p1 = DRand(0.0, 0.4);
+        const double p2 = DRand(p1, p1 + 1.4);
+        const double p3 = DRand(p2, p2 + 1.0);
+        const double pHill = DRand(1.5, 5.0);
+        const int minHill = rand() % 5;
+        
+        // centerX, centerY minDist, maxDist, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
+        
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, p1,    1.0,  4, 7, 0, 23, 15));      // inner land with high mountains
+        _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    pHill, 18, 5, minHill, 10, 15));// default (normal) land
+        _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    0.5,  0, 0, 0, 17, 18));      // default (normal) land mountains
+        _areas.push_back(AreaDesc(0.5, 0.5, p2,  p3,    0.1, 15, 5, 0,  7, 15));      // very small islands
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));   // player positions
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));  // around player positions
     }
     
     protected:
@@ -86,50 +65,28 @@ class GreenlandGenerator : public Generator
     private:
     
     /**
-     * Minimum radius each player must be placed away from the center point of the map.
-     * The radius is measured in map length: min(width/2, height/2).
+     * Textures used for different elevations of the map.
      */
-    double _radiusPlayerMin;
+    static TerrainType Textures[MAXIMUM_HEIGHT];
     
     /**
-     * Maximum radius each player can be placed away from the center point of the map.
-     * The radius is measured in map length: min(width/2, height/2).
+     * Descriptions of different areas used to generate the random map.
      */
-    double _radiusPlayerMax;
+    std::vector<AreaDesc> _areas;
     
     /**
-     * Maximum radius from the map's center point to consider land as "inner land" (higher hills).
-     * The radius is measured in map length: min(width/2, height/2).
+     * Gets the highest possible elevation (height value) for the specified terrain.
+     * @param terrain terrain type to evaluate the maximum height for
+     * @return the maximum height value for the terrain
      */
-    double _radiusInnerLand;
+    int GetMaxTerrainHeight(const TerrainType terrain);
     
     /**
-     * Minimum radius from the map's center point to consider land for the generation of islands.
-     * The radius is measured in map length: min(width/2, height/2).
+     * Gets the minimum height to be considered as specified terrain.
+     * @param terrain terrain type to evaluate the minimum height for
+     * @return the minimum height value for the terrain
      */
-    double _radiusIslands;
-    
-    /**
-     * Minimum radius from the map's center point to consider land for the generation of smaller islands.
-     * The radius is measured in map length: min(width/2, height/2).
-     */
-    double _radiusSmallIslands;
-    
-    /**
-     * Minimum radius from the map's center point to consider land for water only.
-     * The radius is measured in map length: min(width/2, height/2).
-     */
-    double _radiusWaterOnly;
-    
-    /**
-     * Likelyhood in percentage that a stone pile is generated for a vertex.
-     */
-    int _likelyhoodStone;
-    
-    /**
-     * Likelyhood in percentage that a tree is generated for a vertex.
-     */
-    int _likelyhoodTree;
+    int GetMinTerrainHeight(const TerrainType terrain);
     
     /**
      * Create a new, empty terain for the specified map.
