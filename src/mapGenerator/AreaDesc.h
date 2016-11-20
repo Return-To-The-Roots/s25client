@@ -18,9 +18,10 @@
 #ifndef AreaDesc_h__
 #define AreaDesc_h__
 
+#include "defines.h" // IWYU pragma: keep
+
 #include "mapGenerator/Vec2.h"
 #include "mapGenerator/VertexUtility.h"
-#include <cstdlib>
 
 struct AreaDesc
 {
