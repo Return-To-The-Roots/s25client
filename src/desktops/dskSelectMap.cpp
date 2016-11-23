@@ -259,7 +259,7 @@ void dskSelectMap::StartRandomMap()
     
     // setup filepath for the random map
     map_path = GetFilePath(FILE_PATHS[48]);
-    map_path.append("Random.SWD");
+    map_path.append("Random.swd");
 
     // create a random map and save filepath
     generator->Create(map_path, Random, settings);

@@ -16,10 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/MapGenerator.h"
-#include "mapGenerator/MapWriter.h"
 #include "mapGenerator/Generator.h"
 #include "mapGenerator/GreenlandGenerator.h"
+
+#include "libsiedler2/src/libsiedler2.h"
 #include "helpers/Deleter.h"
+
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <stdexcept>
 
@@ -54,21 +56,10 @@ void MapGenerator::Create(const std::string& filePath, Style style, const MapSet
 
     // generate the random map
     Map* map = generator->Create(settings);
-
-    // create a map writer
-    MapWriter* writer = new MapWriter();
-    
-    // try to write the generated map to a file
-    if (!writer->Write(filePath, map))
-    {
-        // cleanup memory if failed
-        delete map;
-        delete writer;
-        
-        throw std::invalid_argument("Failed to write the random map to the filePath");
-    }
+    libsiedler2::ArchivInfo* archiv = map->CreateArchiv();
+    libsiedler2::Write(filePath, *archiv);
     
     // cleanup map and writer
     delete map;
-    delete writer;
+    delete archiv;
 }

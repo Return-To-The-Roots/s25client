@@ -22,6 +22,10 @@
 #include "mapGenerator/Vec2.h"
 #include "mapGenerator/Vertex.h"
 
+#include "libsiedler2/src/archives.h"
+
+using namespace libsiedler2;
+
 /**
  * Data type for reading, writing and generating maps.
  */
@@ -83,6 +87,12 @@ struct Map
      * The actual map data per vertex.
      */
     struct Vertex* vertex;
+    
+    /**
+     * Creates a new archiv for this map. 
+     * @return a new archiv containing the information of this map
+     */
+    ArchivInfo* CreateArchiv();
 };
 
 #endif // Map_h__
