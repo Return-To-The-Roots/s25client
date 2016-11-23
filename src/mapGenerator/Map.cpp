@@ -36,8 +36,7 @@ ArchivInfo* Map::CreateArchiv()
     header->setGfxSet(type);
     for (int i = 0; i < 7; i++)
     {
-        header->setPlayerHQx(i, positions[i].x);
-        header->setPlayerHQy(i, positions[i].y);
+        header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
     map->set(0, header);
 
