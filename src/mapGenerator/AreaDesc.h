@@ -20,9 +20,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 
-#include "mapGenerator/Vec2.h"
-#include "mapGenerator/VertexUtility.h"
-
 struct AreaDesc
 {
     AreaDesc(double cx, double cy, double minDist, double maxDist, double pHill, int pTree, int pStone,
@@ -100,23 +97,7 @@ struct AreaDesc
      * @param height height of the map
      * @return true of the point is within the of the area, false otherwise
      */
-    bool IsInArea(int x, int y, const double playerDistance, const int width, const int height)
-    {
-        const double distance = VertexUtility::Distance(x, y,
-                                                        (int)(width * centerX),
-                                                        (int)(height * centerY),
-                                                        width, height) / min(width / 2, height / 2);
-        
-        if (maxPlayerDistance <= 0)
-        {
-            return playerDistance >= minPlayerDistance && distance >= minDistance && distance < maxDistance;
-        }
-        
-        return playerDistance >= minPlayerDistance
-            && playerDistance < maxPlayerDistance
-            && distance >= minDistance
-            && distance < maxDistance;
-    }
+    bool IsInArea(int x, int y, const double playerDistance, const int width, const int height);
 };
 
 #endif // AreaDesc_h__
