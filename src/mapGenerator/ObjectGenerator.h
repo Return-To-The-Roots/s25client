@@ -24,25 +24,26 @@
 #include <utility>
 
 /**
- * TODO: probably handles to much (textures are not objects)
- * Object generator for map generation.
+ * Utility class to place object, textures and animals on a map.
  */
 class ObjectGenerator
 {
     public:
     
-    /** TODO
+    /**
      * Creates a new texture for the specified terrain type.
+     * @param map map to place the texture on
+     * @param index vertex index to place the texture on
      * @param harbor whether or not enable harbor placement on the texture. To enable the player to
      *      place a harbor at the position of the texture, it need to be close to water. Also keep 
      *      in mind, only terrain types which allow buildings also support harbor placement.
-     * @return the new texture, including two triangles for right-side-up and right-side-down
      */
     static void CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor = false);
     
-    /** TODO
+    /**
      * Checks whether or not the specified texture is representing the specified terrain.
-     * @param texture input texture to check
+     * @param map map of the vertex to check
+     * @param index vertex index of the texture to check
      * @param terrain terrain to compare the input texture to
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
@@ -62,23 +63,25 @@ class ObjectGenerator
      */
     static bool IsHarborAllowed(TerrainType terrain);
 
-    /** TODO
+    /**
      * Creates a new, empty object.
-     * @return empty object
+     * @param map map to place the empty object on
+     * @param index vertex index to place the empty object on
      */
     static void CreateEmpty(Map* map, const int index);
 
-    /** TODO
+    /**
      * Creates a new headquarter for the specified player.
+     * @param map map to place the headquarter on
+     * @param index vertex index to place the headquarter on
      * @param i player number
-     * @return a new headquarter object
      */
     static void CreateHeadquarter(Map* map, const int index, const int i);
 
-    /** TODO
+    /**
      * Checks whether or not the specified object is empty.
-     * @param object object to check
-     * @return true if the object is empty, false otherwise
+     * @param map map of the vertex to check
+     * @param index vertex index to check
      */
     static bool IsEmpty(Map* map, const int index);
 
@@ -116,9 +119,10 @@ class ObjectGenerator
      */
     static uint8_t CreateRandomAnimal(const int likelyhood);
     
-    /** TODO
+    /**
      * Checks whether or not the specified object is a tree.
-     * @param object object to check
+     * @param map map of the vertex to check
+     * @param index index of the vertex to check
      * @return true if the specified object is a tree, false otherwise
      */
     static bool IsTree(Map* map, const int index);
@@ -130,21 +134,24 @@ class ObjectGenerator
      */
     static void CreateRandomTree(Map* map, const int index);
 
-    /** TODO
+    /**
      * Creates a new, random palm.
-     * @return a new palm object
+     * @param map map of the vertex to create a new tree on
+     * @param index index of the vertex to create a new tree on
      */
     static void CreateRandomPalm(Map* map, const int index);
     
-    /** TODO
+    /**
      * Creates a new, random tree (including palm trees).
-     * @return a new tree object
+     * @param map map of the vertex to create a new tree on
+     * @param index index of the vertex to create a new tree on
      */
     static void CreateRandomMixedTree(Map* map, const int index);
     
-    /** TODO
+    /**
      * Creates a random amount of stone.
-     * @return a new stone object
+     * @param map map of the vertex to create a new stone pile on
+     * @param index index of the vertex to create a new stone pile on
      */
     static void CreateRandomStone(Map* map, const int index);
 };
