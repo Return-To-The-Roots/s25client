@@ -300,19 +300,9 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
     
     Map* map = new Map();
     
-    // configuration of the map header
-    std::string name("Random");
-    for (unsigned int i = 0; i < name.length(); i++)
-    {
-        map->name[i] = name[i];
-    }
-    std::string author("auto");
-    for (unsigned int i = 0; i < author.length(); i++)
-    {
-        map->author[i] = author[i];
-    }
-    
     // configuration of the map settings
+    map->name = "Random";
+    map->author = "auto";
     map->width = settings.width;
     map->height = settings.height;
     map->type = settings.type;

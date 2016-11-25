@@ -18,11 +18,12 @@
 #ifndef Map_h__
 #define Map_h__
 
-#include "mapGenerator/MapHeader.h"
 #include "mapGenerator/Vec2.h"
 #include "mapGenerator/Vertex.h"
 
 #include "libsiedler2/src/archives.h"
+
+#include <string>
 
 using namespace libsiedler2;
 
@@ -46,7 +47,7 @@ struct Map
     /**
      * Name of the map.
      */
-    char name[20];
+    std::string name;
 
     /**
      * Height of the map in vertices.
@@ -76,12 +77,7 @@ struct Map
     /**
      * Name of the map author.
      */
-    char author[20];
-    
-    /**
-     * Header data for the map.
-     */
-    MapHeader header[250];
+    std::string author;
     
     /**
      * The actual map data per vertex.

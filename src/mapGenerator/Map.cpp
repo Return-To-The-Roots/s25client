@@ -28,8 +28,8 @@ ArchivInfo* Map::CreateArchiv()
     std::vector<unsigned char> data;
     
     // create header information for the archiv
-    header->setName("Random");
-    header->setAuthor("auto");
+    header->setName(name);
+    header->setAuthor(author);
     header->setWidth(width);
     header->setHeight(height);
     header->setPlayer(players);
