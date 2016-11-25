@@ -27,7 +27,7 @@
 
 typedef boost::interprocess::unique_ptr<Generator, Deleter<Generator> > GeneratorPtr;
 
-void MapGenerator::Create(const std::string& filePath, Style style, const MapSettings& settings)
+void MapGenerator::Create(const std::string& filePath, const MapStyle& style, const MapSettings& settings)
 {
     GeneratorPtr generator;
 

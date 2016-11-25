@@ -35,7 +35,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "desktops/dskLAN.h"
-#include "mapGenerator/Style.h"
+#include "mapGenerator/MapStyle.h"
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/MapSettings.h"
 

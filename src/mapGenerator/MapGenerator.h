@@ -18,7 +18,7 @@
 #ifndef MapGenerator_h__
 #define MapGenerator_h__
 
-#include "mapGenerator/Style.h"
+#include "mapGenerator/MapStyle.h"
 #include "mapGenerator/MapSettings.h"
 
 #include <string>
@@ -37,7 +37,7 @@ class MapGenerator
      * @param style map style
      * @param settings used to generate the random map
      */
-    void Create(const std::string& filePath, Style style, const MapSettings& settings);
+    void Create(const std::string& filePath, const MapStyle& style, const MapSettings& settings);
     
     private:
     
