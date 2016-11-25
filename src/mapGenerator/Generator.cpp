@@ -46,7 +46,7 @@ void Generator::SetHill(Map* map, const Vec2& center, int z)
     {
         const int x2 = *it % map->width, y2 = *it / map->width;
         const double d = VertexUtility::Distance(center.x, center.y, x2, y2, map->width, map->height);
-        map->vertex[*it].z = std::max((int)(z - d), map->vertex[*it].z);
+        map->z[*it] = std::max((unsigned char)(z - d), (unsigned char)map->z[*it]);
     }
 }
 
@@ -65,7 +65,7 @@ unsigned int Generator::ComputeWaterSize(Map* map, const Vec2& position, const u
         Vec2 pos = searchRoom.front(); searchRoom.pop();
         const int index = VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
         
-        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_WATER)
+        if (ObjectGenerator::IsTexture(map, index, TT_WATER)
             && std::find(water.begin(), water.end(), pos) == water.end())
         {
             water.push_back(pos);
@@ -93,13 +93,13 @@ void Generator::SmoothTextures(Map* map)
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int texLeft = map->vertex[VertexUtility::GetIndexOf(x - 1, y, width, height)].texture.second;
-            const int texBottom = map->vertex[VertexUtility::GetIndexOf(x, y + 1, width, height)].texture.second;
-            const int tex = map->vertex[index].texture.first;
+            const int texLeft = map->textureLsd[VertexUtility::GetIndexOf(x - 1, y, width, height)];
+            const int texBottom = map->textureLsd[VertexUtility::GetIndexOf(x, y + 1, width, height)];
+            const int tex = map->textureRsu[index];
             
             if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != waterId)
             {
-                map->vertex[index].texture.first = texBottom;
+                map->textureRsu[index] = texBottom;
             }
         }
     }
@@ -109,13 +109,13 @@ void Generator::SmoothTextures(Map* map)
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int texRight = map->vertex[VertexUtility::GetIndexOf(x + 1, y, width, height)].texture.first;
-            const int texTop = map->vertex[VertexUtility::GetIndexOf(x, y - 1, width, height)].texture.first;
-            const int tex = map->vertex[index].texture.second;
+            const int texRight = map->textureRsu[VertexUtility::GetIndexOf(x + 1, y, width, height)];
+            const int texTop = map->textureRsu[VertexUtility::GetIndexOf(x, y - 1, width, height)];
+            const int tex = map->textureLsd[index];
 
             if (tex != texTop && tex != texRight && texTop == texRight && texTop != waterId)
             {
-                map->vertex[index].texture.second = texTop;
+                map->textureLsd[index] = texTop;
             }
         }
     }
@@ -126,10 +126,10 @@ void Generator::SmoothTextures(Map* map)
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_MOUNTAIN1) ||
-                ObjectGenerator::IsTexture(map->vertex[index].texture, TT_SNOW))
+            if (ObjectGenerator::IsTexture(map, index, TT_MOUNTAIN1) ||
+                ObjectGenerator::IsTexture(map, index, TT_SNOW))
             {
-                map->vertex[index].z = (int)(1.33 * map->vertex[index].z);
+                map->z[index] = (int)(1.33 * map->z[index]);
             }
         }
     }
@@ -140,13 +140,13 @@ void Generator::SmoothTextures(Map* map)
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_MOUNTAINMEADOW))
+            if (ObjectGenerator::IsTexture(map, index, TT_MOUNTAINMEADOW))
             {
                 bool mountainNeighbor = false;
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
-                    if (ObjectGenerator::IsTexture(map->vertex[*it].texture, TT_MOUNTAIN1))
+                    if (ObjectGenerator::IsTexture(map, *it, TT_MOUNTAIN1))
                     {
                         mountainNeighbor = true; break;
                     }
@@ -154,7 +154,7 @@ void Generator::SmoothTextures(Map* map)
                 
                 if (!mountainNeighbor)
                 {
-                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_MEADOW1);
+                    ObjectGenerator::CreateTexture(map, index, TT_MEADOW1);
                 }
             }
         }
@@ -168,21 +168,21 @@ void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
         for (int y = center.y - 2; y <= center.y + 2; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, map->width, map->height);
-            if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TT_WATER))
+            if (!ObjectGenerator::IsTexture(map, index, TT_WATER))
             {
                 if ((x - center.x) * (x - center.x) <= 1 && (y - center.y) * (y - center.y) <= 1)
                 {
-                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_SAVANNAH, true);
-                    map->vertex[index].z = waterLevel;
-                    map->vertex[index].object = ObjectGenerator::CreateEmpty();
-                    map->vertex[index].resource = 0x00;
+                    ObjectGenerator::CreateTexture(map, index, TT_SAVANNAH, true);
+                    ObjectGenerator::CreateEmpty(map, index);
+                    map->z[index]        = waterLevel;
+                    map->resource[index] = 0x00;
                 }
                 else
                 {
-                    map->vertex[index].texture = ObjectGenerator::CreateTexture(TT_STEPPE);
-                    map->vertex[index].z = waterLevel;
-                    map->vertex[index].object = ObjectGenerator::CreateEmpty();
-                    map->vertex[index].resource = 0x00;
+                    ObjectGenerator::CreateTexture(map, index, TT_STEPPE);
+                    ObjectGenerator::CreateEmpty(map, index);
+                    map->z[index]        = waterLevel;
+                    map->resource[index] = 0x00;
                 }
             }
         }
@@ -193,20 +193,20 @@ void Generator::SetTree(Map* map, const Vec2& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
-    if (ObjectGenerator::IsEmpty(map->vertex[index].object))
+    if (ObjectGenerator::IsEmpty(map, index))
     {
-        if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_DESERT))
+        if (ObjectGenerator::IsTexture(map, index, TT_DESERT))
         {
-            map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
+            ObjectGenerator::CreateRandomPalm(map, index);
         }
-        else if (ObjectGenerator::IsTexture(map->vertex[index].texture, TT_SAVANNAH) ||
-                 ObjectGenerator::IsTexture(map->vertex[index].texture, TT_STEPPE))
+        else if (ObjectGenerator::IsTexture(map, index, TT_SAVANNAH) ||
+                 ObjectGenerator::IsTexture(map, index, TT_STEPPE))
         {
-            map->vertex[index].object = ObjectGenerator::CreateRandomPalm();
+            ObjectGenerator::CreateRandomPalm(map, index);
         }
-        else if (!ObjectGenerator::IsTexture(map->vertex[index].texture, TT_WATER))
+        else if (!ObjectGenerator::IsTexture(map, index, TT_WATER))
         {
-            map->vertex[index].object = ObjectGenerator::CreateRandomTree();
+            ObjectGenerator::CreateRandomTree(map, index);
         }
     }
 }
@@ -233,10 +233,10 @@ void Generator::SetStone(Map* map, const Vec2& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
-    if (ObjectGenerator::IsEmpty(map->vertex[index].object) &&
-        !ObjectGenerator::IsTexture(map->vertex[index].texture, TT_WATER))
+    if (ObjectGenerator::IsEmpty(map, index) &&
+        !ObjectGenerator::IsTexture(map, index, TT_WATER))
     {
-        map->vertex[index].object = ObjectGenerator::CreateRandomStone();
+        ObjectGenerator::CreateRandomStone(map, index);
     }
 }
 
