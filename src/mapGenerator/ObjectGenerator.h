@@ -18,11 +18,10 @@
 #ifndef ObjectGenerator_h__
 #define ObjectGenerator_h__
 
+#include "mapGenerator/Map.h"
 #include "gameTypes/MapTypes.h"
 #include "stdint.h"
 #include <utility>
-
-typedef std::pair<uint8_t, uint8_t> IntPair;
 
 /**
  * TODO: probably handles to much (textures are not objects)
@@ -32,22 +31,22 @@ class ObjectGenerator
 {
     public:
     
-    /**
+    /** TODO
      * Creates a new texture for the specified terrain type.
      * @param harbor whether or not enable harbor placement on the texture. To enable the player to
      *      place a harbor at the position of the texture, it need to be close to water. Also keep 
      *      in mind, only terrain types which allow buildings also support harbor placement.
      * @return the new texture, including two triangles for right-side-up and right-side-down
      */
-    static IntPair CreateTexture(TerrainType terrain, const bool harbor = false);
+    static void CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor = false);
     
-    /**
+    /** TODO
      * Checks whether or not the specified texture is representing the specified terrain.
      * @param texture input texture to check
      * @param terrain terrain to compare the input texture to
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
-    static bool IsTexture(const IntPair& texture, TerrainType terrain);
+    static bool IsTexture(Map* map, const int index, TerrainType terrain);
     
     /**
      * Converts the input terrain into a texture id which can be stored in the original s2 map format. 
@@ -63,25 +62,25 @@ class ObjectGenerator
      */
     static bool IsHarborAllowed(TerrainType terrain);
 
-    /**
+    /** TODO
      * Creates a new, empty object.
      * @return empty object
      */
-    static IntPair CreateEmpty();
+    static void CreateEmpty(Map* map, const int index);
 
-    /**
+    /** TODO
      * Creates a new headquarter for the specified player.
      * @param i player number
      * @return a new headquarter object
      */
-    static IntPair CreateHeadquarter(const int i);
+    static void CreateHeadquarter(Map* map, const int index, const int i);
 
-    /**
+    /** TODO
      * Checks whether or not the specified object is empty.
      * @param object object to check
      * @return true if the object is empty, false otherwise
      */
-    static bool IsEmpty(const IntPair& object);
+    static bool IsEmpty(Map* map, const int index);
 
     /**
      * Creates a new duck.
@@ -117,36 +116,37 @@ class ObjectGenerator
      */
     static uint8_t CreateRandomAnimal(const int likelyhood);
     
-    /**
+    /** TODO
      * Checks whether or not the specified object is a tree.
      * @param object object to check
      * @return true if the specified object is a tree, false otherwise
      */
-    static bool IsTree(const IntPair& object);
+    static bool IsTree(Map* map, const int index);
 
     /**
      * Creates a new, random tree (excluding palm trees).
-     * @return a new tree object
+     * @param map map to place the object upon
+     * @param index index of the vertex for the new object
      */
-    static IntPair CreateRandomTree();
+    static void CreateRandomTree(Map* map, const int index);
 
-    /**
+    /** TODO
      * Creates a new, random palm.
      * @return a new palm object
      */
-    static IntPair CreateRandomPalm();
+    static void CreateRandomPalm(Map* map, const int index);
     
-    /**
+    /** TODO
      * Creates a new, random tree (including palm trees).
      * @return a new tree object
      */
-    static IntPair CreateRandomMixedTree();
+    static void CreateRandomMixedTree(Map* map, const int index);
     
-    /**
+    /** TODO
      * Creates a random amount of stone.
      * @return a new stone object
      */
-    static IntPair CreateRandomStone();
+    static void CreateRandomStone(Map* map, const int index);
 };
 
 #endif // ObjectGenerator_h__

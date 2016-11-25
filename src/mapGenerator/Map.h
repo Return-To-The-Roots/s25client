@@ -134,14 +134,24 @@ struct Map
     VecUChar unknown5;
     
     /**
-     * Texture values for each vertex of the map.
+     * Right-side-down texture values for each vertex of the map.
      */
-    VecPair texture; // bottom left / top right
+    VecUChar textureRsu;
+    
+    /**
+     * Left-side-down texture values for each vertex of the map.
+     */
+    VecUChar textureLsd;
+    
+    /**
+     * Object type values for each vertex of the map.
+     */
+    VecUChar objectType;
 
     /**
-     * Object values for each vertex of the map.
+     * Object info values for each vertex of the map.
      */
-    VecPair object; // type, info
+    VecUChar objectInfo;
     
     /**
      * Creates a new archiv for this map. 

@@ -65,31 +65,34 @@ bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
     }
 }
 
-IntPair ObjectGenerator::CreateTexture(TerrainType terrain, const bool harbor)
+void ObjectGenerator::CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor)
 {
     uint8_t textureId = harbor && IsHarborAllowed(terrain) ? GetTextureId(terrain) | 0x40 : GetTextureId(terrain);
-    return IntPair(textureId, textureId);
+    map->textureRsu[index] = textureId;
+    map->textureLsd[index] = textureId;
 }
     
-bool ObjectGenerator::IsTexture(const IntPair& texture, TerrainType terrain)
+bool ObjectGenerator::IsTexture(Map* map, const int index, TerrainType terrain)
 {
     uint8_t textureId = GetTextureId(terrain);
-    return texture.first == textureId || texture.second == textureId;
+    return map->textureRsu[index] == textureId || map->textureLsd[index] == textureId;
 }
     
-IntPair ObjectGenerator::CreateEmpty()
+void ObjectGenerator::CreateEmpty(Map* map, const int index)
 {
-    return IntPair(0x00, 0x00);
+    map->objectType[index] = 0x00;
+    map->objectInfo[index] = 0x00;
 }
     
-IntPair ObjectGenerator::CreateHeadquarter(const int i)
+void ObjectGenerator::CreateHeadquarter(Map* map, const int index, const int i)
 {
-    return IntPair(i, 0x80);
+    map->objectType[index] = (unsigned int)i;
+    map->objectInfo[index] = 0x80;
 }
 
-bool ObjectGenerator::IsEmpty(const IntPair& object)
+bool ObjectGenerator::IsEmpty(Map* map, const int index)
 {
-    return object.first == 0x00 && object.second == 0x00;
+    return (map->objectType[index] == 0x00 && map->objectInfo[index] == 0x00);
 }
     
 uint8_t ObjectGenerator::CreateDuck(const int likelyhood)
@@ -140,37 +143,51 @@ uint8_t ObjectGenerator::CreateRandomAnimal(const int likelyhood)
     }
 }
 
-bool ObjectGenerator::IsTree(const IntPair& object)
+bool ObjectGenerator::IsTree(Map* map, const int index)
 {
-    return object.second == 0xC5 || object.second == 0xC4;
+    return map->objectInfo[index] == 0xC5 || map->objectInfo[index] == 0xC4;
 }
     
-IntPair ObjectGenerator::CreateRandomTree()
+void ObjectGenerator::CreateRandomTree(Map* map, const int index)
 {
-    IntPair tree;
-        
     switch (rand() % 3)
     {
-        case 0: tree.first = 0x30 + rand() % 8; break;
-        case 1: tree.first = 0x70 + rand() % 8; break;
-        case 2: tree.first = 0xB0 + rand() % 8; break;
+        case 0: map->objectType[index] = 0x30 + rand() % 8; break;
+        case 1: map->objectType[index] = 0x70 + rand() % 8; break;
+        case 2: map->objectType[index] = 0xB0 + rand() % 8; break;
     }
-    tree.second = 0xC4;
-    return tree;
+    map->objectInfo[index] = 0xC4;
 }
     
-IntPair ObjectGenerator::CreateRandomPalm()
+void ObjectGenerator::CreateRandomPalm(Map* map, const int index)
 {
-    return (rand() % 2 == 0) ? IntPair(0x30 + rand() % 8, 0xC5) : IntPair(0xF0 + rand() % 8, 0xC4);
+    if (rand() % 2 == 0)
+    {
+        map->objectType[index] = 0x30 + rand() % 8;
+        map->objectInfo[index] = 0xC5;
+    }
+    else
+    {
+        map->objectType[index] = 0xF0 + rand() % 8;
+        map->objectInfo[index] = 0xC4;
+    }
 }
     
-IntPair ObjectGenerator::CreateRandomMixedTree()
+void ObjectGenerator::CreateRandomMixedTree(Map* map, const int index)
 {
-    return (rand() % 2 == 0) ? CreateRandomTree() : CreateRandomPalm();
+    if (rand() % 2 == 0)
+    {
+        CreateRandomTree(map, index);
+    }
+    else
+    {
+        CreateRandomPalm(map, index);
+    }
 }
     
-IntPair ObjectGenerator::CreateRandomStone()
+void ObjectGenerator::CreateRandomStone(Map* map, const int index)
 {
-    return IntPair(0x01 + rand() % 6, 0xCC + rand() % 2);
+    map->objectType[index] = 0x01 + rand() % 6;
+    map->objectInfo[index] = 0xCC + rand() % 2;
 }
 

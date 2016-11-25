@@ -84,12 +84,14 @@ void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* ma
         for (int i = 0; i < width; i++)
         {
             map->z.resize(size, 0x00);
-            map->texture.resize(size, ObjectGenerator::CreateTexture(TT_MEADOW1));
+            map->textureRsu.resize(size, ObjectGenerator::GetTextureId(TT_MEADOW1));
+            map->textureLsd.resize(size, ObjectGenerator::GetTextureId(TT_MEADOW1));
             map->build.resize(size, 0x04);
             map->shading.resize(size, 0x80);
             map->resource.resize(size, 0x00);
             map->road.resize(size, 0x00);
-            map->object.resize(size, ObjectGenerator::CreateEmpty());
+            map->objectType.resize(size, 0x00);
+            map->objectInfo.resize(size, 0x00);
             map->animal.resize(size, 0x00);
             map->unknown1.resize(size, 0x00);
             map->unknown2.resize(size, 0x07);
@@ -119,9 +121,11 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
         // compute headquater position
         Vec2 position = ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
 
-        // create headquarter
+        // store headquarter position
         map->positions[i] = position;
-        map->object[position.y * width + position.x] = ObjectGenerator::CreateHeadquarter(i);
+        
+        // create headquarter
+        ObjectGenerator::CreateHeadquarter(map, position.y * width + position.x, i);
     }
 }
 
@@ -193,7 +197,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             const int level = map->z[index];
             
             // create texture for current height value
-            map->texture[index] = ObjectGenerator::CreateTexture(Textures[level]);
+            ObjectGenerator::CreateTexture(map, index, Textures[level]);
             
             // post-processing of texture (add animals, adapt height, ...)
             switch (Textures[level])
@@ -257,14 +261,14 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             
             // under certain circumstances replace dessert texture by harbor position
             Vec2 water(0,0);
-            if (ObjectGenerator::IsTexture(map->texture[index], TT_DESERT))
+            if (ObjectGenerator::IsTexture(map, index, TT_DESERT))
             {
                 // ensure there's water close to the dessert texture
                 bool waterNeighbor = false;
                 std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
-                    if (ObjectGenerator::IsTexture(map->texture[*it], TT_WATER))
+                    if (ObjectGenerator::IsTexture(map, *it, TT_WATER))
                     {
                         waterNeighbor = true;
                         water = Vec2(*it % width, *it / width);

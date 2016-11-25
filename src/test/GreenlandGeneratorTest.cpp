@@ -66,8 +66,8 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_Headquarters, GreenlandGenerator)
         BOOST_REQUIRE_NE(p.x, 0xFF);
         BOOST_REQUIRE_NE(p.y, 0xFF);
         
-        BOOST_REQUIRE_EQUAL(map->object[p.y * settings.width + p.x].first, (unsigned int)i);
-        BOOST_REQUIRE_EQUAL(map->object[p.y * settings.width + p.x].second, 0x80);
+        BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.width + p.x], (unsigned int)i);
+        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], 0x80);
     }
 
     for (int i = settings.players; i < 7; i++)

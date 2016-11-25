@@ -44,51 +44,19 @@ ArchivInfo* Map::CreateArchiv()
     map->set(1, new ArchivItem_Raw(z));
 
     // texture information (right-side-up)
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(texture[j * width + i].first);
-        }
-    }
-    map->set(2, new ArchivItem_Raw(data));
+    map->set(2, new ArchivItem_Raw(textureRsu));
 
     // texture information (up-side-down)
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(texture[j * width + i].second);
-        }
-    }
-    map->set(3, new ArchivItem_Raw(data));
+    map->set(3, new ArchivItem_Raw(textureLsd));
 
     // road information
     map->set(4, new ArchivItem_Raw(road));
     
     // object type information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(object[j * width + i].first);
-        }
-    }
-    map->set(5, new ArchivItem_Raw(data));
+    map->set(5, new ArchivItem_Raw(objectType));
     
     // object information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(object[j * width + i].second);
-        }
-    }
-    map->set(6, new ArchivItem_Raw(data));
+    map->set(6, new ArchivItem_Raw(objectInfo));
 
     // animal information
     map->set(7, new ArchivItem_Raw(animal));
