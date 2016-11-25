@@ -97,7 +97,9 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // "Weiter"
     AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
     // random map generation
-    AddTextButton(6, 380, 530, 200, 22, TC_GREEN2, _("Random"), NormalFont);
+    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Random"), NormalFont);
+    // random map players
+    AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("#4"), NormalFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
     // "Alte"
@@ -230,6 +232,17 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             StartRandomMap();
         } break;
+        case 7: // random map #players
+        {
+            ctrlTextButton* players = GetCtrl<ctrlTextButton>(7);
+            std::string txt = players->GetText();
+            if (txt == "#4")      players->SetText("#5");
+            else if (txt == "#5") players->SetText("#6");
+            else if (txt == "#6") players->SetText("#7");
+            else if (txt == "#7") players->SetText("#2");
+            else if (txt == "#2") players->SetText("#3");
+            else if (txt == "#3") players->SetText("#4");
+        } break;
     }
 }
 
@@ -249,10 +262,18 @@ void dskSelectMap::StartRandomMap()
 
     // setup map generation parameters
     MapSettings settings;
-    settings.players = 4;
     settings.height = 256;
     settings.width = 256;
     settings.type = 0x00;
+    
+    ctrlTextButton* players = GetCtrl<ctrlTextButton>(7);
+    std::string txt = players->GetText();
+    if (txt == "#4")      settings.players = 4;
+    else if (txt == "#5") settings.players = 5;
+    else if (txt == "#6") settings.players = 6;
+    else if (txt == "#7") settings.players = 7;
+    else if (txt == "#2") settings.players = 2;
+    else if (txt == "#3") settings.players = 3;
 
     // create new map generator
     boost::interprocess::unique_ptr<MapGenerator, Deleter<MapGenerator> > generator(new MapGenerator());
