@@ -41,14 +41,7 @@ ArchivInfo* Map::CreateArchiv()
     map->set(0, header);
 
     // altitude information
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].z);
-        }
-    }
-    map->set(1, new ArchivItem_Raw(data));
+    map->set(1, new ArchivItem_Raw(z));
 
     // texture information (right-side-up)
     data.clear();
@@ -56,7 +49,7 @@ ArchivInfo* Map::CreateArchiv()
     {
         for (int i = 0; i < width; i++)
         {
-            data.push_back(vertex[j * width + i].texture.first);
+            data.push_back(texture[j * width + i].first);
         }
     }
     map->set(2, new ArchivItem_Raw(data));
@@ -67,21 +60,13 @@ ArchivInfo* Map::CreateArchiv()
     {
         for (int i = 0; i < width; i++)
         {
-            data.push_back(vertex[j * width + i].texture.second);
+            data.push_back(texture[j * width + i].second);
         }
     }
     map->set(3, new ArchivItem_Raw(data));
 
     // road information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].road);
-        }
-    }
-    map->set(4, new ArchivItem_Raw(data));
+    map->set(4, new ArchivItem_Raw(road));
     
     // object type information
     data.clear();
@@ -89,7 +74,7 @@ ArchivInfo* Map::CreateArchiv()
     {
         for (int i = 0; i < width; i++)
         {
-            data.push_back(vertex[j * width + i].object.first);
+            data.push_back(object[j * width + i].first);
         }
     }
     map->set(5, new ArchivItem_Raw(data));
@@ -100,98 +85,34 @@ ArchivInfo* Map::CreateArchiv()
     {
         for (int i = 0; i < width; i++)
         {
-            data.push_back(vertex[j * width + i].object.second);
+            data.push_back(object[j * width + i].second);
         }
     }
     map->set(6, new ArchivItem_Raw(data));
 
     // animal information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].animal);
-        }
-    }
-    map->set(7, new ArchivItem_Raw(data));
+    map->set(7, new ArchivItem_Raw(animal));
     
     // unknown information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].unknown1);
-        }
-    }
-    map->set(8, new ArchivItem_Raw(data));
+    map->set(8, new ArchivItem_Raw(unknown1));
 
     // build information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].build);
-        }
-    }
-    map->set(9, new ArchivItem_Raw(data));
+    map->set(9, new ArchivItem_Raw(build));
 
     // unknown information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].unknown2);
-        }
-    }
-    map->set(10, new ArchivItem_Raw(data));
+    map->set(10, new ArchivItem_Raw(unknown2));
 
     // unknown information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].unknown3);
-        }
-    }
-    map->set(11, new ArchivItem_Raw(data));
+    map->set(11, new ArchivItem_Raw(unknown3));
 
     // resource information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].resource);
-        }
-    }
-    map->set(12, new ArchivItem_Raw(data));
+    map->set(12, new ArchivItem_Raw(resource));
 
     // shading information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].shading);
-        }
-    }
-    map->set(13, new ArchivItem_Raw(data));
+    map->set(13, new ArchivItem_Raw(shading));
     
     // unknown information
-    data.clear();
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            data.push_back(vertex[j * width + i].unknown5);
-        }
-    }
-    map->set(14, new ArchivItem_Raw(data));
+    map->set(14, new ArchivItem_Raw(unknown5));
 
     info->push(map);
 

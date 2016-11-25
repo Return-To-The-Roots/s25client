@@ -19,13 +19,17 @@
 #define Map_h__
 
 #include "mapGenerator/Vec2.h"
-#include "mapGenerator/Vertex.h"
 
 #include "libsiedler2/src/archives.h"
 
+#include <vector>
 #include <string>
 
 using namespace libsiedler2;
+using namespace std;
+
+typedef vector<unsigned char> VecUChar;
+typedef vector<pair<uint8_t, uint8_t> > VecPair;
 
 /**
  * Data type for reading, writing and generating maps.
@@ -80,9 +84,64 @@ struct Map
     std::string author;
     
     /**
-     * The actual map data per vertex.
+     * Height for each vertex of the map.
      */
-    struct Vertex* vertex;
+    VecUChar z;
+    
+    /**
+     * Road values for each vertex of the map.
+     */
+    VecUChar road;
+    
+    /**
+     * Animal values for each vertex of the map.
+     */
+    VecUChar animal;
+    
+    /**
+     * Unknown value 1 for each vertex of the map.
+     */
+    VecUChar unknown1;
+
+    /**
+     * Build values for each vertex of the map.
+     */
+    VecUChar build;
+    
+    /**
+     * Unknown value 2 for each vertex of the map.
+     */
+    VecUChar unknown2;
+    
+    /**
+     * Unknown value 3 for each vertex of the map.
+     */
+    VecUChar unknown3;
+
+    /**
+     * Resource values for each vertex of the map.
+     */
+    VecUChar resource;
+
+    /**
+     * Shading values for each vertex of the map.
+     */
+    VecUChar shading;
+    
+    /**
+     * Unknown value 5 for each vertex of the map.
+     */
+    VecUChar unknown5;
+    
+    /**
+     * Texture values for each vertex of the map.
+     */
+    VecPair texture; // bottom left / top right
+
+    /**
+     * Object values for each vertex of the map.
+     */
+    VecPair object; // type, info
     
     /**
      * Creates a new archiv for this map. 
