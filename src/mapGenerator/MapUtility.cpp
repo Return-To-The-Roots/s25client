@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "mapGenerator/Generator.h"
+#include "mapGenerator/MapUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 
@@ -28,18 +28,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-Map* Generator::Create(const MapSettings& settings)
-{
-    // generate a new random map
-    Map* map = GenerateMap(settings);
-
-    // smooth textures for visual appeal
-    SmoothTextures(map);
-
-    return map;
-}
-
-void Generator::SetHill(Map* map, const Vec2& center, int z)
+void MapUtility::SetHill(Map* map, const Vec2& center, int z)
 {
     std::vector<int> neighbors = VertexUtility::GetNeighbors(center.x, center.y, map->width, map->height, z);
     for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
@@ -50,7 +39,7 @@ void Generator::SetHill(Map* map, const Vec2& center, int z)
     }
 }
 
-unsigned int Generator::ComputeWaterSize(Map* map, const Vec2& position, const unsigned int max)
+unsigned int MapUtility::ComputeWaterSize(Map* map, const Vec2& position, const unsigned int max)
 {
     const int width = map->width;
     const int height = map->height;
@@ -81,7 +70,7 @@ unsigned int Generator::ComputeWaterSize(Map* map, const Vec2& position, const u
 }
 
 
-void Generator::SmoothTextures(Map* map)
+void MapUtility::SmoothTextures(Map* map)
 {
     const int waterId = ObjectGenerator::GetTextureId(TT_WATER);
     const int width = map->width;
@@ -161,7 +150,7 @@ void Generator::SmoothTextures(Map* map)
     }
 }
 
-void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
+void MapUtility::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
 {
     for (int x = center.x - 2; x <= center.x + 2; x++)
     {
@@ -189,7 +178,7 @@ void Generator::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
     }
 }
 
-void Generator::SetTree(Map* map, const Vec2& position)
+void MapUtility::SetTree(Map* map, const Vec2& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
@@ -211,7 +200,7 @@ void Generator::SetTree(Map* map, const Vec2& position)
     }
 }
 
-void Generator::SetStones(Map* map, const Vec2& center, const double radius)
+void MapUtility::SetStones(Map* map, const Vec2& center, const double radius)
 {
     const int width = map->width;
     const int height = map->height;
@@ -229,7 +218,7 @@ void Generator::SetStones(Map* map, const Vec2& center, const double radius)
     }
 }
 
-void Generator::SetStone(Map* map, const Vec2& position)
+void MapUtility::SetStone(Map* map, const Vec2& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
     
@@ -240,7 +229,7 @@ void Generator::SetStone(Map* map, const Vec2& position)
     }
 }
 
-Vec2 Generator::ComputePointOnCircle(const int index,
+Vec2 MapUtility::ComputePointOnCircle(const int index,
                                      const int points,
                                      const Vec2& center,
                                      const double radius)

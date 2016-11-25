@@ -15,17 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "mapGenerator/GreenlandGenerator.h"
+#include "mapGenerator/RandomMapGenerator.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-BOOST_AUTO_TEST_SUITE(GreenlandGeneratorTest)
+BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
 
 /**
- * Tests the GreenlandGenerator.GenerateMap method. The generated map must have the 
+ * Tests the RandomMapGenerator.Create method. The generated map must have the
  * same width and height as defined inside of the settings.
  */
-BOOST_FIXTURE_TEST_CASE(GenerateMap_CorrectSize, GreenlandGenerator)
+BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
 {
     MapSettings settings;
     settings.width = 32;
@@ -33,7 +33,7 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_CorrectSize, GreenlandGenerator)
     settings.players = 3;
     settings.type = 0x0;
 
-    GreenlandGenerator* generator = new GreenlandGenerator();
+    RandomMapGenerator* generator = new RandomMapGenerator();
     Map* map = generator->Create(settings);
     
     BOOST_REQUIRE_EQUAL(map->width, settings.width);
@@ -44,10 +44,10 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_CorrectSize, GreenlandGenerator)
 }
 
 /**
- * Tests the GreenlandGenerator.GenerateMap method. The generated map must contain the
+ * Tests the RandomMapGenerator.Create method. The generated map must contain the
  * the same number of headquarters as the number of players in the settings.
  */
-BOOST_FIXTURE_TEST_CASE(GenerateMap_Headquarters, GreenlandGenerator)
+BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 {
     MapSettings settings;
     settings.width = 32;
@@ -55,7 +55,7 @@ BOOST_FIXTURE_TEST_CASE(GenerateMap_Headquarters, GreenlandGenerator)
     settings.players = 3;
     settings.type = 0x0;
     
-    GreenlandGenerator* generator = new GreenlandGenerator();
+    RandomMapGenerator* generator = new RandomMapGenerator();
     Map* map = generator->Create(settings);
 
     BOOST_REQUIRE_EQUAL(map->players, settings.players);

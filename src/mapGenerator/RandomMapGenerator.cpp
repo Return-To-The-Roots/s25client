@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 
-#include "mapGenerator/GreenlandGenerator.h"
+#include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 
@@ -31,7 +31,7 @@
 #define MIN_HARBOR_DISTANCE     35.0
 #define MIN_HARBOR_WATER        200
 
-TerrainType GreenlandGenerator::Textures[MAXIMUM_HEIGHT] =
+TerrainType RandomMapGenerator::Textures[MAXIMUM_HEIGHT] =
 {
     TT_WATER, TT_WATER, TT_WATER, TT_WATER,     // 0-3
     TT_DESERT,                                  // 4
@@ -46,7 +46,7 @@ TerrainType GreenlandGenerator::Textures[MAXIMUM_HEIGHT] =
     TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW // 15-24
 };
 
-int GreenlandGenerator::GetMaxTerrainHeight(const TerrainType terrain)
+int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
 {
     int maxHeight = -1;
     for (int i = 0; i < MAXIMUM_HEIGHT; i++)
@@ -60,7 +60,7 @@ int GreenlandGenerator::GetMaxTerrainHeight(const TerrainType terrain)
     return maxHeight;
 }
 
-int GreenlandGenerator::GetMinTerrainHeight(const TerrainType terrain)
+int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
 {
     for (int i = 0; i < MAXIMUM_HEIGHT; i++)
     {
@@ -73,7 +73,7 @@ int GreenlandGenerator::GetMinTerrainHeight(const TerrainType terrain)
     return -1;
 }
 
-void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
+void RandomMapGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
     const int height = map->height;
@@ -101,7 +101,7 @@ void GreenlandGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* ma
     }
 }
 
-void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
+void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
     const int height = map->height;
@@ -119,7 +119,9 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     for (int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        Vec2 position = ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
+        Vec2 position = _helper.ComputePointOnCircle(i,
+                                                     settings.players,
+                                                     center, (double)(rMin + rnd));
 
         // store headquarter position
         map->positions[i] = position;
@@ -129,19 +131,23 @@ void GreenlandGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     }
 }
 
-void GreenlandGenerator::PlacePlayerResources(const MapSettings& settings, Map* map)
+void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map* map)
 {
     for (int i = 0; i < settings.players; i++)
     {
         const int offset1 = RANDOM.Rand(__FILE__, __LINE__, i, 180);
         const int offset2 = RANDOM.Rand(__FILE__, __LINE__, i, 180) + 180;
 
-        SetStones(map, ComputePointOnCircle(offset1, 360, map->positions[i], 12), 2.0F);
-        SetStones(map, ComputePointOnCircle(offset2, 360, map->positions[i], 12), 2.7F);
+        _helper.SetStones(map, _helper.ComputePointOnCircle(offset1,
+                                                            360,
+                                                            map->positions[i], 12), 2.0F);
+        _helper.SetStones(map, _helper.ComputePointOnCircle(offset2,
+                                                            360,
+                                                            map->positions[i], 12), 2.7F);
     }
 }
 
-void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
+void RandomMapGenerator::CreateHills(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
     const int height = map->height;
@@ -175,7 +181,9 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
                     if (maxZ > 0 && rnd <= pr)
                     {
                         int z = minZ + rand() % (maxZ - minZ + 1);
-                        SetHill(map, Vec2(x, y), z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
+                        _helper.SetHill(map,
+                                        Vec2(x, y),
+                                        z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
                     }
                 }
             }
@@ -183,7 +191,7 @@ void GreenlandGenerator::CreateHills(const MapSettings& settings, Map* map)
     }
 }
 
-void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* map)
+void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
     const int height = map->height;
@@ -237,11 +245,11 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                 {
                     if (rand() % 100 < (*it).likelyhoodTree)
                     {
-                        SetTree(map, Vec2(x,y));
+                        _helper.SetTree(map, Vec2(x,y));
                     }
                     else if (rand() % 100 < (*it).likelyhoodStone)
                     {
-                        SetStone(map, Vec2(x,y));
+                        _helper.SetStone(map, Vec2(x,y));
                     }
                 }
             }
@@ -285,12 +293,14 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                 }
                 
                 const int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor)
-                                        ? ComputeWaterSize(map, water, MIN_HARBOR_WATER) : 0;
+                                        ? _helper.ComputeWaterSize(map,
+                                                                   water,
+                                                                   MIN_HARBOR_WATER) : 0;
 
                 // setup harbor position
                 if (waterTiles >= MIN_HARBOR_WATER)
                 {
-                    SetHarbour(map, Vec2(x, y), GetMaxTerrainHeight(TT_WATER));
+                    _helper.SetHarbour(map, Vec2(x, y), GetMaxTerrainHeight(TT_WATER));
                     harbors.push_back(Vec2(x,y));
                 }
             }
@@ -298,7 +308,7 @@ void GreenlandGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
     }
 }
 
-Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
+Map* RandomMapGenerator::Create(const MapSettings& settings)
 {
     RANDOM.Init(0);
     
@@ -318,6 +328,9 @@ Map* GreenlandGenerator::GenerateMap(const MapSettings& settings)
     PlacePlayerResources(settings, map);
     CreateHills(settings, map);
     FillRemainingTerrain(settings, map);
+    
+    // post-processing
+    _helper.SmoothTextures(map);
     
     return map;
 }

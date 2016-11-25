@@ -15,28 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GreenlandGenerator_h__
-#define GreenlandGenerator_h__
+#ifndef RandomMapGenerator_h__
+#define RandomMapGenerator_h__
 
 #include "mapGenerator/AreaDesc.h"
-#include "mapGenerator/Generator.h"
+#include "mapGenerator/Map.h"
+#include "mapGenerator/MapSettings.h"
+#include "mapGenerator/MapUtility.h"
 #include "gameTypes/MapTypes.h"
+
 #include <vector>
 #include <cstdlib>
 
 #define MAXIMUM_HEIGHT 25
 
 /**
- * Random map generator for Greenland.
+ * Random map generator.
  */
-class GreenlandGenerator : public Generator
+class RandomMapGenerator
 {
     public:
     
     /**
-     * Creates a new GreenlandGenerator with random landscape properties.
+     * Creates a new RandomMapGenerator with random landscape properties.
      */
-    GreenlandGenerator()
+    RandomMapGenerator()
     {
         const double p1 = DRand(0.0, 0.4);
         const double p2 = DRand(p1, p1 + 1.4);
@@ -54,13 +57,11 @@ class GreenlandGenerator : public Generator
         _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));  // around player positions
     }
     
-    protected:
-    
     /**
      * Generates a new random map with the specified settings.
-     * @param settings settings used to generate the random map
+     * @param settings settings used for the map generation
      */
-    Map* GenerateMap(const MapSettings& settings);
+    Map* Create(const MapSettings& settings);
     
     private:
     
@@ -68,6 +69,11 @@ class GreenlandGenerator : public Generator
      * Textures used for different elevations of the map.
      */
     static TerrainType Textures[MAXIMUM_HEIGHT];
+    
+    /**
+     * Helper to generate random maps (tree placement, water, coastlines, ...).
+     */
+    MapUtility _helper;
     
     /**
      * Descriptions of different areas used to generate the random map.
@@ -134,4 +140,4 @@ class GreenlandGenerator : public Generator
     }
  };
 
-#endif // GreenlandGenerator_h__
+#endif // RandomMapGenerator_h__

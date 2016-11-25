@@ -16,8 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/MapGenerator.h"
-#include "mapGenerator/Generator.h"
-#include "mapGenerator/GreenlandGenerator.h"
+#include "mapGenerator/MapUtility.h"
+#include "mapGenerator/RandomMapGenerator.h"
 
 #include "libsiedler2/src/libsiedler2.h"
 #include "helpers/Deleter.h"
@@ -25,7 +25,7 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <stdexcept>
 
-typedef boost::interprocess::unique_ptr<Generator, Deleter<Generator> > GeneratorPtr;
+typedef boost::interprocess::unique_ptr<RandomMapGenerator, Deleter<RandomMapGenerator> > GeneratorPtr;
 
 void MapGenerator::Create(const std::string& filePath, const MapStyle& style, const MapSettings& settings)
 {
@@ -45,7 +45,7 @@ void MapGenerator::Create(const std::string& filePath, const MapStyle& style, co
         case Migration:
             break;
         case Random:
-            generator = GeneratorPtr(new GreenlandGenerator());
+            generator = GeneratorPtr(new RandomMapGenerator());
             break;
     }
     

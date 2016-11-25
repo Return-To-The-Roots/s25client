@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef Generator_h__
-#define Generator_h__
+#ifndef MapUtility_h__
+#define MapUtility_h__
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
@@ -25,36 +25,17 @@
 #include <string>
 
 /**
- * The Generator is an abstract class which defines the basic input and output for map 
- * generation.
+ * Utility for map generation.
  */
-class Generator
+class MapUtility
 {
     public:
-    
-    virtual ~Generator() {}
-    
-    /**
-     * Generates a new random map with the specified settings.
-     * @param settings settings used for the map generation
-     */
-    Map* Create(const MapSettings& settings);
-    
-    private:
     
     /**
      * Smoothes the textures of the map for better visual appearance.
      * @param map map to smooth textures for
      */
     void SmoothTextures(Map* map);
-    
-    protected:
-    
-    /**
-     * Generates a new random map with the specified settings.
-     * @param settings settings used to generate the random map
-     */
-    virtual Map* GenerateMap(const MapSettings& settings) = 0;
     
     /**
      * Creates a hill at the specified center with the specified height.
@@ -114,7 +95,10 @@ class Generator
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    Vec2 ComputePointOnCircle(const int index, const int points, const Vec2& center, const double radius);
+    Vec2 ComputePointOnCircle(const int index,
+                              const int points,
+                              const Vec2& center,
+                              const double radius);
 };
 
-#endif // Generator_h__
+#endif // MapUtility_h__
