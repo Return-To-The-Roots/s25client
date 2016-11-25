@@ -34,10 +34,9 @@ class MapGenerator
     /**
      * Create and saves a new map.
      * @param filePath path for the ouput file
-     * @param style map style
      * @param settings used to generate the random map
      */
-    void Create(const std::string& filePath, const MapStyle& style, const MapSettings& settings);
+    void Create(const std::string& filePath, const MapSettings& settings);
     
     private:
     

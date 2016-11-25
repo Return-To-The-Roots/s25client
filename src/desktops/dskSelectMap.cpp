@@ -43,6 +43,8 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "ingameWindows/iwMapGenerator.h"
+
 #include "helpers/Deleter.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
@@ -84,6 +86,15 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     : Desktop(LOADER.GetImageN("setup015", 0)),
       csi(csi)
 {
+    // default random map settings
+    mapSettings.players = 2;
+    mapSettings.height = 256;
+    mapSettings.width = 256;
+    mapSettings.minPlayerRadius = 0.31;
+    mapSettings.maxPlayerRadius = 0.51;
+    mapSettings.type = 0x00;
+    mapSettings.style = MS_Random;
+
     // Die Tabelle für die Maps
     AddTable( 1, 110,  35, 680, 400, TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
 
@@ -99,7 +110,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // random map generation
     AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Random"), NormalFont);
     // random map players
-    AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("#4"), NormalFont);
+    AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("..."), NormalFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
     // "Alte"
@@ -234,14 +245,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // random map #players
         {
-            ctrlTextButton* players = GetCtrl<ctrlTextButton>(7);
-            std::string txt = players->GetText();
-            if (txt == "#4")      players->SetText("#5");
-            else if (txt == "#5") players->SetText("#6");
-            else if (txt == "#6") players->SetText("#7");
-            else if (txt == "#7") players->SetText("#2");
-            else if (txt == "#2") players->SetText("#3");
-            else if (txt == "#3") players->SetText("#4");
+            WINDOWMANAGER.Show(new iwMapGenerator(mapSettings));
         } break;
     }
 }
@@ -259,22 +263,7 @@ void dskSelectMap::StartRandomMap()
     
     // display "please wait" window while the map is being generated
     WINDOWMANAGER.Show(waitWindow);
-
-    // setup map generation parameters
-    MapSettings settings;
-    settings.height = 256;
-    settings.width = 256;
-    settings.type = 0x00;
     
-    ctrlTextButton* players = GetCtrl<ctrlTextButton>(7);
-    std::string txt = players->GetText();
-    if (txt == "#4")      settings.players = 4;
-    else if (txt == "#5") settings.players = 5;
-    else if (txt == "#6") settings.players = 6;
-    else if (txt == "#7") settings.players = 7;
-    else if (txt == "#2") settings.players = 2;
-    else if (txt == "#3") settings.players = 3;
-
     // create new map generator
     boost::interprocess::unique_ptr<MapGenerator, Deleter<MapGenerator> > generator(new MapGenerator());
     
@@ -283,7 +272,7 @@ void dskSelectMap::StartRandomMap()
     map_path.append("Random.swd");
 
     // create a random map and save filepath
-    generator->Create(map_path, Random, settings);
+    generator->Create(map_path, mapSettings);
     
     // close & cleanup "please wait" window
     WINDOWMANAGER.Close(waitWindow);

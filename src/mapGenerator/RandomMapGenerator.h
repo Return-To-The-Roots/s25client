@@ -35,26 +35,56 @@
 class RandomMapGenerator
 {
     public:
-    
+
     /**
-     * Creates a new RandomMapGenerator with random landscape properties.
+     * Creates a new RandomMapGenerator with random area properties.
+     * @param random whether or not to generate random area description for map generation
      */
-    RandomMapGenerator()
+    RandomMapGenerator(bool random = true)
     {
+        _textures[0]    = TT_WATER;
+        _textures[1]    = TT_WATER;
+        _textures[2]    = TT_WATER;
+        _textures[3]    = TT_WATER;
+        _textures[4]    = TT_DESERT;
+        _textures[5]    = TT_STEPPE;
+        _textures[6]    = TT_SAVANNAH;
+        _textures[7]    = TT_MEADOW1;
+        _textures[8]    = TT_MEADOW_FLOWERS;
+        _textures[9]    = TT_MEADOW2;
+        _textures[10]   = TT_MEADOW2;
+        _textures[11]   = TT_MOUNTAINMEADOW;
+        _textures[12]   = TT_MOUNTAIN1;
+        _textures[13]   = TT_MOUNTAIN1;
+        _textures[14]   = TT_MOUNTAIN1;
+        _textures[15]   = TT_SNOW;
+        _textures[16]   = TT_SNOW;
+        _textures[17]   = TT_SNOW;
+        _textures[18]   = TT_SNOW;
+        _textures[19]   = TT_SNOW;
+        _textures[20]   = TT_SNOW;
+        _textures[21]   = TT_SNOW;
+        _textures[22]   = TT_SNOW;
+        _textures[23]   = TT_SNOW;
+        _textures[24]   = TT_SNOW;
+        
+        if (!random)
+        {
+            return;
+        }
+        
         const double p1 = DRand(0.0, 0.4);
         const double p2 = DRand(p1, p1 + 1.4);
         const double p3 = DRand(p2, p2 + 1.0);
         const double pHill = DRand(1.5, 5.0);
         const int minHill = rand() % 5;
         
-        // centerX, centerY minDist, maxDist, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
-        
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, p1,    1.0,  4, 7, 0, 23, 15));      // inner land with high mountains
-        _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    pHill, 18, 5, minHill, 10, 15));// default (normal) land
-        _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    0.5,  0, 0, 0, 17, 18));      // default (normal) land mountains
-        _areas.push_back(AreaDesc(0.5, 0.5, p2,  p3,    0.1, 15, 5, 0,  7, 15));      // very small islands
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));   // player positions
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));  // around player positions
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, p1,    1.0,  4, 7, 0, 23, 15));
+        _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    pHill, 18, 5, minHill, 10, 15));
+        _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    0.5,  0, 0, 0, 17, 18));
+        _areas.push_back(AreaDesc(0.5, 0.5, p2,  p3,    0.1, 15, 5, 0,  7, 15));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
     }
     
     /**
@@ -63,22 +93,25 @@ class RandomMapGenerator
      */
     Map* Create(const MapSettings& settings);
     
-    private:
-    
-    /**
-     * Textures used for different elevations of the map.
-     */
-    static TerrainType Textures[MAXIMUM_HEIGHT];
-    
-    /**
-     * Helper to generate random maps (tree placement, water, coastlines, ...).
-     */
-    MapUtility _helper;
+    protected:
     
     /**
      * Descriptions of different areas used to generate the random map.
      */
     std::vector<AreaDesc> _areas;
+
+    
+    /**
+     * Textures used for different elevations of the map.
+     */
+    TerrainType _textures[MAXIMUM_HEIGHT];
+
+    private:
+    
+    /**
+     * Helper to generate random maps (tree placement, water, coastlines, ...).
+     */
+    MapUtility _helper;
     
     /**
      * Gets the highest possible elevation (height value) for the specified terrain.

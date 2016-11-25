@@ -152,14 +152,15 @@ void MapUtility::SmoothTextures(Map* map)
 
 void MapUtility::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
 {
-    for (int x = center.x - 2; x <= center.x + 2; x++)
+    for (int x = center.x - 3; x <= center.x + 3; x++)
     {
-        for (int y = center.y - 2; y <= center.y + 2; y++)
+        for (int y = center.y - 3; y <= center.y + 3; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, map->width, map->height);
             if (!ObjectGenerator::IsTexture(map, index, TT_WATER))
             {
-                if ((x - center.x) * (x - center.x) <= 1 && (y - center.y) * (y - center.y) <= 1)
+                if ((x - center.x) * (x - center.x) <= 1.7
+                    && (y - center.y) * (y - center.y) <= 1.7)
                 {
                     ObjectGenerator::CreateTexture(map, index, TT_SAVANNAH, true);
                     ObjectGenerator::CreateEmpty(map, index);

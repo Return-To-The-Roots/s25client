@@ -17,6 +17,12 @@
 
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/MapUtility.h"
+#include "mapGenerator/IslandsGenerator.h"
+#include "mapGenerator/GreenlandGenerator.h"
+#include "mapGenerator/RiverlandGenerator.h"
+#include "mapGenerator/MigrationGenerator.h"
+#include "mapGenerator/ContinentGenerator.h"
+#include "mapGenerator/RinglandGenerator.h"
 #include "mapGenerator/RandomMapGenerator.h"
 
 #include "libsiedler2/src/libsiedler2.h"
@@ -27,25 +33,33 @@
 
 typedef boost::interprocess::unique_ptr<RandomMapGenerator, Deleter<RandomMapGenerator> > GeneratorPtr;
 
-void MapGenerator::Create(const std::string& filePath, const MapStyle& style, const MapSettings& settings)
+void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
 {
     GeneratorPtr generator;
 
     // create a random map generator based on the map style
-    switch (style)
+    switch (settings.style)
     {
-        case Greenland:
+        case MS_Greenland:
+            generator = GeneratorPtr(new GreenlandGenerator);
             break;
-        case Riverland:
+        case MS_Riverland:
+            generator = GeneratorPtr(new RiverlandGenerator);
             break;
-        case Islands:
+        case MS_Islands:
+            generator = GeneratorPtr(new IslandsGenerator);
             break;
-        case Contient:
+        case MS_Continent:
+            generator = GeneratorPtr(new ContinentGenerator);
             break;
-        case Migration:
+        case MS_Migration:
+            generator = GeneratorPtr(new MigrationGenerator);
             break;
-        case Random:
-            generator = GeneratorPtr(new RandomMapGenerator());
+        case MS_Ringland:
+            generator = GeneratorPtr(new RinglandGenerator);
+            break;
+        case MS_Random:
+            generator = GeneratorPtr(new RandomMapGenerator);
             break;
     }
     

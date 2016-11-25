@@ -15,50 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MapSettings_h__
-#define MapSettings_h__
+#ifndef MigrationGenerator_h__
+#define MigrationGenerator_h__
 
-#include "mapGenerator/MapStyle.h"
+#include "mapGenerator/RandomMapGenerator.h"
+#include "mapGenerator/AreaDesc.h"
 
 /**
- * Settings used for map generation.
+ * Random migration map generator.
  */
-struct MapSettings
+class MigrationGenerator : public RandomMapGenerator
 {
-    /**
-     * Number of players.
-     */
-    int players;
-    
-    /**
-     * Map width in vertices.
-     */
-    int width;
+    public:
 
     /**
-     * Map height in vertices.
+     * Creates a new MigrationGenerator.
      */
-    int height;
-    
-    /**
-     * Minimum radius from the center of the map for player placement.
-     */
-    double minPlayerRadius;
-    
-    /**
-     * Maximum radius from the center of the map for player placement.
-     */
-    double maxPlayerRadius;
-    
-    /**
-     * Landscape type used for map generation.
-     */
-    int type;
-    
-    /**
-     * Style of the map.
-     */
-    MapStyle style;
-};
+    MigrationGenerator() : RandomMapGenerator(false)
+    {
+        // cx, cy min, max, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.3, 2.0,   14, 7, 0, 20, 20));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.05,   14, 7, 0, 15, 15));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));        
+    }
+ };
 
-#endif // MapSettings_h__
+#endif // MigrationGenerator_h__

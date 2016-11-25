@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Desktop.h"
+#include "mapGenerator/MapSettings.h"
 
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
@@ -61,6 +62,7 @@ class dskSelectMap :
 
     private:
         CreateServerInfo csi;
+        MapSettings mapSettings;
 };
 
 #endif //!dskSELECTMAP_H_INCLUDED

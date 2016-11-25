@@ -26,33 +26,38 @@ enum MapStyle
     /**
      * Greenland consists moslty of green area, small lakes, trees, stones and rather small mountains.
      */
-    Greenland,
+    MS_Greenland,
     
     /**
      * Riverland is similar to Greenland with additional rivers crossing the map.
      */
-    Riverland,
+    MS_Riverland,
     
     /**
      * Each player starts on its own island. There're also uninhabited islands around the map.
      */
-    Islands,
+    MS_Islands,
     
     /**
      * All players start on the same island.
      */
-    Contient,
+    MS_Continent,
     
     /**
-     * All players start on their own, small island. There's one big island in the center of the map
-     * with lots of resources and mountains.
+     * All players start on their own, small island. There's one big island in the center 
+     * of the map with lots of resources and mountains.
      */
-    Migration,
+    MS_Migration,
+    
+    /**
+     * Players are starting on a land-ring around the sea.
+     */
+    MS_Ringland,
     
     /**
      * Mega random!
      */
-    Random
+    MS_Random
 };
 
 #endif // MapStyle_h__

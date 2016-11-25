@@ -31,27 +31,12 @@
 #define MIN_HARBOR_DISTANCE     35.0
 #define MIN_HARBOR_WATER        200
 
-TerrainType RandomMapGenerator::Textures[MAXIMUM_HEIGHT] =
-{
-    TT_WATER, TT_WATER, TT_WATER, TT_WATER,     // 0-3
-    TT_DESERT,                                  // 4
-    TT_STEPPE,                                  // 5
-    TT_SAVANNAH,                                // 6
-    TT_MEADOW1,                                 // 7
-    TT_MEADOW_FLOWERS,                          // 8
-    TT_MEADOW2, TT_MEADOW2,                     // 9-10
-    TT_MOUNTAINMEADOW,                          // 11
-    TT_MOUNTAIN1, TT_MOUNTAIN1, TT_MOUNTAIN1,   // 12-14
-    TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW,
-    TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW, TT_SNOW // 15-24
-};
-
 int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
 {
     int maxHeight = -1;
     for (int i = 0; i < MAXIMUM_HEIGHT; i++)
     {
-        if (Textures[i] == terrain)
+        if (_textures[i] == terrain)
         {
             maxHeight = i;
         }
@@ -64,7 +49,7 @@ int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
 {
     for (int i = 0; i < MAXIMUM_HEIGHT; i++)
     {
-        if (Textures[i] == terrain)
+        if (_textures[i] == terrain)
         {
             return i;
         }
@@ -111,9 +96,9 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     Vec2 center(width / 2, height / 2);
 
     // radius for player distribution
-    const int rMin = (int)(0.3 * length);;
-    const int rMax = (int)(0.8 * length);
-    const int rnd = RANDOM.Rand(__FILE__, __LINE__, 0, rMax - rMin);
+    const int rMin = (int)(settings.minPlayerRadius * length);;
+    const int rMax = (int)(settings.maxPlayerRadius * length);
+    const int rnd = rand() % (rMax - rMin);
     
     // player headquarters for the players
     for (int i = 0; i < settings.players; i++)
@@ -205,10 +190,10 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             const int level = map->z[index];
             
             // create texture for current height value
-            ObjectGenerator::CreateTexture(map, index, Textures[level]);
+            ObjectGenerator::CreateTexture(map, index, _textures[level]);
             
             // post-processing of texture (add animals, adapt height, ...)
-            switch (Textures[level])
+            switch (_textures[level])
             {
                 case TT_WATER:
                     map->z[index]        = GetMaxTerrainHeight(TT_WATER);
