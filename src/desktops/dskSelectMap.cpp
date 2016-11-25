@@ -267,13 +267,22 @@ void dskSelectMap::StartRandomMap()
     // close & cleanup "please wait" window
     WINDOWMANAGER.Close(waitWindow);
     
-    if(!GAMESERVER.TryToStart(csi, map_path, MAPTYPE_OLDMAP))
+    // select the "played maps" entry
+    ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
+    optionGroup->SetSelection(8, true);
+    
+    // search for the random map entry and select it in the table
+    ctrlTable* table = GetCtrl<ctrlTable>(1);
+    for (int i = 0; i < table->GetRowCount(); i++)
     {
-        GoBack();
-    }
-    else
-    {
-        WINDOWMANAGER.Show(new iwPleaseWait);
+        std::string name = table->GetItemText(i, 0);
+        std::string author = table->GetItemText(i, 1);
+        
+        if (name == "Random" && author == "auto")
+        {
+            table->SetSelection(i);
+            break;
+        }
     }
 }
 
