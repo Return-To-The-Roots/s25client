@@ -69,7 +69,7 @@ void RandomMapGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* ma
             map->textureLsd.resize(size, ObjectGenerator::GetTextureId(TT_MEADOW1));
             map->build.resize(size, 0x04);
             map->shading.resize(size, 0x80);
-            map->resource.resize(size, 0x00);
+            map->resource.resize(size, 0x21);
             map->road.resize(size, 0x00);
             map->objectType.resize(size, 0x00);
             map->objectInfo.resize(size, 0x00);
