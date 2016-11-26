@@ -291,8 +291,6 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
 
 Map* RandomMapGenerator::Create(const MapSettings& settings)
 {
-    RANDOM.Init(0);
-    
     Map* map = new Map();
     
     // configuration of the map settings
