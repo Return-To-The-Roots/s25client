@@ -18,11 +18,15 @@
 #ifndef RandomMapGenerator_h__
 #define RandomMapGenerator_h__
 
+#include "defines.h" // IWYU pragma: keep
+
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapUtility.h"
+
 #include "gameTypes/MapTypes.h"
+#include "Random.h"
 
 #include <vector>
 #include <cstdlib>
@@ -164,12 +168,26 @@ class RandomMapGenerator
 
     /**
      * Generates a random number between min and max.
-     * @param min minimum values
+     * @param min minimum value
      * @param max maximum value
+     * @return a new random number
+     */
+    int Rand(const int min, const int max)
+    {
+        return min + rand() % (max - min);
+//        return min + RANDOM.Rand(__FILE__, __LINE__, 0, max - min);
+    }
+    
+    /**
+     * Generates a random number between min and max.
+     * @param min minimum value
+     * @param max maximum value
+     * @return a new random number
      */
     double DRand(const double min, const double max)
     {
-        return min + static_cast<double>(rand()) / (static_cast<double>(RAND_MAX/(max - min)));
+        return min + static_cast<double>(Rand(0, RAND_MAX)) /
+                    (static_cast<double>(RAND_MAX/(max - min)));
     }
  };
 

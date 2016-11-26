@@ -17,8 +17,6 @@
 
 #include "mapGenerator/ObjectGenerator.h"
 
-#include <cstdlib>
-
 uint8_t ObjectGenerator::GetTextureId(TerrainType terrain)
 {
     switch (terrain)
@@ -97,18 +95,18 @@ bool ObjectGenerator::IsEmpty(Map* map, const int index)
     
 uint8_t ObjectGenerator::CreateDuck(const int likelyhood)
 {
-    return rand() % 100 < likelyhood ? 0x05 : 0x00;
+    return Rand(100) < likelyhood ? 0x05 : 0x00;
 }
     
 uint8_t ObjectGenerator::CreateSheep(const int likelyhood)
 {
-    return (rand() % 100 < likelyhood) ? 0x06 : 0x00;
+    return (Rand(100) < likelyhood) ? 0x06 : 0x00;
 }
     
 uint8_t ObjectGenerator::CreateRandomForestAnimal(const int likelyhood)
 {
-    if (rand() % 100 >= likelyhood) return 0x00;
-    const int animal = rand() % 4;
+    if (Rand(100) >= likelyhood) return 0x00;
+    const int animal = Rand(4);
     switch (animal)
     {
         case 0: return 0x01; // rabbit
@@ -120,19 +118,19 @@ uint8_t ObjectGenerator::CreateRandomForestAnimal(const int likelyhood)
 
 uint8_t ObjectGenerator::CreateRandomResource()
 {
-    const int rnd = rand() % 100;
+    const int rnd = Rand(100);
     int resource = 0x00;
     if (rnd <= 9)       resource = 0x51; // 9% gold
     else if (rnd <= 45) resource = 0x49; // 36% iron
     else if (rnd <= 85) resource = 0x41; // 40% coal
     else                resource = 0x59; // 15% granite
-    return resource + rand() % 7;
+    return resource + Rand(7);
 }
     
 uint8_t ObjectGenerator::CreateRandomAnimal(const int likelyhood)
 {
-    if (rand() % 100 >= likelyhood) return 0x00;
-    const int animal = rand() % 5;
+    if (Rand(100) >= likelyhood) return 0x00;
+    const int animal = Rand(5);
     switch (animal)
     {
         case 0: return 0x01; // rabbit
@@ -150,32 +148,32 @@ bool ObjectGenerator::IsTree(Map* map, const int index)
     
 void ObjectGenerator::CreateRandomTree(Map* map, const int index)
 {
-    switch (rand() % 3)
+    switch (Rand(3))
     {
-        case 0: map->objectType[index] = 0x30 + rand() % 8; break;
-        case 1: map->objectType[index] = 0x70 + rand() % 8; break;
-        case 2: map->objectType[index] = 0xB0 + rand() % 8; break;
+        case 0: map->objectType[index] = 0x30 + Rand(8); break;
+        case 1: map->objectType[index] = 0x70 + Rand(8); break;
+        case 2: map->objectType[index] = 0xB0 + Rand(8); break;
     }
     map->objectInfo[index] = 0xC4;
 }
     
 void ObjectGenerator::CreateRandomPalm(Map* map, const int index)
 {
-    if (rand() % 2 == 0)
+    if (Rand(2) == 0)
     {
-        map->objectType[index] = 0x30 + rand() % 8;
+        map->objectType[index] = 0x30 + Rand(8);
         map->objectInfo[index] = 0xC5;
     }
     else
     {
-        map->objectType[index] = 0xF0 + rand() % 8;
+        map->objectType[index] = 0xF0 + Rand(8);
         map->objectInfo[index] = 0xC4;
     }
 }
     
 void ObjectGenerator::CreateRandomMixedTree(Map* map, const int index)
 {
-    if (rand() % 2 == 0)
+    if (Rand(2) == 0)
     {
         CreateRandomTree(map, index);
     }
@@ -187,7 +185,7 @@ void ObjectGenerator::CreateRandomMixedTree(Map* map, const int index)
     
 void ObjectGenerator::CreateRandomStone(Map* map, const int index)
 {
-    map->objectType[index] = 0x01 + rand() % 6;
-    map->objectInfo[index] = 0xCC + rand() % 2;
+    map->objectType[index] = 0x01 + Rand(6);
+    map->objectInfo[index] = 0xCC + Rand(2);
 }
 

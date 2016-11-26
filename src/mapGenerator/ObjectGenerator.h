@@ -18,9 +18,12 @@
 #ifndef ObjectGenerator_h__
 #define ObjectGenerator_h__
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
 #include "gameTypes/MapTypes.h"
+#include "Random.h"
 #include "stdint.h"
+#include <cstdlib>
 #include <utility>
 
 /**
@@ -28,6 +31,19 @@
  */
 class ObjectGenerator
 {
+    private:
+    
+    /**
+     * Generates a random number.
+     * @param max maximum value
+     * @return a new random number
+     */
+    static int Rand(const int max)
+    {
+        return rand() % max;
+        //return RANDOM.Rand(__FILE__, __LINE__, 0, max);
+    }
+    
     public:
     
     /**

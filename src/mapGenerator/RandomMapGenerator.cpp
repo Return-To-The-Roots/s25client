@@ -15,13 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
-
-#include "Random.h"
 
 #include <vector>
 #include <cstdlib>
@@ -98,7 +94,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     // radius for player distribution
     const int rMin = (int)(settings.minPlayerRadius * length);;
     const int rMax = (int)(settings.maxPlayerRadius * length);
-    const int rnd = rand() % (rMax - rMin);
+    const int rnd = Rand(rMin, rMax);
     
     // player headquarters for the players
     for (int i = 0; i < settings.players; i++)
@@ -120,8 +116,8 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
 {
     for (int i = 0; i < settings.players; i++)
     {
-        const int offset1 = RANDOM.Rand(__FILE__, __LINE__, i, 180);
-        const int offset2 = RANDOM.Rand(__FILE__, __LINE__, i, 180) + 180;
+        const int offset1 = Rand(0, 180);
+        const int offset2 = Rand(180, 360);
 
         _helper.SetStones(map, _helper.ComputePointOnCircle(offset1,
                                                             360,
@@ -159,13 +155,13 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map* map)
                 if (it->IsInArea(x, y, distanceToPlayer, width, height))
                 {
                     const int pr = (int)(*it).likelyhoodHill;
-                    const int rnd = rand() % (pr > 0 ? 101 : (int)(100.0 / (*it).likelyhoodHill));
+                    const int rnd = Rand(0, pr > 0 ? 101 : (int)(100.0 / (*it).likelyhoodHill));
                     const int minZ = (*it).minElevation;
                     const int maxZ = (*it).maxElevation;
                     
                     if (maxZ > 0 && rnd <= pr)
                     {
-                        int z = minZ + rand() % (maxZ - minZ + 1);
+                        const int z = Rand(minZ, maxZ + 1);
                         _helper.SetHill(map,
                                         Vec2(x, y),
                                         z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
@@ -228,11 +224,11 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 if (it->IsInArea(x, y, distanceToPlayer, width, height))
                 {
-                    if (rand() % 100 < (*it).likelyhoodTree)
+                    if (Rand(0, 100) < (*it).likelyhoodTree)
                     {
                         _helper.SetTree(map, Vec2(x,y));
                     }
-                    else if (rand() % 100 < (*it).likelyhoodStone)
+                    else if (Rand(0, 100) < (*it).likelyhoodStone)
                     {
                         _helper.SetStone(map, Vec2(x,y));
                     }
