@@ -68,5 +68,19 @@ BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Limit, MapUtility)
     delete map;
 }
 
+/**
+ * Tests the MapUtility::SetHill method.
+ */
+BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    MapUtility::SetHill(map, Vec2(0, 0), 0x4);
+    
+    BOOST_REQUIRE_EQUAL(map->z[0], 0x4);
+    
+    delete map;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
