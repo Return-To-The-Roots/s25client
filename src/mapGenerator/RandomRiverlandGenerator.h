@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef RiverlandGenerator_h__
-#define RiverlandGenerator_h__
+#ifndef RandomRiverlandGenerator_h__
+#define RandomRiverlandGenerator_h__
 
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/AreaDesc.h"
@@ -24,14 +24,14 @@
 /**
  * Random riverland map generator.
  */
-class RiverlandGenerator : public RandomMapGenerator
+class RandomRiverlandGenerator : public RandomMapGenerator
 {
     public:
 
     /**
-     * Creates a new RiverlandGenerator.
+     * Creates a new RandomRiverlandGenerator.
      */
-    RiverlandGenerator() : RandomMapGenerator(false)
+    RandomRiverlandGenerator() : RandomMapGenerator(false)
     {
         // cx, cy min, max, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
         _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 2.0,  14, 7, 0, 10, 15));
@@ -42,4 +42,4 @@ class RiverlandGenerator : public RandomMapGenerator
     }
  };
 
-#endif // RiverlandGenerator_h__
+#endif // RandomRiverlandGenerator_h__

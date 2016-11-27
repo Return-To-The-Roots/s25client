@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef ContinentGenerator_h__
-#define ContinentGenerator_h__
+#ifndef RandomContinentGenerator_h__
+#define RandomContinentGenerator_h__
 
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/AreaDesc.h"
@@ -24,14 +24,14 @@
 /**
  * Random continent map generator.
  */
-class ContinentGenerator : public RandomMapGenerator
+class RandomContinentGenerator : public RandomMapGenerator
 {
     public:
 
     /**
-     * Creates a new ContinentGenerator.
+     * Creates a new RandomContinentGenerator.
      */
-    ContinentGenerator() : RandomMapGenerator(false)
+    RandomContinentGenerator() : RandomMapGenerator(false)
     {
         // cx, cy min, max, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
         _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.9, 8.0,  14, 7, 5, 10, 15));
@@ -42,4 +42,4 @@ class ContinentGenerator : public RandomMapGenerator
     }
  };
 
-#endif // ContinentGenerator_h__
+#endif // RandomContinentGenerator_h__

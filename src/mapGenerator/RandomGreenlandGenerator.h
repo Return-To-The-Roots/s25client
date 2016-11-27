@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GreenlandGenerator_h__
-#define GreenlandGenerator_h__
+#ifndef RandomGreenlandGenerator_h__
+#define RandomGreenlandGenerator_h__
 
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/AreaDesc.h"
@@ -24,14 +24,14 @@
 /**
  * Random greenland map generator.
  */
-class GreenlandGenerator : public RandomMapGenerator
+class RandomGreenlandGenerator : public RandomMapGenerator
 {
     public:
 
     /**
-     * Creates a new GreenlandGenerator.
+     * Creates a new RandomGreenlandGenerator.
      */
-    GreenlandGenerator() : RandomMapGenerator(false)
+    RandomGreenlandGenerator() : RandomMapGenerator(false)
     {
         // cx, cy min, max, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
         _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 8.0,  14, 7, 5, 10, 15));
@@ -42,4 +42,4 @@ class GreenlandGenerator : public RandomMapGenerator
     }
  };
 
-#endif // GreenlandGenerator_h__
+#endif // RandomGreenlandGenerator_h__

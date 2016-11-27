@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef IslandsGenerator_h__
-#define IslandsGenerator_h__
+#ifndef RandomIslandsGenerator_h__
+#define RandomIslandsGenerator_h__
 
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/AreaDesc.h"
@@ -24,14 +24,14 @@
 /**
  * Random islands map generator.
  */
-class IslandsGenerator : public RandomMapGenerator
+class RandomIslandsGenerator : public RandomMapGenerator
 {
     public:
 
     /**
-     * Creates a new IslandsGenerator.
+     * Creates a new RandomIslandsGenerator.
      */
-    IslandsGenerator() : RandomMapGenerator(false)
+    RandomIslandsGenerator() : RandomMapGenerator(false)
     {
         _textures[0]    = TT_WATER;
         _textures[1]    = TT_WATER;
@@ -67,4 +67,4 @@ class IslandsGenerator : public RandomMapGenerator
     }
  };
 
-#endif // IslandsGenerator_h__
+#endif // RandomIslandsGenerator_h__

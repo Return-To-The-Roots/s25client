@@ -15,30 +15,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MigrationGenerator_h__
-#define MigrationGenerator_h__
+#ifndef RandomRinglandGenerator_h__
+#define RandomRinglandGenerator_h__
 
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/AreaDesc.h"
 
 /**
- * Random migration map generator.
+ * Random ringland map generator.
  */
-class MigrationGenerator : public RandomMapGenerator
+class RandomRinglandGenerator : public RandomMapGenerator
 {
     public:
 
     /**
-     * Creates a new MigrationGenerator.
+     * Creates a new RandomRinglandGenerator.
      */
-    MigrationGenerator() : RandomMapGenerator(false)
+    RandomRinglandGenerator() : RandomMapGenerator(false)
     {
+        const double rMin = DRand(0.2, 0.5);
+        const double rMax = DRand(rMin + 0.1, 0.9);
+        const double rMiddle = rMin + (rMax - rMin) / 2;
+        
         // cx, cy min, max, pHill, pTree, pStone, minZ, maxZ, minPlayerDist, maxPlayerDist
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.3, 2.0,   14, 7, 0, 20, 20));
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.05,   14, 7, 0, 15, 15));
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
-        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));        
+        _areas.push_back(AreaDesc(0.5, 0.5, rMin, rMax, 8.0,  14, 7, 5, 10, 15));
+        _areas.push_back(AreaDesc(0.5, 0.5, rMiddle-0.05, rMiddle+0.05, 1.0,   0, 0, 0, 20, 15));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
+        _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
     }
  };
 
-#endif // MigrationGenerator_h__
+#endif // RandomRinglandGenerator_h__

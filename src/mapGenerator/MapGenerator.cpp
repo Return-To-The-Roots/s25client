@@ -17,12 +17,12 @@
 
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/MapUtility.h"
-#include "mapGenerator/IslandsGenerator.h"
-#include "mapGenerator/GreenlandGenerator.h"
-#include "mapGenerator/RiverlandGenerator.h"
-#include "mapGenerator/MigrationGenerator.h"
-#include "mapGenerator/ContinentGenerator.h"
-#include "mapGenerator/RinglandGenerator.h"
+#include "mapGenerator/RandomIslandsGenerator.h"
+#include "mapGenerator/RandomGreenlandGenerator.h"
+#include "mapGenerator/RandomRiverlandGenerator.h"
+#include "mapGenerator/RandomMigrationGenerator.h"
+#include "mapGenerator/RandomContinentGenerator.h"
+#include "mapGenerator/RandomRinglandGenerator.h"
 #include "mapGenerator/RandomMapGenerator.h"
 
 #include "libsiedler2/src/libsiedler2.h"
@@ -41,22 +41,22 @@ void MapGenerator::Create(const std::string& filePath, const MapSettings& settin
     switch (settings.style)
     {
         case MS_Greenland:
-            generator = GeneratorPtr(new GreenlandGenerator);
+            generator = GeneratorPtr(new RandomGreenlandGenerator);
             break;
         case MS_Riverland:
-            generator = GeneratorPtr(new RiverlandGenerator);
+            generator = GeneratorPtr(new RandomRiverlandGenerator);
             break;
         case MS_Islands:
-            generator = GeneratorPtr(new IslandsGenerator);
+            generator = GeneratorPtr(new RandomIslandsGenerator);
             break;
         case MS_Continent:
-            generator = GeneratorPtr(new ContinentGenerator);
+            generator = GeneratorPtr(new RandomContinentGenerator);
             break;
         case MS_Migration:
-            generator = GeneratorPtr(new MigrationGenerator);
+            generator = GeneratorPtr(new RandomMigrationGenerator);
             break;
         case MS_Ringland:
-            generator = GeneratorPtr(new RinglandGenerator);
+            generator = GeneratorPtr(new RandomRinglandGenerator);
             break;
         case MS_Random:
             generator = GeneratorPtr(new RandomMapGenerator);
