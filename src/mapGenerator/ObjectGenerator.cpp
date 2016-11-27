@@ -82,7 +82,7 @@ void ObjectGenerator::CreateEmpty(Map* map, const int index)
     map->objectInfo[index] = 0x00;
 }
     
-void ObjectGenerator::CreateHeadquarter(Map* map, const int index, const int i)
+void ObjectGenerator::CreateHeadquarter(Map* map, const int index, const unsigned int i)
 {
     map->objectType[index] = (unsigned int)i;
     map->objectInfo[index] = 0x80;

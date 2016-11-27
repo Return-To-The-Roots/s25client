@@ -92,7 +92,7 @@ class ObjectGenerator
      * @param index vertex index to place the headquarter on
      * @param i player number
      */
-    static void CreateHeadquarter(Map* map, const int index, const int i);
+    static void CreateHeadquarter(Map* map, const int index, const unsigned int i);
 
     /**
      * Checks whether or not the specified object is empty.

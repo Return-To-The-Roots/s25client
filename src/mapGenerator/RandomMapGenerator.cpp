@@ -116,7 +116,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     const int rnd = Rand(rMin, rMax);
     
     // player headquarters for the players
-    for (int i = 0; i < settings.players; i++)
+    for (unsigned int i = 0; i < settings.players; i++)
     {
         // compute headquater position
         Vec2 position = _helper.ComputePointOnCircle(i,
