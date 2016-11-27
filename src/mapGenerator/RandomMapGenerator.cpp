@@ -149,7 +149,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map* map)
                         const unsigned int z = (unsigned int)RandomConfig::Rand(minZ, maxZ + 1);
                         _helper.SetHill(map,
                                         Vec2(x, y),
-                                        z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
+                                        z == GetMinTerrainHeight(TT_MOUNTAINMEADOW) ? z-1 : z);
                     }
                 }
             }
