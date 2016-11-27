@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/RandomMapGenerator.h"
+#include "mapGenerator/RandomConfig.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -33,7 +34,7 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
     settings.players = 3;
     settings.type = 0x0;
 
-    RandomMapGenerator* generator = new RandomMapGenerator();
+    RandomMapGenerator* generator = new RandomMapGenerator(RandomConfig::CreateRandom());
     Map* map = generator->Create(settings);
     
     BOOST_REQUIRE_EQUAL(map->width, settings.width);
@@ -55,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     settings.players = 3;
     settings.type = 0x0;
     
-    RandomMapGenerator* generator = new RandomMapGenerator();
+    RandomMapGenerator* generator = new RandomMapGenerator(RandomConfig::CreateRandom());
     Map* map = generator->Create(settings);
 
     BOOST_REQUIRE_EQUAL(map->players, settings.players);

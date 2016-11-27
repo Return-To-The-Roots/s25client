@@ -18,20 +18,15 @@
 #ifndef RandomMapGenerator_h__
 #define RandomMapGenerator_h__
 
-#include "defines.h" // IWYU pragma: keep
-
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapUtility.h"
+#include "mapGenerator/RandomConfig.h"
 
 #include "gameTypes/MapTypes.h"
-#include "Random.h"
 
 #include <vector>
-#include <cstdlib>
-
-#define MAXIMUM_HEIGHT 25
 
 /**
  * Random map generator.
@@ -41,56 +36,33 @@ class RandomMapGenerator
     public:
 
     /**
-     * Creates a new RandomMapGenerator with random area properties.
-     * @param random whether or not to generate random area description for map generation
+     * Creates a new RandomMapGenerator with random properties.
      */
-    RandomMapGenerator(bool random = true);
-
+    RandomMapGenerator();
     
+    /**
+     * Creates a new RandomMapGenerator with the specified configuration.
+     * @param config configuration for the random map generator
+     */
+    RandomMapGenerator(const RandomConfig& config);
+
     /**
      * Generates a new random map with the specified settings.
      * @param settings settings used for the map generation
      */
     Map* Create(const MapSettings& settings);
     
-    protected:
+    private:
     
     /**
      * Descriptions of different areas used to generate the random map.
      */
     std::vector<AreaDesc> _areas;
-
     
     /**
      * Textures used for different elevations of the map.
      */
-    TerrainType _textures[MAXIMUM_HEIGHT];
-    
-    /**
-     * Generates a random number between min and max.
-     * @param min minimum value
-     * @param max maximum value
-     * @return a new random number
-     */
-    int Rand(const int min, const int max)
-    {
-        return min + rand() % (max - min);
-        //        return min + RANDOM.Rand(__FILE__, __LINE__, 0, max - min);
-    }
-    
-    /**
-     * Generates a random number between min and max.
-     * @param min minimum value
-     * @param max maximum value
-     * @return a new random number
-     */
-    double DRand(const double min, const double max)
-    {
-        return min + static_cast<double>(Rand(0, RAND_MAX)) /
-        (static_cast<double>(RAND_MAX/(max - min)));
-    }
-
-    private:
+    std::vector<TerrainType> _textures;
     
     /**
      * Helper to generate random maps (tree placement, water, coastlines, ...).
@@ -102,14 +74,14 @@ class RandomMapGenerator
      * @param terrain terrain type to evaluate the maximum height for
      * @return the maximum height value for the terrain
      */
-    int GetMaxTerrainHeight(const TerrainType terrain);
+    unsigned int GetMaxTerrainHeight(const TerrainType terrain);
     
     /**
      * Gets the minimum height to be considered as specified terrain.
      * @param terrain terrain type to evaluate the minimum height for
      * @return the minimum height value for the terrain
      */
-    int GetMinTerrainHeight(const TerrainType terrain);
+    unsigned int GetMinTerrainHeight(const TerrainType terrain);
     
     /**
      * Create player positions (headquarters) for the specified map.

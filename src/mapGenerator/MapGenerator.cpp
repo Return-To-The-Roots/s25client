@@ -17,12 +17,7 @@
 
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/MapUtility.h"
-#include "mapGenerator/RandomIslandsGenerator.h"
-#include "mapGenerator/RandomGreenlandGenerator.h"
-#include "mapGenerator/RandomRiverlandGenerator.h"
-#include "mapGenerator/RandomMigrationGenerator.h"
-#include "mapGenerator/RandomContinentGenerator.h"
-#include "mapGenerator/RandomRinglandGenerator.h"
+#include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/RandomMapGenerator.h"
 
 #include "libsiedler2/src/libsiedler2.h"
@@ -36,30 +31,31 @@ typedef boost::interprocess::unique_ptr<RandomMapGenerator, Deleter<RandomMapGen
 void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
 {
     GeneratorPtr generator;
+    
 
     // create a random map generator based on the map style
     switch (settings.style)
     {
         case MS_Greenland:
-            generator = GeneratorPtr(new RandomGreenlandGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateGreenland()));
             break;
         case MS_Riverland:
-            generator = GeneratorPtr(new RandomRiverlandGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateRiverland()));
             break;
         case MS_Islands:
-            generator = GeneratorPtr(new RandomIslandsGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateIslands()));
             break;
         case MS_Continent:
-            generator = GeneratorPtr(new RandomContinentGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateContinent()));
             break;
         case MS_Migration:
-            generator = GeneratorPtr(new RandomMigrationGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateMigration()));
             break;
         case MS_Ringland:
-            generator = GeneratorPtr(new RandomRinglandGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateRingland()));
             break;
         case MS_Random:
-            generator = GeneratorPtr(new RandomMapGenerator);
+            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateRandom()));
             break;
     }
     

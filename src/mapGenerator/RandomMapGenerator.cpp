@@ -27,57 +27,23 @@
 #define MIN_HARBOR_DISTANCE     35.0
 #define MIN_HARBOR_WATER        200
 
-RandomMapGenerator::RandomMapGenerator(bool random)
+RandomMapGenerator::RandomMapGenerator()
 {
-    _textures[0]    = TT_WATER;
-    _textures[1]    = TT_WATER;
-    _textures[2]    = TT_WATER;
-    _textures[3]    = TT_WATER;
-    _textures[4]    = TT_DESERT;
-    _textures[5]    = TT_STEPPE;
-    _textures[6]    = TT_SAVANNAH;
-    _textures[7]    = TT_MEADOW1;
-    _textures[8]    = TT_MEADOW_FLOWERS;
-    _textures[9]    = TT_MEADOW2;
-    _textures[10]   = TT_MEADOW2;
-    _textures[11]   = TT_MOUNTAINMEADOW;
-    _textures[12]   = TT_MOUNTAIN1;
-    _textures[13]   = TT_MOUNTAIN1;
-    _textures[14]   = TT_MOUNTAIN1;
-    _textures[15]   = TT_SNOW;
-    _textures[16]   = TT_SNOW;
-    _textures[17]   = TT_SNOW;
-    _textures[18]   = TT_SNOW;
-    _textures[19]   = TT_SNOW;
-    _textures[20]   = TT_SNOW;
-    _textures[21]   = TT_SNOW;
-    _textures[22]   = TT_SNOW;
-    _textures[23]   = TT_SNOW;
-    _textures[24]   = TT_SNOW;
-    
-    if (!random)
-    {
-        return;
-    }
-    
-    const double p1 = DRand(0.0, 0.4);
-    const double p2 = DRand(p1, p1 + 1.4);
-    const double p3 = DRand(p2, p2 + 1.0);
-    const double pHill = DRand(1.5, 5.0);
-    const int minHill = rand() % 5;
-    
-    _areas.push_back(AreaDesc(0.5, 0.5, 0.0, p1,    1.0,  4, 7, 0, 23, 15));
-    _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    pHill, 18, 5, minHill, 10, 15));
-    _areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    0.5,  0, 0, 0, 17, 18));
-    _areas.push_back(AreaDesc(0.5, 0.5, p2,  p3,    0.1, 15, 5, 0,  7, 15));
-    _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
-    _areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
+    RandomConfig config = RandomConfig::CreateRandom();
+    _textures = config.textures;
+    _areas = config.areas;
 }
 
-int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
+RandomMapGenerator::RandomMapGenerator(const RandomConfig& config)
 {
-    int maxHeight = -1;
-    for (int i = 0; i < MAXIMUM_HEIGHT; i++)
+    _textures = config.textures;
+    _areas = config.areas;
+}
+
+unsigned int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
+{
+    unsigned int maxHeight = 0;
+    for (unsigned int i = 0; i < _textures.size(); i++)
     {
         if (_textures[i] == terrain)
         {
@@ -88,9 +54,9 @@ int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
     return maxHeight;
 }
 
-int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
+unsigned int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
 {
-    for (int i = 0; i < MAXIMUM_HEIGHT; i++)
+    for (unsigned int i = 0; i < _textures.size(); i++)
     {
         if (_textures[i] == terrain)
         {
@@ -98,7 +64,7 @@ int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
         }
     }
     
-    return -1;
+    return _textures.size();
 }
 
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
@@ -113,7 +79,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
     // radius for player distribution
     const int rMin = (int)(settings.minPlayerRadius * length);;
     const int rMax = (int)(settings.maxPlayerRadius * length);
-    const int rnd = Rand(rMin, rMax);
+    const int rnd = RandomConfig::Rand(rMin, rMax);
     
     // player headquarters for the players
     for (unsigned int i = 0; i < settings.players; i++)
@@ -135,8 +101,8 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map* 
 {
     for (unsigned int i = 0; i < settings.players; i++)
     {
-        const int offset1 = Rand(0, 180);
-        const int offset2 = Rand(180, 360);
+        const int offset1 = RandomConfig::Rand(0, 180);
+        const int offset2 = RandomConfig::Rand(180, 360);
 
         _helper.SetStones(map, _helper.ComputePointOnCircle(offset1,
                                                             360,
@@ -170,17 +136,17 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map* map)
             
             for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
             {
-                
                 if (it->IsInArea(x, y, distanceToPlayer, width, height))
                 {
                     const int pr = (int)(*it).likelyhoodHill;
-                    const int rnd = Rand(0, pr > 0 ? 101 : (int)(100.0 / (*it).likelyhoodHill));
+                    const int rnd = RandomConfig::Rand(0, pr > 0 ? 101 :
+                                                       (int)(100.0 / (*it).likelyhoodHill));
                     const int minZ = (*it).minElevation;
                     const int maxZ = (*it).maxElevation;
                     
                     if (maxZ > 0 && rnd <= pr)
                     {
-                        const int z = Rand(minZ, maxZ + 1);
+                        const int z = RandomConfig::Rand(minZ, maxZ + 1);
                         _helper.SetHill(map,
                                         Vec2(x, y),
                                         z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
@@ -243,11 +209,11 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
             {
                 if (it->IsInArea(x, y, distanceToPlayer, width, height))
                 {
-                    if (Rand(0, 100) < (*it).likelyhoodTree)
+                    if (RandomConfig::Rand(0, 100) < (*it).likelyhoodTree)
                     {
                         _helper.SetTree(map, Vec2(x,y));
                     }
-                    else if (Rand(0, 100) < (*it).likelyhoodStone)
+                    else if (RandomConfig::Rand(0, 100) < (*it).likelyhoodStone)
                     {
                         _helper.SetStone(map, Vec2(x,y));
                     }
