@@ -20,6 +20,15 @@
 #include <iostream>
 #include <vector>
 
+Map::Map()
+{
+    for (int i = 0; i < 7; i++)
+    {
+        positions[i].x = 0xFF;
+        positions[i].y = 0xFF;
+    }
+}
+
 ArchivInfo* Map::CreateArchiv()
 {
     ArchivInfo* info = new ArchivInfo();

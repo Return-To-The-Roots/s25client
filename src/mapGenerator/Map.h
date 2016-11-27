@@ -39,15 +39,8 @@ struct Map
     /**
      * Creates a new instance of map with initial player positions set to 0xFF (= not set).
      */
-    Map()
-    {
-        for (int i = 0; i < 7; i++)
-        {
-            positions[i].x = 0xFF;
-            positions[i].y = 0xFF;
-        }
-    }
-    
+    Map();
+
     /**
      * Name of the map.
      */
