@@ -30,14 +30,21 @@
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
                                                 IngameWindow::posLastOrCenter,
-                                                300, 400, _("Map Generator"),
+                                                250, 300, _("Map Generator"),
                                                 LOADER.GetImageN("resource", 41), true, false), mapSettings(settings), tmpSettings(settings)
 {
-    AddTextButton(0,  40, 360, 100, 20, TC_RED2, _("Back"), NormalFont);
-    AddTextButton(1, 160, 360, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
-    AddTextButton(2,  50,  50, 200, 20, TC_GREY, _("2 Players"), NormalFont);
+    AddTextButton(0,  20, 260, 100, 20, TC_RED2, _("Back"), NormalFont);
+    AddTextButton(1, 130, 260, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
 
-    ctrlComboBox* combo = AddComboBox(3, 50, 80, 200, 20, TC_GREY, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(2, 20, 30, 210, 20, TC_GREY, NormalFont, 100);
+    combo->AddString("2 Players");
+    combo->AddString("3 Players");
+    combo->AddString("4 Players");
+    combo->AddString("5 Players");
+    combo->AddString("6 Players");
+    combo->AddString("7 Players");
+    
+    combo = AddComboBox(3, 20, 60, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString("Islands");
     combo->AddString("Continent");
     combo->AddString("Greenland");
@@ -46,15 +53,15 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString("Ringland");
     combo->AddString("Random");
 
-    combo = AddComboBox(4, 50, 110, 200, 20, TC_GREY, NormalFont, 100);
+    combo = AddComboBox(4, 20, 90, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString("64 x 64");
     combo->AddString("128 x 128");
     combo->AddString("256 x 256");
     combo->AddString("512 x 512");
     combo->AddString("1024 x 1024");
 
-    AddText(5, 50, 140, _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(6, 50, 170, 200, 20, TC_GREY, NormalFont, 100);
+    AddText(5, 20, 120, _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(6, 20, 140, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString("Very Close");
     combo->AddString("Close");
     combo->AddString("Medium");
@@ -99,7 +106,20 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
-    if (ctrl_id == 3) // map style
+    if (ctrl_id == 2) // players
+    {
+        switch (selection)
+        {
+            case 0: tmpSettings.players = 2; break;
+            case 1: tmpSettings.players = 3; break;
+            case 2: tmpSettings.players = 4; break;
+            case 3: tmpSettings.players = 5; break;
+            case 4: tmpSettings.players = 6; break;
+            case 5: tmpSettings.players = 7; break;
+            default: break;
+        }
+    }
+    else if (ctrl_id == 3) // map style
     {
         switch (selection)
         {
@@ -152,15 +172,15 @@ void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int s
 void iwMapGenerator::SetPlayers(const int numberPlayers)
 {
     tmpSettings.players = numberPlayers >= 2 ? numberPlayers : 2;
-    ctrlTextButton* button = GetCtrl<ctrlTextButton>(2);
+    ctrlComboBox* combo = GetCtrl<ctrlComboBox>(2);
     switch (tmpSettings.players)
     {
-        case 2: button->SetText("2 Players"); break;
-        case 3: button->SetText("3 Players"); break;
-        case 4: button->SetText("4 Players"); break;
-        case 5: button->SetText("5 Players"); break;
-        case 6: button->SetText("6 Players"); break;
-        case 7: button->SetText("7 Players"); break;
+        case 2: combo->SetSelection(0); break;
+        case 3: combo->SetSelection(1); break;
+        case 4: combo->SetSelection(2); break;
+        case 5: combo->SetSelection(3); break;
+        case 6: combo->SetSelection(4); break;
+        case 7: combo->SetSelection(5); break;
         default: break;
     }
 }
