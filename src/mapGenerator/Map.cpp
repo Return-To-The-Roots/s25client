@@ -19,15 +19,6 @@
 #include <iostream>
 #include <vector>
 
-Map::Map()
-{
-    for (int i = 0; i < 7; i++)
-    {
-        positions[i].x = 0xFF;
-        positions[i].y = 0xFF;
-    }
-}
-
 Map::Map(const unsigned int width,
          const unsigned int height,
          const std::string& name,
@@ -40,7 +31,7 @@ Map::Map(const unsigned int width,
         positions[i].x = 0xFF;
         positions[i].y = 0xFF;
     }
-    
+
     z.resize(size, 0x00);
     textureRsu.resize(size, 0x08);
     textureLsd.resize(size, 0x08);

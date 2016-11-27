@@ -37,11 +37,6 @@ typedef vector<pair<uint8_t, uint8_t> > VecPair;
 struct Map
 {
     /**
-     * Creates a new instance of map with initial player positions set to 0xFF (= not set).
-     */
-    Map();
-    
-    /**
      * Creates a new, empty map with the specified width and height.
      * @param width map width
      * @param height map height
