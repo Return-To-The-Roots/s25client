@@ -60,17 +60,17 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
 
-    for (int i = 0; i < settings.players; i++)
+    for (unsigned int i = 0; i < settings.players; i++)
     {
         const Vec2 p = map->positions[i];
         BOOST_REQUIRE_NE(p.x, 0xFF);
         BOOST_REQUIRE_NE(p.y, 0xFF);
         
-        BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.width + p.x], (unsigned int)i);
+        BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.width + p.x], i);
         BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], 0x80);
     }
 
-    for (int i = settings.players; i < 7; i++)
+    for (unsigned int i = settings.players; i < 7; i++)
     {
         BOOST_REQUIRE_EQUAL(map->positions[i].x, 0xFF);
         BOOST_REQUIRE_EQUAL(map->positions[i].y, 0xFF);
