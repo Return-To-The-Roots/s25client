@@ -133,7 +133,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
 
 void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map* map)
 {
-    for (int i = 0; i < settings.players; i++)
+    for (unsigned int i = 0; i < settings.players; i++)
     {
         const int offset1 = Rand(0, 180);
         const int offset2 = Rand(180, 360);
