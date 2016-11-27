@@ -101,34 +101,6 @@ int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
     return -1;
 }
 
-void RandomMapGenerator::CreateEmptyTerrain(const MapSettings& settings, Map* map)
-{
-    const int width = map->width;
-    const int height = map->height;
-    const unsigned int size = (unsigned int)width * height;
-    
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            map->z.resize(size, 0x00);
-            map->textureRsu.resize(size, ObjectGenerator::GetTextureId(TT_MEADOW1));
-            map->textureLsd.resize(size, ObjectGenerator::GetTextureId(TT_MEADOW1));
-            map->build.resize(size, 0x04);
-            map->shading.resize(size, 0x80);
-            map->resource.resize(size, 0x21);
-            map->road.resize(size, 0x00);
-            map->objectType.resize(size, 0x00);
-            map->objectInfo.resize(size, 0x00);
-            map->animal.resize(size, 0x00);
-            map->unknown1.resize(size, 0x00);
-            map->unknown2.resize(size, 0x07);
-            map->unknown3.resize(size, 0x00);
-            map->unknown5.resize(size, 0x00);
-        }
-    }
-}
-
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map* map)
 {
     const int width = map->width;
@@ -338,18 +310,13 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
 
 Map* RandomMapGenerator::Create(const MapSettings& settings)
 {
-    Map* map = new Map();
+    Map* map = new Map(settings.width, settings.height, "Random", "auto");
     
     // configuration of the map settings
-    map->name = "Random";
-    map->author = "auto";
-    map->width = settings.width;
-    map->height = settings.height;
     map->type = settings.type;
     map->players = settings.players;
 
     // the actual map generation
-    CreateEmptyTerrain(settings, map);
     PlacePlayers(settings, map);
     PlacePlayerResources(settings, map);
     CreateHills(settings, map);

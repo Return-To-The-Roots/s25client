@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/Map.h"
-
 #include <iostream>
 #include <vector>
 
@@ -28,6 +27,42 @@ Map::Map()
         positions[i].y = 0xFF;
     }
 }
+
+Map::Map(const unsigned int width,
+         const unsigned int height,
+         const std::string& name,
+         const std::string& author) : width(width), height(height), name(name), author(author)
+{
+    const unsigned int size = (unsigned int)width * height;
+
+    for (int i = 0; i < 7; i++)
+    {
+        positions[i].x = 0xFF;
+        positions[i].y = 0xFF;
+    }
+    
+    for (int j = 0; j < height; j++)
+    {
+        for (int i = 0; i < width; i++)
+        {
+            z.resize(size, 0x00);
+            textureRsu.resize(size, 0x08);
+            textureLsd.resize(size, 0x08);
+            build.resize(size, 0x04);
+            shading.resize(size, 0x80);
+            resource.resize(size, 0x21);
+            road.resize(size, 0x00);
+            objectType.resize(size, 0x00);
+            objectInfo.resize(size, 0x00);
+            animal.resize(size, 0x00);
+            unknown1.resize(size, 0x00);
+            unknown2.resize(size, 0x07);
+            unknown3.resize(size, 0x00);
+            unknown5.resize(size, 0x00);
+        }
+    }
+}
+
 
 ArchivInfo* Map::CreateArchiv()
 {
@@ -48,47 +83,19 @@ ArchivInfo* Map::CreateArchiv()
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
     map->set(0, header);
-
-    // altitude information
     map->set(1, new ArchivItem_Raw(z));
-
-    // texture information (right-side-up)
     map->set(2, new ArchivItem_Raw(textureRsu));
-
-    // texture information (up-side-down)
     map->set(3, new ArchivItem_Raw(textureLsd));
-
-    // road information
     map->set(4, new ArchivItem_Raw(road));
-    
-    // object type information
     map->set(5, new ArchivItem_Raw(objectType));
-    
-    // object information
     map->set(6, new ArchivItem_Raw(objectInfo));
-
-    // animal information
     map->set(7, new ArchivItem_Raw(animal));
-    
-    // unknown information
     map->set(8, new ArchivItem_Raw(unknown1));
-
-    // build information
     map->set(9, new ArchivItem_Raw(build));
-
-    // unknown information
     map->set(10, new ArchivItem_Raw(unknown2));
-
-    // unknown information
     map->set(11, new ArchivItem_Raw(unknown3));
-
-    // resource information
     map->set(12, new ArchivItem_Raw(resource));
-
-    // shading information
     map->set(13, new ArchivItem_Raw(shading));
-    
-    // unknown information
     map->set(14, new ArchivItem_Raw(unknown5));
 
     info->push(map);

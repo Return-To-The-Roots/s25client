@@ -40,21 +40,38 @@ struct Map
      * Creates a new instance of map with initial player positions set to 0xFF (= not set).
      */
     Map();
-
+    
     /**
-     * Name of the map.
+     * Creates a new, empty map with the specified width and height.
+     * @param width map width
+     * @param height map height
+     * @param name name of the map
+     * @param author author of the map
      */
-    std::string name;
-
-    /**
-     * Height of the map in vertices.
-     */
-    uint16_t height;
+    Map(const unsigned int width,
+        const unsigned int height,
+        const std::string& name,
+        const std::string& author);
 
     /**
      * Width of the map in vertices.
      */
     uint16_t width;
+    
+    /**
+     * Height of the map in vertices.
+     */
+    uint16_t height;
+    
+    /**
+     * Name of the map.
+     */
+    std::string name;
+    
+    /**
+     * Name of the map author.
+     */
+    std::string author;
 
     /**
      * Landscape type of the map.
@@ -70,11 +87,6 @@ struct Map
      * Positions of the players' headquarters.
      */
     Vec2 positions[7];
-    
-    /**
-     * Name of the map author.
-     */
-    std::string author;
     
     /**
      * Height for each vertex of the map.

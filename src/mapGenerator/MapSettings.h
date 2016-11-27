@@ -28,17 +28,17 @@ struct MapSettings
     /**
      * Number of players.
      */
-    int players;
+    unsigned int players;
     
     /**
      * Map width in vertices.
      */
-    int width;
+    unsigned int width;
 
     /**
      * Map height in vertices.
      */
-    int height;
+    unsigned int height;
     
     /**
      * Minimum radius from the center of the map for player placement.
@@ -53,7 +53,7 @@ struct MapSettings
     /**
      * Landscape type used for map generation.
      */
-    int type;
+    unsigned int type;
     
     /**
      * Style of the map.
