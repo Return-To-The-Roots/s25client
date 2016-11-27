@@ -65,6 +65,30 @@ class RandomMapGenerator
      * Textures used for different elevations of the map.
      */
     TerrainType _textures[MAXIMUM_HEIGHT];
+    
+    /**
+     * Generates a random number between min and max.
+     * @param min minimum value
+     * @param max maximum value
+     * @return a new random number
+     */
+    int Rand(const int min, const int max)
+    {
+        return min + rand() % (max - min);
+        //        return min + RANDOM.Rand(__FILE__, __LINE__, 0, max - min);
+    }
+    
+    /**
+     * Generates a random number between min and max.
+     * @param min minimum value
+     * @param max maximum value
+     * @return a new random number
+     */
+    double DRand(const double min, const double max)
+    {
+        return min + static_cast<double>(Rand(0, RAND_MAX)) /
+        (static_cast<double>(RAND_MAX/(max - min)));
+    }
 
     private:
     
@@ -86,13 +110,6 @@ class RandomMapGenerator
      * @return the minimum height value for the terrain
      */
     int GetMinTerrainHeight(const TerrainType terrain);
-    
-    /**
-     * Create a new, empty terain for the specified map.
-     * @param settings settings used for map generation
-     * @param map map to modify
-     */
-    void CreateEmptyTerrain(const MapSettings& settings, Map* map);
     
     /**
      * Create player positions (headquarters) for the specified map.
@@ -121,30 +138,6 @@ class RandomMapGenerator
      * @param map map to modify
      */
     void FillRemainingTerrain(const MapSettings& settings, Map* map);
-
-    /**
-     * Generates a random number between min and max.
-     * @param min minimum value
-     * @param max maximum value
-     * @return a new random number
-     */
-    int Rand(const int min, const int max)
-    {
-        return min + rand() % (max - min);
-//        return min + RANDOM.Rand(__FILE__, __LINE__, 0, max - min);
-    }
-    
-    /**
-     * Generates a random number between min and max.
-     * @param min minimum value
-     * @param max maximum value
-     * @return a new random number
-     */
-    double DRand(const double min, const double max)
-    {
-        return min + static_cast<double>(Rand(0, RAND_MAX)) /
-                    (static_cast<double>(RAND_MAX/(max - min)));
-    }
  };
 
 #endif // RandomMapGenerator_h__
