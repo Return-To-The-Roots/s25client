@@ -41,26 +41,20 @@ Map::Map(const unsigned int width,
         positions[i].y = 0xFF;
     }
     
-    for (int j = 0; j < height; j++)
-    {
-        for (int i = 0; i < width; i++)
-        {
-            z.resize(size, 0x00);
-            textureRsu.resize(size, 0x08);
-            textureLsd.resize(size, 0x08);
-            build.resize(size, 0x04);
-            shading.resize(size, 0x80);
-            resource.resize(size, 0x21);
-            road.resize(size, 0x00);
-            objectType.resize(size, 0x00);
-            objectInfo.resize(size, 0x00);
-            animal.resize(size, 0x00);
-            unknown1.resize(size, 0x00);
-            unknown2.resize(size, 0x07);
-            unknown3.resize(size, 0x00);
-            unknown5.resize(size, 0x00);
-        }
-    }
+    z.resize(size, 0x00);
+    textureRsu.resize(size, 0x08);
+    textureLsd.resize(size, 0x08);
+    build.resize(size, 0x04);
+    shading.resize(size, 0x80);
+    resource.resize(size, 0x21);
+    road.resize(size, 0x00);
+    objectType.resize(size, 0x00);
+    objectInfo.resize(size, 0x00);
+    animal.resize(size, 0x00);
+    unknown1.resize(size, 0x00);
+    unknown2.resize(size, 0x07);
+    unknown3.resize(size, 0x00);
+    unknown5.resize(size, 0x00);
 }
 
 
