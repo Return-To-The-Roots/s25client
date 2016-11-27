@@ -146,7 +146,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map* map)
                     
                     if (maxZ > 0 && rnd <= pr)
                     {
-                        const int z = RandomConfig::Rand(minZ, maxZ + 1);
+                        const unsigned int z = (unsigned int)RandomConfig::Rand(minZ, maxZ + 1);
                         _helper.SetHill(map,
                                         Vec2(x, y),
                                         z == GetMinTerrainHeight(TT_MOUNTAIN1) - 1 ? z-1 : z);
