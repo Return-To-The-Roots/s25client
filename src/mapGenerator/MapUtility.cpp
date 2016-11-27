@@ -45,7 +45,7 @@ unsigned int MapUtility::ComputeWaterSize(Map* map, const Vec2& position, const 
     const int height = map->height;
     
     std::queue<Vec2> searchRoom;
-    std::list<Vec2> water;
+    std::list<int> water;
     
     searchRoom.push(Vec2(position.x, position.y));
     
@@ -55,9 +55,9 @@ unsigned int MapUtility::ComputeWaterSize(Map* map, const Vec2& position, const 
         const int index = VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
         
         if (ObjectGenerator::IsTexture(map, index, TT_WATER)
-            && std::find(water.begin(), water.end(), pos) == water.end())
+            && std::find(water.begin(), water.end(), index) == water.end())
         {
-            water.push_back(pos);
+            water.push_back(index);
             
             searchRoom.push(Vec2(pos.x+1, pos.y));
             searchRoom.push(Vec2(pos.x, pos.y+1));
