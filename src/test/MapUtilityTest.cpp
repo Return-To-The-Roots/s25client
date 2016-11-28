@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         map->textureLsd[i] = 0x12;
         map->textureRsu[i] = 0x12;
@@ -98,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
     
     MapUtility::Smooth(map);
 
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         BOOST_REQUIRE_EQUAL(map->textureLsd[i], 0x8);
         BOOST_REQUIRE_EQUAL(map->textureRsu[i], 0x8);
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         map->z[i] = 0x0;
         map->textureLsd[i] = 0x01;
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
     
     MapUtility::Smooth(map);
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         BOOST_REQUIRE_GT(map->z[i], 0x0);
     }
@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         map->z[i] = 0x0;
         map->textureLsd[i] = 0x02;
@@ -149,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
     
     MapUtility::Smooth(map);
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         BOOST_REQUIRE_GT(map->z[i], 0x0);
     }
@@ -165,7 +165,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         map->z[i] = 0x0;
         map->textureLsd[i] = 0x08;
@@ -174,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
     
     MapUtility::Smooth(map);
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         BOOST_REQUIRE_EQUAL(map->z[i], 0x0);
     }
@@ -190,7 +190,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     
-    for (unsigned int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map->width * map->height; i++)
     {
         map->textureLsd[i] = 0x08;
         map->textureRsu[i] = 0x08;
