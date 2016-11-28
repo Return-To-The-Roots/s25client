@@ -205,6 +205,44 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
 }
 
 /**
+ * Tests the MapUtility::SetHarbor method to ensure harbor positions are available after
+ * placing a harbor at an apropriate place.
+ */
+BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (int i = 0; i < map->width * map->height; i++)
+    {
+        if (i % map->width < map->width / 2)
+        {
+            map->textureLsd[i] = 0x08; // half of the map meadow
+            map->textureRsu[i] = 0x08;
+        }
+        else
+        {
+            map->textureLsd[i] = 0x05; // half of the map water
+            map->textureRsu[i] = 0x05;
+        }
+    }
+    
+    MapUtility::SetHarbour(map, Vec2(8, 8), 0);
+    
+    int countHarbors = 0;
+    for (int i = 0; i < map->width * map->height; i++)
+    {
+        if (map->textureLsd[i] == 0x48 && map->textureRsu[i] == 0x48)
+        {
+            countHarbors++;
+        }
+    }
+    
+    BOOST_REQUIRE_GT(countHarbors, 0);
+    
+    delete map;
+}
+
+/**
  * Tests the VertexUtility::ComputePointOnCircle method with fixed values around a circle.
  */
 BOOST_FIXTURE_TEST_CASE(ComputePointOnCircle_FixedValues, MapUtility)
@@ -217,7 +255,7 @@ BOOST_FIXTURE_TEST_CASE(ComputePointOnCircle_FixedValues, MapUtility)
     const Vec2 p2 = MapUtility::ComputePointOnCircle(90, 360, Vec2(1,1), 1.0);
 
     BOOST_REQUIRE_EQUAL(p2.x, 0x1);
-    BOOST_REQUIRE_EQUAL(p2.y, 0x0);
+    BOOST_REQUIRE_EQUAL(p2.y, 0x2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
