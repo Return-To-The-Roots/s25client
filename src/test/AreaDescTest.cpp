@@ -55,7 +55,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointOutsideIgnorePlayer, AreaDesc)
 BOOST_FIXTURE_TEST_CASE(Constructor_PointTooCloseAtPlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 8);
-    const bool isInArea = area->IsInArea(8, 8, 0.1, 16, 16);
+    const bool isInArea = area->IsInArea(8, 8, 1.0, 16, 16);
     
     BOOST_REQUIRE(!isInArea);
     
@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointTooCloseAtPlayer, AreaDesc)
 BOOST_FIXTURE_TEST_CASE(Constructor_PointFarFromPlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 1);
-    const bool isInArea = area->IsInArea(8, 8, 0.5, 16, 16);
+    const bool isInArea = area->IsInArea(8, 8, 2.0, 16, 16);
     
     BOOST_REQUIRE(isInArea);
     
@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointFarFromPlayer, AreaDesc)
 BOOST_FIXTURE_TEST_CASE(Constructor_PointNearPlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0, 8);
-    const bool isInArea = area->IsInArea(8, 8, 0.1, 16, 16);
+    const bool isInArea = area->IsInArea(8, 8, 2.0, 16, 16);
     
     BOOST_REQUIRE(isInArea);
     
