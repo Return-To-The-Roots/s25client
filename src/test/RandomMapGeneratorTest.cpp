@@ -28,14 +28,13 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
 {
-    /*
     MapSettings settings;
     settings.width = 32;
     settings.height = 32;
     settings.players = 3;
     settings.type = 0x0;
 
-    RandomMapGenerator* generator = new RandomMapGenerator(RandomConfig::CreateRandom());
+    RandomMapGenerator* generator = new RandomMapGenerator();
     Map* map = generator->Create(settings);
     
     BOOST_REQUIRE_EQUAL(map->width, settings.width);
@@ -43,7 +42,6 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
     
     delete map;
     delete generator;
-     */
 }
 
 /**
@@ -52,14 +50,13 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 {
-    /*
     MapSettings settings;
     settings.width = 32;
     settings.height = 32;
     settings.players = 3;
     settings.type = 0x0;
     
-    RandomMapGenerator* generator = new RandomMapGenerator(RandomConfig::CreateRandom());
+    RandomMapGenerator* generator = new RandomMapGenerator();
     Map* map = generator->Create(settings);
 
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
@@ -82,7 +79,6 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     
     delete map;
     delete generator;
-     */
 }
 
 BOOST_AUTO_TEST_SUITE_END()
