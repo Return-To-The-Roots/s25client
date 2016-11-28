@@ -231,7 +231,7 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
     int countHarbors = 0;
     for (int i = 0; i < map->width * map->height; i++)
     {
-        if (map->textureLsd[i] == 0x48 && map->textureRsu[i] == 0x48)
+        if (map->textureLsd[i] == 0x40 && map->textureRsu[i] == 0x40)
         {
             countHarbors++;
         }
