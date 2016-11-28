@@ -226,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
         }
     }
     
-    MapUtility::SetHarbour(map, Vec2(8, 8), 0);
+    MapUtility::SetHarbour(map, Vec2(7, 7), 0);
     
     int countHarbors = 0;
     for (int i = 0; i < map->width * map->height; i++)
@@ -238,6 +238,78 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
     }
     
     BOOST_REQUIRE_GT(countHarbors, 0);
+    
+    delete map;
+}
+
+/**
+ * Tests the MapUtility::SetTree for an empty map. As a result the position for the new 
+ * tree shouldn't be empty anymore.
+ */
+BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    MapUtility::SetTree(map, Vec2(8,8));
+
+    BOOST_REQUIRE_NE(map->objectType[8 * 16 + 8], 0x0);
+    BOOST_REQUIRE_NE(map->objectInfo[8 * 16 + 8], 0x0);
+    
+    delete map;
+}
+
+/**
+ * Tests the MapUtility::SetTree for a non-empty map. As a result the position for the new
+ * tree shouldn't be replaced.
+ */
+BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    const int index = 8 * 16 + 8;
+    
+    map->objectType[index] = 0x1;
+    map->objectInfo[index] = 0x1;
+    
+    MapUtility::SetTree(map, Vec2(8,8));
+    
+    BOOST_REQUIRE_EQUAL(map->objectType[index], 0x1);
+    BOOST_REQUIRE_EQUAL(map->objectInfo[index], 0x1);
+    
+    delete map;
+}
+
+/**
+ * Tests the MapUtility::SetStone for an empty map. As a result the position for the new
+ * tree shouldn't be empty anymore.
+ */
+BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    MapUtility::SetStone(map, Vec2(8,8));
+    
+    BOOST_REQUIRE_NE(map->objectType[8 * 16 + 8], 0x0);
+    BOOST_REQUIRE_NE(map->objectInfo[8 * 16 + 8], 0x0);
+    
+    delete map;
+}
+
+/**
+ * Tests the MapUtility::SetStone for a non-empty map. As a result the position for the new
+ * stone pile shouldn't be replaced.
+ */
+BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    const int index = 8 * 16 + 8;
+    
+    map->objectType[index] = 0x1;
+    map->objectInfo[index] = 0x1;
+    
+    MapUtility::SetStone(map, Vec2(8,8));
+    
+    BOOST_REQUIRE_EQUAL(map->objectType[index], 0x1);
+    BOOST_REQUIRE_EQUAL(map->objectInfo[index], 0x1);
     
     delete map;
 }
