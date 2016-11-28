@@ -25,10 +25,20 @@
 #include "addons/const_addons.h"
 #include <vector>
 
+/**
+ * The iwMapGenerator is an ingame window for the user to configure parameters used
+ * for random map generation (when pressing the "Random" button on map selection).
+ */
 class iwMapGenerator : public IngameWindow
 {
     public:
+    
+        /**
+         * Creates a new ingame window to configure the random map generator.
+         * @param settings reference to the settings to be manipulated
+         */
         iwMapGenerator(MapSettings& settings);
+    
         ~iwMapGenerator() override;
 
     protected:
