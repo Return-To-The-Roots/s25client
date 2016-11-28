@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_SUITE(MapTest)
  * Tests the AreaDesc::IsInArea method for a point inside of the area independent of 
  * the player positions.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_PointInsideIgnorePlayer, AreaDesc)
+BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
     const bool isInArea = area->IsInArea(8, 8, 0.0, 16, 16);
@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointInsideIgnorePlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point outside of the area independent of
  * the player positions.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_PointOutsideIgnorePlayer, AreaDesc)
+BOOST_FIXTURE_TEST_CASE(IsInArea_PointOutsideIgnorePlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
     const bool isInArea = area->IsInArea(0, 0, 0.0, 16, 16);
@@ -52,7 +52,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointOutsideIgnorePlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point outside of the area because it is too
  * close to a player.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_PointTooCloseAtPlayer, AreaDesc)
+BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseAtPlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 8);
     const bool isInArea = area->IsInArea(8, 8, 1.0, 16, 16);
@@ -66,7 +66,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointTooCloseAtPlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point inside of the area with a given minimum
  * player distance.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_PointFarFromPlayer, AreaDesc)
+BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 1);
     const bool isInArea = area->IsInArea(8, 8, 2.0, 16, 16);
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_PointFarFromPlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point inside of the area with a given maximum
  * player distance.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_PointNearPlayer, AreaDesc)
+BOOST_FIXTURE_TEST_CASE(IsInArea_PointNearPlayer, AreaDesc)
 {
     AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0, 8);
     const bool isInArea = area->IsInArea(8, 8, 2.0, 16, 16);
