@@ -17,7 +17,7 @@
 
 #include "mapGenerator/Map.h"
 
-Map::Map()
+Map::Map() : width(0), height(0)
 {
     
 }
