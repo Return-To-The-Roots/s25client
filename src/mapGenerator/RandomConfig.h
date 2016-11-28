@@ -43,12 +43,53 @@ struct RandomConfig
      */
     std::vector<TerrainType> textures;
     
+    /**
+     * Creates a new configuration for greenland random maps.
+     * Greendland maps are covered by grass and mountains with very few lakes.
+     * @return a new configuration for greenland random maps
+     */
     static RandomConfig CreateGreenland();
+
+    /**
+     * Creates a new configuration for riverland random maps. Riverland maps are
+     * close to greenland maps but with plenty of water.
+     * @return a new configuration for riverland random maps
+     */
     static RandomConfig CreateRiverland();
+    
+    /**
+     * Creates a new configuration for ringland random maps. Ringland maps usually
+     * covered by water apart from a ring-shaped piece of land.
+     * @return a new configuration for ringland random maps
+     */
     static RandomConfig CreateRingland();
+    
+    /**
+     * Creates a new configuration for migration random maps. On migration style maps
+     * players are starting on their own little island. The main resources (mountains),
+     * however, are available only on one large island in the center of the map.
+     * @return a new configuration for migration random maps
+     */
     static RandomConfig CreateMigration();
+    
+    /**
+     * Creates a new configuration for islands random maps. Each player starts on its
+     * own island which contains all relevant resources (trees, stone piles, mountains).
+     * @return a new configuration for islands random maps
+     */
     static RandomConfig CreateIslands();
+    
+    /**
+     * Creates a new configuration for continental random maps. Continent maps are big
+     * islands surounded by water. Each player starts on the same big island.
+     * @return a new configuration for continental random maps
+     */
     static RandomConfig CreateContinent();
+    
+    /**
+     * Creates a new configuration for full random maps.
+     * @return a new configuration for full random maps
+     */
     static RandomConfig CreateRandom();
     
     /**
