@@ -19,8 +19,6 @@
 #define MapUtility_h__
 
 #include "mapGenerator/Map.h"
-#include "mapGenerator/MapSettings.h"
-#include "mapGenerator/Vec2.h"
 
 #include <string>
 

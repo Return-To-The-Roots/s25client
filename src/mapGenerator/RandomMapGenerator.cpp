@@ -19,7 +19,6 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 
-#include <vector>
 #include <cstdlib>
 #include <cmath>
 
