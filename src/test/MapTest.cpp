@@ -29,22 +29,22 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
 {
     Map* map = new Map(64, 64, "name", "author");
 
-    BOOST_REQUIRE_EQUAL(map->width, 64);
-    BOOST_REQUIRE_EQUAL(map->height, 64);
-    BOOST_REQUIRE_EQUAL(map->z.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->textureRsu.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->textureLsd.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->build.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->shading.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->resource.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->road.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->objectType.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->objectInfo.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->animal.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->unknown1.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->unknown2.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->unknown3.size(), 4096);
-    BOOST_REQUIRE_EQUAL(map->unknown5.size(), 4096);
+    BOOST_REQUIRE_EQUAL(map->width,             (unsigned)64);
+    BOOST_REQUIRE_EQUAL(map->height,            (unsigned)64);
+    BOOST_REQUIRE_EQUAL(map->z.size(),          (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->textureRsu.size(), (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->textureLsd.size(), (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->build.size(),      (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->shading.size(),    (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->resource.size(),   (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->road.size(),       (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->objectType.size(), (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->objectInfo.size(), (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->animal.size(),     (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->unknown1.size(),   (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->unknown2.size(),   (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->unknown3.size(),   (unsigned)4096);
+    BOOST_REQUIRE_EQUAL(map->unknown5.size(),   (unsigned)4096);
 
     delete map;
 }
