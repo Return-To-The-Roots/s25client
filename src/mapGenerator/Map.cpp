@@ -19,6 +19,11 @@
 #include <iostream>
 #include <vector>
 
+Map::Map()
+{
+    
+}
+
 Map::Map(const unsigned int width,
          const unsigned int height,
          const std::string& name,
