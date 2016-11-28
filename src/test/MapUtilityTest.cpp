@@ -117,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        map->z[i] = 0x0;
+        map->z[i] = 0x0A;
         map->textureLsd[i] = 0x01;
         map->textureRsu[i] = 0x01;
     }
@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        BOOST_REQUIRE_GT(map->z[i], 0x0);
+        BOOST_REQUIRE_GT(map->z[i], 0x0D);
     }
     
     delete map;
@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        map->z[i] = 0x0;
+        map->z[i] = 0x0A;
         map->textureLsd[i] = 0x02;
         map->textureRsu[i] = 0x02;
     }
@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        BOOST_REQUIRE_GT(map->z[i], 0x0);
+        BOOST_REQUIRE_GT(map->z[i], 0x0D);
     }
     
     delete map;
@@ -167,7 +167,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        map->z[i] = 0x0;
+        map->z[i] = 0x0A;
         map->textureLsd[i] = 0x08;
         map->textureRsu[i] = 0x08;
     }
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        BOOST_REQUIRE_EQUAL(map->z[i], 0x0);
+        BOOST_REQUIRE_EQUAL(map->z[i], 0x0A);
     }
     
     delete map;
@@ -209,12 +209,12 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(ComputePointOnCircle_FixedValues, MapUtility)
 {
-    const Vec2 p1 = MapUtility::ComputePointOnCircle(0, 360, Vec2(0,0), 1.0);
+    const Vec2 p1 = MapUtility::ComputePointOnCircle(0, 360, Vec2(1,1), 1.0);
 
-    BOOST_REQUIRE_EQUAL(p1.x, 0x0);
+    BOOST_REQUIRE_EQUAL(p1.x, 0x2);
     BOOST_REQUIRE_EQUAL(p1.y, 0x1);
 
-    const Vec2 p2 = MapUtility::ComputePointOnCircle(90, 360, Vec2(0,0), 1.0);
+    const Vec2 p2 = MapUtility::ComputePointOnCircle(90, 360, Vec2(1,1), 1.0);
 
     BOOST_REQUIRE_EQUAL(p2.x, 0x1);
     BOOST_REQUIRE_EQUAL(p2.y, 0x0);
