@@ -29,10 +29,12 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
 BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
 {
     MapSettings settings;
-    settings.width = 64;
-    settings.height = 64;
+    settings.width = 32;
+    settings.height = 32;
     settings.players = 2;
     settings.type = 0x0;
+    settings.minPlayerRadius = 0.2;
+    settings.maxPlayerRadius = 0.3;
 
     RandomMapGenerator* generator = new RandomMapGenerator();
     Map* map = generator->Create(settings);
@@ -51,11 +53,13 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
 BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 {
     MapSettings settings;
-    settings.width = 64;
-    settings.height = 64;
+    settings.width = 32;
+    settings.height = 32;
     settings.players = 2;
     settings.type = 0x0;
-    
+    settings.minPlayerRadius = 0.2;
+    settings.maxPlayerRadius = 0.3;
+
     RandomMapGenerator* generator = new RandomMapGenerator();
 
     Map* map = generator->Create(settings);
