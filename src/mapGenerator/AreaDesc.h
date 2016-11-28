@@ -117,7 +117,7 @@ struct AreaDesc
      * Checks whether ot not the specified point is within this area.
      * @param x-coordinate of the point to check
      * @param y-coordinate of the point to check
-     * @param playerDistance distance to the nearest player position
+     * @param playerDistance distance to the nearest player position in tiles
      * @param width width of the map
      * @param height height of the map
      * @return true of the point is within the of the area, false otherwise
