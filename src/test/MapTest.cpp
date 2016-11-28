@@ -17,7 +17,6 @@
 
 #include "mapGenerator/Map.h"
 #include <boost/test/unit_test.hpp>
-#include <string>
 
 BOOST_AUTO_TEST_SUITE(MapTest)
 

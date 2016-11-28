@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/Map.h"
-#include <iostream>
-#include <vector>
 
 Map::Map()
 {

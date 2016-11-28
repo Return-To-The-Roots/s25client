@@ -19,17 +19,14 @@
 #define Map_h__
 
 #include "mapGenerator/Vec2.h"
-
 #include "libsiedler2/src/archives.h"
-
 #include <vector>
 #include <string>
 
 using namespace libsiedler2;
-using namespace std;
 
-typedef vector<unsigned char> VecUChar;
-typedef vector<pair<uint8_t, uint8_t> > VecPair;
+typedef std::vector<unsigned char> VecUChar;
+typedef std::vector<std::pair<uint8_t, uint8_t> > VecPair;
 
 /**
  * Data type for reading, writing and generating maps.

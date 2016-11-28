@@ -18,17 +18,42 @@
 #ifndef AreaDesc_h__
 #define AreaDesc_h__
 
-#include "defines.h" // IWYU pragma: keep
-
+/**
+ * Descriptor class for specific areas on a random map. Each area describes a particular 
+ * landscape style used for map generation in a particular location.
+ */
 struct AreaDesc
 {
-    AreaDesc(double cx, double cy, double minDist, double maxDist, double pHill, int pTree, int pStone,
-             int minZ, int maxZ, int minPlayerDist, int maxPlayerDist = -1)
-    : centerX(cx), centerY(cy), minDistance(minDist), maxDistance(maxDist),
-      likelyhoodHill(pHill), likelyhoodTree(pTree), likelyhoodStone(pStone),
-      minElevation(minZ), maxElevation(maxZ), minPlayerDistance(minPlayerDist), maxPlayerDistance(maxPlayerDist)
-    {
-    }
+    /**
+     * Creates a new area description.
+     */
+    AreaDesc();
+    
+    /**
+     * Creates a new area description.
+     * @param cx x-coordinate of the center of the area (unit: 1.0 equals length of the map)
+     * @param cy y-coordinate of the center of the area (unit: 1.0 equals length of the map)
+     * @param minDist minimum distance to the area center (unit: 1.0 equals length of the map)
+     * @param maxDist maximum distance to the area center (unit: 1.0 equals length of the map)
+     * @param pHill likelyhood (in percentage) to place a hill on tile
+     * @param pTree likelyhood (in percentage) to place a tree on a non-water tile
+     * @param pStone likelyhood (in percentage) to place stone on a non-water tile
+     * @param minZ minimum height of the area (used for hill generation)
+     * @param maxZ maximum height of the area (used for hill generation)
+     * @param minPlayerDist minimum distance to each player in tiles
+     * @param maxPlayerDist maximum distance to each player in tiles (default: -1 means unlimited)
+     */
+    AreaDesc(double cx,
+             double cy,
+             double minDist,
+             double maxDist,
+             double pHill,
+             int pTree,
+             int pStone,
+             int minZ,
+             int maxZ,
+             int minPlayerDist,
+             int maxPlayerDist = -1);
     
     /**
      * X-coordinate of the center point of the area relative to the width of the map.
