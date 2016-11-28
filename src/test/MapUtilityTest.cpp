@@ -83,7 +83,7 @@ BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
 }
 
 /**
- * Tests the VertexUtility::Smooth method to ensure mountain-meadow textures are
+ * Tests the MapUtility::Smooth method to ensure mountain-meadow textures are
  * replaced by meadow if they have no neighboring mountain-textures.
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
@@ -108,7 +108,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 }
 
 /**
- * Tests the VertexUtility::Smooth method to ensure that height of mountain-textures
+ * Tests the MapUtility::Smooth method to ensure that height of mountain-textures
  * is increased.
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
@@ -133,7 +133,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
 }
 
 /**
- * Tests the VertexUtility::Smooth method to ensure that height of snow-textures
+ * Tests the MapUtility::Smooth method to ensure that height of snow-textures
  * is increased.
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
@@ -158,7 +158,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
 }
 
 /**
- * Tests the VertexUtility::Smooth method to ensure that height of meadow-textures
+ * Tests the MapUtility::Smooth method to ensure that height of meadow-textures
  * are NOT increased.
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
@@ -183,7 +183,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
 }
 
 /**
- * Tests the VertexUtility::Smooth method to ensure that single textures which are surounded
+ * Tests the MapUtility::Smooth method to ensure that single textures which are surounded
  * by other textures are replaced properly.
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
@@ -202,6 +202,22 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
     BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x8);
     
     delete map;
+}
+
+/**
+ * Tests the VertexUtility::ComputePointOnCircle method with fixed values around a circle.
+ */
+BOOST_FIXTURE_TEST_CASE(ComputePointOnCircle_FixedValues, MapUtility)
+{
+    const Vec2 p1 = MapUtility::ComputePointOnCircle(0, 360, Vec2(0,0), 1.0);
+
+    BOOST_REQUIRE_EQUAL(p1.x, 0x0);
+    BOOST_REQUIRE_EQUAL(p1.y, 0x1);
+
+    const Vec2 p2 = MapUtility::ComputePointOnCircle(90, 360, Vec2(0,0), 1.0);
+
+    BOOST_REQUIRE_EQUAL(p2.x, 0x1);
+    BOOST_REQUIRE_EQUAL(p2.y, 0x0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
