@@ -185,12 +185,9 @@ void MapUtility::SetTree(Map* map, const Vec2& position)
     
     if (ObjectGenerator::IsEmpty(map, index))
     {
-        if (ObjectGenerator::IsTexture(map, index, TT_DESERT))
-        {
-            ObjectGenerator::CreateRandomPalm(map, index);
-        }
-        else if (ObjectGenerator::IsTexture(map, index, TT_SAVANNAH) ||
-                 ObjectGenerator::IsTexture(map, index, TT_STEPPE))
+        if (ObjectGenerator::IsTexture(map, index, TT_DESERT) ||
+            ObjectGenerator::IsTexture(map, index, TT_SAVANNAH) ||
+            ObjectGenerator::IsTexture(map, index, TT_STEPPE))
         {
             ObjectGenerator::CreateRandomPalm(map, index);
         }

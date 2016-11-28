@@ -259,6 +259,28 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
 }
 
 /**
+ * Tests the MapUtility::SetTree for a desert map. As a result the position for the new
+ * tree shouldn't be empty anymore.
+ */
+BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (int i = 0; i < map->width * map->height; i++)
+    {
+        map->textureLsd[i] = 0x04;
+        map->textureRsu[i] = 0x04;
+    }
+    
+    MapUtility::SetTree(map, Vec2(8,8));
+    
+    BOOST_REQUIRE_NE(map->objectType[8 * 16 + 8], 0x0);
+    BOOST_REQUIRE_NE(map->objectInfo[8 * 16 + 8], 0x0);
+    
+    delete map;
+}
+
+/**
  * Tests the MapUtility::SetTree for a non-empty map. As a result the position for the new
  * tree shouldn't be replaced.
  */
