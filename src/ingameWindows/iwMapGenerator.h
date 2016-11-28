@@ -36,13 +36,23 @@ class iwMapGenerator : public IngameWindow
         void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
     
     private:
+    
+        /**
+         * Actual settings used for map generation. After pressing the "apply" button in the
+         * UI mapSettings are set to the current tmpSettings.
+         */
         MapSettings& mapSettings;
+    
+        /**
+         * Map settings which are directly manipulated by UI.
+         */
         MapSettings tmpSettings;
     
-        void SetPlayers(const int numberPlayers);
-        void SetStyle(const MapStyle& style);
-        void SetSize(const int size);
-        void SetPlayerDistribution(const double min, const double max);
+        /**
+         * Resets the map generation settings to the original value.
+         * Also updates the UI accordingly.
+         */
+        void Reset();
 };
 
 #endif // !iwMAPGENERATOR_H_INCLUDED

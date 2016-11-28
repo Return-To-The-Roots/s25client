@@ -68,10 +68,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString("Far");
     combo->AddString("Very Far");
 
-    SetPlayers(settings.players);
-    SetStyle(settings.style);
-    SetSize(settings.width);
-    SetPlayerDistribution(settings.minPlayerRadius, settings.maxPlayerRadius);
+    Reset();
 }
 
 iwMapGenerator::~iwMapGenerator()
@@ -94,12 +91,6 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             mapSettings = tmpSettings;
             Close();
-        } break;
-            
-        case 2: // number of players
-        {
-            SetPlayers((tmpSettings.players + 1) % 8);
-
         } break;
     }
 }
@@ -169,9 +160,12 @@ void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int s
     }
 }
 
-void iwMapGenerator::SetPlayers(const int numberPlayers)
+void iwMapGenerator::Reset()
 {
-    tmpSettings.players = numberPlayers >= 2 ? numberPlayers : 2;
+    // reset number of players to original value
+    tmpSettings.players = mapSettings.players;
+    
+    // update number of player in UI
     ctrlComboBox* combo = GetCtrl<ctrlComboBox>(2);
     switch (tmpSettings.players)
     {
@@ -183,13 +177,13 @@ void iwMapGenerator::SetPlayers(const int numberPlayers)
         case 7: combo->SetSelection(5); break;
         default: break;
     }
-}
+    
+    // reset map style to original value
+    tmpSettings.style = mapSettings.style;
 
-void iwMapGenerator::SetStyle(const MapStyle& style)
-{
-    tmpSettings.style = style;
-    ctrlComboBox* combo = GetCtrl<ctrlComboBox>(3);
-    switch (style)
+    // update map style in UI
+    combo = GetCtrl<ctrlComboBox>(3);
+    switch (tmpSettings.style)
     {
         case MS_Islands:    combo->SetSelection(0); break;
         case MS_Continent:  combo->SetSelection(1); break;
@@ -200,14 +194,14 @@ void iwMapGenerator::SetStyle(const MapStyle& style)
         case MS_Random:     combo->SetSelection(6); break;
         default: break;
     }
-}
-
-void iwMapGenerator::SetSize(const int size)
-{
-    tmpSettings.width = size;
-    tmpSettings.height = size;
-    ctrlComboBox* combo = GetCtrl<ctrlComboBox>(4);
-    switch (size)
+    
+    // reset map size to original values
+    tmpSettings.width = mapSettings.width;
+    tmpSettings.height = mapSettings.height;
+    
+    // update map size in UI
+    combo = GetCtrl<ctrlComboBox>(4);
+    switch (mapSettings.width)
     {
         case 64:    combo->SetSelection(0); break;
         case 128:   combo->SetSelection(1); break;
@@ -216,26 +210,29 @@ void iwMapGenerator::SetSize(const int size)
         case 1024:  combo->SetSelection(4); break;
         default: break;
     }
-}
-
-void iwMapGenerator::SetPlayerDistribution(const double min, const double max)
-{
-    tmpSettings.minPlayerRadius = min;
-    tmpSettings.maxPlayerRadius = max;
-    ctrlComboBox* combo = GetCtrl<ctrlComboBox>(6);
-    if (min <= 0.2)
+    
+    // reset map size to original values
+    tmpSettings.minPlayerRadius = mapSettings.minPlayerRadius;
+    tmpSettings.maxPlayerRadius = mapSettings.maxPlayerRadius;
+    
+    // update player distance in UI
+    combo = GetCtrl<ctrlComboBox>(6);
+    if (tmpSettings.minPlayerRadius <= 0.2)
     {
         combo->SetSelection(0);
     }
-    else if (min <= 0.3)
+    else
+    if (tmpSettings.minPlayerRadius <= 0.3)
     {
         combo->SetSelection(1);
     }
-    else if (min <= 0.4)
+    else
+    if (tmpSettings.minPlayerRadius <= 0.4)
     {
         combo->SetSelection(2);
     }
-    else if (min <= 0.5)
+    else
+    if (tmpSettings.minPlayerRadius <= 0.5)
     {
         combo->SetSelection(3);
     }
