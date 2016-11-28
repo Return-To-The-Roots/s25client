@@ -30,10 +30,15 @@ class MapUtility
     public:
     
     /**
-     * Smoothes the textures of the map for better visual appearance.
+     * Smoothes the textures of the map for better visual appearance by post-processing
+     * the specified map. Single textures which are surounded by other textures are replaced
+     * by their neighboring textures. 
+     * Also, the height values of snow- and mountain-textures are increased and mountain-
+     * meadow textures without neighboring mountain-textures are replaced by simple meadow
+     * textures.
      * @param map map to smooth textures for
      */
-    void SmoothTextures(Map* map);
+    void Smooth(Map* map);
     
     /**
      * Creates a hill at the specified center with the specified height.
@@ -44,8 +49,8 @@ class MapUtility
     void SetHill(Map* map, const Vec2& center, int z);
     
     /**
-     * Sets up a harbor position at the specified center. The surounding area is flattened an textures
-     * are replaced to enable harbor building.
+     * Sets up a harbor position at the specified center. The surounding area is flattened 
+     * an textures are replaced to enable harbor building.
      * @param map map to modify the terrain for
      * @param center center point for the harbor position
      * @param waterLevel the height level of the surounding water

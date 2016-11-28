@@ -288,7 +288,7 @@ Map* RandomMapGenerator::Create(const MapSettings& settings)
     FillRemainingTerrain(settings, map);
     
     // post-processing
-    _helper.SmoothTextures(map);
+    _helper.Smooth(map);
     
     return map;
 }

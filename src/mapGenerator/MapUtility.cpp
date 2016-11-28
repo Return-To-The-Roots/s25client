@@ -70,7 +70,7 @@ unsigned int MapUtility::ComputeWaterSize(Map* map, const Vec2& position, const 
 }
 
 
-void MapUtility::SmoothTextures(Map* map)
+void MapUtility::Smooth(Map* map)
 {
     const int waterId = ObjectGenerator::GetTextureId(TT_WATER);
     const int width = map->width;
