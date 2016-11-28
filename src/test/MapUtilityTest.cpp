@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        BOOST_REQUIRE_GT(map->z[i], 0x0D);
+        BOOST_REQUIRE_GT(map->z[i], 0x0A);
     }
     
     delete map;
@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        BOOST_REQUIRE_GT(map->z[i], 0x0D);
+        BOOST_REQUIRE_GT(map->z[i], 0x0A);
     }
     
     delete map;
