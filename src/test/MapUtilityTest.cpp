@@ -82,5 +82,127 @@ BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
     delete map;
 }
 
+/**
+ * Tests the VertexUtility::Smooth method to ensure mountain-meadow textures are
+ * replaced by meadow if they have no neighboring mountain-textures.
+ */
+BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        map->textureLsd[i] = 0x12;
+        map->textureRsu[i] = 0x12;
+    }
+    
+    MapUtility::Smooth(map);
+
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        BOOST_REQUIRE_EQUAL(map->textureLsd[i], 0x8);
+        BOOST_REQUIRE_EQUAL(map->textureRsu[i], 0x8);
+    }
+    
+    delete map;
+}
+
+/**
+ * Tests the VertexUtility::Smooth method to ensure that height of mountain-textures
+ * is increased.
+ */
+BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        map->z[i] = 0x0;
+        map->textureLsd[i] = 0x01;
+        map->textureRsu[i] = 0x01;
+    }
+    
+    MapUtility::Smooth(map);
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        BOOST_REQUIRE_GT(map->z[i], 0x0);
+    }
+    
+    delete map;
+}
+
+/**
+ * Tests the VertexUtility::Smooth method to ensure that height of snow-textures
+ * is increased.
+ */
+BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        map->z[i] = 0x0;
+        map->textureLsd[i] = 0x02;
+        map->textureRsu[i] = 0x02;
+    }
+    
+    MapUtility::Smooth(map);
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        BOOST_REQUIRE_GT(map->z[i], 0x0);
+    }
+    
+    delete map;
+}
+
+/**
+ * Tests the VertexUtility::Smooth method to ensure that height of meadow-textures
+ * are NOT increased.
+ */
+BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        map->z[i] = 0x0;
+        map->textureLsd[i] = 0x08;
+        map->textureRsu[i] = 0x08;
+    }
+    
+    MapUtility::Smooth(map);
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        BOOST_REQUIRE_EQUAL(map->z[i], 0x0);
+    }
+    
+    delete map;
+}
+
+/**
+ * Tests the VertexUtility::Smooth method to ensure that single textures which are surounded
+ * by other textures are replaced properly.
+ */
+BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (unsigned int i = 0; i < map->width * map->height; i++)
+    {
+        map->textureLsd[i] = 0x08;
+        map->textureRsu[i] = 0x08;
+    }
+    map->textureRsu[0] = 0x02;
+    
+    MapUtility::Smooth(map);
+    
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x8);
+    
+    delete map;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

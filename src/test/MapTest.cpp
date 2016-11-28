@@ -21,6 +21,20 @@
 BOOST_AUTO_TEST_SUITE(MapTest)
 
 /**
+ * Tests the default constructor of the Map class. Width and height of the map
+ * are expected to be zero.
+ */
+BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
+{
+    Map* map = new Map();
+    
+    BOOST_REQUIRE_EQUAL(map->width,  (unsigned)0);
+    BOOST_REQUIRE_EQUAL(map->height, (unsigned)0);
+    
+    delete map;
+}
+
+/**
  * Tests the constructor of the Map class. The new map should have correct size 
  * according to the constructor parameters.
  */
