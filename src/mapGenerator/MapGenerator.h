@@ -18,7 +18,6 @@
 #ifndef MapGenerator_h__
 #define MapGenerator_h__
 
-#include "mapGenerator/MapStyle.h"
 #include "mapGenerator/MapSettings.h"
 
 #include <string>
