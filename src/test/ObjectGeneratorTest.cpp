@@ -126,6 +126,53 @@ BOOST_FIXTURE_TEST_CASE(IsTree_Empty, ObjectGenerator)
     delete map;
 }
 
+/**
+ * Tests the ObjectGenerator::CreateTexture method without harbor.
+ * The specified texture should be replaced.
+ */
+BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
+{
+    Map* map = new Map(16, 16, "name", "author");
+    
+    ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
+    
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x05);
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], 0x05);
+    
+    delete map;
+}
+
+/**
+ * Tests the ObjectGenerator::CreateTexture method with harbor.
+ * The specified texture should be replaced with a harbor texture.
+ */
+BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
+{
+    Map* map = new Map(16, 16, "name", "author");
+    
+    ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
+    
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x48);
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], 0x48);
+    
+    delete map;
+}
+
+/**
+ * Tests the ObjectGenerator::CreateTexture method with harbor but non-harbor texture.
+ * The specified texture should be replaced without a harbor texture.
+ */
+BOOST_FIXTURE_TEST_CASE(CreateTexture_HarborNotSupported, ObjectGenerator)
+{
+    Map* map = new Map(16, 16, "name", "author");
+    
+    ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
+    
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x05);
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], 0x05);
+    
+    delete map;
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
