@@ -55,10 +55,20 @@ class dskSelectMap :
         void LC_Created() override;
         void LC_Status_Error(const std::string& error) override;
 
-        /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
+        /**
+         * Starts a new game with the currently selected map.
+         */
         void StartServer();
+    
+        /**
+         * Go back to the previous menu.
+         */
         void GoBack();
-        void StartRandomMap();
+    
+        /**
+         * Generates a new random map and selects the new map in the table (UI).
+         */
+        void CreateRandomMap();
 
     private:
         CreateServerInfo csi;

@@ -241,7 +241,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 6: // random map
         {
-            StartRandomMap();
+            CreateRandomMap();
         } break;
         case 7: // random map #players
         {
@@ -256,14 +256,8 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
     StartServer();
 }
 
-void dskSelectMap::StartRandomMap()
+void dskSelectMap::CreateRandomMap()
 {
-    // create a new "please wait" window to indicate loading process
-    iwPleaseWait* waitWindow = new iwPleaseWait;
-    
-    // display "please wait" window while the map is being generated
-    WINDOWMANAGER.Show(waitWindow);
-    
     // create new map generator
     boost::interprocess::unique_ptr<MapGenerator, Deleter<MapGenerator> > generator(new MapGenerator());
     
@@ -273,9 +267,6 @@ void dskSelectMap::StartRandomMap()
 
     // create a random map and save filepath
     generator->Create(map_path, mapSettings);
-    
-    // close & cleanup "please wait" window
-    WINDOWMANAGER.Close(waitWindow);
     
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
