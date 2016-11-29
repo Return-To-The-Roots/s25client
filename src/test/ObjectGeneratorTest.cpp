@@ -49,5 +49,34 @@ BOOST_FIXTURE_TEST_CASE(GetTextureId_TerrainType, ObjectGenerator)
     BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MOUNTAINMEADOW),   0x12);
 }
 
+/**
+ * Tests the ObjectGenerator::IsHarborAllowed method to ensure the method returns correct
+ * values for all terrain types.
+ */
+BOOST_FIXTURE_TEST_CASE(IsHarborAllowed_TerrainType, ObjectGenerator)
+{
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SNOW),              false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA),              false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA2),             false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA3),             false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA4),             false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER),             false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER_NOSHIP),      false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_DESERT),            false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN1),         false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN2),         false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN3),         false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN4),         false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SWAMPLAND),         false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_BUILDABLE_WATER),   false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_STEPPE),            true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SAVANNAH),          true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW1),           true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW2),           true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW3),           true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW_FLOWERS),    true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAINMEADOW),    true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
