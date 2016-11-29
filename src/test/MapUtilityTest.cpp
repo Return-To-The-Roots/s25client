@@ -108,6 +108,42 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 }
 
 /**
+ * Tests the MapUtility::Smooth method to ensure mountain-meadow textures are
+ * not replaced if they have neighboring mountain-textures.
+ */
+BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
+{
+    Map* map = new Map(16, 16, "map", "author");
+    
+    for (int i = 0; i < map->width * map->height; i++)
+    {
+        if (i % map->width == 0) // mountain-meadow on the left
+        {
+            map->textureLsd[i] = 0x12;
+            map->textureRsu[i] = 0x12;
+        }
+        else // everything else mountains
+        {
+            map->textureLsd[i] = 0x01;
+            map->textureRsu[i] = 0x01;
+        }
+    }
+    
+    MapUtility::Smooth(map);
+    
+    for (int i = 0; i < map->width * map->height; i++)
+    {
+        if (i % map->width == 0)
+        {
+            BOOST_REQUIRE_EQUAL(map->textureLsd[i], 0x12);
+            BOOST_REQUIRE_EQUAL(map->textureRsu[i], 0x12);
+        }
+    }
+    
+    delete map;
+}
+
+/**
  * Tests the MapUtility::Smooth method to ensure that height of mountain-textures
  * is increased.
  */
