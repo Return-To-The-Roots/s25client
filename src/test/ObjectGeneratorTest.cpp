@@ -78,5 +78,54 @@ BOOST_FIXTURE_TEST_CASE(IsHarborAllowed_TerrainType, ObjectGenerator)
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAINMEADOW),    true);
 }
 
+/**
+ * Tests the ObjectGenerator::CreateDuck method with a likelyhood of 100%. A duck should
+ * be returned ;-).
+ */
+BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjectGenerator)
+{
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(100), 0x05);
+}
+
+/**
+ * Tests the ObjectGenerator::CreateDuck method with a likelyhood of 0%. An empty object
+ * should be returned.
+ */
+BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjectGenerator)
+{
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(0), 0x00);
+}
+
+/**
+ * Tests the ObjectGenerator::IsTree method for a tree object. Should return true.
+ */
+BOOST_FIXTURE_TEST_CASE(IsTree_TreeExists, ObjectGenerator)
+{
+    Map* map = new Map(16, 16, "name", "author");
+
+    map->objectInfo[0] = 0xC5;
+    
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), true);
+
+    map->objectInfo[0] = 0xC4;
+    
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), true);
+
+    delete map;
+}
+
+/**
+ * Tests the ObjectGenerator::IsTree method for an empty tile. Should return false.
+ */
+BOOST_FIXTURE_TEST_CASE(IsTree_Empty, ObjectGenerator)
+{
+    Map* map = new Map(16, 16, "name", "author");
+    
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), false);
+    
+    delete map;
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
