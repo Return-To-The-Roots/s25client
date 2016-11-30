@@ -46,7 +46,8 @@ void ObjectGenerator::CreateTexture(Map* map, const int index, TerrainType terra
     
 bool ObjectGenerator::IsTexture(Map* map, const int index, TerrainType terrain)
 {
-    return map->textureRsu[index] == terrain || map->textureLsd[index] == terrain;
+    return map->textureRsu[index] == TerrainData::GetTextureIdentifier(terrain)
+        || map->textureLsd[index] == TerrainData::GetTextureIdentifier(terrain);
 }
     
 void ObjectGenerator::CreateEmpty(Map* map, const int index)
