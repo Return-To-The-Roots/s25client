@@ -166,14 +166,14 @@ void MapUtility::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
                     ObjectGenerator::CreateTexture(map, index, TT_SAVANNAH, true);
                     ObjectGenerator::CreateEmpty(map, index);
                     map->z[index]        = waterLevel;
-                    map->resource[index] = 0x00;
+                    map->resource[index] = libsiedler2::R_None;
                 }
                 else
                 {
                     ObjectGenerator::CreateTexture(map, index, TT_STEPPE);
                     ObjectGenerator::CreateEmpty(map, index);
                     map->z[index]        = waterLevel;
-                    map->resource[index] = 0x00;
+                    map->resource[index] = libsiedler2::R_None;
                 }
             }
         }

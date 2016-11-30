@@ -178,7 +178,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                 case TT_WATER:
                     map->z[index]        = GetMaxTerrainHeight(TT_WATER);
                     map->animal[index]   = ObjectGenerator::CreateDuck(3);
-                    map->resource[index] = 0x87; // fish
+                    map->resource[index] = libsiedler2::R_Fish;
                     break;
                 case TT_MEADOW1:
                     map->animal[index]   = ObjectGenerator::CreateRandomForestAnimal(4);

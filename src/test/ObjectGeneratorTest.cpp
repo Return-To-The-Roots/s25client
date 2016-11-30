@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/ObjectGenerator.h"
+#include "libsiedler2/src/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
@@ -55,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(IsHarborAllowed_TerrainType, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjectGenerator)
 {
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(100), 0x05);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(100), libsiedler2::A_Duck);
 }
 
 /**
@@ -64,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjectGenerator)
 {
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(0), 0x00);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(0), libsiedler2::A_None);
 }
 
 /**
@@ -74,11 +75,11 @@ BOOST_FIXTURE_TEST_CASE(IsTree_TreeExists, ObjectGenerator)
 {
     Map* map = new Map(16, 16, "name", "author");
 
-    map->objectInfo[0] = 0xC5;
+    map->objectInfo[0] = OI_Palm;
     
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), true);
 
-    map->objectInfo[0] = 0xC4;
+    map->objectInfo[0] = OI_TreeOrPalm;
     
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), true);
 
@@ -123,8 +124,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
     
     ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x48);
-    BOOST_REQUIRE_EQUAL(map->textureLsd[0], 0x48);
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], (TT_MEADOW1 | ENABLE_HARBOR));
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], (TT_MEADOW1 | ENABLE_HARBOR));
     
     delete map;
 }
