@@ -68,6 +68,12 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString("Far");
     combo->AddString("Very Far");
 
+    AddText(7, 20, 170, _("Landscape"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(8, 20, 190, 210, 20, TC_GREY, NormalFont, 100);
+    combo->AddString("Greenland");
+    combo->AddString("Winterworld");
+    combo->AddString("Wasteland");
+
     Reset();
 }
 
@@ -97,7 +103,8 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
-    if (ctrl_id == 2) // players
+    // combo-box: number of players
+    if (ctrl_id == 2)
     {
         switch (selection)
         {
@@ -110,7 +117,9 @@ void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int s
             default: break;
         }
     }
-    else if (ctrl_id == 3) // map style
+    
+    // combo-box: random map style
+    else if (ctrl_id == 3)
     {
         switch (selection)
         {
@@ -124,7 +133,9 @@ void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int s
             default: break;
         }
     }
-    else if (ctrl_id == 4) // map size
+    
+    // combo-box: map size
+    else if (ctrl_id == 4)
     {
         switch (selection)
         {
@@ -136,7 +147,9 @@ void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int s
             default: break;
         }
     }
-    else if (ctrl_id == 6) // player distribution
+    
+    // combo-box: player distribution
+    else if (ctrl_id == 6)
     {
         switch (selection)
         {
@@ -155,6 +168,24 @@ void iwMapGenerator::Msg_ComboSelectItem(const unsigned int ctrl_id, const int s
             case 4:
                 tmpSettings.minPlayerRadius = 0.71;
                 tmpSettings.maxPlayerRadius = 0.72; break;
+            default: break;
+        }
+    }
+    
+    // combo-box: landscape
+    else if (ctrl_id == 8)
+    {
+        switch (selection)
+        {
+            case 0:
+                tmpSettings.type = LT_GREENLAND;
+                break;
+            case 1:
+                tmpSettings.type = LT_WINTERWORLD;
+                break;
+            case 2:
+                tmpSettings.type = LT_WASTELAND;
+                break;
             default: break;
         }
     }
@@ -239,6 +270,19 @@ void iwMapGenerator::Reset()
     else
     {
         combo->SetSelection(4);
+    }
+    
+    // reset landscape type
+    tmpSettings.type = mapSettings.type;
+    
+    // update landscape type in UI
+    combo = GetCtrl<ctrlComboBox>(8);
+    switch (mapSettings.type)
+    {
+        case LT_GREENLAND:   combo->SetSelection(0); break;
+        case LT_WINTERWORLD: combo->SetSelection(1); break;
+        case LT_WASTELAND:   combo->SetSelection(2); break;
+        default: break;
     }
 }
 
