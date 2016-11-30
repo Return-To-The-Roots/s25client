@@ -72,7 +72,6 @@ unsigned int MapUtility::ComputeWaterSize(Map* map, const Vec2& position, const 
 
 void MapUtility::Smooth(Map* map)
 {
-    const int waterId = ObjectGenerator::GetTextureId(TT_WATER);
     const int width = map->width;
     const int height = map->height;
     
@@ -86,7 +85,7 @@ void MapUtility::Smooth(Map* map)
             const int texBottom = map->textureLsd[VertexUtility::GetIndexOf(x, y + 1, width, height)];
             const int tex = map->textureRsu[index];
             
-            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != waterId)
+            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != TT_WATER)
             {
                 map->textureRsu[index] = texBottom;
             }
@@ -102,7 +101,7 @@ void MapUtility::Smooth(Map* map)
             const int texTop = map->textureRsu[VertexUtility::GetIndexOf(x, y - 1, width, height)];
             const int tex = map->textureLsd[index];
 
-            if (tex != texTop && tex != texRight && texTop == texRight && texTop != waterId)
+            if (tex != texTop && tex != texRight && texTop == texRight && texTop != TT_WATER)
             {
                 map->textureLsd[index] = texTop;
             }

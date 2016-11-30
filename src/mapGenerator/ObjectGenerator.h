@@ -66,13 +66,6 @@ class ObjectGenerator
     static bool IsTexture(Map* map, const int index, TerrainType terrain);
     
     /**
-     * Converts the input terrain into a texture id which can be stored in the original s2 map format. 
-     * @param terrain terrain to get the texture id for
-     * @return texture id of the terrain type
-     */
-    static uint8_t GetTextureId(TerrainType terrain);
-    
-    /**
      * Checks whether or not it is allowed to build a harbor on the specified terrain.
      * @param terrain terrain to check
      * @return true of it is allowed to build a harbor on the terrain

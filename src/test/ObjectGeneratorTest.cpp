@@ -21,35 +21,6 @@
 BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
 
 /**
- * Tests the ObjectGenerator::GetTextureId method to ensure the method returns correct
- * values for all terrain types.
- */
-BOOST_FIXTURE_TEST_CASE(GetTextureId_TerrainType, ObjectGenerator)
-{
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_SNOW),             0x02);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_LAVA),             0x10);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_LAVA2),            0x10);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_LAVA3),            0x10);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_LAVA4),            0x10);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_WATER),            0x05);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_WATER_NOSHIP),     0x06);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_DESERT),           0x04);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MOUNTAIN1),        0x01);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MOUNTAIN2),        0x0B);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MOUNTAIN3),        0x0C);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MOUNTAIN4),        0x0D);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_SWAMPLAND),        0x03);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_BUILDABLE_WATER),  0x13);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_STEPPE),           0x0E);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_SAVANNAH),         0x00);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MEADOW1),          0x08);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MEADOW2),          0x09);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MEADOW3),          0x0A);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MEADOW_FLOWERS),   0x0F);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::GetTextureId(TT_MOUNTAINMEADOW),   0x12);
-}
-
-/**
  * Tests the ObjectGenerator::IsHarborAllowed method to ensure the method returns correct
  * values for all terrain types.
  */
@@ -136,8 +107,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x05);
-    BOOST_REQUIRE_EQUAL(map->textureLsd[0], 0x05);
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TT_WATER);
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], TT_WATER);
     
     delete map;
 }
@@ -168,8 +139,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_HarborNotSupported, ObjectGenerator)
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], 0x05);
-    BOOST_REQUIRE_EQUAL(map->textureLsd[0], 0x05);
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TT_WATER);
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], TT_WATER);
     
     delete map;
 }

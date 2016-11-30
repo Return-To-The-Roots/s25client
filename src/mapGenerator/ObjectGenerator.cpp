@@ -17,35 +17,6 @@
 
 #include "mapGenerator/ObjectGenerator.h"
 
-uint8_t ObjectGenerator::GetTextureId(TerrainType terrain)
-{
-    switch (terrain)
-    {
-        case TT_SNOW:           return 0x02;
-        case TT_LAVA:           return 0x10;
-        case TT_LAVA2:          return 0x10;
-        case TT_LAVA3:          return 0x10;
-        case TT_LAVA4:          return 0x10;
-        case TT_WATER:          return 0x05;
-        case TT_WATER_NOSHIP:   return 0x06;
-        case TT_DESERT:         return 0x04;
-        case TT_MOUNTAIN1:      return 0x01;
-        case TT_MOUNTAIN2:      return 0x0B;
-        case TT_MOUNTAIN3:      return 0x0C;
-        case TT_MOUNTAIN4:      return 0x0D;
-        case TT_SWAMPLAND:      return 0x03;
-        case TT_BUILDABLE_WATER:return 0x13;
-        case TT_STEPPE:         return 0x0E;
-        case TT_SAVANNAH:       return 0x00;
-        case TT_MEADOW1:        return 0x08;
-        case TT_MEADOW2:        return 0x09;
-        case TT_MEADOW3:        return 0x0A;
-        case TT_MEADOW_FLOWERS: return 0x0F;
-        case TT_MOUNTAINMEADOW: return 0x12;
-        default:                return 0x08;
-    }
-}
-
 bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
 {
     switch (terrain)
@@ -65,15 +36,14 @@ bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
 
 void ObjectGenerator::CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor)
 {
-    uint8_t textureId = harbor && IsHarborAllowed(terrain) ? GetTextureId(terrain) | 0x40 : GetTextureId(terrain);
+    uint8_t textureId = harbor && IsHarborAllowed(terrain) ? terrain | 0x40 : terrain;
     map->textureRsu[index] = textureId;
     map->textureLsd[index] = textureId;
 }
     
 bool ObjectGenerator::IsTexture(Map* map, const int index, TerrainType terrain)
 {
-    uint8_t textureId = GetTextureId(terrain);
-    return map->textureRsu[index] == textureId || map->textureLsd[index] == textureId;
+    return map->textureRsu[index] == terrain || map->textureLsd[index] == terrain;
 }
     
 void ObjectGenerator::CreateEmpty(Map* map, const int index)
