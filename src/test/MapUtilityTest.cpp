@@ -93,8 +93,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        map->textureLsd[i] = TT_MOUNTAINMEADOW;
-        map->textureRsu[i] = TT_MOUNTAINMEADOW;
+        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
     }
     
     MapUtility::Smooth(map);
