@@ -43,8 +43,8 @@ BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_NoWater, MapUtility)
 BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Water, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
-    for (int i = 0; i < 256; i++) map->textureLsd[i] = TT_WATER;
-    for (int i = 0; i < 256; i++) map->textureRsu[i] = TT_WATER;
+    for (int i = 0; i < 256; i++) map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+    for (int i = 0; i < 256; i++) map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     
     const int water = MapUtility::ComputeWaterSize(map, Vec2(10, 10), 300);
     
@@ -59,8 +59,8 @@ BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Water, MapUtility)
 BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Limit, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
-    for (int i = 0; i < 256; i++) map->textureLsd[i] = TT_WATER;
-    for (int i = 0; i < 256; i++) map->textureRsu[i] = TT_WATER;
+    for (int i = 0; i < 256; i++) map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+    for (int i = 0; i < 256; i++) map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     
     const int water = MapUtility::ComputeWaterSize(map, Vec2(10, 10), 100);
     
