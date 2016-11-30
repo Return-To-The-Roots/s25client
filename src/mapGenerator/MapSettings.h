@@ -19,6 +19,7 @@
 #define MapSettings_h__
 
 #include "mapGenerator/MapStyle.h"
+#include "gameTypes/LandscapeType.h"
 
 /**
  * Settings used for map generation.
@@ -53,7 +54,7 @@ struct MapSettings
     /**
      * Landscape type used for map generation.
      */
-    unsigned int type;
+    LandscapeType type;
     
     /**
      * Style of the map.

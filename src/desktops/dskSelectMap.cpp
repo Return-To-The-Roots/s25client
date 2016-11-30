@@ -92,7 +92,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     mapSettings.width = 256;
     mapSettings.minPlayerRadius = 0.31;
     mapSettings.maxPlayerRadius = 0.51;
-    mapSettings.type = 0x00;
+    mapSettings.type = LT_GREENLAND;
     mapSettings.style = MS_Random;
 
     // Die Tabelle für die Maps

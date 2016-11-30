@@ -32,7 +32,7 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
     settings.width = 32;
     settings.height = 32;
     settings.players = 2;
-    settings.type = 0x0;
+    settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     settings.width = 32;
     settings.height = 32;
     settings.players = 2;
-    settings.type = 0x0;
+    settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
