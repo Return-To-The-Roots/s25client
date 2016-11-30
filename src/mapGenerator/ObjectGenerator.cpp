@@ -36,7 +36,10 @@ bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
 
 void ObjectGenerator::CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor)
 {
-    uint8_t textureId = harbor && IsHarborAllowed(terrain) ? terrain | 0x40 : terrain;
+    uint8_t textureId = harbor && IsHarborAllowed(terrain)
+        ? TerrainData::GetTextureIdentifier(terrain) | 0x40
+        : TerrainData::GetTextureIdentifier(terrain);
+    
     map->textureRsu[index] = textureId;
     map->textureLsd[index] = textureId;
 }

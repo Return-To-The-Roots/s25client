@@ -17,7 +17,7 @@
 
 #include "mapGenerator/MapUtility.h"
 #include "mapGenerator/Map.h"
-#include "gameTypes/MapTypes.h"
+#include "gameData/TerrainData.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -101,8 +101,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 
     for (int i = 0; i < map->width * map->height; i++)
     {
-        BOOST_REQUIRE_EQUAL(map->textureLsd[i], TT_MEADOW1);
-        BOOST_REQUIRE_EQUAL(map->textureRsu[i], TT_MEADOW1);
+        BOOST_REQUIRE_EQUAL(map->textureLsd[i], TerrainData::GetTextureIdentifier(TT_MEADOW1));
+        BOOST_REQUIRE_EQUAL(map->textureRsu[i], TerrainData::GetTextureIdentifier(TT_MEADOW1));
     }
     
     delete map;
@@ -120,13 +120,13 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
     {
         if (i % map->width == 0) // mountain-meadow on the left
         {
-            map->textureLsd[i] = TT_MOUNTAINMEADOW;
-            map->textureRsu[i] = TT_MOUNTAINMEADOW;
+            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
         }
         else // everything else mountains
         {
-            map->textureLsd[i] = TT_MOUNTAIN1;
-            map->textureRsu[i] = TT_MOUNTAIN1;
+            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
         }
     }
     
@@ -136,8 +136,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
     {
         if (i % map->width == 0)
         {
-            BOOST_REQUIRE_EQUAL(map->textureLsd[i], TT_MOUNTAINMEADOW);
-            BOOST_REQUIRE_EQUAL(map->textureRsu[i], TT_MOUNTAINMEADOW);
+            BOOST_REQUIRE_EQUAL(map->textureLsd[i], TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW));
+            BOOST_REQUIRE_EQUAL(map->textureRsu[i], TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW));
         }
     }
     
@@ -155,8 +155,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
     for (int i = 0; i < map->width * map->height; i++)
     {
         map->z[i] = 0x0A;
-        map->textureLsd[i] = TT_MOUNTAIN1;
-        map->textureRsu[i] = TT_MOUNTAIN1;
+        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
     }
     
     MapUtility::Smooth(map);
@@ -180,8 +180,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
     for (int i = 0; i < map->width * map->height; i++)
     {
         map->z[i] = 0x0A;
-        map->textureLsd[i] = TT_SNOW;
-        map->textureRsu[i] = TT_SNOW;
+        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
+        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
     }
     
     MapUtility::Smooth(map);
@@ -205,8 +205,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
     for (int i = 0; i < map->width * map->height; i++)
     {
         map->z[i] = 0x0A;
-        map->textureLsd[i] = TT_MEADOW1;
-        map->textureRsu[i] = TT_MEADOW1;
+        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
     }
     
     MapUtility::Smooth(map);
@@ -229,14 +229,14 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
     
     for (int i = 0; i < map->width * map->height; i++)
     {
-        map->textureLsd[i] = TT_MEADOW1;
-        map->textureRsu[i] = TT_MEADOW1;
+        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
     }
     map->textureRsu[0] = TT_SNOW;
     
     MapUtility::Smooth(map);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TT_MEADOW1);
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TerrainData::GetTextureIdentifier(TT_MEADOW1));
     
     delete map;
 }
@@ -253,13 +253,13 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
     {
         if (i % map->width < map->width / 2)
         {
-            map->textureLsd[i] = TT_MEADOW1; // half of the map meadow
-            map->textureRsu[i] = TT_MEADOW1;
+            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1); // half of the map meadow
+            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
         }
         else
         {
-            map->textureLsd[i] = TT_WATER; // half of the map water
-            map->textureRsu[i] = TT_WATER;
+            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER); // half of the map water
+            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
         }
     }
     

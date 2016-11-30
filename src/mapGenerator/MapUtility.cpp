@@ -18,6 +18,7 @@
 #include "mapGenerator/MapUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
+#include "gameData/TerrainData.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -74,6 +75,7 @@ void MapUtility::Smooth(Map* map)
 {
     const int width = map->width;
     const int height = map->height;
+    const unsigned char waterId = TerrainData::GetTextureIdentifier(TT_WATER);
     
     // fixed broken textures
     for (int x = 0; x < width; x++)
@@ -85,7 +87,7 @@ void MapUtility::Smooth(Map* map)
             const int texBottom = map->textureLsd[VertexUtility::GetIndexOf(x, y + 1, width, height)];
             const int tex = map->textureRsu[index];
             
-            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != TT_WATER)
+            if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != waterId)
             {
                 map->textureRsu[index] = texBottom;
             }
@@ -101,7 +103,7 @@ void MapUtility::Smooth(Map* map)
             const int texTop = map->textureRsu[VertexUtility::GetIndexOf(x, y - 1, width, height)];
             const int tex = map->textureLsd[index];
 
-            if (tex != texTop && tex != texRight && texTop == texRight && texTop != TT_WATER)
+            if (tex != texTop && tex != texRight && texTop == texRight && texTop != waterId)
             {
                 map->textureLsd[index] = texTop;
             }

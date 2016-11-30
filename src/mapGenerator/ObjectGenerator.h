@@ -20,7 +20,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
-#include "gameTypes/MapTypes.h"
+#include "gameData/TerrainData.h"
 #include "Random.h"
 #include "stdint.h"
 #include <cstdlib>

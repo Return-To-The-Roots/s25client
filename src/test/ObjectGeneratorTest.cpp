@@ -107,8 +107,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TT_WATER);
-    BOOST_REQUIRE_EQUAL(map->textureLsd[0], TT_WATER);
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TerrainData::GetTextureIdentifier(TT_WATER));
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], TerrainData::GetTextureIdentifier(TT_WATER));
     
     delete map;
 }
@@ -139,8 +139,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_HarborNotSupported, ObjectGenerator)
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TT_WATER);
-    BOOST_REQUIRE_EQUAL(map->textureLsd[0], TT_WATER);
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TerrainData::GetTextureIdentifier(TT_WATER));
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], TerrainData::GetTextureIdentifier(TT_WATER));
     
     delete map;
 }
