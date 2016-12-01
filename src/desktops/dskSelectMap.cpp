@@ -247,7 +247,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             CreateRandomMap();
         } break;
-        case 7: // random map #players
+        case 7: // random map generator settings
         {
             WINDOWMANAGER.Show(new iwMapGenerator(mapSettings));
         } break;
