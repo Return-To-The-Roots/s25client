@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
         BOOST_REQUIRE_NE(p.y, 0xFF);
         
         BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.width + p.x], i);
-        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], OI_Headquarter);
+        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], OI_HeadquarterMask);
     }
 
     for (unsigned int i = settings.players; i < 7; i++)

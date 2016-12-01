@@ -38,7 +38,7 @@ bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
 void ObjectGenerator::CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor)
 {
     uint8_t textureId = harbor && IsHarborAllowed(terrain)
-        ? TerrainData::GetTextureIdentifier(terrain) | ENABLE_HARBOR
+        ? TerrainData::GetTextureIdentifier(terrain) | HARBOR_MASK
         : TerrainData::GetTextureIdentifier(terrain);
     
     map->textureRsu[index] = textureId;
@@ -60,7 +60,7 @@ void ObjectGenerator::CreateEmpty(Map* map, const int index)
 void ObjectGenerator::CreateHeadquarter(Map* map, const int index, const unsigned int i)
 {
     map->objectType[index] = i;
-    map->objectInfo[index] = OI_Headquarter;
+    map->objectInfo[index] = OI_HeadquarterMask;
 }
 
 bool ObjectGenerator::IsEmpty(Map* map, const int index)
@@ -152,13 +152,13 @@ void ObjectGenerator::CreateRandomTree(Map* map, const int index)
     switch (Rand(3))
     {
         case 0:
-            map->objectType[index] = OT_Tree1 + Rand(8);
+            map->objectType[index] = OT_Tree1_Begin + Rand(OT_Tree1_End - OT_Tree1_Begin + 1);
             break;
         case 1:
-            map->objectType[index] = OT_Tree2 + Rand(8);
+            map->objectType[index] = OT_Tree2_Begin + Rand(OT_Tree2_End - OT_Tree2_Begin + 1);
             break;
         case 2:
-            map->objectType[index] = OT_TreeOrPalm + Rand(8);
+            map->objectType[index] = OT_TreeOrPalm_Begin + Rand(OT_TreeOrPalm_End - OT_TreeOrPalm_Begin + 1);
             break;
     }
     map->objectInfo[index] = OI_TreeOrPalm;
@@ -168,12 +168,12 @@ void ObjectGenerator::CreateRandomPalm(Map* map, const int index)
 {
     if (Rand(2) == 0)
     {
-        map->objectType[index] = OT_TreeOrPalm + Rand(8);
+        map->objectType[index] = OT_TreeOrPalm_Begin + Rand(OT_TreeOrPalm_End - OT_TreeOrPalm_Begin + 1);
         map->objectInfo[index] = OI_Palm;
     }
     else
     {
-        map->objectType[index] = OT_Palm + Rand(8);
+        map->objectType[index] = OT_Palm_Begin + Rand(OT_Palm_End - OT_Palm_Begin + 1);
         map->objectInfo[index] = OI_TreeOrPalm;
     }
 }
@@ -192,7 +192,7 @@ void ObjectGenerator::CreateRandomMixedTree(Map* map, const int index)
     
 void ObjectGenerator::CreateRandomStone(Map* map, const int index)
 {
-    map->objectType[index] = OT_Stone + Rand(6);
-    map->objectInfo[index] = OI_Stone + Rand(2);
+    map->objectType[index] = OT_Stone_Begin + Rand(OT_Stone_End - OT_Stone_Begin + 1);
+    map->objectInfo[index] = Rand(2) == 0 ? OI_Stone1 : OI_Stone2;
 }
 

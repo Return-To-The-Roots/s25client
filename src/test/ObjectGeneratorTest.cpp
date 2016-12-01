@@ -124,8 +124,8 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
     
     ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], (TT_MEADOW1 | ENABLE_HARBOR));
-    BOOST_REQUIRE_EQUAL(map->textureLsd[0], (TT_MEADOW1 | ENABLE_HARBOR));
+    BOOST_REQUIRE_EQUAL(map->textureRsu[0], (TT_MEADOW1 | HARBOR_MASK));
+    BOOST_REQUIRE_EQUAL(map->textureLsd[0], (TT_MEADOW1 | HARBOR_MASK));
     
     delete map;
 }

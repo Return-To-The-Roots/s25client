@@ -281,8 +281,8 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
     int countHarbors = 0;
     for (int i = 0; i < map->width * map->height; i++)
     {
-        if ((map->textureLsd[i] & ENABLE_HARBOR) &&
-            (map->textureRsu[i] & ENABLE_HARBOR))
+        if ((map->textureLsd[i] & HARBOR_MASK) &&
+            (map->textureRsu[i] & HARBOR_MASK))
         {
             countHarbors++;
         }
@@ -340,13 +340,13 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
     Map* map = new Map(16, 16, "map", "author");
     const int index = 8 * 16 + 8;
     
-    map->objectType[index] = OT_Stone;
-    map->objectInfo[index] = OI_Stone;
+    map->objectType[index] = OT_Stone_Begin;
+    map->objectInfo[index] = OI_Stone1;
     
     MapUtility::SetTree(map, Vec2(8,8));
     
-    BOOST_REQUIRE_EQUAL(map->objectType[index], OT_Stone);
-    BOOST_REQUIRE_EQUAL(map->objectInfo[index], OI_Stone);
+    BOOST_REQUIRE_EQUAL(map->objectType[index], OT_Stone_Begin);
+    BOOST_REQUIRE_EQUAL(map->objectInfo[index], OI_Stone1);
     
     delete map;
 }
@@ -376,12 +376,12 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
     Map* map = new Map(16, 16, "map", "author");
     const int index = 8 * 16 + 8;
     
-    map->objectType[index] = OT_Tree1;
+    map->objectType[index] = OT_Tree1_Begin;
     map->objectInfo[index] = OI_TreeOrPalm;
     
     MapUtility::SetStone(map, Vec2(8,8));
     
-    BOOST_REQUIRE_EQUAL(map->objectType[index], OT_Tree1);
+    BOOST_REQUIRE_EQUAL(map->objectType[index], OT_Tree1_Begin);
     BOOST_REQUIRE_EQUAL(map->objectInfo[index], OI_TreeOrPalm);
     
     delete map;
