@@ -127,17 +127,22 @@ uint8_t ObjectGenerator::CreateRandomAnimal(const int likelyhood)
     }
 }
 
-uint8_t ObjectGenerator::CreateRandomResource()
+uint8_t ObjectGenerator::CreateRandomResource(const unsigned int ratioGold,
+                                              const unsigned int ratioIron,
+                                              const unsigned int ratioCoal,
+                                              const unsigned int ratioGranite)
 {
     const int rnd = Rand(100);
-    if (rnd <= 9)
-        return R_Gold + Rand(8); // 9% gold
-    else if (rnd <= 45)
-        return R_Iron + Rand(8); // 36% iron
-    else if (rnd <= 85)
-        return R_Coal + Rand(8); // 40% coal
+    if (rnd <= ratioGold)
+        return R_Gold + Rand(8);
+    else if (rnd <= ratioGold + ratioIron)
+        return R_Iron + Rand(8);
+    else if (rnd <= ratioGold + ratioIron + ratioCoal)
+        return R_Coal + Rand(8);
+    else if (rnd <= ratioGold + ratioIron + ratioCoal + ratioGranite)
+        return R_Granite + Rand(8);
     else
-        return R_Granite + Rand(8); // 15% granite
+        return R_None;
 }
 
 

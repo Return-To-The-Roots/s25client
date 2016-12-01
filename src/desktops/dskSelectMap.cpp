@@ -94,6 +94,10 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     mapSettings.maxPlayerRadius = 0.51;
     mapSettings.type = LT_GREENLAND;
     mapSettings.style = MS_Random;
+    mapSettings.ratioGold = 9;
+    mapSettings.ratioIron = 36;
+    mapSettings.ratioCoal = 40;
+    mapSettings.ratioGranite = 15;
 
     // Die Tabelle für die Maps
     AddTable( 1, 110,  35, 680, 400, TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);

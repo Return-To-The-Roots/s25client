@@ -42,6 +42,26 @@ struct MapSettings
     unsigned int height;
     
     /**
+     * Ratio of gold distributed as resources on mountain terrain.
+     */
+    unsigned int ratioGold;
+
+    /**
+     * Ratio of iron distributed as resources on mountain terrain.
+     */
+    unsigned int ratioIron;
+
+    /**
+     * Ratio of coal distributed as resources on mountain terrain.
+     */
+    unsigned int ratioCoal;
+
+    /**
+     * Ratio of granite distributed as resources on mountain terrain.
+     */
+    unsigned int ratioGranite;
+    
+    /**
      * Minimum radius from the center of the map for player placement.
      */
     double minPlayerRadius;

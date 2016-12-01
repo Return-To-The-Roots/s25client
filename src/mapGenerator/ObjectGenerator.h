@@ -117,9 +117,16 @@ class ObjectGenerator
     
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
+     * @param ratioGold ratio of gold placed as mountain resource on the map
+     * @param ratioIron ratio of iron placed as mountain resource on the map
+     * @param ratioCoal ratio of coal placed as mountain resource on the map
+     * @param ratioGranite ratio of granite placed as mountain resource on the map
      * @return random piles of gold, coal, granite or iron
      */
-    static uint8_t CreateRandomResource();
+    static uint8_t CreateRandomResource(const unsigned int ratioGold,
+                                        const unsigned int ratioIron,
+                                        const unsigned int ratioCoal,
+                                        const unsigned int ratioGranite);
 
     /**
      * Creates a new, random ground animal.

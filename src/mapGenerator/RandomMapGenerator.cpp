@@ -187,7 +187,10 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                     map->animal[index]   = ObjectGenerator::CreateSheep(4);
                     break;
                 case TT_MOUNTAIN1:
-                    map->resource[index] = ObjectGenerator::CreateRandomResource();
+                    map->resource[index] = ObjectGenerator::CreateRandomResource(settings.ratioGold,
+                                                                                 settings.ratioIron,
+                                                                                 settings.ratioCoal,
+                                                                                 settings.ratioGranite);
                     break;
                 default:
                     break;
