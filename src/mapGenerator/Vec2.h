@@ -27,12 +27,6 @@ struct Vec2
 {
     Vec2() : x(0), y(0) {}
     Vec2(int px, int py) : x(px), y(py) {}
-    
-    bool operator==(const Vec2& other)
-    {
-        return x == other.x && y == other.y;
-    }
-
     uint16_t x;
     uint16_t y;
 };
