@@ -68,7 +68,7 @@ void MapGenerator::Create(const std::string& filePath, const MapSettings& settin
     libsiedler2::ArchivInfo* archiv = map->CreateArchiv();
     libsiedler2::Write(filePath, *archiv);
     
-    // cleanup map and writer
+    // cleanup map and archiv
     delete map;
     delete archiv;
 }
