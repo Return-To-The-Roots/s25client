@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlComboBox.h"
+#include "controls/ctrlProgress.h"
 
 #include "gameData/const_gui_ids.h"
 #include "helpers/containerUtils.h"
@@ -30,11 +31,11 @@
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
                                                 IngameWindow::posLastOrCenter,
-                                                250, 300, _("Map Generator"),
+                                                250, 400, _("Map Generator"),
                                                 LOADER.GetImageN("resource", 41), true, false), mapSettings(settings), tmpSettings(settings)
 {
-    AddTextButton(0,  20, 260, 100, 20, TC_RED2, _("Back"), NormalFont);
-    AddTextButton(1, 130, 260, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
+    AddTextButton(0,  20, 360, 100, 20, TC_RED2, _("Back"), NormalFont);
+    AddTextButton(1, 130, 360, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo = AddComboBox(2, 20, 30, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString("2 Players");
@@ -73,7 +74,27 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString("Greenland");
     combo->AddString("Winterworld");
     combo->AddString("Wasteland");
+    
+    AddText(9, 20, 225, _("Gold:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlProgress* progressBar = AddProgress(10, 100, 220, 130, 20,
+                                            TC_GREY, 139, 138, 100);
+    progressBar->SetPosition(settings.ratioGold);
 
+    AddText(11, 20, 255, _("Iron:"), COLOR_YELLOW, 0, NormalFont);
+    progressBar = AddProgress(12, 100, 250, 130, 20,
+                              TC_GREY, 139, 138, 100);
+    progressBar->SetPosition(settings.ratioIron);
+
+    AddText(13, 20, 285, _("Coal:"), COLOR_YELLOW, 0, NormalFont);
+    progressBar = AddProgress(14, 100, 280, 130, 20,
+                              TC_GREY, 139, 138, 100);
+    progressBar->SetPosition(settings.ratioCoal);
+
+    AddText(15, 20, 315, _("Granite:"), COLOR_YELLOW, 0, NormalFont);
+    progressBar = AddProgress(16, 100, 310, 130, 20,
+                              TC_GREY, 139, 138, 100);
+    progressBar->SetPosition(settings.ratioGranite);
+    
     Reset();
 }
 
@@ -95,6 +116,10 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned int ctrl_id)
             
         case 1: // apply
         {
+            tmpSettings.ratioGold = GetCtrl<ctrlProgress>(10)->GetPosition();
+            tmpSettings.ratioIron = GetCtrl<ctrlProgress>(12)->GetPosition();
+            tmpSettings.ratioCoal = GetCtrl<ctrlProgress>(14)->GetPosition();
+            tmpSettings.ratioGranite = GetCtrl<ctrlProgress>(16)->GetPosition();
             mapSettings = tmpSettings;
             Close();
         } break;

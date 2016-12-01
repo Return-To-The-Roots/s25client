@@ -132,17 +132,15 @@ uint8_t ObjectGenerator::CreateRandomResource(const unsigned int ratioGold,
                                               const unsigned int ratioCoal,
                                               const unsigned int ratioGranite)
 {
-    const int rnd = Rand(100);
+    const int rnd = Rand(ratioGold + ratioIron + ratioCoal + ratioGranite);
     if (rnd <= ratioGold)
         return R_Gold + Rand(8);
     else if (rnd <= ratioGold + ratioIron)
         return R_Iron + Rand(8);
     else if (rnd <= ratioGold + ratioIron + ratioCoal)
         return R_Coal + Rand(8);
-    else if (rnd <= ratioGold + ratioIron + ratioCoal + ratioGranite)
-        return R_Granite + Rand(8);
     else
-        return R_None;
+        return R_Granite + Rand(8);
 }
 
 
