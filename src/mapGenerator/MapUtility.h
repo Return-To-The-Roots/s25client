@@ -81,13 +81,18 @@ class MapUtility
     void SetStone(Map* map, const Vec2& position);
     
     /**
-     * Computes the size of the water area starting from the specified position.
+     * Computes the size of a terrain body starting from the specified position.
      * @param map map to evaluate
-     * @param position position of the intial area to check for water
+     * @param x x-coordinate of the position of the intial area
+     * @param y y-coordinate of the position of the intial area
      * @param max the maximum number of tiles to check for (performance)
-     * @return the number of vertices in a connected water area around the position
+     * @return the number of vertices in a connected terrain area around the 
+     * intial position
      */
-    unsigned int ComputeWaterSize(Map* map, const Vec2& position, const unsigned int max);
+    unsigned int GetBodySize(Map* map,
+                             const int x,
+                             const int y,
+                             const unsigned int max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.

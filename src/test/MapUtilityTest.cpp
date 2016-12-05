@@ -24,23 +24,9 @@
 BOOST_AUTO_TEST_SUITE(MapUtilityTest)
 
 /**
- * Tests the MapUtility::ComputeWaterSize method for no water.
+ * Tests the MapUtility::GetBodySize method for a water map.
  */
-BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_NoWater, MapUtility)
-{
-    Map* map = new Map(64, 64, "map", "author");
-
-    const int water = MapUtility::ComputeWaterSize(map, Vec2(10, 10), 100);
-    
-    BOOST_REQUIRE_EQUAL(water, 0);
-    
-    delete map;
-}
-
-/**
- * Tests the MapUtility::ComputeWaterSize method for a water map.
- */
-BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Water, MapUtility)
+BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     for (int i = 0; i < 256; i++)
@@ -49,7 +35,7 @@ BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Water, MapUtility)
         map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const int water = MapUtility::ComputeWaterSize(map, Vec2(10, 10), 300);
+    const int water = MapUtility::GetBodySize(map, 10, 10, 300);
     
     BOOST_REQUIRE_EQUAL(water, 256);
     
@@ -57,9 +43,9 @@ BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Water, MapUtility)
 }
 
 /**
- * Tests the MapUtility::ComputeWaterSize method for a water map with maximum limit.
+ * Tests the MapUtility::GetBodySize method for a water map with maximum limit.
  */
-BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Limit, MapUtility)
+BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
 {
     Map* map = new Map(16, 16, "map", "author");
     for (int i = 0; i < 256; i++)
@@ -68,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE(ComputeWaterSize_Limit, MapUtility)
         map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const int water = MapUtility::ComputeWaterSize(map, Vec2(10, 10), 100);
+    const int water = MapUtility::GetBodySize(map, 10, 10, 100);
     
     BOOST_REQUIRE_EQUAL(water, 100);
     

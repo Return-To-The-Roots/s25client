@@ -40,36 +40,55 @@ void MapUtility::SetHill(Map* map, const Vec2& center, int z)
     }
 }
 
-unsigned int MapUtility::ComputeWaterSize(Map* map, const Vec2& position, const unsigned int max)
+unsigned int MapUtility::GetBodySize(Map* map,
+                                     const int x,
+                                     const int y,
+                                     const unsigned int max)
 {
     const int width = map->width;
     const int height = map->height;
     
-    std::queue<Vec2> searchRoom;
-    std::list<int> water;
+    // compute index of the initial position
+    int index = VertexUtility::GetIndexOf(x, y, width, height);
+
+    // figure out terrain type of the initial position
+    TerrainType type = TerrainData::MapIdx2Terrain(map->textureRsu[index]);
     
-    searchRoom.push(Vec2(position.x, position.y));
+    std::queue<Vec2> searchSpace;
+    std::list<int> body;
     
-    while (!searchRoom.empty() && water.size() < max)
+    // put intial position to the search space
+    searchSpace.push(Vec2(x, y));
+    
+    // stop search if no further neighbors are available or
+    // the maximum the body size is reached
+    while (!searchSpace.empty() && body.size() < max)
     {
-        Vec2 pos = searchRoom.front(); searchRoom.pop();
-        const int index = VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
+        // get and remove the last element from the queue
+        Vec2 pos = searchSpace.front();
+        searchSpace.pop();
         
-        if (ObjectGenerator::IsTexture(map, index, TT_WATER)
-            && std::find(water.begin(), water.end(), index) == water.end())
+        // compute the index of the current element
+        index = VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
+        
+        // check if the element has the right terrain and is not yet
+        // part of the terrain body
+        if (ObjectGenerator::IsTexture(map, index, type) &&
+            std::find(body.begin(), body.end(), index) == body.end())
         {
-            water.push_back(index);
+            // add the current element to the body
+            body.push_back(index);
             
-            searchRoom.push(Vec2(pos.x+1, pos.y));
-            searchRoom.push(Vec2(pos.x, pos.y+1));
-            searchRoom.push(Vec2(pos.x-1, pos.y));
-            searchRoom.push(Vec2(pos.x, pos.y-1));
+            // push neighbor elements to the search space
+            searchSpace.push(Vec2(pos.x+1, pos.y));
+            searchSpace.push(Vec2(pos.x, pos.y+1));
+            searchSpace.push(Vec2(pos.x-1, pos.y));
+            searchSpace.push(Vec2(pos.x, pos.y-1));
         }
     }
     
-    return water.size();
+    return body.size(); 
 }
-
 
 void MapUtility::Smooth(Map* map)
 {

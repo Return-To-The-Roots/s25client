@@ -260,10 +260,11 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
                                              VertexUtility::Distance(x, y, it->x, it->y, width, height));
                 }
                 
-                const int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE && waterNeighbor)
-                                        ? _helper.ComputeWaterSize(map,
-                                                                   water,
-                                                                   MIN_HARBOR_WATER) : 0;
+                const int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE &&
+                        waterNeighbor) ? _helper.GetBodySize(map,
+                                                             water.x,
+                                                             water.y,
+                                                             MIN_HARBOR_WATER) : 0;
 
                 // setup harbor position
                 if (waterTiles >= MIN_HARBOR_WATER)
