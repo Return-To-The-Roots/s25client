@@ -9,20 +9,21 @@ properties([[$class: 'jenkins.model.BuildDiscarderProperty',
 catchError() {
     def wspwd = "";
     
-    node('master') {
-        stage name:"Checkout", concurrency:1
-        checkout scm
-        sh """set -x
-              git submodule foreach "git reset --hard || true" || true
-              git reset --hard || true
-              git submodule update --init || true
-           """
-    
-        stash includes: '**, .git/', excludes: 'ws/**', name: 'source', useDefaultExcludes: false
+    stage("Checkout") {
+        node('master') {
+            checkout scm
+            sh """set -x
+                  git submodule foreach "git reset --hard || true" || true
+                  git reset --hard || true
+                  git submodule update --init || true
+               """
         
-        sh "env"
-        
-        wspwd = pwd()
+            stash includes: '**, .git/', excludes: 'ws/**', name: 'source', useDefaultExcludes: false
+            
+            sh "env"
+            
+            wspwd = pwd()
+        }
     }
     
     String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
@@ -99,18 +100,20 @@ catchError() {
     }
     */
     
-    stage name:"Building", concurrency:1
-    parallel parallel_map
+    stage("Building") {
+        parallel parallel_map
+    }
     
-    stage name:"Publishing", concurrency:1
-    node('master') {
-                sh """set -x
-                      alias ssh="ssh -o ForwardX11=no"
-                      cd release
-                      ./upload_urls.sh nightly
-                      ./upload_urls.sh stable
-                """
-                archive 'release/changelog-*.txt,release/rapidshare-*.txt'
+    stage("Publishing") {
+        node('master') {
+                    sh """set -x
+                          alias ssh="ssh -o ForwardX11=no"
+                          cd release
+                          ./upload_urls.sh nightly
+                          ./upload_urls.sh stable
+                    """
+                    archive 'release/changelog-*.txt,release/rapidshare-*.txt'
+        }
     }
 }
 
