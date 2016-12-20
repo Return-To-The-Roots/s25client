@@ -92,50 +92,51 @@ catchError() {
             echo "Adding Job ${arch}"
             parallel_map["${arch}"] = transformIntoStep(arch, wspwd)
         }
-    }
     
-    // mirror to launchpad step
-    parallel_map["mirror"] = {
-        node('master') {
-            ansiColor('xterm') {
-                sh """set -x
-                      mkdir -p ws
-                      pushd ws
-                      if [ ! -d s25client.git ] ; then
-                          git clone --mirror https://github.com/Return-To-The-Roots/s25client.git
-                          (cd s25client.git && git remote set-url --push origin git+ssh://git.launchpad.net/s25rttr)
-                      fi
-                      cd s25client.git
-                      git fetch -p origin
-                      git push --mirror
-                """
-                // todo: mirror submodules?
-            }
-        }
-    }
-    
-    /*
-    parallel_map["upload-ppa"] = {
-        node('master') {
-            ansiColor('xterm') {
-                ws(wspwd+"/ws/upload-ppa") {
-                    echo "Upload to PPA in "+pwd()
-                    sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
-                    unstash 'source'
+        // mirror to launchpad step
+        parallel_map["mirror"] = {
+            node('master') {
+                ansiColor('xterm') {
                     sh """set -x
-                          if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ] ; then
-                                cd release
-                                ./build_deb.sh ${env.BUILD_NUMBER} || exit 1
+                          mkdir -p ws
+                          pushd ws
+                          if [ ! -d s25client.git ] ; then
+                              git clone --mirror https://github.com/Return-To-The-Roots/s25client.git
+                              (cd s25client.git && git remote set-url --push origin git+ssh://git.launchpad.net/s25rttr)
                           fi
+                          cd s25client.git
+                          git fetch -p origin
+                          git push --mirror
                     """
+                    // todo: mirror submodules?
                 }
             }
         }
+        
+        /*
+        parallel_map["upload-ppa"] = {
+            node('master') {
+                ansiColor('xterm') {
+                    ws(wspwd+"/ws/upload-ppa") {
+                        echo "Upload to PPA in "+pwd()
+                        sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
+                        unstash 'source'
+                        sh """set -x
+                              if [ "${env.BRANCH_NAME}" == "master" ] || [ "${env.BRANCH_NAME}" == "latest" ] ; then
+                                    cd release
+                                    ./build_deb.sh ${env.BUILD_NUMBER} || exit 1
+                              fi
+                        """
+                    }
+                }
+            }
+        }
+        */
+        
+        parallel parallel_map
     }
-    */
-    
-    parallel parallel_map
 
+    
     milestone label: 'Build complete'
     
     stage("Publishing") {
