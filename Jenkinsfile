@@ -36,9 +36,9 @@ def transformIntoStep(arch, wspwd) {
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          ubuntu/crossbuild:precise -c \
                                                          "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= -RTTR_LIBDIR=share/s25rttr && make \$PARAMS"
-                              EXIT=$?
-                              echo "Exiting with error code $EXIT"
-                              exit $EXIT
+                              EXIT=\$?
+                              echo "Exiting with error code \$EXIT"
+                              exit \$EXIT
                         """
                         
                         archiveArtifacts artifacts: 's25rttr*.tar.bz2,s25rttr*.zip', fingerprint: true, onlyIfSuccessful: true
