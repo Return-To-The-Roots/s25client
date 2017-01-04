@@ -81,8 +81,11 @@ Note that due to the use of submodules you always need to `git pull && git submo
   Fast Way:
   - extract boost-1.55.zip (i.e to contrib/boost, so that contrib/boost/bootstrap.bat exist)
   - run that "bootstrap.bat"
-  - run created "b2.exe" (this should build boost)
-  - run "b2 install --prefix=%CD%" (this should install everything so the system can find it)
+  - run created "b2.exe": this should build boost
+    Notice: if you have multiple Visual Studio versions installed, use the latest one with the "toolset"-parameter. 
+    i.e "b2 toolset=msvc-14.0" for Visual Studio 2015
+  - run "b2 install --prefix=%CD%": this should install everything so the system can find it
+    Notice: Don't forget to add the toolset parameter if you already used it before
 - Use cmake-gui:
   - "Where is the source code": Select checked out directory
   - "Where to build the binaries": Select "build" directory
