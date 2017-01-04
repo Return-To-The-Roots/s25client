@@ -145,7 +145,7 @@ bool GameCommandFactory::SetAllInventorySettings(const MapPoint pt, bool isJob, 
     return AddGC( new gc::SetAllInventorySettings(pt, isJob, states) );
 }
 
-bool GameCommandFactory::ChangeReserve(const MapPoint pt, unsigned char rank, unsigned char count)
+bool GameCommandFactory::ChangeReserve(const MapPoint pt, unsigned char rank, unsigned count)
 {
     return AddGC( new gc::ChangeReserve(pt, rank, count) );
 }
