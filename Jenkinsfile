@@ -56,10 +56,7 @@ catchError() {
 
     properties([
         buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '14', daysToKeepStr: '14', numToKeepStr: '180')),
-        disableConcurrentBuilds(),
-        pipelineTriggers([
-            cron('H 1 * * *')
-        ])
+        disableConcurrentBuilds()
     ])
 
     milestone label: 'Start'
