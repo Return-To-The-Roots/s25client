@@ -77,7 +77,7 @@ public:
     bool SetInventorySetting(const MapPoint pt, Job job, InventorySetting state);
     bool SetInventorySetting(const MapPoint pt, GoodType good, InventorySetting state);
     bool SetAllInventorySettings(const MapPoint pt, bool isJob, const std::vector<InventorySetting>& states);
-    bool ChangeReserve(const MapPoint pt, unsigned char rank, unsigned char count);
+    bool ChangeReserve(const MapPoint pt, unsigned char rank, unsigned count);
     bool CheatArmageddon();
     /// Simply surrenders...
     bool Surrender();

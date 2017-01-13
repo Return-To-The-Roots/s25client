@@ -582,14 +582,14 @@ namespace gc{
             /// Rang des Soldaten, der verändert werden soll
             const unsigned char rank;
             /// Anzahl der Reserve für diesen Rang
-            const unsigned char count;
+            const unsigned count;
         protected:
-            ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned char count)
+            ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned count)
                 : Coords(CHANGERESERVE, pt), rank(rank), count(count) {}
             ChangeReserve(Serializer& ser)
                 : Coords(CHANGERESERVE, ser),
                   rank(ser.PopUnsignedChar()),
-                  count(ser.PopUnsignedChar())
+                  count(ser.PopUnsignedInt())
             {}
         public:
             void Serialize(Serializer& ser) const override
@@ -597,7 +597,7 @@ namespace gc{
                 Coords::Serialize(ser);
 
                 ser.PushUnsignedChar(rank);
-                ser.PushUnsignedChar(count);
+                ser.PushUnsignedInt(count);
             }
 
             /// Führt das GameCommand aus
