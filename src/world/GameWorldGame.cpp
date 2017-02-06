@@ -485,7 +485,7 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
     size = endPt - startPt;
     if(size.x > GetWidth())
         endPt.x = startPt.x + GetWidth();
-    if(size.y > GetWidth())
+    if(size.y > GetHeight())
         endPt.y = startPt.y + GetHeight();
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
