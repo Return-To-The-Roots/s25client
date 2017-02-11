@@ -84,19 +84,6 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     : Desktop(LOADER.GetImageN("setup015", 0)),
       csi(csi)
 {
-    // default random map settings
-    mapSettings.players = 2;
-    mapSettings.height = 256;
-    mapSettings.width = 256;
-    mapSettings.minPlayerRadius = 0.31;
-    mapSettings.maxPlayerRadius = 0.51;
-    mapSettings.type = LT_GREENLAND;
-    mapSettings.style = MS_Random;
-    mapSettings.ratioGold = 9;
-    mapSettings.ratioIron = 36;
-    mapSettings.ratioCoal = 40;
-    mapSettings.ratioGranite = 15;
-
     // Die Tabelle für die Maps
     AddTable( 1, 110,  35, 680, 400, TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
 
@@ -247,7 +234,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         } break;
         case 7: // random map generator settings
         {
-            WINDOWMANAGER.Show(new iwMapGenerator(mapSettings));
+            WINDOWMANAGER.Show(new iwMapGenerator(rndMapSettings));
         } break;
     }
 }
@@ -268,7 +255,7 @@ void dskSelectMap::CreateRandomMap()
     map_path.append("Random.swd");
 
     // create a random map and save filepath
-    generator->Create(map_path, mapSettings);
+    generator->Create(map_path, rndMapSettings);
     
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);

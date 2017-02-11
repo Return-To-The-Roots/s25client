@@ -72,7 +72,7 @@ class dskSelectMap :
 
     private:
         CreateServerInfo csi;
-        MapSettings mapSettings;
+        MapSettings rndMapSettings;
 };
 
 #endif //!dskSELECTMAP_H_INCLUDED

@@ -26,6 +26,18 @@
  */
 struct MapSettings
 {
+    MapSettings()
+        : players(2),
+          width(256),height(256),
+          ratioGold(9),
+          ratioIron(36),
+          ratioCoal(40),
+          ratioGranite(15),
+          minPlayerRadius(0.31),
+          maxPlayerRadius(0.51),
+          type(LT_GREENLAND),
+          style(MS_Random) {}
+    
     /**
      * Number of players.
      */
