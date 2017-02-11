@@ -67,11 +67,12 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectName, Map)
 {
     std::string name("name");
-    Map* map = new Map(64, 64, name, "author");
+    Map map(64, 64, name, "author");
+    BOOST_REQUIRE_EQUAL(map.name, name);
     
-    BOOST_REQUIRE_EQUAL(map->name, name);
-
-    delete map;
+    std::string name2("name2");
+    Map map2(64, 64, name2, "author");
+    BOOST_REQUIRE_EQUAL(map2.name, name2);
 }
 
 /**
