@@ -45,13 +45,13 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     }
     
     combo = AddComboBox(3, 20, 60, 210, 20, TC_GREY, NormalFont, 100);
-    combo->AddString("Islands");
-    combo->AddString("Continent");
-    combo->AddString("Greenland");
-    combo->AddString("Migration");
-    combo->AddString("Riverland");
-    combo->AddString("Ringland");
-    combo->AddString("Random");
+    combo->AddString(_("Islands"));
+    combo->AddString(_("Continent"));
+    combo->AddString(_("Greenland"));
+    combo->AddString(_("Migration"));
+    combo->AddString(_("Riverland"));
+    combo->AddString(_("Ringland"));
+    combo->AddString(_("Random"));
 
     combo = AddComboBox(4, 20, 90, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString("64 x 64");
@@ -62,17 +62,17 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
 
     AddText(5, 20, 120, _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(6, 20, 140, 210, 20, TC_GREY, NormalFont, 100);
-    combo->AddString("Very Close");
-    combo->AddString("Close");
-    combo->AddString("Medium");
-    combo->AddString("Far");
-    combo->AddString("Very Far");
+    combo->AddString(_("Very Close"));
+    combo->AddString(_("Close"));
+    combo->AddString(_("Medium"));
+    combo->AddString(_("Far"));
+    combo->AddString(_("Very Far"));
 
     AddText(7, 20, 170, _("Landscape"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(8, 20, 190, 210, 20, TC_GREY, NormalFont, 100);
-    combo->AddString("Greenland");
-    combo->AddString("Winterworld");
-    combo->AddString("Wasteland");
+    combo->AddString(_("Greenland"));
+    combo->AddString(_("Winterworld"));
+    combo->AddString(_("Wasteland"));
     
     AddText(9, 20, 225, _("Gold:"), COLOR_YELLOW, 0, NormalFont);
     ctrlProgress* progressBar = AddProgress(10, 100, 220, 130, 20,
