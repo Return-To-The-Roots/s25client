@@ -28,18 +28,16 @@ BOOST_AUTO_TEST_SUITE(MapUtilityTest)
  */
 BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     for (int i = 0; i < 256; i++)
     {
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const int water = MapUtility::GetBodySize(map, 10, 10, 300);
+    const int water = MapUtility::GetBodySize(&map, 10, 10, 300);
     
     BOOST_REQUIRE_EQUAL(water, 256);
-    
-    delete map;
 }
 
 /**
@@ -47,18 +45,16 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     for (int i = 0; i < 256; i++)
     {
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const int water = MapUtility::GetBodySize(map, 10, 10, 100);
+    const int water = MapUtility::GetBodySize(&map, 10, 10, 100);
     
     BOOST_REQUIRE_EQUAL(water, 100);
-    
-    delete map;
 }
 
 /**
@@ -66,13 +62,11 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    MapUtility::SetHill(map, Vec2(0, 0), 0x4);
+    MapUtility::SetHill(&map, Vec2(0, 0), 0x4);
     
-    BOOST_REQUIRE_EQUAL(map->z[0], 0x4);
-    
-    delete map;
+    BOOST_REQUIRE_EQUAL(map.z[0], 0x4);
 }
 
 /**
@@ -81,25 +75,23 @@ BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
     }
     
-    MapUtility::Smooth(map);
+    MapUtility::Smooth(&map);
 
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        BOOST_REQUIRE_EQUAL(map->textureLsd[i],
+        BOOST_REQUIRE_EQUAL(map.textureLsd[i],
                             TerrainData::GetTextureIdentifier(TT_MEADOW1));
-        BOOST_REQUIRE_EQUAL(map->textureRsu[i],
+        BOOST_REQUIRE_EQUAL(map.textureRsu[i],
                             TerrainData::GetTextureIdentifier(TT_MEADOW1));
     }
-    
-    delete map;
 }
 
 /**
@@ -108,36 +100,34 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        if (i % map->width == 0) // mountain-meadow on the left
+        if (i % map.width == 0) // mountain-meadow on the left
         {
-            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
-            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
         }
         else // everything else mountains
         {
-            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
-            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
         }
     }
     
-    MapUtility::Smooth(map);
+    MapUtility::Smooth(&map);
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        if (i % map->width == 0)
+        if (i % map.width == 0)
         {
-            BOOST_REQUIRE_EQUAL(map->textureLsd[i],
+            BOOST_REQUIRE_EQUAL(map.textureLsd[i],
                                 TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW));
-            BOOST_REQUIRE_EQUAL(map->textureRsu[i],
+            BOOST_REQUIRE_EQUAL(map.textureRsu[i],
                                 TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW));
         }
     }
-    
-    delete map;
 }
 
 /**
@@ -146,23 +136,21 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        map->z[i] = 0x0A;
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+        map.z[i] = 0x0A;
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
     }
     
-    MapUtility::Smooth(map);
+    MapUtility::Smooth(&map);
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        BOOST_REQUIRE_GT(map->z[i], 0x0A);
+        BOOST_REQUIRE_GT(map.z[i], 0x0A);
     }
-    
-    delete map;
 }
 
 /**
@@ -171,23 +159,21 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        map->z[i] = 0x0A;
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
+        map.z[i] = 0x0A;
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
     }
     
-    MapUtility::Smooth(map);
+    MapUtility::Smooth(&map);
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        BOOST_REQUIRE_GT(map->z[i], 0x0A);
+        BOOST_REQUIRE_GT(map.z[i], 0x0A);
     }
-    
-    delete map;
 }
 
 /**
@@ -196,23 +182,21 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        map->z[i] = 0x0A;
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map.z[i] = 0x0A;
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
     }
     
-    MapUtility::Smooth(map);
+    MapUtility::Smooth(&map);
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        BOOST_REQUIRE_EQUAL(map->z[i], 0x0A);
+        BOOST_REQUIRE_EQUAL(map.z[i], 0x0A);
     }
-    
-    delete map;
 }
 
 /**
@@ -221,20 +205,18 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
-        map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
     }
-    map->textureRsu[0] = TT_SNOW;
+    map.textureRsu[0] = TT_SNOW;
     
-    MapUtility::Smooth(map);
+    MapUtility::Smooth(&map);
     
-    BOOST_REQUIRE_EQUAL(map->textureRsu[0], TerrainData::GetTextureIdentifier(TT_MEADOW1));
-    
-    delete map;
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_MEADOW1));
 }
 
 /**
@@ -243,40 +225,38 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        if (i % map->width < map->width / 2)
+        if (i % map.width < map.width / 2)
         {
             // half of the map meadow
-            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
-            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
         }
         else
         {
             // half of the map water
-            map->textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
-            map->textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
         }
     }
     
     // place harbor in the center of the map
-    MapUtility::SetHarbour(map, Vec2(7, 7), 0);
+    MapUtility::SetHarbour(&map, Vec2(7, 7), 0);
     
     int countHarbors = 0;
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        if ((map->textureLsd[i] & HARBOR_MASK) &&
-            (map->textureRsu[i] & HARBOR_MASK))
+        if ((map.textureLsd[i] & HARBOR_MASK) &&
+            (map.textureRsu[i] & HARBOR_MASK))
         {
             countHarbors++;
         }
     }
     
     BOOST_REQUIRE_GT(countHarbors, 0);
-    
-    delete map;
 }
 
 /**
@@ -285,14 +265,12 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    MapUtility::SetTree(map, Vec2(8,8));
+    MapUtility::SetTree(&map, Vec2(8,8));
 
-    BOOST_REQUIRE_NE(map->objectType[8 * 16 + 8], OT_Empty);
-    BOOST_REQUIRE_NE(map->objectInfo[8 * 16 + 8], OI_Empty);
-    
-    delete map;
+    BOOST_REQUIRE_NE(map.objectType[8 * 16 + 8], OT_Empty);
+    BOOST_REQUIRE_NE(map.objectInfo[8 * 16 + 8], OI_Empty);
 }
 
 /**
@@ -301,20 +279,18 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    for (int i = 0; i < map->width * map->height; i++)
+    for (int i = 0; i < map.width * map.height; i++)
     {
-        map->textureLsd[i] = TT_DESERT;
-        map->textureRsu[i] = TT_DESERT;
+        map.textureLsd[i] = TT_DESERT;
+        map.textureRsu[i] = TT_DESERT;
     }
     
-    MapUtility::SetTree(map, Vec2(8,8));
+    MapUtility::SetTree(&map, Vec2(8,8));
     
-    BOOST_REQUIRE_NE(map->objectType[8 * 16 + 8], OT_Empty);
-    BOOST_REQUIRE_NE(map->objectInfo[8 * 16 + 8], OI_Empty);
-    
-    delete map;
+    BOOST_REQUIRE_NE(map.objectType[8 * 16 + 8], OT_Empty);
+    BOOST_REQUIRE_NE(map.objectInfo[8 * 16 + 8], OI_Empty);
 }
 
 /**
@@ -323,18 +299,16 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     const int index = 8 * 16 + 8;
     
-    map->objectType[index] = OT_Stone_Begin;
-    map->objectInfo[index] = OI_Stone1;
+    map.objectType[index] = OT_Stone_Begin;
+    map.objectInfo[index] = OI_Stone1;
     
-    MapUtility::SetTree(map, Vec2(8,8));
+    MapUtility::SetTree(&map, Vec2(8,8));
     
-    BOOST_REQUIRE_EQUAL(map->objectType[index], OT_Stone_Begin);
-    BOOST_REQUIRE_EQUAL(map->objectInfo[index], OI_Stone1);
-    
-    delete map;
+    BOOST_REQUIRE_EQUAL(map.objectType[index], OT_Stone_Begin);
+    BOOST_REQUIRE_EQUAL(map.objectInfo[index], OI_Stone1);
 }
 
 /**
@@ -343,14 +317,12 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     
-    MapUtility::SetStone(map, Vec2(8,8));
+    MapUtility::SetStone(&map, Vec2(8,8));
     
-    BOOST_REQUIRE_NE(map->objectType[8 * 16 + 8], OT_Empty);
-    BOOST_REQUIRE_NE(map->objectInfo[8 * 16 + 8], OI_Empty);
-    
-    delete map;
+    BOOST_REQUIRE_NE(map.objectType[8 * 16 + 8], OT_Empty);
+    BOOST_REQUIRE_NE(map.objectInfo[8 * 16 + 8], OI_Empty);
 }
 
 /**
@@ -359,18 +331,16 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
 {
-    Map* map = new Map(16, 16, "map", "author");
+    Map map(16, 16, "map", "author");
     const int index = 8 * 16 + 8;
     
-    map->objectType[index] = OT_Tree1_Begin;
-    map->objectInfo[index] = OI_TreeOrPalm;
+    map.objectType[index] = OT_Tree1_Begin;
+    map.objectInfo[index] = OI_TreeOrPalm;
     
-    MapUtility::SetStone(map, Vec2(8,8));
+    MapUtility::SetStone(&map, Vec2(8,8));
     
-    BOOST_REQUIRE_EQUAL(map->objectType[index], OT_Tree1_Begin);
-    BOOST_REQUIRE_EQUAL(map->objectInfo[index], OI_TreeOrPalm);
-    
-    delete map;
+    BOOST_REQUIRE_EQUAL(map.objectType[index], OT_Tree1_Begin);
+    BOOST_REQUIRE_EQUAL(map.objectInfo[index], OI_TreeOrPalm);
 }
 
 /**

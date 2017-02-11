@@ -26,12 +26,8 @@ BOOST_AUTO_TEST_SUITE(MapTest)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
 {
-    AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
-    const bool isInArea = area->IsInArea(8, 8, 0.0, 16, 16);
-    
-    BOOST_REQUIRE(isInArea);
-    
-    delete area;
+    AreaDesc area(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
+    BOOST_REQUIRE(area.IsInArea(8, 8, 0.0, 16, 16));
 }
 
 /**
@@ -40,12 +36,8 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointOutsideIgnorePlayer, AreaDesc)
 {
-    AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
-    const bool isInArea = area->IsInArea(0, 0, 0.0, 16, 16);
-    
-    BOOST_REQUIRE(!isInArea);
-    
-    delete area;
+    AreaDesc area(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
+    BOOST_REQUIRE(!area.IsInArea(0, 0, 0.0, 16, 16));
 }
 
 /**
@@ -54,12 +46,8 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointOutsideIgnorePlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseAtPlayer, AreaDesc)
 {
-    AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 8);
-    const bool isInArea = area->IsInArea(8, 8, 1.0, 16, 16);
-    
-    BOOST_REQUIRE(!isInArea);
-    
-    delete area;
+    AreaDesc area(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 8);
+    BOOST_REQUIRE(!area.IsInArea(8, 8, 1.0, 16, 16));
 }
 
 /**
@@ -68,12 +56,8 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseAtPlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
 {
-    AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 1);
-    const bool isInArea = area->IsInArea(8, 8, 2.0, 16, 16);
-    
-    BOOST_REQUIRE(isInArea);
-    
-    delete area;
+    AreaDesc area(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 1);
+    BOOST_REQUIRE(area.IsInArea(8, 8, 2.0, 16, 16));
 }
 
 /**
@@ -82,12 +66,8 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointNearPlayer, AreaDesc)
 {
-    AreaDesc* area = new AreaDesc(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0, 8);
-    const bool isInArea = area->IsInArea(8, 8, 2.0, 16, 16);
-    
-    BOOST_REQUIRE(isInArea);
-    
-    delete area;
+    AreaDesc area(0.5, 0.5, 0.0, 0.2, 100.0, 0, 0, 10, 10, 0, 8);
+    BOOST_REQUIRE(area.IsInArea(8, 8, 2.0, 16, 16));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

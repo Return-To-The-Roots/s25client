@@ -28,8 +28,8 @@ BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
 {
     Map* map = new Map();
     
-    BOOST_REQUIRE_EQUAL(map->width,  (unsigned)0);
-    BOOST_REQUIRE_EQUAL(map->height, (unsigned)0);
+    BOOST_REQUIRE_EQUAL(map->width,  0u);
+    BOOST_REQUIRE_EQUAL(map->height, 0u);
     
     delete map;
 }
@@ -40,26 +40,24 @@ BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
  */
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
 {
-    Map* map = new Map(64, 64, "name", "author");
+    Map map(64, 64, "name", "author");
 
-    BOOST_REQUIRE_EQUAL(map->width,             (unsigned)64);
-    BOOST_REQUIRE_EQUAL(map->height,            (unsigned)64);
-    BOOST_REQUIRE_EQUAL(map->z.size(),          (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->textureRsu.size(), (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->textureLsd.size(), (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->build.size(),      (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->shading.size(),    (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->resource.size(),   (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->road.size(),       (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->objectType.size(), (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->objectInfo.size(), (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->animal.size(),     (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->unknown1.size(),   (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->unknown2.size(),   (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->unknown3.size(),   (unsigned)4096);
-    BOOST_REQUIRE_EQUAL(map->unknown5.size(),   (unsigned)4096);
-
-    delete map;
+    BOOST_REQUIRE_EQUAL(map.width,             64u);
+    BOOST_REQUIRE_EQUAL(map.height,            64u);
+    BOOST_REQUIRE_EQUAL(map.z.size(),          4096u);
+    BOOST_REQUIRE_EQUAL(map.textureRsu.size(), 4096u);
+    BOOST_REQUIRE_EQUAL(map.textureLsd.size(), 4096u);
+    BOOST_REQUIRE_EQUAL(map.build.size(),      4096u);
+    BOOST_REQUIRE_EQUAL(map.shading.size(),    4096u);
+    BOOST_REQUIRE_EQUAL(map.resource.size(),   4096u);
+    BOOST_REQUIRE_EQUAL(map.road.size(),       4096u);
+    BOOST_REQUIRE_EQUAL(map.objectType.size(), 4096u);
+    BOOST_REQUIRE_EQUAL(map.objectInfo.size(), 4096u);
+    BOOST_REQUIRE_EQUAL(map.animal.size(),     4096u);
+    BOOST_REQUIRE_EQUAL(map.unknown1.size(),   4096u);
+    BOOST_REQUIRE_EQUAL(map.unknown2.size(),   4096u);
+    BOOST_REQUIRE_EQUAL(map.unknown3.size(),   4096u);
+    BOOST_REQUIRE_EQUAL(map.unknown5.size(),   4096u);
 }
 
 /**
@@ -82,12 +80,14 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectName, Map)
  */
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectAuthor, Map)
 {
-    std::string author("author");
-    Map* map = new Map(64, 64, "name", author);
+    std::string author1("author1");
+    Map mapA(64, 64, "name", author1);
     
-    BOOST_REQUIRE_EQUAL(map->author, author);
+    BOOST_REQUIRE_EQUAL(mapA.author, author1);
     
-    delete map;
+    std::string author2("author2");
+    Map mapB(64, 64, "name", author2);
+    BOOST_REQUIRE_EQUAL(mapB.author, author2);
 }
 
 /**
@@ -97,14 +97,13 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectAuthor, Map)
 BOOST_FIXTURE_TEST_CASE(CreateArchiv_NotNull, Map)
 {
     std::string author("author");
-    Map* map = new Map(64, 64, "name", author);
+    Map map(64, 64, "name", author);
     
-    ArchivInfo* archiv = map->CreateArchiv();
+    ArchivInfo* archiv = map.CreateArchiv();
     
     BOOST_REQUIRE(archiv != NULL);
 
     delete archiv;
-    delete map;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

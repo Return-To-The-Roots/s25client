@@ -110,13 +110,17 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 {
-    const int x = 4;
-    const int y = 2;
-    const int width = x * x;
-    const int height = y * y;
-    const int index = VertexUtility::GetIndexOf(x, y, width, height);
-    
-    BOOST_REQUIRE_EQUAL(index, y * width + x);
+    const int width = 64;
+    const int height = 64;
+
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(x, y, width, height),
+                                y * width + x);
+        }
+    }
 }
 
 /**
