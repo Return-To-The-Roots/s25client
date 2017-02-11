@@ -36,14 +36,13 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    RandomMapGenerator* generator = new RandomMapGenerator();
-    Map* map = generator->Create(settings);
+    RandomMapGenerator generator;
+    Map* map = generator.Create(settings);
 
     BOOST_REQUIRE_EQUAL(map->width, settings.width);
     BOOST_REQUIRE_EQUAL(map->height, settings.height);
     
     delete map;
-    delete generator;
 }
 
 /**
@@ -60,9 +59,9 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    RandomMapGenerator* generator = new RandomMapGenerator();
+    RandomMapGenerator generator;
 
-    Map* map = generator->Create(settings);
+    Map* map = generator.Create(settings);
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
 
     for (unsigned int i = 0; i < settings.players; i++)
@@ -82,7 +81,6 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     }
     
     delete map;
-    delete generator;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
