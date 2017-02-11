@@ -75,20 +75,13 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString(_("Wasteland"));
     
     AddText(9, 20, 225, _("Gold:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlProgress* progressBar = AddProgress(CTRL_RATIO_GOLD, 100, 220, 130, 20,
-                                            TC_GREY, 139, 138, 100);
-
+    AddProgress(CTRL_RATIO_GOLD, 100, 220, 130, 20, TC_GREY, 139, 138, 100);
     AddText(11, 20, 255, _("Iron:"), COLOR_YELLOW, 0, NormalFont);
-    progressBar = AddProgress(CTRL_RATIO_IRON, 100, 250, 130, 20,
-                              TC_GREY, 139, 138, 100);
-
+    AddProgress(CTRL_RATIO_IRON, 100, 250, 130, 20, TC_GREY, 139, 138, 100);
     AddText(13, 20, 285, _("Coal:"), COLOR_YELLOW, 0, NormalFont);
-    progressBar = AddProgress(CTRL_RATIO_COAL, 100, 280, 130, 20,
-                              TC_GREY, 139, 138, 100);
-
+    AddProgress(CTRL_RATIO_COAL, 100, 280, 130, 20, TC_GREY, 139, 138, 100);
     AddText(15, 20, 315, _("Granite:"), COLOR_YELLOW, 0, NormalFont);
-    progressBar = AddProgress(CTRL_RATIO_GRANITE, 100, 310, 130, 20,
-                              TC_GREY, 139, 138, 100);
+    AddProgress(CTRL_RATIO_GRANITE, 100, 310, 130, 20, TC_GREY, 139, 138, 100);
     
     Reset();
 }
