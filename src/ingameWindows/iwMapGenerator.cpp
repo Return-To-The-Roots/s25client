@@ -215,47 +215,82 @@ void iwMapGenerator::Reset()
     ctrlComboBox* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
     switch (mapSettings.players)
     {
-        case 2: combo->SetSelection(0); break;
-        case 3: combo->SetSelection(1); break;
-        case 4: combo->SetSelection(2); break;
-        case 5: combo->SetSelection(3); break;
-        case 6: combo->SetSelection(4); break;
-        case 7: combo->SetSelection(5); break;
-        default: break;
+        case 2:
+            combo->SetSelection(0);
+            break;
+        case 3:
+            combo->SetSelection(1);
+            break;
+        case 4:
+            combo->SetSelection(2);
+            break;
+        case 5:
+            combo->SetSelection(3);
+            break;
+        case 6:
+            combo->SetSelection(4);
+            break;
+        case 7:
+            combo->SetSelection(5);
+            break;
+        default:
+            break;
     }
     
-    ctrlProgress* progressBar = GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD);
-    progressBar->SetPosition(mapSettings.ratioGold);
-    progressBar = GetCtrl<ctrlProgress>(CTRL_RATIO_IRON);
-    progressBar->SetPosition(mapSettings.ratioIron);
-    progressBar = GetCtrl<ctrlProgress>(CTRL_RATIO_COAL);
-    progressBar->SetPosition(mapSettings.ratioCoal);
-    progressBar = GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE);
-    progressBar->SetPosition(mapSettings.ratioGranite);
+    GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(mapSettings.ratioGold);
+    GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->SetPosition(mapSettings.ratioIron);
+    GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->SetPosition(mapSettings.ratioCoal);
+    GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
     
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
     switch (mapSettings.style)
     {
-        case MS_Islands:    combo->SetSelection(0); break;
-        case MS_Continent:  combo->SetSelection(1); break;
-        case MS_Greenland:  combo->SetSelection(2); break;
-        case MS_Migration:  combo->SetSelection(3); break;
-        case MS_Riverland:  combo->SetSelection(4); break;
-        case MS_Ringland:   combo->SetSelection(5); break;
-        case MS_Random:     combo->SetSelection(6); break;
-        default: break;
+        case MS_Islands:
+            combo->SetSelection(0);
+            break;
+        case MS_Continent:
+            combo->SetSelection(1);
+            break;
+        case MS_Greenland:
+            combo->SetSelection(2);
+            break;
+        case MS_Migration:
+            combo->SetSelection(3);
+            break;
+        case MS_Riverland:
+            combo->SetSelection(4);
+            break;
+        case MS_Ringland:
+            combo->SetSelection(5);
+            break;
+        case MS_Random:
+            combo->SetSelection(6);
+            break;
+        default:
+            break;
     }
     
     
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE);
     switch (mapSettings.width)
     {
-        case 64:    combo->SetSelection(0); break;
-        case 128:   combo->SetSelection(1); break;
-        case 256:   combo->SetSelection(2); break;
-        case 512:   combo->SetSelection(3); break;
-        case 1024:  combo->SetSelection(4); break;
-        default: break;
+        case 64:
+            combo->SetSelection(0);
+            break;
+        case 128:
+            combo->SetSelection(1);
+            break;
+        case 256:
+            combo->SetSelection(2);
+            break;
+        case 512:
+            combo->SetSelection(3);
+            break;
+        case 1024:
+            combo->SetSelection(4);
+            break;
+        default:
+            break;
     }
     
     combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS);
@@ -273,10 +308,17 @@ void iwMapGenerator::Reset()
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE);
     switch (mapSettings.type)
     {
-        case LT_GREENLAND:   combo->SetSelection(0); break;
-        case LT_WINTERWORLD: combo->SetSelection(1); break;
-        case LT_WASTELAND:   combo->SetSelection(2); break;
-        default: break;
+        case LT_GREENLAND:
+            combo->SetSelection(0);
+            break;
+        case LT_WINTERWORLD:
+            combo->SetSelection(1);
+            break;
+        case LT_WASTELAND:
+            combo->SetSelection(2);
+            break;
+        default:
+            break;
     }
 }
 
