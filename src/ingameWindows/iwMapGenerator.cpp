@@ -27,6 +27,7 @@
 #include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
 
+#include <boost/format.hpp>
 #include <string>
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
@@ -38,12 +39,10 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     AddTextButton(1, 130, 360, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo = AddComboBox(2, 20, 30, 210, 20, TC_GREY, NormalFont, 100);
-    combo->AddString("2 Players");
-    combo->AddString("3 Players");
-    combo->AddString("4 Players");
-    combo->AddString("5 Players");
-    combo->AddString("6 Players");
-    combo->AddString("7 Players");
+    for (int n = 2; n < 8; n++)
+    {
+        combo->AddString(boost::str(boost::format(_("%s players")) % n));
+    }
     
     combo = AddComboBox(3, 20, 60, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString("Islands");
