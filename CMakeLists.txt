@@ -1,4 +1,5 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
+# CMake 2.8.9 required for POSITION_INDEPENDENT_CODE target property
 CMAKE_POLICY(SET CMP0003 NEW)
 CMAKE_POLICY(SET CMP0015 NEW)
 IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
@@ -30,21 +31,6 @@ IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()
 
-################################################################################
-# C++11 Handling
-# By using this if-else one can assume that:
-# CMAKE_CXX_STANDARD==11 <=> CMAKE_CXX_FLAGS contains "-std=c++11"
-if("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+11")
-    set(CMAKE_CXX_STANDARD 11)
-elseif("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+14")
-    set(CMAKE_CXX_STANDARD 14)
-elseif("${CMAKE_CXX_FLAGS}" MATCHES "-std=c\\+\\+98")
-    set(CMAKE_CXX_STANDARD 98)
-elseif(NOT "${CMAKE_CXX_STANDARD}" STREQUAL "")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" "-std=c++${CMAKE_CXX_STANDARD}")
-else()
-    set(CMAKE_CXX_STANDARD 98)
-endif()
 ################################################################################
 
 STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
@@ -83,6 +69,7 @@ ELSE (CMAKE_CROSSCOMPILING)
 ENDIF (CMAKE_CROSSCOMPILING)
 
 #Include generic platform config
+OPTION(ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
 MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
@@ -237,15 +224,20 @@ MACRO(CheckAndAddFlag flag)
 	unset(checkedFlag)
 ENDMACRO()
 
+OPTION(ENABLE_WERROR "Build with warnings turned into errors" OFF)
 IF (MSVC)
 	ADD_DEFINITIONS(/W3)
-	ADD_DEFINITIONS(/WX) # warning = error
 	ADD_DEFINITIONS(/MP) # parallel compilation
 	# Signed/Unsigned operations
 	ADD_DEFINITIONS(/w34389)
+	IF(ENABLE_WERROR)
+		ADD_DEFINITIONS(/WX) # warning = error
+	ENDIF(ENABLE_WERROR)
 ELSE (MSVC)
 	CheckAndAddFlag("-Wall")
-	CheckAndAddFlag("-Werror")
+	IF(ENABLE_WERROR)
+		CheckAndAddFlag("-Werror")
+	ENDIF(ENABLE_WERROR)
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wpedantic")
@@ -258,10 +250,15 @@ CheckAndAddFlag("-Wno-unknown-pragmas")
 CheckAndAddFlag("-Wno-c++11-extensions")
 CheckAndAddFlag("-fno-strict-aliasing")
 CheckAndAddFlag("-Qunused-arguments")
-if(${CMAKE_CXX_STANDARD} EQUAL 11 OR ${CMAKE_CXX_STANDARD} EQUAL 14)
-    CheckAndAddFlag("-Wsuggest-override")
-    CheckAndAddFlag("-Wno-error=suggest-override")
-endif()
+
+CHECK_CXX_SOURCE_COMPILES("
+	#if __cplusplus >= 201103L
+	int main() {}
+	#endif" COMPILER_IN_CXX11_MODE)
+IF(COMPILER_IN_CXX11_MODE)
+	CheckAndAddFlag("-Wsuggest-override")
+	CheckAndAddFlag("-Wno-error=suggest-override")
+ENDIF(COMPILER_IN_CXX11_MODE)
 
 # Variadic macros are part of C99 but supported by all big compilers in C++03
 CheckAndAddFlag("-Wno-variadic-macros")
