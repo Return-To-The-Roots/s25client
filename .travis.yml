@@ -99,7 +99,7 @@ script:
     # Fail if any command failed
     - set -e
     - cd build
-    - ./cmake.sh --prefix=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" --generator="Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
+    - ./cmake.sh --prefix=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DENABLE_WERROR=ON -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" --generator="Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
     # Travis uses 2 cores
     - make -j2
     # Execute tests
