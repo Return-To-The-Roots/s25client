@@ -23,6 +23,7 @@ addons:
             - boost-latest
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.5
+            - george-edison55-precise-backports # cmake 3.2.3
         packages:
             - libboost-filesystem1.55-dev
             - libboost-iostreams1.55-dev
@@ -34,6 +35,7 @@ addons:
             - clang-3.5
             - llvm-3.5
             - cmake
+            - cmake-data
             - libsdl1.2-dev
             - libsdl-mixer1.2-dev
             - libcurl4-openssl-dev
