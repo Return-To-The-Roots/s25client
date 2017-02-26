@@ -34,7 +34,7 @@ def transformIntoStep(arch, wspwd) {
                                                          -v /srv/apache2/siedler25.org/nightly:/www \
                                                          -v /srv/backup/www/s25client:/archive \
                                                          --name "${env.BUILD_TAG}-${arch}" \
-                                                         ubuntu/crossbuild:precise -c \
+                                                         git.ra-doersch.de:5005/rttr/docker-precise:master -c \
                                                          "cd build && ./cmake.sh --prefix=. \$BARCH -DENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= -RTTR_LIBDIR=share/s25rttr && make \$PARAMS"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
