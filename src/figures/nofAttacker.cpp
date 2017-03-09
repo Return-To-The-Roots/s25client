@@ -379,6 +379,10 @@ void nofAttacker::HomeDestroyed()
         } break;
         default:
         {
+            // Wenn wir gerade auf dem Weg dorthin sind (z.B. an Bord eines Schiffs), Ziel löschen
+            if (goal_ == building)
+                goal_ = NULL;
+
             //  Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
             building = NULL;
