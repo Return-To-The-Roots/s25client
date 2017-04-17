@@ -19,6 +19,7 @@
 #define VertexUtility_h__
 
 #include "Point.h"
+#include "stdint.h"
 #include <vector>
 
 class VertexUtility
