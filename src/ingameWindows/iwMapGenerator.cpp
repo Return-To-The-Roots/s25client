@@ -24,6 +24,7 @@
 #include "controls/ctrlProgress.h"
 
 #include "gameData/const_gui_ids.h"
+#include "gameData/MaxPlayers.h"
 #include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
 
@@ -39,9 +40,9 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     AddTextButton(1, 130, 360, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, 20, 30, 210, 20, TC_GREY, NormalFont, 100);
-    for (int n = 2; n < 8; n++)
+    for (int n = 2; n < MAX_PLAYERS; n++)
     {
-        combo->AddString(boost::str(boost::format(_("%s players")) % n));
+        combo->AddString(boost::str(boost::format(_("%1% players")) % n));
     }
     
     combo = AddComboBox(CTRL_MAP_STYLE, 20, 60, 210, 20, TC_GREY, NormalFont, 100);
@@ -213,28 +214,10 @@ void iwMapGenerator::Apply()
 void iwMapGenerator::Reset()
 {
     ctrlComboBox* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
-    switch (mapSettings.players)
+    unsigned short playersSelection = mapSettings.players - 2;
+    if (playersSelection >= 0 && playersSelection < 6)
     {
-        case 2:
-            combo->SetSelection(0);
-            break;
-        case 3:
-            combo->SetSelection(1);
-            break;
-        case 4:
-            combo->SetSelection(2);
-            break;
-        case 5:
-            combo->SetSelection(3);
-            break;
-        case 6:
-            combo->SetSelection(4);
-            break;
-        case 7:
-            combo->SetSelection(5);
-            break;
-        default:
-            break;
+        combo->SetSelection(playersSelection);
     }
     
     GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->SetPosition(mapSettings.ratioGold);
