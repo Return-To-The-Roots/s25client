@@ -22,8 +22,8 @@ Map::Map() : width(0), height(0)
     
 }
 
-Map::Map(const unsigned int width,
-         const unsigned int height,
+Map::Map(unsigned int width,
+         unsigned int height,
          const std::string& name,
          const std::string& author) : width(width), height(height), name(name), author(author)
 {
