@@ -31,6 +31,19 @@
 #include <boost/format.hpp>
 #include <string>
 
+enum
+{
+    CTRL_PLAYER_NUMBER = 2,
+    CTRL_MAP_STYLE     = 3,
+    CTRL_MAP_SIZE      = 4,
+    CTRL_PLAYER_RADIUS = 6,
+    CTRL_MAP_TYPE      = 8,
+    CTRL_RATIO_GOLD    = 10,
+    CTRL_RATIO_IRON    = 12,
+    CTRL_RATIO_COAL    = 14,
+    CTRL_RATIO_GRANITE = 16
+};
+
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
                                                 IngameWindow::posLastOrCenter,
                                                 250, 400, _("Map Generator"),

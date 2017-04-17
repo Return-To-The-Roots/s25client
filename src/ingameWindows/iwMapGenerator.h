@@ -46,19 +46,6 @@ class iwMapGenerator : public IngameWindow
     
     private:
     
-        enum Ctrl
-        {
-            CTRL_PLAYER_NUMBER = 2,
-            CTRL_MAP_STYLE     = 3,
-            CTRL_MAP_SIZE      = 4,
-            CTRL_PLAYER_RADIUS = 6,
-            CTRL_MAP_TYPE      = 8,
-            CTRL_RATIO_GOLD    = 10,
-            CTRL_RATIO_IRON    = 12,
-            CTRL_RATIO_COAL    = 14,
-            CTRL_RATIO_GRANITE = 16
-        };
-    
         /**
          * Actual settings used for map generation. After pressing the "apply" button in the
          * UI mapSettings are updated with the values configured in the UI.
