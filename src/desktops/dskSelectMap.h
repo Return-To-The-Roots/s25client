@@ -33,9 +33,6 @@ class dskSelectMap :
     public ClientInterface,
     public LobbyInterface
 {
-        /// Kartenpfad
-        std::string map_path;
-
     public:
         dskSelectMap(const CreateServerInfo& csi);
         ~dskSelectMap() override;

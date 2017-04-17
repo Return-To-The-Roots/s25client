@@ -97,8 +97,8 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // "Weiter"
     AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
     // random map generation
-    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Random Map"), NormalFont);
-    // random map players
+    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Create Random"), NormalFont);
+    // random map settings
     AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("..."), NormalFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
@@ -251,11 +251,11 @@ void dskSelectMap::CreateRandomMap()
     boost::interprocess::unique_ptr<MapGenerator, Deleter<MapGenerator> > generator(new MapGenerator());
     
     // setup filepath for the random map
-    map_path = GetFilePath(FILE_PATHS[48]);
-    map_path.append("Random.swd");
+    std::string mapPath = GetFilePath(FILE_PATHS[48]);
+    mapPath.append("Random.swd");
 
     // create a random map and save filepath
-    generator->Create(map_path, rndMapSettings);
+    generator->Create(mapPath, rndMapSettings);
     
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
@@ -265,10 +265,9 @@ void dskSelectMap::CreateRandomMap()
     ctrlTable* table = GetCtrl<ctrlTable>(1);
     for (int i = 0; i < table->GetRowCount(); i++)
     {
-        std::string name = table->GetItemText(i, 0);
-        std::string author = table->GetItemText(i, 1);
+        std::string entryPath = table->GetItemText(i, 5);
         
-        if (name == "Random" && author == "auto")
+        if (entryPath == mapPath)
         {
             table->SetSelection(i);
             break;
@@ -286,10 +285,10 @@ void dskSelectMap::StartServer()
     if(selection < table->GetRowCount())
     {
         // Kartenpfad aus Tabelle holen
-        map_path = table->GetItemText(selection, 5);
+        std::string mapPath = table->GetItemText(selection, 5);
 
         // Server starten
-        if(!GAMESERVER.TryToStart(csi, map_path, MAPTYPE_OLDMAP))
+        if(!GAMESERVER.TryToStart(csi, mapPath, MAPTYPE_OLDMAP))
         {
             GoBack();
         }
