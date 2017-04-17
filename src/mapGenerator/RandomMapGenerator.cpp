@@ -135,7 +135,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map* map)
             
             for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
             {
-                if (it->IsInArea(x, y, distanceToPlayer, width, height))
+                if (it->IsInArea(Point<int>(x,y), distanceToPlayer, width, height))
                 {
                     const int pr = (int)(*it).likelyhoodHill;
                     const int rnd = RandomConfig::Rand(0, pr > 0 ? 101 :
@@ -209,7 +209,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map* 
 
             for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
             {
-                if (it->IsInArea(x, y, distanceToPlayer, width, height))
+                if (it->IsInArea(Point<int>(x,y), distanceToPlayer, width, height))
                 {
                     if (RandomConfig::Rand(0, 100) < (*it).likelyhoodTree)
                     {

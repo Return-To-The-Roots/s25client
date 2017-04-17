@@ -40,18 +40,20 @@ RandomConfig RandomConfig::CreateGreenland()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_SNOW);
 
+    const Point<double> center(0.5, 0.5);
+    
     // greenland all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 8.0,  14, 7, 5, 10, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 8.0,  14, 7, 5, 10, 15));
 
     // small mountains and hills all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.2,   0, 0, 0, 19, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 0.2,   0, 0, 0, 19, 15));
 
     // very few large mountains all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.05,  0, 0, 0, 23, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 0.05,  0, 0, 0, 23, 15));
 
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
 
     return config;
 }
@@ -79,18 +81,20 @@ RandomConfig RandomConfig::CreateRiverland()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_SNOW);
     
+    const Point<double> center(0.5, 0.5);
+
     // mix between water and greenland all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 2.0,  14, 7, 0, 10, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 2.0,  14, 7, 0, 10, 15));
 
     // a couple of mountains (and hills) all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.2,   0, 0, 0, 19, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 0.2,   0, 0, 0, 19, 15));
 
     // very few, very large mountains all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.05,  0, 0, 0, 23, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 0.05,  0, 0, 0, 23, 15));
 
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
 
     return config;
 }
@@ -121,16 +125,17 @@ RandomConfig RandomConfig::CreateRingland()
     const double rMin = DRand(0.2, 0.5);
     const double rMax = DRand(rMin + 0.1, 0.9);
     const double rMiddle = rMin + (rMax - rMin) / 2;
-    
+    const Point<double> center(0.5, 0.5);
+
     // ring formed land (coastal and greenland)
-    config.areas.push_back(AreaDesc(0.5, 0.5, rMin, rMax, 8.0,  14, 7, 5, 10, 15));
+    config.areas.push_back(AreaDesc(center, rMin, rMax, 8.0,  14, 7, 5, 10, 15));
 
     // ring formed mountain land in the middle of the greenland ring
-    config.areas.push_back(AreaDesc(0.5, 0.5, rMiddle-0.05, rMiddle+0.05, 1.0,   0, 0, 0, 20, 15));
+    config.areas.push_back(AreaDesc(center, rMiddle-0.05, rMiddle+0.05, 1.0,   0, 0, 0, 20, 15));
 
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
 
     return config;
 }
@@ -158,15 +163,17 @@ RandomConfig RandomConfig::CreateMigration()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_SNOW);
     
+    const Point<double> center(0.5, 0.5);
+
     // inner island with large mountains
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.2, 2.0,   14, 7, 0, 20, 20));
+    config.areas.push_back(AreaDesc(center, 0.0, 0.2, 2.0,   14, 7, 0, 20, 20));
 
     // greenland around the large mountains
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.2, 0.4, 10.0,  14, 7, 5, 10, 20));
+    config.areas.push_back(AreaDesc(center, 0.2, 0.4, 10.0,  14, 7, 5, 10, 20));
 
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
 
     return config;
 }
@@ -194,15 +201,17 @@ RandomConfig RandomConfig::CreateIslands()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_LAVA);
     
+    const Point<double> center(0.5, 0.5);
+
     // little islands all over the map
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 0.06, 14, 7, 0, 18, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 0.06, 14, 7, 0, 18, 15));
     
     // mountain islands around each player
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 5.0,  14, 7, 10, 20, 21, 22));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 5.0,  14, 7, 10, 20, 21, 22));
 
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
     
     return config;
 }
@@ -230,18 +239,20 @@ RandomConfig RandomConfig::CreateContinent()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_SNOW);
 
+    const Point<double> center(0.5, 0.5);
+
     // greenland all over the map, apart from the water at the edges
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.9, 8.0,  14, 7, 5, 10, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 0.9, 8.0,  14, 7, 5, 10, 15));
 
     // small mountains and hills all over the greenland area
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.9, 0.2,   0, 0, 0, 18, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 0.9, 0.2,   0, 0, 0, 18, 15));
 
     // few very high mountains and hills all over the greenland area
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 0.9, 0.05,  0, 0, 0, 23, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 0.9, 0.05,  0, 0, 0, 23, 15));
 
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 8, 0, 5, 10,  4, 15));
 
     return config;
 }
@@ -274,22 +285,23 @@ RandomConfig RandomConfig::CreateRandom()
     const double p3 = DRand(p2, p2 + 1.0);
     const double pHill = DRand(1.5, 5.0);
     const int minHill = rand() % 5;
-    
+    const Point<double> center(0.5, 0.5);
+
     // random inner area with large mountains
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, p1,    1.0,  4, 7, 0, 23, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, p1,    1.0,  4, 7, 0, 23, 15));
 
     // random middle area with greenland
-    config.areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    pHill, 18, 5, minHill, 10, 15));
+    config.areas.push_back(AreaDesc(center, p1,  p2,    pHill, 18, 5, minHill, 10, 15));
 
     // random mountains in the greenland area
-    config.areas.push_back(AreaDesc(0.5, 0.5, p1,  p2,    0.5,  0, 0, 0, 17, 18));
+    config.areas.push_back(AreaDesc(center, p1,  p2,    0.5,  0, 0, 0, 17, 18));
 
     // random islands in the remaining water
-    config.areas.push_back(AreaDesc(0.5, 0.5, p2,  p3,    0.1, 15, 5, 0,  7, 15));
+    config.areas.push_back(AreaDesc(center, p2,  p3,    0.1, 15, 5, 0,  7, 15));
     
     // empty space around the players
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
-    config.areas.push_back(AreaDesc(0.5, 0.5, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  0, 0, 7,  7,  0, 4));
+    config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
     
     return config;
 }

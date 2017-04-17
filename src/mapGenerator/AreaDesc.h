@@ -18,6 +18,8 @@
 #ifndef AreaDesc_h__
 #define AreaDesc_h__
 
+#include "Point.h"
+
 /**
  * Descriptor class for specific areas on a random map. Each area describes a particular 
  * landscape style used for map generation in a particular location.
@@ -31,8 +33,7 @@ struct AreaDesc
     
     /**
      * Creates a new area description.
-     * @param cx x-coordinate of the center of the area (unit: 1.0 equals length of the map)
-     * @param cy y-coordinate of the center of the area (unit: 1.0 equals length of the map)
+     * @param center center of the area (unit: 0.0 and 1.0 is the edge of the map)
      * @param minDist minimum distance to the area center (unit: 1.0 equals length of the map)
      * @param maxDist maximum distance to the area center (unit: 1.0 equals length of the map)
      * @param pHill likelyhood (in percentage) to place a hill on tile
@@ -43,8 +44,7 @@ struct AreaDesc
      * @param minPlayerDist minimum distance to each player in tiles
      * @param maxPlayerDist maximum distance to each player in tiles (default: -1 means unlimited)
      */
-    AreaDesc(double cx,
-             double cy,
+    AreaDesc(Point<double> center,
              double minDist,
              double maxDist,
              double pHill,
@@ -56,14 +56,9 @@ struct AreaDesc
              int maxPlayerDist = -1);
     
     /**
-     * X-coordinate of the center point of the area relative to the width of the map.
+     * Center point of the area relative to map width and height.
      */
-    double centerX;
-
-    /**
-     * Y-coordinate of the center point of the area relative to the height of the map.
-     */
-    double centerY;
+    Point<double> center;
 
     /**
      * Minimum distance of the area to the center point of the map.
@@ -115,14 +110,13 @@ struct AreaDesc
     
     /**
      * Checks whether ot not the specified point is within this area.
-     * @param x-coordinate of the point to check
-     * @param y-coordinate of the point to check
+     * @param point the point to check
      * @param playerDistance distance to the nearest player position in tiles
      * @param width width of the map
      * @param height height of the map
      * @return true of the point is within the of the area, false otherwise
      */
-    bool IsInArea(int x, int y, const double playerDistance, const int width, const int height);
+    bool IsInArea(const Point<int>& point, double playerDistance, int width, int height);
 };
 
 #endif // AreaDesc_h__

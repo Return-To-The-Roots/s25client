@@ -24,8 +24,7 @@ AreaDesc::AreaDesc()
 
 }
 
-AreaDesc::AreaDesc(double cx,
-                   double cy,
+AreaDesc::AreaDesc(Point<double> center,
                    double minDist,
                    double maxDist,
                    double pHill,
@@ -35,7 +34,7 @@ AreaDesc::AreaDesc(double cx,
                    int maxZ,
                    int minPlayerDist,
                    int maxPlayerDist)
-    : centerX(cx), centerY(cy),
+    : center(center),
       minDistance(minDist), maxDistance(maxDist),
       likelyhoodHill(pHill), likelyhoodTree(pTree), likelyhoodStone(pStone),
       minElevation(minZ), maxElevation(maxZ),
@@ -44,11 +43,11 @@ AreaDesc::AreaDesc(double cx,
     
 }
 
-bool AreaDesc::IsInArea(int x, int y, const double playerDistance, const int width, const int height)
+bool AreaDesc::IsInArea(const Point<int>& point, double playerDistance, int width, int height)
 {
-    const double distance = VertexUtility::Distance(x, y,
-                                                    (int)(width * centerX),
-                                                    (int)(height * centerY),
+    const double distance = VertexUtility::Distance(point.x, point.y,
+                                                    (int)(width * center.x),
+                                                    (int)(height * center.y),
                                                     width, height) / min(width / 2, height / 2);
         
     if (maxPlayerDistance <= 0)
