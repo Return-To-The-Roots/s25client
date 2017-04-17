@@ -52,11 +52,11 @@ Map::Map(const unsigned int width,
 }
 
 
-ArchivInfo* Map::CreateArchiv()
+libsiedler2::ArchivInfo* Map::CreateArchiv()
 {
-    ArchivInfo* info = new ArchivInfo();
-    ArchivItem_Map* map = new ArchivItem_Map();
-    ArchivItem_Map_Header* header = new ArchivItem_Map_Header();
+    libsiedler2::ArchivInfo* info = new libsiedler2::ArchivInfo();
+    libsiedler2::ArchivItem_Map* map = new libsiedler2::ArchivItem_Map();
+    libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header();
     std::vector<unsigned char> data;
     
     // create header information for the archiv
@@ -71,20 +71,20 @@ ArchivInfo* Map::CreateArchiv()
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
     map->set(0, header);
-    map->set(1, new ArchivItem_Raw(z));
-    map->set(2, new ArchivItem_Raw(textureRsu));
-    map->set(3, new ArchivItem_Raw(textureLsd));
-    map->set(4, new ArchivItem_Raw(road));
-    map->set(5, new ArchivItem_Raw(objectType));
-    map->set(6, new ArchivItem_Raw(objectInfo));
-    map->set(7, new ArchivItem_Raw(animal));
-    map->set(8, new ArchivItem_Raw(unknown1));
-    map->set(9, new ArchivItem_Raw(build));
-    map->set(10, new ArchivItem_Raw(unknown2));
-    map->set(11, new ArchivItem_Raw(unknown3));
-    map->set(12, new ArchivItem_Raw(resource));
-    map->set(13, new ArchivItem_Raw(shading));
-    map->set(14, new ArchivItem_Raw(unknown5));
+    map->set(1, new libsiedler2::ArchivItem_Raw(z));
+    map->set(2, new libsiedler2::ArchivItem_Raw(textureRsu));
+    map->set(3, new libsiedler2::ArchivItem_Raw(textureLsd));
+    map->set(4, new libsiedler2::ArchivItem_Raw(road));
+    map->set(5, new libsiedler2::ArchivItem_Raw(objectType));
+    map->set(6, new libsiedler2::ArchivItem_Raw(objectInfo));
+    map->set(7, new libsiedler2::ArchivItem_Raw(animal));
+    map->set(8, new libsiedler2::ArchivItem_Raw(unknown1));
+    map->set(9, new libsiedler2::ArchivItem_Raw(build));
+    map->set(10, new libsiedler2::ArchivItem_Raw(unknown2));
+    map->set(11, new libsiedler2::ArchivItem_Raw(unknown3));
+    map->set(12, new libsiedler2::ArchivItem_Raw(resource));
+    map->set(13, new libsiedler2::ArchivItem_Raw(shading));
+    map->set(14, new libsiedler2::ArchivItem_Raw(unknown5));
 
     info->push(map);
 

@@ -23,10 +23,7 @@
 #include <vector>
 #include <string>
 
-using namespace libsiedler2;
-
 typedef std::vector<unsigned char> VecUChar;
-typedef std::vector<std::pair<uint8_t, uint8_t> > VecPair;
 
 /**
  * Data type for reading, writing and generating maps.
@@ -159,7 +156,7 @@ struct Map
      * Creates a new archiv for this map. 
      * @return a new archiv containing the information of this map
      */
-    ArchivInfo* CreateArchiv();
+    libsiedler2::ArchivInfo* CreateArchiv();
 };
 
 #endif // Map_h__
