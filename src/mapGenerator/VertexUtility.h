@@ -38,43 +38,36 @@ class VertexUtility
     /**
      * Computes the index of a vertex on the map. If the position is outside of the map's boundary, the
      * coordinates are continuing on the other side of the map again (fluent boundaries).
-     * @param x x-coordinate of the position of the vertex on the map
-     * @param y y-coordinate of the position of the vertex on the map
+     * @param p position of the vertex on the map
      * @param width map width (MUST be of the power of 2)
      * @param height map height (MUST be of the power of 2)
      * @return the index of the vertex
      */
-    static int GetIndexOf(int x, int y, int width, int height);
+    static int GetIndexOf(const Point<int>& p, int width, int height);
 
     /**
      * Computes indices of neighboring vertices within the specified radius around the position.
-     * @param pos x x-coordinate of the center position to collect neighboring vertices around
-     * @param pos y y-coordinate of the center position to collect neighboring vertices around
+     * @param p center position to collect neighboring vertices around
      * @param width map width
      * @param height map height
      * @param radius radius for collecting neighbor vertices
      * @return vector of indices for neighbor vertices
      */
-    static std::vector<int> GetNeighbors(int x,
-                                         int y,
+    static std::vector<int> GetNeighbors(const Point<int>& p,
                                          int width,
                                          int height,
                                          int radius);
 
     /**
      * Computes the distance between two vertices.
-     * @param x1 x-coordinate of the first vertex
-     * @param y1 y-coordinate of the first vertex
-     * @param x2 x-coordinate of the second vertex
-     * @param y2 y-coordinate of the second vertex
+     * @param p1 position of the first vertex
+     * @param p2 position of the second vertex
      * @param width map width
      * @param height map height
      * @return the distance between the two vertices
      */
-    static double Distance(int x1,
-                           int y1,
-                           int x2,
-                           int y2,
+    static double Distance(const Point<int>& p1,
+                           const Point<int>& p2,
                            int width,
                            int height);
 };

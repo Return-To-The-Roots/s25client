@@ -23,26 +23,26 @@ Point<uint16_t> VertexUtility::GetPosition(int index, int width, int height)
     return Point<uint16_t>(index % width, index / width);
 }
 
-int VertexUtility::GetIndexOf(int x, int y, int width, int height)
+int VertexUtility::GetIndexOf(const Point<int>& p, int width, int height)
 {
-    return (x & (width - 1)) + (y & (height - 1)) * width;
+    return (p.x & (width - 1)) + (p.y & (height - 1)) * width;
 }
 
-std::vector<int> VertexUtility::GetNeighbors(int x,
-                                             int y,
+std::vector<int> VertexUtility::GetNeighbors(const Point<int>& p,
                                              int width,
                                              int height,
                                              int radius)
 {
     std::vector<int> neighbors;
 
-    for (int nx = x - radius; nx <= x + radius; nx++)
+    for (int nx = p.x - radius; nx <= p.x + radius; nx++)
     {
-        for (int ny = y - radius; ny <= y + radius; ny++)
+        for (int ny = p.y - radius; ny <= p.y + radius; ny++)
         {
-            if (VertexUtility::Distance(x, y, nx, ny, width, height) <= radius)
+            const Point<int> neighbor(nx,ny);
+            if (VertexUtility::Distance(p, neighbor, width, height) <= radius)
             {
-                neighbors.push_back(VertexUtility::GetIndexOf(nx, ny, width, height));
+                neighbors.push_back(VertexUtility::GetIndexOf(neighbor, width, height));
             }
         }
     }
@@ -50,17 +50,15 @@ std::vector<int> VertexUtility::GetNeighbors(int x,
     return neighbors;
 }
 
-double VertexUtility::Distance(int x1,
-                               int y1,
-                               int x2,
-                               int y2,
+double VertexUtility::Distance(const Point<int>& p1,
+                               const Point<int>& p2,
                                int width,
                                int height)
 {
-    int minX = std::min(x1, x2);
-    int minY = std::min(y1, y2);
-    int maxX = std::max(x1, x2);
-    int maxY = std::max(y1, y2);
+    int minX = std::min(p1.x, p2.x);
+    int minY = std::min(p1.y, p2.y);
+    int maxX = std::max(p1.x, p2.x);
+    int maxY = std::max(p1.y, p2.y);
     
     int dx = (maxX - minX);
     int dy = (maxY - minY);

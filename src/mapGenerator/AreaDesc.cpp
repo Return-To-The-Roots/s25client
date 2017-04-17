@@ -45,11 +45,9 @@ AreaDesc::AreaDesc(Point<double> center,
 
 bool AreaDesc::IsInArea(const Point<int>& point, double playerDistance, int width, int height)
 {
-    const double distance = VertexUtility::Distance(point.x, point.y,
-                                                    (int)(width * center.x),
-                                                    (int)(height * center.y),
-                                                    width, height) / min(width / 2, height / 2);
-        
+    Point<int> tile((int)(width * center.x), (int)(height * center.y));
+    double distance = VertexUtility::Distance(point, tile, width, height) / min(width / 2, height / 2);
+    
     if (maxPlayerDistance <= 0)
     {
         return playerDistance >= minPlayerDistance && distance >= minDistance && distance < maxDistance;

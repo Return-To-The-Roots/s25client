@@ -73,7 +73,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     const int length = std::min(width / 2, height / 2);
     
     // compute center of the map
-    Point<uint16_t> center(width / 2, height / 2);
+    Point<int> center(width / 2, height / 2);
 
     // radius for player distribution
     const int rMin = (int)(settings.minPlayerRadius * length);;
@@ -84,12 +84,10 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     for (unsigned int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        Point<uint16_t> position = helper.ComputePointOnCircle(i,
-                                                     settings.players,
-                                                     center, (double)(rMin + rnd));
+        Point<int> position = helper.ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
 
         // store headquarter position
-        map.positions[i] = position;
+        map.positions[i] = Point<uint16_t>(position);
         
         // create headquarter
         ObjectGenerator::CreateHeadquarter(map, position.y * width + position.x, i);
@@ -100,15 +98,12 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& 
 {
     for (unsigned int i = 0; i < settings.players; i++)
     {
-        const int offset1 = RandomConfig::Rand(0, 180);
-        const int offset2 = RandomConfig::Rand(180, 360);
-
-        helper.SetStones(map, helper.ComputePointOnCircle(offset1,
-                                                            360,
-                                                            map.positions[i], 12), 2.0F);
-        helper.SetStones(map, helper.ComputePointOnCircle(offset2,
-                                                            360,
-                                                            map.positions[i], 12), 2.7F);
+        int offset1 = RandomConfig::Rand(0, 180);
+        int offset2 = RandomConfig::Rand(180, 360);
+        const Point<int> p(map.positions[i]);
+        
+        helper.SetStones(map, helper.ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
+        helper.SetStones(map, helper.ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
     }
 }
 
@@ -123,19 +118,19 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
         for (int y = 0; y < height; y++)
         {
             double distanceToPlayer = (double)(width + height);
+            Point<int> tile(x,y);
             
             for (int i = 0; i < players; i++)
             {
                 distanceToPlayer = std::min(distanceToPlayer,
-                                       VertexUtility::Distance(x, y,
-                                                               map.positions[i].x,
-                                                               map.positions[i].y,
+                                       VertexUtility::Distance(tile,
+                                                               Point<int>(map.positions[i]),
                                                                width, height));
             }
             
             for (std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
             {
-                if (it->IsInArea(Point<int>(x,y), distanceToPlayer, width, height))
+                if (it->IsInArea(tile, distanceToPlayer, width, height))
                 {
                     const int pr = (int)(*it).likelyhoodHill;
                     const int rnd = RandomConfig::Rand(0, pr > 0 ? 101 :
@@ -146,9 +141,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                     if (maxZ > 0 && rnd <= pr)
                     {
                         const unsigned int z = (unsigned int)RandomConfig::Rand(minZ, maxZ + 1);
-                        helper.SetHill(map,
-                                        Point<uint16_t>(x, y),
-                                        z == GetMinTerrainHeight(TT_MOUNTAINMEADOW) ? z-1 : z);
+                        helper.SetHill(map, tile, z == GetMinTerrainHeight(TT_MOUNTAINMEADOW) ? z-1 : z);
                     }
                 }
             }
@@ -197,27 +190,26 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             }
             
             double distanceToPlayer = (double)(width + height);
+            Point<int> tile(x,y);
+            
             for (int i = 0; i < players; i++)
             {
                 distanceToPlayer = std::min(distanceToPlayer,
-                                            VertexUtility::Distance(x, y,
-                                                                    map.positions[i].x,
-                                                                    map.positions[i].y,
-                                                                    width,
-                                                                    height));
+                                            VertexUtility::Distance(tile, Point<int>(map.positions[i]),
+                                                                    width, height));
             }
 
             for (std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
             {
-                if (it->IsInArea(Point<int>(x,y), distanceToPlayer, width, height))
+                if (it->IsInArea(tile, distanceToPlayer, width, height))
                 {
                     if (RandomConfig::Rand(0, 100) < (*it).likelyhoodTree)
                     {
-                        helper.SetTree(map, Point<uint16_t>(x,y));
+                        helper.SetTree(map, tile);
                     }
                     else if (RandomConfig::Rand(0, 100) < (*it).likelyhoodStone)
                     {
-                        helper.SetStone(map, Point<uint16_t>(x,y));
+                        helper.SetStone(map, tile);
                     }
                 }
             }
@@ -227,50 +219,48 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
     ///////
     /// Harbour placement
     ///////
-    std::vector<Point<uint16_t> > harbors;
+    std::vector<Point<int> > harbors;
     
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            Point<int> tile(x,y);
+            const int index = VertexUtility::GetIndexOf(tile, width, height);
             
             // under certain circumstances replace dessert texture by harbor position
-            Point<uint16_t> water(0,0);
+            Point<int> water(0,0);
             if (ObjectGenerator::IsTexture(map, index, TT_DESERT))
             {
                 // ensure there's water close to the dessert texture
                 bool waterNeighbor = false;
-                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
+                std::vector<int> neighbors = VertexUtility::GetNeighbors(tile, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
                     if (ObjectGenerator::IsTexture(map, *it, TT_WATER))
                     {
                         waterNeighbor = true;
-                        water = Point<uint16_t>(*it % width, *it / width);
+                        water = Point<int>(*it % width, *it / width);
                         break;
                     }
                 }
                 
                 // ensure there's no other harbor nearby
                 double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
-                for (std::vector<Point<uint16_t> >::iterator it = harbors.begin(); it != harbors.end(); ++it)
+                for (std::vector<Point<int> >::iterator it = harbors.begin(); it != harbors.end(); ++it)
                 {
                     closestHarbor = std::min(closestHarbor,
-                                             VertexUtility::Distance(x, y, it->x, it->y, width, height));
+                                             VertexUtility::Distance(tile, Point<int>(*it), width, height));
                 }
                 
-                const int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE &&
-                        waterNeighbor) ? helper.GetBodySize(map,
-                                                             water.x,
-                                                             water.y,
-                                                             MIN_HARBOR_WATER) : 0;
+                int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE &&
+                        waterNeighbor) ? helper.GetBodySize(map, water, MIN_HARBOR_WATER) : 0;
 
                 // setup harbor position
                 if (waterTiles >= MIN_HARBOR_WATER)
                 {
-                    helper.SetHarbour(map, Point<uint16_t>(x, y), GetMaxTerrainHeight(TT_WATER));
-                    harbors.push_back(Point<uint16_t>(x,y));
+                    helper.SetHarbour(map, tile, GetMaxTerrainHeight(TT_WATER));
+                    harbors.push_back(tile);
                 }
             }
         }

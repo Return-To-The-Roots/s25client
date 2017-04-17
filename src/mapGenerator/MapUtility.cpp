@@ -29,47 +29,44 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-void MapUtility::SetHill(Map& map, const Point<uint16_t>& center, int z)
+void MapUtility::SetHill(Map& map, const Point<int>& center, int z)
 {
-    std::vector<int> neighbors = VertexUtility::GetNeighbors(center.x, center.y, map.width, map.height, z);
+    std::vector<int> neighbors = VertexUtility::GetNeighbors(center, map.width, map.height, z);
     for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
     {
-        const int x2 = *it % map.width, y2 = *it / map.width;
-        const double d = VertexUtility::Distance(center.x, center.y, x2, y2, map.width, map.height);
+        const Point<int> neighbor(*it % map.width, *it / map.width);
+        const double d = VertexUtility::Distance(center, neighbor, map.width, map.height);
         map.z[*it] = std::max((unsigned char)(z - d), (unsigned char)map.z[*it]);
     }
 }
 
-unsigned int MapUtility::GetBodySize(Map& map,
-                                     int x,
-                                     int y,
-                                     unsigned int max)
+unsigned int MapUtility::GetBodySize(Map& map, const Point<int>& p, unsigned int max)
 {
     const int width = map.width;
     const int height = map.height;
     
     // compute index of the initial position
-    int index = VertexUtility::GetIndexOf(x, y, width, height);
+    int index = VertexUtility::GetIndexOf(p, width, height);
 
     // figure out terrain type of the initial position
     TerrainType type = TerrainData::MapIdx2Terrain(map.textureRsu[index]);
     
-    std::queue<Point<uint16_t> > searchSpace;
+    std::queue<Point<int> > searchSpace;
     std::list<int> body;
     
     // put intial position to the search space
-    searchSpace.push(Point<uint16_t>(x, y));
+    searchSpace.push(p);
     
     // stop search if no further neighbors are available or
     // the maximum the body size is reached
     while (!searchSpace.empty() && body.size() < max)
     {
         // get and remove the last element from the queue
-        Point<uint16_t> pos = searchSpace.front();
+        Point<int> pos = searchSpace.front();
         searchSpace.pop();
         
         // compute the index of the current element
-        index = VertexUtility::GetIndexOf(pos.x, pos.y, width, height);
+        index = VertexUtility::GetIndexOf(pos, width, height);
         
         // check if the element has the right terrain and is not yet
         // part of the terrain body
@@ -80,10 +77,10 @@ unsigned int MapUtility::GetBodySize(Map& map,
             body.push_back(index);
             
             // push neighbor elements to the search space
-            searchSpace.push(Point<uint16_t>(pos.x+1, pos.y));
-            searchSpace.push(Point<uint16_t>(pos.x, pos.y+1));
-            searchSpace.push(Point<uint16_t>(pos.x-1, pos.y));
-            searchSpace.push(Point<uint16_t>(pos.x, pos.y-1));
+            searchSpace.push(Point<int>(pos.x+1, pos.y));
+            searchSpace.push(Point<int>(pos.x, pos.y+1));
+            searchSpace.push(Point<int>(pos.x-1, pos.y));
+            searchSpace.push(Point<int>(pos.x, pos.y-1));
         }
     }
     
@@ -101,10 +98,13 @@ void MapUtility::Smooth(Map& map)
     {
         for (int y = 0; y < height; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int texLeft = map.textureLsd[VertexUtility::GetIndexOf(x - 1, y, width, height)];
-            const int texBottom = map.textureLsd[VertexUtility::GetIndexOf(x, y + 1, width, height)];
-            const int tex = map.textureRsu[index];
+            int index = VertexUtility::GetIndexOf(Point<int>(x,y), width, height);
+            int indexLeft = VertexUtility::GetIndexOf(Point<int>(x - 1, y), width, height);
+            int indexBottom = VertexUtility::GetIndexOf(Point<int>(x, y + 1), width, height);
+            
+            int texLeft = map.textureLsd[indexLeft];
+            int texBottom = map.textureLsd[indexBottom];
+            int tex = map.textureRsu[index];
             
             if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != waterId)
             {
@@ -117,10 +117,13 @@ void MapUtility::Smooth(Map& map)
     {
         for (int y = 0; y < height; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int texRight = map.textureRsu[VertexUtility::GetIndexOf(x + 1, y, width, height)];
-            const int texTop = map.textureRsu[VertexUtility::GetIndexOf(x, y - 1, width, height)];
-            const int tex = map.textureLsd[index];
+            int index = VertexUtility::GetIndexOf(Point<int>(x,y), width, height);
+            int indexRight = VertexUtility::GetIndexOf(Point<int>(x + 1, y), width, height);
+            int indexTop = VertexUtility::GetIndexOf(Point<int>(x, y - 1), width, height);
+            
+            int texRight = map.textureRsu[indexRight];
+            int texTop = map.textureRsu[indexTop];
+            int tex = map.textureLsd[index];
 
             if (tex != texTop && tex != texRight && texTop == texRight && texTop != waterId)
             {
@@ -134,7 +137,7 @@ void MapUtility::Smooth(Map& map)
     {
         for (int y = 0; y < height; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            int index = VertexUtility::GetIndexOf(Point<int>(x,y), width, height);
             if (ObjectGenerator::IsTexture(map, index, TT_MOUNTAIN1) ||
                 ObjectGenerator::IsTexture(map, index, TT_SNOW))
             {
@@ -148,11 +151,12 @@ void MapUtility::Smooth(Map& map)
     {
         for (int y = 0; y < height; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, width, height);
+            Point<int> tile(x,y);
+            int index = VertexUtility::GetIndexOf(tile, width, height);
             if (ObjectGenerator::IsTexture(map, index, TT_MOUNTAINMEADOW))
             {
                 bool mountainNeighbor = false;
-                std::vector<int> neighbors = VertexUtility::GetNeighbors(x, y, width, height, 1);
+                std::vector<int> neighbors = VertexUtility::GetNeighbors(tile, width, height, 1);
                 for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
                 {
                     if (ObjectGenerator::IsTexture(map, *it, TT_MOUNTAIN1))
@@ -170,13 +174,13 @@ void MapUtility::Smooth(Map& map)
     }
 }
 
-void MapUtility::SetHarbour(Map& map, const Point<uint16_t>& center, int waterLevel)
+void MapUtility::SetHarbour(Map& map, const Point<int>& center, int waterLevel)
 {
     for (int x = center.x - 3; x <= center.x + 3; x++)
     {
         for (int y = center.y - 3; y <= center.y + 3; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, map.width, map.height);
+            int index = VertexUtility::GetIndexOf(Point<int>(x,y), map.width, map.height);
             if (!ObjectGenerator::IsTexture(map, index, TT_WATER))
             {
                 if ((x - center.x) * (x - center.x) <= 1.7
@@ -199,9 +203,9 @@ void MapUtility::SetHarbour(Map& map, const Point<uint16_t>& center, int waterLe
     }
 }
 
-void MapUtility::SetTree(Map& map, const Point<uint16_t>& position)
+void MapUtility::SetTree(Map& map, const Point<int>& position)
 {
-    const int index = VertexUtility::GetIndexOf(position.x, position.y, map.width, map.height);
+    int index = VertexUtility::GetIndexOf(position, map.width, map.height);
     
     if (ObjectGenerator::IsEmpty(map, index))
     {
@@ -218,27 +222,30 @@ void MapUtility::SetTree(Map& map, const Point<uint16_t>& position)
     }
 }
 
-void MapUtility::SetStones(Map& map, const Point<uint16_t>& center, double radius)
+void MapUtility::SetStones(Map& map, const Point<int>& center, double radius)
 {
-    const int width = map.width;
-    const int height = map.height;
-    const int cx = center.x, cy = center.y, r = (int)radius;
+    int width = map.width;
+    int height = map.height;
+    int cx = center.x;
+    int cy = center.y;
+    int r = (int)radius;
     
     for (int x = cx - r; x < cx + r; x++)
     {
-        for (int y = cy - r; y <cy + r; y++)
+        for (int y = cy - r; y < cy + r; y++)
         {
-            if (VertexUtility::Distance(cx, cy, x, y, width, height) < radius)
+            Point<int> p(x,y);
+            if (VertexUtility::Distance(center, p, width, height) < radius)
             {
-                SetStone(map, Point<uint16_t>(x, y));
+                SetStone(map, p);
             }
         }
     }
 }
 
-void MapUtility::SetStone(Map& map, const Point<uint16_t>& position)
+void MapUtility::SetStone(Map& map, const Point<int>& position)
 {
-    const int index = VertexUtility::GetIndexOf(position.x, position.y, map.width, map.height);
+    int index = VertexUtility::GetIndexOf(position, map.width, map.height);
     
     if (ObjectGenerator::IsEmpty(map, index) &&
         !ObjectGenerator::IsTexture(map, index, TT_WATER))
@@ -247,12 +254,12 @@ void MapUtility::SetStone(Map& map, const Point<uint16_t>& position)
     }
 }
 
-Point<uint16_t> MapUtility::ComputePointOnCircle(int index,
-                                                 int points,
-                                                 const Point<uint16_t>& center,
-                                                 double radius)
+Point<int> MapUtility::ComputePointOnCircle(int index,
+                                            int points,
+                                            const Point<int>& center,
+                                            double radius)
 {
-    Point<uint16_t> point;
+    Point<int> point;
     
     // compute angle according to index
     double angle = index * 2.0 * M_PI / points;
