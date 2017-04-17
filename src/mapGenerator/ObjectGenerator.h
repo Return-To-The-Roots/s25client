@@ -54,7 +54,7 @@ class ObjectGenerator
      *      place a harbor at the position of the texture, it need to be close to water. Also keep 
      *      in mind, only terrain types which allow buildings also support harbor placement.
      */
-    static void CreateTexture(Map* map, const int index, TerrainType terrain, const bool harbor = false);
+    static void CreateTexture(Map& map, int index, TerrainType terrain, bool harbor = false);
     
     /**
      * Checks whether or not the specified texture is representing the specified terrain.
@@ -63,7 +63,7 @@ class ObjectGenerator
      * @param terrain terrain to compare the input texture to
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
-    static bool IsTexture(Map* map, const int index, TerrainType terrain);
+    static bool IsTexture(Map& map, int index, TerrainType terrain);
     
     /**
      * Checks whether or not it is allowed to build a harbor on the specified terrain.
@@ -77,7 +77,7 @@ class ObjectGenerator
      * @param map map to place the empty object on
      * @param index vertex index to place the empty object on
      */
-    static void CreateEmpty(Map* map, const int index);
+    static void CreateEmpty(Map& map, int index);
 
     /**
      * Creates a new headquarter for the specified player.
@@ -85,35 +85,35 @@ class ObjectGenerator
      * @param index vertex index to place the headquarter on
      * @param i player number
      */
-    static void CreateHeadquarter(Map* map, const int index, const unsigned int i);
+    static void CreateHeadquarter(Map& map, int index, unsigned int i);
 
     /**
      * Checks whether or not the specified object is empty.
      * @param map map of the vertex to check
      * @param index vertex index to check
      */
-    static bool IsEmpty(Map* map, const int index);
+    static bool IsEmpty(Map& map, int index);
 
     /**
      * Creates a new duck.
      * @param likelyhood likelyhood for object generation in percent
      * @return a new duck animal
      */
-    static uint8_t CreateDuck(const int likelyhood);
+    static uint8_t CreateDuck(int likelyhood);
 
     /**
      * Creates a new sheep.
      * @param likelyhood likelyhood for object generation in percent
      * @return a new sheep animal
      */
-    static uint8_t CreateSheep(const int likelyhood);
+    static uint8_t CreateSheep(int likelyhood);
 
     /**
      * Creates a new, random animal to be placed inside of a forest.
      * @param likelyhood likelyhood for object generation in percent
      * @return a new forest animal
      */
-    static uint8_t CreateRandomForestAnimal(const int likelyhood);
+    static uint8_t CreateRandomForestAnimal(int likelyhood);
     
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
@@ -123,17 +123,17 @@ class ObjectGenerator
      * @param ratioGranite ratio of granite placed as mountain resource on the map
      * @return random piles of gold, coal, granite or iron
      */
-    static uint8_t CreateRandomResource(const unsigned int ratioGold,
-                                        const unsigned int ratioIron,
-                                        const unsigned int ratioCoal,
-                                        const unsigned int ratioGranite);
+    static uint8_t CreateRandomResource(unsigned int ratioGold,
+                                        unsigned int ratioIron,
+                                        unsigned int ratioCoal,
+                                        unsigned int ratioGranite);
 
     /**
      * Creates a new, random ground animal.
      * @param likelyhood likelyhood for object generation in percent
      * @return a new ground animal
      */
-    static uint8_t CreateRandomAnimal(const int likelyhood);
+    static uint8_t CreateRandomAnimal(int likelyhood);
     
     /**
      * Checks whether or not the specified object is a tree.
@@ -141,35 +141,35 @@ class ObjectGenerator
      * @param index index of the vertex to check
      * @return true if the specified object is a tree, false otherwise
      */
-    static bool IsTree(Map* map, const int index);
+    static bool IsTree(Map& map, int index);
 
     /**
      * Creates a new, random tree (excluding palm trees).
      * @param map map to place the object upon
      * @param index index of the vertex for the new object
      */
-    static void CreateRandomTree(Map* map, const int index);
+    static void CreateRandomTree(Map& map, int index);
 
     /**
      * Creates a new, random palm.
      * @param map map of the vertex to create a new tree on
      * @param index index of the vertex to create a new tree on
      */
-    static void CreateRandomPalm(Map* map, const int index);
+    static void CreateRandomPalm(Map& map, int index);
     
     /**
      * Creates a new, random tree (including palm trees).
      * @param map map of the vertex to create a new tree on
      * @param index index of the vertex to create a new tree on
      */
-    static void CreateRandomMixedTree(Map* map, const int index);
+    static void CreateRandomMixedTree(Map& map, int index);
     
     /**
      * Creates a random amount of stone.
      * @param map map of the vertex to create a new stone pile on
      * @param index index of the vertex to create a new stone pile on
      */
-    static void CreateRandomStone(Map* map, const int index);
+    static void CreateRandomStone(Map& map, int index);
 };
 
 #endif // ObjectGenerator_h__

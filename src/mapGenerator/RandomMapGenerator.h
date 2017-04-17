@@ -88,28 +88,28 @@ class RandomMapGenerator
      * @param settings settings used for map generation
      * @param map map to modify
      */
-    void PlacePlayers(const MapSettings& settings, Map* map);
+    void PlacePlayers(const MapSettings& settings, Map& map);
 
     /**
      * Create standard resoures for each player.
      * @param settings settings used for map generation
      * @param map map to modify
      */
-    void PlacePlayerResources(const MapSettings& settings, Map* map);
+    void PlacePlayerResources(const MapSettings& settings, Map& map);
     
     /**
      * Create a elevation (hills) for the specified map.
      * @param settings settings used for map generation
      * @param map map to modify
      */
-    void CreateHills(const MapSettings& settings, Map* map);
+    void CreateHills(const MapSettings& settings, Map& map);
     
     /**
      * Fill the remaining terrain (apart from the player positions) according to the generated hills.
      * @param settings settings used for map generation
      * @param map map to modify
      */
-    void FillRemainingTerrain(const MapSettings& settings, Map* map);
+    void FillRemainingTerrain(const MapSettings& settings, Map& map);
  };
 
 #endif // RandomMapGenerator_h__

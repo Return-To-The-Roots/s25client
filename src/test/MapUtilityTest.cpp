@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const int water = MapUtility::GetBodySize(&map, 10, 10, 300);
+    const int water = MapUtility::GetBodySize(map, 10, 10, 300);
     
     BOOST_REQUIRE_EQUAL(water, 256);
 }
@@ -52,7 +52,7 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const int water = MapUtility::GetBodySize(&map, 10, 10, 100);
+    const int water = MapUtility::GetBodySize(map, 10, 10, 100);
     
     BOOST_REQUIRE_EQUAL(water, 100);
 }
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
 {
     Map map(16, 16, "map", "author");
     
-    MapUtility::SetHill(&map, Vec2(0, 0), 0x4);
+    MapUtility::SetHill(map, Vec2(0, 0), 0x4);
     
     BOOST_REQUIRE_EQUAL(map.z[0], 0x4);
 }
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
         }
     }
     
-    MapUtility::Smooth(&map);
+    MapUtility::Smooth(map);
     
     for (int i = 0; i < map.width * map.height; i++)
     {
@@ -145,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
     }
     
-    MapUtility::Smooth(&map);
+    MapUtility::Smooth(map);
     
     for (int i = 0; i < map.width * map.height; i++)
     {
@@ -168,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
     }
     
-    MapUtility::Smooth(&map);
+    MapUtility::Smooth(map);
     
     for (int i = 0; i < map.width * map.height; i++)
     {
@@ -191,7 +191,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
     }
     
-    MapUtility::Smooth(&map);
+    MapUtility::Smooth(map);
     
     for (int i = 0; i < map.width * map.height; i++)
     {
@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
     }
     map.textureRsu[0] = TT_SNOW;
     
-    MapUtility::Smooth(&map);
+    MapUtility::Smooth(map);
     
     BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_MEADOW1));
 }
@@ -244,7 +244,7 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
     }
     
     // place harbor in the center of the map
-    MapUtility::SetHarbour(&map, Vec2(7, 7), 0);
+    MapUtility::SetHarbour(map, Vec2(7, 7), 0);
     
     int countHarbors = 0;
     for (int i = 0; i < map.width * map.height; i++)
@@ -287,7 +287,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
         map.textureRsu[i] = TT_DESERT;
     }
     
-    MapUtility::SetTree(&map, Vec2(8,8));
+    MapUtility::SetTree(map, Vec2(8,8));
     
     BOOST_REQUIRE_NE(map.objectType[8 * 16 + 8], OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[8 * 16 + 8], OI_Empty);
@@ -305,7 +305,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
     map.objectType[index] = OT_Stone_Begin;
     map.objectInfo[index] = OI_Stone1;
     
-    MapUtility::SetTree(&map, Vec2(8,8));
+    MapUtility::SetTree(map, Vec2(8,8));
     
     BOOST_REQUIRE_EQUAL(map.objectType[index], OT_Stone_Begin);
     BOOST_REQUIRE_EQUAL(map.objectInfo[index], OI_Stone1);
@@ -319,7 +319,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
 {
     Map map(16, 16, "map", "author");
     
-    MapUtility::SetStone(&map, Vec2(8,8));
+    MapUtility::SetStone(map, Vec2(8,8));
     
     BOOST_REQUIRE_NE(map.objectType[8 * 16 + 8], OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[8 * 16 + 8], OI_Empty);
@@ -337,7 +337,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
     map.objectType[index] = OT_Tree1_Begin;
     map.objectInfo[index] = OI_TreeOrPalm;
     
-    MapUtility::SetStone(&map, Vec2(8,8));
+    MapUtility::SetStone(map, Vec2(8,8));
     
     BOOST_REQUIRE_EQUAL(map.objectType[index], OT_Tree1_Begin);
     BOOST_REQUIRE_EQUAL(map.objectInfo[index], OI_TreeOrPalm);

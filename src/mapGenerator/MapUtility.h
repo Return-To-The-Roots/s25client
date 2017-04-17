@@ -38,7 +38,7 @@ class MapUtility
      * textures.
      * @param map map to smooth textures for
      */
-    void Smooth(Map* map);
+    void Smooth(Map& map);
     
     /**
      * Creates a hill at the specified center with the specified height.
@@ -46,7 +46,7 @@ class MapUtility
      * @param center center point of the hill (highest elevation)
      * @param z maximum height (elevation) of the hill
      */
-    void SetHill(Map* map, const Vec2& center, int z);
+    void SetHill(Map& map, const Vec2& center, int z);
     
     /**
      * Sets up a harbor position at the specified center. The surounding area is flattened 
@@ -55,14 +55,14 @@ class MapUtility
      * @param center center point for the harbor position
      * @param waterLevel the height level of the surounding water
      */
-    void SetHarbour(Map* map, const Vec2& center, const int waterLevel);
+    void SetHarbour(Map& map, const Vec2& center, int waterLevel);
     
     /**
      * Places a tree to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the tree
      */
-    void SetTree(Map* map, const Vec2& position);
+    void SetTree(Map& map, const Vec2& position);
     
     /**
      * Sets stone on the map around the specified center within the specified radius.
@@ -71,14 +71,14 @@ class MapUtility
      * @param center center point for stone placement
      * @param radius radius around the center to place stone in
      */
-    void SetStones(Map* map, const Vec2& center, const double radius);
+    void SetStones(Map& map, const Vec2& center, double radius);
 
     /**
      * Places a stone to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the stone
      */
-    void SetStone(Map* map, const Vec2& position);
+    void SetStone(Map& map, const Vec2& position);
     
     /**
      * Computes the size of a terrain body starting from the specified position.
@@ -89,10 +89,10 @@ class MapUtility
      * @return the number of vertices in a connected terrain area around the 
      * intial position
      */
-    unsigned int GetBodySize(Map* map,
-                             const int x,
-                             const int y,
-                             const unsigned int max);
+    unsigned int GetBodySize(Map& map,
+                             int x,
+                             int y,
+                             unsigned int max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.
@@ -103,10 +103,10 @@ class MapUtility
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    Vec2 ComputePointOnCircle(const int index,
-                              const int points,
+    Vec2 ComputePointOnCircle(int index,
+                              int points,
                               const Vec2& center,
-                              const double radius);
+                              double radius);
 };
 
 #endif // MapUtility_h__

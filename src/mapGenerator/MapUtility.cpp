@@ -29,30 +29,30 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-void MapUtility::SetHill(Map* map, const Vec2& center, int z)
+void MapUtility::SetHill(Map& map, const Vec2& center, int z)
 {
-    std::vector<int> neighbors = VertexUtility::GetNeighbors(center.x, center.y, map->width, map->height, z);
+    std::vector<int> neighbors = VertexUtility::GetNeighbors(center.x, center.y, map.width, map.height, z);
     for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
     {
-        const int x2 = *it % map->width, y2 = *it / map->width;
-        const double d = VertexUtility::Distance(center.x, center.y, x2, y2, map->width, map->height);
-        map->z[*it] = std::max((unsigned char)(z - d), (unsigned char)map->z[*it]);
+        const int x2 = *it % map.width, y2 = *it / map.width;
+        const double d = VertexUtility::Distance(center.x, center.y, x2, y2, map.width, map.height);
+        map.z[*it] = std::max((unsigned char)(z - d), (unsigned char)map.z[*it]);
     }
 }
 
-unsigned int MapUtility::GetBodySize(Map* map,
-                                     const int x,
-                                     const int y,
-                                     const unsigned int max)
+unsigned int MapUtility::GetBodySize(Map& map,
+                                     int x,
+                                     int y,
+                                     unsigned int max)
 {
-    const int width = map->width;
-    const int height = map->height;
+    const int width = map.width;
+    const int height = map.height;
     
     // compute index of the initial position
     int index = VertexUtility::GetIndexOf(x, y, width, height);
 
     // figure out terrain type of the initial position
-    TerrainType type = TerrainData::MapIdx2Terrain(map->textureRsu[index]);
+    TerrainType type = TerrainData::MapIdx2Terrain(map.textureRsu[index]);
     
     std::queue<Vec2> searchSpace;
     std::list<int> body;
@@ -90,10 +90,10 @@ unsigned int MapUtility::GetBodySize(Map* map,
     return body.size(); 
 }
 
-void MapUtility::Smooth(Map* map)
+void MapUtility::Smooth(Map& map)
 {
-    const int width = map->width;
-    const int height = map->height;
+    const int width = map.width;
+    const int height = map.height;
     const unsigned char waterId = TerrainData::GetTextureIdentifier(TT_WATER);
     
     // fixed broken textures
@@ -102,13 +102,13 @@ void MapUtility::Smooth(Map* map)
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int texLeft = map->textureLsd[VertexUtility::GetIndexOf(x - 1, y, width, height)];
-            const int texBottom = map->textureLsd[VertexUtility::GetIndexOf(x, y + 1, width, height)];
-            const int tex = map->textureRsu[index];
+            const int texLeft = map.textureLsd[VertexUtility::GetIndexOf(x - 1, y, width, height)];
+            const int texBottom = map.textureLsd[VertexUtility::GetIndexOf(x, y + 1, width, height)];
+            const int tex = map.textureRsu[index];
             
             if (tex != texLeft && tex != texBottom && texLeft == texBottom && texBottom != waterId)
             {
-                map->textureRsu[index] = texBottom;
+                map.textureRsu[index] = texBottom;
             }
         }
     }
@@ -118,13 +118,13 @@ void MapUtility::Smooth(Map* map)
         for (int y = 0; y < height; y++)
         {
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
-            const int texRight = map->textureRsu[VertexUtility::GetIndexOf(x + 1, y, width, height)];
-            const int texTop = map->textureRsu[VertexUtility::GetIndexOf(x, y - 1, width, height)];
-            const int tex = map->textureLsd[index];
+            const int texRight = map.textureRsu[VertexUtility::GetIndexOf(x + 1, y, width, height)];
+            const int texTop = map.textureRsu[VertexUtility::GetIndexOf(x, y - 1, width, height)];
+            const int tex = map.textureLsd[index];
 
             if (tex != texTop && tex != texRight && texTop == texRight && texTop != waterId)
             {
-                map->textureLsd[index] = texTop;
+                map.textureLsd[index] = texTop;
             }
         }
     }
@@ -138,7 +138,7 @@ void MapUtility::Smooth(Map* map)
             if (ObjectGenerator::IsTexture(map, index, TT_MOUNTAIN1) ||
                 ObjectGenerator::IsTexture(map, index, TT_SNOW))
             {
-                map->z[index] = (int)(1.33 * map->z[index]);
+                map.z[index] = (int)(1.33 * map.z[index]);
             }
         }
     }
@@ -170,13 +170,13 @@ void MapUtility::Smooth(Map* map)
     }
 }
 
-void MapUtility::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
+void MapUtility::SetHarbour(Map& map, const Vec2& center, int waterLevel)
 {
     for (int x = center.x - 3; x <= center.x + 3; x++)
     {
         for (int y = center.y - 3; y <= center.y + 3; y++)
         {
-            const int index = VertexUtility::GetIndexOf(x, y, map->width, map->height);
+            const int index = VertexUtility::GetIndexOf(x, y, map.width, map.height);
             if (!ObjectGenerator::IsTexture(map, index, TT_WATER))
             {
                 if ((x - center.x) * (x - center.x) <= 1.7
@@ -184,24 +184,24 @@ void MapUtility::SetHarbour(Map* map, const Vec2& center, const int waterLevel)
                 {
                     ObjectGenerator::CreateTexture(map, index, TT_SAVANNAH, true);
                     ObjectGenerator::CreateEmpty(map, index);
-                    map->z[index]        = waterLevel;
-                    map->resource[index] = libsiedler2::R_None;
+                    map.z[index]        = waterLevel;
+                    map.resource[index] = libsiedler2::R_None;
                 }
                 else
                 {
                     ObjectGenerator::CreateTexture(map, index, TT_STEPPE);
                     ObjectGenerator::CreateEmpty(map, index);
-                    map->z[index]        = waterLevel;
-                    map->resource[index] = libsiedler2::R_None;
+                    map.z[index]        = waterLevel;
+                    map.resource[index] = libsiedler2::R_None;
                 }
             }
         }
     }
 }
 
-void MapUtility::SetTree(Map* map, const Vec2& position)
+void MapUtility::SetTree(Map& map, const Vec2& position)
 {
-    const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
+    const int index = VertexUtility::GetIndexOf(position.x, position.y, map.width, map.height);
     
     if (ObjectGenerator::IsEmpty(map, index))
     {
@@ -218,10 +218,10 @@ void MapUtility::SetTree(Map* map, const Vec2& position)
     }
 }
 
-void MapUtility::SetStones(Map* map, const Vec2& center, const double radius)
+void MapUtility::SetStones(Map& map, const Vec2& center, double radius)
 {
-    const int width = map->width;
-    const int height = map->height;
+    const int width = map.width;
+    const int height = map.height;
     const int cx = center.x, cy = center.y, r = (int)radius;
     
     for (int x = cx - r; x < cx + r; x++)
@@ -236,9 +236,9 @@ void MapUtility::SetStones(Map* map, const Vec2& center, const double radius)
     }
 }
 
-void MapUtility::SetStone(Map* map, const Vec2& position)
+void MapUtility::SetStone(Map& map, const Vec2& position)
 {
-    const int index = VertexUtility::GetIndexOf(position.x, position.y, map->width, map->height);
+    const int index = VertexUtility::GetIndexOf(position.x, position.y, map.width, map.height);
     
     if (ObjectGenerator::IsEmpty(map, index) &&
         !ObjectGenerator::IsTexture(map, index, TT_WATER))
@@ -247,10 +247,10 @@ void MapUtility::SetStone(Map* map, const Vec2& position)
     }
 }
 
-Vec2 MapUtility::ComputePointOnCircle(const int index,
-                                     const int points,
-                                     const Vec2& center,
-                                     const double radius)
+Vec2 MapUtility::ComputePointOnCircle(int index,
+                                      int points,
+                                      const Vec2& center,
+                                      double radius)
 {
     Vec2 point;
     
