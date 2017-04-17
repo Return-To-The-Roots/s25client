@@ -29,22 +29,22 @@
 RandomMapGenerator::RandomMapGenerator()
 {
     RandomConfig config = RandomConfig::CreateRandom();
-    _textures = config.textures;
-    _areas = config.areas;
+    textures = config.textures;
+    areas = config.areas;
 }
 
 RandomMapGenerator::RandomMapGenerator(const RandomConfig& config)
 {
-    _textures = config.textures;
-    _areas = config.areas;
+    textures = config.textures;
+    areas = config.areas;
 }
 
 unsigned int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
 {
     unsigned int maxHeight = 0;
-    for (unsigned int i = 0; i < _textures.size(); i++)
+    for (unsigned int i = 0; i < textures.size(); i++)
     {
-        if (_textures[i] == terrain)
+        if (textures[i] == terrain)
         {
             maxHeight = i;
         }
@@ -55,15 +55,15 @@ unsigned int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain)
 
 unsigned int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain)
 {
-    for (unsigned int i = 0; i < _textures.size(); i++)
+    for (unsigned int i = 0; i < textures.size(); i++)
     {
-        if (_textures[i] == terrain)
+        if (textures[i] == terrain)
         {
             return i;
         }
     }
     
-    return _textures.size();
+    return textures.size();
 }
 
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
@@ -84,7 +84,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     for (unsigned int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        Vec2 position = _helper.ComputePointOnCircle(i,
+        Vec2 position = helper.ComputePointOnCircle(i,
                                                      settings.players,
                                                      center, (double)(rMin + rnd));
 
@@ -103,10 +103,10 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& 
         const int offset1 = RandomConfig::Rand(0, 180);
         const int offset2 = RandomConfig::Rand(180, 360);
 
-        _helper.SetStones(map, _helper.ComputePointOnCircle(offset1,
+        helper.SetStones(map, helper.ComputePointOnCircle(offset1,
                                                             360,
                                                             map.positions[i], 12), 2.0F);
-        _helper.SetStones(map, _helper.ComputePointOnCircle(offset2,
+        helper.SetStones(map, helper.ComputePointOnCircle(offset2,
                                                             360,
                                                             map.positions[i], 12), 2.7F);
     }
@@ -133,7 +133,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                                                                width, height));
             }
             
-            for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
+            for (std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
             {
                 if (it->IsInArea(Point<int>(x,y), distanceToPlayer, width, height))
                 {
@@ -146,7 +146,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                     if (maxZ > 0 && rnd <= pr)
                     {
                         const unsigned int z = (unsigned int)RandomConfig::Rand(minZ, maxZ + 1);
-                        _helper.SetHill(map,
+                        helper.SetHill(map,
                                         Vec2(x, y),
                                         z == GetMinTerrainHeight(TT_MOUNTAINMEADOW) ? z-1 : z);
                     }
@@ -170,10 +170,10 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             const int level = map.z[index];
             
             // create texture for current height value
-            ObjectGenerator::CreateTexture(map, index, _textures[level]);
+            ObjectGenerator::CreateTexture(map, index, textures[level]);
             
             // post-processing of texture (add animals, adapt height, ...)
-            switch (_textures[level])
+            switch (textures[level])
             {
                 case TT_WATER:
                     map.z[index]        = GetMaxTerrainHeight(TT_WATER);
@@ -207,17 +207,17 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                                                                     height));
             }
 
-            for (std::vector<AreaDesc>::iterator it = _areas.begin(); it != _areas.end(); ++it)
+            for (std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
             {
                 if (it->IsInArea(Point<int>(x,y), distanceToPlayer, width, height))
                 {
                     if (RandomConfig::Rand(0, 100) < (*it).likelyhoodTree)
                     {
-                        _helper.SetTree(map, Vec2(x,y));
+                        helper.SetTree(map, Vec2(x,y));
                     }
                     else if (RandomConfig::Rand(0, 100) < (*it).likelyhoodStone)
                     {
-                        _helper.SetStone(map, Vec2(x,y));
+                        helper.SetStone(map, Vec2(x,y));
                     }
                 }
             }
@@ -261,7 +261,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                 }
                 
                 const int waterTiles = (closestHarbor >= MIN_HARBOR_DISTANCE &&
-                        waterNeighbor) ? _helper.GetBodySize(map,
+                        waterNeighbor) ? helper.GetBodySize(map,
                                                              water.x,
                                                              water.y,
                                                              MIN_HARBOR_WATER) : 0;
@@ -269,7 +269,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                 // setup harbor position
                 if (waterTiles >= MIN_HARBOR_WATER)
                 {
-                    _helper.SetHarbour(map, Vec2(x, y), GetMaxTerrainHeight(TT_WATER));
+                    helper.SetHarbour(map, Vec2(x, y), GetMaxTerrainHeight(TT_WATER));
                     harbors.push_back(Vec2(x,y));
                 }
             }
@@ -292,7 +292,7 @@ Map* RandomMapGenerator::Create(const MapSettings& settings)
     FillRemainingTerrain(settings, *map);
     
     // post-processing
-    _helper.Smooth(*map);
+    helper.Smooth(*map);
     
     return map;
 }

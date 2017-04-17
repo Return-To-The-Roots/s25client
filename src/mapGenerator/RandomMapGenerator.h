@@ -57,17 +57,17 @@ class RandomMapGenerator
     /**
      * Descriptions of different areas used to generate the random map.
      */
-    std::vector<AreaDesc> _areas;
+    std::vector<AreaDesc> areas;
     
     /**
      * Textures used for different elevations of the map.
      */
-    std::vector<TerrainType> _textures;
+    std::vector<TerrainType> textures;
     
     /**
      * Helper to generate random maps (tree placement, water, coastlines, ...).
      */
-    MapUtility _helper;
+    MapUtility helper;
     
     /**
      * Gets the highest possible elevation (height value) for the specified terrain.
