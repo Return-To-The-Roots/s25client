@@ -18,7 +18,7 @@
 #ifndef VertexUtility_h__
 #define VertexUtility_h__
 
-#include "mapGenerator/Vec2.h"
+#include "Point.h"
 #include <vector>
 
 class VertexUtility
@@ -32,7 +32,7 @@ class VertexUtility
      * @param height height of the map
      * @return the position of the vertex on the map
      */
-    static Vec2 GetPosition(const int index, const int width, const int height);
+    static Point<uint16_t> GetPosition(int index, int width, int height);
     
     /**
      * Computes the index of a vertex on the map. If the position is outside of the map's boundary, the
@@ -43,7 +43,7 @@ class VertexUtility
      * @param height map height (MUST be of the power of 2)
      * @return the index of the vertex
      */
-    static int GetIndexOf(const int x, const int y, const int width, const int height);
+    static int GetIndexOf(int x, int y, int width, int height);
 
     /**
      * Computes indices of neighboring vertices within the specified radius around the position.
@@ -54,11 +54,11 @@ class VertexUtility
      * @param radius radius for collecting neighbor vertices
      * @return vector of indices for neighbor vertices
      */
-    static std::vector<int> GetNeighbors(const int x,
-                                         const int y,
-                                         const int width,
-                                         const int height,
-                                         const int radius);
+    static std::vector<int> GetNeighbors(int x,
+                                         int y,
+                                         int width,
+                                         int height,
+                                         int radius);
 
     /**
      * Computes the distance between two vertices.
@@ -70,12 +70,12 @@ class VertexUtility
      * @param height map height
      * @return the distance between the two vertices
      */
-    static double Distance(const int x1,
-                           const int y1,
-                           const int x2,
-                           const int y2,
-                           const int width,
-                           const int height);
+    static double Distance(int x1,
+                           int y1,
+                           int x2,
+                           int y2,
+                           int width,
+                           int height);
 };
 
 #endif // VertexUtility_h__

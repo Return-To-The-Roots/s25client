@@ -18,21 +18,21 @@
 #include "mapGenerator/VertexUtility.h"
 #include <cmath>
 
-Vec2 VertexUtility::GetPosition(const int index, const int width, const int height)
+Point<uint16_t> VertexUtility::GetPosition(int index, int width, int height)
 {
-    return Vec2(index % width, index / width);
+    return Point<uint16_t>(index % width, index / width);
 }
 
-int VertexUtility::GetIndexOf(const int x, const int y, const int width, const int height)
+int VertexUtility::GetIndexOf(int x, int y, int width, int height)
 {
     return (x & (width - 1)) + (y & (height - 1)) * width;
 }
 
-std::vector<int> VertexUtility::GetNeighbors(const int x,
-                                             const int y,
-                                             const int width,
-                                             const int height,
-                                             const int radius)
+std::vector<int> VertexUtility::GetNeighbors(int x,
+                                             int y,
+                                             int width,
+                                             int height,
+                                             int radius)
 {
     std::vector<int> neighbors;
 
@@ -50,18 +50,20 @@ std::vector<int> VertexUtility::GetNeighbors(const int x,
     return neighbors;
 }
 
-double VertexUtility::Distance(const int x1,
-                               const int y1,
-                               const int x2,
-                               const int y2,
-                               const int width,
-                               const int height)
+double VertexUtility::Distance(int x1,
+                               int y1,
+                               int x2,
+                               int y2,
+                               int width,
+                               int height)
 {
-    int min_x = x1 < x2 ? x1 : x2, min_y = y1 < y2 ? y1 : y2;
-    int max_x = x1 > x2 ? x1 : x2, max_y = y1 > y2 ? y1 : y2;
+    int minX = std::min(x1, x2);
+    int minY = std::min(y1, y2);
+    int maxX = std::max(x1, x2);
+    int maxY = std::max(y1, y2);
     
-    int dx = (max_x - min_x);
-    int dy = (max_y - min_y);
+    int dx = (maxX - minX);
+    int dy = (maxY - minY);
     
     if (dx > width / 2)  dx = width - dx;
     if (dy > height / 2) dy = height - dy;

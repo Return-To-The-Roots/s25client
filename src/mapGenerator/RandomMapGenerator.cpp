@@ -73,7 +73,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     const int length = std::min(width / 2, height / 2);
     
     // compute center of the map
-    Vec2 center(width / 2, height / 2);
+    Point<uint16_t> center(width / 2, height / 2);
 
     // radius for player distribution
     const int rMin = (int)(settings.minPlayerRadius * length);;
@@ -84,7 +84,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     for (unsigned int i = 0; i < settings.players; i++)
     {
         // compute headquater position
-        Vec2 position = helper.ComputePointOnCircle(i,
+        Point<uint16_t> position = helper.ComputePointOnCircle(i,
                                                      settings.players,
                                                      center, (double)(rMin + rnd));
 
@@ -147,7 +147,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
                     {
                         const unsigned int z = (unsigned int)RandomConfig::Rand(minZ, maxZ + 1);
                         helper.SetHill(map,
-                                        Vec2(x, y),
+                                        Point<uint16_t>(x, y),
                                         z == GetMinTerrainHeight(TT_MOUNTAINMEADOW) ? z-1 : z);
                     }
                 }
@@ -213,11 +213,11 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                 {
                     if (RandomConfig::Rand(0, 100) < (*it).likelyhoodTree)
                     {
-                        helper.SetTree(map, Vec2(x,y));
+                        helper.SetTree(map, Point<uint16_t>(x,y));
                     }
                     else if (RandomConfig::Rand(0, 100) < (*it).likelyhoodStone)
                     {
-                        helper.SetStone(map, Vec2(x,y));
+                        helper.SetStone(map, Point<uint16_t>(x,y));
                     }
                 }
             }
@@ -227,7 +227,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
     ///////
     /// Harbour placement
     ///////
-    std::vector<Vec2> harbors;
+    std::vector<Point<uint16_t> > harbors;
     
     for (int x = 0; x < width; x++)
     {
@@ -236,7 +236,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             const int index = VertexUtility::GetIndexOf(x, y, width, height);
             
             // under certain circumstances replace dessert texture by harbor position
-            Vec2 water(0,0);
+            Point<uint16_t> water(0,0);
             if (ObjectGenerator::IsTexture(map, index, TT_DESERT))
             {
                 // ensure there's water close to the dessert texture
@@ -247,14 +247,14 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                     if (ObjectGenerator::IsTexture(map, *it, TT_WATER))
                     {
                         waterNeighbor = true;
-                        water = Vec2(*it % width, *it / width);
+                        water = Point<uint16_t>(*it % width, *it / width);
                         break;
                     }
                 }
                 
                 // ensure there's no other harbor nearby
                 double closestHarbor = MIN_HARBOR_DISTANCE + 1.0;
-                for (std::vector<Vec2>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+                for (std::vector<Point<uint16_t> >::iterator it = harbors.begin(); it != harbors.end(); ++it)
                 {
                     closestHarbor = std::min(closestHarbor,
                                              VertexUtility::Distance(x, y, it->x, it->y, width, height));
@@ -269,8 +269,8 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
                 // setup harbor position
                 if (waterTiles >= MIN_HARBOR_WATER)
                 {
-                    helper.SetHarbour(map, Vec2(x, y), GetMaxTerrainHeight(TT_WATER));
-                    harbors.push_back(Vec2(x,y));
+                    helper.SetHarbour(map, Point<uint16_t>(x, y), GetMaxTerrainHeight(TT_WATER));
+                    harbors.push_back(Point<uint16_t>(x,y));
                 }
             }
         }

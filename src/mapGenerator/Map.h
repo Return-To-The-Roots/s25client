@@ -18,8 +18,8 @@
 #ifndef Map_h__
 #define Map_h__
 
-#include "mapGenerator/Vec2.h"
 #include "libsiedler2/src/archives.h"
+#include "Point.h"
 #include <vector>
 #include <string>
 
@@ -80,7 +80,7 @@ struct Map
     /**
      * Positions of the players' headquarters.
      */
-    Vec2 positions[7];
+    Point<uint16_t> positions[7];
     
     /**
      * Height for each vertex of the map.

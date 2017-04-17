@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-void MapUtility::SetHill(Map& map, const Vec2& center, int z)
+void MapUtility::SetHill(Map& map, const Point<uint16_t>& center, int z)
 {
     std::vector<int> neighbors = VertexUtility::GetNeighbors(center.x, center.y, map.width, map.height, z);
     for (std::vector<int>::iterator it = neighbors.begin(); it != neighbors.end(); ++it)
@@ -54,18 +54,18 @@ unsigned int MapUtility::GetBodySize(Map& map,
     // figure out terrain type of the initial position
     TerrainType type = TerrainData::MapIdx2Terrain(map.textureRsu[index]);
     
-    std::queue<Vec2> searchSpace;
+    std::queue<Point<uint16_t> > searchSpace;
     std::list<int> body;
     
     // put intial position to the search space
-    searchSpace.push(Vec2(x, y));
+    searchSpace.push(Point<uint16_t>(x, y));
     
     // stop search if no further neighbors are available or
     // the maximum the body size is reached
     while (!searchSpace.empty() && body.size() < max)
     {
         // get and remove the last element from the queue
-        Vec2 pos = searchSpace.front();
+        Point<uint16_t> pos = searchSpace.front();
         searchSpace.pop();
         
         // compute the index of the current element
@@ -80,10 +80,10 @@ unsigned int MapUtility::GetBodySize(Map& map,
             body.push_back(index);
             
             // push neighbor elements to the search space
-            searchSpace.push(Vec2(pos.x+1, pos.y));
-            searchSpace.push(Vec2(pos.x, pos.y+1));
-            searchSpace.push(Vec2(pos.x-1, pos.y));
-            searchSpace.push(Vec2(pos.x, pos.y-1));
+            searchSpace.push(Point<uint16_t>(pos.x+1, pos.y));
+            searchSpace.push(Point<uint16_t>(pos.x, pos.y+1));
+            searchSpace.push(Point<uint16_t>(pos.x-1, pos.y));
+            searchSpace.push(Point<uint16_t>(pos.x, pos.y-1));
         }
     }
     
@@ -170,7 +170,7 @@ void MapUtility::Smooth(Map& map)
     }
 }
 
-void MapUtility::SetHarbour(Map& map, const Vec2& center, int waterLevel)
+void MapUtility::SetHarbour(Map& map, const Point<uint16_t>& center, int waterLevel)
 {
     for (int x = center.x - 3; x <= center.x + 3; x++)
     {
@@ -199,7 +199,7 @@ void MapUtility::SetHarbour(Map& map, const Vec2& center, int waterLevel)
     }
 }
 
-void MapUtility::SetTree(Map& map, const Vec2& position)
+void MapUtility::SetTree(Map& map, const Point<uint16_t>& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map.width, map.height);
     
@@ -218,7 +218,7 @@ void MapUtility::SetTree(Map& map, const Vec2& position)
     }
 }
 
-void MapUtility::SetStones(Map& map, const Vec2& center, double radius)
+void MapUtility::SetStones(Map& map, const Point<uint16_t>& center, double radius)
 {
     const int width = map.width;
     const int height = map.height;
@@ -230,13 +230,13 @@ void MapUtility::SetStones(Map& map, const Vec2& center, double radius)
         {
             if (VertexUtility::Distance(cx, cy, x, y, width, height) < radius)
             {
-                SetStone(map, Vec2(x, y));
+                SetStone(map, Point<uint16_t>(x, y));
             }
         }
     }
 }
 
-void MapUtility::SetStone(Map& map, const Vec2& position)
+void MapUtility::SetStone(Map& map, const Point<uint16_t>& position)
 {
     const int index = VertexUtility::GetIndexOf(position.x, position.y, map.width, map.height);
     
@@ -247,12 +247,12 @@ void MapUtility::SetStone(Map& map, const Vec2& position)
     }
 }
 
-Vec2 MapUtility::ComputePointOnCircle(int index,
-                                      int points,
-                                      const Vec2& center,
-                                      double radius)
+Point<uint16_t> MapUtility::ComputePointOnCircle(int index,
+                                                 int points,
+                                                 const Point<uint16_t>& center,
+                                                 double radius)
 {
-    Vec2 point;
+    Point<uint16_t> point;
     
     // compute angle according to index
     double angle = index * 2.0 * M_PI / points;
