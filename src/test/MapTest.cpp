@@ -40,24 +40,26 @@ BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
  */
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
 {
-    Map map(64, 64, "name", "author");
+    const uint16_t width = 64;
+    const uint16_t height = 64;
+    Map map(width, height, "name", "author");
 
-    BOOST_REQUIRE_EQUAL(map.width,             64u);
-    BOOST_REQUIRE_EQUAL(map.height,            64u);
-    BOOST_REQUIRE_EQUAL(map.z.size(),          4096u);
-    BOOST_REQUIRE_EQUAL(map.textureRsu.size(), 4096u);
-    BOOST_REQUIRE_EQUAL(map.textureLsd.size(), 4096u);
-    BOOST_REQUIRE_EQUAL(map.build.size(),      4096u);
-    BOOST_REQUIRE_EQUAL(map.shading.size(),    4096u);
-    BOOST_REQUIRE_EQUAL(map.resource.size(),   4096u);
-    BOOST_REQUIRE_EQUAL(map.road.size(),       4096u);
-    BOOST_REQUIRE_EQUAL(map.objectType.size(), 4096u);
-    BOOST_REQUIRE_EQUAL(map.objectInfo.size(), 4096u);
-    BOOST_REQUIRE_EQUAL(map.animal.size(),     4096u);
-    BOOST_REQUIRE_EQUAL(map.unknown1.size(),   4096u);
-    BOOST_REQUIRE_EQUAL(map.unknown2.size(),   4096u);
-    BOOST_REQUIRE_EQUAL(map.unknown3.size(),   4096u);
-    BOOST_REQUIRE_EQUAL(map.unknown5.size(),   4096u);
+    BOOST_REQUIRE_EQUAL(map.width,             width);
+    BOOST_REQUIRE_EQUAL(map.height,            height);
+    BOOST_REQUIRE_EQUAL(map.z.size(),          width * height);
+    BOOST_REQUIRE_EQUAL(map.textureRsu.size(), width * height);
+    BOOST_REQUIRE_EQUAL(map.textureLsd.size(), width * height);
+    BOOST_REQUIRE_EQUAL(map.build.size(),      width * height);
+    BOOST_REQUIRE_EQUAL(map.shading.size(),    width * height);
+    BOOST_REQUIRE_EQUAL(map.resource.size(),   width * height);
+    BOOST_REQUIRE_EQUAL(map.road.size(),       width * height);
+    BOOST_REQUIRE_EQUAL(map.objectType.size(), width * height);
+    BOOST_REQUIRE_EQUAL(map.objectInfo.size(), width * height);
+    BOOST_REQUIRE_EQUAL(map.animal.size(),     width * height);
+    BOOST_REQUIRE_EQUAL(map.unknown1.size(),   width * height);
+    BOOST_REQUIRE_EQUAL(map.unknown2.size(),   width * height);
+    BOOST_REQUIRE_EQUAL(map.unknown3.size(),   width * height);
+    BOOST_REQUIRE_EQUAL(map.unknown5.size(),   width * height);
 }
 
 /**
