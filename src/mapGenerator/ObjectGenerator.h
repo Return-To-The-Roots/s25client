@@ -63,7 +63,7 @@ class ObjectGenerator
      * @param terrain terrain to compare the input texture to
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
-    static bool IsTexture(Map& map, int index, TerrainType terrain);
+    static bool IsTexture(const Map& map, int index, TerrainType terrain);
     
     /**
      * Checks whether or not it is allowed to build a harbor on the specified terrain.
@@ -92,7 +92,7 @@ class ObjectGenerator
      * @param map map of the vertex to check
      * @param index vertex index to check
      */
-    static bool IsEmpty(Map& map, int index);
+    static bool IsEmpty(const Map& map, int index);
 
     /**
      * Creates a new duck.
@@ -141,7 +141,7 @@ class ObjectGenerator
      * @param index index of the vertex to check
      * @return true if the specified object is a tree, false otherwise
      */
-    static bool IsTree(Map& map, int index);
+    static bool IsTree(const Map& map, int index);
 
     /**
      * Creates a new, random tree (excluding palm trees).

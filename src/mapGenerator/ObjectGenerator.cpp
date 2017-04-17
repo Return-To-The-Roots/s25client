@@ -45,7 +45,7 @@ void ObjectGenerator::CreateTexture(Map& map, int index, TerrainType terrain, bo
     map.textureLsd[index] = textureId;
 }
     
-bool ObjectGenerator::IsTexture(Map& map, int index, TerrainType terrain)
+bool ObjectGenerator::IsTexture(const Map& map, int index, TerrainType terrain)
 {
     return map.textureRsu[index] == TerrainData::GetTextureIdentifier(terrain)
         || map.textureLsd[index] == TerrainData::GetTextureIdentifier(terrain);
@@ -63,7 +63,7 @@ void ObjectGenerator::CreateHeadquarter(Map& map, int index, unsigned int i)
     map.objectInfo[index] = libsiedler2::OI_HeadquarterMask;
 }
 
-bool ObjectGenerator::IsEmpty(Map& map, int index)
+bool ObjectGenerator::IsEmpty(const Map& map, int index)
 {
     return (map.objectType[index] == libsiedler2::OT_Empty &&
             map.objectInfo[index] == libsiedler2::OI_Empty);
@@ -147,7 +147,7 @@ uint8_t ObjectGenerator::CreateRandomResource(unsigned int ratioGold,
 }
 
 
-bool ObjectGenerator::IsTree(Map& map, int index)
+bool ObjectGenerator::IsTree(const Map& map, int index)
 {
     return map.objectInfo[index] == libsiedler2::OI_TreeOrPalm ||
            map.objectInfo[index] == libsiedler2::OI_Palm;
