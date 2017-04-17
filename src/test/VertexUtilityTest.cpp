@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_SUITE(VertexUtilityTest)
  */
 BOOST_FIXTURE_TEST_CASE(GetPosition_IndexOutOfBounds, VertexUtility)
 {
-    Vec2 v = VertexUtility::GetPosition(10, 2, 2);
+    Point<int> v = VertexUtility::GetPosition(10, 2, 2);
         
     BOOST_REQUIRE_EQUAL(v.x, 0);
     BOOST_REQUIRE_EQUAL(v.y, 5);
@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_IndexOutOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetPosition_CornerIndex, VertexUtility)
 {
-    Vec2 v = VertexUtility::GetPosition(8, 3, 3);
+    Point<int> v = VertexUtility::GetPosition(8, 3, 3);
         
     BOOST_REQUIRE_EQUAL(v.x, 2);
     BOOST_REQUIRE_EQUAL(v.y, 2);
@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_ZeroIndex, VertexUtility)
     {
         for (int height = 1; height < 100; height++)
         {
-            Vec2 v = VertexUtility::GetPosition(0, width, height);
+            Point<int> v = VertexUtility::GetPosition(0, width, height);
             BOOST_REQUIRE_EQUAL(v.x, 0);
             BOOST_REQUIRE_EQUAL(v.y, 0);
         }
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePositionX, VertexUtility)
 {
     const int width = 4;
     const int height = 5;
-    const int index = VertexUtility::GetIndexOf(-2 * width, 0, width, height);
+    const int index = VertexUtility::GetIndexOf(Point<int>(-2 * width, 0), width, height);
     
     BOOST_REQUIRE(index >= 0 && index < width * height);
 }
@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePositionY, VertexUtility)
 {
     const int width = 4;
     const int height = 5;
-    const int index = VertexUtility::GetIndexOf(0, -2 * height, width, height);
+    const int index = VertexUtility::GetIndexOf(Point<int>(0, -2 * height), width, height);
     
     BOOST_REQUIRE(index >= 0 && index < width * height);
 }
@@ -99,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
 {
     const int width = 4;
     const int height = 5;
-    const int index = VertexUtility::GetIndexOf(2 * width, 2 * height, width, height);
+    const int index = VertexUtility::GetIndexOf(Point<int>(2 * width, 2 * height), width, height);
     
     BOOST_REQUIRE(index >= 0 && index < width * height);
 }
@@ -117,7 +117,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
     {
         for (int y = 0; y < height; y++)
         {
-            BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(x, y, width, height),
+            BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(Point<int>(x, y), width, height),
                                 y * width + x);
         }
     }
@@ -130,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
 {
-    std::vector<int> neighbors = VertexUtility::GetNeighbors(0, 0, 10, 10, 1);
+    std::vector<int> neighbors = VertexUtility::GetNeighbors(Point<int>(0, 0), 10, 10, 1);
     const unsigned int expectedSize = 5;
     
     BOOST_REQUIRE_EQUAL(neighbors.size(), expectedSize);
@@ -141,7 +141,7 @@ BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Distance_BoundaryNeighbors, VertexUtility)
 {
-    const double distance = VertexUtility::Distance(0, 0, 0, 9, 10, 10);
+    const double distance = VertexUtility::Distance(Point<int>(0, 0), Point<int>(0, 9), 10, 10);
     
     BOOST_REQUIRE_LT(distance, 2.0);
 }
