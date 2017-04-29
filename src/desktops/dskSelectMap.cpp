@@ -97,7 +97,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // "Weiter"
     AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
     // random map generation
-    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Create Random"), NormalFont);
+    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Random Map"), NormalFont);
     // random map settings
     AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("..."), NormalFont);
 
