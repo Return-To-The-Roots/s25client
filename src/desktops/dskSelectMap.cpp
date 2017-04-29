@@ -43,7 +43,6 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwMapGenerator.h"
 
-#include "helpers/Deleter.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
@@ -51,7 +50,6 @@
 #include "libutil/src/ucString.h"
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 /** @class dskSelectMap
  *
@@ -247,15 +245,13 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 
 void dskSelectMap::CreateRandomMap()
 {
-    // create new map generator
-    boost::interprocess::unique_ptr<MapGenerator, Deleter<MapGenerator> > generator(new MapGenerator());
-    
     // setup filepath for the random map
     std::string mapPath = GetFilePath(FILE_PATHS[48]);
     mapPath.append("Random.swd");
 
     // create a random map and save filepath
-    generator->Create(mapPath, rndMapSettings);
+    MapGenerator generator;
+    generator.Create(mapPath, rndMapSettings);
     
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
