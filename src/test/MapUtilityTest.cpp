@@ -286,8 +286,8 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
     int countHarbors = 0;
     for (int i = 0; i < width * height; i++)
     {
-        if ((map.textureLsd[i] & HARBOR_MASK) &&
-            (map.textureRsu[i] & HARBOR_MASK))
+        if ((map.textureLsd[i] & libsiedler2::HARBOR_MASK) &&
+            (map.textureRsu[i] & libsiedler2::HARBOR_MASK))
         {
             countHarbors++;
         }
@@ -308,7 +308,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
     Map map(width, height, "map", "author");
     
     Point<int> p(width/2, height/2);
-    MapUtility::SetTree(&map, p);
+    MapUtility::SetTree(map, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
@@ -351,8 +351,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
     
     Map map(width, height, "map", "author");
     
-    map.objectType[index] = OT_Stone_Begin;
-    map.objectInfo[index] = OI_Stone1;
+    map.objectType[index] = libsiedler2::OT_Stone_Begin;
+    map.objectInfo[index] = libsiedler2::OI_Stone1;
     
     MapUtility::SetTree(map, p);
     
@@ -391,8 +391,8 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
     
     Map map(width, height, "map", "author");
     
-    map.objectType[index] = OT_Tree1_Begin;
-    map.objectInfo[index] = OI_TreeOrPalm;
+    map.objectType[index] = libsiedler2::OT_Tree1_Begin;
+    map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
     
     MapUtility::SetStone(map, p);
     
