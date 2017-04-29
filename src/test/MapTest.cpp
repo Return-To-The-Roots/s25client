@@ -102,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(CreateArchiv_NotNull, Map)
     std::string author("author");
     Map map(64, 64, "name", author);
     
-    ArchivInfo* archiv = map.CreateArchiv();
+    libsiedler2::ArchivInfo* archiv = map.CreateArchiv();
     
     BOOST_REQUIRE(archiv != NULL);
 
