@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "libsiedler2/src/enumTypes.h"
 
@@ -71,22 +72,24 @@ bool ObjectGenerator::IsEmpty(const Map& map, int index)
     
 uint8_t ObjectGenerator::CreateDuck(int likelyhood)
 {
-    return Rand(100) < likelyhood ? libsiedler2::A_Duck : libsiedler2::A_None;
+    return RandomConfig::Rand(100) < likelyhood
+        ? libsiedler2::A_Duck : libsiedler2::A_None;
 }
     
 uint8_t ObjectGenerator::CreateSheep(int likelyhood)
 {
-    return (Rand(100) < likelyhood) ? libsiedler2::A_Sheep : libsiedler2::A_None;
+    return RandomConfig::Rand(100) < likelyhood
+        ? libsiedler2::A_Sheep : libsiedler2::A_None;
 }
     
 uint8_t ObjectGenerator::CreateRandomForestAnimal(int likelyhood)
 {
-    if (Rand(100) >= likelyhood)
+    if (RandomConfig::Rand(100) >= likelyhood)
     {
         return libsiedler2::A_None;
     }
     
-    switch (Rand(5))
+    switch (RandomConfig::Rand(5))
     {
         case 0:
             return libsiedler2::A_Rabbit;
@@ -103,12 +106,12 @@ uint8_t ObjectGenerator::CreateRandomForestAnimal(int likelyhood)
 
 uint8_t ObjectGenerator::CreateRandomAnimal(int likelyhood)
 {
-    if (Rand(100) >= likelyhood)
+    if (RandomConfig::Rand(100) >= likelyhood)
     {
         return libsiedler2::A_None;
     }
 
-    switch (Rand(7))
+    switch (RandomConfig::Rand(7))
     {
         case 0:
             return libsiedler2::A_Rabbit;
@@ -132,18 +135,19 @@ uint8_t ObjectGenerator::CreateRandomResource(unsigned int ratioGold,
                                               unsigned int ratioCoal,
                                               unsigned int ratioGranite)
 {
-    const unsigned int rnd = (unsigned)Rand(ratioGold +
-                                            ratioIron +
-                                            ratioCoal +
-                                            ratioGranite);
+    unsigned int rnd = (unsigned)RandomConfig::Rand(ratioGold +
+                                                    ratioIron +
+                                                    ratioCoal +
+                                                    ratioGranite);
+
     if (rnd <= ratioGold)
-        return libsiedler2::R_Gold + Rand(8);
+        return libsiedler2::R_Gold + RandomConfig::Rand(8);
     else if (rnd <= ratioGold + ratioIron)
-        return libsiedler2::R_Iron + Rand(8);
+        return libsiedler2::R_Iron + RandomConfig::Rand(8);
     else if (rnd <= ratioGold + ratioIron + ratioCoal)
-        return libsiedler2::R_Coal + Rand(8);
+        return libsiedler2::R_Coal + RandomConfig::Rand(8);
     else
-        return libsiedler2::R_Granite + Rand(8);
+        return libsiedler2::R_Granite + RandomConfig::Rand(8);
 }
 
 
@@ -155,21 +159,21 @@ bool ObjectGenerator::IsTree(const Map& map, int index)
     
 void ObjectGenerator::CreateRandomTree(Map& map, int index)
 {
-    switch (Rand(3))
+    switch (RandomConfig::Rand(3))
     {
         case 0:
             map.objectType[index] = libsiedler2::OT_Tree1_Begin
-                                        + Rand(libsiedler2::OT_Tree1_End
+                                        + RandomConfig::Rand(libsiedler2::OT_Tree1_End
                                             - libsiedler2::OT_Tree1_Begin + 1);
             break;
         case 1:
             map.objectType[index] = libsiedler2::OT_Tree2_Begin
-                                        + Rand(libsiedler2::OT_Tree2_End
+                                        + RandomConfig::Rand(libsiedler2::OT_Tree2_End
                                             - libsiedler2::OT_Tree2_Begin + 1);
             break;
         case 2:
             map.objectType[index] = libsiedler2::OT_TreeOrPalm_Begin
-                                        + Rand(libsiedler2::OT_TreeOrPalm_End
+                                        + RandomConfig::Rand(libsiedler2::OT_TreeOrPalm_End
                                             - libsiedler2::OT_TreeOrPalm_Begin + 1);
             break;
     }
@@ -178,17 +182,17 @@ void ObjectGenerator::CreateRandomTree(Map& map, int index)
     
 void ObjectGenerator::CreateRandomPalm(Map& map, int index)
 {
-    if (Rand(2) == 0)
+    if (RandomConfig::Rand(2) == 0)
     {
         map.objectType[index] = libsiedler2::OT_TreeOrPalm_Begin
-                                    + Rand(libsiedler2::OT_TreeOrPalm_End
+                                    + RandomConfig::Rand(libsiedler2::OT_TreeOrPalm_End
                                         - libsiedler2::OT_TreeOrPalm_Begin + 1);
         map.objectInfo[index] = libsiedler2::OI_Palm;
     }
     else
     {
         map.objectType[index] = libsiedler2::OT_Palm_Begin
-                                    + Rand(libsiedler2::OT_Palm_End
+                                    + RandomConfig::Rand(0, libsiedler2::OT_Palm_End
                                         - libsiedler2::OT_Palm_Begin + 1);
         map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
     }
@@ -196,7 +200,7 @@ void ObjectGenerator::CreateRandomPalm(Map& map, int index)
     
 void ObjectGenerator::CreateRandomMixedTree(Map& map, int index)
 {
-    if (Rand(2) == 0)
+    if (RandomConfig::Rand(2) == 0)
     {
         CreateRandomTree(map, index);
     }
@@ -209,8 +213,8 @@ void ObjectGenerator::CreateRandomMixedTree(Map& map, int index)
 void ObjectGenerator::CreateRandomStone(Map& map, int index)
 {
     map.objectType[index] = libsiedler2::OT_Stone_Begin
-                                + Rand(libsiedler2::OT_Stone_End
+                                + RandomConfig::Rand(libsiedler2::OT_Stone_End
                                     - libsiedler2::OT_Stone_Begin + 1);
-    map.objectInfo[index] = Rand(2) == 0 ? libsiedler2::OI_Stone1 : libsiedler2::OI_Stone2;
+    map.objectInfo[index] = RandomConfig::Rand(2) == 0 ? libsiedler2::OI_Stone1 : libsiedler2::OI_Stone2;
 }
 

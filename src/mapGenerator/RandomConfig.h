@@ -93,15 +93,28 @@ struct RandomConfig
     static RandomConfig CreateRandom();
     
     /**
-     * Generates a random number between min and max.
+     * Generates a random number between 0 and max-1.
+     * @param max maximum value
+     * @return a new random number
+     */
+    static int Rand(const int max)
+    {
+        return Rand(0, max);
+    }
+    
+    /**
+     * Generates a random number between min and max-1.
      * @param min minimum value
      * @param max maximum value
      * @return a new random number
      */
     static int Rand(const int min, const int max)
     {
+        // NOTE: the portable RANDOM class generates the same sequence of values after
+        // a while when creating large number of new values. Therefore, the platform
+        // dependent rand() function is used here.
+        
         return min + rand() % (max - min);
-        //return min + RANDOM.Rand(__FILE__, __LINE__, 0, max - min);
     }
     
     /**

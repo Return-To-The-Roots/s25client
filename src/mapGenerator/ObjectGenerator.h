@@ -31,19 +31,6 @@
  */
 class ObjectGenerator
 {
-    private:
-    
-    /**
-     * Generates a random number.
-     * @param max maximum value
-     * @return a new random number
-     */
-    static int Rand(const int max)
-    {
-        return rand() % max;
-        //return RANDOM.Rand(__FILE__, __LINE__, 0, max);
-    }
-    
     public:
     
     /**
