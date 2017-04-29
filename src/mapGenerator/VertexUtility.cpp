@@ -17,6 +17,7 @@
 
 #include "mapGenerator/VertexUtility.h"
 #include <cmath>
+#include <algorithm>
 
 Point<uint16_t> VertexUtility::GetPosition(int index, int width, int height)
 {
