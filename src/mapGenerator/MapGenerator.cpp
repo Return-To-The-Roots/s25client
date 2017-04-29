@@ -20,55 +20,45 @@
 #include "mapGenerator/RandomMapGenerator.h"
 
 #include "libsiedler2/src/libsiedler2.h"
-#include "helpers/Deleter.h"
 
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <stdexcept>
-
-typedef boost::interprocess::unique_ptr<RandomMapGenerator, Deleter<RandomMapGenerator> > GeneratorPtr;
 
 void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
 {
-    GeneratorPtr generator;
-    
+    RandomMapGenerator generator;
+    Map* randomMap = NULL;
 
     // create a random map generator based on the map style
     switch (settings.style)
     {
         case MS_Greenland:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateGreenland()));
+            randomMap = generator.Create(settings, RandomConfig::CreateGreenland());
             break;
         case MS_Riverland:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateRiverland()));
+            randomMap = generator.Create(settings, RandomConfig::CreateRiverland());
             break;
         case MS_Islands:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateIslands()));
+            randomMap = generator.Create(settings, RandomConfig::CreateIslands());
             break;
         case MS_Continent:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateContinent()));
+            randomMap = generator.Create(settings, RandomConfig::CreateContinent());
             break;
         case MS_Migration:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateMigration()));
+            randomMap = generator.Create(settings, RandomConfig::CreateMigration());
             break;
         case MS_Ringland:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateRingland()));
+            randomMap = generator.Create(settings, RandomConfig::CreateRingland());
             break;
         case MS_Random:
-            generator = GeneratorPtr(new RandomMapGenerator(RandomConfig::CreateRandom()));
+            randomMap = generator.Create(settings, RandomConfig::CreateRandom());
             break;
     }
     
-    if (generator.get() == NULL)
-    {
-        throw new std::invalid_argument("Style not supported");
-    }
-
     // generate the random map
-    Map* map = generator->Create(settings);
-    libsiedler2::ArchivInfo* archiv = map->CreateArchiv();
+    libsiedler2::ArchivInfo* archiv = randomMap->CreateArchiv();
     libsiedler2::Write(filePath, *archiv);
     
     // cleanup map and archiv
-    delete map;
+    delete randomMap;
     delete archiv;
 }

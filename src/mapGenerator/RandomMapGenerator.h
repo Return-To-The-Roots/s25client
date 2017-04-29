@@ -39,31 +39,16 @@ class RandomMapGenerator
      * Creates a new RandomMapGenerator with random properties.
      */
     RandomMapGenerator();
-    
-    /**
-     * Creates a new RandomMapGenerator with the specified configuration.
-     * @param config configuration for the random map generator
-     */
-    RandomMapGenerator(const RandomConfig& config);
 
     /**
      * Generates a new random map with the specified settings.
      * @param settings settings used for the map generation
+     * @param config configuration for the random map generator
      */
-    Map* Create(const MapSettings& settings);
+    Map* Create(const MapSettings& settings, const RandomConfig& config);
     
     private:
-    
-    /**
-     * Descriptions of different areas used to generate the random map.
-     */
-    std::vector<AreaDesc> areas;
-    
-    /**
-     * Textures used for different elevations of the map.
-     */
-    std::vector<TerrainType> textures;
-    
+
     /**
      * Helper to generate random maps (tree placement, water, coastlines, ...).
      */
@@ -72,16 +57,18 @@ class RandomMapGenerator
     /**
      * Gets the highest possible elevation (height value) for the specified terrain.
      * @param terrain terrain type to evaluate the maximum height for
+     * @param textures set of textures used for different height values
      * @return the maximum height value for the terrain
      */
-    unsigned int GetMaxTerrainHeight(const TerrainType terrain);
+    unsigned int GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
     
     /**
      * Gets the minimum height to be considered as specified terrain.
      * @param terrain terrain type to evaluate the minimum height for
+     * @param textures set of textures used for different height values
      * @return the minimum height value for the terrain
      */
-    unsigned int GetMinTerrainHeight(const TerrainType terrain);
+    unsigned int GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
     
     /**
      * Create player positions (headquarters) for the specified map.
@@ -100,16 +87,18 @@ class RandomMapGenerator
     /**
      * Create a elevation (hills) for the specified map.
      * @param settings settings used for map generation
+     * @param config configuration for the random map generator
      * @param map map to modify
      */
-    void CreateHills(const MapSettings& settings, Map& map);
+    void CreateHills(const MapSettings& settings, const RandomConfig& config, Map& map);
     
     /**
      * Fill the remaining terrain (apart from the player positions) according to the generated hills.
      * @param settings settings used for map generation
+     * @param config configuration for the random map generator
      * @param map map to modify
      */
-    void FillRemainingTerrain(const MapSettings& settings, Map& map);
+    void FillRemainingTerrain(const MapSettings& settings, const RandomConfig& config, Map& map);
  };
 
 #endif // RandomMapGenerator_h__

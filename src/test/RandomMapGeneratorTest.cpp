@@ -28,6 +28,7 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
  */
 BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
 {
+    RandomConfig config = RandomConfig::CreateRandom();
     MapSettings settings;
     settings.width = 32;
     settings.height = 32;
@@ -37,7 +38,7 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
     settings.maxPlayerRadius = 0.3;
 
     RandomMapGenerator generator;
-    Map* map = generator.Create(settings);
+    Map* map = generator.Create(settings, config);
 
     BOOST_REQUIRE_EQUAL(map->width, settings.width);
     BOOST_REQUIRE_EQUAL(map->height, settings.height);
@@ -51,6 +52,7 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 {
+    RandomConfig config = RandomConfig::CreateRandom();
     MapSettings settings;
     settings.width = 32;
     settings.height = 32;
@@ -61,7 +63,7 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 
     RandomMapGenerator generator;
 
-    Map* map = generator.Create(settings);
+    Map* map = generator.Create(settings, config);
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
 
     for (unsigned int i = 0; i < settings.players; i++)
