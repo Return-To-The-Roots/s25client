@@ -66,12 +66,12 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 
     for (unsigned int i = 0; i < settings.players; i++)
     {
-        const Vec2 p = map->positions[i];
+        Point<uint16_t> p = map->positions[i];
         BOOST_REQUIRE_NE(p.x, 0xFF);
         BOOST_REQUIRE_NE(p.y, 0xFF);
         
         BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.width + p.x], i);
-        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], OI_HeadquarterMask);
+        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], libsiedler2::OI_HeadquarterMask);
     }
 
     for (unsigned int i = settings.players; i < 7; i++)
