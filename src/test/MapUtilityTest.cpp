@@ -310,8 +310,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
     Point<int> p(width/2, height/2);
     MapUtility::SetTree(&map, p);
 
-    BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], OT_Empty);
-    BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], OI_Empty);
+    BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
+    BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
 }
 
 /**
@@ -334,8 +334,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
     Point<int> p(width/2, height/2);
     MapUtility::SetTree(map, p);
     
-    BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], OT_Empty);
-    BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], OI_Empty);
+    BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
+    BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
 }
 
 /**
@@ -356,8 +356,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
     
     MapUtility::SetTree(map, p);
     
-    BOOST_REQUIRE_EQUAL(map.objectType[index], OT_Stone_Begin);
-    BOOST_REQUIRE_EQUAL(map.objectInfo[index], OI_Stone1);
+    BOOST_REQUIRE_EQUAL(map.objectType[index], libsiedler2::OT_Stone_Begin);
+    BOOST_REQUIRE_EQUAL(map.objectInfo[index], libsiedler2::OI_Stone1);
 }
 
 /**
@@ -374,8 +374,8 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
     Point<int> p(width/2, height/2);
     MapUtility::SetStone(map, p);
     
-    BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], OT_Empty);
-    BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], OI_Empty);
+    BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
+    BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
 }
 
 /**
@@ -396,8 +396,8 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
     
     MapUtility::SetStone(map, p);
     
-    BOOST_REQUIRE_EQUAL(map.objectType[index], OT_Tree1_Begin);
-    BOOST_REQUIRE_EQUAL(map.objectInfo[index], OI_TreeOrPalm);
+    BOOST_REQUIRE_EQUAL(map.objectType[index], libsiedler2::OT_Tree1_Begin);
+    BOOST_REQUIRE_EQUAL(map.objectInfo[index], libsiedler2::OI_TreeOrPalm);
 }
 
 /**
@@ -405,12 +405,12 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(ComputePointOnCircle_FixedValues, MapUtility)
 {
-    const Vec2 p1 = MapUtility::ComputePointOnCircle(0, 360, Point<int>(1,1), 1.0);
+    Point<int> p1 = MapUtility::ComputePointOnCircle(0, 360, Point<int>(1,1), 1.0);
 
     BOOST_REQUIRE_EQUAL(p1.x, 0x2);
     BOOST_REQUIRE_EQUAL(p1.y, 0x1);
 
-    const Vec2 p2 = MapUtility::ComputePointOnCircle(90, 360, Point<int>(1,1), 1.0);
+    Point<int> p2 = MapUtility::ComputePointOnCircle(90, 360, Point<int>(1,1), 1.0);
 
     BOOST_REQUIRE_EQUAL(p2.x, 0x1);
     BOOST_REQUIRE_EQUAL(p2.y, 0x2);
