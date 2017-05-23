@@ -38,7 +38,9 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
       wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
-    SetTitle(_("Trade with %s") + gwv.GetWorld().GetPlayer(wh.GetPlayer()).name);
+    SetTitle((
+		boost::format(_("Trade with %s")) % gwv.GetWorld().GetPlayer(wh.GetPlayer()).name
+			 ).str());
     // Gebäudebild und dessen Schatten
     AddImage( 0, 100, 144, LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType()));
 
