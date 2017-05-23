@@ -54,6 +54,7 @@ void LuaPlayer::Register(kaguya::State& state)
         .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
         .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
         .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
+        .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
         .addFunction("Surrender", &LuaPlayer::Surrender)
     );
 }
@@ -261,6 +262,11 @@ void LuaPlayer::ModifyHQ(bool isTent)
         if(hq)
             hq->SetIsTent(isTent);
     }
+}
+
+bool LuaPlayer::IsDefeated()
+{
+    return player.IsDefeated();
 }
 
 void LuaPlayer::Surrender(bool destroyBlds)
