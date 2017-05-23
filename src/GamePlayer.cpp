@@ -1469,7 +1469,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const b
         tools_ordered_delta[i] -= orderChanges[i];
 
         if(orderChanges[i] != 0){
-            LOG.write(">> Committing an order of %d for tool #%d(%s)\n") % (int)orderChanges[i] % i % _(WARE_NAMES[TOOLS[i]]);
+            LOG.write(">> Committing an order of %d for tool #%d(%s)\n", LogTarget::File) % (int)orderChanges[i] % i % _(WARE_NAMES[TOOLS[i]]);
             gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
         }
     }
