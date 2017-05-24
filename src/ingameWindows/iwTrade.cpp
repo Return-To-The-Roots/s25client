@@ -31,6 +31,7 @@
 #include "factories/GameCommandFactory.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
+#include <boost/format.hpp>
 #include <cstdio>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
