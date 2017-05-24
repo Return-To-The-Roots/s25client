@@ -436,9 +436,6 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("player:Surrender(false)");
     BOOST_REQUIRE(player0.IsDefeated());
     BOOST_CHECK(isLuaEqual("player:IsDefeated()", "true"));
-	// Player1 still alive!
-    BOOST_REQUIRE(!world.GetPlayer(1).IsDefeated());
-    BOOST_CHECK(isLuaEqual("rttr:GetPlayer(1):IsDefeated()", "false"));
 	// HQ should still be there
     BOOST_REQUIRE(player0.GetHQPos().isValid() && world.GetSpecObj<nobHQ>(hqPos));
 	// Destroy everything
