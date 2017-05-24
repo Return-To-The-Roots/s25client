@@ -1535,6 +1535,9 @@ void GameServer::SwapPlayer(const unsigned char player1, const unsigned char pla
     // Swap everything
     using std::swap;
     swap(players[player1], players[player2]);
+	// In savegames some things cannot be changed
+	if(mapinfo.type == MAPTYPE_SAVEGAME)
+		players[player1].FixSwappedSaveSlot(players[player2]);
 }
 
 JoinPlayerInfo& GameServer::GetJoinPlayer(unsigned playerIdx)

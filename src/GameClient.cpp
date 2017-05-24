@@ -588,6 +588,9 @@ inline void GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
         // During preparation just swap the players
         using std::swap;
         swap(gameLobby->GetPlayer(msg.player), gameLobby->GetPlayer(msg.player2));
+		// Some things cannot be changed in savegames
+		if(mapinfo.type == MAPTYPE_SAVEGAME)
+			gameLobby->GetPlayer(msg.player).FixSwappedSaveSlot(gameLobby->GetPlayer(msg.player2));
 
         // Evtl. sind wir betroffen?
         if(playerId_ == msg.player)

@@ -428,12 +428,17 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("player:ModifyHQ(true)");
 
     const GamePlayer& player0 = world.GetPlayer(0);
+    executeLua("player = rttr:GetPlayer(0)");
     MapPoint hqPos = player0.GetHQPos();
     BOOST_REQUIRE(hqPos.isValid() && world.GetSpecObj<nobHQ>(hqPos));
     BOOST_REQUIRE(!player0.IsDefeated());
-    executeLua("player = rttr:GetPlayer(0)\n player:Surrender(false)");
+    BOOST_CHECK(isLuaEqual("player:IsDefeated()", "false"));
+    executeLua("player:Surrender(false)");
     BOOST_REQUIRE(player0.IsDefeated());
+    BOOST_CHECK(isLuaEqual("player:IsDefeated()", "true"));
+	// HQ should still be there
     BOOST_REQUIRE(player0.GetHQPos().isValid() && world.GetSpecObj<nobHQ>(hqPos));
+	// Destroy everything
     executeLua("player:Surrender(true)");
     BOOST_REQUIRE(!player0.GetHQPos().isValid() && !world.GetSpecObj<nobHQ>(hqPos));
 }
