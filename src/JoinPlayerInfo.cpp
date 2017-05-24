@@ -55,6 +55,19 @@ void JoinPlayerInfo::Serialize(Serializer& ser) const
     ser.PushBool(isReady);
 }
 
+void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
+{
+	// TODO: This has a code smell.
+	// Probably some composition instead of inheritance required?
+
+	// Unswap fixed stuff
+	using std::swap;
+	swap(originName, other.originName);
+	swap(nation, other.nation);
+	swap(color, other.color);
+	swap(team, other.team);
+}
+
 void JoinPlayerInfo::InitRating()
 {
     if(ps == PS_OCCUPIED)

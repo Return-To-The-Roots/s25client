@@ -37,6 +37,8 @@ struct JoinPlayerInfo: public PlayerInfo
 
     void InitRating();
     void SetAIName(unsigned id);
+	// Recovers fixed data in savegames after player slots are swapped
+	void FixSwappedSaveSlot(JoinPlayerInfo& other);
 };
 
 #endif // JoinPlayerInfo_h__
