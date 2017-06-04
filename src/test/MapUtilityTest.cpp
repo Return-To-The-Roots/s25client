@@ -28,9 +28,9 @@ BOOST_AUTO_TEST_SUITE(MapUtilityTest)
  */
 BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
 {
-    const unsigned limit = 300u;
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
+    const unsigned limit = 300u; // limit is higher than body size (width * height = 128)
     
     Map map(width, height, "map", "author");
     
@@ -40,7 +40,8 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
     
-    const Point<int> position(10,10);
+    const Point<int> position(10,10); // any position is valid here, because everything is water
+    
     unsigned water = MapUtility::GetBodySize(map, position, limit);
     
     BOOST_REQUIRE_EQUAL(water, width * height);
@@ -51,9 +52,9 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
 {
-    const unsigned limit = 100u;
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
+    const unsigned limit = 100u; // limit is lower than body size (width * height = 128)
 
     Map map(width, height, "map", "author");
     for (unsigned i = 0; i < width * height; i++)
@@ -74,14 +75,15 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
 BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
+    const unsigned z = 4u; // height of the hill
     const Point<int> position(0,0);
 
     Map map(width, height, "map", "author");
     
-    MapUtility::SetHill(map, position, 0x4);
+    MapUtility::SetHill(map, position, z);
     
-    BOOST_REQUIRE_EQUAL(map.z[0], 0x4);
+    BOOST_REQUIRE_EQUAL(map.z[0], z);
 }
 
 /**
@@ -91,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
 
     Map map(width, height, "map", "author");
     
@@ -119,7 +121,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
     
     Map map(width, height, "map", "author");
     
@@ -158,13 +160,14 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
 BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
+    const unsigned z = 11u; // height of the mountain
     
     Map map(width, height, "map", "author");
     
     for (unsigned i = 0; i < width * height; i++)
     {
-        map.z[i] = 0x0A;
+        map.z[i] = z;
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
     }
@@ -173,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
     
     for (unsigned i = 0; i < width * height; i++)
     {
-        BOOST_REQUIRE_GT(map.z[i], 0x0A);
+        BOOST_REQUIRE_GT(map.z[i], z); // mountain got increased for better visual appearance
     }
 }
 
@@ -184,13 +187,14 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
 BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
+    const unsigned z = 11u; // height of the snow area
     
     Map map(width, height, "map", "author");
     
     for (unsigned i = 0; i < width * height; i++)
     {
-        map.z[i] = 0x0A;
+        map.z[i] = z;
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
     }
@@ -199,7 +203,10 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
     
     for (unsigned i = 0; i < width * height; i++)
     {
-        BOOST_REQUIRE_GT(map.z[i], 0x0A);
+        // snow got increased for better visual appearance:
+        // this assumes that snow is always placed on top of a mountain area,
+        // so its z-value is increased along with the mountain area
+        BOOST_REQUIRE_GT(map.z[i], z);
     }
 }
 
@@ -210,13 +217,14 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
 BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
+    const unsigned z = 11u; // height of the meadow area
     
     Map map(width, height, "map", "author");
     
     for (unsigned i = 0; i < width * height; i++)
     {
-        map.z[i] = 0x0A;
+        map.z[i] = z;
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
     }
@@ -225,7 +233,8 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
     
     for (unsigned i = 0; i < width * height; i++)
     {
-        BOOST_REQUIRE_EQUAL(map.z[i], 0x0A);
+        // texture other than snow/mountain remain their z values
+        BOOST_REQUIRE_EQUAL(map.z[i], z);
     }
 }
 
@@ -236,7 +245,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
 BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
 {
     const unsigned width = 16u;
-    const unsigned height = 16u;
+    const unsigned height = 8u;
     
     Map map(width, height, "map", "author");
     

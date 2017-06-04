@@ -39,7 +39,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
 {
     const unsigned width = 64u;
-    const unsigned height = 64u;
+    const unsigned height = 32u;
     const unsigned size = width * height;
     Map map(width, height, "name", "author");
 
@@ -68,11 +68,11 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectName, Map)
 {
     std::string name("name");
-    Map map(64, 64, name, "author");
+    Map map(64, 32, name, "author");
     BOOST_REQUIRE_EQUAL(map.name, name);
     
     std::string name2("name2");
-    Map map2(64, 64, name2, "author");
+    Map map2(64, 32, name2, "author");
     BOOST_REQUIRE_EQUAL(map2.name, name2);
 }
 
@@ -83,12 +83,12 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectName, Map)
 BOOST_FIXTURE_TEST_CASE(Constructor_CorrectAuthor, Map)
 {
     std::string author1("author1");
-    Map mapA(64, 64, "name", author1);
+    Map mapA(64, 32, "name", author1);
     
     BOOST_REQUIRE_EQUAL(mapA.author, author1);
     
     std::string author2("author2");
-    Map mapB(64, 64, "name", author2);
+    Map mapB(64, 32, "name", author2);
     BOOST_REQUIRE_EQUAL(mapB.author, author2);
 }
 
@@ -99,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectAuthor, Map)
 BOOST_FIXTURE_TEST_CASE(CreateArchiv_NotNull, Map)
 {
     std::string author("author");
-    Map map(64, 64, "name", author);
+    Map map(64, 32, "name", author);
     
     libsiedler2::ArchivInfo* archiv = map.CreateArchiv();
     

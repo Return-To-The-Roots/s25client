@@ -26,8 +26,19 @@ BOOST_AUTO_TEST_SUITE(MapTest)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
 {
-    AreaDesc area(Point<double>(0.5,0.5), 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
-    BOOST_REQUIRE(area.IsInArea(Point<int>(8,8), 0.0, 16, 16));
+    const int width = 16;
+    const int height = 32;
+    const int minPlayerDist = 0;
+    const double playerDistance = 0.0; // distance of check point to player
+    
+    AreaDesc area(Point<double>(0.5,0.5), // area center (= map center)
+                  0.0, // min distance to area center
+                  0.2, // max distance to area center
+                  100.0, 0, 0, 10, 10, // test-independent values
+                  minPlayerDist);
+    
+    BOOST_REQUIRE(area.IsInArea(Point<int>(width/2,height/2), // check map center
+                                playerDistance, width, height));
 }
 
 /**
@@ -36,18 +47,40 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointOutsideIgnorePlayer, AreaDesc)
 {
-    AreaDesc area(Point<double>(0.5,0.5), 0.0, 0.2, 100.0, 0, 0, 10, 10, 0);
-    BOOST_REQUIRE(!area.IsInArea(Point<int>(0,0), 0.0, 16, 16));
+    const int width = 16;
+    const int height = 32;
+    const int minPlayerDist = 0;
+    const double playerDistance = 0.0; // distance of check point to player
+    
+    AreaDesc area(Point<double>(0.5,0.5), // area center (= map center)
+                  0.0, // min distance to area center
+                  0.2, // max distance to area center
+                  100.0, 0, 0, 10, 10, // test-independent values
+                  minPlayerDist);
+    
+    BOOST_REQUIRE(!area.IsInArea(Point<int>(width, height), // bottom-right corner
+                                playerDistance, width, height));
 }
 
 /**
  * Tests the AreaDesc::IsInArea method for a point outside of the area because it is too
  * close to a player.
  */
-BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseAtPlayer, AreaDesc)
+BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseToPlayer, AreaDesc)
 {
-    AreaDesc area(Point<double>(0.5,0.5), 0.0, 0.2, 100.0, 0, 0, 10, 10, 8);
-    BOOST_REQUIRE(!area.IsInArea(Point<int>(8,8), 1.0, 16, 16));
+    const int width = 16;
+    const int height = 32;
+    const int minPlayerDist = 8;
+    const double playerDistance = 0.2; // distance of check point to player
+
+    AreaDesc area(Point<double>(0.5,0.5), // area center (= map center)
+                  0.0, // min distance to area center
+                  0.2, // max distance to area center
+                  100.0, 0, 0, 10, 10, // test-independent values
+                  minPlayerDist);
+    
+    BOOST_REQUIRE(!area.IsInArea(Point<int>(width/2, height/2),
+                                 playerDistance, width, height));
 }
 
 /**
@@ -56,8 +89,19 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseAtPlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
 {
-    AreaDesc area(Point<double>(0.5,0.5), 0.0, 0.2, 100.0, 0, 0, 10, 10, 1);
-    BOOST_REQUIRE(area.IsInArea(Point<int>(8,8), 2.0, 16, 16));
+    const int width = 16;
+    const int height = 32;
+    const int minPlayerDist = 8;
+    const double playerDistance = 8.2; // distance of check point to player
+    
+    AreaDesc area(Point<double>(0.5,0.5), // area center (= map center)
+                  0.0, // min distance to area center
+                  0.2, // max distance to area center
+                  100.0, 0, 0, 10, 10, // test-independent values
+                  minPlayerDist);
+    
+    BOOST_REQUIRE(area.IsInArea(Point<int>(width/2, height/2),
+                                 playerDistance, width, height));
 }
 
 /**
@@ -66,8 +110,20 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
  */
 BOOST_FIXTURE_TEST_CASE(IsInArea_PointNearPlayer, AreaDesc)
 {
-    AreaDesc area(Point<double>(0.5,0.5), 0.0, 0.2, 100.0, 0, 0, 10, 10, 0, 8);
-    BOOST_REQUIRE(area.IsInArea(Point<int>(8,8), 2.0, 16, 16));
+    const int width = 16;
+    const int height = 32;
+    const int minPlayerDist = 0;
+    const int maxPlayerDist = 8;
+    const double playerDistance = 6.2; // distance of check point to player
+    
+    AreaDesc area(Point<double>(0.5,0.5), // area center (= map center)
+                  0.0, // min distance to area center
+                  0.2, // max distance to area center
+                  100.0, 0, 0, 10, 10, // test-independent values
+                  minPlayerDist, maxPlayerDist);
+    
+    BOOST_REQUIRE(area.IsInArea(Point<int>(width/2, height/2),
+                                playerDistance, width, height));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
