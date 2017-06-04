@@ -18,10 +18,8 @@
 #ifndef RandomConfig_h__
 #define RandomConfig_h__
 
-#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/AreaDesc.h"
 #include "gameTypes/MapTypes.h"
-#include "Random.h"
 #include <vector>
 #include <cstdlib>
 

@@ -18,13 +18,8 @@
 #ifndef ObjectGenerator_h__
 #define ObjectGenerator_h__
 
-#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
 #include "gameData/TerrainData.h"
-#include "Random.h"
-#include "stdint.h"
-#include <cstdlib>
-#include <utility>
 
 /**
  * Utility class to place object, textures and animals on a map.

@@ -18,7 +18,6 @@
 #ifndef RandomMapGenerator_h__
 #define RandomMapGenerator_h__
 
-#include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapUtility.h"

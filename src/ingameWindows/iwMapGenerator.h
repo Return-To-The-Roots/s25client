@@ -22,8 +22,6 @@
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapStyle.h"
 #include "IngameWindow.h"
-#include "addons/const_addons.h"
-#include <vector>
 
 /**
  * The iwMapGenerator is an ingame window for the user to configure parameters used

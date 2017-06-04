@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/ObjectGenerator.h"
+#include "mapGenerator/RandomConfig.h"
 #include "libsiedler2/src/enumTypes.h"
 
 bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)

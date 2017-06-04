@@ -20,8 +20,6 @@
 
 #include "mapGenerator/Map.h"
 
-#include <string>
-
 /**
  * Utility for map generation.
  */
