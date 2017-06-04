@@ -26,11 +26,11 @@ Map::Map() : width(0), height(0)
 Map::Map(unsigned int width,
          unsigned int height,
          const std::string& name,
-         const std::string& author) : width(width), height(height), name(name), author(author), players(MAX_PLAYERS)
+         const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS)
 {
     const unsigned int size = (unsigned int)width * height;
 
-    for (int i = 0; i < MAX_PLAYERS; i++)
+    for (unsigned int i = 0; i < positions.size(); i++)
     {
         positions[i].x = 0xFF;
         positions[i].y = 0xFF;
@@ -67,7 +67,7 @@ libsiedler2::ArchivInfo* Map::CreateArchiv()
     header->setHeight(height);
     header->setPlayer(players);
     header->setGfxSet(type);
-    for (int i = 0; i < MAX_PLAYERS; i++)
+    for (unsigned int i = 0; i < positions.size(); i++)
     {
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
