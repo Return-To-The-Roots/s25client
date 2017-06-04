@@ -80,7 +80,7 @@ struct Map
     /**
      * Positions of the players' headquarters.
      */
-    Point<uint16_t> positions[7];
+    std::vector<Point<uint16_t> > positions;
     
     /**
      * Height for each vertex of the map.

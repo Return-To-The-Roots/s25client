@@ -16,6 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "mapGenerator/Map.h"
+#include "gameData/MaxPlayers.h"
 
 Map::Map() : width(0), height(0)
 {
@@ -25,11 +26,11 @@ Map::Map() : width(0), height(0)
 Map::Map(unsigned int width,
          unsigned int height,
          const std::string& name,
-         const std::string& author) : width(width), height(height), name(name), author(author)
+         const std::string& author) : width(width), height(height), name(name), author(author), players(MAX_PLAYERS)
 {
     const unsigned int size = (unsigned int)width * height;
 
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < MAX_PLAYERS; i++)
     {
         positions[i].x = 0xFF;
         positions[i].y = 0xFF;
@@ -66,7 +67,7 @@ libsiedler2::ArchivInfo* Map::CreateArchiv()
     header->setHeight(height);
     header->setPlayer(players);
     header->setGfxSet(type);
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < MAX_PLAYERS; i++)
     {
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
