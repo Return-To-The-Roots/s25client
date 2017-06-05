@@ -23,18 +23,12 @@ Map::Map() : width(0), height(0)
     
 }
 
-Map::Map(unsigned int width,
-         unsigned int height,
+Map::Map(unsigned width,
+         unsigned height,
          const std::string& name,
-         const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS)
+         const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>::Invalid())
 {
-    const unsigned int size = (unsigned int)width * height;
-
-    for (unsigned int i = 0; i < positions.size(); i++)
-    {
-        positions[i].x = 0xFF;
-        positions[i].y = 0xFF;
-    }
+    const unsigned size = (unsigned)width * height;
 
     z.resize(size, 0x00);
     textureRsu.resize(size, 0x08);
@@ -67,10 +61,12 @@ libsiedler2::ArchivInfo* Map::CreateArchiv()
     header->setHeight(height);
     header->setPlayer(players);
     header->setGfxSet(type);
-    for (unsigned int i = 0; i < positions.size(); i++)
+    
+    for (unsigned i = 0; i < positions.size(); i++)
     {
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
+    
     map->set(0, header);
     map->set(1, new libsiedler2::ArchivItem_Raw(z));
     map->set(2, new libsiedler2::ArchivItem_Raw(textureRsu));
