@@ -263,7 +263,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
 
 /**
  * Tests the MapUtility::SetHarbor method to ensure harbor positions are available after
- * placing a harbor at an apropriate place.
+ * placing a harbor in a suitable position.
  */
 BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
 {
