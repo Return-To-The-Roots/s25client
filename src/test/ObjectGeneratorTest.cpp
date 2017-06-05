@@ -73,7 +73,7 @@ BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(IsTree_TreeExists, ObjectGenerator)
 {
-    Map map(16, 16, "name", "author");
+    Map map(16, 8, "name", "author");
 
     map.objectInfo[0] = libsiedler2::OI_Palm;
     
@@ -89,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(IsTree_TreeExists, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(IsTree_Empty, ObjectGenerator)
 {
-    Map map(16, 16, "name", "author");
+    Map map(16, 8, "name", "author");
     
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), false);
 }
@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(IsTree_Empty, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
 {
-    Map map(16, 16, "name", "author");
+    Map map(16, 8, "name", "author");
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
     
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
 {
-    Map map(16, 16, "name", "author");
+    Map map(16, 8, "name", "author");
     
     ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
     
@@ -130,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
  */
 BOOST_FIXTURE_TEST_CASE(CreateTexture_HarborNotSupported, ObjectGenerator)
 {
-    Map map(16, 16, "name", "author");
+    Map map(16, 8, "name", "author");
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
     

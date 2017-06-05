@@ -31,8 +31,8 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
 {
     RandomConfig config = RandomConfig::CreateRandom();
     MapSettings settings;
-    settings.width = 32;
-    settings.height = 32;
+    settings.width = 32u;
+    settings.height = 8u;
     settings.players = 2;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
@@ -55,8 +55,8 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
 {
     RandomConfig config = RandomConfig::CreateRandom();
     MapSettings settings;
-    settings.width = 32;
-    settings.height = 32;
+    settings.width = 16u;
+    settings.height = 32u;
     settings.players = 2;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
