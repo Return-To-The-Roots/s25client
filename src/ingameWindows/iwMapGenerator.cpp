@@ -53,7 +53,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     AddTextButton(1, 130, 360, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
 
     ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, 20, 30, 210, 20, TC_GREY, NormalFont, 100);
-    for (unsigned int n = 2; n < MAX_PLAYERS; n++)
+    for (unsigned n = 2; n < MAX_PLAYERS; n++)
     {
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
     }
@@ -104,7 +104,7 @@ iwMapGenerator::~iwMapGenerator()
 {
 }
 
-void iwMapGenerator::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

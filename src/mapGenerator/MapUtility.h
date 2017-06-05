@@ -86,7 +86,7 @@ class MapUtility
      * @return the number of vertices in a connected terrain area around the 
      * intial position
      */
-    unsigned int GetBodySize(Map& map, const Point<int>& p, unsigned int max);
+    unsigned GetBodySize(Map& map, const Point<int>& p, unsigned max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.

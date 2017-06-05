@@ -58,7 +58,7 @@ void ObjectGenerator::CreateEmpty(Map& map, int index)
     map.objectInfo[index] = libsiedler2::OI_Empty;
 }
     
-void ObjectGenerator::CreateHeadquarter(Map& map, int index, unsigned int i)
+void ObjectGenerator::CreateHeadquarter(Map& map, int index, unsigned i)
 {
     map.objectType[index] = i;
     map.objectInfo[index] = libsiedler2::OI_HeadquarterMask;
@@ -130,15 +130,15 @@ uint8_t ObjectGenerator::CreateRandomAnimal(int likelyhood)
     }
 }
 
-uint8_t ObjectGenerator::CreateRandomResource(unsigned int ratioGold,
-                                              unsigned int ratioIron,
-                                              unsigned int ratioCoal,
-                                              unsigned int ratioGranite)
+uint8_t ObjectGenerator::CreateRandomResource(unsigned ratioGold,
+                                              unsigned ratioIron,
+                                              unsigned ratioCoal,
+                                              unsigned ratioGranite)
 {
-    unsigned int rnd = (unsigned)RandomConfig::Rand(ratioGold +
-                                                    ratioIron +
-                                                    ratioCoal +
-                                                    ratioGranite);
+    unsigned rnd = (unsigned)RandomConfig::Rand(ratioGold +
+                                                ratioIron +
+                                                ratioCoal +
+                                                ratioGranite);
 
     if (rnd <= ratioGold)
         return libsiedler2::R_Gold + RandomConfig::Rand(8);

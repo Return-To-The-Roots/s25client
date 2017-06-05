@@ -30,10 +30,10 @@ RandomMapGenerator::RandomMapGenerator()
 {
 }
 
-unsigned int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
+unsigned RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
 {
-    unsigned int maxHeight = 0;
-    for (unsigned int i = 0; i < textures.size(); i++)
+    unsigned maxHeight = 0;
+    for (unsigned i = 0; i < textures.size(); i++)
     {
         if (textures[i] == terrain)
         {
@@ -44,9 +44,9 @@ unsigned int RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain, 
     return maxHeight;
 }
 
-unsigned int RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
+unsigned RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
 {
-    for (unsigned int i = 0; i < textures.size(); i++)
+    for (unsigned i = 0; i < textures.size(); i++)
     {
         if (textures[i] == terrain)
         {
@@ -72,7 +72,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     const int rnd = RandomConfig::Rand(rMin, rMax);
     
     // player headquarters for the players
-    for (unsigned int i = 0; i < settings.players; i++)
+    for (unsigned i = 0; i < settings.players; i++)
     {
         // compute headquater position
         Point<int> position = helper.ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
@@ -87,7 +87,7 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
 
 void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& map)
 {
-    for (unsigned int i = 0; i < settings.players; i++)
+    for (unsigned i = 0; i < settings.players; i++)
     {
         int offset1 = RandomConfig::Rand(0, 180);
         int offset2 = RandomConfig::Rand(180, 360);
@@ -133,7 +133,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, const RandomCo
                     
                     if (maxZ > 0 && rnd <= pr)
                     {
-                        const unsigned int z = (unsigned int)RandomConfig::Rand(minZ, maxZ + 1);
+                        const unsigned z = (unsigned)RandomConfig::Rand(minZ, maxZ + 1);
                         helper.SetHill(map, tile, z == GetMinTerrainHeight(TT_MOUNTAINMEADOW, textures) ? z-1 : z);
                     }
                 }

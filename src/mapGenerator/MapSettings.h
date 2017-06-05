@@ -41,17 +41,17 @@ struct MapSettings
     /**
      * Number of players.
      */
-    unsigned int players;
+    unsigned players;
     
     /**
      * Map width in vertices.
      */
-    unsigned int width;
+    unsigned width;
 
     /**
      * Map height in vertices.
      */
-    unsigned int height;
+    unsigned height;
     
     /**
      * Ratio of gold distributed as resources on mountain terrain.

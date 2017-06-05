@@ -311,8 +311,8 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
 {
-    const unsigned int width = 16u;
-    const unsigned int height = 16u;
+    const unsigned width = 16u;
+    const unsigned height = 16u;
     
     Map map(width, height, "map", "author");
     
@@ -329,8 +329,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
 {
-    const unsigned int width = 16u;
-    const unsigned int height = 16u;
+    const unsigned width = 16u;
+    const unsigned height = 16u;
     
     Map map(width, height, "map", "author");
     
@@ -353,8 +353,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
 {
-    const unsigned int width = 16u;
-    const unsigned int height = 16u;
+    const unsigned width = 16u;
+    const unsigned height = 16u;
     Point<int> p(width/2, height/2);
     const int index = p.y * width + p.x;
     
@@ -375,8 +375,8 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
 {
-    const unsigned int width = 16u;
-    const unsigned int height = 16u;
+    const unsigned width = 16u;
+    const unsigned height = 16u;
     
     Map map(width, height, "map", "author");
     
@@ -393,8 +393,8 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
  */
 BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
 {
-    const unsigned int width = 16u;
-    const unsigned int height = 16u;
+    const unsigned width = 16u;
+    const unsigned height = 16u;
     Point<int> p(width/2, height/2);
     const int index = p.y * width + p.x;
     

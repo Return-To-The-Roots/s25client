@@ -40,7 +40,7 @@ void MapUtility::SetHill(Map& map, const Point<int>& center, int z)
     }
 }
 
-unsigned int MapUtility::GetBodySize(Map& map, const Point<int>& p, unsigned int max)
+unsigned MapUtility::GetBodySize(Map& map, const Point<int>& p, unsigned max)
 {
     const int width = map.width;
     const int height = map.height;

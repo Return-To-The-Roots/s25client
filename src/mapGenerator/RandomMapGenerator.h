@@ -59,7 +59,7 @@ class RandomMapGenerator
      * @param textures set of textures used for different height values
      * @return the maximum height value for the terrain
      */
-    unsigned int GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
+    unsigned GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
     
     /**
      * Gets the minimum height to be considered as specified terrain.
@@ -67,7 +67,7 @@ class RandomMapGenerator
      * @param textures set of textures used for different height values
      * @return the minimum height value for the terrain
      */
-    unsigned int GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
+    unsigned GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
     
     /**
      * Create player positions (headquarters) for the specified map.

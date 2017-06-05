@@ -67,7 +67,7 @@ class ObjectGenerator
      * @param index vertex index to place the headquarter on
      * @param i player number
      */
-    static void CreateHeadquarter(Map& map, int index, unsigned int i);
+    static void CreateHeadquarter(Map& map, int index, unsigned i);
 
     /**
      * Checks whether or not the specified object is empty.
@@ -105,10 +105,10 @@ class ObjectGenerator
      * @param ratioGranite ratio of granite placed as mountain resource on the map
      * @return random piles of gold, coal, granite or iron
      */
-    static uint8_t CreateRandomResource(unsigned int ratioGold,
-                                        unsigned int ratioIron,
-                                        unsigned int ratioCoal,
-                                        unsigned int ratioGranite);
+    static uint8_t CreateRandomResource(unsigned ratioGold,
+                                        unsigned ratioIron,
+                                        unsigned ratioCoal,
+                                        unsigned ratioGranite);
 
     /**
      * Creates a new, random ground animal.

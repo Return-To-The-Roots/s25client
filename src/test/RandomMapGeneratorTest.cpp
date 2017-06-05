@@ -17,6 +17,7 @@
 
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/RandomConfig.h"
+#include "gameData/MaxPlayers.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -66,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     Map* map = generator.Create(settings, config);
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
 
-    for (unsigned int i = 0; i < settings.players; i++)
+    for (unsigned i = 0; i < settings.players; i++)
     {
         Point<uint16_t> p = map->positions[i];
         BOOST_REQUIRE_NE(p.x, 0xFF);
@@ -76,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
         BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], libsiedler2::OI_HeadquarterMask);
     }
 
-    for (unsigned int i = settings.players; i < 7; i++)
+    for (unsigned i = settings.players; i < MAX_PLAYERS; i++)
     {
         BOOST_REQUIRE_EQUAL(map->positions[i].x, 0xFF);
         BOOST_REQUIRE_EQUAL(map->positions[i].y, 0xFF);

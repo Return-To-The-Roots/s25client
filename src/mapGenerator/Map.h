@@ -42,8 +42,8 @@ struct Map
      * @param name name of the map
      * @param author author of the map
      */
-    Map(unsigned int width,
-        unsigned int height,
+    Map(unsigned width,
+        unsigned height,
         const std::string& name,
         const std::string& author);
 
