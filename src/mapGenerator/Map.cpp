@@ -26,7 +26,7 @@ Map::Map() : width(0), height(0)
 Map::Map(unsigned width,
          unsigned height,
          const std::string& name,
-         const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>::Invalid())
+         const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
 {
     const unsigned size = (unsigned)width * height;
 
