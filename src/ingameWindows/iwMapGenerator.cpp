@@ -33,7 +33,8 @@
 
 enum
 {
-    CTRL_PLAYER_NUMBER = 2,
+    CTRL_LAST_ID = 7, // last UI control ID used before enum controls
+    CTRL_PLAYER_NUMBER,
     CTRL_MAP_STYLE,
     CTRL_MAP_SIZE,
     CTRL_PLAYER_RADIUS,
@@ -41,8 +42,7 @@ enum
     CTRL_RATIO_GOLD,
     CTRL_RATIO_IRON,
     CTRL_RATIO_COAL,
-    CTRL_RATIO_GRANITE,
-    CTRL_LAST_ID // last enum value
+    CTRL_RATIO_GRANITE
 };
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
@@ -75,7 +75,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString("512 x 512");
     combo->AddString("1024 x 1024");
 
-    AddText(CTRL_LAST_ID, 20, 120, _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
+    AddText(2, 20, 120, _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(CTRL_PLAYER_RADIUS, 20, 140, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString(_("Very Close"));
     combo->AddString(_("Close"));
@@ -83,19 +83,19 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString(_("Far"));
     combo->AddString(_("Very Far"));
 
-    AddText(CTRL_LAST_ID+1, 20, 170, _("Landscape"), COLOR_YELLOW, 0, NormalFont);
+    AddText(3, 20, 170, _("Landscape"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(CTRL_MAP_TYPE, 20, 190, 210, 20, TC_GREY, NormalFont, 100);
     combo->AddString(_("Greenland"));
     combo->AddString(_("Winterworld"));
     combo->AddString(_("Wasteland"));
     
-    AddText(CTRL_LAST_ID+2, 20, 225, _("Gold:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(4, 20, 225, _("Gold:"), COLOR_YELLOW, 0, NormalFont);
     AddProgress(CTRL_RATIO_GOLD, 100, 220, 130, 20, TC_GREY, 139, 138, 100);
-    AddText(CTRL_LAST_ID+3, 20, 255, _("Iron:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(5, 20, 255, _("Iron:"), COLOR_YELLOW, 0, NormalFont);
     AddProgress(CTRL_RATIO_IRON, 100, 250, 130, 20, TC_GREY, 139, 138, 100);
-    AddText(CTRL_LAST_ID+4, 20, 285, _("Coal:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(6, 20, 285, _("Coal:"), COLOR_YELLOW, 0, NormalFont);
     AddProgress(CTRL_RATIO_COAL, 100, 280, 130, 20, TC_GREY, 139, 138, 100);
-    AddText(CTRL_LAST_ID+5, 20, 315, _("Granite:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(7, 20, 315, _("Granite:"), COLOR_YELLOW, 0, NormalFont);
     AddProgress(CTRL_RATIO_GRANITE, 100, 310, 130, 20, TC_GREY, 139, 138, 100);
     
     Reset();
