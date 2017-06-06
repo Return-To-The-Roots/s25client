@@ -47,6 +47,8 @@ public:
     static bool IsAnimated(TerrainType t);
     /// Gets the number of frames in the animation
     static unsigned GetFrameCount(TerrainType t);
+    /// Gets the texture identifier for the terrain in the SWD file format
+    static unsigned char GetTextureIdentifier(TerrainType t);
     /// Gets the start color for the animation (extraction)
     static unsigned char GetStartColor(TerrainType t);
     /// Gets the color by which the extracted texture is shifted. For the animation (extraction)

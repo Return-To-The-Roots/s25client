@@ -19,6 +19,36 @@
 #include "TerrainData.h"
 #include <boost/array.hpp>
 
+unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
+{
+    switch (t)
+    {
+        case TT_SNOW:               return 0x02;
+        case TT_DESERT:             return 0x04;
+        case TT_SWAMPLAND:          return 0x03;
+        case TT_MEADOW_FLOWERS:     return 0x0F;
+        case TT_MOUNTAIN1:          return 0x01;
+        case TT_MOUNTAIN2:          return 0x0B;
+        case TT_MOUNTAIN3:          return 0x0C;
+        case TT_MOUNTAIN4:          return 0x0D;
+        case TT_SAVANNAH:           return 0x00;
+        case TT_MEADOW1:            return 0x08;
+        case TT_MEADOW2:            return 0x09;
+        case TT_MEADOW3:            return 0x0A;
+        case TT_STEPPE:             return 0x0E;
+        case TT_MOUNTAINMEADOW:     return 0x12;
+        case TT_WATER:              return 0x05;
+        case TT_WATER_NOSHIP:       return 0x06;
+        case TT_BUILDABLE_MOUNTAIN: return 0x22;
+        case TT_BUILDABLE_WATER:    return 0x13;
+        case TT_LAVA:               return 0x10;
+        case TT_LAVA2:              return 0x14;
+        case TT_LAVA3:              return 0x15;
+        case TT_LAVA4:              return 0x16;
+    }
+    throw std::logic_error("Invalid parameters given");
+}
+
 TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
 {
     // Unset bit 0x40 (harbour) and 0x80 (unknown)

@@ -35,11 +35,14 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "desktops/dskLAN.h"
+#include "mapGenerator/MapGenerator.h"
 
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "ingameWindows/iwMapGenerator.h"
+
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
@@ -91,6 +94,10 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     AddTextButton(4, 590, 530, 200, 22, TC_GREEN2, _("Load game..."), NormalFont);
     // "Weiter"
     AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
+    // random map generation
+    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Random Map"), NormalFont);
+    // random map settings
+    AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("..."), NormalFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
     // "Alte"
@@ -219,6 +226,14 @@ void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             StartServer();
         } break;
+        case 6: // random map
+        {
+            CreateRandomMap();
+        } break;
+        case 7: // random map generator settings
+        {
+            WINDOWMANAGER.Show(new iwMapGenerator(rndMapSettings));
+        } break;
     }
 }
 
@@ -226,6 +241,34 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 {
     // Doppelklick auf bestimmte Map -> weiter
     StartServer();
+}
+
+void dskSelectMap::CreateRandomMap()
+{
+    // setup filepath for the random map
+    std::string mapPath = GetFilePath(FILE_PATHS[48]);
+    mapPath.append("Random.swd");
+
+    // create a random map and save filepath
+    MapGenerator generator;
+    generator.Create(mapPath, rndMapSettings);
+    
+    // select the "played maps" entry
+    ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
+    optionGroup->SetSelection(8, true);
+    
+    // search for the random map entry and select it in the table
+    ctrlTable* table = GetCtrl<ctrlTable>(1);
+    for (int i = 0; i < table->GetRowCount(); i++)
+    {
+        std::string entryPath = table->GetItemText(i, 5);
+        
+        if (entryPath == mapPath)
+        {
+            table->SetSelection(i);
+            break;
+        }
+    }
 }
 
 /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
@@ -238,10 +281,10 @@ void dskSelectMap::StartServer()
     if(selection < table->GetRowCount())
     {
         // Kartenpfad aus Tabelle holen
-        map_path = table->GetItemText(selection, 5);
+        std::string mapPath = table->GetItemText(selection, 5);
 
         // Server starten
-        if(!GAMESERVER.TryToStart(csi, map_path, MAPTYPE_OLDMAP))
+        if(!GAMESERVER.TryToStart(csi, mapPath, MAPTYPE_OLDMAP))
         {
             GoBack();
         }

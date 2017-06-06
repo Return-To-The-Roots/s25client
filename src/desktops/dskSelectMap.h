@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Desktop.h"
+#include "mapGenerator/MapSettings.h"
 
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
@@ -32,9 +33,6 @@ class dskSelectMap :
     public ClientInterface,
     public LobbyInterface
 {
-        /// Kartenpfad
-        std::string map_path;
-
     public:
         dskSelectMap(const CreateServerInfo& csi);
         ~dskSelectMap() override;
@@ -54,12 +52,24 @@ class dskSelectMap :
         void LC_Created() override;
         void LC_Status_Error(const std::string& error) override;
 
-        /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
+        /**
+         * Starts a new game with the currently selected map.
+         */
         void StartServer();
+    
+        /**
+         * Go back to the previous menu.
+         */
         void GoBack();
+    
+        /**
+         * Generates a new random map and selects the new map in the table (UI).
+         */
+        void CreateRandomMap();
 
     private:
         CreateServerInfo csi;
+        MapSettings rndMapSettings;
 };
 
 #endif //!dskSELECTMAP_H_INCLUDED
