@@ -28,7 +28,7 @@ Map::Map(unsigned width,
          const std::string& name,
          const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
 {
-    const unsigned size = (unsigned)width * height;
+    const unsigned size = width * height;
 
     z.resize(size, 0x00);
     textureRsu.resize(size, 0x08);
