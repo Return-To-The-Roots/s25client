@@ -74,11 +74,13 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
         // Filepath must be utf8 encoded
         BOOST_REQUIRE(isValidUTF8(file));
 
+        bfs::path filePath(file);
+        // String result must still be utf8
+        BOOST_REQUIRE(isValidUTF8(filePath.string()));
 
         // Scopes for auto-close
         {
             // path input
-            bfs::path filePath(file);
             bfs::ifstream sFile(filePath);
             BOOST_REQUIRE(sFile);
             std::string content;
