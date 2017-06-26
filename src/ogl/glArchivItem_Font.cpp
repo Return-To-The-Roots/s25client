@@ -217,7 +217,7 @@ void glArchivItem_Font::Draw(DrawPoint pos,
         initFont();
 
     std::string text;
-    if(!utf8::is_valid(textIn.begin(), textIn.end()))
+    if(!isValidUTF8(textIn))
     {
         RTTR_Assert(false); // Can only handle UTF-8 strings!
         // However old savegames/replays might contain invalid chars -> Replace
@@ -227,7 +227,7 @@ void glArchivItem_Font::Draw(DrawPoint pos,
     } else
         text = textIn;
 
-    RTTR_Assert(utf8::is_valid(end.begin(), end.end()));
+    RTTR_Assert(isValidUTF8(end));
 
     // Breite bestimmen
     if(length == 0)
@@ -391,7 +391,7 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
  */
 std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const std::string& text)
 {
-    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
+    RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
 
     std::vector<std::string> destStrings;
     if(positions.empty())
@@ -424,7 +424,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
     if(!fontNoOutline)
         initFont();
 
-    RTTR_Assert(utf8::is_valid(text.begin(), text.end())); // Can only handle UTF-8 strings!
+    RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
     
     // Current line width
     unsigned line_width = 0;

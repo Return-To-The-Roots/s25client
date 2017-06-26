@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ListDir.h"
+#include "libutil/src/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/test/unit_test.hpp>
@@ -70,11 +71,16 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
     {
         BOOST_REQUIRE(bfs::exists(file));
         BOOST_REQUIRE(bfs::path(file).is_absolute());
+        // Filepath must be utf8 encoded
+        BOOST_REQUIRE(isValidUTF8(file));
+
+        bfs::path filePath(file);
+        // String result must still be utf8
+        BOOST_REQUIRE(isValidUTF8(filePath.string()));
 
         // Scopes for auto-close
         {
             // path input
-            bfs::path filePath(file);
             bfs::ifstream sFile(filePath);
             BOOST_REQUIRE(sFile);
             std::string content;
