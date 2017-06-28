@@ -28,6 +28,7 @@
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
 #include "libutil/src/error.h"
+#include "libutil/src/System.h"
 #include <sstream>
 #ifndef _WIN32
 #   include <cstring>
@@ -110,15 +111,8 @@ bool Settings::LoadDefaults()
 
     // lobby
     // {
-    char tmp_name[256];
-#ifdef _WIN32
-    DWORD size = 256;
-    GetUserNameA(tmp_name, &size);
-#else
-    strncpy(tmp_name, getenv("USER"), 256);
-#endif // !_WIN32
 
-    lobby.name = tmp_name;
+    lobby.name = System::getUserName();
     lobby.password.clear();
     lobby.email.clear();
     lobby.save_password = false;
@@ -253,18 +247,8 @@ bool Settings::Load()
     lobby.save_password = (iniLobby->getValueI("save_password") != 0);
     // }
 
-    if(lobby.name.length() == 0)
-    {
-        char tmp_name[256];
-#ifdef _WIN32
-        DWORD size = 256;
-        GetUserNameA(tmp_name, &size);
-#else
-        strncpy(tmp_name, getenv("USER"), 256);
-#endif // !_WIN32
-
-        lobby.name = tmp_name;
-    }
+    if(lobby.name.empty())
+        lobby.name = System::getUserName();
 
     // server
     // {

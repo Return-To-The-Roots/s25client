@@ -25,7 +25,9 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include "ClientInterface.h"
 #include <boost/array.hpp>
+#include <boost/filesystem/path.hpp>
 #include <iostream>
+#include <algorithm>
 
 class SwitchOnStart: public ClientInterface
 {
@@ -54,12 +56,14 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     csi.ipv6 = false;
     csi.use_upnp = false;
 
-    printf("loading game!\n");
+    std::cout << "Loading game!" << std::endl;
+    std::string extension = bfs::path(filePath).extension().string();
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
-    if((filePath.find(".sav") != std::string::npos && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
-        || ((filePath.find(".swd") != std::string::npos || filePath.find(".wld") != std::string::npos) && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
+    if((extension == ".sav" && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
+        || ((extension == ".swd" || extension == ".wld") && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
     {
         WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
         return true;
