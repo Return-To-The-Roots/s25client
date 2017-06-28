@@ -284,7 +284,7 @@ class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity
                 RandCheckInfo() { Clear(); }
                 void Clear();
 
-                int rand;
+                unsigned rand;
         } randcheckinfo;
 
 

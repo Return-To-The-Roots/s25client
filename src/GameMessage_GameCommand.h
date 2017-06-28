@@ -25,12 +25,12 @@
 class Serializer;
 
 struct AsyncChecksum{
-    unsigned randState;
+    unsigned randChecksum;
     unsigned objCt;
     unsigned objIdCt;
     AsyncChecksum();
-    explicit AsyncChecksum(unsigned randState);
-    AsyncChecksum(unsigned randState, unsigned objCt, unsigned objIdCt);
+    explicit AsyncChecksum(unsigned randChecksum);
+    AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt);
 
     inline bool operator==(const AsyncChecksum& rhs) const;
     inline bool operator!=(const AsyncChecksum& rhs) const;
@@ -56,7 +56,7 @@ class GameMessage_GameCommand : public GameMessage
 
 bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const
 {
-    return randState == rhs.randState &&
+    return randChecksum == rhs.randChecksum &&
                objCt == rhs.objCt &&
              objIdCt == rhs.objIdCt;
 }

@@ -376,7 +376,7 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     {
         if (!SendUnsigned(it_a->counter))   return(false);
         if (!SendSigned(it_a->max))         return(false);
-        if (!SendSigned(it_a->rngState))    return(false);
+        if (!SendSigned(it_a->rngState.getState()))    return(false);
         if (!SendString(it_a->src_name))    return(false);
         if (!SendUnsigned(it_a->src_line))  return(false);
         if (!SendUnsigned(it_a->obj_id))    return(false);
@@ -388,14 +388,14 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     {
         if (!SendUnsigned(it_a->counter))   return(false);
         if (!SendSigned(it_a->max))         return(false);
-        if (!SendSigned(it_a->rngState))    return(false);
+        if (!SendSigned(it_a->rngState.getState()))    return(false);
         if (!SendString(it_a->src_name))    return(false);
         if (!SendUnsigned(it_a->src_line))  return(false);
         if (!SendUnsigned(it_a->obj_id))    return(false);
 
         if (!SendUnsigned(it_b->counter))   return(false);
         if (!SendSigned(it_b->max))         return(false);
-        if (!SendSigned(it_b->rngState))    return(false);
+        if (!SendSigned(it_b->rngState.getState()))    return(false);
         if (!SendString(it_b->src_name))    return(false);
         if (!SendUnsigned(it_b->src_line))  return(false);
         if (!SendUnsigned(it_b->obj_id))    return(false);

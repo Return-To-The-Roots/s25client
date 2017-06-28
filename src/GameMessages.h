@@ -30,6 +30,7 @@
 #include "gameTypes/TeamTypes.h"
 #include "libutil/src/Serializer.h"
 #include "libutil/src/Log.h"
+#include <boost/foreach.hpp>
 
 struct JoinPlayerInfo;
 class MessageInterface;
@@ -1048,14 +1049,9 @@ public:
         ser.PushBool(last);
         ser.PushUnsignedInt(entries.size());
 
-        for(std::vector<RandomEntry>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+        BOOST_FOREACH(const RandomEntry& entry, entries)
         {
-            ser.PushUnsignedInt(it->counter);
-            ser.PushSignedInt(it->max);
-            ser.PushSignedInt(it->rngState);
-            ser.PushString(it->src_name);
-            ser.PushUnsignedInt(it->src_line);
-            ser.PushUnsignedInt(it->obj_id);
+            entry.Serialize(ser);
         }
     }
 
@@ -1065,20 +1061,11 @@ public:
         last = ser.PopBool();
         unsigned cnt = ser.PopUnsignedInt();
         entries.clear();
-        entries.reserve(cnt);
-
-        while (cnt--)
+        entries.resize(cnt);
+        BOOST_FOREACH(RandomEntry& entry, entries)
         {
-            unsigned counter = ser.PopUnsignedInt();
-            int max = ser.PopSignedInt();
-            int rngState = ser.PopSignedInt();
-            std::string src_name = ser.PopString();
-            unsigned src_line = ser.PopUnsignedInt();
-            unsigned obj_id = ser.PopUnsignedInt();
-
-            entries.push_back(RandomEntry(counter, max, rngState, src_name, src_line, obj_id));
+            entry.Deserialize(ser);
         }
-
 	}
 
 	void Run(MessageInterface* callback) override

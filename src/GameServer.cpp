@@ -890,7 +890,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
 
         const GameMessage_GameCommand& frontGC = player.gc_queue.front();
         AsyncChecksum curChecksum = frontGC.checksum;
-        checksums.push_back(curChecksum.randState);
+        checksums.push_back(curChecksum.randChecksum);
 
         // Checksumme des ersten Spielers als Richtwert
         if (referencePlayerIdx == 0xFF)
@@ -907,7 +907,7 @@ void GameServer::ExecuteNWF(const unsigned  /*currentTime*/)
         if (curChecksum != referenceChecksum)
         {
             LOG.write("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % currentGF % playerId % referencePlayerIdx
-                % curChecksum.randState % referenceChecksum.randState
+                % curChecksum.randChecksum % referenceChecksum.randChecksum
                 % curChecksum.objCt % referenceChecksum.objCt
                 % curChecksum.objIdCt % referenceChecksum.objIdCt;
 
@@ -1413,27 +1413,23 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
-    FILE* file = fopen(fileName.c_str(), "w");
+    bfs::ofstream file(fileName);
 
     if (file)
     {
         // print identical lines, they help in tracing the bug
         for(unsigned i = 0; i < identical; i++)
         {
-            fprintf(file, "[I]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, it1->GetValue(), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
-            
+            file << "[I]: " << *it1 << "\n";
             ++it1; ++it2;
         }
 
         while ((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
         {
-            fprintf(file, "[S]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it1->counter, it1->max, it1->GetValue(), it1->rngState, it1->src_name.c_str(), it1->src_line, it1->obj_id);
-            fprintf(file, "[C]: %u:R(%d)=%d,z=%d | %s#%u|id=%u\n", it2->counter, it2->max, it2->GetValue(), it2->rngState, it2->src_name.c_str(), it2->src_line, it2->obj_id);
-
+            file << "[S]: " << *it1 << "\n";
+            file << "[C]: " << *it2 << "\n";
             ++it1; ++it2;
         }
-
-        fclose(file);
 
         LOG.write("Async log saved at \"%s\"\n") % fileName;
     }

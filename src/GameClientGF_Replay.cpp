@@ -28,7 +28,7 @@
 
 void GameClient::ExecuteGameFrame_Replay()
 {
-    randcheckinfo.rand = RANDOM.GetCurrentRandomValue();
+    randcheckinfo.rand = RANDOM.GetChecksum();
     AsyncChecksum checksum(randcheckinfo.rand);
 
     const unsigned curGF = GetGFNumber();
@@ -59,7 +59,7 @@ void GameClient::ExecuteGameFrame_Replay()
             ExecuteAllGCs(msg);
 
             // Check for async if checksum data is valid
-            if(msg.checksum.randState != 0 &&  msg.checksum != checksum)
+            if(msg.checksum.randChecksum != 0 &&  msg.checksum != checksum)
             {
                 // Show message if this is the first async GF
                 if(replayinfo.async == 0)
@@ -71,7 +71,7 @@ void GameClient::ExecuteGameFrame_Replay()
                         ci->CI_ReplayAsync(text);
 
                     LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF
-                        % msg.checksum.randState % checksum.randState
+                        % msg.checksum.randChecksum % checksum.randChecksum
                         % msg.checksum.objCt % checksum.objCt
                         % msg.checksum.objIdCt % checksum.objIdCt;
 

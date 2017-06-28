@@ -21,57 +21,90 @@
 #define RANDOM_H_INCLUDED
 
 #include "Singleton.h"
+#include "random/OldLCG.h"
 #include <boost/array.hpp>
 #include <vector>
 #include <string>
 #include <limits>
+#include <stdint.h>
+#include <iosfwd>
 
-struct RandomEntry
+class Serializer;
+
+/// Random class for the random values in the game
+/// Guarantees reproducible sequences given same seeds/states
+/// Allows getting/restoring the state and provides a log of the last invocations and results
+/// T_PRNG must be a model of the Pseudo-Random Number Generator according to boost:
+///        http://www.boost.org/doc/libs/1_61_0/doc/html/boost_random/reference.html#boost_random.reference.concepts.pseudo_random_number_generator
+/// Additionally it must implement Serialize and Deserialize functions
+/// and operator()(unsigned max) to return a random value in the range [0, max)
+template<class T_PRNG>
+class Random : public Singleton< Random<T_PRNG> >
 {
-    unsigned counter;
-    int max;
-    int rngState;
-    std::string src_name;
-    unsigned src_line;
-    unsigned obj_id;
+public:
+    /// The used random number generator type
+    typedef T_PRNG PRNG;
 
-    inline unsigned GetValue() const;
-
-    RandomEntry(unsigned counter, int max, int rngState, const std::string& src_name, unsigned int src_line, unsigned obj_id) : counter(counter), max(max), rngState(rngState), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
-    RandomEntry() : counter(0), max(0), rngState(0), src_line(0), obj_id(0) {};
-};
-
-class Random : public Singleton<Random>
-{
+    /// Class for storing the invocation of the rng
+    struct RandomEntry
+    {
         unsigned counter;
-        boost::array<RandomEntry, 1024> async_log; //-V730_NOINIT
+        int max;
+        PRNG rngState;
+        std::string src_name;
+        unsigned src_line;
+        unsigned obj_id;
 
-    public:
+        RandomEntry() : counter(0), max(0), src_line(0), obj_id(0) {};
+        RandomEntry(unsigned counter, int max, const PRNG& rngState, const std::string& src_name, unsigned src_line, unsigned obj_id):
+            counter(counter), max(max), rngState(rngState), src_name(src_name), src_line(src_line), obj_id(obj_id) {};
+        
+        friend std::ostream& operator<<(std::ostream& os, const RandomEntry& entry){ return entry.print(os); }
+        std::ostream& print(std::ostream& os) const;
 
-        Random();
-        /// Initialisiert den Zufallszahlengenerator.
-        void Init(const unsigned int init);
-        /// Erzeugt eine Zufallszahl.
-        int Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max);
+        void Serialize(Serializer& ser) const;
+        void Deserialize(Serializer& ser);
 
-        /// Gibt aktuelle Zufallszahl zurück
-        int GetCurrentRandomValue() const { return rngState_; }
+        int GetValue() const;
+    };
 
-        std::vector<RandomEntry> GetAsyncLog();
+    Random();
+    /// Initialize the rng with a given seed
+    void Init(const uint64_t& seed);
+    /// Reset the Random class to start from a given state
+    void ResetState(const PRNG& newState);
+    /// Return a random number in the range [0, max)
+    int Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max);
 
-        /// Speichere Log
-        void SaveLog(const std::string& filename);
+    /// Get a checksum of the RNG
+    unsigned GetChecksum() const;
+    static unsigned CalcChecksum(const PRNG& rng);
 
-        static int GetValueFromState(const int rngState, const int maxVal);
+    /// Get current rng state
+    const PRNG& GetCurrentState() const;
 
-    private:
-        int rngState_; /// Die aktuelle Zufallszahl.
-        static inline int GetNextState(const int rngState, const int maxVal);
+    std::vector<RandomEntry> GetAsyncLog();
+
+    /// Save the log to a file
+    void SaveLog(const std::string& filename);
+
+private:
+    PRNG rng_; /// the PRNG
+    /// Number of invocations to the PRNG
+    unsigned numInvocations_;
+    /// History
+    boost::array<RandomEntry, 1024> history_; //-V730_NOINIT
+
 };
+
+/// The actual PRNG used for the ingame RNG
+typedef OldLCG UsedPRNG;
+typedef Random<UsedPRNG> UsedRandom;
+typedef UsedRandom::RandomEntry RandomEntry;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
-#define RANDOM Random::inst()
+// Macros / Defines
+#define RANDOM UsedRandom::inst()
 /// Shortcut to get a new random value in range [0, maxVal) for a given object id
 /// Note: maxVal has to be small (at least <= 32768)
 #define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
@@ -92,9 +125,5 @@ struct RandomFunctor
 
 /// Shortcut for creating an instance of RandomFunctor
 #define RANDOM_FUNCTOR(varName) RandomFunctor varName(__FILE__, __LINE__)
-
-unsigned RandomEntry::GetValue() const {
-    return Random::GetValueFromState(rngState, max);
-}
 
 #endif // !RANDOM_H_INCLUDED

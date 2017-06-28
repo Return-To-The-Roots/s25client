@@ -65,12 +65,11 @@ void installSegFaultHandler(){}
 void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
 {
 #ifdef RTTR_RAND_TEST
-    RANDOM.Init(rand() + defaultValue);
-#else
-    RANDOM.Init(defaultValue);
+    defaultValue += rand();
 #endif
+    RANDOM.Init(defaultValue);
     if(fileName && fileName[0])
-        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentRandomValue() << std::endl;
+        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentState() << "(" << defaultValue << ")" << std::endl;
 }
 
 class DummyDesktop: public Desktop

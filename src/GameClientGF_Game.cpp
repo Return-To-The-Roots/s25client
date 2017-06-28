@@ -27,7 +27,7 @@ void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
-    AsyncChecksum checksum(RANDOM.GetCurrentRandomValue());
+    AsyncChecksum checksum(RANDOM.GetChecksum());
     const unsigned curGF = GetGFNumber();
 
     for(unsigned i = 0; i < GetPlayerCount(); ++i)
