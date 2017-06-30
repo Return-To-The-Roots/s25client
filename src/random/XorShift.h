@@ -35,7 +35,7 @@ public:
     static return_type max() { return UINT64_MAX; }
 
     XorShift() { seed(); }
-    explicit XorShift(unsigned initSeed) { seed(initSeed); }
+    explicit XorShift(uint64_t initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
     explicit XorShift(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0) { seed(seedSeq); }
 
@@ -66,9 +66,10 @@ private:
 template<class T_SeedSeq>
 inline void XorShift::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type*)
 {
-    unsigned seeds[2];
+    uint32_t seeds[2];
     seedSeq.generate(&seeds[0], &seeds[1]);
-    seed(*static_cast<uint64_t*>(seeds));
+    // Interpret 2 32 bit values as one 64 bit value
+    seed(*reinterpret_cast<uint64_t*>(seeds));
 }
 
 inline XorShift::return_type XorShift::operator()()
