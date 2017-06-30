@@ -30,7 +30,7 @@ namespace{
         RandomConfig config;
         ObjectGenerator objGen;
     public:
-        ObjGenFixture(): config(RandomConfig::Random, 0x1337), objGen(config){}
+        ObjGenFixture(): config(MapStyle::Random, 0x1337), objGen(config){}
     };
 }
 

@@ -18,46 +18,32 @@
 #ifndef MapStyle_h__
 #define MapStyle_h__
 
+#include <boost/core/scoped_enum.hpp>
+
 /**
  * Random map types for map generation. A map type describes the basic high-level look of a map.
  */
-enum MapStyle
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(MapStyle)
 {
-    /**
-     * Greenland consists moslty of green area, small lakes, trees, stones and rather small mountains.
-     */
-    MS_Greenland,
-    
-    /**
-     * Riverland is similar to Greenland with additional rivers crossing the map.
-     */
-    MS_Riverland,
-    
-    /**
-     * Each player starts on its own island. There're also uninhabited islands around the map.
-     */
-    MS_Islands,
-    
-    /**
-     * All players start on the same island.
-     */
-    MS_Continent,
-    
-    /**
-     * All players start on their own, small island. There's one big island in the center 
-     * of the map with lots of resources and mountains.
-     */
-    MS_Migration,
-    
-    /**
-     * Players are starting on a land-ring around the sea.
-     */
-    MS_Ringland,
-    
-    /**
-     * Mega random!
-     */
-    MS_Random
-};
+    /** Greenland maps are covered by grass and mountains with very few lakes. */
+    Greenland,
+    /** Riverland maps are close to greenland maps but with plenty of water. */
+    Riverland,
+    /** Ringland maps usually covered by water apart from a ring-shaped piece of land. */
+    Ringland,
+    /** On migration style maps players are starting on their own little island.
+     *  The main resources (mountains), however, are available only on one large
+     *  island in the center of the map. */
+    Migration,
+    /** Each player starts on its own island which contains all relevant resources
+     *  (trees, stone piles, mountains). */
+    Islands,
+    /** Continent maps are big islands surrounded by water.
+     *  Each player starts on the same big island. */
+    Continent,
+    /** full random map */
+    Random
+}
+BOOST_SCOPED_ENUM_DECLARE_END(MapStyle)
 
 #endif // MapStyle_h__

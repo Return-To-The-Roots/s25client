@@ -136,25 +136,25 @@ void iwMapGenerator::Apply()
     switch (GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE)->GetSelection())
     {
         case 0:
-            mapSettings.style = MS_Islands;
+            mapSettings.style = MapStyle::Islands;
             break;
         case 1:
-            mapSettings.style = MS_Continent;
+            mapSettings.style = MapStyle::Continent;
             break;
         case 2:
-            mapSettings.style = MS_Greenland;
+            mapSettings.style = MapStyle::Greenland;
             break;
         case 3:
-            mapSettings.style = MS_Migration;
+            mapSettings.style = MapStyle::Migration;
             break;
         case 4:
-            mapSettings.style = MS_Riverland;
+            mapSettings.style = MapStyle::Riverland;
             break;
         case 5:
-            mapSettings.style = MS_Ringland;
+            mapSettings.style = MapStyle::Ringland;
             break;
         case 6:
-            mapSettings.style = MS_Random;
+            mapSettings.style = MapStyle::Random;
             break;
         default:
             break;
@@ -240,27 +240,27 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(CTRL_RATIO_GRANITE)->SetPosition(mapSettings.ratioGranite);
     
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_STYLE);
-    switch (mapSettings.style)
+    switch (boost::native_value(mapSettings.style))
     {
-        case MS_Islands:
+        case MapStyle::Islands:
             combo->SetSelection(0);
             break;
-        case MS_Continent:
+        case MapStyle::Continent:
             combo->SetSelection(1);
             break;
-        case MS_Greenland:
+        case MapStyle::Greenland:
             combo->SetSelection(2);
             break;
-        case MS_Migration:
+        case MapStyle::Migration:
             combo->SetSelection(3);
             break;
-        case MS_Riverland:
+        case MapStyle::Riverland:
             combo->SetSelection(4);
             break;
-        case MS_Ringland:
+        case MapStyle::Ringland:
             combo->SetSelection(5);
             break;
-        case MS_Random:
+        case MapStyle::Random:
             combo->SetSelection(6);
             break;
         default:

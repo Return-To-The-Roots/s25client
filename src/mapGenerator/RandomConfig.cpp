@@ -21,41 +21,41 @@
 #include <ctime>
 #include <cstdlib>
 
-RandomConfig::RandomConfig(MapType mapType)
+RandomConfig::RandomConfig(MapStyle mapStyle)
 {
     uint64_t seed = static_cast<uint64_t>(time(NULL));
-    Init(mapType, seed);
+    Init(mapStyle, seed);
 }
 
-RandomConfig::RandomConfig(MapType mapType, uint64_t seed)
+RandomConfig::RandomConfig(MapStyle mapStyle, uint64_t seed)
 {
-    Init(mapType, seed);
+    Init(mapStyle, seed);
 }
 
-void RandomConfig::Init(MapType mapType, uint64_t seed)
+void RandomConfig::Init(MapStyle mapStyle, uint64_t seed)
 {
-    srand(static_cast<unsigned>(seed));
-    switch(mapType)
+    rng_.seed(static_cast<UsedRNG::return_type>(seed));
+    switch(boost::native_value(mapStyle))
     {
-    case RandomConfig::Greenland:
+    case MapStyle::Greenland:
         CreateGreenland();
         break;
-    case RandomConfig::Riverland:
+    case MapStyle::Riverland:
         CreateRiverland();
         break;
-    case RandomConfig::Ringland:
+    case MapStyle::Ringland:
         CreateRingland();
         break;
-    case RandomConfig::Migration:
+    case MapStyle::Migration:
         CreateMigration();
         break;
-    case RandomConfig::Islands:
+    case MapStyle::Islands:
         CreateIslands();
         break;
-    case RandomConfig::Continent:
+    case MapStyle::Continent:
         CreateContinent();
         break;
-    case RandomConfig::Random:
+    case MapStyle::Random:
         CreateRandom();
         break;
     default:

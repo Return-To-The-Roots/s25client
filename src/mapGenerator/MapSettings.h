@@ -36,7 +36,7 @@ struct MapSettings
           minPlayerRadius(0.31),
           maxPlayerRadius(0.51),
           type(LT_GREENLAND),
-          style(MS_Random) {}
+          style(MapStyle::Random) {}
     
     /**
      * Number of players.

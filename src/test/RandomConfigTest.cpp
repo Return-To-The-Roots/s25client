@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_SUITE(RandomConfigTest)
  */
 BOOST_AUTO_TEST_CASE(CreateRandom_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Random);
+    RandomConfig config(MapStyle::Random, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(CreateRandom_MaxHeightBelowTextureCount)
  */
 BOOST_AUTO_TEST_CASE(CreateIslands_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Islands);
+    RandomConfig config(MapStyle::Islands, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(CreateIslands_MaxHeightBelowTextureCount)
  */
 BOOST_AUTO_TEST_CASE(CreateRingland_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Ringland);
+    RandomConfig config(MapStyle::Ringland, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(CreateRingland_MaxHeightBelowTextureCount)
  */
 BOOST_AUTO_TEST_CASE(CreateContinent_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Continent);
+    RandomConfig config(MapStyle::Continent, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(CreateContinent_MaxHeightBelowTextureCount)
  */
 BOOST_AUTO_TEST_CASE(CreateGreenland_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Greenland);
+    RandomConfig config(MapStyle::Greenland, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(CreateGreenland_MaxHeightBelowTextureCount)
  */
 BOOST_AUTO_TEST_CASE(CreateMigration_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Migration);
+    RandomConfig config(MapStyle::Migration, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(CreateMigration_MaxHeightBelowTextureCount)
  */
 BOOST_AUTO_TEST_CASE(CreateRiverland_MaxHeightBelowTextureCount)
 {
-    RandomConfig config(RandomConfig::Riverland);
+    RandomConfig config(MapStyle::Riverland, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
