@@ -56,6 +56,7 @@ AddDirectory(notifications)
 AddDirectory(ogl)
 AddDirectory(pathfinding)
 AddDirectory(postSystem)
+AddDirectory(random)
 AddDirectory(world)
 
 ################################################################################
