@@ -24,35 +24,36 @@
 
 void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
 {
-    RandomConfig config;
+    RandomConfig::MapType mapType;
 
     // create a random map generator based on the map style
     switch (settings.style)
     {
         case MS_Greenland:
-            config = RandomConfig::CreateGreenland();
+            mapType = RandomConfig::Greenland;
             break;
         case MS_Riverland:
-            config = RandomConfig::CreateRiverland();
+            mapType = RandomConfig::Riverland;
             break;
         case MS_Islands:
-            config = RandomConfig::CreateIslands();
+            mapType = RandomConfig::Islands;
             break;
         case MS_Continent:
-            config = RandomConfig::CreateContinent();
+            mapType = RandomConfig::Continent;
             break;
         case MS_Migration:
-            config = RandomConfig::CreateMigration();
+            mapType = RandomConfig::Migration;
             break;
         case MS_Ringland:
-            config = RandomConfig::CreateRingland();
+            mapType = RandomConfig::Ringland;
             break;
         case MS_Random:
-            config = RandomConfig::CreateRandom();
+            mapType = RandomConfig::Random;
             break;
         default:
             throw std::logic_error("Invalid enum value");
     }
+    RandomConfig config(mapType);
     RandomMapGenerator generator(config);
     Map* randomMap = generator.Create(settings);
 

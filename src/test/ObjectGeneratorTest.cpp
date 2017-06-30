@@ -27,7 +27,7 @@ namespace{
         RandomConfig config;
         ObjectGenerator objGen;
     public:
-        ObjGenFixture(): config(RandomConfig::CreateRandom()), objGen(config){}
+        ObjGenFixture(): config(RandomConfig::Random), objGen(config){}
     };
 }
 

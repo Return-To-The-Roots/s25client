@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
  */
 BOOST_AUTO_TEST_CASE(Create_CorrectSize)
 {
-    RandomConfig config = RandomConfig::CreateRandom();
+    RandomConfig config(RandomConfig::Random);
     MapSettings settings;
     settings.width = 32u;
     settings.height = 8u;
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
  */
 BOOST_AUTO_TEST_CASE(Create_Headquarters)
 {
-    RandomConfig config = RandomConfig::CreateRandom();
+    RandomConfig config(RandomConfig::Random);
     MapSettings settings;
     settings.width = 16u;
     settings.height = 32u;

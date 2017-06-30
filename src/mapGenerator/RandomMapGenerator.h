@@ -25,7 +25,7 @@
 
 #include <vector>
 
-struct RandomConfig;
+class RandomConfig;
 
 /**
  * Random map generator.

@@ -21,7 +21,7 @@
 #include "mapGenerator/Map.h"
 #include "gameData/TerrainData.h"
 
-struct RandomConfig;
+class RandomConfig;
 
 /**
  * Utility class to place object, textures and animals on a map.
