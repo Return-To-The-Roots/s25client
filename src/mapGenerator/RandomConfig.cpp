@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
+#include <boost/random/uniform_real_distribution.hpp>
 #include <stdexcept>
 #include <ctime>
-#include <cstdlib>
 
 RandomConfig::RandomConfig(MapStyle mapStyle)
 {
@@ -34,7 +34,7 @@ RandomConfig::RandomConfig(MapStyle mapStyle, uint64_t seed)
 
 void RandomConfig::Init(MapStyle mapStyle, uint64_t seed)
 {
-    rng_.seed(static_cast<UsedRNG::return_type>(seed));
+    rng_.seed(static_cast<UsedRNG::result_type>(seed));
     switch(boost::native_value(mapStyle))
     {
     case MapStyle::Greenland:
@@ -326,21 +326,16 @@ void RandomConfig::CreateRandom()
 
 int RandomConfig::Rand(const int max)
 {
-    return Rand(0, max);
+    return static_cast<int>(rng_(max + 1));
 }
 
 int RandomConfig::Rand(const int min, const int max)
 {
-    // NOTE: the portable RANDOM class generates the same sequence of values after
-    // a while when creating large number of new values. Therefore, the platform
-    // dependent rand() function is used here.
-
-    return min + rand() % (max - min);
+    return min + Rand(max - min);
 }
 
 double RandomConfig::DRand(const double min, const double max)
 {
-    return min + static_cast<double>(Rand(0, RAND_MAX)) /
-        (static_cast<double>(RAND_MAX / (max - min)));
+    boost::random::uniform_real_distribution<double> distr(min, max);
+    return distr(rng_);
 }
-

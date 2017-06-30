@@ -29,10 +29,10 @@ class Serializer;
 class XorShift
 {
 public:
-    typedef uint64_t return_type;
+    typedef uint64_t result_type;
 
-    static return_type min() { return 1; }
-    static return_type max() { return UINT64_MAX; }
+    static result_type min() { return 1; }
+    static result_type max() { return UINT64_MAX; }
 
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
@@ -45,7 +45,7 @@ public:
     void seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0);
 
     /// Return random value in [min, max]
-    return_type operator()();
+    result_type operator()();
     /// Return random value in [0, maxVal] for a small maxVal
     unsigned operator()(unsigned maxVal);
 
@@ -72,7 +72,7 @@ inline void XorShift::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost:
     seed(*reinterpret_cast<uint64_t*>(seeds));
 }
 
-inline XorShift::return_type XorShift::operator()()
+inline XorShift::result_type XorShift::operator()()
 {
     state_ ^= state_ >> 12; // a
     state_ ^= state_ << 25; // b

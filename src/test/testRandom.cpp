@@ -52,10 +52,10 @@ BOOST_AUTO_TEST_CASE(XorShiftRange)
 {
     XorShift rng;
     const unsigned numSamples = 3000;
-    const XorShift::return_type min = rng.min();
-    const XorShift::return_type max = rng.max();
+    const XorShift::result_type min = rng.min();
+    const XorShift::result_type max = rng.max();
     for(unsigned i = 0; i < numSamples; i++){
-        XorShift::return_type val = rng();
+        XorShift::result_type val = rng();
         BOOST_REQUIRE_GE(val, min);
         BOOST_REQUIRE_LE(val, max);
     }
@@ -92,10 +92,10 @@ BOOST_AUTO_TEST_CASE(XorShiftFromSeedSeq)
     // to the rng. It is possible that same values are returned as it is random
     // but it is unlikely for many values to be the same
     const unsigned numSamples = 10;
-    const XorShift::return_type firstVal = rng();
+    const XorShift::result_type firstVal = rng();
     bool differentValueFound = false;
     for(unsigned i = 0; i < numSamples; i++){
-        XorShift::return_type val = rng();
+        XorShift::result_type val = rng();
         if(val != firstVal){
             differentValueFound = true;
             break;
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(XorShiftCopy)
 {
     XorShift rng, rng2;
     BOOST_REQUIRE_EQUAL(rng, rng2);
-    XorShift::return_type val = rng();
+    XorShift::result_type val = rng();
     BOOST_REQUIRE_NE(rng, rng2);
     // Both must return the same value
     BOOST_REQUIRE_EQUAL(val, rng2());

@@ -32,7 +32,7 @@ void XorShift::Deserialize(Serializer& ser)
     state_ = (high << 32) | low;
 }
 
-void XorShift::Serialize(Serializer & ser) const
+void XorShift::Serialize(Serializer& ser) const
 {
     unsigned high = static_cast<unsigned>(state_ >> 32);
     unsigned low = static_cast<unsigned>(state_);
