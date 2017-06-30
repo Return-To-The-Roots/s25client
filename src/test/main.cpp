@@ -17,11 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 
-#include "Random.h"
 #include "ogl/glAllocator.h"
 #include "ProgramInitHelpers.h"
 #include "files.h"
-#include "test/testHelpers.h"
 // Test helpers. Header only 
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
 #include "libutil/src/Log.h"
@@ -87,28 +85,6 @@ BOOST_AUTO_TEST_CASE(Basic)
 {
     // Check if tests work
     BOOST_CHECK(true);
-}
-
-BOOST_AUTO_TEST_CASE(RandomTest)
-{
-    initGameRNG();
-    std::vector<unsigned> resultCt6(6);
-    std::vector<unsigned> resultCt13(13);
-    std::vector<unsigned> resultCt28(28);
-    const unsigned numSamples = 3000;
-    for(unsigned i = 0; i < numSamples; i++)
-    {
-        ++resultCt6.at(RANDOM.Rand(__FILE__, __LINE__, 0, resultCt6.size()));
-        ++resultCt13.at(RANDOM.Rand(__FILE__, __LINE__, 0, resultCt13.size()));
-        ++resultCt28.at(RANDOM.Rand(__FILE__, __LINE__, 0, resultCt28.size()));
-    }
-    // Result must be at least 70% of the average
-    for(unsigned i = 0; i < resultCt6.size(); i++)
-        BOOST_REQUIRE_GT(resultCt6[i], numSamples / resultCt6.size() * 70u / 100u);
-    for(unsigned i = 0; i < resultCt13.size(); i++)
-        BOOST_REQUIRE_GT(resultCt13[i], numSamples / resultCt13.size() * 70u / 100u);
-    for(unsigned i = 0; i < resultCt28.size(); i++)
-        BOOST_REQUIRE_GT(resultCt28[i], numSamples / resultCt28.size() * 70u / 100u);
 }
 
 BOOST_AUTO_TEST_CASE(LocaleFormatTest)
