@@ -15,13 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#define _USE_MATH_DEFINES
+
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/MapUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/TerrainData.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <queue>
 #include <list>
