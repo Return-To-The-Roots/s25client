@@ -1,5 +1,23 @@
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+//
+// This file is part of Return To The Roots.
+//
+// Return To The Roots is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Return To The Roots is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
+#include "System.h"
 #include <build_paths.h>
 
 #include <boost/locale.hpp>
@@ -49,22 +67,12 @@ bool InitLocale()
     return true;
 }
 
-bool InitWorkingDirectory(const std::string& exeFilepath)
+bool InitWorkingDirectory(const bfs::path& exeFilepath)
 {
-    bfs::path fullExeFilepath = exeFilepath;
-#ifdef _WIN32
-    // For windows we may be run in a path with special chars. So get the wide-char version of the filepath
-    int nArgs;
-    wchar_t** argList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
-    if(!argList || nArgs < 1)
-    {
-        std::cerr << "Could not get command line!" << std::endl;
-        return false;
-    }
-    fullExeFilepath = argList[0];
-    LocalFree(argList);
-#endif // _WIN32
-    fullExeFilepath = bfs::absolute(fullExeFilepath);
+    // Complete the path as it would be done by the system
+    // This avoids problems if the program was not started from the working directory
+    // e.g. by putting its path in PATH
+    bfs::path fullExeFilepath = bfs::absolute(bfs::system_complete(exeFilepath));
     if(!bfs::exists(fullExeFilepath))
     {
         std::cerr << "Executable not at '" << fullExeFilepath << "'" << std::endl;
@@ -72,12 +80,10 @@ bool InitWorkingDirectory(const std::string& exeFilepath)
     }
 
     // Determine install prefix
-    bfs::path prefixPath;
     // Allow overwrite with RTTR_PREFIX_DIR
-    const char* rttrPrefixDir = getenv("RTTR_PREFIX_DIR");
-    if(rttrPrefixDir)
+    bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
+    if(!prefixPath.empty())
     {
-        prefixPath = rttrPrefixDir;
         std::cout << "Note: Prefix path manually set to " << prefixPath << std::endl;
     } else
     {

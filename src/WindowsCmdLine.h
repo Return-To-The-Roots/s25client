@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,16 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef SIGNAL_H_INCLUDED
-#define SIGNAL_H_INCLUDED
-
 #pragma once
 
+#ifndef WindowsCmdLine_h__
+#define WindowsCmdLine_h__
+
+#include <vector>
+
+/// Provides UTF8 encoded arguments to use instead of the original argv
+/// Inspired by the class of the same name in  MongoDB
+/// The data is valid for the lifetime of this class
+class WindowsCmdLine
+{
+public:
+    /// Initialize the class from the given parameters (e.g. from main function)
+    WindowsCmdLine(int argc, wchar_t** argv);
 #ifdef _WIN32
-#   include <windows.h>
-BOOL WINAPI HandlerRoutine(DWORD dwCtrlType);
-#else
-void HandlerRoutine(int sig);
+    /// Initialize by finding the parameters using the WinAPI
+    WindowsCmdLine();
 #endif // _WIN32
 
-#endif // SIGNAL_H_INCLUDED
+    char** getArgv();
+private:
+    void init(int argc, wchar_t** argv);
+    std::vector< std::vector<char> > arguments_;
+    std::vector<char*> argv_;
+};
+
+#endif // WindowsCmdLine_h__

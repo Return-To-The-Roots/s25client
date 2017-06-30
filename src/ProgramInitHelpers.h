@@ -20,9 +20,10 @@
 #ifndef ProgramInitHelpers_h__
 #define ProgramInitHelpers_h__
 
+#include <boost/filesystem/path.hpp>
 #include <string>
 
 bool InitLocale();
-bool InitWorkingDirectory(const std::string& exeFilepath);
+bool InitWorkingDirectory(const bfs::path& exeFilepath);
 
 #endif // ProgramInitHelpers_h__

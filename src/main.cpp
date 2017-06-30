@@ -18,14 +18,6 @@
 #include "defines.h" // IWYU pragma: keep
 #include "RTTR_AssertError.h"
 
-#ifdef _WIN32
-#   include <windows.h>
-#endif
-
-#ifndef _MSC_VER
-#   include <csignal>
-#endif
-
 #include "ProgramInitHelpers.h"
 #include "SignalHandler.h"
 
@@ -42,12 +34,14 @@
 #include "QuickStartGame.h"
 #include "GlobalVars.h"
 #include "fileFuncs.h"
+#include "System.h"
 
 #include "ogl/glAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
 #include "mygettext/src/mygettext.h"
 
 #ifdef _WIN32
+#   include "WindowsCmdLine.h"
 #   include "../win32/resource.h"
 #   include "drivers/VideoDriverWrapper.h"
 #endif
@@ -61,9 +55,17 @@
 #   include <SDL_main.h>
 #endif // __APPLE__
 
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-#   include <eh.h>
+#ifdef _WIN32
+#   include <windows.h>
+#   if defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
+#       include <eh.h>
+#   endif
 #endif
+
+#ifndef _MSC_VER
+#   include <csignal>
+#endif
+
 
 //#include <vld.h> 
 
@@ -396,6 +398,11 @@ int RunProgram(const std::string& exeFilepath, po::variables_map& options)
  */
 int main(int argc, char** argv)
 {
+#ifdef _WIN32
+    // Replace arguments by UTF8 versions
+    WindowsCmdLine winCmdLine;
+    argv = winCmdLine.getArgv();
+#endif // _WIN32
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h", "Show help")
