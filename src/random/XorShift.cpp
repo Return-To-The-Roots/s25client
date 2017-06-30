@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "XorShift.h"
 #include "libutil/src/Serializer.h"
+#include <iostream>
 
 void XorShift::discard(uint64_t j)
 {

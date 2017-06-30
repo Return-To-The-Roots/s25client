@@ -20,7 +20,8 @@
 
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
-#include <stdint.h>
+#include <boost/cstdint.hpp>
+#include <boost/limits.hpp>
 #include <iosfwd>
 
 class Serializer;
@@ -32,7 +33,7 @@ public:
     typedef uint64_t result_type;
 
     static result_type min() { return 1; }
-    static result_type max() { return UINT64_MAX; }
+    static result_type max() { return std::numeric_limits<uint64_t>::max(); }
 
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
