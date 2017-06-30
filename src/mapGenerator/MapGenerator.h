@@ -22,7 +22,7 @@
 #include <string>
 
 /**
- * The MapGenerator is a utility to generate a large variaty of different worlds.
+ * The MapGenerator is a utility to generate a large variety of different worlds.
  */
 class MapGenerator
 {
@@ -30,10 +30,10 @@ class MapGenerator
 
     /**
      * Create and saves a new map.
-     * @param filePath path for the ouput file
+     * @param filePath path for the output file
      * @param settings used to generate the random map
      */
-    void Create(const std::string& filePath, const MapSettings& settings);
+    static void Create(const std::string& filePath, const MapSettings& settings);
 };
 
 #endif // MapGenerator_h__
