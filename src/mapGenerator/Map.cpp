@@ -1,6 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
-//
-// This file is part of Return To The Roots.
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // Return To The Roots is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,13 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
 
-Map::Map() : width(0), height(0)
-{
-    
-}
+Map::Map() : width(0), height(0){}
 
 Map::Map(unsigned width,
          unsigned height,
