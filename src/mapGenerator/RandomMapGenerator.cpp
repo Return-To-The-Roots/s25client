@@ -19,6 +19,7 @@
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
+#include "mapGenerator/RandomConfig.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -27,7 +28,7 @@
 #define MIN_HARBOR_DISTANCE     35.0
 #define MIN_HARBOR_WATER        200
 
-RandomMapGenerator::RandomMapGenerator()
+RandomMapGenerator::RandomMapGenerator(RandomConfig& config): config(config)
 {
 }
 
@@ -70,12 +71,12 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     // radius for player distribution
     const int rMin = (int)(settings.minPlayerRadius * length);;
     const int rMax = (int)(settings.maxPlayerRadius * length);
-    const int rnd = RandomConfig::Rand(rMin, rMax);
+    const int rnd = config.Rand(rMin, rMax);
     
     // player headquarters for the players
     for (unsigned i = 0; i < settings.players; i++)
     {
-        // compute headquater position
+        // compute headquarter position
         Point<int> position = helper.ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
 
         // store headquarter position
@@ -88,18 +89,19 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
 
 void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& map)
 {
+    ObjectGenerator objGen(config);
     for (unsigned i = 0; i < settings.players; i++)
     {
-        int offset1 = RandomConfig::Rand(0, 180);
-        int offset2 = RandomConfig::Rand(180, 360);
+        int offset1 = config.Rand(0, 180);
+        int offset2 = config.Rand(180, 360);
         const Point<int> p(map.positions[i]);
         
-        helper.SetStones(map, helper.ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
-        helper.SetStones(map, helper.ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
+        helper.SetStones(map, objGen, helper.ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
+        helper.SetStones(map, objGen, helper.ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
     }
 }
 
-void RandomMapGenerator::CreateHills(const MapSettings& settings, const RandomConfig& config, Map& map)
+void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
 {
     const int width = map.width;
     const int height = map.height;
@@ -127,14 +129,14 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, const RandomCo
                 if (it->IsInArea(tile, distanceToPlayer, width, height))
                 {
                     const int pr = (int)(*it).likelyhoodHill;
-                    const int rnd = RandomConfig::Rand(0, pr > 0 ? 101 :
+                    const int rnd = config.Rand(0, pr > 0 ? 101 :
                                                        (int)(100.0 / (*it).likelyhoodHill));
                     const int minZ = (*it).minElevation;
                     const int maxZ = (*it).maxElevation;
                     
                     if (maxZ > 0 && rnd <= pr)
                     {
-                        const unsigned z = (unsigned)RandomConfig::Rand(minZ, maxZ + 1);
+                        const unsigned z = (unsigned)config.Rand(minZ, maxZ + 1);
                         helper.SetHill(map, tile, z == GetMinTerrainHeight(TT_MOUNTAINMEADOW, textures) ? z-1 : z);
                     }
                 }
@@ -143,13 +145,15 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, const RandomCo
     }
 }
 
-void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, const RandomConfig& config, Map& map)
+void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& map)
 {
     const int width = map.width;
     const int height = map.height;
     const int players = settings.players;
     std::vector<AreaDesc> areas = config.areas;
     std::vector<TerrainType> textures = config.textures;
+
+    ObjectGenerator objGen(config);
 
     for (int x = 0; x < width; x++)
     {
@@ -166,17 +170,17 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, const
             {
                 case TT_WATER:
                     map.z[index]        = GetMaxTerrainHeight(TT_WATER, textures);
-                    map.animal[index]   = ObjectGenerator::CreateDuck(3);
+                    map.animal[index]   = objGen.CreateDuck(3);
                     map.resource[index] = libsiedler2::R_Fish;
                     break;
                 case TT_MEADOW1:
-                    map.animal[index]   = ObjectGenerator::CreateRandomForestAnimal(4);
+                    map.animal[index]   = objGen.CreateRandomForestAnimal(4);
                     break;
                 case TT_MEADOW_FLOWERS:
-                    map.animal[index]   = ObjectGenerator::CreateSheep(4);
+                    map.animal[index]   = objGen.CreateSheep(4);
                     break;
                 case TT_MOUNTAIN1:
-                    map.resource[index] = ObjectGenerator::CreateRandomResource(settings.ratioGold,
+                    map.resource[index] = objGen.CreateRandomResource(settings.ratioGold,
                                                                                  settings.ratioIron,
                                                                                  settings.ratioCoal,
                                                                                  settings.ratioGranite);
@@ -199,13 +203,13 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, const
             {
                 if (it->IsInArea(tile, distanceToPlayer, width, height))
                 {
-                    if (RandomConfig::Rand(0, 100) < (*it).likelyhoodTree)
+                    if (config.Rand(0, 100) < (*it).likelyhoodTree)
                     {
-                        helper.SetTree(map, tile);
+                        helper.SetTree(map, objGen, tile);
                     }
-                    else if (RandomConfig::Rand(0, 100) < (*it).likelyhoodStone)
+                    else if (config.Rand(0, 100) < (*it).likelyhoodStone)
                     {
-                        helper.SetStone(map, tile);
+                        helper.SetStone(map, objGen, tile);
                     }
                 }
             }
@@ -263,7 +267,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, const
     }
 }
 
-Map* RandomMapGenerator::Create(const MapSettings& settings, const RandomConfig& config)
+Map* RandomMapGenerator::Create(const MapSettings& settings)
 {
     Map* map = new Map(settings.width, settings.height, "Random", "auto");
 
@@ -274,13 +278,11 @@ Map* RandomMapGenerator::Create(const MapSettings& settings, const RandomConfig&
     // the actual map generation
     PlacePlayers(settings, *map);
     PlacePlayerResources(settings, *map);
-    CreateHills(settings, config, *map);
-    FillRemainingTerrain(settings, config, *map);
+    CreateHills(settings, *map);
+    FillRemainingTerrain(settings, *map);
     
     // post-processing
     helper.Smooth(*map);
     
     return map;
 }
-
-

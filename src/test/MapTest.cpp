@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_SUITE(MapTest)
  * Tests the default constructor of the Map class. Width and height of the map
  * are expected to be zero.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
+BOOST_AUTO_TEST_CASE(Constructor_DefaultZeroSize)
 {
     Map map;
     
@@ -37,7 +37,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_DefaultZeroSize, Map)
  * Tests the constructor of the Map class. The new map should have correct size 
  * according to the constructor parameters.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
+BOOST_AUTO_TEST_CASE(Constructor_CorrectSize)
 {
     const unsigned width = 64u;
     const unsigned height = 32u;
@@ -66,7 +66,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectSize, Map)
  * Tests the constructor of the Map class. The name must match the name specified
  * in the constructor arguments.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_CorrectName, Map)
+BOOST_AUTO_TEST_CASE(Constructor_CorrectName)
 {
     std::string name("name");
     Map map(64, 32, name, "author");
@@ -81,7 +81,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectName, Map)
  * Tests the constructor of the Map class. The author must match the author specified
  * in the constructor arguments.
  */
-BOOST_FIXTURE_TEST_CASE(Constructor_CorrectAuthor, Map)
+BOOST_AUTO_TEST_CASE(Constructor_CorrectAuthor)
 {
     std::string author1("author1");
     Map mapA(64, 32, "name", author1);
@@ -97,7 +97,7 @@ BOOST_FIXTURE_TEST_CASE(Constructor_CorrectAuthor, Map)
  * Tests the Map::CreateArchiv method. Ensure that the generated archiv for a map is 
  * not null.
  */
-BOOST_FIXTURE_TEST_CASE(CreateArchiv_NotNull, Map)
+BOOST_AUTO_TEST_CASE(CreateArchiv_NotNull)
 {
     std::string author("author");
     Map map(64, 32, "name", author);

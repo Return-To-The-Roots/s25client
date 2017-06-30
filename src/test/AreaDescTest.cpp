@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_SUITE(MapTest)
  * Tests the AreaDesc::IsInArea method for a point inside of the area independent of 
  * the player positions.
  */
-BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
+BOOST_AUTO_TEST_CASE(IsInArea_PointInsideIgnorePlayer)
 {
     const int width = 16;
     const int height = 32;
@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointInsideIgnorePlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point outside of the area independent of
  * the player positions.
  */
-BOOST_FIXTURE_TEST_CASE(IsInArea_PointOutsideIgnorePlayer, AreaDesc)
+BOOST_AUTO_TEST_CASE(IsInArea_PointOutsideIgnorePlayer)
 {
     const int width = 16;
     const int height = 32;
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointOutsideIgnorePlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point outside of the area because it is too
  * close to a player.
  */
-BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseToPlayer, AreaDesc)
+BOOST_AUTO_TEST_CASE(IsInArea_PointTooCloseToPlayer)
 {
     const int width = 16;
     const int height = 32;
@@ -88,7 +88,7 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointTooCloseToPlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point inside of the area with a given minimum
  * player distance.
  */
-BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
+BOOST_AUTO_TEST_CASE(IsInArea_PointFarFromPlayer)
 {
     const int width = 16;
     const int height = 32;
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(IsInArea_PointFarFromPlayer, AreaDesc)
  * Tests the AreaDesc::IsInArea method for a point inside of the area with a given maximum
  * player distance.
  */
-BOOST_FIXTURE_TEST_CASE(IsInArea_PointNearPlayer, AreaDesc)
+BOOST_AUTO_TEST_CASE(IsInArea_PointNearPlayer)
 {
     const int width = 16;
     const int height = 32;

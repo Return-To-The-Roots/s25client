@@ -123,8 +123,8 @@ RandomConfig RandomConfig::CreateRingland()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_SNOW);
     
-    const double rMin = DRand(0.2, 0.5);
-    const double rMax = DRand(rMin + 0.1, 0.9);
+    const double rMin = config.DRand(0.2, 0.5);
+    const double rMax = config.DRand(rMin + 0.1, 0.9);
     const double rMiddle = rMin + (rMax - rMin) / 2;
     const Point<double> center(0.5, 0.5);
 
@@ -281,11 +281,11 @@ RandomConfig RandomConfig::CreateRandom()
     for (int i = 0; i < 10; i++)
         config.textures.push_back(TT_SNOW);
     
-    const double p1 = DRand(0.0, 0.4);
-    const double p2 = DRand(p1, p1 + 1.4);
-    const double p3 = DRand(p2, p2 + 1.0);
-    const double pHill = DRand(1.5, 5.0);
-    const int minHill = rand() % 5;
+    const double p1 = config.DRand(0.0, 0.4);
+    const double p2 = config.DRand(p1, p1 + 1.4);
+    const double p3 = config.DRand(p2, p2 + 1.0);
+    const double pHill = config.DRand(1.5, 5.0);
+    const int minHill = config.Rand(5);
     const Point<double> center(0.5, 0.5);
 
     // random inner area with large mountains
@@ -305,5 +305,25 @@ RandomConfig RandomConfig::CreateRandom()
     config.areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0,  8, 0, 5, 10,  4, 15));
     
     return config;
+}
+
+int RandomConfig::Rand(const int max)
+{
+    return Rand(0, max);
+}
+
+int RandomConfig::Rand(const int min, const int max)
+{
+    // NOTE: the portable RANDOM class generates the same sequence of values after
+    // a while when creating large number of new values. Therefore, the platform
+    // dependent rand() function is used here.
+
+    return min + rand() % (max - min);
+}
+
+double RandomConfig::DRand(const double min, const double max)
+{
+    return min + static_cast<double>(Rand(0, RAND_MAX)) /
+        (static_cast<double>(RAND_MAX / (max - min)));
 }
 

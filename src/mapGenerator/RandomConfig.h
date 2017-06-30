@@ -21,7 +21,6 @@
 #include "mapGenerator/AreaDesc.h"
 #include "gameTypes/MapTypes.h"
 #include <vector>
-#include <cstdlib>
 
 /**
  * Random map configuration.
@@ -79,7 +78,7 @@ struct RandomConfig
     
     /**
      * Creates a new configuration for continental random maps. Continent maps are big
-     * islands surounded by water. Each player starts on the same big island.
+     * islands surrounded by water. Each player starts on the same big island.
      * @return a new configuration for continental random maps
      */
     static RandomConfig CreateContinent();
@@ -95,10 +94,7 @@ struct RandomConfig
      * @param max maximum value
      * @return a new random number
      */
-    static int Rand(const int max)
-    {
-        return Rand(0, max);
-    }
+     int Rand(const int max);
     
     /**
      * Generates a random number between min and max-1.
@@ -106,14 +102,7 @@ struct RandomConfig
      * @param max maximum value
      * @return a new random number
      */
-    static int Rand(const int min, const int max)
-    {
-        // NOTE: the portable RANDOM class generates the same sequence of values after
-        // a while when creating large number of new values. Therefore, the platform
-        // dependent rand() function is used here.
-        
-        return min + rand() % (max - min);
-    }
+    int Rand(const int min, const int max);
     
     /**
      * Generates a random number between min and max.
@@ -121,11 +110,7 @@ struct RandomConfig
      * @param max maximum value
      * @return a new random number
      */
-    static double DRand(const double min, const double max)
-    {
-        return min + static_cast<double>(Rand(0, RAND_MAX)) /
-        (static_cast<double>(RAND_MAX/(max - min)));
-    }
+    double DRand(const double min, const double max);
 };
 
 #endif // RandomConfig_h__
