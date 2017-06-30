@@ -18,7 +18,7 @@
 #ifndef XorShift_h__
 #define XorShift_h__
 
-#include <boost/core/enable_if.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <stdint.h>
 #include <iosfwd>
