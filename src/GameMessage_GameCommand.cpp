@@ -22,15 +22,15 @@
 #include "GameObject.h"
 #include "libutil/src/Serializer.h"
 
-AsyncChecksum::AsyncChecksum(): randState(0), objCt(0), objIdCt(0)
+AsyncChecksum::AsyncChecksum(): randChecksum(0), objCt(0), objIdCt(0)
 {}
 
-AsyncChecksum::AsyncChecksum(unsigned randState):
-    randState(randState), objCt(GameObject::GetObjCount()), objIdCt(GameObject::GetObjIDCounter())
+AsyncChecksum::AsyncChecksum(unsigned randChecksum):
+	randChecksum(randChecksum), objCt(GameObject::GetObjCount()), objIdCt(GameObject::GetObjIDCounter())
 {}
 
-AsyncChecksum::AsyncChecksum(unsigned randState, unsigned objCt, unsigned objIdCt):
-    randState(randState), objCt(objCt), objIdCt(objIdCt)
+AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt):
+	randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt)
 {}
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ GameMessage_GameCommand::GameMessage_GameCommand(const unsigned char player, con
 void GameMessage_GameCommand::Serialize(Serializer& ser) const
 {
     GameMessage::Serialize(ser);
-    ser.PushUnsignedInt(checksum.randState);
+    ser.PushUnsignedInt(checksum.randChecksum);
     ser.PushUnsignedInt(checksum.objCt);
     ser.PushUnsignedInt(checksum.objIdCt);
     ser.PushUnsignedInt(gcs.size());
@@ -61,7 +61,7 @@ void GameMessage_GameCommand::Serialize(Serializer& ser) const
 void GameMessage_GameCommand::Deserialize(Serializer& ser)
 {
     GameMessage::Deserialize(ser);
-    checksum.randState = ser.PopUnsignedInt();
+    checksum.randChecksum = ser.PopUnsignedInt();
     checksum.objCt = ser.PopUnsignedInt();
     checksum.objIdCt = ser.PopUnsignedInt();
     gcs.resize(ser.PopUnsignedInt());

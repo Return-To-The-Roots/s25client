@@ -1394,7 +1394,7 @@ void GameClient::ExecuteAllGCs(const GameMessage_GameCommand& gcs)
 void GameClient::SendNothingNC(int checksum)
 {
     if(checksum == -1)
-        checksum = RANDOM.GetCurrentRandomValue();
+        checksum = RANDOM.GetChecksum();
 
     send_queue.push(new GameMessage_GameCommand(playerId_, AsyncChecksum(checksum), std::vector<gc::GameCommandPtr>()));
 }

@@ -17,89 +17,139 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Random.h"
-#include <cstdio>
+#include "libutil/src/Serializer.h"
+#include <boost/filesystem/fstream.hpp>
 
-Random::Random()
+template<class T_PRNG>
+Random<T_PRNG>::Random()
 {
-    /*log = fopen("async_log.txt","w");*/
     Init(123456789);
 }
 
-/**
- *  Initialisiert den Zufallszahlengenerator.
- *
- *  @param[in] init Zahl mit der der Zufallsgenerator initialisiert wird.
- */
-void Random::Init(const unsigned int init)
+template<class T_PRNG>
+void Random<T_PRNG>::Init(const uint64_t& seed)
 {
-    rngState_ = init;
-    counter = 0;
+    ResetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
 }
 
-int Random::GetValueFromState(const int rngState, const int maxVal)
+template<class T_PRNG>
+void Random<T_PRNG>::ResetState(const PRNG& newState)
 {
-    return (rngState * maxVal) / 32768;
+    rng_ = newState;
+    numInvocations_ = 0;
 }
 
-int Random::GetNextState(const int rngState, const int maxVal)
+template<class T_PRNG>
+int Random<T_PRNG>::Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max)
 {
-    return (rngState * 997 + 1 + maxVal) & 32767;
+    history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, src_name, src_line, obj_id);
+    ++numInvocations_;
+    
+    // Special case: [0, 0) makes 0
+    return (max == 0) ? 0 : rng_(max - 1);
 }
 
-/**
- *  Erzeugt eine Zufallszahl.
- *
- *  @param[in] max @p max-1 ist die maximale Zufallszahl welche geliefert werden soll.
- *
- *  @return liefert eine Zufallszahl.
- */
-int Random::Rand(const char* const src_name, const unsigned src_line, const unsigned obj_id, const int max)
+template<class T_PRNG>
+unsigned Random<T_PRNG>::GetChecksum() const
 {
-    rngState_ = GetNextState(rngState_, max);
-
-    async_log[counter % async_log.size()] = RandomEntry(counter, max, rngState_, src_name, src_line, obj_id);
-    ++counter;
-
-    return GetValueFromState(rngState_, max);
+    return CalcChecksum(rng_);
 }
 
-std::vector<RandomEntry> Random::GetAsyncLog()
+template<class T_PRNG>
+unsigned Random<T_PRNG>::CalcChecksum(const PRNG& rng)
+{
+    // This is designed in a way that makes the checksum be equivalent
+    // to the state of the OldLCG for compatibility with old versions
+    Serializer ser;
+    rng.Serialize(ser);
+    unsigned checksum = 0;
+    while(ser.GetBytesLeft() >= sizeof(unsigned))
+        checksum += ser.PopUnsignedInt();
+    while(ser.GetBytesLeft())
+        checksum += ser.PopUnsignedChar();
+    return checksum;
+}
+
+template<class T_PRNG>
+const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::GetCurrentState() const
+{
+    return rng_;
+}
+
+template<class T_PRNG>
+std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
 {
     std::vector<RandomEntry> ret;
 
     unsigned begin, end;
-    if(counter > async_log.size())
+    if(numInvocations_ > history_.size())
     {
         // Ringbuffer filled -> Start from next entry (which is the one written longest time ago)
         // and go one full cycle (to the entry written last)
-        begin = counter;
-        end = counter + async_log.size();
+        begin = numInvocations_;
+        end = numInvocations_ + history_.size();
     } else
     {
         // Ringbuffer not filled -> Start from 0 till number of entries
         begin = 0;
-        end = counter;
+        end = numInvocations_;
     }
 
+    ret.reserve(end - begin);
     for (unsigned i = begin; i < end; ++i)
-        ret.push_back(async_log[i % async_log.size()]);
+        ret.push_back(history_[i % history_.size()]);
 
     return ret;
 }
 
-void Random::SaveLog(const std::string& filename)
+template<class T_PRNG>
+void Random<T_PRNG>::SaveLog(const std::string& filename)
 {
-    std::vector<RandomEntry> log = GetAsyncLog();
-    FILE* file = fopen(filename.c_str(), "w");
+    const std::vector<RandomEntry> log = GetAsyncLog();
+    bfs::ofstream file(filename);
 
-    for(std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
-    {
-        fprintf(file, "%u:R(%d)=%d,z=%d | %s#%u|id=%u\n",
-            it->counter,
-            it->max, it->GetValue(), it->rngState,
-            it->src_name.c_str(), it->src_line,
-            it->obj_id);
-    }
-
-    fclose(file);
+    for(typename std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
+        file << *it;
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+template<class T_PRNG>
+void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
+{
+    ser.PushUnsignedInt(counter);
+    ser.PushSignedInt(max);
+    rngState.Serialize(ser);
+    ser.PushString(src_name);
+    ser.PushUnsignedInt(src_line);
+    ser.PushUnsignedInt(obj_id);
+}
+
+template<class T_PRNG>
+void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
+{
+    counter = ser.PopUnsignedInt();
+    max = ser.PopSignedInt();
+    rngState.Deserialize(ser);
+    src_name = ser.PopString();
+    src_line = ser.PopUnsignedInt();
+    obj_id = ser.PopUnsignedInt();
+}
+
+template<class T_PRNG>
+int Random<T_PRNG>::RandomEntry::GetValue() const
+{
+    PRNG tmpRng(rngState);
+    return (max == 0) ? 0 : tmpRng(max - 1);
+}
+
+template<class T_PRNG>
+std::ostream& Random<T_PRNG>::RandomEntry::print(std::ostream& os) const
+{
+    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << rngState
+        << " | " << src_name << "#" << src_line
+        << "|id=" << obj_id << "\n";
+}
+
+// Instantiate the Random class with the used PRNG
+template class Random<UsedPRNG>;

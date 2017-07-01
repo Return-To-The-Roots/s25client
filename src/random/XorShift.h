@@ -22,6 +22,7 @@
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/limits.hpp>
+#include <boost/array.hpp>
 #include <iosfwd>
 
 class Serializer;
@@ -67,10 +68,10 @@ private:
 template<class T_SeedSeq>
 inline void XorShift::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type*)
 {
-    uint32_t seeds[2];
-    seedSeq.generate(&seeds[0], &seeds[1]);
+    boost::array<uint32_t, 2> seeds;
+    seedSeq.generate(seeds.begin(), seeds.end());
     // Interpret 2 32 bit values as one 64 bit value
-    seed(*reinterpret_cast<uint64_t*>(seeds));
+    seed(*reinterpret_cast<uint64_t*>(seeds.data()));
 }
 
 inline XorShift::result_type XorShift::operator()()
