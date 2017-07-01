@@ -54,6 +54,7 @@
 #include "files.h"
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <fstream>
 
 GameServer::ServerConfig::ServerConfig()

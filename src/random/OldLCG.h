@@ -18,7 +18,7 @@
 #ifndef OldLCG_h__
 #define OldLCG_h__
 
-#include <boost/core/enable_if.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <iosfwd>
 #include <boost/cstdint.hpp>

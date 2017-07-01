@@ -29,7 +29,7 @@ Random<T_PRNG>::Random()
 template<class T_PRNG>
 void Random<T_PRNG>::Init(const uint64_t& seed)
 {
-    ResetState(PRNG(static_cast<PRNG::result_type>(seed)));
+    ResetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
 }
 
 template<class T_PRNG>
@@ -108,7 +108,7 @@ void Random<T_PRNG>::SaveLog(const std::string& filename)
     const std::vector<RandomEntry> log = GetAsyncLog();
     bfs::ofstream file(filename);
 
-    for(std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
+    for(typename std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
         file << *it;
 }
 
