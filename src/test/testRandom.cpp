@@ -42,9 +42,9 @@ namespace{
     };
 }
 
-BOOST_AUTO_TEST_SUITE(RNG_Tests)
+BOOST_FIXTURE_TEST_SUITE(RNG_Tests, SeedFixture)
 
-BOOST_FIXTURE_TEST_CASE(RandomTest, SeedFixture)
+BOOST_AUTO_TEST_CASE(RandomTest)
 {
     BOOST_FOREACH(unsigned seed, seeds)
     {
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(RandomEmptySeq, SeedFixture)
+BOOST_AUTO_TEST_CASE(RandomEmptySeq)
 {
     BOOST_FOREACH(unsigned seed, seeds)
     {
@@ -102,17 +102,18 @@ BOOST_FIXTURE_TEST_CASE(RandomEmptySeq, SeedFixture)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(XorShiftRange, SeedFixture)
+template<class T_RNG, class T_Seeds>
+void testRange(const T_Seeds& seeds)
 {
     BOOST_FOREACH(unsigned seed, seeds)
     {
-        XorShift rng(seed);
+        T_RNG rng(seed);
         const unsigned numSamplesMinMax = 3000;
-        const XorShift::result_type min = rng.min();
-        const XorShift::result_type max = rng.max();
+        const typename T_RNG::result_type min = rng.min();
+        const typename T_RNG::result_type max = rng.max();
         for(unsigned i = 0; i < numSamplesMinMax; i++)
         {
-            XorShift::result_type val = rng();
+            typename T_RNG::result_type val = rng();
             BOOST_REQUIRE_GE(val, min);
             BOOST_REQUIRE_LE(val, max);
         }
@@ -147,11 +148,17 @@ BOOST_FIXTURE_TEST_CASE(XorShiftRange, SeedFixture)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(XorShiftEmptyRange, SeedFixture)
+BOOST_AUTO_TEST_CASE(ValueRangeValid)
+{
+    testRange<XorShift>(seeds);
+}
+
+template<class T_RNG, class T_Seeds>
+void testEmptyRange(const T_Seeds& seeds)
 {
     BOOST_FOREACH(unsigned seed, seeds)
     {
-        XorShift rng(seed);
+        T_RNG rng(seed);
         for(int i = 0; i < 100; i++)
         {
             // Create a random number in [0, 0] is always 0
@@ -160,24 +167,25 @@ BOOST_FIXTURE_TEST_CASE(XorShiftEmptyRange, SeedFixture)
     }
 }
 
-BOOST_AUTO_TEST_CASE(XorShiftFromSeedSeq)
+BOOST_AUTO_TEST_CASE(EmptyRange)
 {
-    std::vector<unsigned> seeds;
-    // Just add a few random values
-    seeds.push_back(0);
-    seeds.push_back(13455);
-    seeds.push_back(0x1337);
+    testEmptyRange<XorShift>(seeds);
+}
+
+template<class T_RNG, class T_Seed>
+void testCtorFromSeedSeq(const T_Seed& seeds)
+{
     boost::random::seed_seq seedSeq(seeds.begin(), seeds.end());
-    XorShift rng(seedSeq);
+    T_RNG rng(seedSeq);
     // Now check that we get different values during multiple calls
     // to the rng. It is possible that same values are returned as it is random
     // but it is unlikely for many values to be the same
     const unsigned numSamples = 10;
-    const XorShift::result_type firstVal = rng();
+    const typename T_RNG::result_type firstVal = rng();
     bool differentValueFound = false;
     for(unsigned i = 0; i < numSamples; i++)
     {
-        XorShift::result_type val = rng();
+        typename T_RNG::result_type val = rng();
         if(val != firstVal)
         {
             differentValueFound = true;
@@ -187,60 +195,101 @@ BOOST_AUTO_TEST_CASE(XorShiftFromSeedSeq)
     BOOST_REQUIRE(differentValueFound);
 }
 
-BOOST_AUTO_TEST_CASE(XorShiftCopy)
+BOOST_AUTO_TEST_CASE(CtorFromSeedSeq)
 {
-    XorShift rng, rng2;
-    BOOST_REQUIRE_EQUAL(rng, rng2);
-    XorShift::result_type val = rng();
-    BOOST_REQUIRE_NE(rng, rng2);
-    // Both must return the same value
-    BOOST_REQUIRE_EQUAL(val, rng2());
-
-    // Execute it a few times
-    for(unsigned i = 0; i < 10; i++)
-        rng();
-    BOOST_REQUIRE_NE(rng, rng2);
-    rng2 = rng;
-    BOOST_REQUIRE_EQUAL(rng, rng2);
-    // Both must return the same value
-    BOOST_REQUIRE_EQUAL(rng(), rng2());
+    testCtorFromSeedSeq<XorShift>(seeds);
 }
 
-BOOST_AUTO_TEST_CASE(XorShiftStream)
+template<class T_RNG, class T_Seeds>
+void testCopy(const T_Seeds& seeds)
 {
-    XorShift rng, rng2;
-    // Execute it a few times
-    for(unsigned i = 0; i < 10; i++)
-        rng();
-    std::stringstream ss;
-    // Save to stream
-    ss << rng;
-    // Load it
-    ss >> rng2;
-    BOOST_REQUIRE_EQUAL(rng, rng2);
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        T_RNG rng(seed), rng2(seed);
+        BOOST_REQUIRE_EQUAL(rng, rng2);
+        typename T_RNG::result_type val = rng();
+        BOOST_REQUIRE_NE(rng, rng2);
+        // Both must return the same value
+        BOOST_REQUIRE_EQUAL(val, rng2());
+
+        // Execute it a few times
+        for(unsigned i = 0; i < 10; i++)
+            rng();
+        BOOST_REQUIRE_NE(rng, rng2);
+        rng2 = rng;
+        BOOST_REQUIRE_EQUAL(rng, rng2);
+        // Both must return the same value
+        BOOST_REQUIRE_EQUAL(rng(), rng2());
+    }
 }
 
-BOOST_AUTO_TEST_CASE(XorShiftSerialize)
+BOOST_AUTO_TEST_CASE(Copy)
 {
-    XorShift rng, rng2;
-    // Execute it a few times
-    for(unsigned i = 0; i < 10; i++)
-        rng();
-    Serializer ser;
-    rng.Serialize(ser);
-    rng2.Deserialize(ser);
-    BOOST_REQUIRE_EQUAL(rng, rng2);
+    testCopy<XorShift>(seeds);
 }
 
-BOOST_AUTO_TEST_CASE(XorShiftDiscard)
+template<class T_RNG, class T_Seeds>
+void testStreamOps(const T_Seeds& seeds)
 {
-    XorShift rng, rng2;
-    const unsigned skipCt = 100;
-    // Execute it a few times
-    for(unsigned i = 0; i < skipCt; i++)
-        rng();
-    rng2.discard(skipCt);
-    BOOST_REQUIRE_EQUAL(rng, rng2);
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        T_RNG rng(seed), rng2(seed);
+        // Execute it a few times
+        for(unsigned i = 0; i < 10; i++)
+            rng();
+        std::stringstream ss;
+        // Save to stream
+        ss << rng;
+        // Load it
+        ss >> rng2;
+        BOOST_REQUIRE_EQUAL(rng, rng2);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(StreamOperations)
+{
+    testStreamOps<XorShift>(seeds);
+}
+
+template<class T_RNG, class T_Seeds>
+void testSerialize(const T_Seeds& seeds)
+{
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        T_RNG rng(seed), rng2(seed);
+        // Execute it a few times
+        for(unsigned i = 0; i < 10; i++)
+            rng();
+        Serializer ser;
+        rng.Serialize(ser);
+        rng2.Deserialize(ser);
+        BOOST_REQUIRE_EQUAL(rng, rng2);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(Serialization)
+{
+    testSerialize<XorShift>(seeds);
+}
+
+template<class T_RNG, class T_Seeds>
+void testDiscard(const T_Seeds& seeds)
+{
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        T_RNG rng(seed), rng2(seed);
+        const unsigned skipCt = 100;
+        // Execute it a few times
+        for(unsigned i = 0; i < skipCt; i++)
+            rng();
+        rng2.discard(skipCt);
+        BOOST_REQUIRE_EQUAL(rng, rng2);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(Discard)
+{
+    testDiscard<XorShift>(seeds);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
