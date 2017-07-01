@@ -250,8 +250,7 @@ void dskSelectMap::CreateRandomMap()
     mapPath.append("Random.swd");
 
     // create a random map and save filepath
-    MapGenerator generator;
-    generator.Create(mapPath, rndMapSettings);
+    MapGenerator::Create(mapPath, rndMapSettings);
     
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);

@@ -21,30 +21,31 @@
 #include "mapGenerator/Map.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapUtility.h"
-#include "mapGenerator/RandomConfig.h"
-
 #include "gameTypes/MapTypes.h"
 
 #include <vector>
+
+class RandomConfig;
 
 /**
  * Random map generator.
  */
 class RandomMapGenerator
 {
+    RandomConfig& config;
     public:
 
     /**
      * Creates a new RandomMapGenerator with random properties.
      */
-    RandomMapGenerator();
+    RandomMapGenerator(RandomConfig& config);
 
     /**
      * Generates a new random map with the specified settings.
      * @param settings settings used for the map generation
      * @param config configuration for the random map generator
      */
-    Map* Create(const MapSettings& settings, const RandomConfig& config);
+    Map* Create(const MapSettings& settings);
     
     private:
 
@@ -89,7 +90,7 @@ class RandomMapGenerator
      * @param config configuration for the random map generator
      * @param map map to modify
      */
-    void CreateHills(const MapSettings& settings, const RandomConfig& config, Map& map);
+    void CreateHills(const MapSettings& settings, Map& map);
     
     /**
      * Fill the remaining terrain (apart from the player positions) according to the generated hills.
@@ -97,7 +98,7 @@ class RandomMapGenerator
      * @param config configuration for the random map generator
      * @param map map to modify
      */
-    void FillRemainingTerrain(const MapSettings& settings, const RandomConfig& config, Map& map);
+    void FillRemainingTerrain(const MapSettings& settings, Map& map);
  };
 
 #endif // RandomMapGenerator_h__

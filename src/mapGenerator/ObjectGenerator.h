@@ -21,12 +21,17 @@
 #include "mapGenerator/Map.h"
 #include "gameData/TerrainData.h"
 
+class RandomConfig;
+
 /**
  * Utility class to place object, textures and animals on a map.
  */
 class ObjectGenerator
 {
+    RandomConfig& config;
     public:
+
+        ObjectGenerator(RandomConfig& config): config(config){}
     
     /**
      * Creates a new texture for the specified terrain type.
@@ -81,21 +86,21 @@ class ObjectGenerator
      * @param likelyhood likelyhood for object generation in percent
      * @return a new duck animal
      */
-    static uint8_t CreateDuck(int likelyhood);
+    uint8_t CreateDuck(int likelyhood);
 
     /**
      * Creates a new sheep.
      * @param likelyhood likelyhood for object generation in percent
      * @return a new sheep animal
      */
-    static uint8_t CreateSheep(int likelyhood);
+    uint8_t CreateSheep(int likelyhood);
 
     /**
      * Creates a new, random animal to be placed inside of a forest.
      * @param likelyhood likelyhood for object generation in percent
      * @return a new forest animal
      */
-    static uint8_t CreateRandomForestAnimal(int likelyhood);
+    uint8_t CreateRandomForestAnimal(int likelyhood);
     
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
@@ -105,7 +110,7 @@ class ObjectGenerator
      * @param ratioGranite ratio of granite placed as mountain resource on the map
      * @return random piles of gold, coal, granite or iron
      */
-    static uint8_t CreateRandomResource(unsigned ratioGold,
+    uint8_t CreateRandomResource(unsigned ratioGold,
                                         unsigned ratioIron,
                                         unsigned ratioCoal,
                                         unsigned ratioGranite);
@@ -115,7 +120,7 @@ class ObjectGenerator
      * @param likelyhood likelyhood for object generation in percent
      * @return a new ground animal
      */
-    static uint8_t CreateRandomAnimal(int likelyhood);
+    uint8_t CreateRandomAnimal(int likelyhood);
     
     /**
      * Checks whether or not the specified object is a tree.
@@ -130,28 +135,28 @@ class ObjectGenerator
      * @param map map to place the object upon
      * @param index index of the vertex for the new object
      */
-    static void CreateRandomTree(Map& map, int index);
+    void CreateRandomTree(Map& map, int index);
 
     /**
      * Creates a new, random palm.
      * @param map map of the vertex to create a new tree on
      * @param index index of the vertex to create a new tree on
      */
-    static void CreateRandomPalm(Map& map, int index);
+    void CreateRandomPalm(Map& map, int index);
     
     /**
      * Creates a new, random tree (including palm trees).
      * @param map map of the vertex to create a new tree on
      * @param index index of the vertex to create a new tree on
      */
-    static void CreateRandomMixedTree(Map& map, int index);
+    void CreateRandomMixedTree(Map& map, int index);
     
     /**
      * Creates a random amount of stone.
      * @param map map of the vertex to create a new stone pile on
      * @param index index of the vertex to create a new stone pile on
      */
-    static void CreateRandomStone(Map& map, int index);
+    void CreateRandomStone(Map& map, int index);
 };
 
 #endif // ObjectGenerator_h__

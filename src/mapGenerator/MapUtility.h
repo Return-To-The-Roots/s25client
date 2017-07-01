@@ -18,7 +18,10 @@
 #ifndef MapUtility_h__
 #define MapUtility_h__
 
-#include "mapGenerator/Map.h"
+#include "Point.h"
+
+struct Map;
+class ObjectGenerator;
 
 /**
  * Utility for map generation.
@@ -28,15 +31,15 @@ class MapUtility
     public:
     
     /**
-     * Smoothes the textures of the map for better visual appearance by post-processing
-     * the specified map. Single textures which are surounded by other textures are replaced
+     * Smooths the textures of the map for better visual appearance by post-processing
+     * the specified map. Single textures which are surrounded by other textures are replaced
      * by their neighboring textures. 
      * Also, the height values of snow- and mountain-textures are increased and mountain-
      * meadow textures without neighboring mountain-textures are replaced by simple meadow
      * textures.
      * @param map map to smooth textures for
      */
-    void Smooth(Map& map);
+    static void Smooth(Map& map);
     
     /**
      * Creates a hill at the specified center with the specified height.
@@ -44,23 +47,23 @@ class MapUtility
      * @param center center point of the hill (highest elevation)
      * @param z maximum height (elevation) of the hill
      */
-    void SetHill(Map& map, const Point<int>& center, int z);
+    static void SetHill(Map& map, const Point<int>& center, int z);
     
     /**
-     * Sets up a harbor position at the specified center. The surounding area is flattened 
+     * Sets up a harbor position at the specified center. The surrounding area is flattened 
      * an textures are replaced to enable harbor building.
      * @param map map to modify the terrain for
      * @param center center point for the harbor position
-     * @param waterLevel the height level of the surounding water
+     * @param waterLevel the height level of the surrounding water
      */
-    void SetHarbour(Map& map, const Point<int>& center, int waterLevel);
+    static void SetHarbour(Map& map, const Point<int>& center, int waterLevel);
     
     /**
      * Places a tree to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the tree
      */
-    void SetTree(Map& map, const Point<int>& position);
+    static void SetTree(Map& map, ObjectGenerator& objGen, const Point<int>& position);
     
     /**
      * Sets stone on the map around the specified center within the specified radius.
@@ -69,24 +72,24 @@ class MapUtility
      * @param center center point for stone placement
      * @param radius radius around the center to place stone in
      */
-    void SetStones(Map& map, const Point<int>& center, double radius);
+    static void SetStones(Map& map, ObjectGenerator& objGen, const Point<int>& center, double radius);
 
     /**
      * Places a stone to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the stone
      */
-    void SetStone(Map& map, const Point<int>& position);
+    static void SetStone(Map& map, ObjectGenerator& objGen, const Point<int>& position);
     
     /**
      * Computes the size of a terrain body starting from the specified position.
      * @param map map to evaluate
-     * @param p position of the intial area
+     * @param p position of the initial area
      * @param max the maximum number of tiles to check for (performance)
      * @return the number of vertices in a connected terrain area around the 
-     * intial position
+     * initial position
      */
-    unsigned GetBodySize(Map& map, const Point<int>& p, unsigned max);
+    static unsigned GetBodySize(Map& map, const Point<int>& p, unsigned max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.
@@ -97,7 +100,7 @@ class MapUtility
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    Point<int> ComputePointOnCircle(int index,
+    static Point<int> ComputePointOnCircle(int index,
                                     int points,
                                     const Point<int>& center,
                                     double radius);

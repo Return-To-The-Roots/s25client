@@ -1,7 +1,10 @@
-
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 if(NOT Boost_USE_STATIC_LIBS)
 	ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
+endif()
+if(MSVC)
+    # Use full paths for defines (makes Boost.Test with the VS addin work better)
+    add_definitions(/FC)
 endif()
 FILE(GLOB TEST_SOURCES *.cpp *.h)
 add_executable(Test ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/src/ProgramInitHelpers.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)

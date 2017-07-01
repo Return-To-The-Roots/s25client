@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,9 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/ObjectGenerator.h"
+#include "mapGenerator/RandomConfig.h"
 #include "libsiedler2/src/enumTypes.h"
 #include <boost/test/unit_test.hpp>
+
+namespace{
+    class ObjGenFixture{
+    protected:
+        RandomConfig config;
+        ObjectGenerator objGen;
+    public:
+        ObjGenFixture(): config(MapStyle::Random, 0x1337), objGen(config){}
+    };
+}
 
 BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
 
@@ -25,7 +37,7 @@ BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
  * Tests the ObjectGenerator::IsHarborAllowed method to ensure the method returns correct
  * values for all terrain types.
  */
-BOOST_FIXTURE_TEST_CASE(IsHarborAllowed_TerrainType, ObjectGenerator)
+BOOST_AUTO_TEST_CASE(IsHarborAllowed_TerrainType)
 {
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SNOW),              false);
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA),              false);
@@ -54,24 +66,24 @@ BOOST_FIXTURE_TEST_CASE(IsHarborAllowed_TerrainType, ObjectGenerator)
  * Tests the ObjectGenerator::CreateDuck method with a likelyhood of 100%. A duck should
  * be returned ;-).
  */
-BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjectGenerator)
+BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjGenFixture)
 {
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(100), libsiedler2::A_Duck);
+    BOOST_REQUIRE_EQUAL(objGen.CreateDuck(100), libsiedler2::A_Duck);
 }
 
 /**
  * Tests the ObjectGenerator::CreateDuck method with a likelyhood of 0%. An empty object
  * should be returned.
  */
-BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjectGenerator)
+BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjGenFixture)
 {
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::CreateDuck(0), libsiedler2::A_None);
+    BOOST_REQUIRE_EQUAL(objGen.CreateDuck(0), libsiedler2::A_None);
 }
 
 /**
  * Tests the ObjectGenerator::IsTree method for a tree object. Should return true.
  */
-BOOST_FIXTURE_TEST_CASE(IsTree_TreeExists, ObjectGenerator)
+BOOST_AUTO_TEST_CASE(IsTree_TreeExists)
 {
     Map map(16, 8, "name", "author");
 
@@ -87,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(IsTree_TreeExists, ObjectGenerator)
 /**
  * Tests the ObjectGenerator::IsTree method for an empty tile. Should return false.
  */
-BOOST_FIXTURE_TEST_CASE(IsTree_Empty, ObjectGenerator)
+BOOST_AUTO_TEST_CASE(IsTree_Empty)
 {
     Map map(16, 8, "name", "author");
     
@@ -98,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE(IsTree_Empty, ObjectGenerator)
  * Tests the ObjectGenerator::CreateTexture method without harbor.
  * The specified texture should be replaced.
  */
-BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
+BOOST_AUTO_TEST_CASE(CreateTexture_NoHarbor)
 {
     Map map(16, 8, "name", "author");
     
@@ -112,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_NoHarbor, ObjectGenerator)
  * Tests the ObjectGenerator::CreateTexture method with harbor.
  * The specified texture should be replaced with a harbor texture.
  */
-BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
+BOOST_AUTO_TEST_CASE(CreateTexture_Harbor)
 {
     Map map(16, 8, "name", "author");
     
@@ -128,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjectGenerator)
  * Tests the ObjectGenerator::CreateTexture method with harbor but non-harbor texture.
  * The specified texture should be replaced without a harbor texture.
  */
-BOOST_FIXTURE_TEST_CASE(CreateTexture_HarborNotSupported, ObjectGenerator)
+BOOST_AUTO_TEST_CASE(CreateTexture_HarborNotSupported)
 {
     Map map(16, 8, "name", "author");
     

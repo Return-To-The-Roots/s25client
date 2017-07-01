@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "gameData/MaxPlayers.h"
@@ -27,9 +28,9 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
  * Tests the RandomMapGenerator.Create method. The generated map must have the
  * same width and height as defined inside of the settings.
  */
-BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
+BOOST_AUTO_TEST_CASE(Create_CorrectSize)
 {
-    RandomConfig config = RandomConfig::CreateRandom();
+    RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
     settings.width = 32u;
     settings.height = 8u;
@@ -38,8 +39,8 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    RandomMapGenerator generator;
-    Map* map = generator.Create(settings, config);
+    RandomMapGenerator generator(config);
+    Map* map = generator.Create(settings);
 
     BOOST_REQUIRE_EQUAL(map->width, settings.width);
     BOOST_REQUIRE_EQUAL(map->height, settings.height);
@@ -51,9 +52,9 @@ BOOST_FIXTURE_TEST_CASE(Create_CorrectSize, RandomMapGenerator)
  * Tests the RandomMapGenerator.Create method. The generated map must contain the
  * the same number of headquarters as the number of players in the settings.
  */
-BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
+BOOST_AUTO_TEST_CASE(Create_Headquarters)
 {
-    RandomConfig config = RandomConfig::CreateRandom();
+    RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
     settings.width = 16u;
     settings.height = 32u;
@@ -62,9 +63,9 @@ BOOST_FIXTURE_TEST_CASE(Create_Headquarters, RandomMapGenerator)
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
-    RandomMapGenerator generator;
+    RandomMapGenerator generator(config);
 
-    Map* map = generator.Create(settings, config);
+    Map* map = generator.Create(settings);
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
 
     for (unsigned i = 0; i < settings.players; i++)

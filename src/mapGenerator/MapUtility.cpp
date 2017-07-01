@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#define _USE_MATH_DEFINES
+
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/MapUtility.h"
+#include "mapGenerator/Map.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/VertexUtility.h"
 #include "gameData/TerrainData.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #include <queue>
 #include <list>
 #include <vector>
@@ -54,7 +57,7 @@ unsigned MapUtility::GetBodySize(Map& map, const Point<int>& p, unsigned max)
     std::queue<Point<int> > searchSpace;
     std::list<int> body;
     
-    // put intial position to the search space
+    // put initial position to the search space
     searchSpace.push(p);
     
     // stop search if no further neighbors are available or
@@ -203,7 +206,7 @@ void MapUtility::SetHarbour(Map& map, const Point<int>& center, int waterLevel)
     }
 }
 
-void MapUtility::SetTree(Map& map, const Point<int>& position)
+void MapUtility::SetTree(Map& map, ObjectGenerator& objGen, const Point<int>& position)
 {
     int index = VertexUtility::GetIndexOf(position, map.width, map.height);
     
@@ -213,16 +216,16 @@ void MapUtility::SetTree(Map& map, const Point<int>& position)
             ObjectGenerator::IsTexture(map, index, TT_SAVANNAH) ||
             ObjectGenerator::IsTexture(map, index, TT_STEPPE))
         {
-            ObjectGenerator::CreateRandomPalm(map, index);
+            objGen.CreateRandomPalm(map, index);
         }
         else if (!ObjectGenerator::IsTexture(map, index, TT_WATER))
         {
-            ObjectGenerator::CreateRandomTree(map, index);
+            objGen.CreateRandomTree(map, index);
         }
     }
 }
 
-void MapUtility::SetStones(Map& map, const Point<int>& center, double radius)
+void MapUtility::SetStones(Map& map, ObjectGenerator& objGen, const Point<int>& center, double radius)
 {
     int width = map.width;
     int height = map.height;
@@ -237,20 +240,20 @@ void MapUtility::SetStones(Map& map, const Point<int>& center, double radius)
             Point<int> p(x,y);
             if (VertexUtility::Distance(center, p, width, height) < radius)
             {
-                SetStone(map, p);
+                SetStone(map, objGen, p);
             }
         }
     }
 }
 
-void MapUtility::SetStone(Map& map, const Point<int>& position)
+void MapUtility::SetStone(Map& map, ObjectGenerator& objGen, const Point<int>& position)
 {
     int index = VertexUtility::GetIndexOf(position, map.width, map.height);
     
     if (ObjectGenerator::IsEmpty(map, index) &&
         !ObjectGenerator::IsTexture(map, index, TT_WATER))
     {
-        ObjectGenerator::CreateRandomStone(map, index);
+        objGen.CreateRandomStone(map, index);
     }
 }
 

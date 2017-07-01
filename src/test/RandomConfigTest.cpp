@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
 #include <boost/test/unit_test.hpp>
 
@@ -24,9 +25,9 @@ BOOST_AUTO_TEST_SUITE(RandomConfigTest)
  * Tests the RandomConfig::CreateRandom method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateRandom_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateRandom_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateRandom();
+    RandomConfig config(MapStyle::Random, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -37,9 +38,9 @@ BOOST_FIXTURE_TEST_CASE(CreateRandom_MaxHeightBelowTextureCount, RandomConfig)
  * Tests the RandomConfig::CreateIslands method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateIslands_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateIslands_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateIslands();
+    RandomConfig config(MapStyle::Islands, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -50,9 +51,9 @@ BOOST_FIXTURE_TEST_CASE(CreateIslands_MaxHeightBelowTextureCount, RandomConfig)
  * Tests the RandomConfig::CreateRingland method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateRingland_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateRingland_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateRingland();
+    RandomConfig config(MapStyle::Ringland, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -63,9 +64,9 @@ BOOST_FIXTURE_TEST_CASE(CreateRingland_MaxHeightBelowTextureCount, RandomConfig)
  * Tests the RandomConfig::CreateContinent method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateContinent_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateContinent_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateContinent();
+    RandomConfig config(MapStyle::Continent, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -76,9 +77,9 @@ BOOST_FIXTURE_TEST_CASE(CreateContinent_MaxHeightBelowTextureCount, RandomConfig
  * Tests the RandomConfig::CreateGreenland method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateGreenland_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateGreenland_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateGreenland();
+    RandomConfig config(MapStyle::Greenland, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -89,9 +90,9 @@ BOOST_FIXTURE_TEST_CASE(CreateGreenland_MaxHeightBelowTextureCount, RandomConfig
  * Tests the RandomConfig::CreateMigration method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateMigration_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateMigration_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateMigration();
+    RandomConfig config(MapStyle::Migration, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());
@@ -102,9 +103,9 @@ BOOST_FIXTURE_TEST_CASE(CreateMigration_MaxHeightBelowTextureCount, RandomConfig
  * Tests the RandomConfig::CreateRiverland method to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_FIXTURE_TEST_CASE(CreateRiverland_MaxHeightBelowTextureCount, RandomConfig)
+BOOST_AUTO_TEST_CASE(CreateRiverland_MaxHeightBelowTextureCount)
 {
-    RandomConfig config = RandomConfig::CreateRiverland();
+    RandomConfig config(MapStyle::Riverland, 0x1337);
     for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
     {
         BOOST_REQUIRE_LT((unsigned)it->maxElevation, config.textures.size());

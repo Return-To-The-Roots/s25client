@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,42 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/RandomMapGenerator.h"
 #include "libsiedler2/src/libsiedler2.h"
+#include <stdexcept>
 
 void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
 {
-    RandomMapGenerator generator;
-    Map* randomMap = NULL;
-
     // create a random map generator based on the map style
-    switch (settings.style)
-    {
-        case MS_Greenland:
-            randomMap = generator.Create(settings, RandomConfig::CreateGreenland());
-            break;
-        case MS_Riverland:
-            randomMap = generator.Create(settings, RandomConfig::CreateRiverland());
-            break;
-        case MS_Islands:
-            randomMap = generator.Create(settings, RandomConfig::CreateIslands());
-            break;
-        case MS_Continent:
-            randomMap = generator.Create(settings, RandomConfig::CreateContinent());
-            break;
-        case MS_Migration:
-            randomMap = generator.Create(settings, RandomConfig::CreateMigration());
-            break;
-        case MS_Ringland:
-            randomMap = generator.Create(settings, RandomConfig::CreateRingland());
-            break;
-        case MS_Random:
-            randomMap = generator.Create(settings, RandomConfig::CreateRandom());
-            break;
-    }
-    
+    RandomConfig config(settings.style);
+    RandomMapGenerator generator(config);
+    Map* randomMap = generator.Create(settings);
+
     // generate the random map
     libsiedler2::ArchivInfo* archiv = randomMap->CreateArchiv();
     libsiedler2::Write(filePath, *archiv);

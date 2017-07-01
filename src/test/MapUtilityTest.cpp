@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,18 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/MapUtility.h"
 #include "mapGenerator/Map.h"
+#include "mapGenerator/RandomConfig.h"
+#include "mapGenerator/ObjectGenerator.h"
 #include "gameData/TerrainData.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
+
+namespace{
+    class ObjGenFixture{
+    protected:
+        RandomConfig config;
+        ObjectGenerator objGen;
+    public:
+        ObjGenFixture(): config(MapStyle::Random, 0x1337), objGen(config){}
+    };
+}
 
 BOOST_AUTO_TEST_SUITE(MapUtilityTest)
 
 /**
  * Tests the MapUtility::GetBodySize method for a water map.
  */
-BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
+BOOST_AUTO_TEST_CASE(GetBodySize_Water)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -50,7 +63,7 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Water, MapUtility)
 /**
  * Tests the MapUtility::GetBodySize method for a water map with maximum limit.
  */
-BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
+BOOST_AUTO_TEST_CASE(GetBodySize_Limit)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -72,7 +85,7 @@ BOOST_FIXTURE_TEST_CASE(GetBodySize_Limit, MapUtility)
 /**
  * Tests the MapUtility::SetHill method.
  */
-BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
+BOOST_AUTO_TEST_CASE(SetHill_Height)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -90,7 +103,7 @@ BOOST_FIXTURE_TEST_CASE(SetHill_Height, MapUtility)
  * Tests the MapUtility::Smooth method to ensure mountain-meadow textures are
  * replaced by meadow if they have no neighboring mountain-textures.
  */
-BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
+BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowReplaced)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -118,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, MapUtility)
  * Tests the MapUtility::Smooth method to ensure mountain-meadow textures are
  * not replaced if they have neighboring mountain-textures.
  */
-BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
+BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowNotReplaced)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -157,7 +170,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, MapUtility)
  * Tests the MapUtility::Smooth method to ensure that height of mountain-textures
  * is increased.
  */
-BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
+BOOST_AUTO_TEST_CASE(Smooth_MountainIncreased)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -184,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, MapUtility)
  * Tests the MapUtility::Smooth method to ensure that height of snow-textures
  * is increased.
  */
-BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
+BOOST_AUTO_TEST_CASE(Smooth_SnowIncreased)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -214,7 +227,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, MapUtility)
  * Tests the MapUtility::Smooth method to ensure that height of meadow-textures
  * are NOT increased.
  */
-BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
+BOOST_AUTO_TEST_CASE(Smooth_MeadowNotIncreased)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -242,7 +255,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, MapUtility)
  * Tests the MapUtility::Smooth method to ensure that single textures which are surounded
  * by other textures are replaced properly.
  */
-BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
+BOOST_AUTO_TEST_CASE(Smooth_SingleTexturesReplaced)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -265,7 +278,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, MapUtility)
  * Tests the MapUtility::SetHarbor method to ensure harbor positions are available after
  * placing a harbor in a suitable position.
  */
-BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
+BOOST_AUTO_TEST_CASE(SetHarbor_HarborPlaceAvailable)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -309,7 +322,7 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, MapUtility)
  * Tests the MapUtility::SetTree for an empty map. As a result the position for the new 
  * tree shouldn't be empty anymore.
  */
-BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
+BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, ObjGenFixture)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -317,7 +330,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
     Map map(width, height, "map", "author");
     
     Point<int> p(width/2, height/2);
-    MapUtility::SetTree(map, p);
+    MapUtility::SetTree(map, objGen, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
@@ -327,7 +340,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, MapUtility)
  * Tests the MapUtility::SetTree for a desert map. As a result the position for the new
  * tree shouldn't be empty anymore.
  */
-BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
+BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -341,7 +354,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
     }
     
     Point<int> p(width/2, height/2);
-    MapUtility::SetTree(map, p);
+    MapUtility::SetTree(map, objGen, p);
     
     BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
@@ -351,7 +364,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, MapUtility)
  * Tests the MapUtility::SetTree for a non-empty map. As a result the position for the new
  * tree shouldn't be replaced.
  */
-BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
+BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, ObjGenFixture)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -363,7 +376,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
     map.objectType[index] = libsiedler2::OT_Stone_Begin;
     map.objectInfo[index] = libsiedler2::OI_Stone1;
     
-    MapUtility::SetTree(map, p);
+    MapUtility::SetTree(map, objGen, p);
     
     BOOST_REQUIRE_EQUAL(map.objectType[index], libsiedler2::OT_Stone_Begin);
     BOOST_REQUIRE_EQUAL(map.objectInfo[index], libsiedler2::OI_Stone1);
@@ -373,7 +386,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, MapUtility)
  * Tests the MapUtility::SetStone for an empty map. As a result the position for the new
  * tree shouldn't be empty anymore.
  */
-BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
+BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, ObjGenFixture)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -381,7 +394,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
     Map map(width, height, "map", "author");
     
     Point<int> p(width/2, height/2);
-    MapUtility::SetStone(map, p);
+    MapUtility::SetStone(map, objGen, p);
     
     BOOST_REQUIRE_NE(map.objectType[p.y * width + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * width + p.x], libsiedler2::OI_Empty);
@@ -391,7 +404,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, MapUtility)
  * Tests the MapUtility::SetStone for a non-empty map. As a result the position for the new
  * stone pile shouldn't be replaced.
  */
-BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
+BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, ObjGenFixture)
 {
     const unsigned width = 16u;
     const unsigned height = 8u;
@@ -403,7 +416,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
     map.objectType[index] = libsiedler2::OT_Tree1_Begin;
     map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
     
-    MapUtility::SetStone(map, p);
+    MapUtility::SetStone(map, objGen, p);
     
     BOOST_REQUIRE_EQUAL(map.objectType[index], libsiedler2::OT_Tree1_Begin);
     BOOST_REQUIRE_EQUAL(map.objectInfo[index], libsiedler2::OI_TreeOrPalm);
@@ -412,7 +425,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, MapUtility)
 /**
  * Tests the VertexUtility::ComputePointOnCircle method with fixed values around a circle.
  */
-BOOST_FIXTURE_TEST_CASE(ComputePointOnCircle_FixedValues, MapUtility)
+BOOST_AUTO_TEST_CASE(ComputePointOnCircle_FixedValues)
 {
     Point<int> p1 = MapUtility::ComputePointOnCircle(0, 360, Point<int>(1,1), 1.0);
 
