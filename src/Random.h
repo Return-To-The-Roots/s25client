@@ -72,6 +72,9 @@ class Random : public Singleton<Random>
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #define RANDOM Random::inst()
+/// Shortcut to get a new random value in range [0, maxVal) for a given object id
+/// Note: maxVal has to be small (at least <= 32768)
+#define RANDOM_RAND(objId, maxVal) RANDOM.Rand(__FILE__, __LINE__, objId, maxVal)
 
 /// functor using RANDOM.Rand(...) e.g. for std::random_shuffle
 struct RandomFunctor

@@ -21,61 +21,142 @@
 #include "test/testHelpers.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/assign/std/vector.hpp>
 #include <boost/random/seed_seq.hpp>
+#include <boost/foreach.hpp>
 #include <vector>
+#include <limits>
+//#include <iostream>
+
+using namespace boost::assign;
+
+namespace{
+    struct SeedFixture{
+        SeedFixture()
+        {
+            // For every seed the rng must return good random values
+            // so try a regular one and some corner cases
+            seeds += 0x1337, 0, std::numeric_limits<unsigned>::max(), std::numeric_limits<unsigned short>::max();
+        }
+        std::vector<unsigned> seeds;
+    };
+}
 
 BOOST_AUTO_TEST_SUITE(RNG_Tests)
 
-BOOST_AUTO_TEST_CASE(RandomTest)
+BOOST_FIXTURE_TEST_CASE(RandomTest, SeedFixture)
 {
-    initGameRNG();
-    std::vector<unsigned> resultCt6(6);
-    std::vector<unsigned> resultCt13(13);
-    std::vector<unsigned> resultCt28(28);
-    const unsigned numSamples = 3000;
-    for(unsigned i = 0; i < numSamples; i++)
+    BOOST_FOREACH(unsigned seed, seeds)
     {
-        ++resultCt6.at(RANDOM.Rand(__FILE__, __LINE__, 0, resultCt6.size()));
-        ++resultCt13.at(RANDOM.Rand(__FILE__, __LINE__, 0, resultCt13.size()));
-        ++resultCt28.at(RANDOM.Rand(__FILE__, __LINE__, 0, resultCt28.size()));
+        RANDOM.Init(seed);
+        std::vector< std::vector<unsigned> > results;
+        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11),
+            std::vector<unsigned>(13), std::vector<unsigned>(32), std::vector<unsigned>(33);
+        const unsigned numSamples = 3000;
+        for(unsigned i = 0; i < numSamples; i++)
+        {
+            BOOST_FOREACH(std::vector<unsigned>& result, results)
+            {
+                // Using .at makes sure we don't exceed the maximum value
+                ++result.at(RANDOM_RAND(0, result.size()));
+            }
+        }
+        // We want a uniform distribution. So all values should occur about the same number of times
+        // this is: average = numSamples / maxVal
+        // Due to normal fluctuations on true random numbers we just check that they occurred at least
+        // average * percentage times
+        const unsigned minPercentage = 70u;
+        BOOST_FOREACH(std::vector<unsigned>& result, results)
+        {
+            const unsigned average = numSamples / result.size();
+            const unsigned minCt = average * minPercentage / 100u;
+            for(unsigned i = 0; i < result.size(); i++)
+                BOOST_REQUIRE_GT(result[i], minCt);
+        }
     }
-    // Result must be at least 70% of the average
-    for(unsigned i = 0; i < resultCt6.size(); i++)
-        BOOST_REQUIRE_GT(resultCt6[i], numSamples / resultCt6.size() * 70u / 100u);
-    for(unsigned i = 0; i < resultCt13.size(); i++)
-        BOOST_REQUIRE_GT(resultCt13[i], numSamples / resultCt13.size() * 70u / 100u);
-    for(unsigned i = 0; i < resultCt28.size(); i++)
-        BOOST_REQUIRE_GT(resultCt28[i], numSamples / resultCt28.size() * 70u / 100u);
 }
 
-BOOST_AUTO_TEST_CASE(XorShiftRange)
+BOOST_AUTO_TEST_CASE(RandomSameSeq)
 {
-    XorShift rng;
-    const unsigned numSamples = 3000;
-    const XorShift::result_type min = rng.min();
-    const XorShift::result_type max = rng.max();
-    for(unsigned i = 0; i < numSamples; i++){
-        XorShift::result_type val = rng();
-        BOOST_REQUIRE_GE(val, min);
-        BOOST_REQUIRE_LE(val, max);
+    // The rng must return the same sequence of values for a given seed
+    RANDOM.Init(0x1337);
+    std::vector<int> results;
+    results += 713, 860, 519, 141, 414, 616, 313, 458, 421, 302;
+    BOOST_FOREACH(int result, results)
+    {
+        //std::cout << RANDOM_RAND(0, 1024) << std::endl;
+        BOOST_REQUIRE_EQUAL(RANDOM_RAND(0, 1024), result);
     }
-    std::vector< std::vector<unsigned> > results;
-    results.push_back(std::vector<unsigned>(10));
-    results.push_back(std::vector<unsigned>(11));
-    results.push_back(std::vector<unsigned>(13));
-    results.push_back(std::vector<unsigned>(32));
-    results.push_back(std::vector<unsigned>(33));
-    for(size_t j = 0; j < results.size(); j++){
-        std::vector<unsigned>& result = results[j];
-        const unsigned maxVal = static_cast<unsigned>(result.size() - 1);
-        for(unsigned i = 0; i < numSamples; i++){
-            unsigned val = rng(maxVal);
-            BOOST_REQUIRE_LE(val, maxVal);
-            ++result.at(val);
+}
+
+BOOST_FIXTURE_TEST_CASE(RandomEmptySeq, SeedFixture)
+{
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        RANDOM.Init(seed);
+        for(int i = 0; i < 100; i++)
+        {
+            // Create a random number in [0, 0) is always 0 (by definition)
+            BOOST_REQUIRE_EQUAL(RANDOM_RAND(0, 0), 0);
         }
-        // Now every value has to be set (every value was rolled at least once)
-        for(unsigned i = 0; i < result.size(); i++)
-            BOOST_REQUIRE_GT(result[i], 0u);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(XorShiftRange, SeedFixture)
+{
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        XorShift rng(seed);
+        const unsigned numSamplesMinMax = 3000;
+        const XorShift::result_type min = rng.min();
+        const XorShift::result_type max = rng.max();
+        for(unsigned i = 0; i < numSamplesMinMax; i++)
+        {
+            XorShift::result_type val = rng();
+            BOOST_REQUIRE_GE(val, min);
+            BOOST_REQUIRE_LE(val, max);
+        }
+
+        std::vector< std::vector<unsigned> > results;
+        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11),
+            std::vector<unsigned>(13), std::vector<unsigned>(32), std::vector<unsigned>(33);
+        const unsigned numSamples = 2000;
+        for(unsigned i = 0; i < numSamples; i++)
+        {
+            BOOST_FOREACH(std::vector<unsigned>& result, results)
+            {
+                const unsigned maxVal = static_cast<unsigned>(result.size() - 1);
+                unsigned val = rng(maxVal);
+                BOOST_REQUIRE_LE(val, maxVal);
+                // Using .at makes sure we don't exceed the maximum value
+                ++result.at(val);
+            }
+        }
+        // We want a uniform distribution. So all values should occur about the same number of times
+        // this is: average = numSamples / maxVal
+        // Due to normal fluctuations on true random numbers we just check that they occurred at least
+        // average * percentage times
+        const unsigned minPercentage = 70u;
+        BOOST_FOREACH(std::vector<unsigned>& result, results)
+        {
+            const unsigned average = numSamples / result.size();
+            const unsigned minCt = average * minPercentage / 100u;
+            for(unsigned i = 0; i < result.size(); i++)
+                BOOST_REQUIRE_GT(result[i], minCt);
+        }
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(XorShiftEmptyRange, SeedFixture)
+{
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        XorShift rng(seed);
+        for(int i = 0; i < 100; i++)
+        {
+            // Create a random number in [0, 0] is always 0
+            BOOST_REQUIRE_EQUAL(rng(0), 0u);
+        }
     }
 }
 
@@ -94,9 +175,11 @@ BOOST_AUTO_TEST_CASE(XorShiftFromSeedSeq)
     const unsigned numSamples = 10;
     const XorShift::result_type firstVal = rng();
     bool differentValueFound = false;
-    for(unsigned i = 0; i < numSamples; i++){
+    for(unsigned i = 0; i < numSamples; i++)
+    {
         XorShift::result_type val = rng();
-        if(val != firstVal){
+        if(val != firstVal)
+        {
             differentValueFound = true;
             break;
         }
