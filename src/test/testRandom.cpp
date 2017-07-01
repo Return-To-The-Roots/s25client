@@ -121,7 +121,7 @@ void testRange(const T_Seeds& seeds)
         std::vector< std::vector<unsigned> > results;
         results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11),
             std::vector<unsigned>(13), std::vector<unsigned>(32), std::vector<unsigned>(33);
-        const unsigned numSamples = 2000;
+        const unsigned numSamples = 3000;
         for(unsigned i = 0; i < numSamples; i++)
         {
             BOOST_FOREACH(std::vector<unsigned>& result, results)
@@ -150,6 +150,7 @@ void testRange(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(ValueRangeValid)
 {
+    testRange<OldLCG>(seeds);
     testRange<XorShift>(seeds);
 }
 
@@ -169,6 +170,7 @@ void testEmptyRange(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(EmptyRange)
 {
+    testEmptyRange<OldLCG>(seeds);
     testEmptyRange<XorShift>(seeds);
 }
 
@@ -197,6 +199,7 @@ void testCtorFromSeedSeq(const T_Seed& seeds)
 
 BOOST_AUTO_TEST_CASE(CtorFromSeedSeq)
 {
+    testCtorFromSeedSeq<OldLCG>(seeds);
     testCtorFromSeedSeq<XorShift>(seeds);
 }
 
@@ -225,6 +228,7 @@ void testCopy(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(Copy)
 {
+    testCopy<OldLCG>(seeds);
     testCopy<XorShift>(seeds);
 }
 
@@ -248,6 +252,7 @@ void testStreamOps(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(StreamOperations)
 {
+    testStreamOps<OldLCG>(seeds);
     testStreamOps<XorShift>(seeds);
 }
 
@@ -269,6 +274,7 @@ void testSerialize(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(Serialization)
 {
+    testSerialize<OldLCG>(seeds);
     testSerialize<XorShift>(seeds);
 }
 
@@ -289,6 +295,7 @@ void testDiscard(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(Discard)
 {
+    testDiscard<OldLCG>(seeds);
     testDiscard<XorShift>(seeds);
 }
 

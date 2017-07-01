@@ -29,7 +29,7 @@ Random<T_PRNG>::Random()
 template<class T_PRNG>
 void Random<T_PRNG>::Init(const uint64_t& seed)
 {
-    ResetState(PRNG(seed));
+    ResetState(PRNG(static_cast<PRNG::result_type>(seed)));
 }
 
 template<class T_PRNG>
@@ -45,7 +45,8 @@ int Random<T_PRNG>::Rand(const char* const src_name, const unsigned src_line, co
     history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, src_name, src_line, obj_id);
     ++numInvocations_;
     
-    return rng_(max);
+    // Special case: [0, 0) makes 0
+    return (max == 0) ? 0 : rng_(max - 1);
 }
 
 template<class T_PRNG>
@@ -139,7 +140,7 @@ template<class T_PRNG>
 int Random<T_PRNG>::RandomEntry::GetValue() const
 {
     PRNG tmpRng(rngState);
-    return tmpRng(max);
+    return (max == 0) ? 0 : tmpRng(max - 1);
 }
 
 template<class T_PRNG>

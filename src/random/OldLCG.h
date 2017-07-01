@@ -18,10 +18,10 @@
 #ifndef OldLCG_h__
 #define OldLCG_h__
 
-#include <iosfwd>
 #include <boost/core/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
-#include <stdint.h>
+#include <iosfwd>
+#include <boost/cstdint.hpp>
 
 class Serializer;
 
@@ -29,13 +29,13 @@ class Serializer;
 class OldLCG
 {
 public:
-    typedef unsigned return_type;
+    typedef unsigned result_type;
 
-    static return_type min() { return 0; }
-    static return_type max() { return 32767; }
+    static result_type min() { return 0; }
+    static result_type max() { return 32767; }
 
     OldLCG() { seed(); }
-    explicit OldLCG(unsigned initSeed) { seed(initSeed); }
+    explicit OldLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
     explicit OldLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0) { seed(seedSeq); }
 
@@ -44,16 +44,15 @@ public:
     template<class T_SeedSeq>
     void seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0);
 
-    return_type operator()() { return (*this)(max() + 1); }
-    return_type operator()(return_type maxVal);
+    /// Return random value in [min, max]
+    result_type operator()() { return (*this)(max()); }
+    /// Return random value in [0, maxVal] for a small maxVal
+    result_type operator()(result_type maxVal);
 
     void discard(uint64_t j);
 
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);
-
-    // Temp workaround for getting the state
-    unsigned getState() const { return state_; }
 private:
     friend std::ostream& operator<<(std::ostream& os, const OldLCG& obj);
     friend std::istream& operator>>(std::istream& is, OldLCG& obj);
@@ -66,13 +65,15 @@ private:
 template<class T_SeedSeq>
 inline void OldLCG::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type*)
 {
-    unsigned seed;
-    seedSeq.generate(&seed, &seed);
-    seed(seed);
+    unsigned seedVal;
+    seedSeq.generate(&seedVal, &seedVal + 1);
+    seed(seedVal);
 }
 
-inline OldLCG::return_type OldLCG::operator()(OldLCG::return_type maxVal)
+inline OldLCG::result_type OldLCG::operator()(OldLCG::result_type maxVal)
 {
+    // Shift range from [0, maxVal) to [0, maxVal]
+    maxVal++;
     state_ = (state_ * 997 + 1 + maxVal) & 32767;
     return (state_ * maxVal) / 32768;
 }
