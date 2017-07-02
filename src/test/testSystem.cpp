@@ -18,6 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "libutil/src/System.h"
 #include "libutil/src/ucString.h"
+#include "WindowsCmdLine.h"
+#include "ProgramInitHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -58,6 +60,44 @@ BOOST_AUTO_TEST_CASE(GetUsername)
 {
     BOOST_REQUIRE(!System::getUserName().empty());
     BOOST_REQUIRE(isValidUTF8(System::getUserName()));
+}
+
+BOOST_AUTO_TEST_CASE(GetExePath)
+{
+    char** argv = boost::unit_test::framework::master_test_suite().argv;
+#ifdef _WIN32
+    WindowsCmdLine cmdLine;
+    argv = cmdLine.getArgv();
+#endif // _WIN32
+    bfs::path exePath = System::getExecutablePath(argv[0]);
+    BOOST_REQUIRE(!exePath.empty());
+    BOOST_REQUIRE(bfs::exists(exePath));
+    BOOST_REQUIRE(bfs::is_regular_file(exePath));
+}
+
+class ResetWorkDir{
+    bfs::path oldWorkDir;
+public:
+    ResetWorkDir(): oldWorkDir(bfs::current_path()){}
+    ~ResetWorkDir(){ bfs::current_path(oldWorkDir); }
+};
+
+BOOST_AUTO_TEST_CASE(PrefixPath)
+{
+    char** argv = boost::unit_test::framework::master_test_suite().argv;
+#ifdef _WIN32
+    WindowsCmdLine cmdLine;
+    argv = cmdLine.getArgv();
+#endif // _WIN32
+    bfs::path prefixPath = GetPrefixPath(argv[0]);
+    BOOST_REQUIRE(!prefixPath.empty());
+    BOOST_REQUIRE(bfs::exists(prefixPath));
+    BOOST_REQUIRE(bfs::is_directory(prefixPath));
+    {
+        ResetWorkDir resetWorkDir;
+        BOOST_REQUIRE(InitWorkingDirectory(argv[0]));
+        BOOST_REQUIRE_EQUAL(prefixPath, bfs::current_path());
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -24,6 +24,8 @@
 #include <string>
 
 bool InitLocale();
+/// Return the prefix path for the installation
+bfs::path GetPrefixPath(const std::string& argv0);
 bool InitWorkingDirectory(const std::string& argv0);
 
 #endif // ProgramInitHelpers_h__

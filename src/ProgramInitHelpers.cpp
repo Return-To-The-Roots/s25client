@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
 #include "System.h"
+#include "libutil/src/Log.h"
 #include <build_paths.h>
 
 #include <boost/locale.hpp>
@@ -67,15 +68,15 @@ bool InitLocale()
     return true;
 }
 
-bool InitWorkingDirectory(const std::string& argv0)
+bfs::path GetPrefixPath(const std::string& argv0)
 {
     // Determine install prefix
     // Allow overwrite with RTTR_PREFIX_DIR
     bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
     if(!prefixPath.empty())
     {
-        std::cout << "Note: Prefix path manually set to " << prefixPath << std::endl;
-    } 
+        LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
+    }
 
     // Complete the path as it would be done by the system
     // This avoids problems if the program was not started from the working directory
@@ -87,10 +88,9 @@ bool InitWorkingDirectory(const std::string& argv0)
     }
     if(!bfs::exists(fullExeFilepath))
     {
-        std::cerr << "Executable not at '" << fullExeFilepath << "'" << std::endl
-            << "starting file path: " << argv0 << std::endl
-            << "completed file path: " << System::getExecutablePath(argv0) << std::endl;
-        return false;
+        LOG.write("Executable not at '%1%'\nStarting file path: %2%\nCompleted file path: %3%\n", LogTarget::Stderr)
+            % fullExeFilepath % argv0 % System::getExecutablePath(argv0);
+        return "";
     }
 
     // Determine install prefix
@@ -108,14 +108,22 @@ bool InitWorkingDirectory(const std::string& argv0)
         }
         if(!bfs::equivalent(curBinDir, prefixPath / cfgBinDir))
         {
-            std::cerr << "Could not find install prefix." << std::endl
-                << "Current binary dir: " << curBinDir << std::endl
-                << "Best guess for prefixed binary dir: " << (prefixPath / cfgBinDir) << std::endl
-                << "Configured binary dir: " << cfgBinDir << std::endl;
-            return false;
+            LOG.write("Could not find install prefix.\n"
+                "Current binary dir: %1%\n"
+                "Best guess for prefixed binary dir: %2%\n"
+                "Configured binary dir: %3%\n", LogTarget::Stderr)
+                % curBinDir % (prefixPath / cfgBinDir) % cfgBinDir;
+            return "";
         }
     }
+    return prefixPath;
+}
 
+bool InitWorkingDirectory(const std::string& argv0)
+{
+    bfs::path prefixPath = GetPrefixPath(argv0);
+    if(prefixPath.empty())
+        return false;
     // Make the prefix path our working directory as all other paths are relative to that
     bfs::current_path(prefixPath);
     return true;
