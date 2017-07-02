@@ -24,6 +24,6 @@
 #include <string>
 
 bool InitLocale();
-bool InitWorkingDirectory(const bfs::path& exeFilepath);
+bool InitWorkingDirectory(const std::string& argv0);
 
 #endif // ProgramInitHelpers_h__

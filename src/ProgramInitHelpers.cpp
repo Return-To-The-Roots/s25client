@@ -67,25 +67,34 @@ bool InitLocale()
     return true;
 }
 
-bool InitWorkingDirectory(const bfs::path& exeFilepath)
+bool InitWorkingDirectory(const std::string& argv0)
 {
-    // Complete the path as it would be done by the system
-    // This avoids problems if the program was not started from the working directory
-    // e.g. by putting its path in PATH
-    bfs::path fullExeFilepath = bfs::absolute(bfs::system_complete(exeFilepath));
-    if(!bfs::exists(fullExeFilepath))
-    {
-        std::cerr << "Executable not at '" << fullExeFilepath << "'" << std::endl;
-        return false;
-    }
-
     // Determine install prefix
     // Allow overwrite with RTTR_PREFIX_DIR
     bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
     if(!prefixPath.empty())
     {
         std::cout << "Note: Prefix path manually set to " << prefixPath << std::endl;
-    } else
+    } 
+
+    // Complete the path as it would be done by the system
+    // This avoids problems if the program was not started from the working directory
+    // e.g. by putting its path in PATH
+    bfs::path fullExeFilepath = System::getExecutablePath(argv0);
+    if(!bfs::exists(fullExeFilepath) && !prefixPath.empty())
+    {
+        fullExeFilepath = prefixPath / RTTR_BINDIR / bfs::path(argv0).filename();
+    }
+    if(!bfs::exists(fullExeFilepath))
+    {
+        std::cerr << "Executable not at '" << fullExeFilepath << "'" << std::endl
+            << "starting file path: " << argv0 << std::endl
+            << "completed file path: " << System::getExecutablePath(argv0) << std::endl;
+        return false;
+    }
+
+    // Determine install prefix
+    if(prefixPath.empty())
     {
         const bfs::path curBinDir = fullExeFilepath.parent_path();
         const bfs::path cfgBinDir = RTTR_BINDIR;
