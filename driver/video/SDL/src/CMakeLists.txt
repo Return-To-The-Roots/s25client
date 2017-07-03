@@ -17,7 +17,7 @@ IF (SDL_FOUND)
 		SET(SL_PREFIX "")
 	ENDIF ()
 
-	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
+	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(videoSDL updateversion)
 	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
 

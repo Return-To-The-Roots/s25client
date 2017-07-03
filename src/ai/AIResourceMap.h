@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "ai/Resource.h"
+#include "ai/AIResource.h"
 #include "ai/AIInterface.h"
 #include <vector>
 namespace AIJH { struct Node; }

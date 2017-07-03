@@ -14,7 +14,7 @@ IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 	ADD_DEFINITIONS(-DBUILD_DLL)
 	SET(SL_PREFIX "")
 
-	ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h main.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
+	ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(videoWinAPI updateversion)
 	TARGET_LINK_LIBRARIES(videoWinAPI videodrv gdi32 opengl32 user32) 
 	

@@ -28,7 +28,7 @@ LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/myge
 ################################################################################
 
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
-LIST(REMOVE_ITEM SOURCES_OTHER "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+LIST(REMOVE_ITEM SOURCES_OTHER "${CMAKE_CURRENT_SOURCE_DIR}/s25client.cpp")
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
 SET(SOURCES_SUBDIRS )
@@ -228,7 +228,7 @@ IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 	TARGET_LINK_LIBRARIES(s25Main dl)
 ENDIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 
-ADD_EXECUTABLE(s25client main.cpp ${s25client_RC})
+ADD_EXECUTABLE(s25client s25client.cpp ${s25client_RC})
 TARGET_LINK_LIBRARIES(s25client s25Main)
 
 IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")

@@ -17,7 +17,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Header
-#include "main.h" // IWYU pragma: keep
+#include "driverDefines.h" // IWYU pragma: keep
 #include "GLFW.h"
 #include <VideoInterface.h>
 #include <build_version.h>

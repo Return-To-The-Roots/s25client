@@ -23,7 +23,7 @@
 #include "factories/GameCommandFactory.h"
 #include "GameCommand.h"
 #include "gameTypes/Direction.h"
-#include "ai/Resource.h"
+#include "ai/AIResource.h"
 #include "NodalObjectTypes.h"
 
 class nobHQ;
