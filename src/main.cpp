@@ -341,11 +341,11 @@ bool InitGame()
     return true;
 }
 
-int RunProgram(const std::string& exeFilepath, po::variables_map& options)
+int RunProgram(const std::string& argv0, po::variables_map& options)
 {
     if(!InitLocale())
         return 1;
-    if(!InitWorkingDirectory(exeFilepath))
+    if(!InitWorkingDirectory(argv0))
         return 1;
     SetAppSymbol();
     InstallSignalHandlers();
