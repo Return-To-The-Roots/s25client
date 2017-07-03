@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "main.h" // IWYU pragma: keep
+#include "driverDefines.h" // IWYU pragma: keep
 #include "SoundSDL_Effect.h"
 #include <SDL_mixer.h>
 

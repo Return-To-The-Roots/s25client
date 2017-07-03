@@ -24,7 +24,7 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "AIEvents.h"
-#include "ai/Resource.h"
+#include "ai/AIResource.h"
 
 #include <vector>
 
