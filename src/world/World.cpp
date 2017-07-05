@@ -546,7 +546,7 @@ MapPoint World::GetHarborPoint(const unsigned harborId) const
     return harbor_pos[harborId].pos;
 }
 
-const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbor(const unsigned harborId, const ShipDirection& dir) const
+const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const unsigned harborId, const ShipDirection& dir) const
 {
     RTTR_Assert(harborId);
     return harbor_pos[harborId].neighbors[dir.toUInt()];
