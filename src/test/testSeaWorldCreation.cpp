@@ -101,7 +101,7 @@ BOOST_FIXTURE_TEST_CASE(GetShipDir, DummyWorldFixture)
     testShipDir(this->world, MapPoint(world.GetWidth() - 1, world.GetHeight() - 1));
 }
 
-BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
 {
     // Point 0,0 is definitely inside the sea
     BOOST_REQUIRE(world.IsWaterPoint(MapPoint(0, 0)));
@@ -153,7 +153,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution<>)
 {
     // Now just test some assumptions: 2 harbor spots per possible HQ.
     // Square land, 1 HQ on each side, harbors top and bottom or left and right of it

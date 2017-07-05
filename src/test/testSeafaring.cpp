@@ -40,7 +40,7 @@ namespace{
 
 BOOST_AUTO_TEST_SUITE(SeafaringTestSuite)
 
-BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
 {
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const MapPoint hqPos = player.GetHQPos();
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
     BOOST_REQUIRE(!road.empty());
 }
 
-BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
 {
     initGameRNG();
 
@@ -120,7 +120,8 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
     BOOST_REQUIRE_EQUAL(player.GetShipID(ship), 0u);
 }
 
-struct ShipReadyFixture: public SeaWorldWithGCExecution
+template<unsigned T_width = 64, unsigned T_height = 64>
+struct ShipReadyFixture: public SeaWorldWithGCExecution<T_width, T_height>
 {
     PostBox* postBox;
     ShipReadyFixture()
@@ -155,7 +156,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
+BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
 {
     initGameRNG();
 
@@ -299,7 +300,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsIdling());
 }
 
-BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)
+BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
 {
     initGameRNG();
 
