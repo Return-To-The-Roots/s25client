@@ -97,7 +97,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         throw std::runtime_error("World to small");
 
     // Vertical
-    for(MapPoint pt(offset, offset); pt.y < width_ - offset; ++pt.y)
+    for(MapPoint pt(offset, offset); pt.y < height_ - offset; ++pt.y)
     {
         for(pt.x = offset; pt.x < offset + landSize; ++pt.x)
         {
@@ -154,6 +154,23 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
         return false;
     world.InitAfterLoad();
+
+
+    /* The HQs and harbor(ids) are here: (H=HQ, 1-8=harbor)
+     * WWWWWWWWWWWWWWWWWWWWWWW
+     * WWWWWWWWWW1WWWWWWWWWWWW
+     * WWLLLLLLLLHLLLLLLLLLLWW
+     * WWLLLLLLLLLLLLLLLLLLLWW
+     * WWLLWWWWWW2WWWWWWWWLLWW
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * W3HL4WWWWWWWWWWWWW5HL6W
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * WWLLWWWWWWW7WWWWWWWLLWW
+     * WWLLLLLLLLLHLLLLLLLLLWW
+     * WWLLLLLLLLLLLLLLLLLLLWW
+     * WWWWWWWWWWW8WWWWWWWWWWW
+     * WWWWWWWWWWWWWWWWWWWWWWW
+     */
     return true;
 }
 
