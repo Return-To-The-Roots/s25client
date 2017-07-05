@@ -999,8 +999,8 @@ void noShip::StartDrivingToHarborPlace()
     {
         // todo
         RTTR_Assert(false);
-        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden! player %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n")
-            % GetEvMgr().GetCurrentGF() % ownerId_ % state % pos.x % pos.y % coastalPos.x % coastalPos.y % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n")
+            % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % state % pos.x % pos.y % coastalPos.x % coastalPos.y % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
         goal_harborId = 0;
         return;
     }
