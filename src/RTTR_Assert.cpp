@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
+#include "libutil/src/System.h"
 #include <iostream>
 #include <sstream>
 #ifdef _WIN32
@@ -28,7 +29,13 @@ bool RTTR_AssertEnableBreak = true;
 
 bool RTTR_IsBreakOnAssertFailureEnabled()
 {
-    return RTTR_AssertEnableBreak;
+    bool assertBreakDisabled = false;
+    try{
+        std::string envVarVal = System::getEnvVar("RTTR_DISABLE_ASSERT_BREAKPOINT");
+        if(envVarVal == "1" || envVarVal == "yes")
+            assertBreakDisabled = true;
+    }catch(...){}
+    return !assertBreakDisabled && RTTR_AssertEnableBreak;
 }
 
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)

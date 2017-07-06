@@ -30,6 +30,8 @@
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function);
 bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
+/// Note: This breakpoint can be globally disabled by setting the environment variable
+///       RTTR_DISABLE_ASSERT_BREAKPOINT to "1" or "yes" which overrides this setting
 extern bool RTTR_AssertEnableBreak;
 
 /* Some aspects about RTTR_Assert:
@@ -38,7 +40,6 @@ extern bool RTTR_AssertEnableBreak;
     - Use sizeof for disabled assert to avoid unused value warnings and actual code generation
  */
 #if RTTR_ENABLE_ASSERTS
-    // Gets the name of the current function. Might not work on all compilers...
 #   define RTTR_Assert(cond)                                                       \
 		do{                                                                        \
 			if(!(cond))                                                            \

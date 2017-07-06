@@ -20,6 +20,7 @@
 #   include <windows.h>
 #else
 #   include <cstdlib>
+#   include <csignal>
 #endif // _WIN32
 #include "SignalHandler.h"
 
