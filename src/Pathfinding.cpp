@@ -22,7 +22,9 @@
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditions.h"
+#include "gameTypes/ShipDirection.h"
 #include "gameData/GameConsts.h"
+#include <boost/foreach.hpp>
 
 /// Param for road-build pathfinding
 struct Param_RoadPath
@@ -92,10 +94,30 @@ unsigned char GameWorldGame::FindPathForWareOnRoads(const noRoadNode& start, con
         return INVALID_DIR;
 }
 
-/// Wegfindung für Schiffe auf dem Wasser
-bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length)
+bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId,
+    std::vector<unsigned char>* route, unsigned* length)
 {
-    return GetFreePathFinder().FindPath(start, dest, true, 400, route, length, NULL, PathConditionShip(*this));
+    // Find the distance to the furthest harbor from the target harbor and take that as maximum
+    unsigned maxDistance = 0;    
+
+    for(int iDir = 0; iDir < ShipDirection::COUNT; iDir++)
+    {
+        const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(harborId, ShipDirection::fromInt(iDir));
+        BOOST_FOREACH(const HarborPos::Neighbor& neighbor, neighbors)
+        {
+            if(IsHarborAtSea(neighbor.id, seaId) && neighbor.distance > maxDistance)
+                maxDistance = neighbor.distance;
+        }
+    }
+    // Add a few fields reserve
+    maxDistance += 6;
+    return FindShipPath(start, GetCoastalPoint(harborId, seaId), maxDistance, route, length);
+}
+
+bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest,
+    unsigned maxDistance, std::vector<unsigned char>* route, unsigned* length)
+{
+    return GetFreePathFinder().FindPath(start, dest, true, maxDistance, route, length, NULL, PathConditionShip(*this));
 }
 
 /// Prüft, ob eine Schiffsroute noch Gültigkeit hat

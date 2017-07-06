@@ -37,20 +37,24 @@
 #           define snprintf _snprintf
 #       endif
         extern void __cdecl __debugbreak();
-#       define BREAKPOINT __debugbreak()
+#       define RTTR_BREAKPOINT __debugbreak()
 #       ifndef assert
 #           define assert _ASSERT
 #       endif
 #   else
 #       include <assert.h>
-#       define BREAKPOINT
+#       define RTTR_BREAKPOINT
 #   endif
 
 #   undef PlaySound
     typedef int socklen_t;
 #else
-#   include <csignal>
-#   define BREAKPOINT raise(SIGTRAP)
+#   if (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
+#       define RTTR_BREAKPOINT __asm__ __volatile__ ( "int $3\n\t" )
+#   else
+#       include <csignal>
+#       define RTTR_BREAKPOINT raise(SIGTRAP)
+#   endif
 #   define SOCKET int
 #   define INVALID_SOCKET -1
 #   define SOCKET_ERROR -1

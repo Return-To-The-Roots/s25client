@@ -16,8 +16,8 @@ platform:
 environment:
   matrix:
   - BOOST_ROOT: C:\Libraries\boost_1_59_0
-    BOOST_LIBRARYDIR_32: C:\Libraries\boost_1_59_0\lib32-msvc-14.0
-    BOOST_LIBRARYDIR_64: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
+    BOOST_LIBDIR_32: lib32-msvc-14.0
+    BOOST_LIBDIR_64: lib64-msvc-14.0
     
 install:
   - dir C:\Libraries
@@ -29,17 +29,19 @@ install:
 
 before_build:
   - cd build
-  - if "%platform%"=="Win32" cmake -G "Visual Studio 14 2015" -DENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR_32%" ..
-  - if "%platform%"=="x64" cmake -G "Visual Studio 14 2015 Win64" -DENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR_64%" ..
+  - if "%platform%"=="Win32" cmake -G "Visual Studio 14 2015" -DENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR_32%" ..
+  - if "%platform%"=="x64" cmake -G "Visual Studio 14 2015 Win64" -DENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR_64%" ..
   - cd ..
     
 build:
 
 build_script:
-  - echo "Building for %CONFIGURATION% on %platform%"
+  - echo "Building for %configuration% on %platform%"
   - msbuild /m /p:Configuration="%configuration%" /p:Platform="%platform%" /v:n build/s25client.sln
 
 test_script:
   - cd build
-  - ctest --output-on-failure -C %CONFIGURATION%
+  - set RTTR_DISABLE_ASSERT_BREAKPOINT="1"
+  - echo "RTTR_DISABLE_ASSERT_BREAKPOINT=%RTTR_DISABLE_ASSERT_BREAKPOINT%"
+  - ctest --output-on-failure -C %configuration%
   - cd ..

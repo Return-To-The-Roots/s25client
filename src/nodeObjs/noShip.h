@@ -191,7 +191,7 @@ class noShip : public noMovable
 
         /// Return the harbor ID where the ship currently is. Only valid when waiting for expedition instructions
         unsigned GetCurrentHarbor() const;
-        /// Return the harbor the ship is currently targetting (0 if ship is idling)
+        /// Return the harbor the ship is currently targeting (0 if ship is idling)
         unsigned GetTargetHarbor() const;
         /// Return the source harbor from where the ship left the current mission (0 if ship is idling)
         unsigned GetHomeHarbor() const;

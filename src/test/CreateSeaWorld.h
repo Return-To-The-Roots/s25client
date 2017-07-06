@@ -25,6 +25,14 @@ class GameWorldGame;
 
 /// Creates a world for up to 4 players,
 /// with a sea on the outside and a lake on the inside with each player having access to both
+/// Harbors: 1: Top outside
+///          2: Top inside
+///          3: Left outside
+///          4: Left inside
+///          5: Right inside
+///          6: Right outside
+///          7: Bottom inside
+///          8: Bottom outside
 struct CreateSeaWorld
 {
     CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers);

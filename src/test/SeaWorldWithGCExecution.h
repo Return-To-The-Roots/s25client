@@ -22,10 +22,11 @@
 #ifndef SeaWorldWithGCExecution_h__
 #define SeaWorldWithGCExecution_h__
 
-class SeaWorldWithGCExecution: public WorldFixture<CreateSeaWorld, 3>, public GCExecutor
+template<unsigned T_width = 64, unsigned T_height = 64>
+class SeaWorldWithGCExecution: public WorldFixture<CreateSeaWorld, 3, T_width, T_height>, public GCExecutor
 {
 public:
-    using WorldFixture<CreateSeaWorld, 3>::world;
+    using WorldFixture<CreateSeaWorld, 3, T_width, T_height>::world;
 protected:
     virtual GameWorldGame& GetWorld() override { return world; }
 };

@@ -72,16 +72,32 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = TT_WATER;
     }
-    // Init some land stripes of size 16 (a bit less than the HQ radius)
+    /* We create an outlined square of land in the water so it looks like:
+     * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
+     * WWWWWWWWWWWWWWWWWWWWWWW
+     * WWLLLLLLLLLLLLLLLLLLLWW  Height of land: landSize
+     * WWLLLLLLLLLLLLLLLLLLLWW  Width of water (left and right): offset (on each side)
+     * WWLLWWWWWWWWWWWWWWWLLWW  Width of land: landSize (on each side)
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * WWLLLLLLLLLLLLLLLLLLLWW
+     * WWLLLLLLLLLLLLLLLLLLLWW
+     * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
+     * WWWWWWWWWWWWWWWWWWWWWWW
+     */
+     // Init some land stripes of size 16 (a bit less than the HQ radius)
     const MapCoord offset = 7;
     const MapCoord landSize = 16;
-    // We have: Water(Offset)-Land-Water-Land-Water(Offset)
+    // We need the offset at each side, the land on each side
+    // and at least the same amount of water between the land
     const MapCoord minSize = landSize * 3 + offset * 2;
     if(width_ < minSize || height_ < minSize)
         throw std::runtime_error("World to small");
 
     // Vertical
-    for(MapPoint pt(offset, offset); pt.y < width_ - offset; ++pt.y)
+    for(MapPoint pt(offset, offset); pt.y < height_ - offset; ++pt.y)
     {
         for(pt.x = offset; pt.x < offset + landSize; ++pt.x)
         {
@@ -138,6 +154,23 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
         return false;
     world.InitAfterLoad();
+
+
+    /* The HQs and harbor(ids) are here: (H=HQ, 1-8=harbor)
+     * WWWWWWWWWWWWWWWWWWWWWWW
+     * WWWWWWWWWW1WWWWWWWWWWWW
+     * WWLLLLLLLLHLLLLLLLLLLWW
+     * WWLLLLLLLLLLLLLLLLLLLWW
+     * WWLLWWWWWW2WWWWWWWWLLWW
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * W3HL4WWWWWWWWWWWWW5HL6W
+     * WWLLWWWWWWWWWWWWWWWLLWW
+     * WWLLWWWWWWW7WWWWWWWLLWW
+     * WWLLLLLLLLLHLLLLLLLLLWW
+     * WWLLLLLLLLLLLLLLLLLLLWW
+     * WWWWWWWWWWW8WWWWWWWWWWW
+     * WWWWWWWWWWWWWWWWWWWWWWW
+     */
     return true;
 }
 

@@ -215,7 +215,7 @@ public:
     MapPoint GetHarborPoint(const unsigned harborId) const;
     /// Gibt die ID eines Hafenpunktes zurück
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
-    const std::vector<HarborPos::Neighbor>& GetHarborNeighbor(const unsigned harborId, const ShipDirection& dir) const;
+    const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(const unsigned harborId, const ShipDirection& dir) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     unsigned short GetSeaFromCoastalPoint(const MapPoint pt) const;
 

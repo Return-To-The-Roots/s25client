@@ -107,6 +107,7 @@ script:
     # Execute tests
     - export CTEST_OUTPUT_ON_FAILURE=1
     - export BOOST_TEST_CATCH_SYSTEM_ERRORS="no"
+    - export RTTR_DISABLE_ASSERT_BREAKPOINT=1
     - make test
     # Reset environment
     - cd ..

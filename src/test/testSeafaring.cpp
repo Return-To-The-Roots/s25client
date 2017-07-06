@@ -40,7 +40,7 @@ namespace{
 
 BOOST_AUTO_TEST_SUITE(SeafaringTestSuite)
 
-BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
 {
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const MapPoint hqPos = player.GetHQPos();
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution)
     BOOST_REQUIRE(!road.empty());
 }
 
-BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
+BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
 {
     initGameRNG();
 
@@ -120,16 +120,20 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution)
     BOOST_REQUIRE_EQUAL(player.GetShipID(ship), 0u);
 }
 
-struct ShipReadyFixture: public SeaWorldWithGCExecution
+template<unsigned T_hbId = 1, unsigned T_width = 64, unsigned T_height = 64>
+struct ShipReadyFixture: public SeaWorldWithGCExecution<T_width, T_height>
 {
+    typedef SeaWorldWithGCExecution<T_width, T_height> Parent;
+    using Parent::world;
+    using Parent::curPlayer;
+
     PostBox* postBox;
     ShipReadyFixture()
     {
         GamePlayer& player = world.GetPlayer(curPlayer);
         const MapPoint hqPos = player.GetHQPos();
         const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
-        const unsigned hbId = 1;
-        const MapPoint hbPos = world.GetHarborPoint(hbId);
+        const MapPoint hbPos = world.GetHarborPoint(T_hbId);
         world.GetPostMgr().AddPostBox(curPlayer);
         postBox = world.GetPostMgr().GetPostBox(curPlayer);
 
@@ -146,7 +150,11 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
             this->SetFlag(curPt);
         }
 
-        noShip* ship = new noShip(MapPoint(hbPos.x, hbPos.y - 3), curPlayer);
+        MapPoint shipPos(hbPos.x, hbPos.y - 3);
+        if(!world.IsSeaPoint(shipPos))
+            shipPos.y += 6;
+        BOOST_REQUIRE(world.IsSeaPoint(shipPos));
+        noShip* ship = new noShip(shipPos, curPlayer);
         world.AddFigure(ship, ship->GetPos());
         player.RegisterShip(ship);
 
@@ -155,7 +163,7 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
+BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
 {
     initGameRNG();
 
@@ -299,7 +307,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture)
     BOOST_REQUIRE(ship->IsIdling());
 }
 
-BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)
+BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
 {
     initGameRNG();
 
@@ -450,6 +458,50 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture)
             break;
     }
     BOOST_REQUIRE_EQUAL(player.GetHarbors().size(), 2u);
+}
+
+typedef ShipReadyFixture<2, 64, 800> ShipReadyFixtureBig;
+
+BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
+{
+    initGameRNG();
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip* ship = player.GetShipByID(0);
+    nobHarborBuilding& harbor = *player.GetHarbors().front();
+    const MapPoint hbPos = harbor.GetPos();
+    BOOST_REQUIRE(ship);
+    // Go to opposite one
+    const unsigned targetHbId = 7;
+    // Make sure that the other harbor is far away
+    BOOST_REQUIRE_GT(world.CalcHarborDistance(2, targetHbId), 600u);
+    // Add some scouts
+    Inventory newScouts;
+    newScouts.people[JOB_SCOUT] = 20;
+    harbor.AddGoods(newScouts, true);
+    // We want the ship to only scout unexplored harbors, so set all but one to visible
+    for(unsigned i=1; i<=8; i++)
+        world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[curPlayer].visibility = VIS_INVISIBLE;
+    // Start an exploration expedition
+    this->StartExplorationExpedition(hbPos);
+    BOOST_REQUIRE(harbor.IsExplorationExpeditionActive());
+    // Wait till ship has arrived and starts loading
+    for(unsigned gf = 0; gf < 100; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsOnExplorationExpedition())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsOnExplorationExpedition());
+    // Wait till ship has loaded scouts 
+    for(unsigned gf = 0; gf < 200; gf++)
+    {
+        this->em.ExecuteNextGF();
+        if(ship->IsMoving())
+            break;
+    }
+    BOOST_REQUIRE(ship->IsMoving());
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
