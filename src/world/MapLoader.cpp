@@ -463,10 +463,13 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
     std::queue<CalcHarborPosNeighborsNode> todo_list;
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
-    std::vector<unsigned int> flags_init(world.nodes.size()); //-V656
+    std::vector<unsigned int> ptIsSeaPt(world.nodes.size()); //-V656
 
     RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
-        flags_init[world.GetIdx(pt)] = world.IsSeaPoint(pt) ? 1 : 0;
+    {
+        if(world.IsSeaPoint(pt))
+            ptIsSeaPt[world.GetIdx(pt)] = 1;
+    }
 
     for(size_t startHbId = 1; startHbId < world.harbor_pos.size(); ++startHbId)
     {
@@ -476,9 +479,9 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         // 0 - visited or no sea point
         // 1 - sea point, not already visited
         // n - harbor_pos[n - 1]
-        std::vector<unsigned int> flags(flags_init);
+        std::vector<unsigned int> ptToVisitOrHb(ptIsSeaPt);
 
-        // add another entry, so that we can use the value from 'flags' directly.
+        // add another entry, so that we can use the value from 'ptToVisitOrHb' directly.
         std::vector<bool> found(world.harbor_pos.size() + 1, false);
 
         // mark points around harbors
@@ -493,16 +496,16 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             {
                 MapPoint pa = world.GetNeighbour2(world.harbor_pos[otherHbId].pos, d);
 
-                if(flags[world.GetIdx(pa)] == 1)
+                if(ptToVisitOrHb[world.GetIdx(pa)] == 1)
                 {
                     if(otherHbId == startHbId)
                     {
                         // This is our start harbor. Add the sea points around it to our todo list.
                         todo_list.push(CalcHarborPosNeighborsNode(pa, 0));
-                        flags[world.GetIdx(pa)] = 0; // Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
+                        ptToVisitOrHb[world.GetIdx(pa)] = 0; // Mark them as visited (flags = 0) to avoid finding a way to our start harbor.
                     } else
                     {
-                        flags[world.GetIdx(pa)] = otherHbId + 1;
+                        ptToVisitOrHb[world.GetIdx(pa)] = otherHbId + 1;
                     }
                 }
             }
@@ -518,21 +521,21 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 MapPoint curPt = world.GetNeighbour(curNode.pos, d);
                 size_t idx = world.GetIdx(curPt);
 
-                if((flags[idx] > 1) && !found[flags[idx]]) // found harbor we haven't already found
+                if((ptToVisitOrHb[idx] > 1) && !found[ptToVisitOrHb[idx]]) // found harbor we haven't already found
                 {
                     ShipDirection shipDir = world.GetShipDir(world.harbor_pos[startHbId].pos, curPt);
-                    world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(HarborPos::Neighbor(flags[idx] - 1, curNode.distance + 1));
+                    world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(HarborPos::Neighbor(ptToVisitOrHb[idx] - 1, curNode.distance + 1));
 
                     todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
 
-                    found[flags[idx]] = true;
+                    found[ptToVisitOrHb[idx]] = true;
 
-                    flags[idx] = 0; // mark as visited, so we do not go here again
-                } else if(flags[idx])    // this detects any sea point plus harbors we already visited
+                    ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
+                } else if(ptToVisitOrHb[idx])    // this detects any sea point plus harbors we already visited
                 {
                     todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
 
-                    flags[idx] = 0; // mark as visited, so we do not go here again
+                    ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
                 }
             }
         }

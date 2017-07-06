@@ -73,29 +73,22 @@ struct PathConditionTrade: public PathConditionHuman
 
 struct PathConditionShip
 {
-    const GameWorldBase& gwb;
+    const World& world;
 
-    PathConditionShip(const GameWorldBase& gwb): gwb(gwb){}
+    PathConditionShip(const World& world): world(world){}
 
     // Called for every node but the start & goal and should return true, if this point is usable
     FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
-        // Ein Meeresfeld?
-        for(unsigned i = 0; i < 6; ++i)
-        {
-            if(!TerrainData::IsUsableByShip(gwb.GetTerrainAround(pt, i)))
-                return false;
-        }
-
-        return true;
+        return world.IsSeaPoint(pt);
     }
 
     // Called for every node
     FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
     {
         // Der �bergang muss immer aus Wasser sein zu beiden Seiten
-        return TerrainData::IsUsableByShip(gwb.GetWalkingTerrain1(fromPt, dir)) &&
-               TerrainData::IsUsableByShip(gwb.GetWalkingTerrain2(fromPt, dir));
+        return TerrainData::IsUsableByShip(world.GetWalkingTerrain1(fromPt, dir)) &&
+               TerrainData::IsUsableByShip(world.GetWalkingTerrain2(fromPt, dir));
     }
 };
 #endif // PathConditions_h__
