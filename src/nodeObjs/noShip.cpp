@@ -992,8 +992,8 @@ void noShip::StartDrivingToHarborPlace()
         bool routeFound;
         if(pos == gwg->GetCoastalPoint(home_harbor, seaId_))
         {
-            // Use the maximum distance between the harbors plus 20%
-            unsigned maxDistance = (gwg->CalcHarborDistance(home_harbor, goal_harborId) * 120) / 100;
+            // Use the maximum distance between the harbors plus 6 fields
+            unsigned maxDistance = gwg->CalcHarborDistance(home_harbor, goal_harborId) + 6;
             routeFound = gwg->FindShipPath(pos, coastalPos, maxDistance, &route_, NULL);
         }
         else

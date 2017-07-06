@@ -100,7 +100,7 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId
     // Find the distance to the furthest harbor from the target harbor and take that as maximum
     unsigned maxDistance = 0;    
 
-    for(unsigned iDir = 0; iDir < ShipDirection::COUNT; iDir++)
+    for(int iDir = 0; iDir < ShipDirection::COUNT; iDir++)
     {
         const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(harborId, ShipDirection::fromInt(iDir));
         BOOST_FOREACH(const HarborPos::Neighbor& neighbor, neighbors)
@@ -109,8 +109,8 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, unsigned harborId
                 maxDistance = neighbor.distance;
         }
     }
-    // Add 20% as reserve
-    maxDistance = (maxDistance * 120) / 100;
+    // Add a few fields reserve
+    maxDistance += 6;
     return FindShipPath(start, GetCoastalPoint(harborId, seaId), maxDistance, route, length);
 }
 
