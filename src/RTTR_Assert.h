@@ -28,6 +28,7 @@
 #endif // !RTTR_ENABLE_ASSERTS
 
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function);
+bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
 extern bool RTTR_AssertEnableBreak;
 
@@ -38,15 +39,14 @@ extern bool RTTR_AssertEnableBreak;
  */
 #if RTTR_ENABLE_ASSERTS
     // Gets the name of the current function. Might not work on all compilers...
-#   define FUNCTION_NAME __FUNCTION__
-#   define RTTR_Assert(cond)                                                  \
-		do{                                                                   \
-			if(!(cond))                                                       \
-			{                                                                 \
-				if(RTTR_AssertEnableBreak)                                    \
-                    BREAKPOINT;                                               \
-				RTTR_AssertFailure(#cond, __FILE__, __LINE__, FUNCTION_NAME); \
-			}                                                                 \
+#   define RTTR_Assert(cond)                                                       \
+		do{                                                                        \
+			if(!(cond))                                                            \
+			{                                                                      \
+				if(RTTR_IsBreakOnAssertFailureEnabled())                           \
+                    RTTR_BREAKPOINT;                                               \
+				RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME); \
+			}                                                                      \
 		}while(false)
 #else
 #   define RTTR_Assert(cond)    \

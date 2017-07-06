@@ -67,6 +67,15 @@
 #   define SUPPRESS_UNUSED
 #endif
 
+// RTTR_FUNCTION_NAME evaluates to the name of the current function if supported
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) /* C99 supports __func__ as a standard. */
+#   define RTTR_FUNCTION_NAME __func__
+#elif ((__GNUC__ >= 2) || defined(_MSC_VER))
+#   define RTTR_FUNCTION_NAME __FUNCTION__
+#else
+#   define RTTR_FUNCTION_NAME "<Unknown Func>"
+#endif
+
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
     // Check for heap corruption
 #   define CHECK_HEAP_CORRUPTION _ASSERTE(_CrtCheckMemory());

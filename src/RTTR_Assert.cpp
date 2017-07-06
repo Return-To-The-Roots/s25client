@@ -26,6 +26,11 @@
 
 bool RTTR_AssertEnableBreak = true;
 
+bool RTTR_IsBreakOnAssertFailureEnabled()
+{
+    return RTTR_AssertEnableBreak;
+}
+
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)
 {
     static const std::string thisFilePath = __FILE__;
