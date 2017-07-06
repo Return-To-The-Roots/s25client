@@ -510,16 +510,13 @@ noShip::Result noShip::DriveToHarbourPlace()
     if(curRouteIdx == route_.size())
         return GOAL_REACHED;
 
-    // Punkt, zu dem uns der Hafen hinführen will (Küstenpunkt)
-    MapPoint coastalPos = gwg->GetCoastalPoint(goal_harborId, seaId_);
-
     MapPoint goalRoutePos;
 
     // Route überprüfen
     if(!gwg->CheckShipRoute(pos, route_, curRouteIdx, &goalRoutePos))
     {
         // Route kann nicht mehr passiert werden --> neue Route suchen
-        if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
+        if(!gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, NULL))
         {
             // Wieder keine gefunden -> raus
             return NO_ROUTE_FOUND;
@@ -527,16 +524,14 @@ noShip::Result noShip::DriveToHarbourPlace()
 
         // Wir fangen bei der neuen Route wieder von vorne an
         curRouteIdx = 0;
-    }
-
-    // Kommen wir auch mit unser bisherigen Route an dem ursprünglich anvisierten Hafenplatz an?
-    if(coastalPos != goalRoutePos)
+    }else if(goalRoutePos != gwg->GetCoastalPoint(goal_harborId, seaId_))
     {
-        // Nein, d.h. wenn wir schon nah dran sind, müssen wir die Route neu berechnen
+        // Our goal point of the current route has changed
+        // If we are close to it, recalculate the route
         RTTR_Assert(route_.size() >= curRouteIdx);
         if(route_.size() - curRouteIdx < 10)
         {
-            if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
+            if(!gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, NULL))
                 // Keiner gefunden -> raus
                 return NO_ROUTE_FOUND;
 
@@ -577,10 +572,8 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     if(!new_goal)
         return;
 
-    MapPoint coastalPos = gwg->GetCoastalPoint(new_goal, seaId_);
-
     // Versuchen, Weg zu finden
-    if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
+    if(!gwg->FindShipPathToHarbor(pos, new_goal, seaId_, &route_, NULL))
         return;
 
     // Dann fahren wir da mal hin
@@ -995,14 +988,25 @@ void noShip::StartDrivingToHarborPlace()
     MapPoint coastalPos = gwg->GetCoastalPoint(goal_harborId, seaId_);
     if(pos == coastalPos)
         route_.clear();
-    else if(!gwg->FindShipPath(pos, coastalPos, &route_, NULL))
-    {
-        // todo
-        RTTR_Assert(false);
-        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n")
-            % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % state % pos.x % pos.y % coastalPos.x % coastalPos.y % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
-        goal_harborId = 0;
-        return;
+    else{
+        bool routeFound;
+        if(pos == gwg->GetCoastalPoint(home_harbor, seaId_))
+        {
+            // Use the maximum distance between the harbors plus 20%
+            unsigned maxDistance = (gwg->CalcHarborDistance(home_harbor, goal_harborId) * 120) / 100;
+            routeFound = gwg->FindShipPath(pos, coastalPos, maxDistance, &route_, NULL);
+        }
+        else
+            routeFound = gwg->FindShipPathToHarbor(pos, goal_harborId, seaId_, &route_, NULL);
+        if(!routeFound)
+        {
+            // todo
+            RTTR_Assert(false);
+            LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i pos %u,%u goal coastal %u,%u goal-id %i goalpos %u,%u \n")
+                % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % state % pos.x % pos.y % coastalPos.x % coastalPos.y % goal_harborId % gwg->GetHarborPoint(goal_harborId).x % gwg->GetHarborPoint(goal_harborId).y;
+            goal_harborId = 0;
+            return;
+        }
     }
     curRouteIdx = 0;
 }

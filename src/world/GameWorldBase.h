@@ -98,8 +98,10 @@ public:
 
     /// Finds a path for figures. Returns 0xFF if none found
     unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL) const;
-    /// Find path for ships. Return true on success
-    bool FindShipPath(const MapPoint start, const MapPoint dest, std::vector<unsigned char>* route, unsigned* length);
+    /// Find path for ships to a specific harbor and see. Return true on success
+    bool FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId, std::vector<unsigned char>* route, unsigned* length);
+    /// Find path for ships with a limited distance. Return true on success
+    bool FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance, std::vector<unsigned char>* route, unsigned* length);
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
