@@ -491,7 +491,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         for(unsigned otherHbId = 1; otherHbId < world.harbor_pos.size(); ++otherHbId)
         {
             std::vector<bool> seaIsMarked(world.GetNumSeas(), false);
-            for(int d = 0; d < Direction::COUNT; d++)
+            for(unsigned d = 0; d < Direction::COUNT; d++)
             {
                 // In every direction there can be a coastal point to a sea
                 // So find the sea first and then the dedicated coastal point

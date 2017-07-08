@@ -30,12 +30,12 @@ struct Direction
         SOUTHEAST, // 4
         SOUTHWEST  // 5
     };
-    static BOOST_CONSTEXPR_OR_CONST int COUNT = SOUTHWEST + 1;
+    static BOOST_CONSTEXPR_OR_CONST unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
-    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && t_ < COUNT); }
+    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
     /// Converts an UInt safely to a Direction
-    explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && t_ < COUNT); }
+    explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t){ return Type(t); }
     static Direction fromInt(int t){ return Type(t); }
@@ -43,8 +43,11 @@ struct Direction
     /// Returns the Direction as an UInt (for legacy code)
     unsigned toUInt() const { return t_; }
     Direction operator+(unsigned i) const { return Direction(t_ + i); }
+    Direction operator-(unsigned i) const { return Direction(t_ + COUNT - (i % COUNT)); }
     inline Direction& operator++();
     inline Direction operator++(int);
+    inline Direction& operator--();
+    inline Direction operator--(int);
     // TODO: Add iterator to iterate over all values from a given value
 private:
     //prevent automatic conversion for any other built-in types such as bool, int, etc
@@ -62,6 +65,18 @@ Direction Direction::operator++(int)
 {
     Direction result(*this);
     ++(*this);
+    return result;
+}
+
+Direction& Direction::operator--()
+{
+    t_ = Type((t_ + COUNT - 1) % COUNT);
+    return *this;
+}
+Direction Direction::operator--(int)
+{
+    Direction result(*this);
+    --(*this);
     return result;
 }
 

@@ -488,7 +488,7 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
             if(aii.IsRoadPoint(pt))
                 return AIJH::NOTHING;
             // check for vital plant space
-            for(int i = 0; i < Direction::COUNT; ++i)
+            for(unsigned i = 0; i < Direction::COUNT; ++i)
             {
                 TerrainType t = aii.GetTerrainAround(pt, Direction::fromInt(i));
 
@@ -554,7 +554,7 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
         MapPoint r = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
-        for (int dir = 0; dir < Direction::COUNT; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             MapPoint n = aii.GetNeighbour(r, Direction::fromInt(dir));
             unsigned ni = aii.GetIdx(n);
@@ -735,7 +735,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         }
 
         // now insert neighbouring nodes...
-        for (int dir = 0; dir < Direction::COUNT; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             MapPoint n = aii.GetNeighbour(pt, Direction::fromInt(dir));
             unsigned ni = aii.GetIdx(n);

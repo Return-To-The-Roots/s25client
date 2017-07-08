@@ -44,6 +44,41 @@
 //      - Fix the bug -> Test succeeds
 BOOST_AUTO_TEST_SUITE(RegressionsSuite)
 
+BOOST_AUTO_TEST_CASE(DirectionIncDec)
+{
+    // For every direction
+    for(unsigned startDir = 0; startDir < Direction::COUNT; startDir++)
+    {
+        // Fit back to range
+        BOOST_REQUIRE_EQUAL(Direction(startDir + Direction::COUNT).toUInt(), startDir);
+        // Increment
+        Direction testDir(startDir);
+        BOOST_REQUIRE_EQUAL(testDir++, startDir);
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
+        BOOST_REQUIRE_EQUAL(++testDir, Direction(startDir + 2));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 2));
+        // Decrement
+        BOOST_REQUIRE_EQUAL(testDir--, Direction(startDir + 2));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
+        BOOST_REQUIRE_EQUAL(--testDir, Direction(startDir));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir));
+        // Add/Subtract. Test using the already tested primitives
+        for(unsigned diff = 1; diff < 20; diff++)
+        {
+            Direction resultDir = testDir + diff;
+            Direction expectedDir(testDir);
+            for(unsigned i = 0; i < diff; i++)
+                ++expectedDir;
+            BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
+            resultDir = testDir - diff;
+            expectedDir = testDir;
+            for(unsigned i = 0; i < diff; i++)
+                --expectedDir;
+            BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE(IngameWnd)
 {
     initGUITests();
