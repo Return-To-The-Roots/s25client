@@ -67,11 +67,14 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 }
 
 /// Findet einen Weg für Figuren
-unsigned char GameWorldBase::FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route, const bool random_route, unsigned* length) const
+unsigned char GameWorldBase::FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route, const bool random_route,
+    unsigned* length, std::vector<unsigned char>* route) const
 {
     unsigned char first_dir = INVALID_DIR;
-    GetFreePathFinder().FindPath(start, dest, random_route, max_route, NULL, length, &first_dir, PathConditionHuman(*this));
-    return first_dir;
+    if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir, PathConditionHuman(*this)))
+        return first_dir;
+    else
+        return INVALID_DIR;
 }
 
 /// Wegfindung für Menschen im Straßennetz

@@ -97,7 +97,8 @@ public:
     bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;
 
     /// Finds a path for figures. Returns 0xFF if none found
-    unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL) const;
+    unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, unsigned max_route = 0xFFFFFFFF, bool random_route = false,
+        unsigned* length = NULL, std::vector<unsigned char>* route = NULL) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     bool FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId, std::vector<unsigned char>* route, unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
