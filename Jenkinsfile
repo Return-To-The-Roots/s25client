@@ -133,6 +133,7 @@ catchError() {
         }
         */
         
+        parallel_map.failFast = true
         parallel parallel_map
     }
 
