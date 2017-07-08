@@ -38,11 +38,30 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
+std::ostream& operator<<(std::ostream& os, const Direction& dir)
+{
+    return os << "Direction(" << dir << ")";
+}
+
 // This suite tests bugs that got fixed to avoid regressions
 // So:
 //      - Before you fix a bug, reproduce it here (or in a fitting suite) -> Test fails
 //      - Fix the bug -> Test succeeds
 BOOST_AUTO_TEST_SUITE(RegressionsSuite)
+
+BOOST_AUTO_TEST_CASE(DirectionCmp)
+{
+    Direction east(Direction::EAST);
+    Direction east2(Direction::EAST);
+    Direction west(Direction::WEST);
+    // All variations: Dir-Dir, Dir-Type, Type-Dir
+    BOOST_REQUIRE_EQUAL(east, east2);
+    BOOST_REQUIRE_EQUAL(east, Direction::EAST);
+    BOOST_REQUIRE_EQUAL(Direction::EAST, east2);
+    BOOST_REQUIRE_NE(east, west);
+    BOOST_REQUIRE_NE(east, Direction::WEST);
+    BOOST_REQUIRE_NE(Direction::WEST, east2);
+}
 
 BOOST_AUTO_TEST_CASE(DirectionIncDec)
 {
@@ -53,7 +72,7 @@ BOOST_AUTO_TEST_CASE(DirectionIncDec)
         BOOST_REQUIRE_EQUAL(Direction(startDir + Direction::COUNT).toUInt(), startDir);
         // Increment
         Direction testDir(startDir);
-        BOOST_REQUIRE_EQUAL(testDir++, startDir);
+        BOOST_REQUIRE_EQUAL(testDir++, Direction(startDir));
         BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
         BOOST_REQUIRE_EQUAL(++testDir, Direction(startDir + 2));
         BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 2));

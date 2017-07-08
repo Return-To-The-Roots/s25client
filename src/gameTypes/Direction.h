@@ -44,10 +44,10 @@ struct Direction
     unsigned toUInt() const { return t_; }
     Direction operator+(unsigned i) const { return Direction(t_ + i); }
     Direction operator-(unsigned i) const { return Direction(t_ + COUNT - (i % COUNT)); }
-    inline Direction& operator++();
-    inline Direction operator++(int);
-    inline Direction& operator--();
-    inline Direction operator--(int);
+    Direction& operator++();
+    Direction operator++(int);
+    Direction& operator--();
+    Direction operator--(int);
     // TODO: Add iterator to iterate over all values from a given value
 private:
     //prevent automatic conversion for any other built-in types such as bool, int, etc
@@ -56,28 +56,58 @@ private:
 };
 //-V:Direction:801 
 
-Direction& Direction::operator++()
+inline Direction& Direction::operator++()
 {
     t_ = Type((t_ + 1) % COUNT);
     return *this;
 }
-Direction Direction::operator++(int)
+
+inline Direction Direction::operator++(int)
 {
     Direction result(*this);
     ++(*this);
     return result;
 }
 
-Direction& Direction::operator--()
+inline Direction& Direction::operator--()
 {
     t_ = Type((t_ + COUNT - 1) % COUNT);
     return *this;
 }
-Direction Direction::operator--(int)
+
+inline Direction Direction::operator--(int)
 {
     Direction result(*this);
     --(*this);
     return result;
+}
+
+inline bool operator==(const Direction& lhs, const Direction& rhs)
+{
+    return Direction::Type(lhs) == Direction::Type(rhs);
+}
+
+inline bool operator!=(const Direction& lhs, const Direction& rhs)
+{
+    return !(lhs == rhs);
+}
+
+// Comparison operators to avoid ambiguity
+inline bool operator==(const Direction::Type& lhs, const Direction& rhs)
+{
+    return lhs == Direction::Type(rhs);
+}
+inline bool operator==(const Direction& lhs, const Direction::Type& rhs)
+{
+    return Direction::Type(lhs) == rhs;
+}
+inline bool operator!=(const Direction::Type& lhs, const Direction& rhs)
+{
+    return lhs != Direction::Type(rhs);
+}
+inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
+{
+    return Direction::Type(lhs) != rhs;
 }
 
 #endif // Direction_h__
