@@ -40,7 +40,7 @@
 
 std::ostream& operator<<(std::ostream& os, const Direction& dir)
 {
-    return os << "Direction(" << dir << ")";
+    return os << "Direction(" << dir.toUInt() << ")";
 }
 
 // This suite tests bugs that got fixed to avoid regressions
