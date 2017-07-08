@@ -71,6 +71,27 @@ struct PathConditionTrade: public PathConditionHuman
     }
 };
 
+template<class T_WorldOrViewer>
+struct PathConditionRoad
+{
+    const T_WorldOrViewer& worldOrViewer;
+    const bool isBoatRoad;
+
+    PathConditionRoad(const T_WorldOrViewer& worldOrViewer, const bool isBoatRoad): worldOrViewer(worldOrViewer), isBoatRoad(isBoatRoad){}
+
+    // Called for every node but the start & goal and should return true, if this point is usable
+    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
+    {
+        return worldOrViewer.IsPlayerTerritory(pt) && worldOrViewer.IsRoadAvailable(isBoatRoad, pt);
+    }
+
+    // Called for every edge (node to other node)
+    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
+    {
+        return true;
+    }
+};
+
 struct PathConditionShip
 {
     const World& world;

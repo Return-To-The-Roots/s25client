@@ -133,6 +133,11 @@ bool GameWorldViewer::IsOwner(const MapPoint& pt) const
     return GetWorld().GetNode(pt).owner == playerId_ + 1;
 }
 
+bool GameWorldViewer::IsPlayerTerritory(const MapPoint & pt) const
+{
+    return GetWorld().IsPlayerTerritory(pt);
+}
+
 const MapNode& GameWorldViewer::GetNode(const MapPoint& pt) const
 {
     return GetWorld().GetNode(pt);

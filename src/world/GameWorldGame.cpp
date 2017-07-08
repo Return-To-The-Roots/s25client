@@ -36,6 +36,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
+#include "pathfinding/PathConditions.h"
 #include "EventManager.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
@@ -217,13 +218,14 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     }
 
     // Gucken, ob der Weg überhaupt noch gebaut werden kann
+    PathConditionRoad<GameWorldBase> roadChecker(*this, boat_road);
     MapPoint curPt(start);
     for(unsigned i = 0; i + 1 < route.size(); ++i)
     {
+        bool roadOk = roadChecker.IsEdgeOk(curPt, route[i]);
         curPt = GetNeighbour(curPt, route[i]);
-
-        // Feld bebaubar und auf unserem Gebiet
-        if(!IsRoadAvailable(boat_road, curPt) || !IsPlayerTerritory(curPt))
+        roadOk &= roadChecker.IsNodeOk(curPt);
+        if(!roadOk)
         {
             // Nein? Dann prüfen ob genau der gewünscht Weg schon da ist
             if (!RoadAlreadyBuilt(boat_road, start, route))

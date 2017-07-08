@@ -857,31 +857,11 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
     }
 }
 
-struct PathConditionRoad
-{
-    const GameWorldViewer& worldViewer;
-    const bool isBoatRoad;
-
-    PathConditionRoad(const GameWorldViewer& worldViewer, const bool isBoatRoad): worldViewer(worldViewer), isBoatRoad(isBoatRoad){}
-
-    // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
-    {
-        return worldViewer.GetWorld().IsPlayerTerritory(pt) && worldViewer.IsRoadAvailable(isBoatRoad, pt);
-    }
-
-    // Called for every edge (node to other node)
-    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
-    {
-        return true;
-    }
-};
-
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
 {
     std::vector<unsigned char> new_route;
     // Weg gefunden?
-    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(worldViewer, road.mode == RM_BOAT)))
+    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad<GameWorldViewer>(worldViewer, road.mode == RM_BOAT)))
         return false;
 
     // Test on water way length

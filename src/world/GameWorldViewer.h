@@ -68,6 +68,8 @@ public:
     Visibility GetVisibility(const MapPoint pt) const;
     /// Returns true, if we own this point (but may not be our territory if this is a border point)
     bool IsOwner(const MapPoint& pt) const;
+    /// Return true if the point belongs to any player
+    bool IsPlayerTerritory(const MapPoint& pt) const;
     const MapNode& GetNode(const MapPoint& pt) const;
     MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
 
