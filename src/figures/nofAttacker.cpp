@@ -211,7 +211,7 @@ void nofAttacker::Walked()
                 else
                 {
                     // Hinlaufen
-                    StartWalking(dir);
+                    StartWalking(Direction(dir));
                 }
             }
         } break;
@@ -234,7 +234,7 @@ void nofAttacker::Walked()
                     static_cast<nobMilitary*>(attacked_goal)->StopCapturing();
 
                 state = STATE_ATTACKING_WALKINGTOGOAL;
-                StartWalking(4);
+                StartWalking(Direction::SOUTHEAST);
                 return;
             }
             else
@@ -315,11 +315,11 @@ void nofAttacker::Walked()
             }
 
             // Erstmal Flagge ansteuern
-            MapPoint harborFlagPos = gwg->GetNeighbour(harborPos, 4);
+            MapPoint harborFlagPos = gwg->GetNeighbour(harborPos, Direction::SOUTHEAST);
 
             // Wenn wir an der Flagge bereits sind, in den Hafen eintreten
             if(pos == harborFlagPos)
-                StartWalking(1);
+                StartWalking(Direction::NORTHWEST);
             else
             {
                 // Weg zum Hafen suchen
@@ -332,7 +332,7 @@ void nofAttacker::Walked()
                 }
 
                 // Und schön weiterlaufen
-                StartWalking(dir);
+                StartWalking(Direction(dir));
             }
 
         } break;
@@ -401,7 +401,7 @@ void nofAttacker::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+    StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 }
 
 /// Wenn ein Kampf gewonnen wurde
@@ -456,7 +456,7 @@ void nofAttacker::ContinueAtFlag()
 				return;
             // kein Verteidiger gefunden --> ins Gebäude laufen und es erobern
             state = STATE_ATTACKING_CAPTURINGFIRST;
-            StartWalking(1);
+            StartWalking(Direction::NORTHWEST);
 
             // Normalen Militärgebäuden schonmal Bescheid sagen
             if(attacked_goal->GetGOT() == GOT_NOB_MILITARY)
@@ -574,7 +574,7 @@ void nofAttacker::MissAttackingWalk()
     }
 
     // Start walking
-    StartWalking(dir);
+    StartWalking(Direction(dir));
 }
 
 /// Ist am Militärgebäude angekommen
@@ -592,7 +592,7 @@ void nofAttacker::ReachedDestination()
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
             RTTR_Assert(goal->IsFarAwayCapturer(this));
             // Start walking first so the flag is free
-            StartWalking(1);
+            StartWalking(Direction::NORTHWEST);
             // Then tell the building
             goal->FarAwayCapturerReachedGoal(this);
             return;
@@ -611,7 +611,7 @@ void nofAttacker::ReachedDestination()
         {
             // kein Verteidiger gefunden --> ins Gebäude laufen und es erobern
             state = STATE_ATTACKING_CAPTURINGFIRST;
-            StartWalking(1);
+            StartWalking(Direction::NORTHWEST);
 			// Normalen Militärgebäuden schonmal Bescheid sagen
             if(attacked_goal->GetGOT() == GOT_NOB_MILITARY)
                 static_cast<nobMilitary*>(attacked_goal)->PrepareCapturing();
@@ -623,39 +623,39 @@ void nofAttacker::ReachedDestination()
         // reservieren, damit sich kein anderer noch hier hinstellt
         state = STATE_ATTACKING_WAITINGAROUNDBUILDING;
         // zur Flagge hin ausrichten
-        unsigned char dir = 0; 
+        Direction dir(Direction::WEST); 
         MapPoint attFlagPos = attacked_goal->GetFlag()->GetPos();
         if(pos.y == attFlagPos.y && pos.x <= attFlagPos.x)
-            dir = 3;
+            dir = Direction::EAST;
         else if(pos.y == attFlagPos.y && pos.x > attFlagPos.x)
-            dir = 0;
+            dir = Direction::WEST;
         else if(pos.y < attFlagPos.y && pos.x < attFlagPos.x)
-            dir = 4;
+            dir = Direction::SOUTHEAST;
         else if(pos.y < attFlagPos.y && pos.x >  attFlagPos.x)
-            dir = 5;
+            dir = Direction::SOUTHWEST;
         else if(pos.y > attFlagPos.y && pos.x < attFlagPos.x)
-            dir = 2;
+            dir = Direction::NORTHEAST;
         else if(pos.y > attFlagPos.y && pos.x >  attFlagPos.x)
-            dir = 1;
+            dir = Direction::NORTHWEST;
         else/* (pos.x ==  attFlagPos.x)*/
         {
             if(pos.y < attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1))
-                dir = 4;
+                dir = Direction::SOUTHEAST;
             else if(pos.y < attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))
             {
                 if(pos.y & 1)
-                    dir = 5;
+                    dir = Direction::SOUTHWEST;
                 else
-                    dir = 4;
+                    dir = Direction::SOUTHEAST;
             }
             else if(pos.y > attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1))
-                dir = 2;
+                dir = Direction::NORTHEAST;
             else/* (pos.y > attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))*/
             {
                 if(pos.y & 1)
-                    dir = 1;
+                    dir = Direction::NORTHWEST;
                 else
-                    dir = 2;
+                    dir = Direction::NORTHEAST;
             }
         }
         FaceDir(dir);
@@ -753,7 +753,7 @@ bool nofAttacker::AttackFlag(nofDefender*  /*defender*/)
     if(tmp_dir != 0xFF)
     {
         // alte Richtung für Nachrücker merken
-        unsigned char old_dir = GetCurMoveDir();
+        Direction old_dir = GetCurMoveDir();
 
         // Hat er drumrum gewartet?
         bool waiting_around_building = (state == STATE_ATTACKING_WAITINGAROUNDBUILDING);
@@ -762,7 +762,7 @@ bool nofAttacker::AttackFlag(nofDefender*  /*defender*/)
 
         // Wenn er steht, muss er loslaufen
         if(waiting_around_building)
-            StartWalking(tmp_dir);
+            StartWalking(Direction(tmp_dir));
 
         state = STATE_ATTACKING_ATTACKINGFLAG;
 
@@ -843,7 +843,7 @@ void nofAttacker::CapturingWalking()
     else if(pos == attFlagPos)
     {
         // ins Gebäude laufen
-        StartWalking(1);
+        StartWalking(Direction::NORTHWEST);
         // nächsten Angreifer ggf. rufen, der auch reingehen soll
         RTTR_Assert(attacked_goal->GetPlayer() == player); // Assumed by the call below
         static_cast<nobMilitary*>(attacked_goal)->NeedOccupyingTroops();
@@ -888,7 +888,7 @@ void nofAttacker::CapturingWalking()
             ReturnHomeMissionAttacking();
         }
         else
-            StartWalking(dir);
+            StartWalking(Direction(dir));
     }
 }
 
@@ -925,13 +925,13 @@ void nofAttacker::CapturedBuildingFull()
     }
 }
 
-void nofAttacker::StartSucceeding(const MapPoint  /*pt*/, const unsigned short new_radius, const unsigned char  /*dir*/)
+void nofAttacker::StartSucceeding(const MapPoint pt, const unsigned short new_radius, Direction dir)
 {
     // Wir sollen auf diesen Punkt nachrücken
     state = STATE_ATTACKING_WALKINGTOGOAL;
 
     // Unsere alte Richtung merken für evtl. weitere Nachrücker
-    unsigned char old_dir = GetCurMoveDir();
+    Direction old_dir = GetCurMoveDir();
 
     // unser alter Platz ist ja nun auch leer, da gibts vielleicht auch einen Nachrücker?
     attacked_goal->SendSuccessor(this->pos, radius, old_dir);
@@ -1149,7 +1149,7 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
     else
     {
         // weiterlaufen
-        StartWalking(dir);
+        StartWalking(Direction(dir));
     }
 }
 

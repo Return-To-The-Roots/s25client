@@ -45,26 +45,26 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 
     // Straßeneingang setzen (wenn nicht schon vorhanden z.b. durch vorherige Baustelle!)
-    if(!gwg->GetPointRoad(pos, 4))
+    if(!gwg->GetPointRoad(pos, Direction::SOUTHEAST))
     {
-        gwg->SetPointRoad(pos, 4, RoadSegment::RT_NORMAL + 1);
+        gwg->SetPointRoad(pos, Direction::SOUTHEAST, RoadSegment::RT_NORMAL + 1);
 
         // Straßenverbindung erstellen zwischen Flagge und Haus
         // immer von Flagge ZU Gebäude (!)
-        std::vector<unsigned char> route(1, 1);
+        std::vector<Direction> route(1, Direction::NORTHWEST);
         // Straße zuweisen
-        gwg->GetSpecObj<noRoadNode>(flagPt)->routes[1] = // der Flagge
-            routes[4] = // dem Gebäude
-                new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
+        RoadSegment* rs = new RoadSegment(RoadSegment::RT_NORMAL, gwg->GetSpecObj<noRoadNode>(flagPt), this, route);
+        gwg->GetSpecObj<noRoadNode>(flagPt)->SetRoute(Direction::NORTHWEST, rs); // der Flagge
+        SetRoute(Direction::SOUTHEAST, rs); // dem Gebäude
     }
     else
     {
         // vorhandene Straße der Flagge nutzen
         noFlag* flag = gwg->GetSpecObj<noFlag>(flagPt);
 
-        RTTR_Assert(flag->routes[1]);
-        routes[4] = flag->routes[1];
-        routes[4]->SetF2(this);
+        RTTR_Assert(flag->GetRoute(Direction::NORTHWEST));
+        SetRoute(Direction::SOUTHEAST, flag->GetRoute(Direction::NORTHWEST));
+        GetRoute(Direction::SOUTHEAST)->SetF2(this);
     }
 
     // Werde/Bin ich (mal) ein großes Schloss? Dann müssen die Anbauten gesetzt werden

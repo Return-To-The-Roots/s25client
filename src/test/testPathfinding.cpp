@@ -19,6 +19,7 @@
 #include "WorldFixture.h"
 #include "CreateEmptyWorld.h"
 #include "nodeObjs/noGranite.h"
+#include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
 #include "test/PointOutput.h"
 #include <boost/test/unit_test.hpp>
@@ -116,22 +117,22 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     // 4 steps right
     MapPoint endPt = world.MakeMapPoint(Point<int>(startPt.x + 4, startPt.y));
     unsigned length;
-    std::vector<unsigned char> route;
+    std::vector<Direction> route;
     // Forward route
     BOOST_REQUIRE_NE(world.FindHumanPath(startPt, endPt, 99, false, &length, &route), INVALID_DIR);
     BOOST_REQUIRE_EQUAL(length, 6u);
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
-    std::vector<unsigned char> expectedRoute;
+    std::vector<Direction> expectedRoute;
     expectedRoute += Direction::NORTHEAST, Direction::EAST, Direction::SOUTHEAST, Direction::EAST, Direction::NORTHEAST, Direction::SOUTHEAST;
     BOOST_REQUIRE_EQUAL_COLLECTIONS(route.begin(), route.end(), expectedRoute.begin(), expectedRoute.end());
     // Inverse route
     BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route), INVALID_DIR);
     BOOST_REQUIRE_EQUAL(length, 6u);
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
-    std::vector<unsigned char> expectedRevRoute;
-    BOOST_REVERSE_FOREACH(unsigned char dir, expectedRoute)
+    std::vector<Direction> expectedRevRoute;
+    BOOST_REVERSE_FOREACH(Direction dir, expectedRoute)
     {
-        expectedRevRoute.push_back(Direction(dir + 3).toUInt());
+        expectedRevRoute.push_back(dir + 3u);
     }
     BOOST_REQUIRE_EQUAL_COLLECTIONS(route.begin(), route.end(), expectedRevRoute.begin(), expectedRevRoute.end());
 }
@@ -162,18 +163,18 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
         BOOST_REQUIRE_EQUAL(length, 4u);
         // But road must be constructible
         world.SetFlag(startPt, 0);
-        std::vector<unsigned char> roadRoute(3, dir.toUInt());
+        std::vector<Direction> roadRoute(3, dir);
         world.BuildRoad(0, false, startPt, roadRoute);
         Direction revDir(dir.toUInt() + 3);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir.toUInt()), 1u);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir.toUInt()), 1u);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 1u);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 1u);
         world.DestroyFlag(endPt, 0);
         // Reverse direction
-        std::vector<unsigned char> roadRouteRev(3, revDir.toUInt());
+        std::vector<Direction> roadRouteRev(3, revDir);
         world.SetFlag(endPt, 0);
         world.BuildRoad(0, false, endPt, roadRouteRev);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir.toUInt()), 1u);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir.toUInt()), 1u);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir), 1u);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir), 1u);
         world.DestroyFlag(startPt, 0);
         world.DestroyFlag(endPt, 0);
     }
@@ -211,18 +212,18 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
             BOOST_REQUIRE_EQUAL(length, 4u);
             // No road must be constructible
             world.SetFlag(startPt, 0);
-            std::vector<unsigned char> roadRoute(3, dir.toUInt());
+            std::vector<Direction> roadRoute(3, dir);
             world.BuildRoad(0, false, startPt, roadRoute);
-            Direction revDir(dir.toUInt() + 3);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir.toUInt()), 0u);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir.toUInt()), 0u);
+            Direction revDir(dir + 3u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 0u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 0u);
             world.DestroyFlag(startPt, 0);
             // Reverse direction
-            std::vector<unsigned char> roadRouteRev(3, revDir.toUInt());
+            std::vector<Direction> roadRouteRev(3, revDir);
             world.SetFlag(endPt, 0);
             world.BuildRoad(0, false, endPt, roadRouteRev);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir.toUInt()), 0u);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir.toUInt()), 0u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir), 0u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir), 0u);
             world.DestroyFlag(endPt, 0);
             // Switch to yellow points. They are placed to be one step left than the direction
             curStartPt = world.GetNeighbour(curStartPt, dir - 1u);

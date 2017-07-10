@@ -134,7 +134,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+    StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 
 }
 
@@ -143,7 +143,7 @@ void nofPassiveSoldier::LeaveBuilding()
     // Nach Hause in ein Lagerhaus gehen
     rs_dir = true;
     rs_pos = 1;
-    cur_rs = building->routes[4];
+    cur_rs = building->GetRoute(Direction::SOUTHEAST);
     GoHome();
 
     building = NULL;

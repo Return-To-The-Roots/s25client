@@ -49,7 +49,7 @@ unsigned char TradeRoute::GetNextDir()
     unsigned char nextDir;
     // Check if the route is still valid
     if(gwg.CheckTradeRoute(curPos, path.route, curRouteIdx, player))
-        nextDir = path.route[curRouteIdx];
+        nextDir = path.route[curRouteIdx].toUInt();
     else
     {
         // If not, recalc it
@@ -60,7 +60,7 @@ unsigned char TradeRoute::GetNextDir()
     }
 
     RTTR_Assert(nextDir < 6);
-    RTTR_Assert(nextDir == path.route[curRouteIdx]);
+    RTTR_Assert(nextDir == path.route[curRouteIdx].toUInt());
     curRouteIdx++;
     curPos = gwg.GetNeighbour(curPos, nextDir);
     return nextDir;

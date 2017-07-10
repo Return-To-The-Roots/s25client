@@ -88,7 +88,7 @@ void nofDonkeybreeder::WorkFinished()
     // Esel erzeugen und zum Ziel beordern
     nofCarrier* donkey = new nofCarrier(nofCarrier::CT_DONKEY, pos, player, road, flag_goal);
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_PACKDONKEY, 1);
-    donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(pos)->routes[4], 0, true);
+    donkey->InitializeRoadWalking(gwg->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SOUTHEAST), 0, true);
 
     // Wenn keine Straße gefunden wurde, muss er nach Hause gehen
     if(!road)

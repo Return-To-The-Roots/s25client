@@ -72,7 +72,7 @@ class noShip : public noMovable
         std::string name;
         /// Schiffsroute und Position
         unsigned curRouteIdx;
-        std::vector<unsigned char> route_;
+        std::vector<Direction> route_;
         /// Ladung des Schiffes
         std::list<noFigure*> figures;
         std::list<Ware*> wares;
@@ -92,7 +92,7 @@ class noShip : public noMovable
         /// entscheidet, was nach einem gefahrenen Abschnitt weiter zu tun ist
         void Driven();
         /// Fängt an zu fahren
-        void StartDriving(const unsigned char dir);
+        void StartDriving(const Direction dir);
 
         void HandleState_GoToHarbor();
         void HandleState_ExpeditionDriving();
@@ -197,7 +197,7 @@ class noShip : public noMovable
         unsigned GetHomeHarbor() const;
 
         /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
-        void GoToHarbor(const nobHarborBuilding& hb, const std::vector<unsigned char>& route);
+        void GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route);
         /// Startet eine Expedition
         void StartExpedition(unsigned homeHarborId);
         /// Startet eine Erkundungs-Expedition

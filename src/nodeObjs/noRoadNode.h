@@ -20,6 +20,7 @@
 
 #include "noCoordBase.h"
 #include "RoadSegment.h"
+#include "gameTypes/Direction.h"
 #include <boost/array.hpp>
 
 class Ware;
@@ -31,10 +32,9 @@ class noRoadNode : public noCoordBase
     protected:
 
         unsigned char player;
+        boost::array<RoadSegment*, 6> routes;
 
     public:
-
-        boost::array<RoadSegment*, 6> routes;
 
 // For Pathfinding
         // cost from start
@@ -45,6 +45,7 @@ class noRoadNode : public noCoordBase
         mutable unsigned estimate; //-V730_NOINIT
         mutable unsigned last_visit;
         mutable const noRoadNode* prev; //-V730_NOINIT
+        /// Direction to previous node, includes SHIP_DIR
         mutable unsigned dir_; //-V730_NOINIT
     public:
 
@@ -60,17 +61,12 @@ class noRoadNode : public noCoordBase
     protected:  void Serialize_noRoadNode(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noRoadNode(sgd); }
 
-        inline noRoadNode* GetNeighbour(const unsigned char dir) const {
-            if(!routes[dir])
-                return NULL;
-            else if(routes[dir]->GetF1() == this) 
-                return routes[dir]->GetF2();
-            else
-                return routes[dir]->GetF1();
-        }
+        RoadSegment* GetRoute(const Direction dir) const { return routes[dir.toUInt()]; }
+        void SetRoute(const Direction dir, RoadSegment* route) { routes[dir.toUInt()] = route; }
+        noRoadNode* GetNeighbour(const Direction dir) const;
 
-        void DestroyRoad(const unsigned char dir);
-        void UpgradeRoad(const unsigned char dir);
+        void DestroyRoad(const Direction dir);
+        void UpgradeRoad(const Direction dir);
         /// Vernichtet Alle Straße um diesen Knoten
         void DestroyAllRoads();
 
@@ -80,8 +76,18 @@ class noRoadNode : public noCoordBase
         virtual void AddWare(Ware*& ware) = 0;
 
         /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen
-        virtual unsigned GetPunishmentPoints(const unsigned char  /*dir*/) const { return 0; }
+        virtual unsigned GetPunishmentPoints(const Direction dir) const { return 0; }
 
 };
+
+inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const {
+    const RoadSegment* route = routes[dir.toUInt()];
+    if(!route)
+        return NULL;
+    else if(route->GetF1() == this)
+        return route->GetF2();
+    else
+        return route->GetF1();
+}
 
 #endif

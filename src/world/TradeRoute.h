@@ -45,7 +45,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const;
 
-    /// Gets the next direction the caravane has to take
+    /// Gets the next direction the caravane has to take, REACHED_GOAL or INVALID_DIR
     unsigned char GetNextDir();
     /// Returns the current position. This is assumed to be the position currently walking to and reached by the time GetNextDir should be called
     MapPoint GetCurPos() const { return curPos; }

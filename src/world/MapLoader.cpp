@@ -522,11 +522,11 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             CalcHarborPosNeighborsNode curNode = todo_list.front();
             todo_list.pop();
 
-            for(unsigned d = 0; d < 6; ++d)
+            for(unsigned dir = 0; dir < 6; ++dir)
             {
-                if(!shipPathChecker.IsEdgeOk(curNode.pos, d))
+                if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
                     continue;
-                MapPoint curPt = world.GetNeighbour(curNode.pos, d);
+                MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
                 unsigned idx = world.GetIdx(curPt);
 
                 if((ptToVisitOrHb[idx] > 1) && !hbFound[ptToVisitOrHb[idx]]) // found harbor we haven't already found

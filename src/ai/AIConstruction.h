@@ -21,6 +21,7 @@
 
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapTypes.h"
 #include <vector>
 #include <deque>
@@ -64,13 +65,13 @@ class AIConstruction
 		bool MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos);
 
         /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
-        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius = 14);
+        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned int maxSearchRadius = 14);
 
         /// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
-        bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char> &route);
+        bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction> &route);
 
         /// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with the lower bq is picked for the final path
-        bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char> &route);
+        bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction> &route);
 
         /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
         bool IsConnectedToRoadSystem(const noFlag* flag);
@@ -105,7 +106,7 @@ class AIConstruction
         //void RecalcGround(const MapPoint buildingPos, std::vector<unsigned char> &route_road);
 
         /// Tries to build a second road to a flag, which is in any way better than the first one
-        bool BuildAlternativeRoad(const noFlag* flag, std::vector<unsigned char> &route);
+        bool BuildAlternativeRoad(const noFlag* flag, std::vector<Direction> &route);
 
         bool OtherStoreInRadius(MapPoint pt, unsigned radius);
 

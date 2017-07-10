@@ -34,6 +34,7 @@ public:
 
     /// Calculates the best path from start to goal
     /// Outputs are only valid if true is returned!
+    /// Direction might additionally be INVALID_DIR or SHIP_DIR
     ///
     /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road points have already many wares)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)

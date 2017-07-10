@@ -26,6 +26,7 @@
 #include "EventManager.h"
 #include "TerrainRenderer.h"
 #include "ingameWindows/iwHelp.h"
+#include "gameTypes/Direction_Output.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/MapConsts.h"
 #include "RTTR_AssertError.h"
@@ -37,11 +38,6 @@
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <algorithm>
-
-std::ostream& operator<<(std::ostream& os, const Direction& dir)
-{
-    return os << "Direction(" << dir.toUInt() << ")";
-}
 
 // This suite tests bugs that got fixed to avoid regressions
 // So:
@@ -234,7 +230,7 @@ struct FarmerFixture: public WorldFixture<CreateEmptyWorld, 1, 20, 20>
         farmPt = world.GetPlayer(0).GetHQPos() + MapPoint(5, 0);
         farm = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FARM, farmPt, 0, NAT_ROMANS));
         BOOST_REQUIRE(farm);
-        world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST), std::vector<unsigned char>(5, Direction::WEST));
+        world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST), std::vector<Direction>(5, Direction::WEST));
         for(unsigned gf = 0; gf < 7 * 20 + 60; gf++)
         {
             em.ExecuteNextGF();

@@ -22,6 +22,7 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "boost/foreach.hpp"
 #include <algorithm>
@@ -128,11 +129,11 @@ void nofScout_Free::Scout()
         unsigned char dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
-        if(dir == 0xFF)
+        if(dir == INVALID_DIR)
             // Neuen Punkt suchen
             GoToNewNode();
         else
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
     }
 }
 

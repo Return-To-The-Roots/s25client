@@ -48,7 +48,7 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
 GameWorldBase::~GameWorldBase()
 {}
 
-void GameWorldBase::Init(const unsigned short width, const unsigned short height, LandscapeType lt)
+void GameWorldBase::Init(unsigned short width, unsigned short height, LandscapeType lt)
 {
     World::Init(width, height, lt);
     freePathFinder->Init(GetWidth(), GetHeight());
@@ -112,14 +112,14 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     if(GetNode(pt).boundary_stones[0])
         return false;
 
-    for(unsigned char z = 0; z < 6; ++z)
+    for(unsigned z = 0; z < 6; ++z)
     {
         // Roads around charburner piles are not possible
         if(GetNO(GetNeighbour(pt, z))->GetBM() == BlockingManner::NothingAround)
             return false;
 
         // Other roads at this point?
-        if(GetPointRoad(pt, z))
+        if(GetPointRoad(pt, Direction::fromInt(z)))
             return false;
     }
 
@@ -130,7 +130,7 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
 
         for(unsigned char i = 0; i < 6; ++i)
         {
-            TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+            TerrainBQ bq = TerrainData::GetBuildingQuality(GetRightTerrain(pt, Direction::fromInt(i)));
             if(bq == TerrainBQ::DANGER)
                 return false;
             else if(bq != TerrainBQ::NOTHING)
@@ -142,15 +142,14 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     else
     {
         // Beim Wasserweg muss um den Punkt herum Wasser sein
-        for(unsigned i = 0; i < 6; ++i)
-            if(!TerrainData::IsWater(GetTerrainAround(pt, i)))
-                return false;
+        if(!IsWaterPoint(pt))
+            return false;
     }
 
     return true;
 }
 
-bool GameWorldBase::RoadAlreadyBuilt(const bool  /*boat_road*/, const MapPoint start, const std::vector<unsigned char>& route)
+bool GameWorldBase::RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<Direction>& route)
 {
     MapPoint tmp(start);
     for(unsigned i = 0; i < route.size() - 1; ++i)
@@ -227,20 +226,20 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return militarySquares.GetBuildingsInRange(pt, radius);
 }
 
-bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const
+bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, Direction dir) const
 {
     // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
     unsigned char road = GetPointRoad(pt, dir);
     if(road && road != RoadSegment::RT_BOAT + 1)
         return true;
 
-    TerrainBQ bq1 = TerrainData::GetBuildingQuality(GetWalkingTerrain1(pt, dir)),
-        bq2 = TerrainData::GetBuildingQuality(GetWalkingTerrain2(pt, dir));
+    TerrainBQ bq1 = TerrainData::GetBuildingQuality(GetRightTerrain(pt, dir)),
+        bq2 = TerrainData::GetBuildingQuality(GetLeftTerrain(pt, dir));
     // Don't go next to danger terrain
     return (bq1 != TerrainBQ::DANGER && bq2 != TerrainBQ::DANGER);
 }
 
-noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir)
+noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir)
 {
     // Getting a flag is const
     const noFlag* flag = const_cast<const GameWorldBase*>(this)->GetRoadFlag(pt, dir, prevDir);
@@ -248,16 +247,16 @@ noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned pre
     return const_cast<noFlag*>(flag);
 }
 
-const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir) const
+const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir) const
 {
     unsigned i = 0;
 
     while(true)
     {
         // suchen, wo der Weg weitergeht
-        for(i = 0; i < 6; ++i)
+        for(i = 0; i < Direction::COUNT; ++i)
         {
-            if(i != prevDir && GetPointRoad(pt, i))
+            if(i != prevDir && GetPointRoad(pt, Direction::fromInt(i)))
                 break;
         }
 
@@ -269,7 +268,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, unsigned char& dir, unsign
         // endlich am Ende des Weges und an einer Flagge angekommen?
         if(GetNO(pt)->GetType() == NOP_FLAG)
         {
-            dir = (i + 3) % 6;
+            dir = Direction(i + 3);
             return GetSpecObj<noFlag>(pt);
         }
         prevDir = (i + 3) % 6;

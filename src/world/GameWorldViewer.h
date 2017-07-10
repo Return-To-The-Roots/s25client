@@ -81,7 +81,7 @@ public:
     void SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type);
     bool IsOnRoad(const MapPoint& pt) const;
     /// Remove a visual (not yet built) road
-    void RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route);
+    void RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route);
     /// Checks if the road can be build in the world and additonally if there is no virtual road at that point
     bool IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const;
 

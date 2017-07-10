@@ -87,7 +87,7 @@ void nofWorkman::HandleStateWaiting2()
     else
     {
         // und diese raustragen
-        StartWalking(4);
+        StartWalking(Direction::SOUTHEAST);
         state = STATE_CARRYOUTWARE;
     }
 

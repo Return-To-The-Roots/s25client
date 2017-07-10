@@ -239,7 +239,7 @@ bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned lis
 	return false;
 }
 
-bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsigned char>& route, unsigned int maxSearchRadius)
+bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned int maxSearchRadius /*= 14*/)
 {
     // TODO: die methode kann  ganz schön böse Laufzeiten bekommen... Optimieren?
 
@@ -279,7 +279,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
 
     std::vector<const noFlag*>::iterator shortest = flags.end();
     unsigned int shortestLength = 99999;
-    std::vector<unsigned char> tmpRoute;
+    std::vector<Direction> tmpRoute;
     bool found = false;
 
     // Jede Flagge testen...
@@ -302,7 +302,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
         MapPoint tmpPos = flag->GetPos();
         for(unsigned j = 0; j < tmpRoute.size(); ++j)
         {
-            tmpPos = aii.GetNeighbour(tmpPos, Direction::fromInt(tmpRoute[j]));
+            tmpPos = aii.GetNeighbour(tmpPos, tmpRoute[j]);
             if(aii.GetBuildingQuality(tmpPos) == BQ_NOTHING)
                 curNonFlagPts++;
             else
@@ -348,7 +348,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<unsi
     return false;
 }
 
-bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char>&route)
+bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction> &route)
 {
 	 return BuildRoad(start, target, route);
     //bool done=false;
@@ -358,35 +358,35 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
         LOG.write((" %i",route[i]);
     }
     LOG.write(("\n");*/
-    for(unsigned i = 0; i < (route.size() - 1); i++)
+    for(unsigned i = 0; i + 1 < route.size(); i++)
     {
-        if(((route[i] + 1) % 6 == route[i + 1]) || ((route[i] + 5) % 6 == route[i + 1])) //switching current and next route element will result in the same position after building both
+        if((route[i] + 1u == route[i + 1]) || (route[i] - 1u == route[i + 1])) //switching current and next route element will result in the same position after building both
         {
             MapPoint t(pStart);
-            t = aii.GetNeighbour(t, Direction::fromInt(route[i + 1]));
-            pStart = aii.GetNeighbour(pStart, Direction::fromInt(route[i]));
+            t = aii.GetNeighbour(t, route[i + 1]);
+            pStart = aii.GetNeighbour(pStart, route[i]);
             if(aii.RoadAvailable(t) && aii.IsOwnTerritory(t)) //can the alternative road be build?
             {
                 if(aii.CalcBQSumDifference(pStart, t)) //does the alternative road block a lower buildingquality point than the normal planned route?
                 {
                     //LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i, i+1:%i\n",playerID, start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
                     pStart = t; //we move the alternative path so move x&y and switch the route entries
-                    if((route[i] + 1) % 6 == route[i + 1])
+                    if(route[i] + 1u == route[i + 1])
                     {
-                        route[i] = (route[i] + 1) % 6;
-                        route[i + 1] = (route[i + 1] + 5) % 6;
+                        ++route[i];
+                        --route[i + 1];
                     }
                     else
                     {
-                        route[i] = (route[i] + 5) % 6;
-                        route[i + 1] = (route[i + 1] + 1) % 6;
+                        --route[i];
+                        ++route[i + 1];
                     }
                     //done=true;
                 }
             }
         }
         else
-            pStart = aii.GetNeighbour(pStart, Direction::fromInt(route[i]));
+            pStart = aii.GetNeighbour(pStart, route[i]);
     }
     /*if(done)
     {
@@ -400,7 +400,7 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
     return BuildRoad(start, target, route);
 }
 
-bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<unsigned char> &route)
+bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction> &route)
 {
     bool foundPath;
 
@@ -765,7 +765,7 @@ void AIConstruction::InitBuildingsWanted()
     buildingsWanted[BLD_SHIPYARD] = aijh.GetCountofAIRelevantSeaIds() == 1 ? 1 : 99;
 }
 
-bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsigned char> &route)
+bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direction> &route)
 {
     //LOG.write(("ai build alt road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
     // Radius in dem nach würdigen Fahnen gesucht wird
@@ -776,12 +776,12 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
 
     // Flaggen in der Umgebung holen
     std::vector<const noFlag*> flags = FindFlags(flag->GetPos(), maxRoadLength);
-    std::vector<unsigned char> mainroad = route;
+    std::vector<Direction> mainroad = route;
     //targetflag for mainroad
     MapPoint t = flag->GetPos();
     for(unsigned i = 0; i < mainroad.size(); i++)
     {
-        t = aii.GetNeighbour(t, Direction::fromInt(mainroad[i]));
+        t = aii.GetNeighbour(t, mainroad[i]);
     }
     const noFlag* mainflag = aii.GetSpecObj<noFlag>(t);
 
@@ -824,12 +824,12 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<unsign
         t = flag->GetPos();
         for(unsigned j = 0; j < route.size(); ++j)
         {
-            t = aii.GetNeighbour(t, Direction::fromInt(route[j]));
+            t = aii.GetNeighbour(t, route[j]);
             MapPoint t2 = flag->GetPos();
             //check if we cross the planned main road
             for(unsigned k = 0; k < mainroad.size(); ++k)
             {
-                t2 = aii.GetNeighbour(t2, Direction::fromInt(mainroad[k]));
+                t2 = aii.GetNeighbour(t2, mainroad[k]);
                 if(t2 == t)
                 {
                     crossmainpath = true;

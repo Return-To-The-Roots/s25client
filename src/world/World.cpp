@@ -42,7 +42,7 @@ World::~World()
     Unload();
 }
 
-void World::Init(const unsigned short width, const unsigned short height, LandscapeType lt)
+void World::Init(unsigned short width, unsigned short height, LandscapeType lt)
 {
     RTTR_Assert(width_ == 0 && height_ == 0); // Already init
     RTTR_Assert(width > 0 && height > 0);     // No empty map
@@ -66,11 +66,11 @@ void World::Unload()
     {
         if(!it->obj || it->obj->GetGOT() != GOT_FLAG)
             continue;
-        for(unsigned r = 0; r < 6; ++r)
+        for(unsigned dir = 0; dir < 6; ++dir)
         {
-            if(static_cast<noFlag*>(it->obj)->routes[r])
+            if(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)))
             {
-                roadsegments.insert(static_cast<noFlag*>(it->obj)->routes[r]);
+                roadsegments.insert(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)));
             }
         }
     }
@@ -168,10 +168,10 @@ MapPoint World::GetNeighbour2(const MapPoint pt, unsigned dir) const
     return MakeMapPoint(::GetNeighbour2(Point<int>(pt), dir));
 }
 
-unsigned World::CalcDistance(const int x1, const int y1, const int x2, const int y2) const
+unsigned World::CalcDistance(Point<int> p1, Point<int> p2) const
 {
-    int dx = ((x1 - x2) * 2) + (y1 & 1) - (y2 & 1);
-    int dy = ((y1 > y2) ? (y1 - y2) : (y2 - y1)) * 2;
+    int dx = ((p1.x - p2.x) * 2) + (p1.y & 1) - (p2.y & 1);
+    int dy = ((p1.y > p2.y) ? (p1.y - p2.y) : (p2.y - p1.y)) * 2;
 
     if(dx < 0)
         dx = -dx;
@@ -360,9 +360,9 @@ bool World::IsPlayerTerritory(const MapPoint pt) const
     const unsigned char owner = GetNode(pt).owner;
 
     // Neighbour nodes must belong to this player
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if(GetNeighbourNode(pt, i).owner != owner)
+        if(GetNeighbourNode(pt, Direction::fromInt(i)).owner != owner)
             return false;
     }
 
@@ -392,34 +392,24 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         return nodeBQ;
 }
 
-/**
- *  liefert das Terrain um den Punkt X, Y.
- */
-TerrainType World::GetTerrainAround(const MapPoint pt, unsigned char dir)  const
+TerrainType World::GetRightTerrain(const MapPoint pt, Direction dir)  const
 {
-    switch(dir)
+    switch(Direction::Type(dir))
     {
-    case 0: return GetNeighbourNode(pt, 1).t1;
-    case 1: return GetNeighbourNode(pt, 1).t2;
-    case 2: return GetNeighbourNode(pt, 2).t1;
-    case 3: return GetNode(pt).t2;
-    case 4: return GetNode(pt).t1;
-    case 5: return GetNeighbourNode(pt, 0).t2;
+    case Direction::WEST:      return GetNeighbourNode(pt, Direction::NORTHWEST).t1;
+    case Direction::NORTHWEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t2;
+    case Direction::NORTHEAST: return GetNeighbourNode(pt, Direction::NORTHEAST).t1;
+    case Direction::EAST:      return GetNode(pt).t2;
+    case Direction::SOUTHEAST: return GetNode(pt).t1;
+    case Direction::SOUTHWEST: return GetNeighbourNode(pt, Direction::WEST).t2;
     }
-
     throw std::logic_error("Invalid direction");
 }
 
-TerrainType World::GetWalkingTerrain1(const MapPoint pt, unsigned char dir)  const
+TerrainType World::GetLeftTerrain(const MapPoint pt, Direction dir)  const
 {
-    RTTR_Assert(dir < 6);
-    return (dir == 0) ? GetTerrainAround(pt, 5) : GetTerrainAround(pt, dir - 1);
-}
-
-TerrainType World::GetWalkingTerrain2(const MapPoint pt, unsigned char dir)  const
-{
-    RTTR_Assert(dir < 6);
-    return GetTerrainAround(pt, dir);
+    // We can find the left terrain by going a bit more left/counter-clockwise and take the right terrain
+    return GetRightTerrain(pt, dir - 1u);
 }
 
 void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
@@ -444,9 +434,9 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
 bool World::IsSeaPoint(const MapPoint pt) const
 {
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if(!TerrainData::IsUsableByShip(GetTerrainAround(pt, i)))
+        if(!TerrainData::IsUsableByShip(GetRightTerrain(pt, Direction::fromInt(i))))
             return false;
     }
 
@@ -455,9 +445,9 @@ bool World::IsSeaPoint(const MapPoint pt) const
 
 bool World::IsWaterPoint(const MapPoint pt) const
 {
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if(!TerrainData::IsWater(GetTerrainAround(pt, i)))
+        if(!TerrainData::IsWater(GetRightTerrain(pt, Direction::fromInt(i))))
             return false;
     }
 
@@ -505,26 +495,22 @@ unsigned char World::GetRoad(const MapPoint pt, unsigned char dir) const
     return GetNode(pt).roads[dir];
 }
 
-unsigned char World::GetPointRoad(const MapPoint pt, unsigned char dir) const
+unsigned char World::GetPointRoad(const MapPoint pt, Direction dir) const
 {
-    RTTR_Assert(dir < 6);
-
-    if(dir >= 3)
-        return GetRoad(pt, dir - 3);
+    if(dir.toUInt() >= 3u)
+        return GetRoad(pt, dir.toUInt() - 3u);
     else
-        return GetRoad(GetNeighbour(pt, dir), dir);
+        return GetRoad(GetNeighbour(pt, dir), dir.toUInt());
 }
 
-unsigned char World::GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const
+unsigned char World::GetPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const
 {
-    RTTR_Assert(dir < 6);
-
-    if(dir >= 3)
-        dir -= 3;
+    if(dir.toUInt() >= 3)
+        dir = dir - 3u;
     else
         pt = GetNeighbour(pt, dir);
 
-    return GetNode(pt).fow[viewing_player].roads[dir];
+    return GetNode(pt).fow[viewing_player].roads[dir.toUInt()];
 }
 
 void World::AddCatapultStone(CatapultStone* cs)
@@ -563,9 +549,9 @@ unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const
         return 0;
 
     // Surrounding must be valid sea
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        unsigned short seaId = GetNeighbourNode(pt, i).seaId;
+        unsigned short seaId = GetNeighbourNode(pt, Direction::fromInt(i)).seaId;
         if(seaId)
         {
             // Check size (TODO: Others checks like harbor spots?)

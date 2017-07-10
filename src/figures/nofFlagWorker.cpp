@@ -124,7 +124,7 @@ void nofFlagWorker::GoToFlag()
         }
         else
         {
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
         }
     }
 }

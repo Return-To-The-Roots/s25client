@@ -32,21 +32,21 @@ struct PathConditionHuman
     // Called for every node but the start & goal and should return true, if this point is usable
     FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
-        // Feld passierbar?
+        // Node blocked -> Can't go there
         const BlockingManner bm = gwb.GetNO(pt)->GetBM();
         if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
             return false;
         // If no terrain around this is usable, we can't go here
-        for(unsigned i = 0; i < 6; ++i)
+        for(unsigned dir = 0; dir < 6; ++dir)
         {
-            if(TerrainData::IsUseable(gwb.GetTerrainAround(pt, i)))
+            if(TerrainData::IsUseable(gwb.GetRightTerrain(pt, Direction::fromInt(dir))))
                 return true;
         }
         return false;
     }
 
     // Called for every node
-    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
+    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // Check terrain for node transition
         return gwb.IsNodeToNodeForFigure(fromPt, dir);
@@ -86,7 +86,7 @@ struct PathConditionRoad
     }
 
     // Called for every edge (node to other node)
-    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
+    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const Direction /*dir*/) const
     {
         return true;
     }
@@ -105,11 +105,11 @@ struct PathConditionShip
     }
 
     // Called for every node
-    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const unsigned char dir) const
+    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
-        // Der �bergang muss immer aus Wasser sein zu beiden Seiten
-        return TerrainData::IsUsableByShip(world.GetWalkingTerrain1(fromPt, dir)) &&
-               TerrainData::IsUsableByShip(world.GetWalkingTerrain2(fromPt, dir));
+        // We must have shippable water on both sides
+        return TerrainData::IsUsableByShip(world.GetLeftTerrain(fromPt, dir)) &&
+               TerrainData::IsUsableByShip(world.GetRightTerrain(fromPt, dir));
     }
 };
 #endif // PathConditions_h__

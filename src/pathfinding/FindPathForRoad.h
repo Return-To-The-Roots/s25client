@@ -18,6 +18,7 @@
 #ifndef FindRoad_h__
 #define FindRoad_h__
 
+#include "gameTypes/Direction.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "world/GameWorldBase.h"
 #include <vector>
@@ -54,7 +55,7 @@ namespace detail{
         }
 
         // Called for every edge (node to other node)
-        FORCE_INLINE bool IsEdgeOk(const MapPoint& /*fromPt*/, const unsigned char /*dir*/) const
+        FORCE_INLINE bool IsEdgeOk(const MapPoint& /*fromPt*/, const Direction /*dir*/) const
         {
             return true;
         }
@@ -66,11 +67,11 @@ namespace detail{
 /// Takes a bool functor for checking nodes
 /// Returns the road directions as a vector or an empty vector if no possible road was found
 template<class T_NodeCondition>
-inline std::vector<unsigned char> FindPathForRoad(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt,
+inline std::vector<Direction> FindPathForRoad(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt,
                                                   const T_NodeCondition& nodeCondition)
 {
     RTTR_Assert(startPt != endPt);
-    std::vector<unsigned char> road;
+    std::vector<Direction> road;
     world.GetFreePathFinder().FindPath(startPt, endPt, false, 100, &road, NULL, NULL, detail::FindRoadCondition<T_NodeCondition>(nodeCondition));
     return road;
 }
@@ -79,7 +80,7 @@ inline std::vector<unsigned char> FindPathForRoad(const GameWorldBase& world, co
 /// Takes a world or worldView instance that has a IsRoadAvailable function to call for each Node
 /// Returns the road directions as a vector or an empty vector if no possible road was found
 template<class T_WorldOrView>
-inline std::vector<unsigned char> FindPathForRoad(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt,
+inline std::vector<Direction> FindPathForRoad(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt,
                                                   const T_WorldOrView& worldOrView, const bool isBoatRoad)
 {
     return FindPathForRoad(world, startPt, endPt, detail::DefaultFindRoadCondition<T_WorldOrView>(worldOrView, isBoatRoad));

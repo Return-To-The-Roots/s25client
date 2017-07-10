@@ -346,9 +346,9 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
-        unsigned char flag_dir = 0;
+        Direction flag_dir;
         const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
-        if(flag && flag->routes[flag_dir]->GetRoadType() == RoadSegment::RT_NORMAL)
+        if(flag && flag->GetRoute(flag_dir)->GetRoadType() == RoadSegment::RT_NORMAL)
         {
             width = 90;
             group->AddImageButton(2, 90, 45, width, 36, TC_GREY, LOADER.GetImageN("io", 44), _("Upgrade to donkey road"));
@@ -358,7 +358,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
 
 void iwAction::DoUpgradeRoad()
 {
-    unsigned char flag_dir = 0;
+    Direction flag_dir;
     const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
     if(flag)
         GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
@@ -691,7 +691,7 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
     {
         case 1: // Straße abreißen
         {
-            unsigned char flag_dir = 0;
+            Direction flag_dir;
             const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
             if(flag)
                 GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);

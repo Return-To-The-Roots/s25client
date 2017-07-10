@@ -212,7 +212,7 @@ void nofGeologist::Walked()
             if(dir == INVALID_DIR)
                 GoToNextNode();
             else
-                StartWalking(dir);
+                StartWalking(Direction::fromInt(dir));
         }
     }
     else if(state == STATE_GOTOFLAG)
@@ -372,11 +372,11 @@ void nofGeologist::GoToNextNode()
     // ersten Punkt suchen
     unsigned char dir = GetNextNode();
 
-    if(dir != 0xFF)
+    if(dir != INVALID_DIR)
     {
         // Wenn es einen Punkt gibt, dann hingehen
         state = STATE_GEOLOGIST_GOTONEXTNODE;
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
         --signs;
     }else if(node_goal == pos)
     {

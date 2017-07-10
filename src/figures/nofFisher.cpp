@@ -95,7 +95,7 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
     }
 
     LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-    DrawShadow(drawPt, 0, fishing_dir);
+    DrawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)

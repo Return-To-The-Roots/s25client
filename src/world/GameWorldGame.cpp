@@ -121,16 +121,14 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
         gi->GI_FlagDestroyed(pt);
 }
 
-void GameWorldGame::SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type)
+void GameWorldGame::SetPointRoad(MapPoint pt, Direction dir, unsigned char type)
 {
-    RTTR_Assert(dir < 6);
-
-    if(dir >= 3)
-        dir -= 3;
+    if(dir.toUInt() >= 3)
+        dir = dir - 3u;
     else
         pt = GetNeighbour(pt, dir);
 
-    SetRoad(pt, dir, type);
+    SetRoad(pt, dir.toUInt(), type);
 
     if(gi)
         gi->GI_UpdateMinimap(pt);
@@ -202,7 +200,7 @@ void GameWorldGame::DestroyBuilding(const MapPoint pt, const unsigned char playe
 }
 
 
-void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route)
+void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<Direction>& route)
 {
     // No routes with less than 2 parts. Actually invalid!
     if(route.size() < 2)
@@ -255,7 +253,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
             return;
         }
         //keine Flagge bisher aber spricht auch nix gegen ne neue Flagge -> Flagge aufstellen!
-        SetFlag(curPt, playerId, (route[route.size() - 1] + 3) % 6);
+        SetFlag(curPt, playerId, (route[route.size() - 1] + 3u).toUInt());
     }
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)
@@ -277,8 +275,8 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     RoadSegment* rs = new RoadSegment(boat_road ? RoadSegment::RT_BOAT : RoadSegment::RT_NORMAL, 
                                       GetSpecObj<noFlag>(start), GetSpecObj<noFlag>(end), route);
 
-    GetSpecObj<noFlag>(start)->routes[route.front()] = rs;
-    GetSpecObj<noFlag>(end)->routes[(route.back() + 3) % 6] = rs;
+    GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
+    GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);
 
     // Der Wirtschaft mitteilen, dass eine neue Straße gebaut wurde, damit sie alles Nötige macht
     GetPlayer(playerId).NewRoadConnection(rs);
@@ -447,7 +445,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, const bool d
                     // BQ neu berechnen
                     RecalcBQ(neighbourPt);
                     // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
-                    if(GetNeighbourNode(neighbourPt, 1).bq != BQ_NOTHING)
+                    if(GetNeighbourNode(neighbourPt, Direction::NORTHWEST).bq != BQ_NOTHING)
                         RecalcBQ(GetNeighbour(neighbourPt, 1));
                 }
 
@@ -605,10 +603,10 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
             if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
                 return true;
             //also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
-            for(int dir = 0; dir < 6; dir++)
+            for(int dir = 0; dir < Direction::COUNT; dir++)
             {
-                t1 = GetNeighbourNode(curMapPt, dir).t1;
-                t2 = GetNeighbourNode(curMapPt, dir).t2;
+                t1 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t1;
+                t2 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t2;
                 if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
                     return true;
             }
@@ -696,14 +694,14 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
     // TODO: This might not be required. Roads are destroyed when their flags are destroyed
 
     // ggf. Weg kappen
-    unsigned char dir;
+    Direction dir(Direction::WEST);
     noFlag* flag = GetRoadFlag(pt, dir, 0xFF);
     if(flag)
     {
         // Die Ministraße von dem Militärgebäude nich abreißen!
-        if(flag->routes[dir]->GetLength() == 1)
+        if(flag->GetRoute(dir)->GetLength() == 1)
         {
-            if(flag->routes[dir]->GetF2() == exception)
+            if(flag->GetRoute(dir)->GetF2() == exception)
                 return;
         }
 
@@ -724,9 +722,9 @@ bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
 
     // Terrain untersuchen
     unsigned char good_terrains = 0;
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < 6; ++dir)
     {
-        TerrainBQ bq = TerrainData::GetBuildingQuality(GetTerrainAround(pt, i));
+        TerrainBQ bq = TerrainData::GetBuildingQuality(GetRightTerrain(pt, Direction::fromInt(dir)));
         if(bq == TerrainBQ::DANGER)
             return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
         else if(bq != TerrainBQ::NOTHING)
@@ -743,7 +741,7 @@ void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
     for(unsigned char i = 0; i < 6; ++i)
     {
         // Nochmal prüfen, ob er nun wirklich verfügbar ist (evtl blocken noch mehr usw.)
-        if(!IsRoadNodeForFigures(pt, (i + 3) % 6))
+        if(!IsRoadNodeForFigures(pt))
             continue;
 
         // Koordinaten um den Punkt herum
@@ -932,7 +930,7 @@ void  GameWorldGame::AttackViaSea(const unsigned char player_attacker, const Map
 }
 
 
-bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt, const unsigned char  /*dir*/)
+bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
 {
     /// Objekte sammeln
     std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
@@ -985,7 +983,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
             figures.push_back(*it);
 
     // Und natürlich in unmittelbarer Umgebung suchen
-    for(unsigned d = 0; d < 6; ++d)
+    for(unsigned d = 0; d < Direction::COUNT; ++d)
     {
         const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, d));
         for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
@@ -995,9 +993,9 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
 
     for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
     {
-        if(dir < 6)
+        if(dir < Direction::COUNT)
         {
-            if((dir + 3) % 6 == static_cast<noFigure*>(*it)->GetCurMoveDir())
+            if(Direction(dir + 3) == static_cast<noFigure*>(*it)->GetCurMoveDir())
             {
                 if(GetNeighbour(pt, dir) == static_cast<noFigure*>(*it)->GetPos())
                     continue;
@@ -1324,7 +1322,7 @@ void GameWorldGame::SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord
 /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an
 /// den Rändern neu
 void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius, 
-        const unsigned char moving_dir, MapPoint * enemy_territory)
+        const Direction moving_dir, MapPoint * enemy_territory)
 {
     // Neue Sichtbarkeiten zuerst setzen
     // Zum Eckpunkt der beiden neuen sichtbaren Kanten gehen
@@ -1335,7 +1333,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     // Und zu beiden Abzweigungen weiter gehen und Punkte auf visible setzen
     MakeVisible(t, player);
     MapPoint tt(t);
-    unsigned char dir = (moving_dir + 2) % 6;
+    Direction dir = moving_dir + 2u;
     for(MapCoord i = 0; i < radius; ++i)
     {
         tt = GetNeighbour(tt, dir);
@@ -1359,7 +1357,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     }
 
     tt = t;
-    dir = (moving_dir + 6 - 2) % 6;
+    dir = moving_dir - 2u;
     for(MapCoord i = 0; i < radius; ++i)
     {
         tt = GetNeighbour(tt, dir);
@@ -1385,13 +1383,13 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     // Dasselbe für die zurückgebliebenen Punkte
     // Diese müssen allerdings neu berechnet werden!
     t = pt;
-    unsigned char anti_moving_dir = (moving_dir + 3) % 6;
+    Direction anti_moving_dir = moving_dir + 3u;
     for(MapCoord i = 0; i < radius + 1; ++i)
         t = GetNeighbour(t, anti_moving_dir);
 
     RecalcVisibility(t, player, NULL);
     tt = t;
-    dir = (anti_moving_dir + 2) % 6;
+    dir = anti_moving_dir + 2u;
     for(MapCoord i = 0; i < radius; ++i)
     {
         tt = GetNeighbour(tt, dir);
@@ -1399,7 +1397,7 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     }
 
     tt = t;
-    dir = (anti_moving_dir + 6 - 2) % 6;
+    dir = anti_moving_dir - 2u;
     for(unsigned i = 0; i < radius; ++i)
     {
         tt = GetNeighbour(tt, dir);

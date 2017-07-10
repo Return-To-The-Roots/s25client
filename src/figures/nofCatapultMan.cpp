@@ -212,22 +212,22 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
             }
 
             // Richtung, in die sich der Katapult drehen soll, bestimmen
-            unsigned char shooting_dir;
+            Direction shooting_dir;
 
             // Y-Abstand nur unwesentlich klein --> Richtung 0 und 3 (direkt gegenüber) nehmen
             if(distY <= distX / 5)
-                shooting_dir = (targetIsRight) ? 3 : 0;
+                shooting_dir = (targetIsRight) ? Direction::EAST : Direction::WEST;
             else
             {
                 // Ansonsten noch y mit berücksichtigen und je einen der 4 Quadranten nehmen
                 if(targetIsDown)
-                    shooting_dir = (targetIsRight) ? 4 : 5;
+                    shooting_dir = (targetIsRight) ? Direction::SOUTHEAST : Direction::SOUTHWEST;
                 else
-                    shooting_dir = (targetIsRight) ? 2 : 1;
+                    shooting_dir = (targetIsRight) ? Direction::NORTHEAST : Direction::NORTHWEST;
             }
 
             // "Drehschritte" ausrechnen, da von Richtung 4 aus gedreht wird
-            wheel_steps = int(shooting_dir) - 4;
+            wheel_steps = int(shooting_dir.toUInt()) - 4;
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 

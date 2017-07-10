@@ -19,6 +19,7 @@
 #define NOF_HUNTER_H_
 
 #include "nofBuildingWorker.h"
+#include "gameTypes/Direction.h"
 
 class noAnimal;
 class SerializedGameData;
@@ -34,7 +35,7 @@ class nofHunter : public nofBuildingWorker
         /// Punkt, von dem aus geschossen wird
         MapPoint shootingPos;
         /// Richtung, in die geschossen wird
-        unsigned char shooting_dir;
+        Direction shooting_dir;
 
     private:
 

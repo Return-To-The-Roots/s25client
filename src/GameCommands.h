@@ -5,6 +5,7 @@
 #include "Serializer.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/InventorySetting.h"
@@ -81,9 +82,9 @@ namespace gc{
             /// Boot-Straße oder nicht?
             const bool boat_road;
             /// Beschreibung der Straße mittels einem Array aus Richtungen
-            std::vector<unsigned char> route;
+            std::vector<Direction> route;
         protected:
-            BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<unsigned char>& route)
+            BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<Direction>& route)
                 : Coords(BUILDROAD, pt), boat_road(boat_road), route(route) {}
             BuildRoad(Serializer& ser)
                 : Coords(BUILDROAD, ser),
@@ -91,7 +92,7 @@ namespace gc{
                   route(ser.PopUnsignedInt())
             {
                 for(unsigned i = 0; i < route.size(); ++i)
-                    route[i] = ser.PopUnsignedChar();
+                    route[i] = Direction(ser.PopUnsignedChar());
             }
         public:
 
@@ -102,7 +103,7 @@ namespace gc{
                 ser.PushBool(boat_road);
                 ser.PushUnsignedInt(route.size());
                 for(unsigned i = 0; i < route.size(); ++i)
-                    ser.PushUnsignedChar(route[i]);
+                    ser.PushUnsignedChar(route[i].toUInt());
             }
 
             /// Führt das GameCommand aus
@@ -114,9 +115,9 @@ namespace gc{
     {
         GC_FRIEND_DECL;
             /// Richtung in der von der Flagge an x;y aus gesehen die Straße zerstört werden soll
-            const unsigned char start_dir;
+            const Direction start_dir;
         protected:
-            DestroyRoad(const MapPoint pt, const unsigned char start_dir)
+            DestroyRoad(const MapPoint pt, const Direction start_dir)
                 : Coords(DESTROYROAD, pt), start_dir(start_dir) {}
             DestroyRoad(Serializer& ser)
                 : Coords(DESTROYROAD, ser),
@@ -126,7 +127,7 @@ namespace gc{
             {
                 Coords::Serialize(ser);
 
-                ser.PushUnsignedChar(start_dir);
+                ser.PushUnsignedChar(start_dir.toUInt());
             }
 
             /// Führt das GameCommand aus
@@ -138,9 +139,9 @@ namespace gc{
     {
         GC_FRIEND_DECL;
             /// Richtung in der von der Flagge an x;y aus gesehen die Straße zerstört werden soll
-            const unsigned char start_dir;
+            const Direction start_dir;
         protected:
-            UpgradeRoad(const MapPoint pt, const unsigned char start_dir)
+            UpgradeRoad(const MapPoint pt, const Direction start_dir)
                 : Coords(UPGRADEROAD, pt), start_dir(start_dir) {}
             UpgradeRoad(Serializer& ser)
                 : Coords(UPGRADEROAD, ser), start_dir(ser.PopUnsignedChar()) {}
@@ -148,7 +149,7 @@ namespace gc{
             void Serialize(Serializer& ser) const override
             {
                 Coords::Serialize(ser);
-                ser.PushUnsignedChar(start_dir);
+                ser.PushUnsignedChar(start_dir.toUInt());
             }
 
             /// Führt das GameCommand aus

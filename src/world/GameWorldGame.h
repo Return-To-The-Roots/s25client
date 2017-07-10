@@ -72,7 +72,7 @@ public:
     /// Prüft, ob dieser Punkt von Menschen betreten werden kann
     bool IsNodeForFigures(const MapPoint pt) const;
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
-    bool IsRoadNodeForFigures(const MapPoint pt, const unsigned char dir);
+    bool IsRoadNodeForFigures(const MapPoint pt);
     /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
     void StopOnRoads(const MapPoint pt, const unsigned char dir = 0xff);
 
@@ -89,24 +89,23 @@ public:
     /// Gebäude bzw Baustelle abreißen
     void DestroyBuilding(const MapPoint pt, const unsigned char playe);
 
-    /// Wegfindung für Menschen im Straßennetz
+    /// Find a path for people using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
     unsigned char FindHumanPathOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL, const RoadSegment* const forbidden = NULL);
-    /// Wegfindung für Waren im Straßennetz
+    /// Find a path for wares using roads. Result will be a direction, INVALID_DIR or SHIP_DIR
     unsigned char FindPathForWareOnRoads(const noRoadNode& start, const noRoadNode& goal, unsigned* length = NULL, MapPoint* firstPt = NULL, unsigned max = std::numeric_limits<unsigned>::max());
     /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
-    bool CheckShipRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos,
-        MapPoint* dest);
+    bool CheckShipRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos, MapPoint* dest);
     /// Find a route for trade caravanes
     unsigned char FindTradePath(const MapPoint start, const MapPoint dest, unsigned char player, unsigned max_route = 0xffffffff, bool random_route = false,
-        std::vector<unsigned char>* route = NULL, unsigned* length = NULL) const;
+        std::vector<Direction>* route = NULL, unsigned* length = NULL) const;
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid. Optionally returns destination pt
-    bool CheckTradeRoute(const MapPoint start, const std::vector<unsigned char>& route, unsigned startRouteIdx, unsigned char player, MapPoint* dest = NULL) const;
+    bool CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned startRouteIdx, unsigned char player, MapPoint* dest = NULL) const;
 
     /// setzt den Straßen-Wert um den Punkt X,Y.
-    void SetPointRoad(MapPoint pt, unsigned char dir, unsigned char type);
+    void SetPointRoad(MapPoint pt, Direction dir, unsigned char type);
 
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
-    void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
+    void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<Direction>& route);
 
     /// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
     /// Militärgebäude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll
@@ -139,7 +138,7 @@ public:
     void SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player);
     /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an den Rändern neu
     void RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
-        const unsigned char moving_dir, MapPoint * enemy_territory);
+        const Direction moving_dir, MapPoint * enemy_territory);
 
     /// Return whether this is a border node (node belongs to player, but not all others around)
     bool IsBorderNode(const MapPoint pt, const unsigned char player) const;

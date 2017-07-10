@@ -36,6 +36,7 @@
 #include <queue>
 
 struct BuildingCount;
+struct Direction;
 class GameWorldGame;
 class noBaseBuilding;
 class noBuildingSite;
@@ -274,7 +275,7 @@ class GamePlayer: public GamePlayerInfo
         unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
         /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
         /// gibt true zurück, falls erfolgreich
-        bool FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<unsigned char> * route,
+        bool FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<Direction>* route,
                                     nobHarborBuilding* exception);
         /// A ship has discovered new hostile territory --> determines if this is new
         /// i.e. there is a sufficient distance to older locations

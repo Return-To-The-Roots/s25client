@@ -859,7 +859,7 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
 {
-    std::vector<unsigned char> new_route;
+    std::vector<Direction> new_route;
     // Weg gefunden?
     if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad<GameWorldViewer>(worldViewer, road.mode == RM_BOAT)))
         return false;
@@ -889,7 +889,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     // Weg (visuell) bauen
     for(unsigned i = 0; i < new_route.size(); ++i)
     {
-        worldViewer.SetVisiblePointRoad(road.point, Direction::fromInt(new_route[i]), (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.SetVisiblePointRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
         worldViewer.RecalcBQForRoad(road.point);
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, new_route[i]);
     }
@@ -911,7 +911,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
         if(curPt == pt)
             return i + 1;
 
-        curPt = worldViewer.GetNeighbour(curPt, Direction::fromInt(road.route[i]));
+        curPt = worldViewer.GetNeighbour(curPt, road.route[i]);
     }
     return 0;
 }
@@ -931,9 +931,9 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        for(unsigned char x = 0; x < 6; ++x)
+        for(unsigned x = 0; x < Direction::COUNT; ++x)
         {
-            if(TerrainData::IsWater(world.GetTerrainAround(cSel, x)))
+            if(TerrainData::IsWater(world.GetRightTerrain(cSel, Direction::fromInt(x))))
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -1169,8 +1169,8 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
     for(unsigned i = road.route.size(); i >= start_id; --i)
     {
         MapPoint t = road.point;
-        road.point = worldViewer.GetWorld().GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
-        worldViewer.SetVisiblePointRoad(road.point, Direction::fromInt(road.route[i - 1]), 0);
+        road.point = worldViewer.GetWorld().GetNeighbour(road.point, road.route[i - 1] + 3u);
+        worldViewer.SetVisiblePointRoad(road.point, road.route[i - 1], 0);
         worldViewer.RecalcBQForRoad(t);
     }
 

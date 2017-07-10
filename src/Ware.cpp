@@ -276,17 +276,18 @@ void Ware::RemoveWareJobForDir(const unsigned char last_next_dir)
     // aber nun nicht mehr will, deshalb muss dem Träger Bescheid gesagt werden
 
     // War's überhaupt ne richtige Richtung?
-    if(last_next_dir >= 6)
+    if(last_next_dir >= Direction::COUNT)
         return;
+    Direction lastDir = Direction::fromInt(last_next_dir);
     // Existiert da noch ne Straße?
-    if(!location->routes[last_next_dir])
+    if(!location->GetRoute(lastDir))
         return;
     // Den Trägern Bescheid sagen
-    location->routes[last_next_dir]->WareJobRemoved(NULL);
+    location->GetRoute(lastDir)->WareJobRemoved(NULL);
     // Wenn nicht, könntes ja sein, dass die Straße in ein Lagerhaus führt, dann muss dort Bescheid gesagt werden
-    if(location->routes[last_next_dir]->GetF2()->GetType() == NOP_BUILDING)
+    if(location->GetRoute(lastDir)->GetF2()->GetType() == NOP_BUILDING)
     {
-        noBuilding* bld = static_cast<noBuilding*>(location->routes[1]->GetF2());
+        noBuilding* bld = static_cast<noBuilding*>(location->GetRoute(Direction::NORTHWEST)->GetF2());
         if(bld->GetBuildingType() == BLD_HEADQUARTERS || bld->GetBuildingType() == BLD_STOREHOUSE || bld->GetBuildingType() == BLD_HARBORBUILDING)
             static_cast<nobBaseWarehouse*>(bld)->DontFetchNextWare();
     }
@@ -297,7 +298,7 @@ void Ware::CallCarrier()
     RTTR_Assert(IsWaitingAtFlag());
     RTTR_Assert(next_dir != INVALID_DIR);
     RTTR_Assert(location);
-    location->routes[next_dir]->AddWareJob(location);
+    location->GetRoute(Direction::fromInt(next_dir))->AddWareJob(location);
 }
 
 bool Ware::FindRouteToWarehouse()
@@ -336,11 +337,11 @@ unsigned Ware::CheckNewGoalForLostWare(noBaseBuilding* newgoal)
         //in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
         if(possibledir==1 && newgoal->GetFlag()->GetPos() == location->GetPos())
         {
-            for(unsigned i=0; i<6; i++)
+            for(unsigned dir=0; dir<6; dir++)
             {
-                if(i!=1 && location->routes[i])
+                if(dir!=1 && location->GetRoute(Direction::fromInt(dir)))
                 {
-                    possibledir = i;
+                    possibledir = dir;
                     break;
                 }
             }
@@ -364,11 +365,11 @@ void Ware::SetNewGoalForLostWare(noBaseBuilding* newgoal)
         //in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back because non-warehouses cannot just carry in new wares they need a helper to do this
         if(possibledir == 1 && newgoal->GetFlag()->GetPos() == location->GetPos())
         {
-            for(unsigned i=0; i<6; i++)
+            for(unsigned dir=0; dir<6; dir++)
             {
-                if(i!=1 && location->routes[i])
+                if(dir!=1 && location->GetRoute(Direction::fromInt(dir)))
                 {
-                    possibledir = i;
+                    possibledir = dir;
                     break;
                 }
             }

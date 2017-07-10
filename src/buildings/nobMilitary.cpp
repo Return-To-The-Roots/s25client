@@ -505,7 +505,7 @@ void nobMilitary::RegulateTroops()
         bool mightHaveRoad=false;
 		for(unsigned i=2; i<7; i++) //every direction but 1 because 1 is the building connection so it doesnt count for this check
 		{
-			if(GetFlag()->routes[i%6])
+			if(GetFlag()->GetRoute(Direction(i)))
 			{
 			    mightHaveRoad=true;
 				break;

@@ -18,8 +18,9 @@
 #ifndef RoadBuildState_h__
 #define RoadBuildState_h__
 
-#include "gameTypes/RoadBuildMode.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/RoadBuildMode.h"
 #include <vector>
 
 struct RoadBuildState
@@ -27,7 +28,7 @@ struct RoadBuildState
     RoadBuildMode mode;
 
     MapPoint point, start;
-    std::vector<unsigned char> route;  /// Directions of the built road
+    std::vector<Direction> route;  /// Directions of the built road
 };
 
 #endif // RoadBuildState_h__

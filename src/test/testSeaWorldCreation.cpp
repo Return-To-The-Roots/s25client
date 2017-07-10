@@ -139,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
         BOOST_REQUIRE_NE(world.GetSeaFromCoastalPoint(coastPt), 0);
         // Sea in the direction of the coast must match
         bool coastPtFound = false;
-        for(unsigned dir = 0; dir < 6; dir++)
+        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
             if(world.GetNeighbour(curHarborPt, Direction::fromInt(dir)) == coastPt)
             {

@@ -567,9 +567,9 @@ void AIJH::ConnectJob::ExecuteJob()
 	//is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid multiple connections on mil buildings)
 	if(aiInterface.IsMilitaryBuildingOnNode(aiInterface.GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
 	{
-		for(unsigned i=2;i<7;i++)
+		for(unsigned dir=2;dir<7;dir++)
 		{
-			if(flag->routes[i%6])
+			if(flag->GetRoute(Direction(dir)))
 			{
 				status=AIJH::JOB_FINISHED;
 				return;

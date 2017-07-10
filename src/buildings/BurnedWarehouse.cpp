@@ -119,24 +119,24 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
         unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
         // Letzte mögliche Richtung bestimmen
-        unsigned char last_dir = 0xFF;
+        Direction last_dir = Direction::WEST;
 
         for(unsigned char d = 0; d < 6; ++d)
         {
-            unsigned char dir = (start_dir + d) % 6;
-            if(dirIsPossible[dir])
+            Direction dir(start_dir + d);
+            if(dirIsPossible[dir.toUInt()])
                 last_dir = dir;
         }
 
-        RTTR_Assert(last_dir < 6);
+        RTTR_Assert(dirIsPossible[last_dir.toUInt()]);
 
         for(unsigned char d = 0; d < 6; ++d)
         {
             // Aktuelle Richtung, die jetzt dran ist bestimmen
-            unsigned dir = (start_dir + d) % 6;
+            Direction dir(start_dir + d);
 
             // Wenn Richtung nicht möglich ist --> weglassen
-            if(!dirIsPossible[dir])
+            if(!dirIsPossible[dir.toUInt()])
                 continue;
 
             // Anzahl jetzt für diese Richtung ausrechnen

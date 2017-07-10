@@ -107,7 +107,7 @@ void nofActiveSoldier::WalkingHome()
     if(GetPos() == building->GetFlag()->GetPos())
     {
         // Enter via the door
-        StartWalking(1);
+        StartWalking(Direction::NORTHWEST);
         return;
     }
     // or are we at the building?
@@ -139,7 +139,7 @@ void nofActiveSoldier::WalkingHome()
             return;
 
         // Start walking
-        StartWalking(dir);
+        StartWalking(Direction(dir));
     }
 }
 
@@ -385,7 +385,7 @@ void nofActiveSoldier::MeetingEnemy()
         unsigned char dir = gwg->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
         if (dir != 0xFF)
         {
-            StartWalking(dir);
+            StartWalking(Direction(dir));
         }
         else
         {

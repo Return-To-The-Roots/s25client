@@ -26,6 +26,7 @@
 #include "SerializedGameData.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
+#include "gameData/GameConsts.h"
 #include "gameData/TerrainData.h"
 
 #include "ogl/glSmartBitmap.h"
@@ -79,7 +80,7 @@ void noAnimal::Draw(DrawPoint drawPt)
             unsigned ani_step = GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir()][ani_step].draw(drawPt);
+            LOADER.animal_cache[species][GetCurMoveDir().toUInt()][ani_step].draw(drawPt);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == SPEC_DUCK || species == SPEC_SHEEP)
@@ -102,7 +103,7 @@ void noAnimal::Draw(DrawPoint drawPt)
         case STATE_PAUSED:
         {
             // Stehend zeichnen
-            LOADER.animal_cache[species][GetCurMoveDir()][0].draw(drawPt);
+            LOADER.animal_cache[species][GetCurMoveDir().toUInt()][0].draw(drawPt);
         } break;
         case STATE_DEAD:
         {
@@ -124,7 +125,7 @@ void noAnimal::Draw(DrawPoint drawPt)
             else
             {
                 // Stehend zeichnen
-                LOADER.animal_cache[species][GetCurMoveDir()][0].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.animal_cache[species][GetCurMoveDir().toUInt()][0].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
             }
 
         } break;
@@ -185,7 +186,7 @@ void noAnimal::HandleEvent(const unsigned int id)
 
 }
 
-void noAnimal::StartWalking(const unsigned char dir)
+void noAnimal::StartWalking(const Direction dir)
 {
     StartMoving(dir, ANIMALCONSTS[species].speed);
 }
@@ -194,7 +195,7 @@ void noAnimal::StandardWalking()
 {
     // neuen Weg suchen
     unsigned char dir = FindDir();
-    if(dir == 0xFF)
+    if(dir == INVALID_DIR)
     {
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
@@ -208,7 +209,7 @@ void noAnimal::StandardWalking()
     else
     {
         // weiterlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
 }
 
@@ -261,23 +262,23 @@ unsigned char noAnimal::FindDir()
 
     for(unsigned char dtmp = 0; dtmp < 6; ++dtmp)
     {
-        unsigned char d = (dtmp + doffset) % 6;
+        Direction d(dtmp + doffset);
 
-        TerrainType t1 = gwg->GetWalkingTerrain1(pos, d);
-        TerrainType t2 = gwg->GetWalkingTerrain2(pos, d);
+        TerrainType t1 = gwg->GetLeftTerrain(pos, d);
+        TerrainType t2 = gwg->GetRightTerrain(pos, d);
 
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein       
             if(TerrainData::IsWater(t1) && TerrainData::IsWater(t2))
-                return d;
+                return d.toUInt();
         }
         else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
             LandscapeType lt = gwg->GetLandscapeType();
             if(TerrainData::IsSnow(lt, t1) && TerrainData::IsSnow(lt, t2))
-                return d;
+                return d.toUInt();
         }
         else
         {
@@ -298,9 +299,9 @@ unsigned char noAnimal::FindDir()
 
             // Und möglichst auch keine Straßen
             bool roads = false;
-            for(unsigned char d2 = 0; d2 < 6; ++d2)
+            for(unsigned char d2 = 0; d2 < Direction::COUNT; ++d2)
             {
-                if(gwg->GetPointRoad(dst, d2))
+                if(gwg->GetPointRoad(dst, Direction::fromInt(d2)))
                 {
                     roads = true;
                     break;
@@ -308,12 +309,12 @@ unsigned char noAnimal::FindDir()
             }
 
             if(!roads)
-                return d;
+                return d.toUInt();
         }
     }
 
     // kein Weg mehr gefunden
-    return 0xFF;
+    return INVALID_DIR;
 }
 
 

@@ -79,7 +79,7 @@ void FreePathFinder::IncreaseCurrentVisit()
 /// Pathfinder ( A* ), O(v lg v) --> Normal terrain (ignoring roads) for road building and free walking jobs
 bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
                                                    const bool randomRoute, const unsigned maxLength,
-                                                   std::vector<unsigned char>* route, unsigned* length, unsigned char* firstDir,
+                                                   std::vector<Direction>* route, unsigned* length, Direction* firstDir,
                                                    FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param)
 {
     if(start == dest)
@@ -93,7 +93,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         if(length)
             *length = 0;
         if(firstDir)
-            *firstDir = 0xff;
+            *firstDir = Direction::EAST;
         return true;
     }
 
@@ -113,7 +113,6 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     nodes[startId].prevEven = INVALID_PREV;
     nodes[startId].lastVisitedEven = currentVisit;
     nodes[startId].wayEven = 0;
-    nodes[startId].dirEven = 0;
     //LOG.write(("pf: from %i, %i to %i, %i \n", x_start, y_start, x_dest, y_dest);
 
     // Start at random dir (so different jobs may use different roads)
@@ -182,10 +181,10 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         // Knoten in alle 6 Richtungen bilden
         for(unsigned z = startDir + 3; z < startDir + 9; ++z)
         {
-            unsigned i = z % 6;
+            Direction dir(z);
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, i);
+            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);
 
             // ID des umliegenden Knotens bilden
             unsigned nbId = gwb_.GetIdx(neighbourPos);
@@ -201,12 +200,12 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             {
                 if(prevStepEven)
                 {
-                    if(!IsNodeOK(gwb_, neighbourPos, i, param))
+                    if(!IsNodeOK(gwb_, neighbourPos, dir, param))
                         continue;
                 }
                 else
                 {
-                    if (!IsNodeOKAlternate(gwb_, neighbourPos, i, param))
+                    if (!IsNodeOKAlternate(gwb_, neighbourPos, dir, param))
                         continue;
                     MapPoint p = nodes[bestId].mapPt;
 
@@ -215,8 +214,8 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                     unsigned back_id = bestId;
                     for(unsigned i = nodes[bestId].way-1; i>1; i--) // backtrack the plannend route and check if another "even" position is too close
                     {
-                        unsigned char pdir = alternate ? nodes[back_id].dirEven : nodes[back_id].dir;
-                        p = gwb_.GetNeighbour(p, (pdir+3) % 6);
+                        Direction pdir = alternate ? nodes[back_id].dirEven : nodes[back_id].dir;
+                        p = gwb_.GetNeighbour(p, pdir+3u);
                         if(i%2 == 0) //even step
                         {	
                             evenLocationsOnRoute.push_back(p);
@@ -248,7 +247,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             // Conditions for all nodes
             if(IsNodeToDestOk)
             {
-                if(!IsNodeToDestOk(gwb_, neighbourPos, i, param))
+                if(!IsNodeToDestOk(gwb_, neighbourPos, dir, param))
                     continue;
             }
 
@@ -258,14 +257,14 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
             {
                 nodes[nbId].lastVisited = currentVisit;
                 way = nodes[nbId].way = nodes[bestId].wayEven + 1;
-                nodes[nbId].dir = i;
+                nodes[nbId].dir = dir;
                 nodes[nbId].prev = bestId;
             }
             else
             {
                 nodes[nbId].lastVisitedEven = currentVisit;
                 way = nodes[nbId].wayEven = nodes[bestId].way + 1;
-                nodes[nbId].dirEven = i;
+                nodes[nbId].dirEven = dir;
                 nodes[nbId].prevEven = bestId;
             }
 

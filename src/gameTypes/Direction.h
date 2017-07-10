@@ -33,7 +33,8 @@ struct Direction
     static BOOST_CONSTEXPR_OR_CONST unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
-    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    Direction(): t_(WEST){}
+    Direction(Type t): t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
     /// Converts an UInt safely to a Direction
     explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
