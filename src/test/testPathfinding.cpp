@@ -237,81 +237,6 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     }
 }
 
-/// Check if we can walk if one of the 2 or both surrounding terrains is changed
-boost::test_tools::predicate_result checkWalkOnTerrain(GameWorldGame& world, const MapPoint& startPt, const MapPoint& targetPt,
-    Direction dir, TerrainType t, bool isWalkableOneSide, bool isWalkableBothSide)
-{
-    // Block either side
-    setRightTerrain(world, startPt, dir, t);
-    if((world.FindHumanPath(startPt, targetPt) != INVALID_DIR) != isWalkableOneSide)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for right terrain";
-        return result;
-    }
-    if((world.FindHumanPath(targetPt, startPt) != INVALID_DIR) != isWalkableOneSide)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for right terrain2";
-        return result;
-    }
-    setRightTerrain(world, startPt, dir, TT_STEPPE);
-    setLeftTerrain(world, startPt, dir, t);
-    if((world.FindHumanPath(startPt, targetPt) != INVALID_DIR) != isWalkableOneSide)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for left terrain";
-        return result;
-    }
-    if((world.FindHumanPath(targetPt, startPt) != INVALID_DIR) != isWalkableOneSide)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for left terrain2";
-        return result;
-    }
-    setRightTerrain(world, startPt, dir, t);
-    if((world.FindHumanPath(startPt, targetPt) != INVALID_DIR) != isWalkableBothSide)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for both terrain";
-        return result;
-    }
-    if((world.FindHumanPath(targetPt, startPt) != INVALID_DIR) != isWalkableBothSide)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for both terrain2";
-        return result;
-    }
-    setRightTerrain(world, startPt, dir, TT_STEPPE);
-    setLeftTerrain(world, startPt, dir, TT_STEPPE);
-    return true;
-}
-
-/// Check if we can walk on the point if it is completely covered in terrain
-boost::test_tools::predicate_result checkWalkOnPoint(GameWorldGame& world, const MapPoint& startPt, const MapPoint& targetPt,
-    Direction dir, TerrainType t)
-{
-    // Block whole point
-    const MapPoint nextPt = world.GetNeighbour(startPt, dir);
-    for(unsigned i=0; i<6; i++)
-        setRightTerrain(world, nextPt, Direction::fromInt(i), t);
-    if(world.FindHumanPath(startPt, targetPt) != INVALID_DIR)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for fwd direction";
-        return result;
-    }
-    if(world.FindHumanPath(targetPt, startPt) != INVALID_DIR)
-    {
-        boost::test_tools::predicate_result result(false);
-        result.message() << "Failed for bwd direction";
-        return result;
-    }
-    for(unsigned i = 0; i < 6; i++)
-        setRightTerrain(world, nextPt, Direction::fromInt(i), TT_STEPPE);
-    return true;
-}
-
 BOOST_FIXTURE_TEST_CASE(BlockedPaths, WorldFixtureEmpty0P)
 {
     MapPoint startPt(3, 6);
@@ -327,13 +252,6 @@ BOOST_FIXTURE_TEST_CASE(BlockedPaths, WorldFixtureEmpty0P)
     // Allow left exit
     world.DestroyNO(surroundingPts[0]);
     BOOST_REQUIRE_EQUAL(world.FindHumanPath(startPt, surroundingPts2[0]), 0);
-    BOOST_REQUIRE(checkWalkOnTerrain(world, startPt, surroundingPts2[0], Direction::WEST, TT_WATER, true, false));
-    BOOST_REQUIRE(checkWalkOnTerrain(world, startPt, surroundingPts2[0], Direction::WEST, TT_SWAMPLAND, true, false));
-    BOOST_REQUIRE(checkWalkOnTerrain(world, startPt, surroundingPts2[0], Direction::WEST, TT_LAVA, false, false));
-    BOOST_REQUIRE(checkWalkOnTerrain(world, startPt, surroundingPts2[0], Direction::WEST, TT_SNOW, false, false));
-
-    BOOST_REQUIRE(checkWalkOnPoint(world, startPt, surroundingPts2[0], Direction::WEST, TT_WATER));
-    BOOST_REQUIRE(checkWalkOnPoint(world, startPt, surroundingPts2[0], Direction::WEST, TT_SWAMPLAND));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
