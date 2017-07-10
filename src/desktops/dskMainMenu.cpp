@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,51 +25,59 @@
 
 #include "Settings.h"
 
-#include "dskSinglePlayer.h"
-#include "dskMultiPlayer.h"
-#include "dskOptions.h"
-#include "dskIntro.h"
-#include "dskCredits.h"
+#include "desktops/dskSinglePlayer.h"
+#include "desktops/dskMultiPlayer.h"
+#include "desktops/dskOptions.h"
+#include "desktops/dskIntro.h"
+#include "desktops/dskCredits.h"
 #include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ogl/glArchivItem_Font.h"
 
-/** @class dskMainMenu
- *
- *  Klasse des Hauptmenü Desktops.
- */
+enum{
+    ID_txtVersion,
+    ID_txtURL,
+    ID_txtCopyright,
+    ID_btSingleplayer,
+    ID_btMultiplayer,
+    ID_btOptions,
+    ID_btIntro,
+    ID_btReadme,
+    ID_btCredits,
+    ID_btQuit,
+    ID_logo,
+    ID_tmrDebugData
+};
 
 dskMainMenu::dskMainMenu() : Desktop(LOADER.GetImageN("menu", 0))
 {
     // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
+    AddVarText(ID_txtVersion, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // URL
-    AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddText(ID_txtURL, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
     // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(ID_txtCopyright, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     // "Einzelspieler"
-    AddTextButton(4, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
+    AddTextButton(ID_btSingleplayer, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
     // "Mehrspieler"
-    AddTextButton(5, 115, 210, 220, 22, TC_GREEN2, _("Multiplayer"), NormalFont);
+    AddTextButton(ID_btMultiplayer, 115, 210, 220, 22, TC_GREEN2, _("Multiplayer"), NormalFont);
     // "Optionen"
-    AddTextButton(6, 115, 250, 220, 22, TC_GREEN2, _("Options"), NormalFont);
+    AddTextButton(ID_btOptions, 115, 250, 220, 22, TC_GREEN2, _("Options"), NormalFont);
     // "Intro"
-    AddTextButton(7, 115, 280, 220, 22, TC_GREEN2, _("Intro"), NormalFont);
+    AddTextButton(ID_btIntro, 115, 280, 220, 22, TC_GREEN2, _("Intro"), NormalFont);
     // "ReadMe"
-    AddTextButton(10, 115, 310, 220, 22, TC_GREEN2, _("Readme"), NormalFont);
+    AddTextButton(ID_btReadme, 115, 310, 220, 22, TC_GREEN2, _("Readme"), NormalFont);
     // "Credits"
-    AddTextButton(8, 115, 340, 220, 22, TC_GREEN2, _("Credits"), NormalFont);
+    AddTextButton(ID_btCredits, 115, 340, 220, 22, TC_GREEN2, _("Credits"), NormalFont);
     // "Programm verlassen"
-    AddTextButton(9, 115, 390, 220, 22, TC_RED1, _("Quit program"), NormalFont);
+    AddTextButton(ID_btQuit, 115, 390, 220, 22, TC_RED1, _("Quit program"), NormalFont);
 
-    AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
+    AddImage(ID_logo, 20, 20, LOADER.GetImageN("logo", 0));
 
     if (SETTINGS.global.submit_debug_data == 0)
-    {
-        AddTimer(20, 250);
-    }
+        AddTimer(ID_tmrDebugData, 250);
 
     /*AddText(20, 50, 450, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
     AddText(21, 50, 470, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
@@ -100,51 +108,26 @@ void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 4: // "Single Player"
-        {
+        case ID_btSingleplayer: // "Single Player"
             WINDOWMANAGER.Switch(new dskSinglePlayer);
-        } break;
-        case 5: // "Multiplayer"
-        {
+            break;
+        case ID_btMultiplayer: // "Multiplayer"
             WINDOWMANAGER.Switch(new dskMultiPlayer);
-        } break;
-        case 6: // "Options"
-        {
+            break;
+        case ID_btOptions: // "Options"
             WINDOWMANAGER.Switch(new dskOptions);
-        } break;
-        case 7: // "Intro"
-        {
+            break;
+        case ID_btIntro: // "Intro"
             WINDOWMANAGER.Switch(new dskIntro);
-        } break;
-        case 8: // "Credits"
-        {
+            break;
+        case ID_btCredits: // "Credits"
             WINDOWMANAGER.Switch(new dskCredits);
-        } break;
-        case 9: // "Quit"
-        {
+            break;
+        case ID_btQuit: // "Quit"
             GLOBALVARS.notdone = false;
-        } break;
-        case 10: // "Readme"
-        {
+            break;
+        case ID_btReadme: // "Readme"
             WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
-        } break;
-
+            break;
     }
-}
-
-void dskMainMenu::Msg_PaintAfter()
-{
-
-    /*for(unsigned i = 0;i<100;++i)
-    {
-        glDisable(GL_TEXTURE_2D);
-        glColor4f(1.0f,0.0f,0.0f,1.0f);
-        glBegin(GL_QUADS);
-        glVertex3f(0.0f, 0.0f,float(i));
-        glVertex3f(0.0f, 600.0f,float(i));
-        glVertex3f(700.0f, 600.0f,float(i));
-        glVertex3f(700.0f, 0.0f,float(i));
-        glEnd();
-        glEnable(GL_TEXTURE_2D);
-    }*/
 }

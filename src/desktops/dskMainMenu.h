@@ -24,7 +24,6 @@
 /// Klasse des Hauptmenü Desktops.
 class dskMainMenu : public Desktop
 {
-        void Msg_PaintAfter() override;
     public:
         dskMainMenu();
 
