@@ -27,12 +27,12 @@ inline std::ostream& operator<<(std::ostream& os, const Direction& dir)
 {
     switch(Direction::Type(dir))
     {
-    case Direction::WEST: os << "WEST";
-    case Direction::NORTHWEST: os << "NORTHWEST";
-    case Direction::NORTHEAST: os << "NORTHEAST";
-    case Direction::EAST: os << "EAST";
-    case Direction::SOUTHEAST: os << "SOUTHEAST";
-    case Direction::SOUTHWEST: os << "SOUTHWEST";
+    case Direction::WEST:      os << "WEST"; break;
+    case Direction::NORTHWEST: os << "NORTHWEST"; break;
+    case Direction::NORTHEAST: os << "NORTHEAST"; break;
+    case Direction::EAST:      os << "EAST"; break;
+    case Direction::SOUTHEAST: os << "SOUTHEAST"; break;
+    case Direction::SOUTHWEST: os << "SOUTHWEST"; break;
     }
     return os;
 }
