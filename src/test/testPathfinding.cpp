@@ -57,13 +57,15 @@ void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, TerrainType t
     // curPt stores the current point on the path
     world.GetNodeWriteable(world.GetNeighbour(startPt, Direction::NORTHWEST)).t2 = tWhite;
     MapPoint curPt = world.GetNeighbour(startPt, Direction::NORTHEAST);
-    world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NORTHEAST)).t1 = tWhite;
-    curPt = world.GetNeighbour(curPt, Direction::EAST);
     world.GetNodeWriteable(curPt).t2 = tWhite;
     curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
-    world.GetNodeWriteable(curPt).t2 = tWhite;
-    curPt = world.GetNeighbour(curPt, Direction::EAST);
+    world.GetNodeWriteable(curPt).t1 = tWhite;
+    curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
     world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NORTHEAST)).t1 = tWhite;
+    curPt = world.GetNeighbour(curPt, Direction::NORTHEAST);
+    world.GetNodeWriteable(world.GetNeighbour(curPt, Direction::NORTHEAST)).t1 = tWhite;
+    curPt = world.GetNeighbour(curPt, Direction::EAST);
+    world.GetNodeWriteable(curPt).t2 = tWhite;
 }
 
 void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t)
@@ -123,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     BOOST_REQUIRE_EQUAL(length, 6u);
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
     std::vector<Direction> expectedRoute;
-    expectedRoute += Direction::NORTHEAST, Direction::EAST, Direction::SOUTHEAST, Direction::EAST, Direction::NORTHEAST, Direction::SOUTHEAST;
+    expectedRoute += Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST, Direction::NORTHEAST, Direction::EAST, Direction::EAST;
     BOOST_REQUIRE_EQUAL_COLLECTIONS(route.begin(), route.end(), expectedRoute.begin(), expectedRoute.end());
     // Inverse route
     BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route), INVALID_DIR);
@@ -144,7 +146,8 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     {
         world.SetOwner(pt, 1);
     }
-    const MapPoint startPt(5, 2);
+    // Start far enough away from the HQ in the middle
+    const MapPoint startPt(1, 2);
     std::vector<Direction> testDirections;
     // Test cases 2         a)                 b)                     c)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
@@ -155,6 +158,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
         MapPoint endPt(startPt);
         for(unsigned i=0; i<3; i++)
             endPt = world.GetNeighbour(endPt, dir);
+        // We can't go directly so 1 step detour
         unsigned length;
         BOOST_REQUIRE_NE(world.FindHumanPath(startPt, endPt, 99, false, &length), INVALID_DIR);
         BOOST_REQUIRE_EQUAL(length, 4u);
@@ -173,8 +177,8 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
         std::vector<Direction> roadRouteRev(3, revDir);
         world.SetFlag(endPt, 0);
         world.BuildRoad(0, false, endPt, roadRouteRev);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir), 1u);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir), 1u);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 1u);
+        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 1u);
         world.DestroyFlag(startPt, 0);
         world.DestroyFlag(endPt, 0);
     }
@@ -187,7 +191,8 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     {
         world.SetOwner(pt, 1);
     }
-    const MapPoint startPt(5, 2);
+    // Start far enough away from the HQ in the middle
+    const MapPoint startPt(1, 2);
     std::vector<Direction> testDirections;
     // Test cases 3         a)                 b)                     c)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
