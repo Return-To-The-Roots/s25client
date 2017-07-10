@@ -226,19 +226,6 @@ sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, un
     return militarySquares.GetBuildingsInRange(pt, radius);
 }
 
-bool GameWorldBase::IsNodeToNodeForFigure(const MapPoint pt, Direction dir) const
-{
-    // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
-    unsigned char road = GetPointRoad(pt, dir);
-    if(road && road != RoadSegment::RT_BOAT + 1)
-        return true;
-
-    TerrainBQ bq1 = TerrainData::GetBuildingQuality(GetRightTerrain(pt, dir)),
-        bq2 = TerrainData::GetBuildingQuality(GetLeftTerrain(pt, dir));
-    // Don't go next to danger terrain
-    return (bq1 != TerrainBQ::DANGER && bq2 != TerrainBQ::DANGER);
-}
-
 noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir)
 {
     // Getting a flag is const

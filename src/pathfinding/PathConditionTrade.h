@@ -21,6 +21,7 @@
 #define PathConditionTrade_h__
 
 #include "pathfinding/PathConditionHuman.h"
+#include "world/GameWorldBase.h"
 #include "GamePlayer.h"
 
 struct PathConditionTrade: public PathConditionHuman
@@ -35,7 +36,7 @@ struct PathConditionTrade: public PathConditionHuman
         if(!PathConditionHuman::IsNodeOk(pt))
             return false;
 
-        unsigned char owner = gwb.GetNode(pt).owner;
+        unsigned char owner = world.GetNode(pt).owner;
         // Ally or no player? Then ok
         return (owner == 0 || player.IsAlly(owner - 1));
     }

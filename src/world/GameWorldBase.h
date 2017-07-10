@@ -93,9 +93,6 @@ public:
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer Richtung im Umkreis
     sortedMilitaryBlds LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 
-    /// Pr�ft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zug�nglich ist (kein Wasser,Lava,Sumpf)
-    bool IsNodeToNodeForFigure(const MapPoint pt, Direction dir) const;
-
     /// Finds a path for figures. Returns 0xFF if none found
     unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, unsigned max_route = 0xFFFFFFFF, bool random_route = false,
         unsigned* length = NULL, std::vector<Direction>* route = NULL) const;

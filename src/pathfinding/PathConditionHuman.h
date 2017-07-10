@@ -20,27 +20,27 @@
 #ifndef PathConditionHuman_h__
 #define PathConditionHuman_h__
 
-#include "world/GameWorldBase.h"
+#include "world/World.h"
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainData.h"
 
 struct PathConditionHuman
 {
-    const GameWorldBase& gwb;
+    const World& world;
 
-    PathConditionHuman(const GameWorldBase& gwb): gwb(gwb){}
+    PathConditionHuman(const World& world): world(world){}
 
     // Called for every node but the start & goal and should return true, if this point is usable
     FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
     {
         // Node blocked -> Can't go there
-        const BlockingManner bm = gwb.GetNO(pt)->GetBM();
+        const BlockingManner bm = world.GetNO(pt)->GetBM();
         if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
             return false;
         // If no terrain around this is usable, we can't go here
         for(unsigned dir = 0; dir < 6; ++dir)
         {
-            if(TerrainData::IsUseable(gwb.GetRightTerrain(pt, Direction::fromInt(dir))))
+            if(TerrainData::IsUseable(world.GetRightTerrain(pt, Direction::fromInt(dir))))
                 return true;
         }
         return false;
@@ -49,8 +49,16 @@ struct PathConditionHuman
     // Called for every node
     FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
+        // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
+        unsigned char road = world.GetPointRoad(fromPt, dir);
+        if(road && road != RoadSegment::RT_BOAT + 1)
+            return true;
+
         // Check terrain for node transition
-        return gwb.IsNodeToNodeForFigure(fromPt, dir);
+        TerrainBQ bq1 = TerrainData::GetBuildingQuality(world.GetRightTerrain(fromPt, dir));
+        TerrainBQ bq2 = TerrainData::GetBuildingQuality(world.GetLeftTerrain(fromPt, dir));
+        // Don't go next to danger terrain
+        return (bq1 != TerrainBQ::DANGER && bq2 != TerrainBQ::DANGER);
     }
 };
 

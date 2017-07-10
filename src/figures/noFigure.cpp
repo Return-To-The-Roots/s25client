@@ -28,6 +28,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -695,13 +696,14 @@ void noFigure::Wander()
 
 bool noFigure::WalkInRandomDir()
 {
+    PathConditionHuman pathChecker(*gwg);
     // Check all dirs starting with a random one and taking the first possible
     unsigned char dirOffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
-    for(unsigned char d = 0; d < 6; ++d)
+    for(unsigned char iDir = 0; iDir < Direction::COUNT; ++iDir)
     {
-        Direction dir(d + dirOffset);
+        Direction dir(iDir + dirOffset);
 
-        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && gwg->IsNodeToNodeForFigure(pos, dir))
+        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && pathChecker.IsEdgeOk(pos, dir))
         {
             StartWalking(dir);
             return true;
