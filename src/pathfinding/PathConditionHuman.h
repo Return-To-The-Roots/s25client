@@ -37,13 +37,19 @@ struct PathConditionHuman
         const BlockingManner bm = world.GetNO(pt)->GetBM();
         if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
             return false;
-        // If no terrain around this is usable, we can't go here
-        for(unsigned dir = 0; dir < 6; ++dir)
+        // Check that there is no deadly terrain and at least one good (buildable) terrain
+        bool goodTerrainFound = false;
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            if(TerrainData::IsUseable(world.GetRightTerrain(pt, Direction::fromInt(dir))))
-                return true;
+            // Note: Old version used TerrainData::IsUsable which disallowed buildable water. Refine that?
+            // However we still need to check if ANY terrain is dangerous
+            const TerrainBQ bq = TerrainData::GetBuildingQuality(world.GetRightTerrain(pt, Direction::fromInt(dir)));
+            if(bq == TerrainBQ::DANGER)
+                return false;
+            else if(bq != TerrainBQ::NOTHING)
+                goodTerrainFound = true;
         }
-        return false;
+        return goodTerrainFound;
     }
 
     // Called for every node

@@ -703,7 +703,7 @@ bool noFigure::WalkInRandomDir()
     {
         Direction dir(iDir + dirOffset);
 
-        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && pathChecker.IsEdgeOk(pos, dir))
+        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)) && pathChecker.IsEdgeOk(pos, dir))
         {
             StartWalking(dir);
             return true;

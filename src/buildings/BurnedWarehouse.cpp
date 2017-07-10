@@ -25,6 +25,7 @@
 #include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "figures/nofPassiveWorker.h"
+#include "pathfinding/PathConditionHuman.h"
 
 /// Anzahl der Rausgeh-Etappen
 const unsigned GO_OUT_PHASES = 10;
@@ -75,19 +76,15 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
-    bool dirIsPossible[6];
+    boost::array<Direction, 6> possibleDirs;
     unsigned possibleDirCt = 0;
 
     // Mögliche Richtungen zählen und speichern
-    for(unsigned char d = 0; d < 6; ++d)
+    PathConditionHuman pathChecker(*gwg);
+    for(unsigned dir = 0; dir < 6; ++dir)
     {
-        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, d)))
-        {
-            dirIsPossible[d] = true;
-            ++possibleDirCt;
-        }
-        else
-            dirIsPossible[d] = false;
+        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)))
+            possibleDirs[possibleDirCt++] = Direction::fromInt(dir);
     }
 
     // GAR KEINE Richtungen?
@@ -102,54 +99,38 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
         return;
     }
 
-    for(unsigned int i = 0; i < people.size(); ++i)
+    for(unsigned iJob = 0; iJob < people.size(); ++iJob)
     {
         // Anzahl ausrechnen, die in dieser Runde rausgeht
         unsigned count;
         if (go_out_phase + 1 >= GO_OUT_PHASES)
-            count = people[i]; // Take all on last round
+            count = people[iJob]; // Take all on last round
         else
-            count = people[i] / (GO_OUT_PHASES - go_out_phase);
+            count = people[iJob] / (GO_OUT_PHASES - go_out_phase);
 
         // Von der vorhandenen Abzahl abziehen
-        people[i] -= count;
+        people[iJob] -= count;
 
         // In Alle Richtungen verteilen
         // Startrichtung zufällig bestimmen
-        unsigned char start_dir = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
+        unsigned start_dir = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
-        // Letzte mögliche Richtung bestimmen
-        Direction last_dir = Direction::WEST;
-
-        for(unsigned char d = 0; d < 6; ++d)
-        {
-            Direction dir(start_dir + d);
-            if(dirIsPossible[dir.toUInt()])
-                last_dir = dir;
-        }
-
-        RTTR_Assert(dirIsPossible[last_dir.toUInt()]);
-
-        for(unsigned char d = 0; d < 6; ++d)
+        for(unsigned j = 0; j < possibleDirCt; ++j)
         {
             // Aktuelle Richtung, die jetzt dran ist bestimmen
-            Direction dir(start_dir + d);
-
-            // Wenn Richtung nicht möglich ist --> weglassen
-            if(!dirIsPossible[dir.toUInt()])
-                continue;
+            Direction dir(possibleDirs[j] + start_dir);
 
             // Anzahl jetzt für diese Richtung ausrechnen
             unsigned numPeopleInDir = count / possibleDirCt;
             // Bei letzter Richtung noch den übriggebliebenen Rest dazuaddieren
-            if(dir == last_dir)
+            if(j + 1 == possibleDirCt)
                 numPeopleInDir += count % possibleDirCt;
 
             // Die Figuren schließlich rausschicken
             for(unsigned z = 0; z < numPeopleInDir; ++z)
             {
                 // Job erzeugen
-                nofPassiveWorker* figure = new nofPassiveWorker(Job(i), pos, player, NULL);
+                nofPassiveWorker* figure = new nofPassiveWorker(Job(iJob), pos, player, NULL);
                 // Auf die Map setzen
                 gwg->AddFigure(figure, pos);
                 // Losrumirren in die jeweilige Richtung

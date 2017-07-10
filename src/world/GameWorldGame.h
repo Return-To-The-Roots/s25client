@@ -69,8 +69,6 @@ public:
     /// Stellt anderen Spielern/Spielobjekten das Game-GUI-Interface zur Verfüung
     inline GameInterface* GetGameInterface() const { return gi; }
 
-    /// Prüft, ob dieser Punkt von Menschen betreten werden kann
-    bool IsNodeForFigures(const MapPoint pt) const;
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
     bool IsRoadNodeForFigures(const MapPoint pt);
     /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)

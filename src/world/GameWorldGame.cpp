@@ -36,6 +36,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "pathfinding/PathConditionRoad.h"
 #include "EventManager.h"
 #include "notifications/BuildingNote.h"
@@ -709,32 +710,6 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
     }
 }
 
-bool GameWorldGame::IsNodeForFigures(const MapPoint pt) const
-{
-    // Nicht über die Kante gehen!
-    if(pt.x >= GetWidth() || pt.y >= GetHeight())
-        return false;
-
-    // Irgendwelche Objekte im Weg?
-    const BlockingManner bm = GetNO(pt)->GetBM();
-    if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
-        return false;
-
-    // Terrain untersuchen
-    unsigned char good_terrains = 0;
-    for(unsigned char dir = 0; dir < 6; ++dir)
-    {
-        TerrainBQ bq = TerrainData::GetBuildingQuality(GetRightTerrain(pt, Direction::fromInt(dir)));
-        if(bq == TerrainBQ::DANGER)
-            return false; // in die Nähe von Lava usw. dürfen die Figuren gar nich kommen!
-        else if(bq != TerrainBQ::NOTHING)
-            ++good_terrains;
-    }
-
-    // Darf nicht im Wasser liegen, 
-    return good_terrains != 0;
-}
-
 void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
 {
     // Figuren direkt daneben
@@ -1040,7 +1015,7 @@ void GameWorldGame::Armageddon(const unsigned char player)
 bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker*  /*attacker*/, const MapPoint center)
 {
     // Gültiger Punkt für Figuren?
-    if(!IsNodeForFigures(pt))
+    if(!PathConditionHuman(*this).IsNodeOk(pt))
         return false;
 
     // Objekte, die sich hier befinden durchgehen

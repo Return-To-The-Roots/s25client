@@ -30,6 +30,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include <stdexcept>
@@ -247,7 +248,7 @@ void nofHunter::WalkedDerived()
 bool nofHunter::IsShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return (gwg->IsNodeForFigures(pt) && gwg->FindHumanPath(this->pos, pt, 6) != 0xFF);
+    return (PathConditionHuman(*gwg).IsNodeOk(pt) && gwg->FindHumanPath(this->pos, pt, 6) != INVALID_DIR);
 }
 
 void nofHunter::HandleStateChasing()

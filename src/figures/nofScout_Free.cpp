@@ -22,9 +22,10 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include "boost/foreach.hpp"
+#include <boost/foreach.hpp>
 #include <algorithm>
 class noRoadNode;
 
@@ -149,7 +150,7 @@ namespace{
         bool operator()(const MapPoint& pt) const
         {
             // Liegt Punkt im Nebel und für Figuren begehbar?
-            return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
+            return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && PathConditionHuman(gwg).IsNodeOk(pt);
         }
     };
 }

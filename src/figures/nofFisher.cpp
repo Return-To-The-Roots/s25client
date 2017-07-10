@@ -25,6 +25,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "addons/const_addons.h"
 
@@ -143,7 +144,7 @@ void nofFisher::WorkFinished()
 nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
 {
     // Der Punkt muss passierbar sein für Figuren
-    if(!gwg->IsNodeForFigures(pt))
+    if(!PathConditionHuman(*gwg).IsNodeOk(pt))
         return PQ_NOTPOSSIBLE;
 
     // irgendwo drumherum muss es Fisch geben

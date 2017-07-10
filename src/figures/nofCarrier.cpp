@@ -29,6 +29,7 @@
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noFlag.h"
 #include "world/GameWorldGame.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "gameData/JobConsts.h"
 #include "Loader.h"
 #include "ogl/glSmartBitmap.h"
@@ -664,11 +665,11 @@ void nofCarrier::LooseWare()
 namespace{
     struct IsCoastalAndForFigs
     {
-        const GameWorldGame& gwg;
-        IsCoastalAndForFigs(const GameWorldGame& gwg): gwg(gwg){}
+        const World& world;
+        IsCoastalAndForFigs(const World& world): world(world){}
 
         bool operator()(const MapPoint& pt) const{
-            return gwg.GetSeaFromCoastalPoint(pt) && gwg.IsNodeForFigures(pt);
+            return world.GetSeaFromCoastalPoint(pt) && PathConditionHuman(world).IsNodeOk(pt);
         }
     };
 }
