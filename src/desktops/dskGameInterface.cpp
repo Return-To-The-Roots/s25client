@@ -62,8 +62,7 @@
 #include "EventManager.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
-#include "pathfinding/FreePathFinderImpl.h"
-#include "pathfinding/PathConditionRoad.h"
+#include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostMsg.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
@@ -859,9 +858,9 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
 {
-    std::vector<Direction> new_route;
+    std::vector<Direction> new_route = FindPathForRoad(worldViewer, road.point, cSel, road.mode == RM_BOAT, 100);
     // Weg gefunden?
-    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad<GameWorldViewer>(worldViewer, road.mode == RM_BOAT)))
+    if(new_route.empty())
         return false;
 
     // Test on water way length

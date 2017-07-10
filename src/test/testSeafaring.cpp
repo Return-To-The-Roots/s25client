@@ -34,7 +34,7 @@
 namespace{
     std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
     {
-        return FindPathForRoad(world, fromPt, toPt, world, false);
+        return FindPathForRoad(world, fromPt, toPt, false);
     }
 }
 
