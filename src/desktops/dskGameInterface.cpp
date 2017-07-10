@@ -63,7 +63,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "pathfinding/FreePathFinderImpl.h"
-#include "pathfinding/PathConditions.h"
+#include "pathfinding/PathConditionRoad.h"
 #include "postSystem/PostMsg.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"

@@ -21,7 +21,9 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/FreePathFinderImpl.h"
-#include "pathfinding/PathConditions.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "pathfinding/PathConditionShip.h"
+#include "pathfinding/PathConditionTrade.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/GameConsts.h"
 #include <boost/foreach.hpp>

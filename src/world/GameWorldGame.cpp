@@ -36,7 +36,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "world/TerritoryRegion.h"
 #include "world/MapGeometry.h"
-#include "pathfinding/PathConditions.h"
+#include "pathfinding/PathConditionRoad.h"
 #include "EventManager.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
