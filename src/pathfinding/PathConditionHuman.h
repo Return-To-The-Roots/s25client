@@ -55,16 +55,19 @@ struct PathConditionHuman
     // Called for every node
     FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
-        // Wenn ein Weg da drüber geht, dürfen wir das sowieso, aber kein Wasserweg!
+        // If there is a road (but no boat road) we can pass
         unsigned char road = world.GetPointRoad(fromPt, dir);
         if(road && road != RoadSegment::RT_BOAT + 1)
             return true;
 
         // Check terrain for node transition
-        TerrainBQ bq1 = TerrainData::GetBuildingQuality(world.GetRightTerrain(fromPt, dir));
-        TerrainBQ bq2 = TerrainData::GetBuildingQuality(world.GetLeftTerrain(fromPt, dir));
+        TerrainBQ bqLeft = TerrainData::GetBuildingQuality(world.GetLeftTerrain(fromPt, dir));
+        TerrainBQ bqRight = TerrainData::GetBuildingQuality(world.GetRightTerrain(fromPt, dir));
         // Don't go next to danger terrain
-        return (bq1 != TerrainBQ::DANGER && bq2 != TerrainBQ::DANGER);
+        if(bqLeft == TerrainBQ::DANGER || bqRight == TerrainBQ::DANGER)
+            return false;
+        // If either terrain is buildable, then we can use this transition
+        return (bqLeft != TerrainBQ::NOTHING || bqRight != TerrainBQ::NOTHING);
     }
 };
 
