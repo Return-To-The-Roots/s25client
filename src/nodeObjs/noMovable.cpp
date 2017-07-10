@@ -187,8 +187,8 @@ DrawPoint noMovable::CalcWalkingRelative() const
             curPt.y += mapHeight;
     }
 
-    // Wenn sie runterlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(!IsMovingUpwards())
+    // Wenn sie hochlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
+    if(IsMovingUpwards())
     {
         using std::swap;
         swap(curPt, nextPt);
