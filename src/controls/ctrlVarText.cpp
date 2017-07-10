@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -64,11 +64,9 @@ ctrlVarText::~ctrlVarText()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlVarText::Draw_()
+void ctrlVarText::Draw_()
 {
     font->Draw(GetDrawPos(), GetFormatedText(), format, color_);
-
-    return true;
 }
 
 std::string ctrlVarText::GetFormatedText() const

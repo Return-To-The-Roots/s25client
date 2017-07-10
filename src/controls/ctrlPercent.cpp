@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,7 +40,7 @@ ctrlPercent::ctrlPercent(Window* parent,
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlPercent::Draw_()
+void ctrlPercent::Draw_()
 {
     // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
     unsigned short percentage = (this->percentage_ ?  *this->percentage_ : 0);
@@ -69,6 +69,4 @@ bool ctrlPercent::Draw_()
     char caption[256];
     sprintf(caption, "%u%%", percentage);
     font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, caption, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, text_color);
-
-    return true;
 }

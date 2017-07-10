@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -77,7 +77,7 @@ void ctrlProgress::SetPosition(unsigned short position)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlProgress::Draw_()
+void ctrlProgress::Draw_()
 {
     DrawPoint barPos = GetDrawPos() + padding;
     // Offset by button size
@@ -115,8 +115,6 @@ bool ctrlProgress::Draw_()
     std::stringstream percent;
     percent << percentage << "%";
     SmallFont->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
-
-    return true;
 }
 
 void ctrlProgress::Resize(unsigned short width, unsigned short height)

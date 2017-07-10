@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,13 +40,11 @@ ctrlImage::~ctrlImage()
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlImage::Draw_()
+void ctrlImage::Draw_()
 {
     // gültiges Bild?
     if(image)
         image->Draw(GetDrawPos());
-
-    return true;
 }
 
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)

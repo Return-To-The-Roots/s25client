@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,7 +31,7 @@ class ctrlPercent : public Window
 
     protected:
         /// Zeichenmethode.
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         TextureColor tc;

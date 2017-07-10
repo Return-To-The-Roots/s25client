@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -249,7 +249,7 @@ void ctrlTable::SortRows(int column, bool* direction)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlTable::Draw_()
+void ctrlTable::Draw_()
 {
     Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
@@ -281,8 +281,6 @@ bool ctrlTable::Draw_()
         }
         curPos.y += font->getHeight();
     }
-
-    return true;
 }
 
 void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)

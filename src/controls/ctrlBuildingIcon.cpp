@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -39,7 +39,7 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlBuildingIcon::Draw_()
+void ctrlBuildingIcon::Draw_()
 {
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();
@@ -53,8 +53,6 @@ bool ctrlBuildingIcon::Draw_()
 		image = LOADER.GetImageN("charburner", nation*8+8);
     if(image)
         image->Draw(GetDrawPos() + DrawPoint(size, size) / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
-
-    return true;
 }
 
 

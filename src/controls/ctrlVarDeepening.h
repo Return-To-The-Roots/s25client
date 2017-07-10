@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,7 +31,7 @@ class ctrlVarDeepening : public ctrlVarText
         ctrlVarDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc,  const std::string& text, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list liste);
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         TextureColor tc;

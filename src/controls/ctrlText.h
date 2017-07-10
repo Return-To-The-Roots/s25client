@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -52,7 +52,7 @@ class ctrlText : public Window, public ctrlBaseText
     public:
         ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     protected:
 

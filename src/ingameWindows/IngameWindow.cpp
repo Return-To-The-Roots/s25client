@@ -227,7 +227,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     }
 }
 
-bool IngameWindow::Draw_()
+void IngameWindow::Draw_()
 {
     if(isModal_)
     {
@@ -370,8 +370,6 @@ bool IngameWindow::Draw_()
         bottomBorderSideImg->Draw(pos_ + DrawPoint(0, bottomBorderSideImg->getHeight()));
         bottomBorderSideImg->Draw(pos_ + DrawPoint(width_ - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
     }
-
-    return true;
 }
 
 /// Verschiebt Fenster in die Bildschirmmitte

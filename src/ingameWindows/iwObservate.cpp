@@ -165,7 +165,7 @@ void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-bool iwObservate::Draw_()
+void iwObservate::Draw_()
 {
     if (pos_ != lastWindowPos)
     {

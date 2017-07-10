@@ -51,7 +51,7 @@ class iwObservate : public IngameWindow
         iwObservate(GameWorldView& gwv, const MapPoint selectedPt);
 
     private:
-        bool Draw_() override;
+        void Draw_() override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_RightDown(const MouseCoords& mc) override;

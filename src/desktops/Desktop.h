@@ -33,7 +33,7 @@ class Desktop : public Window
         void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     protected:
         glArchivItem_Bitmap* background;

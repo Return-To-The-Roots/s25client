@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -123,7 +123,7 @@ void ctrlChat::Resize(unsigned short width, unsigned short height)
 /**
  *  Zeichnet das Chat-Control.
  */
-bool ctrlChat::Draw_()
+void ctrlChat::Draw_()
 {
     // Box malen
     Draw3D(GetDrawPos(), width_, height_, tc, 2);
@@ -171,8 +171,6 @@ bool ctrlChat::Draw_()
         }
         textPos.y += font->getHeight() + 2;
     }
-
-    return true;
 }
 
 void ctrlChat::WrapLine(unsigned short i)

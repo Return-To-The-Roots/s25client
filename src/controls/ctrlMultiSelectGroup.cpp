@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -31,11 +31,9 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
 /**
  *  Zeichenmethode.
  */
-bool ctrlMultiSelectGroup::Draw_()
+void ctrlMultiSelectGroup::Draw_()
 {
     DrawControls();
-
-    return true;
 }
 
 /**

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -61,7 +61,7 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlCheck::Draw_()
+void ctrlCheck::Draw_()
 {
     const unsigned short boxSize = 20;
     short spacing = (height_ - boxSize) / 2;
@@ -97,6 +97,4 @@ bool ctrlCheck::Draw_()
 
     if(check)
         LOADER.GetImageN("io", 32)->Draw(boxPos + DrawPoint(boxSize, boxSize) / 2);
-
-    return true;
 }

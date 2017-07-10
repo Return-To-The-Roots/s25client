@@ -41,14 +41,12 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool Desktop::Draw_()
+void Desktop::Draw_()
 {
     if(background)
         background->Draw(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
 
     DrawControls();
-
-    return true;
 }
 
 /**

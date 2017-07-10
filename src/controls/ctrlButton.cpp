@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -104,10 +104,10 @@ void ctrlButton::TestMouseOver()
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlButton::Draw_()
+void ctrlButton::Draw_()
 {
     if(width_ == 0 || height_ == 0)
-        return true;
+        return;
 
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();
@@ -140,8 +140,6 @@ bool ctrlButton::Draw_()
 
     /// Inhalt malen (Text, Bilder usw.)
     DrawContent();
-
-    return true;
 }
 
 

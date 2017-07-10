@@ -99,7 +99,7 @@ class IngameWindow : public Window
         void MouseMove(const MouseCoords& mc);
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
         /// Verschiebt Fenster in die Bildschirmmitte
         void MoveToCenter();

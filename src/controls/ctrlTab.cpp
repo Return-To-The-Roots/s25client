@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -152,7 +152,7 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned int tab_id)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlTab::Draw_()
+void ctrlTab::Draw_()
 {
     DrawControls();
 
@@ -165,8 +165,6 @@ bool ctrlTab::Draw_()
     ctrlButton* button = GetCtrl<ctrlButton>(tab_selection);
     if(button)
         button->Draw();
-
-    return true;
 }
 
 void ctrlTab::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)

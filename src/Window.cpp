@@ -59,12 +59,10 @@ Window::~Window()
 /**
  *  zeichnet das Fenster.
  */
-bool Window::Draw()
+void Window::Draw()
 {
     if(visible_)
-        return Draw_();
-
-    return true;
+        Draw_();
 }
 
 /**

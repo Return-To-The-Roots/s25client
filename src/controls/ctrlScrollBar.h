@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -42,7 +42,7 @@ class ctrlScrollBar : public Window
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         void UpdatePosFromSlider();

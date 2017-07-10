@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -46,11 +46,9 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlVarDeepening::Draw_()
+void ctrlVarDeepening::Draw_()
 {
     Draw3D(GetDrawPos(), width_, height_, tc, 2);
 
     font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
-
-    return true;
 }

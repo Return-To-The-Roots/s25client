@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -238,7 +238,7 @@ void ctrlComboBox::SetSelection(unsigned short selection)
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlComboBox::Draw_()
+void ctrlComboBox::Draw_()
 {
     ctrlList* liste = GetCtrl<ctrlList>(0);
 
@@ -254,8 +254,6 @@ bool ctrlComboBox::Draw_()
     ctrlImageButton* button = GetCtrl<ctrlImageButton>(1);
     if(button)
         button->Draw();
-
-    return true;
 }
 
 /**

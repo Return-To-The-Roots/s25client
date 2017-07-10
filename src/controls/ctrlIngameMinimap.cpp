@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -43,7 +43,7 @@ ctrlIngameMinimap::ctrlIngameMinimap( Window* parent,
 /**
  *  Zeichnet die MapPreview
  */
-bool ctrlIngameMinimap::Draw_()
+void ctrlIngameMinimap::Draw_()
 {
     DrawMap(minimap);
 
@@ -92,8 +92,6 @@ bool ctrlIngameMinimap::Draw_()
 
     // Zeichnen
     image->Draw(GetDrawPos() + GetBBOffset() + pos, 0, 0, src_x, src_y, draw_width, draw_height);
-
-    return true;
 }
 
 bool ctrlIngameMinimap::Msg_LeftDown(const MouseCoords& mc)

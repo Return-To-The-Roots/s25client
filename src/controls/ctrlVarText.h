@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -34,7 +34,7 @@ class ctrlVarText : public ctrlText
         ~ctrlVarText() override;
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
         /// Returns the text with placeholders replaced by the actual vars
         std::string GetFormatedText() const;
 

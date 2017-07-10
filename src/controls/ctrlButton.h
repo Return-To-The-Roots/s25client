@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -59,7 +59,7 @@ class ctrlButton : public Window
 
     protected:
         /// Zeichnet Grundstruktur des Buttons
-        bool Draw_() override;
+        void Draw_() override;
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
         virtual void DrawContent() const = 0;
         // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist

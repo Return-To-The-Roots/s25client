@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -39,7 +39,7 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
 /**
  *  Zeichnet die MapPreview
  */
-bool ctrlPreviewMinimap::Draw_()
+void ctrlPreviewMinimap::Draw_()
 {
     const DrawPoint basePos = GetDrawPos() - padding;
     // Button drumrum zeichnen
@@ -55,8 +55,6 @@ bool ctrlPreviewMinimap::Draw_()
         if(players[i].color)
             DrawRectangle(basePos + CalcMapCoord(players[i].pos), 4, 4, players[i].color);
     }
-
-    return true;
 }
 
 void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)

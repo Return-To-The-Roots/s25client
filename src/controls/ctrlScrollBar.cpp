@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -194,11 +194,11 @@ void ctrlScrollBar::Resize(unsigned short width, unsigned short height)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlScrollBar::Draw_()
+void ctrlScrollBar::Draw_()
 {
     RTTR_Assert(scroll_range > pagesize); // Don't show unneccessary scrollbars, otherwise invariants might be violated.
     if(scroll_height == 0)
-        return true;
+        return;
     DrawPoint pos = GetDrawPos();
     // Leiste
     Draw3D(pos + DrawPoint(0, button_height - 2), width_, height_ - button_height * 2 + 4, tc, 2);
@@ -208,8 +208,6 @@ bool ctrlScrollBar::Draw_()
 
     // Scrollbar
     Draw3D(pos + DrawPoint(0, button_height + sliderPos), width_, sliderHeight, tc, 0);
-
-    return true;
 }
 
 void ctrlScrollBar::UpdatePosFromSlider()

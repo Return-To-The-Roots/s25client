@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -56,7 +56,7 @@ void ctrlMultiline::Clear()
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlMultiline::Draw_()
+void ctrlMultiline::Draw_()
 {
     if(showBackground_)
         Draw3D(GetDrawPos(), width_, height_, tc_, 2);
@@ -72,8 +72,6 @@ bool ctrlMultiline::Draw_()
         font->Draw(curPos, drawLines[i + scrollbarPos].str, format_, drawLines[i + scrollbarPos].color);
         curPos.y += font->getHeight();
     }
-
-    return true;
 }
 
 void ctrlMultiline::RecalcVisibleLines()

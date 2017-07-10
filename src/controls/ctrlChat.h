@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -49,7 +49,7 @@ class ctrlChat : public Window
 
     protected:
         /// Zeichnet das Chat-Control.
-        bool Draw_() override;
+        void Draw_() override;
         /// Converts an unwrapped line into a wrapped one and appends it
         void WrapLine(unsigned short i);
 

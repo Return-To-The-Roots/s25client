@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -83,7 +83,7 @@ std::string ctrlEdit::GetText() const
  *
  *  @todo muss alles überarbeitet werden
  */
-bool ctrlEdit::Draw_()
+void ctrlEdit::Draw_()
 {
     // Box malen
     Draw3D(GetDrawPos(), width_, height_, texColor_, 2);
@@ -135,8 +135,6 @@ bool ctrlEdit::Draw_()
 
         DrawRectangle(GetDrawPos() + DrawPoint(cwidth, (height_ - (font_->getHeight() + 2)) / 2), 1, font_->getHeight() + 2, 0xFFFFA000);
     }
-
-    return true;
 }
 
 /**

@@ -73,7 +73,7 @@ class Window
         Window(const DrawPoint& position, unsigned int id, Window* parent, unsigned short width = 0, unsigned short height = 0, const std::string& tooltip = "");
         virtual ~Window();
         /// zeichnet das Fenster.
-        bool Draw();
+        void Draw();
         /// liefert die X-Koordinate.
         DrawPoint::ElementType GetX(bool absolute = true) const;
         /// liefert die Y-Koordinate.
@@ -276,7 +276,7 @@ class Window
         /// prüft ob Mauskoordinaten in einer gesperrten Region liegt.
         bool TestWindowInRegion(Window* window, const MouseCoords& mc) const;
         /// zeichnet das Fenster. (virtuelle Memberfunktion)
-        virtual bool Draw_() = 0;
+        virtual void Draw_() = 0;
         /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
         virtual bool IsMessageRelayAllowed() const;
 
