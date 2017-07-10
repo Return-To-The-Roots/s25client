@@ -100,6 +100,8 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
     private:
         /// wechselt einen Desktop
         void Switch();
+        /// Actually close all ingame windows marked for closing
+        void CloseMarkedIngameWnds();
 
     private:
         boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     /// aktueller Desktop

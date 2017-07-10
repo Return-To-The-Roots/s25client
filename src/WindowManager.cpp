@@ -30,7 +30,7 @@
 #include "ogl/glArchivItem_Sound.h"
 #include "Log.h"
 #include "gameData/const_gui_ids.h"
-
+#include <boost/foreach.hpp>
 #include <algorithm>
 
 WindowManager::WindowManager()
@@ -74,31 +74,21 @@ void WindowManager::Draw()
     // und Desktop zeichnen
     curDesktop->Draw();
 
-    // haben wir Fenster?
-    if(!windows.empty())
+    // First close all marked windows
+    CloseMarkedIngameWnds();
+    BOOST_FOREACH(IngameWindow* wnd, windows)
     {
-        for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
-        {
-            // Soll Fenster geschlossen werden?
-            if((*it)->ShouldBeClosed())
-            {
-                // Fenster schliessen
-                Close(*it);
-
-                // und raus (korruption der liste verhindern)
-                break;
-            }
-
-            // Fenster zeichnen
-            (*it)->Draw();
-
-            // wurde es minimiert?
-            if(!(*it)->IsMinimized())
-            {
-                // nein, Msg_PaintAfter aufrufen
-                (*it)->Msg_PaintAfter();
-            }
-        }
+        // If the window is not minimized, call paintAfter
+        if(!wnd->IsMinimized())
+            wnd->Msg_PaintBefore();
+    }
+    BOOST_FOREACH(IngameWindow* wnd, windows)
+        wnd->Draw();
+    BOOST_FOREACH(IngameWindow* wnd, windows)
+    {
+        // If the window is not minimized, call paintAfter
+        if(!wnd->IsMinimized())
+            wnd->Msg_PaintAfter();
     }
 
     DrawToolTip();
@@ -859,6 +849,25 @@ void WindowManager::Switch()
 
     // Dummy mouse move to init hovering etc
     Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), false, false, false));
+}
+
+struct IsWndMarkedForClose
+{
+    bool operator()(const IngameWindow* wnd) const
+    {
+        return wnd->ShouldBeClosed();
+    }
+};
+
+void WindowManager::CloseMarkedIngameWnds()
+{
+    IgwListIterator it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+    while(it != windows.end())
+    {
+        Close(*it);
+        it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+    }
+
 }
 
 void WindowManager::SetToolTip(const Window* ttw, const std::string& tooltip)

@@ -23,6 +23,8 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "driver/src/MouseCoords.h"
 #include "ExtensionList.h"
+#include <boost/foreach.hpp>
+#include <boost/range/adaptor/map.hpp>
 #include <cstdarg>
 
 Window::Window()
@@ -1037,22 +1039,12 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
  */
 void Window::DrawControls()
 {
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-    {
-        Window* control = it->second;
-        RTTR_Assert(control);
-
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
         control->Msg_PaintBefore();
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
         control->Draw();
-    }
-
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-    {
-        Window* control = it->second;
-        RTTR_Assert(control);
-
+    BOOST_FOREACH(Window* control, childIdToWnd_ | boost::adaptors::map_values)
         control->Msg_PaintAfter();
-    }
 }
 
 /**
