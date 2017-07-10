@@ -20,6 +20,7 @@
 #pragma once
 
 #include "GameObject.h"
+#include "gameTypes/Direction.h"
 #include <boost/array.hpp>
 #include <vector>
 
@@ -40,7 +41,7 @@ class RoadSegment : public GameObject
         };
 
     public:
-        RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<unsigned char>& route);
+        RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route);
         RoadSegment(SerializedGameData& sgd, const unsigned obj_id);
 
         /// zerstört das Objekt.
@@ -48,46 +49,46 @@ class RoadSegment : public GameObject
         /// serialisiert das Objekt.
         void Serialize(SerializedGameData& sgd) const override { Serialize_RoadSegment(sgd); }
         /// liefert den GO-Type.
-        inline GO_Type GetGOT() const override { return GOT_ROADSEGMENT; }
+        GO_Type GetGOT() const override { return GOT_ROADSEGMENT; }
         /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst kommt Müll raus!!)
-        inline bool GetNodeID(const noRoadNode* rn) { return (rn == f2); }
+        bool GetNodeID(const noRoadNode* rn) { return (rn == f2); }
         /// Gibt Straßen-Typ zurück
-        inline RoadType GetRoadType() const { return rt; }
+        RoadType GetRoadType() const { return rt; }
         /// Gibt die Länge der Staße zurück
-        inline unsigned GetLength() const { return route.size(); }
+        unsigned GetLength() const { return route.size(); }
         /// gibt Flagge 1 zurück
-        inline noRoadNode* GetF1() const { return f1; }
+        noRoadNode* GetF1() const { return f1; }
         /// setzt Flagge 1 auf o
-        inline void SetF1(noRoadNode* o) { f1 = o; }
+        void SetF1(noRoadNode* o) { f1 = o; }
         /// gibt Flagge 2 zurück
-        inline noRoadNode* GetF2() const { return f2; }
+        noRoadNode* GetF2() const { return f2; }
         /// setzt Flagge 2 auf o
-        inline void SetF2(noRoadNode* o) { f2 = o; }
+        void SetF2(noRoadNode* o) { f2 = o; }
         /// gibt die Route nr zurück
-        inline unsigned char GetRoute(unsigned short nr) const { return route.at(nr); }
+        Direction GetRoute(unsigned nr) const { return route.at(nr); }
         /// setzt die Route nr auf r
-        inline void SetRoute(unsigned short nr, unsigned char r) { route[nr] = r; }
+        void SetRoute(unsigned short nr, Direction r) { route[nr] = r; }
         /// gibt den Carrier nr zurück
-        inline nofCarrier* getCarrier(unsigned char nr) const { return carriers_[nr]; }
+        nofCarrier* getCarrier(unsigned char nr) const { return carriers_[nr]; }
         /// setzt den Carrier nr auf c
-        inline void setCarrier(unsigned char nr, nofCarrier* c) { RTTR_Assert(!c || !hasCarrier(nr)); carriers_[nr] = c; }
+        void setCarrier(unsigned char nr, nofCarrier* c) { RTTR_Assert(!c || !hasCarrier(nr)); carriers_[nr] = c; }
         /// haben wir den Carrier "nr"?
-        inline bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != NULL); }
+        bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != NULL); }
         /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
-        inline bool NeedDonkey() const { return (rt == RT_DONKEY && carriers_[0] && !carriers_[1]); }
+        bool NeedDonkey() const { return (rt == RT_DONKEY && carriers_[0] && !carriers_[1]); }
         /// Hat einen Esel als Arbeiter dazubekommen.
-        inline void GotDonkey(nofCarrier* donkey) { RTTR_Assert(!carriers_[1]); carriers_[1] = donkey; }
+        void GotDonkey(nofCarrier* donkey) { RTTR_Assert(!carriers_[1]); carriers_[1] = donkey; }
 
         /// haben wir überhaupt Carrier?
-        inline bool isOccupied() const
+        bool isOccupied() const
         {
-            return((carriers_[0]) || (carriers_[1]));
+            return (carriers_[0] || carriers_[1]);
         }
 
-        inline unsigned char GetDir(const bool dir, const unsigned int id) const
+        Direction GetDir(bool bwdDir, unsigned id) const
         {
-            if(dir)
-                return (route[route.size() - id - 1] + 3) % 6;
+            if(bwdDir)
+                return route[route.size() - id - 1] + 3u;
             else
                 return route[id];
         }
@@ -109,7 +110,7 @@ class RoadSegment : public GameObject
         /// given a flag returns the other end location
         noFlag* GetOtherFlag(const noFlag* flag);
         /// given a flag returns last direction of the route towards the other flag
-        unsigned char GetOtherFlagDir(const noFlag* flag);
+        Direction GetOtherFlagDir(const noFlag* flag);
 
     protected:
         /// zerstört das Objekt.
@@ -123,7 +124,7 @@ class RoadSegment : public GameObject
         /// die 2 Roadnodes, die den Weg eingrenzen
         noRoadNode* f1, *f2;
         /// Beschreibung des Weges, ist length groß und liegt als Beschreibung der einzelnen Richtungen vor (von f1 zu f2)
-        std::vector<unsigned char> route;
+        std::vector<Direction> route;
         /// Träger (und ggf. Esel), der auf diesem Weg arbeitet
         boost::array<nofCarrier*, 2> carriers_;
 };

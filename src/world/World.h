@@ -72,44 +72,44 @@ class World
 
 protected:
     /// Internal method for access to nodes with write access
-    inline MapNode& GetNodeInt(const MapPoint pt);
-    inline MapNode& GetNeighbourNodeInt(const MapPoint pt, const unsigned i);
+    MapNode& GetNodeInt(const MapPoint pt);
+    MapNode& GetNeighbourNodeInt(const MapPoint pt, Direction dir);
 public:
-    /// Currently flying catapultstones
+    /// Currently flying catapult stones
     std::list<CatapultStone*> catapult_stones; 
     MilitarySquares militarySquares;
 
     World();
     virtual ~World();
 
-    // Grundlegende Initialisierungen
-    virtual void Init(const unsigned short width, const unsigned short height, LandscapeType lt);
-    /// Aufräumen
+    /// Initialize the world
+    virtual void Init(unsigned short width, unsigned short height, LandscapeType lt);
+    /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 
-    /// Größe der Map abfragen
+    /// Return the size of the world
     unsigned short GetWidth() const { return width_; }
     unsigned short GetHeight() const { return height_; }
 
-    /// Landschaftstyp abfragen
+    /// Return the type of the landscape
     LandscapeType GetLandscapeType() const { return lt; }
 
-    /// Gets coordinates of neightbour in the given direction
+    /// Get coordinates of neighbor in the given direction
     MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
-    /// Returns neighbouring point (2nd layer: dir 0-11)
+    /// Return neighboring point (2nd layer: dir 0-11)
     MapPoint GetNeighbour2(const MapPoint, unsigned dir) const;
     // Convenience functions for the above function
-    inline MapCoord GetXA(const MapCoord x, const MapCoord y, unsigned dir) const;
-    inline MapCoord GetXA(const MapPoint pt, unsigned dir) const;
-    inline  MapCoord GetYA(const MapCoord x, const MapCoord y, unsigned dir) const;
-    inline MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const;
+    MapCoord GetXA(const MapCoord x, const MapCoord y, unsigned dir) const;
+    MapCoord GetXA(const MapPoint pt, unsigned dir) const;
+    MapCoord GetYA(const MapCoord x, const MapCoord y, unsigned dir) const;
+    MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const;
 
-    /// Returns all points in a radius around pt (excluding pt) that satisfy a given condition. 
+    /// Return all points in a radius around pt (excluding pt) that satisfy a given condition. 
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
     /// Number of results is constrained to maxResults (if > 0)
     /// Overloads are used due to missing template default args until C++11
     template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
-    inline std::vector<typename T_TransformPt::result_type>
+    std::vector<typename T_TransformPt::result_type>
     GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt = false) const;
 
     template<class T_TransformPt>
@@ -132,38 +132,37 @@ public:
     /// Returns true, if the IsValid functor returns true for any point in the given radius
     /// If includePt is true, then the point itself is also checked
     template<class T_IsValidPt>
-    inline bool
-    CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
+    bool CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
 
 
-    /// Ermittelt Abstand zwischen 2 Punkten auf der Map unter Berücksichtigung der Kartengrenzüberquerung
-    unsigned CalcDistance(int x1, int y1, int x2, int y2) const;
-    unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(p1.x, p1.y, p2.x, p2.y); }
-    /// Bestimmt die Schifffahrtrichtung, in der ein Punkt relativ zu einem anderen liegt
+    /// Return the distance between 2 points on the map (includes wrapping around map borders)
+    unsigned CalcDistance(const Point<int> p1, const Point<int> p2) const;
+    unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(Point<int>(p1), Point<int>(p2)); }
+    /// Return the direction for ships for going from one point to another
     ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
 
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
     MapPoint MakeMapPoint(Point<int> pt) const;
 
-    // Returns the linear index for a map point
-    inline unsigned GetIdx(const MapPoint pt) const;
+    /// Returns the linear index for a map point
+    unsigned GetIdx(const MapPoint pt) const;
 
-    /// Gibt Map-Knotenpunkt zurück
-    inline const MapNode& GetNode(const MapPoint pt) const;
-    /// Gibt MapKnotenpunkt darum zurück
-    inline const MapNode& GetNeighbourNode(const MapPoint pt, const unsigned i) const;
+    /// Return the node at that point
+    const MapNode& GetNode(const MapPoint pt) const;
+    /// Return the neighboring node
+    const MapNode& GetNeighbourNode(const MapPoint pt, Direction dir) const;
 
     void AddFigure(noBase* fig, const MapPoint pt);
     void RemoveFigure(noBase* fig, const MapPoint pt);
-    // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
+    /// Return the NO from that point or a "nothing"-object if there is none
     noBase* GetNO(const MapPoint pt);
-    // Gibt ein NO zurück, falls keins existiert, wird ein "Nothing-Objekt" zurückgegeben
+    /// Return the NO from that point or a "nothing"-object if there is none
     const noBase* GetNO(const MapPoint pt) const;
-    /// Places a nodeobject at a given position. If replace is true, the old object is replace, else it is assumed as non-existant
+    /// Places a NO at a given position. If replace is true, the old object is replaced, else it is assumed as non-existent
     void SetNO(const MapPoint pt, noBase* obj, const bool replace = false);
     /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if there is no obj
     void DestroyNO(const MapPoint pt, const bool checkExists = true);
-    /// Gibt den GOT des an diesem Punkt befindlichen Objekts zurück bzw. GOT_NOTHING, wenn keins existiert
+    /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
     void SetResource(const MapPoint pt, const unsigned char newResource){ GetNodeInt(pt).resources = newResource; }
@@ -177,43 +176,41 @@ public:
     bool IsPlayerTerritory(const MapPoint pt) const;
     /// Return the BQ for the given player at the point (including ownership constraints)
     BuildingQuality GetBQ(const MapPoint pt, const unsigned char player) const;
-    /// Incooporates node ownership into the given BQ
+    /// Incorporates node ownership into the given BQ
     BuildingQuality AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
-    /// Gibt Figuren, die sich auf einem bestimmten Punkt befinden, zurück
+    /// Return the figures currently on the node
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
 
-    // Gibt ein spezifisches Objekt zurück
+    /// Return a specific object or NULL
     template<typename T> T* GetSpecObj(const MapPoint pt) { return dynamic_cast<T*>(GetNode(pt).obj); }
-    // Gibt ein spezifisches Objekt zurück
+    /// Return a specific object or NULL
     template<typename T> const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>(GetNode(pt).obj); }
 
-    /// Returns the terrain that is on the clockwise side of the edge in the given direction:
+    /// Return the terrain to the right when walking from the point in the given direction
     /// 0 = left upper triangle, 1 = triangle above, ..., 4 = triangle below
-    TerrainType GetTerrainAround(const MapPoint pt, unsigned char dir) const;
-    /// Returns the terrain to the left when walking from the point in the given direction (forward direction?)
-    TerrainType GetWalkingTerrain1(const MapPoint pt, unsigned char dir) const;
-    /// Returns the terrain to the right when walking from the point in the given direction (backward direction?)
-    TerrainType GetWalkingTerrain2(const MapPoint pt, unsigned char dir) const;
-    /// Erzeugt FOW-Objekte, -Straßen und -Grensteine von aktuellen Punkt für einen bestimmten Spieler
+    TerrainType GetRightTerrain(const MapPoint pt, Direction dir) const;
+    /// Return the terrain to the left when walking from the point in the given direction
+    TerrainType GetLeftTerrain(const MapPoint pt, Direction dir) const;
+    /// Create the FOW-objects, -streets, etc for a point and player
     void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
-    /// Returns whether a node is inside a (shippable) sea (surrounded by shippable water)
+    /// Return whether a node is inside a (shippable) sea (surrounded by shippable water)
     bool IsSeaPoint(const MapPoint pt) const;
-    /// Returns true, if the point is surrounded by water
+    /// Return true, if the point is surrounded by water
     bool IsWaterPoint(const MapPoint pt) const;
     unsigned GetSeaSize(const unsigned seaId) const;
     /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
     unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
     /// Is the harbor at the given sea
     bool IsHarborAtSea(const unsigned harborId, const unsigned short seaId) const;
-    /// Returns the coast pt for a given harbor (where ships can land) if any
+    /// Return the coast pt for a given harbor (where ships can land) if any
     MapPoint GetCoastalPoint(const unsigned harborId, const unsigned short seaId) const;
-    /// Gibt die Anzahl an Hafenpunkten zurück
+    /// Return the number of harbor points
     unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
-    /// Gibt die Koordinaten eines bestimmten Hafenpunktes zurück
+    /// Return the coordinates for a given harbor point
     MapPoint GetHarborPoint(const unsigned harborId) const;
-    /// Gibt die ID eines Hafenpunktes zurück
+    /// Return the ID of the harbor point on that node or 0 if there is none
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
     const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(const unsigned harborId, const ShipDirection& dir) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
@@ -222,17 +219,18 @@ public:
     /// Return the road type of this point in the given direction (E, SE, SW) or 0 if no road
     unsigned char GetRoad(const MapPoint pt, unsigned char dir) const;
     /// Return the road type from this point in the given direction (Full circle direction)
-    unsigned char GetPointRoad(const MapPoint pt, unsigned char dir) const;
-    /// liefert FOW-Straßen-Wert um den punkt X,Y
-    unsigned char GetPointFOWRoad(MapPoint pt, unsigned char dir, const unsigned char viewing_player) const;
+    unsigned char GetPointRoad(const MapPoint pt, Direction dir) const;
+    /// Return the FOW road type for a player
+    unsigned char GetPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const;
 
-    /// Fügt einen Katapultstein der Welt hinzu, der gezeichnt werden will
+    /// Adds a catapult stone currently flying
     void AddCatapultStone(CatapultStone* cs);
     void RemoveCatapultStone(CatapultStone* cs);
 
 protected:
-    /// Für abgeleitete Klasse, die dann das Terrain entsprechend neu generieren kann
+    /// Notify derived classes of changed altitude
     virtual void AltitudeChanged(const MapPoint pt) = 0;
+    /// Notify derived classes of changed visibility
     virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
     /// Sets the road for the given (road) direction
     void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
@@ -240,7 +238,7 @@ protected:
     /// Set the BQ at the point and return true if it was changed
     bool SetBQ(const MapPoint pt, BuildingQuality bq);
 
-    /// Berechnet die Schattierung eines Punktes neu
+    /// Recalculates the shade of a point
     void RecalcShadow(const MapPoint pt);
 };
 
@@ -249,37 +247,39 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 // Convenience functions
-MapCoord World::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const { return GetXA(MapPoint(x, y), dir); }
-MapCoord World::GetXA(const MapPoint pt, unsigned dir) const { return GetNeighbour(pt, dir).x; }
-MapCoord World::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const { return GetNeighbour(MapPoint(x, y), dir).y; }
-MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const { return GetNeighbour(pt, Direction::fromInt(dir)); }
+inline MapCoord World::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const { return GetXA(MapPoint(x, y), dir); }
+inline MapCoord World::GetXA(const MapPoint pt, unsigned dir) const { return GetNeighbour(pt, dir).x; }
+inline MapCoord World::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const { return GetNeighbour(MapPoint(x, y), dir).y; }
+inline MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const { return GetNeighbour(pt, Direction::fromInt(dir)); }
 
-unsigned World::GetIdx(const MapPoint pt) const
+inline unsigned World::GetIdx(const MapPoint pt) const
 {
     RTTR_Assert(pt.x < width_ && pt.y < height_);
     return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x);
 }
 
-const MapNode& World::GetNode(const MapPoint pt) const
-{
-    return nodes[GetIdx(pt)];
-}
-MapNode& World::GetNodeInt(const MapPoint pt)
+inline const MapNode& World::GetNode(const MapPoint pt) const
 {
     return nodes[GetIdx(pt)];
 }
 
-const MapNode& World::GetNeighbourNode(const MapPoint pt, const unsigned i) const
+inline MapNode& World::GetNodeInt(const MapPoint pt)
 {
-    return GetNode(GetNeighbour(pt, i));
+    return nodes[GetIdx(pt)];
 }
-MapNode& World::GetNeighbourNodeInt(const MapPoint pt, const unsigned i)
+
+inline const MapNode& World::GetNeighbourNode(const MapPoint pt, Direction dir) const
 {
-    return GetNodeInt(GetNeighbour(pt, i));
+    return GetNode(GetNeighbour(pt, dir));
+}
+
+inline MapNode& World::GetNeighbourNodeInt(const MapPoint pt, Direction dir)
+{
+    return GetNodeInt(GetNeighbour(pt, dir));
 }
 
 template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
-std::vector<typename T_TransformPt::result_type>
+inline std::vector<typename T_TransformPt::result_type>
 World::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt) const
 {
     typedef typename T_TransformPt::result_type Element;

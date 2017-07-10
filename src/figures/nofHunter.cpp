@@ -30,6 +30,8 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include <stdexcept>
 
@@ -37,7 +39,7 @@
 const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(NULL), shootingPos(0, 0), shooting_dir(0)
+    : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(NULL), shootingPos(0, 0)
 {
 }
 
@@ -49,7 +51,7 @@ void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
     {
         sgd.PushObject(animal, true);
         sgd.PushMapPoint(shootingPos);
-        sgd.PushUnsignedChar(shooting_dir);
+        sgd.PushUnsignedChar(shooting_dir.toUInt());
     }
 }
 
@@ -59,7 +61,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
     {
         animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
         shootingPos = sgd.PopMapPoint();
-        shooting_dir = sgd.PopUnsignedChar();
+        shooting_dir = Direction::fromInt(sgd.PopUnsignedChar());
     }else
     {
         animal = NULL;
@@ -75,7 +77,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             break;
         case STATE_HUNTER_SHOOTING:
         {
-            if(shooting_dir == 3)
+            if(shooting_dir == Direction::EAST)
             {
                 // die Animation in dieser Richtung ist etwas anders als die in den restlichen
                 unsigned short id = GAMECLIENT.Interpolate(13, current_ev);
@@ -90,7 +92,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             else
             {
                 unsigned short id = GAMECLIENT.Interpolate(8, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 1686 + ((shooting_dir + 2) % 6) * 8 + id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 1686 + (shooting_dir + 2u).toUInt() * 8 + id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
 
                 if(id == 7)
                 {
@@ -203,7 +205,7 @@ void nofHunter::TryStartHunting()
         animal->BeginHunting(this);
 
         // Anfangen zu laufen (erstmal aus dem Haus raus!)
-        StartWalking(4);
+        StartWalking(Direction::SOUTHEAST);
 
         StopNotWorking();
     }
@@ -246,7 +248,7 @@ void nofHunter::WalkedDerived()
 bool nofHunter::IsShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return (gwg->IsNodeForFigures(pt) && gwg->FindHumanPath(this->pos, pt, 6) != 0xFF);
+    return (PathConditionHuman(*gwg).IsNodeOk(pt) && gwg->FindHumanPath(this->pos, pt, 6) != INVALID_DIR);
 }
 
 void nofHunter::HandleStateChasing()
@@ -308,7 +310,7 @@ void nofHunter::HandleStateChasing()
         if(shootingPos.isValid())
         {
             // Richtung, in die geschossen wird, bestimmen (natürlich die entgegengesetzte nehmen)
-            shooting_dir = (d + doffset + 3) % 6;
+            shooting_dir = Direction(d + doffset + 3);
             // dorthingehen
             state = STATE_HUNTER_FINDINGSHOOTINGPOINT;
             HandleStateFindingShootingPoint();
@@ -325,10 +327,10 @@ void nofHunter::HandleStateChasing()
     {
         // Weg dorthin suchen
         unsigned char dir = gwg->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE);
-        if(dir != 0xFF)
+        if(dir != INVALID_DIR)
         {
             // Weg gefunden, dann hinlaufen
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
         }
         else
         {
@@ -363,10 +365,10 @@ void nofHunter::HandleStateFindingShootingPoint()
     {
         // Weg dorthin suchen
         unsigned char dir = gwg->FindHumanPath(pos, shootingPos, 6);
-        if(dir != 0xFF)
+        if(dir != INVALID_DIR)
         {
             // Weg gefunden, dann hinlaufen
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
         }
         else
         {
@@ -399,10 +401,10 @@ void nofHunter::HandleStateWalkingToCadaver()
     {
         // Weg dorthin suchen
         unsigned char dir = gwg->FindHumanPath(pos, animal->GetPos(), 6);
-        if(dir != 0xFF)
+        if(dir != INVALID_DIR)
         {
             // Weg gefunden, dann hinlaufen
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
         }
         else
         {
@@ -455,7 +457,7 @@ void nofHunter::WalkHome()
     // Weg suchen und ob wir überhaupt noch nach Hause kommen (Toleranz bei dem Weg mit einberechnen,
     // damit er nicht einfach rumirrt und wegstirbt, wenn er einmal ein paar Felder zu weit gelaufen ist)
     unsigned char dir = gwg->FindHumanPath(pos, homeFlagPos, MAX_HUNTING_DISTANCE + MAX_HUNTING_DISTANCE / 4);
-    if(dir == 0xFF)
+    if(dir == INVALID_DIR)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         AbrogateWorkplace();
@@ -465,7 +467,7 @@ void nofHunter::WalkHome()
     else
     {
         // Alles ok, wir können hinlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
 }
 

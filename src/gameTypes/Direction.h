@@ -30,39 +30,112 @@ struct Direction
         SOUTHEAST, // 4
         SOUTHWEST  // 5
     };
-    static BOOST_CONSTEXPR_OR_CONST int COUNT = SOUTHWEST + 1;
+    static BOOST_CONSTEXPR_OR_CONST unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
-    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && t_ < COUNT); }
-    /// Converts an UInt safely to a Direction
-    explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && t_ < COUNT); }
-    /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
+    Direction(): t_(WEST){}
+    Direction(Type t): t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    /// Convert an UInt safely to a Direction
+    explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t){ return Type(t); }
     static Direction fromInt(int t){ return Type(t); }
     operator Type() const { return t_; }
-    /// Returns the Direction as an UInt (for legacy code)
+    /// Return the Direction as an UInt
     unsigned toUInt() const { return t_; }
-    Direction operator+(unsigned i) const { return Direction(t_ + i); }
-    inline Direction& operator++();
-    inline Direction operator++(int);
+    Direction& operator+=(unsigned i);
+    Direction& operator-=(unsigned i);
+    Direction& operator++();
+    Direction operator++(int);
+    Direction& operator--();
+    Direction operator--(int);
     // TODO: Add iterator to iterate over all values from a given value
 private:
     //prevent automatic conversion for any other built-in types such as bool, int, etc
     template<typename T>
     operator T() const;
+    // Disallow int operators
+    Direction& operator+=(int i);
+    Direction& operator-=(int i);
 };
 //-V:Direction:801 
 
-Direction& Direction::operator++()
+//////////////////////////////////////////////////////////////////////////
+// Implementation
+//////////////////////////////////////////////////////////////////////////
+
+inline Direction& Direction::operator+=(unsigned i)
 {
-    t_ = Type((t_ + 1) % COUNT);
+    t_ = Direction(static_cast<unsigned>(t_) + i);
     return *this;
 }
-Direction Direction::operator++(int)
+
+inline Direction& Direction::operator-=(unsigned i)
+{
+    t_ = Direction(static_cast<unsigned>(t_) + COUNT - (i % COUNT));
+    return *this;
+}
+
+inline Direction operator+(Direction dir, unsigned i)
+{
+    return dir += i;
+}
+
+inline Direction operator-(Direction dir, unsigned i)
+{
+    return dir -= i;
+}
+
+inline Direction& Direction::operator++()
+{
+    return *this += 1u;
+}
+
+inline Direction Direction::operator++(int)
 {
     Direction result(*this);
     ++(*this);
     return result;
+}
+
+inline Direction& Direction::operator--()
+{
+    return *this -= 1u;
+}
+
+inline Direction Direction::operator--(int)
+{
+    Direction result(*this);
+    --(*this);
+    return result;
+}
+
+inline bool operator==(const Direction& lhs, const Direction& rhs)
+{
+    return Direction::Type(lhs) == Direction::Type(rhs);
+}
+
+inline bool operator!=(const Direction& lhs, const Direction& rhs)
+{
+    return !(lhs == rhs);
+}
+
+// Comparison operators to avoid ambiguity
+inline bool operator==(const Direction::Type& lhs, const Direction& rhs)
+{
+    return lhs == Direction::Type(rhs);
+}
+inline bool operator==(const Direction& lhs, const Direction::Type& rhs)
+{
+    return Direction::Type(lhs) == rhs;
+}
+inline bool operator!=(const Direction::Type& lhs, const Direction& rhs)
+{
+    return lhs != Direction::Type(rhs);
+}
+inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
+{
+    return Direction::Type(lhs) != rhs;
 }
 
 #endif // Direction_h__

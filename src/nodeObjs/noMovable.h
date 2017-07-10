@@ -20,6 +20,7 @@
 
 #include "noCoordBase.h"
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/Direction.h"
 
 class SerializedGameData;
 class GameEvent;
@@ -29,7 +30,7 @@ const unsigned short ASCENT_ANIMATION_STEPS[7] = {16, 16, 16, 16, 24, 32, 48};
 
 class noMovable : public noCoordBase
 {
-    unsigned char curMoveDir; // Richtung, in die es gerade läcft
+    Direction curMoveDir; // Richtung, in die es gerade läcft
     protected:
 
         unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
@@ -51,23 +52,24 @@ class noMovable : public noCoordBase
         noMovable(const NodalObjectType nop, const MapPoint pt);
         noMovable(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
     protected:  void Destroy_noMovable() { Destroy_noCoordBase(); }
     public:     void Destroy() override { Destroy_noMovable(); }
 
-        /// Serialisierungsfunktionen
     protected:  void Serialize_noMovable(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noMovable(sgd); }
 
         /// Returns the direction in which the object is moving/which it is facing
-        unsigned char GetCurMoveDir() const { return curMoveDir; }
+        Direction GetCurMoveDir() const { return curMoveDir; }
+        /// Return true if the object is moving north which means it actually belongs to the target point
+        /// as it has to be drawn from that point
+        bool IsMovingUpwards() const { return curMoveDir == Direction::NORTHWEST || curMoveDir == Direction::NORTHEAST; }
         /// "Turns" the object in that direction without starting to walk
-        void FaceDir(unsigned char newDir);
+        void FaceDir(Direction newDir);
         /// In aktueller Richtung ein Stück zurücklegen
         void Walk();
         // Starten zu Laufen, Event anmelden
-        void StartMoving(const unsigned char dir, unsigned gf_length);
-        // Interpoliert die Positon zwischen zwei Knotenpunkten
+        void StartMoving(const Direction dir, unsigned gf_length);
+        // Interpoliert die Position zwischen zwei Knoten punkten
         DrawPoint CalcRelative(const DrawPoint& curPt, const  DrawPoint& nextPt) const;
         /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
         DrawPoint CalcWalkingRelative() const;

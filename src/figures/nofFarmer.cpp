@@ -154,7 +154,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         // Nicht auf Straßen bauen!
         for(unsigned char i = 0; i < 6; ++i)
         {
-            if(gwg->GetPointRoad(pt, i))
+            if(gwg->GetPointRoad(pt, Direction::fromInt(i)))
                 return PQ_NOTPOSSIBLE;
         }
 
@@ -162,7 +162,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         unsigned char good_terrains = 0;
         for(unsigned char i = 0; i < 6; ++i)
         {
-            if(TerrainData::IsVital(gwg->GetTerrainAround(pt, i)))
+            if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(i))))
                 ++good_terrains;
         }
         if (good_terrains != 6)

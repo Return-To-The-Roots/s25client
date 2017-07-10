@@ -55,7 +55,7 @@ class noAnimal : public noMovable
         /// Sucht eine Richtung, in die das Tier gehen kann
         unsigned char FindDir();
         /// Fängt an zu laufen
-        void StartWalking(const unsigned char dir);
+        void StartWalking(const Direction dir);
         /// Sucht eine neue Richtung und läuft in diese, ansonsten stirbt es
         void StandardWalking();
 

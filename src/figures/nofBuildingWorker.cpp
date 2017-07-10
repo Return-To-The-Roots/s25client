@@ -201,7 +201,7 @@ void nofBuildingWorker::WorkingReady()
     }
 
     // Wieder reingehen
-    StartWalking(1);
+    StartWalking(Direction::NORTHWEST);
     state = STATE_ENTERBUILDING;
 }
 
@@ -273,7 +273,7 @@ bool nofBuildingWorker::FreePlaceAtFlag()
     // Hinaus gehen, um Ware abzulegen, falls wir auf einen freien Platz warten
     if(state == STATE_WAITFORWARESPACE)
     {
-        StartWalking(4);
+        StartWalking(Direction::SOUTHEAST);
         state = STATE_CARRYOUTWARE;
         return true;
     }

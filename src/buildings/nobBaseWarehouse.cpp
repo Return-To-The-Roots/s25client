@@ -375,7 +375,7 @@ void nobBaseWarehouse::HandleCollectEvent()
 void nobBaseWarehouse::HandleSendoutEvent()
 {
     // Fight or something in front of the house? Try again later!
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4), 4))
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4)))
     {
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
         return;
@@ -578,7 +578,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     }
 
     // Fight or something in front of the house and we are not defending?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4), 4))
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4)))
     {
         // there's a fight
         bool found = false;

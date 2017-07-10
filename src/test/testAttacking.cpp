@@ -94,7 +94,7 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
     {
         const MapPoint start = world.GetNeighbour(bldPosFrom, Direction::SOUTHEAST);
         const MapPoint end = world.GetNeighbour(bldPosTo, Direction::SOUTHEAST);
-        std::vector<unsigned char> road = FindPathForRoad(world, start, end, world, false);
+        std::vector<Direction> road = FindPathForRoad(world, start, end, false);
         BOOST_REQUIRE(!road.empty());
         this->BuildRoad(start, false, road);
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(start, road.front()), RoadSegment::RT_NORMAL + 1);

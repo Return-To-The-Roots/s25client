@@ -26,7 +26,7 @@
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noAnimal.h"
 #include "buildings/nobHQ.h"
-#include "pathfinding/PathConditions.h"
+#include "pathfinding/PathConditionShip.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainData.h"
 #include "gameData/MaxPlayers.h"
@@ -491,7 +491,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         for(unsigned otherHbId = 1; otherHbId < world.harbor_pos.size(); ++otherHbId)
         {
             std::vector<bool> seaIsMarked(world.GetNumSeas(), false);
-            for(int d = 0; d < Direction::COUNT; d++)
+            for(unsigned d = 0; d < Direction::COUNT; d++)
             {
                 // In every direction there can be a coastal point to a sea
                 // So find the sea first and then the dedicated coastal point
@@ -522,11 +522,11 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             CalcHarborPosNeighborsNode curNode = todo_list.front();
             todo_list.pop();
 
-            for(unsigned d = 0; d < 6; ++d)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                if(!shipPathChecker.IsEdgeOk(curNode.pos, d))
+                if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
                     continue;
-                MapPoint curPt = world.GetNeighbour(curNode.pos, d);
+                MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
                 unsigned idx = world.GetIdx(curPt);
 
                 if((ptToVisitOrHb[idx] > 1) && !hbFound[ptToVisitOrHb[idx]]) // found harbor we haven't already found

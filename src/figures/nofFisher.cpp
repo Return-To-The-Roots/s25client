@@ -25,6 +25,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "addons/const_addons.h"
 
@@ -95,7 +96,7 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
     }
 
     LOADER.GetPlayerImage("rom_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
-    DrawShadow(drawPt, 0, fishing_dir);
+    DrawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -143,7 +144,7 @@ void nofFisher::WorkFinished()
 nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
 {
     // Der Punkt muss passierbar sein für Figuren
-    if(!gwg->IsNodeForFigures(pt))
+    if(!PathConditionHuman(*gwg).IsNodeOk(pt))
         return PQ_NOTPOSSIBLE;
 
     // irgendwo drumherum muss es Fisch geben

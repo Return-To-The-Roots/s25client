@@ -174,7 +174,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
         // darf außerdem nicht neben einer Straße liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
-            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), j))
+            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), Direction::fromInt(j)))
                 return PQ_NOTPOSSIBLE;
         }
     }
@@ -184,7 +184,7 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        TerrainType t = gwg->GetTerrainAround(pt, i);
+        TerrainType t = gwg->GetRightTerrain(pt, Direction::fromInt(i));
         if(TerrainData::IsVital(t) || t == TT_DESERT)
             ++good_terrains;
     }

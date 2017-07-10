@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(NeighbourPts, WorldFixtureEmpty0P)
     testPoints += PointI(0, 1), PointI(0, world.GetHeight() - 2), PointI(world.GetWidth() - 1, 1), PointI(world.GetWidth() - 1, world.GetHeight() - 2);
     BOOST_FOREACH(const PointI& pt, testPoints)
     {
-        for(unsigned dir = 0; dir < 6; dir++)
+        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
             const bool isEvenRow = pt.y % 2 == 0;
             const PointI targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];

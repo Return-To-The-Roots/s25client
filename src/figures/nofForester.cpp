@@ -76,9 +76,9 @@ void nofForester::WorkStarted()
 void nofForester::WorkFinished()
 {
     // Wenn irgendwo ne Straße schon ist, NICHT einsetzen!
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetPointRoad(pos, i))
+        if(gwg->GetPointRoad(pos, Direction::fromInt(dir)))
             return;
     }
 
@@ -128,25 +128,25 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
 
 
     // darf außerdem nich auf einer Straße liegen
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetPointRoad(pt, i))
+        if(gwg->GetPointRoad(pt, Direction::fromInt(dir)))
             return PQ_NOTPOSSIBLE;
     }
 
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType() ==  NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() ==  NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
     }
 
     // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
     unsigned char good_terrains = 0;
 
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(TerrainData::IsVital(gwg->GetTerrainAround(pt, i)))
+        if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(dir))))
             ++good_terrains;
     }
     if(good_terrains != 6)

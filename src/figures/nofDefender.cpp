@@ -89,7 +89,7 @@ void nofDefender::Walked()
             {
                 // dann umdrehen und wieder rausgehen
                 state = STATE_DEFENDING_WALKINGTO;
-                StartWalking(4);
+                StartWalking(Direction::SOUTHEAST);
             }
             else
             {
@@ -150,7 +150,7 @@ void nofDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+    StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 }
 
 
@@ -186,7 +186,7 @@ void nofDefender::WonFighting()
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
-        StartWalking(1);
+        StartWalking(Direction::NORTHWEST);
     }
 }
 
@@ -220,7 +220,7 @@ void nofDefender::AttackerArrested()
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
-        StartWalking(1);
+        StartWalking(Direction::NORTHWEST);
     }
 }
 

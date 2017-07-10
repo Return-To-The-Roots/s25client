@@ -18,13 +18,14 @@
 #ifndef GameCommandFactory_h__
 #define GameCommandFactory_h__
 
-#include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/ShipDirection.h"
+#include "gameTypes/MapTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
+#include "gameTypes/ShipDirection.h"
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 
@@ -40,10 +41,10 @@ public:
     /// Destroys a flag on a spot
     bool DestroyFlag(const MapPoint pt);
     /// Builds a road from a starting point along a given route
-    bool BuildRoad(const MapPoint pt, bool boat_road, const std::vector<unsigned char>& route);
+    bool BuildRoad(const MapPoint pt, bool boat_road, const std::vector<Direction>& route);
     /// Destroys a road on a spot
-    bool DestroyRoad(const MapPoint pt, unsigned char start_dir);
-    bool UpgradeRoad(const MapPoint pt, unsigned char start_dir);
+    bool DestroyRoad(const MapPoint pt, Direction start_dir);
+    bool UpgradeRoad(const MapPoint pt, Direction start_dir);
     /// Sets new distribution of goods
     bool ChangeDistribution(const Distributions& data);
     bool ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& data);

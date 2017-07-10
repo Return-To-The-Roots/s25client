@@ -32,13 +32,10 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 
     world.Init(width_, height_, LT_GREENLAND);
     // Set everything to meadow
-    for(MapPoint pt(0,0); pt.y < height_; ++pt.y)
+    RTTR_FOREACH_PT(MapPoint, width_, height_)
     {
-        for(pt.x = 0; pt.x < width_; ++pt.x)
-        {
-            MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = node.t2 = TT_MEADOW1;
-        }
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = TT_MEADOW1;
     }
     if(!playerNations_.empty())
     {

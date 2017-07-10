@@ -108,7 +108,7 @@ class noFigure : public noMovable
         /// In aktueller Richtung ein Stück zurcklegen
         void WalkFigure();
         /// Schatten der Figur malen
-        void DrawShadow(DrawPoint drawPt, const unsigned char anistep, unsigned char dir);
+        void DrawShadow(DrawPoint drawPt, const unsigned char anistep, Direction dir);
 
         /// Herumirren
         void Wander();
@@ -168,7 +168,7 @@ class noFigure : public noMovable
         /// Interpoliert die Positon zwischen zwei Knotenpunkten
         DrawPoint CalcFigurRelative() const;
         /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
-        void StartWalking(const unsigned char dir);
+        void StartWalking(const Direction dir);
         /// Starts walking in a random dir and returns whether this was possible
         bool WalkInRandomDir();
         /// Umherirren starten (frei rumlaufen)

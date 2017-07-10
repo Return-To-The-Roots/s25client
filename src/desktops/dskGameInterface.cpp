@@ -62,8 +62,7 @@
 #include "EventManager.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
-#include "pathfinding/FreePathFinderImpl.h"
-#include "pathfinding/PathConditions.h"
+#include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostMsg.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
@@ -857,31 +856,11 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
     }
 }
 
-struct PathConditionRoad
-{
-    const GameWorldViewer& worldViewer;
-    const bool isBoatRoad;
-
-    PathConditionRoad(const GameWorldViewer& worldViewer, const bool isBoatRoad): worldViewer(worldViewer), isBoatRoad(isBoatRoad){}
-
-    // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
-    {
-        return worldViewer.GetWorld().IsPlayerTerritory(pt) && worldViewer.IsRoadAvailable(isBoatRoad, pt);
-    }
-
-    // Called for every edge (node to other node)
-    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const unsigned char  /*dir*/) const
-    {
-        return true;
-    }
-};
-
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
 {
-    std::vector<unsigned char> new_route;
+    std::vector<Direction> new_route = FindPathForRoad(worldViewer, road.point, cSel, road.mode == RM_BOAT, 100);
     // Weg gefunden?
-    if(!worldViewer.GetWorld().GetFreePathFinder().FindPath(road.point, cSel, false, 100, &new_route, NULL, NULL, PathConditionRoad(worldViewer, road.mode == RM_BOAT)))
+    if(new_route.empty())
         return false;
 
     // Test on water way length
@@ -909,7 +888,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     // Weg (visuell) bauen
     for(unsigned i = 0; i < new_route.size(); ++i)
     {
-        worldViewer.SetVisiblePointRoad(road.point, Direction::fromInt(new_route[i]), (road.mode == RM_BOAT) ? 3 : 1);
+        worldViewer.SetVisiblePointRoad(road.point, new_route[i], (road.mode == RM_BOAT) ? 3 : 1);
         worldViewer.RecalcBQForRoad(road.point);
         road.point = worldViewer.GetWorld().GetNeighbour(road.point, new_route[i]);
     }
@@ -931,7 +910,7 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
         if(curPt == pt)
             return i + 1;
 
-        curPt = worldViewer.GetNeighbour(curPt, Direction::fromInt(road.route[i]));
+        curPt = worldViewer.GetNeighbour(curPt, road.route[i]);
     }
     return 0;
 }
@@ -951,9 +930,9 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        for(unsigned char x = 0; x < 6; ++x)
+        for(unsigned x = 0; x < Direction::COUNT; ++x)
         {
-            if(TerrainData::IsWater(world.GetTerrainAround(cSel, x)))
+            if(TerrainData::IsWater(world.GetRightTerrain(cSel, Direction::fromInt(x))))
                 params = iwAction::AWFT_WATERFLAG;
         }
     }
@@ -1189,8 +1168,8 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
     for(unsigned i = road.route.size(); i >= start_id; --i)
     {
         MapPoint t = road.point;
-        road.point = worldViewer.GetWorld().GetNeighbour(road.point, (road.route[i - 1] + 3) % 6);
-        worldViewer.SetVisiblePointRoad(road.point, Direction::fromInt(road.route[i - 1]), 0);
+        road.point = worldViewer.GetWorld().GetNeighbour(road.point, road.route[i - 1] + 3u);
+        worldViewer.SetVisiblePointRoad(road.point, road.route[i - 1], 0);
         worldViewer.RecalcBQForRoad(t);
     }
 

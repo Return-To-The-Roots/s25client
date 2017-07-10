@@ -21,6 +21,7 @@
 
 //#define DEBUG_AI
 
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "AIEvents.h"
@@ -120,7 +121,7 @@ namespace AIJH
             BuildingType type;
             MapPoint around;
             SearchMode searchMode;
-            std::vector<unsigned char> route;
+            std::vector<Direction> route;
 
             void TryToBuild();
             void BuildMainRoad();
@@ -138,7 +139,7 @@ namespace AIJH
 			MapPoint getFlag() const {return flagPos;}
         private:
             MapPoint flagPos;
-            std::vector<unsigned char> route;
+            std::vector<Direction> route;
     };
 
     class EventJob : public Job

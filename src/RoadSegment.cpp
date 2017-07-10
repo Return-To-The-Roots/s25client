@@ -26,13 +26,13 @@
 #include "Random.h"
 #include "EventManager.h"
 #include "world/GameWorldGame.h"
-
 #include "Log.h"
+#include <stdexcept>
 
 RoadSegment::RoadSegment(const RoadType rt,
                          noRoadNode* const f1,
                          noRoadNode* const f2,
-                         const std::vector<unsigned char>& route)
+                         const std::vector<Direction>& route)
     : rt(rt), f1(f1), f2(f2), route(route)
 {
     carriers_[0] = carriers_[1] = NULL;
@@ -49,11 +49,11 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned int obj_id)
     carriers_[1] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
 
     for(unsigned short i = 0; i < route.size(); ++i)
-        route[i] = sgd.PopUnsignedChar();
+        route[i] = Direction(sgd.PopUnsignedChar());
 
     // tell the noRoadNodes about our existance
-    f1->routes[route[0]] = this;
-    f2->routes[(route[route.size() - 1] + 3) % 6] = this;
+    f1->SetRoute(route[0], this);
+    f2->SetRoute(route.back() + 3u, this);
 }
 
 void RoadSegment::Destroy_RoadSegment()
@@ -114,7 +114,7 @@ void RoadSegment::Serialize_RoadSegment(SerializedGameData& sgd) const
     sgd.PushObject(carriers_[1], true);
 
     for(unsigned short i = 0; i < route.size(); ++i)
-        sgd.PushUnsignedChar(route[i]);
+        sgd.PushUnsignedChar(route[i].toUInt());
 }
 
 /**
@@ -126,7 +126,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     //         |       unterbrochener Weg       |
 
     // Alten Straßenverlauf merken, damit wir später allen Leuten darau Bescheid sagen können
-    std::vector<unsigned char> old_route(route);
+    std::vector<Direction> old_route(route);
 
     // Stelle herausfinden, an der der Weg zerschnitten wird ( = Länge des ersten Teilstücks )
     unsigned int length1, length2;
@@ -141,7 +141,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     length2 = this->route.size() - length1;
 
-    std::vector<unsigned char> second_route(length2);
+    std::vector<Direction> second_route(length2);
     for(unsigned int i = 0; i < length2; ++i)
         second_route[i] = this->route[length1 + i];
 
@@ -157,13 +157,13 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     //f1 = f1;
     f2 = splitflag;
 
-    f1->routes[route.front()] = this;
-    splitflag->routes[(route.back() + 3) % 6] = this;
+    f1->SetRoute(route.front(), this);
+    splitflag->SetRoute(route.back() + 3u, this);
 
     // 2. Teilstück von dieser F bis zu F2
 
-    splitflag->routes[second->route.front()] = second;
-    second->f2->routes[(second->route.back() + 3) % 6] = second;
+    splitflag->SetRoute(second->route.front(), second);
+    second->f2->SetRoute(second->route.back() + 3u, second);
 
     // Straße durchgehen und allen Figuren Bescheid sagen
     t = f1->GetPos();
@@ -209,7 +209,7 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 
     // Anzahl der Waren, die getragen werden wollen, ermitteln
     if(flag)
-        jobs_count = static_cast<noFlag*>(f2)->GetWaresCountForRoad((route.back() + 3) % 6);
+        jobs_count = static_cast<noFlag*>(f2)->GetWaresCountForRoad((route.back() + 3u));
     else
         jobs_count = static_cast<noFlag*>(f1)->GetWaresCountForRoad(route.front());
 
@@ -371,14 +371,14 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 /**
  * Return last road direction to flag at the other end of the road
  */
-unsigned char RoadSegment::GetOtherFlagDir(const noFlag* flag)
+Direction RoadSegment::GetOtherFlagDir(const noFlag* flag)
 {
     //is it a valid flag?
     RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
     if(flag->GetPos() == f1->GetPos())
         return route[route.size() - 1];
     if(flag->GetPos() == f2->GetPos())
-        return (route[0] + 3) % 6;;
-    //shouldnt get here or at least catch the assertion fail
-    return 255;
+        return (route[0] + 3u);
+    LOG.write("BUG detected. Please report this with savegame and replay. No other flag direction found!");
+    throw std::runtime_error("Invalid road!");
 }

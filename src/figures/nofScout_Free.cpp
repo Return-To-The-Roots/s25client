@@ -22,8 +22,10 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
-#include "boost/foreach.hpp"
+#include <boost/foreach.hpp>
 #include <algorithm>
 class noRoadNode;
 
@@ -128,11 +130,11 @@ void nofScout_Free::Scout()
         unsigned char dir = gwg->FindHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
-        if(dir == 0xFF)
+        if(dir == INVALID_DIR)
             // Neuen Punkt suchen
             GoToNewNode();
         else
-            StartWalking(dir);
+            StartWalking(Direction::fromInt(dir));
     }
 }
 
@@ -148,7 +150,7 @@ namespace{
         bool operator()(const MapPoint& pt) const
         {
             // Liegt Punkt im Nebel und für Figuren begehbar?
-            return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && gwg.IsNodeForFigures(pt);
+            return gwg.CalcVisiblityWithAllies(pt, player) != VIS_VISIBLE && PathConditionHuman(gwg).IsNodeOk(pt);
         }
     };
 }

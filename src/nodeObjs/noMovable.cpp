@@ -35,7 +35,7 @@ void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd.PushUnsignedChar(curMoveDir);
+    sgd.PushUnsignedChar(curMoveDir.toUInt());
     sgd.PushUnsignedChar(ascent);
     sgd.PushObject(current_ev, true);
     sgd.PushUnsignedInt(pause_walked_gf);
@@ -48,8 +48,8 @@ noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id) : noCoordBa
     ascent(sgd.PopUnsignedChar()),
     current_ev(sgd.PopEvent()),
     pause_walked_gf(sgd.PopUnsignedInt()),
-    pause_event_length(sgd.PopUnsignedInt())
-    , moving(sgd.PopBool())
+    pause_event_length(sgd.PopUnsignedInt()),
+    moving(sgd.PopBool())
 {
 }
 
@@ -57,7 +57,7 @@ void noMovable::Walk()
 {
     moving = false;
 	
-	if ((curMoveDir != 1) && (curMoveDir != 2))
+	if (!IsMovingUpwards())
 	{
 		gwg->RemoveFigure(this, pos);
 		
@@ -70,22 +70,21 @@ void noMovable::Walk()
 	}
 }
 
-void noMovable::FaceDir(unsigned char newDir)
+void noMovable::FaceDir(Direction newDir)
 {
-    RTTR_Assert(newDir < 6);
+    RTTR_Assert(newDir.toUInt() < 6);
     curMoveDir = newDir;
 }
 
-void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
+void noMovable::StartMoving(const Direction dir, unsigned gf_length)
 {
     RTTR_Assert(!moving);
-    RTTR_Assert(newDir < 6);
 
     // Ist das Wesen stehengeblieben mitten aufm Weg?
     if(pause_walked_gf)
     {
         // Das Laufevent fortführen
-        RTTR_Assert(newDir == curMoveDir);
+        RTTR_Assert(dir == curMoveDir);
         // Avoid setting an event for current gf by increasing the length
         if(pause_walked_gf == pause_event_length)
             pause_event_length++;
@@ -97,7 +96,7 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
     // runter natürlich nich so viel schneller werden wie langsamer hoch
-    switch(int(gwg->GetNeighbourNode(pos, newDir).altitude) - int(gwg->GetNode(pos).altitude))
+    switch(int(gwg->GetNeighbourNode(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
     {
         default: ascent = 3; break; // gerade
         case 1: ascent = 4; gf_length+=(gf_length/2); break; // leicht hoch
@@ -109,14 +108,14 @@ void noMovable::StartMoving(const unsigned char newDir, unsigned gf_length)
     }
 
     current_ev = GetEvMgr().AddEvent(this, gf_length);
-    this->curMoveDir = newDir;
+    this->curMoveDir = dir;
     moving = true;
 
     // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
-    if(newDir == 1 || newDir == 2)
+    if(IsMovingUpwards())
     {
         gwg->RemoveFigure(this, pos);
-        gwg->AddFigure(this, gwg->GetNeighbour(pos, newDir));
+        gwg->AddFigure(this, gwg->GetNeighbour(pos, dir));
     }
 }
 
@@ -152,7 +151,7 @@ DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextP
     RTTR_Assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
     RTTR_Assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
 
-    if(curMoveDir != 1 && curMoveDir != 2)
+    if(!IsMovingUpwards())
     {
         return ((nextPt - curPt) * static_cast<int>(curTimePassed)) / static_cast<int>(duration);
     }
@@ -188,8 +187,8 @@ DrawPoint noMovable::CalcWalkingRelative() const
             curPt.y += mapHeight;
     }
 
-    // Wenn sie runterlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(curMoveDir == 1 || curMoveDir == 2)
+    // Wenn sie hochlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
+    if(IsMovingUpwards())
     {
         using std::swap;
         swap(curPt, nextPt);
@@ -217,7 +216,7 @@ void noMovable::PauseWalking()
     {
         // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
         // --> rückgängig!
-        if(curMoveDir == 1 || curMoveDir == 2)
+        if(IsMovingUpwards())
         {
             gwg->RemoveFigure(this, gwg->GetNeighbour(pos, curMoveDir));
             gwg->AddFigure(this, pos);
@@ -241,4 +240,3 @@ MapPoint noMovable::GetDestinationForCurrentMove() const
 
     return pos;
 }
-

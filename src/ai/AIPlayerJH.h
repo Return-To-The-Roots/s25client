@@ -213,10 +213,10 @@ class AIPlayerJH : public AIBase
         void HandleShipBuilt(const MapPoint pt);
 
         // A new road has been built -> handle it
-        void HandleRoadConstructionComplete(MapPoint pt, unsigned char dir);
+        void HandleRoadConstructionComplete(MapPoint pt, Direction dir);
 
         // A road construction has failed -> handle it
-        void HandleRoadConstructionFailed(const MapPoint pt, unsigned char dir);
+        void HandleRoadConstructionFailed(const MapPoint pt, Direction dir);
 
         // Handle border event
         void HandleBorderChanged(const MapPoint pt);
@@ -260,7 +260,7 @@ class AIPlayerJH : public AIBase
         bool BuildingNearby(const MapPoint pt, BuildingType bld, unsigned min);
 
         /// Update BQ and farming ground around new building site + road
-        void RecalcGround(const MapPoint buildingPos, std::vector<unsigned char> &route_road);
+        void RecalcGround(const MapPoint buildingPos, std::vector<Direction> &route_road);
 
         void SaveResourceMapsToFile();
 

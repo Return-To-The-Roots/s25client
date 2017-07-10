@@ -34,8 +34,8 @@ struct NewNode
     unsigned way;
     unsigned wayEven;
     /// Die Richtung, über die dieser Knoten erreicht wurde
-    unsigned char dir;
-    unsigned char dirEven;
+    Direction dir;
+    Direction dirEven;
     /// ID (gebildet aus y*Kartenbreite+x) des Vorgänngerknotens
     unsigned prev;
     unsigned prevEven;
@@ -62,7 +62,7 @@ struct FreePathNode
     /// Index used to distinguish nodes with same estimate
     unsigned idx;
     /// Direction used to reach this node
-    unsigned char dir;
+    Direction dir;
     /// Point on map which this node represents
     MapPoint mapPt;
     OpenListBinaryHeapBase<FreePathNode>::PosMarker posMarker;

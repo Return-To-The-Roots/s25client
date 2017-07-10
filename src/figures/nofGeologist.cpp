@@ -29,6 +29,7 @@
 #include "SoundManager.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "EventManager.h"
 #include "postSystem/PostMsg.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -212,7 +213,7 @@ void nofGeologist::Walked()
             if(dir == INVALID_DIR)
                 GoToNextNode();
             else
-                StartWalking(dir);
+                StartWalking(Direction::fromInt(dir));
         }
     }
     else if(state == STATE_GOTOFLAG)
@@ -270,7 +271,7 @@ bool nofGeologist::IsNodeGood(const MapPoint pt) const
 {
     // Es dürfen auch keine bestimmten Objekte darauf stehen und auch keine Schilder !!
     const noBase& obj = *gwg->GetNO(pt);
-    return gwg->IsNodeForFigures(pt) && obj.GetGOT() != GOT_SIGN
+    return PathConditionHuman(*gwg).IsNodeOk(pt) && obj.GetGOT() != GOT_SIGN
             && obj.GetType() != NOP_FLAG && obj.GetType() != NOP_TREE;
 }
 
@@ -372,11 +373,11 @@ void nofGeologist::GoToNextNode()
     // ersten Punkt suchen
     unsigned char dir = GetNextNode();
 
-    if(dir != 0xFF)
+    if(dir != INVALID_DIR)
     {
         // Wenn es einen Punkt gibt, dann hingehen
         state = STATE_GEOLOGIST_GOTONEXTNODE;
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
         --signs;
     }else if(node_goal == pos)
     {

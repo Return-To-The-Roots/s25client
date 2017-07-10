@@ -21,6 +21,7 @@
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/Resource.h"
+#include "gameTypes/Direction.h"
 
 namespace AIEvent
 {
@@ -74,12 +75,12 @@ namespace AIEvent
     class Direction: public Location
     {
     public:
-        Direction(EventType type, const MapPoint pt, unsigned char direction): Location(type, pt), direction(direction) { }
+        Direction(EventType type, const MapPoint pt, ::Direction direction): Location(type, pt), direction(direction) { }
         ~Direction() override { }
-        unsigned char GetDirection() const { return direction; }
+        ::Direction GetDirection() const { return direction; }
 
     protected:
-        unsigned char direction;
+        ::Direction direction;
     };
 
     class Building: public Location

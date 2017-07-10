@@ -293,9 +293,9 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
 
             int altitude = GetWorld().GetNode(rb.point).altitude;
 
-            for(unsigned i = 0; i < 6; ++i)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                if(road_points[i] != curPt)
+                if(road_points[dir] != curPt)
                     continue;
 
                 // test on maximal water way length
@@ -324,7 +324,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 if(GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start)
                     LOADER.GetMapImageN(20)->Draw(curPos);
 
-                if(!rb.route.empty() && unsigned(rb.route.back() + 3) % 6 == i)
+                if(!rb.route.empty() && rb.route.back() + 3u == Direction::fromInt(dir))
                     LOADER.GetMapImageN(67)->Draw(curPos);
             }
         }

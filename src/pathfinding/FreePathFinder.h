@@ -19,11 +19,12 @@
 #define FreePathFinder_h__
 
 #include "gameTypes/MapTypes.h"
+#include "gameTypes/Direction.h"
 #include <vector>
 
 class GameWorldBase;
 
-typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
+typedef bool (*FP_Node_OK_Callback)(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
 
 // There are 2 callback types:
 // IsNodeToDestOk: Called for every point to check if this node is usable
@@ -43,17 +44,17 @@ public:
     template<class TNodeChecker>
     bool FindPath(const MapPoint start, const MapPoint dest,
         const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
+        std::vector<Direction>* route, unsigned* length, Direction* firstDir,
         const TNodeChecker& nodeChecker);
 
     bool FindPathAlternatingConditions(const MapPoint start, const MapPoint dest,
         const bool randomRoute, const unsigned maxLength,
-        std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
+        std::vector<Direction>* route, unsigned* length, Direction* firstDir,
         FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate, FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     template<class TNodeChecker>
-    bool CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, const TNodeChecker& nodeChecker, MapPoint* dest) const;
+    bool CheckRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos, const TNodeChecker& nodeChecker, MapPoint* dest) const;
 
 private:
     void IncreaseCurrentVisit();

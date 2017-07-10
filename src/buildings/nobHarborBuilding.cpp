@@ -149,7 +149,7 @@ void nobHarborBuilding::Destroy()
 
         figure->Abrogate();
         figure->StartWandering();
-        figure->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+        figure->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
     }
     figures_for_ships.clear();
 
@@ -163,7 +163,7 @@ void nobHarborBuilding::Destroy()
         RTTR_Assert(soldier->HasNoHome());
         RTTR_Assert(soldier->HasNoGoal());
         soldier->StartWandering();
-        soldier->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+        soldier->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
     }
     soldiers_for_ships.clear();
 
@@ -856,7 +856,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
         return connections;
 
     std::vector<nobHarborBuilding*> harbor_buildings;
-    for(unsigned short dir = 0; dir < 6; ++dir)
+    for(unsigned short dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(seaIds[dir] != 0)
             gwg->GetPlayer(player).GetHarborsAtSea(harbor_buildings, seaIds[dir]);

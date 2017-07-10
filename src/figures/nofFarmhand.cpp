@@ -252,7 +252,7 @@ void nofFarmhand::WalkToWorkpoint()
     else
     {
         // Alles ok, wir können hinlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
 }
 
@@ -288,7 +288,7 @@ void nofFarmhand::WalkHome()
     else
     {
         // Alles ok, wir können hinlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
 }
 

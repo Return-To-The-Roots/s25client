@@ -48,16 +48,16 @@ noFlag::noFlag(const MapPoint pos,
     }
 
     // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
-    unsigned char dir;
+    Direction dir;
     noFlag* flag = gwg->GetRoadFlag(pos, dir, dis_dir);
 
-    if(flag && flag->routes[dir])
-        flag->routes[dir]->SplitRoad(this);
+    if(flag && flag->GetRoute(dir))
+        flag->GetRoute(dir)->SplitRoad(this);
 
     // auf Wasseranteile prüfen
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if(TerrainData::IsWater(gwg->GetTerrainAround(pos, i)))
+        if(TerrainData::IsWater(gwg->GetRightTerrain(pos, Direction::fromInt(i))))
             flagtype = FT_WATER;
     }
 }
@@ -199,7 +199,7 @@ unsigned noFlag::GetWareCount() const
  * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
  * und somit nicht die Träger benachrichtigt werden müssen.
  */
-Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const noFigure* const carrier)
+Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
 {
     Ware* best_ware = NULL;
 
@@ -211,7 +211,7 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     {
         if(!wares[i])
             continue;
-        if(wares[i]->GetNextDir() == dir)
+        if(wares[i]->GetNextDir() == roadDir.toUInt())
         {
             if(best_ware)
             {
@@ -234,18 +234,18 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
         wares[best_ware_index] = NULL;
 
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
-    routes[dir]->WareJobRemoved(carrier);
+    GetRoute(roadDir)->WareJobRemoved(carrier);
 
     if(!swap_wares && best_ware)
     {
         // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
-        for(unsigned i = 0; i < 6; ++i)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            if(!routes[i])
+            if(!routes[dir])
                 continue;
 
-            if(routes[i]->GetLength() == 1)
+            if(routes[dir]->GetLength() == 1)
             {
                 // Gebäude?
 
@@ -260,9 +260,9 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
                 // Richtiger Weg --> Träger Bescheid sagen
                 for(unsigned char c = 0; c < 2; ++c)
                 {
-                    if(routes[i]->hasCarrier(c))
+                    if(routes[dir]->hasCarrier(c))
                     {
-                        if(routes[i]->getCarrier(c)->SpaceAtFlag(this == routes[i]->GetF2()))
+                        if(routes[dir]->getCarrier(c)->SpaceAtFlag(this == routes[dir]->GetF2()))
                             break;
                     }
                 }
@@ -273,13 +273,13 @@ Ware* noFlag::SelectWare(const unsigned char dir, const bool swap_wares, const n
     return best_ware;
 }
 
-unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
+unsigned noFlag::GetWaresCountForRoad(const Direction dir) const
 {
     unsigned ret = 0;
 
     for(unsigned i=0; i < wares.size(); i++)
     {
-        if (wares[i] && (wares[i]->GetNextDir() == dir))
+        if (wares[i] && (wares[i]->GetNextDir() == dir.toUInt()))
             ret++;
     }
     return ret;
@@ -289,15 +289,17 @@ unsigned noFlag::GetWaresCountForRoad(const unsigned char dir) const
  *  Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte
  *  Richtung noch transportiert werden müssen.
  */
-unsigned noFlag::GetPunishmentPoints(const unsigned char dir) const
+unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 {
     // Waren zählen, die in diese Richtung transportiert werden müssen
     unsigned points = GetWaresCountForRoad(dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
-    if(!routes[dir]->isOccupied())
+    const RoadSegment* routeInDir = routes[dir.toUInt()];
+    if(!routeInDir->isOccupied())
         points += 500;
-	else if (routes[dir]->hasCarrier(0) && routes[dir]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK && !routes[dir]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+	else if (routes[dir.toUInt()]->hasCarrier(0) && routes[dir.toUInt()]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
+        && !routes[dir.toUInt()]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
 		points += 50;
 
     return points;
@@ -332,10 +334,10 @@ void noFlag::Upgrade()
 void noFlag::Capture(const unsigned char new_owner)
 {
     // Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(i != 1)
-            DestroyRoad(i);
+        if(dir != 1)
+            DestroyRoad(Direction::fromInt(dir));
     }
 
     // Waren vernichten

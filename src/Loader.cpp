@@ -40,6 +40,7 @@
 #include "ogl/glTexturePacker.h"
 #include "ogl/glArchivItem_Font.h"
 #include "addons/const_addons.h"
+#include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
 
@@ -470,7 +471,7 @@ void Loader::fillCaches()
 // Animals
     for (unsigned species = 0; species < SPEC_COUNT; ++species)
     {
-        for (unsigned dir = 0; dir < 6; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             for (unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
             {
@@ -576,7 +577,7 @@ void Loader::fillCaches()
 // Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
         for (unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
         {
-            for (unsigned dir = 0; dir < 6; ++dir)
+            for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
                 for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
@@ -714,7 +715,7 @@ void Loader::fillCaches()
     }
 
 // Donkeys
-    for (unsigned dir = 0; dir < 6; ++dir)
+    for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
@@ -730,7 +731,7 @@ void Loader::fillCaches()
     }
 
 // Boats
-    for (unsigned dir = 0; dir < 6; ++dir)
+    for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
@@ -750,7 +751,7 @@ void Loader::fillCaches()
 
     for (unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
     {
-        for (unsigned dir = 0; dir < 6; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {

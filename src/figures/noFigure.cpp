@@ -28,6 +28,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "pathfinding/PathConditionHuman.h"
 #include "world/GameWorldGame.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -44,7 +45,7 @@
 #include "libutil/src/colors.h"
 
 
-const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, 0, 0, std::vector<unsigned char>(0, 0));
+const RoadSegment noFigure::emulated_wanderroad(RoadSegment::RT_NORMAL, 0, 0, std::vector<Direction>(0, Direction::EAST));
 /// Welche Strecke soll minimal und maximal zurückgelegt werden beim Rumirren, bevor eine Flagge gesucht wird
 const unsigned short WANDER_WAY_MIN = 20;
 const unsigned short WANDER_WAY_MAX = 40;
@@ -166,7 +167,7 @@ void noFigure::ActAtFirst()
     {
         default: break;
         case FS_GOTOGOAL: WalkToGoal(); break;
-        case FS_JOB: StartWalking(4); break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
+        case FS_JOB: StartWalking(Direction::SOUTHEAST); break; // erstmal rauslaufen, darum kümmern sich dann die abgeleiteten Klassen
         case FS_GOHOME:
         {
             // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst rausgehen!
@@ -184,7 +185,7 @@ void noFigure::ActAtFirst()
                 // ansonsten ganz normal rausgehen
                 WalkToGoal();
         } break;
-        case FS_WANDER: StartWalking(4); break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
+        case FS_WANDER: StartWalking(Direction::SOUTHEAST); break; // erstmal rauslaufen, darum kümmern sich dann die Wander-Funktionen
     }
 }
 
@@ -231,7 +232,7 @@ DrawPoint noFigure::CalcFigurRelative() const
     Point<int> result;
 
     const MapPoint nb = gwg->GetNeighbour(pos, 1);
-    if(GetCurMoveDir() == 1 && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
+    if(GetCurMoveDir() == Direction::NORTHWEST && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
     {
         noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(nb);
         nextPt += bld->GetDoorPoint();
@@ -244,8 +245,8 @@ DrawPoint noFigure::CalcFigurRelative() const
     }else
         result = Point<int>(0, 0);
 
-    // Wenn die Träger runterlaufne, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(GetCurMoveDir() == 1 || GetCurMoveDir() == 2)
+    // Wenn die Träger hochlaufen, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden
+    if(IsMovingUpwards())
     {
         using std::swap;
         swap(curPt, nextPt);
@@ -254,43 +255,43 @@ DrawPoint noFigure::CalcFigurRelative() const
     return result + CalcRelative(curPt, nextPt);
 }
 
-void noFigure::StartWalking(const unsigned char newDir)
+void noFigure::StartWalking(const Direction dir)
 {
     RTTR_Assert(!(GetGOT() == GOT_NOF_PASSIVESOLDIER && fs == FS_JOB));
 
-    RTTR_Assert(newDir <= 5);
-    if(newDir > 5)
+    if(dir.toUInt() >= Direction::COUNT)
     {
-        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n") % GetEvMgr().GetCurrentGF() % unsigned(newDir);
+        RTTR_Assert(false);
+        LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noFigure::StartWalking: dir = %d\n") % GetEvMgr().GetCurrentGF() % dir.toUInt();
         return;
     }
 
     // Gehen wir in ein Gebäude?
-    if(newDir == 1 && gwg->GetNO(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
+    if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
-    if(newDir == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, newDir), newDir) && cur_rs)
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, dir)) && cur_rs)
     {
         // Dann stehen bleiben!
-        FaceDir(newDir);
+        FaceDir(dir);
         waiting_for_free_node = true;
         // Andere Figuren stoppen
-        gwg->StopOnRoads(pos, newDir);
+        gwg->StopOnRoads(pos, dir.toUInt());
     }
     else
     {
         // Normal hinlaufen
-        StartMoving(newDir, 20);
+        StartMoving(dir, 20);
     }
 }
 
-void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, unsigned char dir)
+void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Direction dir)
 {
-    glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + anistep);
+    glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + (dir + 3u).toUInt() * 8 + anistep);
     if(bitmap)
         bitmap->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
 }
@@ -298,7 +299,7 @@ void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, unsigne
 void noFigure::WalkFigure()
 {
     // Tür hinter sich zumachen, wenn wir aus einem Gebäude kommen
-    if(GetCurMoveDir() == 4 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
     Walk();
@@ -306,11 +307,9 @@ void noFigure::WalkFigure()
     if(cur_rs)
         ++rs_pos;
 
-
     // oder in eins reingegangen sind
-    if(GetCurMoveDir() == 1 && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
-
 }
 
 
@@ -417,8 +416,9 @@ void noFigure::WalkToGoal()
             }else
             {
                 // Get next street we are walking on
-                cur_rs = curRoadNode->routes[route];
-                StartWalking(route);
+                Direction walkDir = Direction::fromInt(route);
+                cur_rs = curRoadNode->GetRoute(walkDir);
+                StartWalking(walkDir);
                 rs_pos = 0;
                 rs_dir = curRoadNode != cur_rs->GetF1();
             }
@@ -444,7 +444,7 @@ void noFigure::HandleEvent(const unsigned int id)
         WalkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
-        unsigned char old_dir = GetCurMoveDir();
+        Direction old_dir = GetCurMoveDir();
 
         MapPoint old_pos(pos);
 
@@ -696,13 +696,14 @@ void noFigure::Wander()
 
 bool noFigure::WalkInRandomDir()
 {
+    PathConditionHuman pathChecker(*gwg);
     // Check all dirs starting with a random one and taking the first possible
     unsigned char dirOffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
-    for(unsigned char d = 0; d < 6; ++d)
+    for(unsigned char iDir = 0; iDir < Direction::COUNT; ++iDir)
     {
-        unsigned char dir = (d + dirOffset) % 6;
+        Direction dir(iDir + dirOffset);
 
-        if(gwg->IsNodeForFigures(gwg->GetNeighbour(pos, dir)) && gwg->IsNodeToNodeForFigure(pos, dir))
+        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)) && pathChecker.IsEdgeOk(pos, dir))
         {
             StartWalking(dir);
             return true;
@@ -760,7 +761,7 @@ void noFigure::WanderToFlag()
     if(dir != 0xFF)
     {
         // weiter hinlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
     else
     {
@@ -803,7 +804,7 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
             // und wir sind da noch am Anfang
             rs_pos = 0;
         }
-        else if(GetCurMoveDir() == (cur_rs->GetRoute(cur_rs->GetLength() - 1) + 3) % 6)
+        else if(GetCurMoveDir() == cur_rs->GetRoute(cur_rs->GetLength() - 1) + 3u)
         {
             // wir laufen auf dem 1. Teilstück
 
@@ -837,7 +838,7 @@ void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned int ware, bool f
     if(!waiting_for_free_node || pause_walked_gf)
         drawPt += CalcFigurRelative();
 
-    LOADER.carrier_cache[ware][GetCurMoveDir()][ani_step][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.carrier_cache[ware][GetCurMoveDir().toUInt()][ani_step][fat].draw(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 }
 
 
@@ -856,7 +857,7 @@ void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned int job)
     if(!waiting_for_free_node || pause_walked_gf)
         drawPt += CalcFigurRelative();
 
-    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
+    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir().toUInt()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned int id, bool fat, bool waitingsoldier)
@@ -868,7 +869,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned in
     if(!waitingsoldier && (!waiting_for_free_node || pause_walked_gf))
         drawPt += CalcFigurRelative();
     if(file)
-        file->Draw(id, GetCurMoveDir(), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
+        file->Draw(id, GetCurMoveDir().toUInt(), fat, ani_step, drawPt, gwg->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
@@ -882,7 +883,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned in
     if(!waiting_for_free_node || pause_walked_gf)
         drawPt += CalcFigurRelative();
 
-    LOADER.GetPlayerImage(file, id + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.GetPlayerImage(file, id + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
@@ -901,9 +902,9 @@ void noFigure::DrawWalking(DrawPoint drawPt)
                 drawPt += CalcFigurRelative();
 
             // Esel
-            LOADER.GetMapImageN(2000 + ((GetCurMoveDir() + 3) % 6) * 8 + ani_step)->Draw(drawPt);
+            LOADER.GetMapImageN(2000 + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->Draw(drawPt);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + GetCurMoveDir() % 3)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2048 + GetCurMoveDir().toUInt() % 3)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
         } return;
         case JOB_CHARBURNER:
         {
@@ -961,10 +962,10 @@ void noFigure::NodeFreed(const MapPoint pt)
         return;
 
     // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-    if(GetCurMoveDir() == 1 && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, 1))->CloseDoor();
     // oder aus einem raus?
-    if(GetCurMoveDir() == 4 && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
+    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();
 
     // Wir stehen nun nicht mehr
@@ -1016,7 +1017,7 @@ void noFigure::StopIfNecessary(const MapPoint pt)
             // Dann stehenbleiben
             PauseWalking();
             waiting_for_free_node = true;
-            gwg->StopOnRoads(this->pos, GetCurMoveDir());
+            gwg->StopOnRoads(this->pos, GetCurMoveDir().toUInt());
         }
     }
 }

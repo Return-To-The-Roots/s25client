@@ -34,8 +34,8 @@
 class noRoadNode;
 
 // from Pathfinding.cpp TODO: in nice
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
+bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
+bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
 
 AIJH::Resource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
@@ -170,16 +170,16 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
 
 bool AIInterface::IsRoadPoint(const MapPoint pt) const
 {
-    for(unsigned char i = 0; i < 6; ++i)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if (gwb.GetPointRoad(pt, i))
+        if (gwb.GetPointRoad(pt, Direction::fromInt(dir)))
             return true;
     }
     return false;
 }
 
 
-bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<unsigned char> *route, unsigned* length) const
+bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction> *route /*= NULL*/, unsigned* length /*= NULL*/) const
 {
     bool boat = false;
     return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,IsPointOK_RoadPathEvenStep, NULL, (void*) &boat);

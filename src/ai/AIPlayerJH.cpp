@@ -38,6 +38,7 @@
 #include "AIConstruction.h"
 #include "addons/const_addons.h"
 #include "gameData/TerrainData.h"
+#include "gameData/GameConsts.h"
 #include "FindWhConditions.h"
 #include "GameMessages.h"
 #include "GameServer.h"
@@ -52,7 +53,7 @@
 #include <stdexcept>
 
 // from Pathfinding.cpp
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const unsigned char dir, const void* param);
+bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
 
 namespace{
     void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
@@ -488,9 +489,9 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
             if(aii.IsRoadPoint(pt))
                 return AIJH::NOTHING;
             // check for vital plant space
-            for(int i = 0; i < Direction::COUNT; ++i)
+            for(unsigned i = 0; i < Direction::COUNT; ++i)
             {
-                TerrainType t = aii.GetTerrainAround(pt, Direction::fromInt(i));
+                TerrainType t = aii.GetRightTerrain(pt, Direction::fromInt(i));
 
                 // check against valid terrains for planting
                 if(!TerrainData::IsVital(t))
@@ -554,7 +555,7 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
         MapPoint r = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
-        for (int dir = 0; dir < Direction::COUNT; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             MapPoint n = aii.GetNeighbour(r, Direction::fromInt(dir));
             unsigned ni = aii.GetIdx(n);
@@ -565,7 +566,7 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
 
             bool boat = false;
             // Test whether point is reachable; yes->add to check list
-            if (IsPointOK_RoadPath(gwb, n, (dir + 3) % 6, (void*) &boat))
+            if (IsPointOK_RoadPath(gwb, n, Direction(dir + 3u), (void*) &boat))
             {
                 if (nodes[ni].failed_penalty == 0)
                 {
@@ -735,7 +736,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         }
 
         // now insert neighbouring nodes...
-        for (int dir = 0; dir < Direction::COUNT; ++dir)
+        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             MapPoint n = aii.GetNeighbour(pt, Direction::fromInt(dir));
             unsigned ni = aii.GetIdx(n);
@@ -1409,7 +1410,7 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
 
 }
 
-void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
+void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, Direction dir)
 {
     //todo: detect "bad" roads and handle them
     const noFlag* flag;
@@ -1417,7 +1418,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
     if(!(flag = aii.GetSpecObj<noFlag>(pt)))
         return;
     //does the roadsegment still exist?
-    RoadSegment* const roadSeg = flag->routes[dir];
+    RoadSegment* const roadSeg = flag->GetRoute(dir);
     if(!roadSeg)
         return;
 	if(roadSeg->GetLength()<4) //road too short to need flags
@@ -1431,7 +1432,7 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
         t = gwb.GetNeighbour(t, 4);
         for(unsigned i = 0; i < roadSeg->GetLength(); ++i)
         {
-            t = aii.GetNeighbour(t, Direction::fromInt(roadSeg->GetDir(true, i)));
+            t = aii.GetNeighbour(t, roadSeg->GetDir(true, i));
             aii.SetFlag(t);
         }
     }
@@ -1440,13 +1441,13 @@ void AIPlayerJH::HandleRoadConstructionComplete(MapPoint pt, unsigned char dir)
         //set flags on our new road starting from the new flag
         for(unsigned i = 0; i < roadSeg->GetLength(); ++i)
         {
-            pt = aii.GetNeighbour(pt, Direction::fromInt(roadSeg->GetDir(false, i)));
+            pt = aii.GetNeighbour(pt, roadSeg->GetDir(false, i));
             aii.SetFlag(pt);
         }
     }
 }
 
-void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, unsigned char  /*dir*/)
+void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction dir)
 {
     const noFlag* flag;
     //does the flag still exist?
@@ -2045,7 +2046,7 @@ void AIPlayerJH::TrySeaAttack()
     }
 }
 
-void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned char> &route_road)
+void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction> &route_road)
 {
     MapPoint pt = buildingPos;
 
@@ -2069,7 +2070,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<unsigned c
     // along the road
     for (unsigned i = 0; i < route_road.size(); ++i)
     {
-        pt = aii.GetNeighbour(pt, Direction::fromInt(route_road[i]));
+        pt = aii.GetNeighbour(pt, route_road[i]);
         RecalcBQAround(pt);
         // Auch Plantspace entsprechend anpassen:
         if (GetAINode(pt).res == AIJH::PLANTSPACE)
@@ -2120,22 +2121,23 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
     if(maxlen < 1)
         return false;
     bool partofcircle = false;
-    unsigned testdir = 0;
-    while(testdir < 6 && !partofcircle)
+    unsigned iTestDir = 0;
+    while(iTestDir < 6 && !partofcircle)
     {
-        if (testdir == excludeDir)
+        Direction testDir = Direction::fromInt(iTestDir);
+        if (iTestDir == excludeDir)
         {
-            testdir++;
+            iTestDir++;
             continue;
         }
-        if(testdir == 1 && (aii.IsObjectTypeOnNode(aii.GetNeighbour(curFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDING) || aii.IsObjectTypeOnNode(aii.GetNeighbour(curFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
+        if(iTestDir == 1 && (aii.IsObjectTypeOnNode(aii.GetNeighbour(curFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDING) || aii.IsObjectTypeOnNode(aii.GetNeighbour(curFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
         {
-            testdir++;
+            iTestDir++;
             continue;
         }
-        if(curFlag->routes[testdir])
+        if(curFlag->GetRoute(testDir))
         {
-            const noFlag* flag = curFlag->routes[testdir]->GetOtherFlag(curFlag);
+            const noFlag* flag = curFlag->GetRoute(testDir)->GetOtherFlag(curFlag);
             if (!flag)
                 return(false);
 
@@ -2143,10 +2145,11 @@ bool AIPlayerJH::IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, co
             if(!alreadyinlist)
             {
                 oldFlags.push_back(flag->GetPos());
-                partofcircle = IsFlagPartofCircle(startFlag, maxlen - 1, flag, (curFlag->routes[testdir]->GetOtherFlagDir(curFlag) + 3) % 6, false, oldFlags);
+                Direction revDir = curFlag->GetRoute(testDir)->GetOtherFlagDir(curFlag) + 3u;
+                partofcircle = IsFlagPartofCircle(startFlag, maxlen - 1, flag, revDir.toUInt(), false, oldFlags);
             }
         }
-        testdir++;
+        iTestDir++;
     }
     return partofcircle;
 }
@@ -2171,20 +2174,20 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
 
 bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir, bool firstflag, bool allowcircle,bool keepstartflag)
 {
-    unsigned char foundDir = 0xFF;
-    unsigned char foundDir2 = 0xFF;
+    unsigned char foundDir = INVALID_DIR;
+    unsigned char foundDir2 = INVALID_DIR;
     unsigned char finds = 0;
     // Count roads from this flag...
-    for (unsigned char dir = 0; dir < 6; ++dir)
+    for (unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
         if (dir == excludeDir)
             continue;
-        if(dir == 1 && (aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDING) || aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
+        if(dir == Direction::NORTHWEST && (aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDING) || aii.IsObjectTypeOnNode(aii.GetNeighbour(startFlag->GetPos(), Direction::NORTHWEST), NOP_BUILDINGSITE)))
         {
             //the flag belongs to a building - update the pathing map around us and try to reconnect it (if we cant reconnect it -> burn it(burning takes place at the pathfinding job))
             return true;
         }
-        if(startFlag->routes[dir])
+        if(startFlag->GetRoute(Direction::fromInt(dir)))
         {
             finds++;
             if(finds == 1)
@@ -2213,20 +2216,24 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag* startFlag, unsigned char exclude
     // kill the flag
 	if(keepstartflag)
 	{
-		if(foundDir<6)
-			aii.DestroyRoad(startFlag->GetPos(),foundDir);
+		if(foundDir != INVALID_DIR)
+			aii.DestroyRoad(startFlag->GetPos(),Direction::fromInt(foundDir));
 	}
 	else
 		aii.DestroyFlag(startFlag);
 
     // nothing found?
-    if (foundDir > 6)
+    if (foundDir == INVALID_DIR)
         return false;
     // at least 1 road exists
-    RemoveUnusedRoad(startFlag->routes[foundDir]->GetOtherFlag(startFlag), (startFlag->routes[foundDir]->GetOtherFlagDir(startFlag) + 3) % 6, false);
+    Direction revDir1 = startFlag->GetRoute(Direction::fromInt(foundDir))->GetOtherFlagDir(startFlag) + 3u;
+    RemoveUnusedRoad(startFlag->GetRoute(Direction::fromInt(foundDir))->GetOtherFlag(startFlag), revDir1.toUInt(), false);
     // 2 roads exist
     if(foundDir2 != 0xFF)
-        RemoveUnusedRoad(startFlag->routes[foundDir2]->GetOtherFlag(startFlag), (startFlag->routes[foundDir2]->GetOtherFlagDir(startFlag) + 3) % 6, false);
+    {
+        Direction revDir2 = startFlag->GetRoute(Direction::fromInt(foundDir2))->GetOtherFlagDir(startFlag) + 3u;
+        RemoveUnusedRoad(startFlag->GetRoute(Direction::fromInt(foundDir2))->GetOtherFlag(startFlag), revDir2.toUInt(), false);
+    }
     return false;
 }
 

@@ -50,7 +50,7 @@ VecImpl todo;
 namespace AdditonalCosts{
     struct None
     {
-        unsigned operator()(const noRoadNode& curNode, const unsigned char nextDir) const
+        unsigned operator()(const noRoadNode& curNode, const Direction nextDir) const
         {
             return 0;
         }
@@ -58,7 +58,7 @@ namespace AdditonalCosts{
 
     struct Carrier
     {
-        unsigned operator()(const noRoadNode& curNode, const unsigned char nextDir) const
+        unsigned operator()(const noRoadNode& curNode, const Direction nextDir) const
         {
             // Im Warenmodus m�ssen wir Strafpunkte für �berlastete Tr�ger hinzuaddieren, 
             // damit der Algorithmus auch Ausweichrouten ausw�hlt
@@ -213,10 +213,11 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         }
 
         // Nachbarflagge bzw. Wege in allen 6 Richtungen verfolgen
-        for (unsigned i = 0; i < 6; ++i)
+        for (unsigned iDir = 0; iDir < 6; ++iDir)
         {
+            const Direction dir = Direction::fromInt(iDir);
             // Gibt es auch einen solchen Weg bzw. Nachbarflagge?
-            noRoadNode* neighbour = best.GetNeighbour(i);
+            noRoadNode* neighbour = best.GetNeighbour(dir);
 
             // Wenn nicht, brauchen wir mit dieser Richtung gar nicht weiter zu machen
             if (!neighbour)
@@ -228,7 +229,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 continue;
 
             // No pathes over buildings
-            if ((i == 1) && (neighbour != &goal))
+            if ((dir == Direction::NORTHWEST) && (neighbour != &goal))
             {
                 // Flags and harbors are allowed
                 const GO_Type got = neighbour->GetGOT();
@@ -237,12 +238,12 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             }
 
             // evtl verboten?
-            if(!isSegmentAllowed(*best.routes[i]))
+            if(!isSegmentAllowed(*best.GetRoute(dir)))
                 continue;
 
             // Neuer Weg für diesen neuen Knoten berechnen
-            unsigned cost = best.cost + best.routes[i]->GetLength();
-            cost += addCosts(best, i);
+            unsigned cost = best.cost + best.GetRoute(dir)->GetLength();
+            cost += addCosts(best, dir);
 
             if (cost > max)
                 continue;
@@ -257,14 +258,14 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     neighbour->prev = &best;
                     neighbour->estimate = neighbour->targetDistance + cost;
                     todo.rearrange(neighbour);
-                    neighbour->dir_ = i;
+                    neighbour->dir_ = iDir;
                 }
             }else
             {
                 // Not visited yet -> Add to list
                 neighbour->last_visit = currentVisit;
                 neighbour->cost = cost;
-                neighbour->dir_ = i;
+                neighbour->dir_ = iDir;
                 neighbour->prev = &best;
 
                 neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goal.GetPos());

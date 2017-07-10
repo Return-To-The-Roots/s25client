@@ -481,16 +481,8 @@ unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, 
 
 bool TerrainData::IsUseable(TerrainType t)
 {
-    if(IsLava(t) || IsWater(t))
-        return false;
-    switch (t)
-    {
-    case TT_SNOW:
-    case TT_SWAMPLAND:
-        return false;
-    default:
-        return true;
-    }
+    TerrainBQ bq = GetBuildingQuality(t);
+    return (bq != TerrainBQ::NOTHING && bq != TerrainBQ::DANGER);
 }
 
 bool TerrainData::IsUsableByShip(TerrainType t)

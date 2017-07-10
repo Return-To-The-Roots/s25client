@@ -30,17 +30,17 @@ bool GameCommandFactory::DestroyFlag(const MapPoint pt)
     return AddGC( new gc::DestroyFlag(pt) );
 }
 
-bool GameCommandFactory::BuildRoad(const MapPoint pt, bool boat_road, const std::vector<unsigned char>& route)
+bool GameCommandFactory::BuildRoad(const MapPoint pt, bool boat_road, const std::vector<Direction>& route)
 {
     return AddGC( new gc::BuildRoad(pt, boat_road, route) );
 }
 
-bool GameCommandFactory::DestroyRoad(const MapPoint pt, unsigned char start_dir)
+bool GameCommandFactory::DestroyRoad(const MapPoint pt, Direction start_dir)
 {
     return AddGC( new gc::DestroyRoad(pt, start_dir) );
 }
 
-bool GameCommandFactory::UpgradeRoad(const MapPoint pt, unsigned char start_dir)
+bool GameCommandFactory::UpgradeRoad(const MapPoint pt, Direction start_dir)
 {
     return AddGC( new gc::UpgradeRoad(pt, start_dir) );
 }

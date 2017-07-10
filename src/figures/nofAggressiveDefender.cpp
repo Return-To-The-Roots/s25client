@@ -108,7 +108,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
 
     // Rumirren
     StartWandering();
-    StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+    StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 }
 
 void nofAggressiveDefender::CancelAtAttackedBld()
@@ -264,7 +264,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     else
     {
         // Continue walking towards him
-        StartWalking(dir);
+        StartWalking(Direction(dir));
     }
 }
 

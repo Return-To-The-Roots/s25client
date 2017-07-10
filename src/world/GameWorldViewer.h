@@ -68,6 +68,8 @@ public:
     Visibility GetVisibility(const MapPoint pt) const;
     /// Returns true, if we own this point (but may not be our territory if this is a border point)
     bool IsOwner(const MapPoint& pt) const;
+    /// Return true if the point belongs to any player
+    bool IsPlayerTerritory(const MapPoint& pt) const;
     const MapNode& GetNode(const MapPoint& pt) const;
     MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
 
@@ -79,7 +81,7 @@ public:
     void SetVisiblePointRoad(const MapPoint& pt, Direction dir, unsigned char type);
     bool IsOnRoad(const MapPoint& pt) const;
     /// Remove a visual (not yet built) road
-    void RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route);
+    void RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route);
     /// Checks if the road can be build in the world and additonally if there is no virtual road at that point
     bool IsRoadAvailable(bool isWaterRoad, const MapPoint& pt) const;
 

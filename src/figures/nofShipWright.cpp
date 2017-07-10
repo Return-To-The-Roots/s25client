@@ -198,7 +198,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char  /*first_dir*/)
     // Punkt für uns reservieren
     gwg->SetReserved(dest, true);
     // Anfangen zu laufen (erstmal aus dem Haus raus!)
-    StartWalking(4);
+    StartWalking(Direction::SOUTHEAST);
 
     StopNotWorking();
 }
@@ -208,9 +208,9 @@ void nofShipWright::StartWalkingToShip(const unsigned char  /*first_dir*/)
 bool nofShipWright::IsPointGood(const MapPoint pt) const
 {
     // Auf Wegen nicht bauen
-    for(unsigned i = 0; i < 6; ++i)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetPointRoad(pt, i))
+        if(gwg->GetPointRoad(pt, Direction::fromInt(dir)))
             return false;
     }
 
@@ -233,7 +233,7 @@ void nofShipWright::WalkToWorkpoint()
     }
     unsigned char dir = gwg->FindHumanPath(pos, dest, 20);
     // Weg suchen und gucken ob der Punkt noch in Ordnung ist
-    if(dir == 0xFF || (!IsPointGood(dest) && gwg->GetGOT(dest) != GOT_SHIPBUILDINGSITE))
+    if(dir == INVALID_DIR || (!IsPointGood(dest) && gwg->GetGOT(dest) != GOT_SHIPBUILDINGSITE))
     {
         // Punkt freigeben
         gwg->SetReserved(dest, false);
@@ -243,7 +243,7 @@ void nofShipWright::WalkToWorkpoint()
     else
     {
         // Alles ok, wir können hinlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
 }
 
@@ -268,7 +268,7 @@ void nofShipWright::WalkHome()
     }
     unsigned char dir = gwg->FindHumanPath(pos, dest, SHIPWRIGHT_WALKING_DISTANCE);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
-    if(dir == 0xFF)
+    if(dir == INVALID_DIR)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
         AbrogateWorkplace();
@@ -278,7 +278,7 @@ void nofShipWright::WalkHome()
     else
     {
         // Alles ok, wir können hinlaufen
-        StartWalking(dir);
+        StartWalking(Direction::fromInt(dir));
     }
 }
 

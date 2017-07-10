@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noRoadNode>(flagPt), flag);
 
     // Place flag at neighbour
-    for(int dir = 0; dir < 6; dir++)
+    for(unsigned dir = 0; dir < Direction::COUNT; dir++)
     {
         MapPoint curPt = world.GetNeighbour(flagPt, dir);
         this->SetFlag(curPt);
@@ -91,8 +91,8 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     // Removed from game
     BOOST_REQUIRE_EQUAL(GameObject::GetObjCount(), objCt - 1);
     // And everything clear now
-    for(int dir = 0; dir < 6; dir++)
-        BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, dir).bq, BQ_CASTLE);
+    for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+        BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt, Direction::fromInt(dir)).bq, BQ_CASTLE);
 }
 
 BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
@@ -103,18 +103,18 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     this->SetFlag(flagPt + MapPoint(4, 0));
     // Build road with 3 segments:
     // a1) invalid start pt -> No road
-    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<unsigned char>(4, Direction::EAST));
+    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(4, Direction::EAST));
     for(unsigned i = 0; i < 6; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     // a2) invalid player
     curPlayer = 1;
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(4, Direction::EAST));
     for(unsigned i = 0; i < 6; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     curPlayer = 0;
 
     // b) Flag->Flag ->OK
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(4, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(4, Direction::EAST));
     for(unsigned i = 0; i < 4; i++)
     {
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
@@ -153,20 +153,20 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     // g) Road with no existing end flag -> Build road and place flag if possible
     // g1) Other flag to close
     this->SetFlag(flagPt + MapPoint(3, 0));
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(2, 3));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_NOTHING);
     for(unsigned i = 0; i < 3; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     this->DestroyFlag(flagPt + MapPoint(3, 0));
     // g2) Building to close
     this->SetBuildingSite(flagPt + MapPoint(3, 0), BLD_FORTRESS);
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(2, 3));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
     BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     for(unsigned i = 0; i < 2; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     this->DestroyFlag(world.GetNeighbour(flagPt + MapPoint(3, 0), Direction::SOUTHEAST));
     // g3) Nothing objectionable
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(2, 3));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     for(unsigned i = 0; i < 2; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
@@ -174,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     // h) Non-blocking env. object
     world.SetNO(flagPt + MapPoint(3, 0), new noEnvObject(flagPt, 512));
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NOP_ENVIRONMENT);
-    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(flagPt + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::EAST));
     for(unsigned i = 2; i < 4; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(3, 0))->GetType(), NOP_NOTHING);
@@ -184,11 +184,11 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
 
     // i) outside player territory
     // i1) border
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x), Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(HQ_RADIUS - (flagPt.x - hqPos.x), Direction::EAST));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     // i2) territory
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(HQ_RADIUS - (flagPt.x - hqPos.x) + 1, Direction::EAST));
     for(unsigned i = 0; i <= HQ_RADIUS; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
 }
@@ -199,8 +199,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadTest, WorldWithGCExecution2P)
     MapPoint flagPt2 = flagPt + MapPoint(2, 0);
     this->SetFlag(flagPt);
     // Build road with 3 segments:
-    this->BuildRoad(flagPt, false, std::vector<unsigned char>(2, Direction::EAST));
-    this->BuildRoad(flagPt2, false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(flagPt2, false, std::vector<Direction>(2, Direction::EAST));
     for(unsigned i = 0; i < 4; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     // Destroy from middle of road -> fail
@@ -229,7 +229,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2));
     BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPt2 + MapPoint(2, 0)));
     // Rebuild
-    this->BuildRoad(flagPt2, false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(flagPt2, false, std::vector<Direction>(2, Direction::EAST));
     for(unsigned i = 0; i < 4; i++)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 1);
     // Opposite dir
@@ -253,9 +253,9 @@ BOOST_FIXTURE_TEST_CASE(UpgradeRoadTest, WorldWithGCExecution2P)
 {
     // 3 Roads, so we have a middle flag, and an additional road
     const MapPoint hqFlagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
-    this->BuildRoad(hqFlagPos, false, std::vector<unsigned char>(2, Direction::EAST));
-    this->BuildRoad(hqFlagPos + MapPoint(2, 0), false, std::vector<unsigned char>(2, Direction::EAST));
-    this->BuildRoad(hqFlagPos + MapPoint(4, 0), false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(hqFlagPos, false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(hqFlagPos + MapPoint(2, 0), false, std::vector<Direction>(2, Direction::EAST));
+    this->BuildRoad(hqFlagPos + MapPoint(4, 0), false, std::vector<Direction>(2, Direction::EAST));
     const MapPoint middleFlag = hqFlagPos + MapPoint(2, 0);
     const noFlag* hqFlag = world.GetSpecObj<noFlag>(hqFlagPos);
     const noFlag* flag = world.GetSpecObj<noFlag>(middleFlag);
@@ -386,7 +386,7 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetNO(world.GetNeighbour(okMilPt, Direction::SOUTHEAST))->GetType(), NOP_NOTHING);
 
     // Check if bld is build
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<unsigned char>(2, Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
     for(unsigned i = 0; i < 1200; i++)
         this->em.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDING);
@@ -428,7 +428,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // Build a watchtower and connect it
     nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milPt, curPlayer, player.nation));
     BOOST_REQUIRE(bld);
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<unsigned char>((milPt.x - hqPos.x), Direction::EAST));
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to and from flag), 30GFs for leaving carrier)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
     for(unsigned i = 0; i < numGFtillAllArrive; i++)
@@ -528,7 +528,7 @@ namespace{
         BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
         // Build road and let worker leave
-        worldFixture.BuildRoad(flagPt, false, std::vector<unsigned char>(3, Direction::WEST));
+        worldFixture.BuildRoad(flagPt, false, std::vector<Direction>(3, Direction::WEST));
         for(unsigned i = 0; i < 30; i++)
             worldFixture.em.ExecuteNextGF();
         BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);

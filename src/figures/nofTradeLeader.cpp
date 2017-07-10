@@ -95,8 +95,8 @@ void nofTradeLeader::Walked()
             }
             return;
         }else if(next_dir == REACHED_GOAL)
-            next_dir = 1; // Walk into building
-        StartWalking(next_dir);
+            next_dir = Direction::NORTHWEST; // Walk into building
+        StartWalking(Direction::fromInt(next_dir));
         if(successor)
             successor->AddNextDir(next_dir);
     }

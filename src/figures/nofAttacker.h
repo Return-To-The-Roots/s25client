@@ -134,7 +134,7 @@ class nofAttacker : public nofActiveSoldier
         unsigned GetRadius() const { return radius; }
         /// Ein um-die-Flagge-Swartender Angreifer soll auf einen frei gewordenen Platz nachrücken, damit keine
         /// Lücken entstehen
-        void StartSucceeding(const MapPoint pt, const unsigned short new_radius, const unsigned char dir);
+        void StartSucceeding(const MapPoint pt, const unsigned short new_radius, Direction dir);
         /// Try to start capturing although he is still far away from the destination
         /// Returns true if successful
         bool TryToStartFarAwayCapturing(nobMilitary* dest);

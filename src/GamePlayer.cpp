@@ -551,7 +551,7 @@ void GamePlayer::RoadDestroyed()
 				unsigned gotfliproute = 1;
 				for(unsigned i=2; i<7; i++)
 				{
-					if(wareLocation.routes[i%6])
+					if(wareLocation.GetRoute(Direction(i)))
 					{
 						gotfliproute = i;
 						break;
@@ -1931,12 +1931,12 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 
     noShip* best_ship = NULL;
     uint32_t best_distance = std::numeric_limits<uint32_t>::max();
-    std::vector<unsigned char> best_route;
+    std::vector<Direction> best_route;
 
     for (std::vector<ShipForHarbor>::iterator it = sfh.begin(); it != sfh.end(); ++it)
     {
         uint32_t distance;
-        std::vector<unsigned char> route;
+        std::vector<Direction> route;
 
         // the estimate (air-line distance) for this and all other ships in the list is already worse than what we found? disregard the rest
         if (it->estimate >= best_distance)
@@ -2008,7 +2008,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
     // Evtl. steht irgendwo eine Expedition an und das Schiff kann diese übernehmen
     nobHarborBuilding* best = 0;
     int best_points = 0;
-    std::vector<unsigned char> best_route;
+    std::vector<Direction> best_route;
 
     // Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
     for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
@@ -2037,7 +2037,7 @@ void GamePlayer::GetJobForShip(noShip* ship)
             }
 
             unsigned length;
-            std::vector<unsigned char> route;
+            std::vector<Direction> route;
 
             if(gwg->FindShipPathToHarbor(ship->GetPos(), (*it)->GetHarborPosID(), ship->GetSeaID(), &route, &length))
             {
@@ -2122,7 +2122,7 @@ void GamePlayer::HarborDestroyed(nobHarborBuilding* hb)
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
 bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId,
-        std::vector<unsigned char>* route, nobHarborBuilding* exception)
+        std::vector<Direction>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = NULL;
     unsigned best_distance = 0xffffffff;
@@ -2267,7 +2267,7 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
     for(unsigned i = 0; i < enemies_discovered_by_ships.size(); ++i)
     {
-        if(gwg->CalcDistance(enemies_discovered_by_ships[i].x, enemies_discovered_by_ships[i].y, location.x, location.y) < 30)
+        if(gwg->CalcDistance(enemies_discovered_by_ships[i], location) < 30)
             return false;
     }
 

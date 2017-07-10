@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,27 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "world/TradePath.h"
-#include "SerializedGameData.h"
-#include <boost/foreach.hpp>
+#pragma  once
 
-TradePath::TradePath(SerializedGameData& sgd): start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
+#ifndef Direction_Output_h__
+#define Direction_Output_h__
+
+#include "gameTypes/Direction.h"
+#include <ostream>
+
+inline std::ostream& operator<<(std::ostream& os, const Direction& dir)
 {
-    route.resize(sgd.PopUnsignedInt());
-    BOOST_FOREACH(Direction& dir, route)
+    switch(Direction::Type(dir))
     {
-        dir = Direction::fromInt(sgd.PopUnsignedChar());
+    case Direction::WEST:      os << "WEST"; break;
+    case Direction::NORTHWEST: os << "NORTHWEST"; break;
+    case Direction::NORTHEAST: os << "NORTHEAST"; break;
+    case Direction::EAST:      os << "EAST"; break;
+    case Direction::SOUTHEAST: os << "SOUTHEAST"; break;
+    case Direction::SOUTHWEST: os << "SOUTHWEST"; break;
     }
+    return os;
 }
 
-void TradePath::Serialize(SerializedGameData& sgd) const
-{
-    sgd.PushMapPoint(start);
-    sgd.PushMapPoint(goal);
-    sgd.PushUnsignedInt(route.size());
-    BOOST_FOREACH(const Direction& dir, route)
-    {
-        sgd.PushUnsignedChar(dir.toUInt());
-    }
-}
+#endif // Direction_Output_h__

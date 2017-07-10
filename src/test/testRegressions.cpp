@@ -26,6 +26,7 @@
 #include "EventManager.h"
 #include "TerrainRenderer.h"
 #include "ingameWindows/iwHelp.h"
+#include "gameTypes/Direction_Output.h"
 #include "gameData/ShieldConsts.h"
 #include "gameData/MapConsts.h"
 #include "RTTR_AssertError.h"
@@ -43,6 +44,61 @@
 //      - Before you fix a bug, reproduce it here (or in a fitting suite) -> Test fails
 //      - Fix the bug -> Test succeeds
 BOOST_AUTO_TEST_SUITE(RegressionsSuite)
+
+BOOST_AUTO_TEST_CASE(DirectionCmp)
+{
+    Direction east(Direction::EAST);
+    Direction east2(Direction::EAST);
+    Direction west(Direction::WEST);
+    // All variations: Dir-Dir, Dir-Type, Type-Dir
+    BOOST_REQUIRE_EQUAL(east, east2);
+    BOOST_REQUIRE_EQUAL(east, Direction::EAST);
+    BOOST_REQUIRE_EQUAL(Direction::EAST, east2);
+    BOOST_REQUIRE_NE(east, west);
+    BOOST_REQUIRE_NE(east, Direction::WEST);
+    BOOST_REQUIRE_NE(Direction::WEST, east2);
+}
+
+BOOST_AUTO_TEST_CASE(DirectionIncDec)
+{
+    // For every direction
+    for(unsigned startDir = 0; startDir < Direction::COUNT; startDir++)
+    {
+        // Fit back to range
+        BOOST_REQUIRE_EQUAL(Direction(startDir + Direction::COUNT).toUInt(), startDir);
+        // Increment
+        Direction testDir(startDir);
+        BOOST_REQUIRE_EQUAL(testDir++, Direction(startDir));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
+        BOOST_REQUIRE_EQUAL(++testDir, Direction(startDir + 2));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 2));
+        // Decrement
+        BOOST_REQUIRE_EQUAL(testDir--, Direction(startDir + 2));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir + 1));
+        BOOST_REQUIRE_EQUAL(--testDir, Direction(startDir));
+        BOOST_REQUIRE_EQUAL(testDir, Direction(startDir));
+        // Add/Subtract. Test using the already tested primitives
+        for(unsigned diff = 1; diff < 20; diff++)
+        {
+            Direction resultDir = testDir + diff;
+            Direction expectedDir(testDir);
+            for(unsigned i = 0; i < diff; i++)
+                ++expectedDir;
+            BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
+            Direction resultDir2 = testDir;
+            BOOST_REQUIRE_EQUAL(resultDir2 += diff, expectedDir);
+            BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
+            resultDir = testDir - diff;
+            expectedDir = testDir;
+            for(unsigned i = 0; i < diff; i++)
+                --expectedDir;
+            BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
+            resultDir2 = testDir;
+            BOOST_REQUIRE_EQUAL(resultDir2 -= diff, expectedDir);
+            BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
+        }
+    }
+}
 
 BOOST_AUTO_TEST_CASE(IngameWnd)
 {
@@ -180,7 +236,7 @@ struct FarmerFixture: public WorldFixture<CreateEmptyWorld, 1, 20, 20>
         farmPt = world.GetPlayer(0).GetHQPos() + MapPoint(5, 0);
         farm = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FARM, farmPt, 0, NAT_ROMANS));
         BOOST_REQUIRE(farm);
-        world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST), std::vector<unsigned char>(5, Direction::WEST));
+        world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST), std::vector<Direction>(5, Direction::WEST));
         for(unsigned gf = 0; gf < 7 * 20 + 60; gf++)
         {
             em.ExecuteNextGF();

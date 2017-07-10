@@ -24,6 +24,7 @@
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListBinaryHeap.h"
 #include "EventManager.h"
+#include "world/GameWorldBase.h"
 
 typedef std::vector<FreePathNode> FreePathNodes;
 extern FreePathNodes fpNodes;
@@ -56,7 +57,7 @@ typedef OpenListBinaryHeap<FreePathNode, GetEstimatedDistance> QueueImpl;
 template<class TNodeChecker>
 bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
               const bool randomRoute, const unsigned maxLength,
-              std::vector<unsigned char> * route, unsigned* length, unsigned char* firstDir,
+              std::vector<Direction>* route, unsigned* length, Direction* firstDir,
               const TNodeChecker& nodeChecker)
 {
     RTTR_Assert(start != dest);
@@ -76,7 +77,6 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
     startNode.lastVisited = currentVisit;
     startNode.prev = NULL;
     startNode.curDistance = 0;
-    startNode.dir = 0;
 
     todo.push(&startNode);
 
@@ -123,7 +123,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
         // Knoten in alle 6 Richtungen bilden
         for(unsigned z = startDir; z < startDir + 6; ++z)
         {
-            unsigned dir = z % 6;
+            Direction dir(z);
 
             // Koordinaten des entsprechenden umliegenden Punktes bilden
             MapPoint neighbourPos = gwb_.GetNeighbour(best.mapPt, dir);
@@ -184,7 +184,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest,
 
 /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 template<class TNodeChecker>
-bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<unsigned char>& route, const unsigned pos, 
+bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos, 
                                 const TNodeChecker& nodeChecker, MapPoint* dest) const
 {
     RTTR_Assert(pos < route.size());

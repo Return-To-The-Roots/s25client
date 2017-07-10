@@ -35,8 +35,8 @@ nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char p
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
-    RTTR_Assert(gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4))->routes[1]->GetLength() == 1);
-    cur_rs = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4))->routes[1];
+    RTTR_Assert(gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))->GetRoute(Direction::NORTHWEST)->GetLength() == 1);
+    cur_rs = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))->GetRoute(Direction::NORTHWEST);
     rs_dir = true;
 }
 
@@ -109,15 +109,15 @@ void nofWarehouseWorker::GoalReached()
     else
     {
         // Ware aufnehmen
-        carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(1, false, this);
+        carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(Direction::NORTHWEST, false, this);
 
         if (carried_ware)
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 1)));
+            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
     }
 
     // Wieder ins Schloss gehen
-    StartWalking(1);
-    InitializeRoadWalking(wh->routes[4], 0, false);
+    StartWalking(Direction::NORTHWEST);
+    InitializeRoadWalking(wh->GetRoute(Direction::SOUTHEAST), 0, false);
 }
 
 void nofWarehouseWorker::Walked()

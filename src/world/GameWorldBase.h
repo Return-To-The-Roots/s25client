@@ -62,7 +62,7 @@ public:
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
-    void Init(const unsigned short width, const unsigned short height, LandscapeType lt) override;
+    void Init(unsigned short width, unsigned short height, LandscapeType lt) override;
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 
@@ -77,7 +77,7 @@ public:
     /// Should only be used for the points between the 2 flags of a road
     bool IsRoadAvailable(const bool boat_road, const MapPoint pt) const;
     /// Check if this road already exists completely
-    bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<unsigned char>& route);
+    bool RoadAlreadyBuilt(const bool boat_road, const MapPoint start, const std::vector<Direction>& route);
     bool IsOnRoad(const MapPoint& pt) const;
     /// Check if a flag is at a neighbour node
     bool IsFlagAround(const MapPoint& pt) const;
@@ -93,22 +93,20 @@ public:
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer Richtung im Umkreis
     sortedMilitaryBlds LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 
-    /// Pr�ft, ob von einem bestimmten Punkt aus der Untergrund für Figuren zug�nglich ist (kein Wasser,Lava,Sumpf)
-    bool IsNodeToNodeForFigure(const MapPoint pt, const unsigned dir) const;
-
     /// Finds a path for figures. Returns 0xFF if none found
-    unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, const unsigned max_route = 0xFFFFFFFF, const bool random_route = false, unsigned* length = NULL) const;
+    unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, unsigned max_route = 0xFFFFFFFF, bool random_route = false,
+        unsigned* length = NULL, std::vector<Direction>* route = NULL) const;
     /// Find path for ships to a specific harbor and see. Return true on success
-    bool FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId, std::vector<unsigned char>* route, unsigned* length);
+    bool FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route, unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
-    bool FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance, std::vector<unsigned char>* route, unsigned* length);
+    bool FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance, std::vector<Direction>* route, unsigned* length);
     RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
 
     /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
     /// prevDir (if set) will be skipped when searching for the road points
-    noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255);
-    const noFlag* GetRoadFlag(MapPoint pt, unsigned char& dir, unsigned prevDir = 255) const;
+    noFlag* GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir = 255);
+    const noFlag* GetRoadFlag(MapPoint pt, Direction& dir, unsigned prevDir = 255) const;
 
     /// Erzeugt eine GUI-ID für die Fenster von Map-Objekten
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }

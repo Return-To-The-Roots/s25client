@@ -83,7 +83,7 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
         {
             (*it)->Abrogate();
             (*it)->StartWandering();
-            (*it)->StartWalking(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6));
+            (*it)->StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
         }
     }
 
@@ -322,7 +322,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
     }
 }
 
-bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius, const unsigned char dir)
+bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radius, const Direction dir)
 {
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {

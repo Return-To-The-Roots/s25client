@@ -92,7 +92,7 @@ void nofTradeDonkey::Walked()
         }
     }
     else if(nextDir != INVALID_DIR)
-        StartWalking(nextDir);
+        StartWalking(Direction::fromInt(nextDir));
     else
     {
         CancelTradeCaravane();
@@ -120,12 +120,12 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.donkey_cache[GetCurMoveDir()][ani_step].draw(drawPt);
+        LOADER.donkey_cache[GetCurMoveDir().toUInt()][ani_step].draw(drawPt);
 
         if(gt != GD_NOTHING)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
+            LOADER.GetMapImageN(2350 + gt)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
         }
     }
     else

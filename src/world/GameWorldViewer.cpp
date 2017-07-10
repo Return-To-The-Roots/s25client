@@ -133,6 +133,11 @@ bool GameWorldViewer::IsOwner(const MapPoint& pt) const
     return GetWorld().GetNode(pt).owner == playerId_ + 1;
 }
 
+bool GameWorldViewer::IsPlayerTerritory(const MapPoint & pt) const
+{
+    return GetWorld().IsPlayerTerritory(pt);
+}
+
 const MapNode& GameWorldViewer::GetNode(const MapPoint& pt) const
 {
     return GetWorld().GetNode(pt);
@@ -279,12 +284,12 @@ void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
         RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
 }
 
-void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<unsigned char>& route)
+void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route)
 {
     MapPoint curPt = start;
     for(unsigned i = 0; i < route.size(); ++i)
     {
-        SetVisiblePointRoad(curPt, Direction::fromInt(route[i]), 0);
+        SetVisiblePointRoad(curPt, route[i], 0);
         RecalcBQForRoad(curPt);
         curPt = GetWorld().GetNeighbour(curPt, route[i]);
     }

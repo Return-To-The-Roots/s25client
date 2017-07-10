@@ -886,7 +886,8 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         unsigned char type = gwViewer.GetVisibleRoad(pt, dir, visibility);
         if (!type)
             continue;
-        MapPoint ta = gwViewer.GetNeighbour(pt, Direction::fromInt(3 + dir));
+        Direction targetDir = Direction::fromInt(3 + dir);
+        MapPoint ta = gwViewer.GetNeighbour(pt, targetDir);
 
         PointI endPos = PointI(GetNodePos(ta)) + offset;
         PointI diff = startPos - endPos;
@@ -916,11 +917,11 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
             case RoadSegment::RT_DONKEY:
             case RoadSegment::RT_NORMAL:
             {
-                TerrainType t1 = gwViewer.GetWorld().GetTerrainAround(pt, dir + 2);
-                TerrainType t2 = gwViewer.GetWorld().GetTerrainAround(pt, dir + 3);
+                TerrainType t1 = gwViewer.GetWorld().GetLeftTerrain(pt, targetDir);
+                TerrainType t2 = gwViewer.GetWorld().GetRightTerrain(pt, targetDir);
 
                 // Prüfen, ob Bergwege gezeichnet werden müssen, indem man guckt, ob der Weg einen
-                // Berg "streift" oder auch eine Bergwiese
+                // Berg "streift" oder auch eine Berg wiese
                 if(TerrainData::IsMountain(t1) || TerrainData::IsMountain(t2))
                     type = 3;
 
