@@ -18,6 +18,7 @@
 #ifndef OpenListPrioQueue_h__
 #define OpenListPrioQueue_h__
 
+#include <algorithm>
 #include <vector>
 #include <queue>
 

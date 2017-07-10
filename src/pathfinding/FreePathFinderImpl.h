@@ -24,6 +24,7 @@
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListBinaryHeap.h"
 #include "EventManager.h"
+#include "world/GameWorldBase.h"
 
 typedef std::vector<FreePathNode> FreePathNodes;
 extern FreePathNodes fpNodes;
