@@ -35,16 +35,16 @@ struct Direction
     Type t_;
     Direction(): t_(WEST){}
     Direction(Type t): t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
-    /// Converts an UInt safely to a Direction
+    /// Convert an UInt safely to a Direction
     explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
-    /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
+    /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t){ return Type(t); }
     static Direction fromInt(int t){ return Type(t); }
     operator Type() const { return t_; }
-    /// Returns the Direction as an UInt (for legacy code)
+    /// Return the Direction as an UInt
     unsigned toUInt() const { return t_; }
-    Direction operator+(unsigned i) const { return Direction(t_ + i); }
-    Direction operator-(unsigned i) const { return Direction(t_ + COUNT - (i % COUNT)); }
+    Direction& operator+=(unsigned i);
+    Direction& operator-=(unsigned i);
     Direction& operator++();
     Direction operator++(int);
     Direction& operator--();
@@ -54,13 +54,41 @@ private:
     //prevent automatic conversion for any other built-in types such as bool, int, etc
     template<typename T>
     operator T() const;
+    // Disallow int operators
+    Direction& operator+=(int i);
+    Direction& operator-=(int i);
 };
 //-V:Direction:801 
 
+//////////////////////////////////////////////////////////////////////////
+// Implementation
+//////////////////////////////////////////////////////////////////////////
+
+inline Direction& Direction::operator+=(unsigned i)
+{
+    t_ = Direction(static_cast<unsigned>(t_) + i);
+    return *this;
+}
+
+inline Direction& Direction::operator-=(unsigned i)
+{
+    t_ = Direction(static_cast<unsigned>(t_) + COUNT - (i % COUNT));
+    return *this;
+}
+
+inline Direction operator+(Direction dir, unsigned i)
+{
+    return dir += i;
+}
+
+inline Direction operator-(Direction dir, unsigned i)
+{
+    return dir -= i;
+}
+
 inline Direction& Direction::operator++()
 {
-    t_ = Type((t_ + 1) % COUNT);
-    return *this;
+    return *this += 1u;
 }
 
 inline Direction Direction::operator++(int)
@@ -72,8 +100,7 @@ inline Direction Direction::operator++(int)
 
 inline Direction& Direction::operator--()
 {
-    t_ = Type((t_ + COUNT - 1) % COUNT);
-    return *this;
+    return *this -= 1u;
 }
 
 inline Direction Direction::operator--(int)

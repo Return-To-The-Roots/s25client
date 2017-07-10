@@ -81,15 +81,20 @@ BOOST_AUTO_TEST_CASE(DirectionIncDec)
         for(unsigned diff = 1; diff < 20; diff++)
         {
             Direction resultDir = testDir + diff;
+            Direction resultDir2 = testDir;
             Direction expectedDir(testDir);
             for(unsigned i = 0; i < diff; i++)
                 ++expectedDir;
             BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
+            BOOST_REQUIRE_EQUAL(resultDir2 += diff, expectedDir);
+            BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
             resultDir = testDir - diff;
             expectedDir = testDir;
             for(unsigned i = 0; i < diff; i++)
                 --expectedDir;
             BOOST_REQUIRE_EQUAL(resultDir, expectedDir);
+            BOOST_REQUIRE_EQUAL(resultDir2 -= diff, expectedDir);
+            BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
         }
     }
 }
