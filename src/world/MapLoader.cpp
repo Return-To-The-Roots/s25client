@@ -26,7 +26,7 @@
 #include "nodeObjs/noTree.h"
 #include "nodeObjs/noAnimal.h"
 #include "buildings/nobHQ.h"
-#include "pathfinding/PathConditions.h"
+#include "pathfinding/PathConditionShip.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainData.h"
 #include "gameData/MaxPlayers.h"
