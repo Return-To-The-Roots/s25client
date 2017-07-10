@@ -73,7 +73,7 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
 noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
     player(sgd.PopUnsignedChar())
 {
-    for (unsigned dir = 0; dir < 6; ++dir)
+    for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         routes[dir] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
@@ -130,6 +130,6 @@ void noRoadNode::DestroyRoad(const Direction dir)
 void noRoadNode::DestroyAllRoads()
 {
     // Alle Straßen um mich herum zerstören
-    for(unsigned char dir = 0; dir < 6; ++dir)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
         DestroyRoad(Direction::fromInt(dir));
 }

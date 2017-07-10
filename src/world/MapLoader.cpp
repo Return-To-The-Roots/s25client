@@ -522,7 +522,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             CalcHarborPosNeighborsNode curNode = todo_list.front();
             todo_list.pop();
 
-            for(unsigned dir = 0; dir < 6; ++dir)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
                 if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
                     continue;

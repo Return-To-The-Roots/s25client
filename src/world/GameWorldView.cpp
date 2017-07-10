@@ -293,7 +293,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
 
             int altitude = GetWorld().GetNode(rb.point).altitude;
 
-            for(unsigned dir = 0; dir < 6; ++dir)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
                 if(road_points[dir] != curPt)
                     continue;

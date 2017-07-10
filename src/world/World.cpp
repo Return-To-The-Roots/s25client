@@ -66,7 +66,7 @@ void World::Unload()
     {
         if(!it->obj || it->obj->GetGOT() != GOT_FLAG)
             continue;
-        for(unsigned dir = 0; dir < 6; ++dir)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             if(static_cast<noFlag*>(it->obj)->GetRoute(Direction::fromInt(dir)))
             {

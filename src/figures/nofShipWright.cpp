@@ -208,7 +208,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char  /*first_dir*/)
 bool nofShipWright::IsPointGood(const MapPoint pt) const
 {
     // Auf Wegen nicht bauen
-    for(unsigned dir = 0; dir < 6; ++dir)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(gwg->GetPointRoad(pt, Direction::fromInt(dir)))
             return false;

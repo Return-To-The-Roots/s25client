@@ -604,7 +604,7 @@ bool GameWorldGame::DoesTerritoryChange(const noBaseBuilding& building, const bo
             if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
                 return true;
             //also check neighboring nodes for their terrain since border will still count as player territory but not allow any buildings !
-            for(int dir = 0; dir < Direction::COUNT; dir++)
+            for(unsigned dir = 0; dir < Direction::COUNT; dir++)
             {
                 t1 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t1;
                 t2 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t2;

@@ -240,7 +240,7 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
     {
         // Wenn nun wieder ein Platz frei ist, allen Wegen rundrum sowie evtl Warenhäusern
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
-        for(unsigned dir = 0; dir < 6; ++dir)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
             if(!routes[dir])
                 continue;
@@ -334,7 +334,7 @@ void noFlag::Upgrade()
 void noFlag::Capture(const unsigned char new_owner)
 {
     // Alle Straßen um mich herum zerstören bis auf die zum Gebäude (also Nr. 1)
-    for(unsigned dir = 0; dir < 6; ++dir)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(dir != 1)
             DestroyRoad(Direction::fromInt(dir));

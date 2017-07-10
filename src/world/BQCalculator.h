@@ -48,7 +48,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     unsigned mine_hits = 0;
     unsigned flag_hits = 0;
 
-    for(unsigned char dir = 0; dir < 6; ++dir)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
         TerrainBQ bq = TerrainData::GetBuildingQuality(world.GetRightTerrain(pt, Direction::fromInt(dir)));
         if(bq == TerrainBQ::CASTLE)
@@ -93,7 +93,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         else
         {
             // Direct neighbours: Flag for altitude diff > 3
-            for(unsigned dir = 0; dir < 6; ++dir)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
                 otherAltitude = world.GetNeighbourNode(pt, Direction::fromInt(dir)).altitude;
                 if(SafeDiff(curAltitude, otherAltitude) > 3)
@@ -129,11 +129,11 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
 
     // Blocking manners of neighbours (cache for reuse)
     boost::array<BlockingManner, 6> neighbourBlocks;
-    for(unsigned dir = 0; dir < 6; ++dir)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         neighbourBlocks[dir] = world.GetNO(world.GetNeighbour(pt, Direction::fromInt(dir)))->GetBM();
 
     // Don't build anything around charburner piles
-    for(unsigned dir = 0; dir < 6; ++dir)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(neighbourBlocks[dir] == BlockingManner::NothingAround)
             return BQ_NOTHING;
@@ -173,7 +173,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     }
 
     // Granite type block (stones, fire, grain fields) -> Flag around
-    for(unsigned dir = 0; dir < 6; ++dir)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(neighbourBlocks[dir] == BlockingManner::FlagsAround)
         {

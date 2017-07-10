@@ -135,7 +135,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     }
 
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
-    for(unsigned char dir = 0; dir < 6; ++dir)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() ==  NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
@@ -144,7 +144,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
     unsigned char good_terrains = 0;
 
-    for(unsigned char dir = 0; dir < 6; ++dir)
+    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
         if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(dir))))
             ++good_terrains;
