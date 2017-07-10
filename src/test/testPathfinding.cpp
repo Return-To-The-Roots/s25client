@@ -112,6 +112,37 @@ void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, TerrainTyp
         setRightTerrain(world, terrainPt, dir, tOther);
 }
 
+BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
+{
+    std::vector<Direction> testDirections;
+    testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
+    testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
+    std::vector<TerrainType> friendlyTerrains;
+    friendlyTerrains += TT_DESERT, TT_MEADOW_FLOWERS, TT_MOUNTAIN1, TT_MOUNTAIN2, TT_MOUNTAIN3, TT_MOUNTAIN4, TT_SAVANNAH,
+        TT_MEADOW1, TT_MEADOW2, TT_MEADOW3, TT_STEPPE, TT_MOUNTAINMEADOW, TT_BUILDABLE_WATER, TT_BUILDABLE_MOUNTAIN;
+
+    const MapPoint startPt(0, 6);
+
+    BOOST_FOREACH(TerrainType friendlyTerrain, friendlyTerrains)
+    {
+        clearWorld(world, friendlyTerrain);
+        BOOST_FOREACH(Direction dir, testDirections)
+        {
+            // 3 steps in dir
+            MapPoint endPt(startPt);
+            for(unsigned i = 0; i < 3; i++)
+                endPt = world.GetNeighbour(endPt, dir);
+            unsigned length;
+            // Must be able to go there directly
+            BOOST_REQUIRE_NE(world.FindHumanPath(startPt, endPt, 99, false, &length), INVALID_DIR);
+            BOOST_REQUIRE_EQUAL(length, 3u);
+            // Inverse route
+            BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length), INVALID_DIR);
+            BOOST_REQUIRE_EQUAL(length, 3u);
+        }
+    }
+}
+
 BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
 {
     const MapPoint startPt(5, 2);
@@ -151,36 +182,41 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     std::vector<Direction> testDirections;
     // Test cases 2         a)                 b)                     c)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
-    BOOST_FOREACH(Direction dir, testDirections)
+    std::vector<TerrainType> deepWaterTerrains;
+    deepWaterTerrains += TT_WATER, TT_WATER_NOSHIP, TT_SWAMPLAND;
+    BOOST_FOREACH(TerrainType deepWater, deepWaterTerrains)
     {
-        setupTestcase2to4(world, startPt, TT_STEPPE, TT_WATER, true, dir);
-        // 3 steps in dir
-        MapPoint endPt(startPt);
-        for(unsigned i=0; i<3; i++)
-            endPt = world.GetNeighbour(endPt, dir);
-        // We can't go directly so 1 step detour
-        unsigned length;
-        BOOST_REQUIRE_NE(world.FindHumanPath(startPt, endPt, 99, false, &length), INVALID_DIR);
-        BOOST_REQUIRE_EQUAL(length, 4u);
-        // Inverse route
-        BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length), INVALID_DIR);
-        BOOST_REQUIRE_EQUAL(length, 4u);
-        // But road must be constructible
-        world.SetFlag(startPt, 0);
-        std::vector<Direction> roadRoute(3, dir);
-        world.BuildRoad(0, false, startPt, roadRoute);
-        Direction revDir(dir.toUInt() + 3);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 1u);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 1u);
-        world.DestroyFlag(endPt, 0);
-        // Reverse direction
-        std::vector<Direction> roadRouteRev(3, revDir);
-        world.SetFlag(endPt, 0);
-        world.BuildRoad(0, false, endPt, roadRouteRev);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 1u);
-        BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 1u);
-        world.DestroyFlag(startPt, 0);
-        world.DestroyFlag(endPt, 0);
+        BOOST_FOREACH(Direction dir, testDirections)
+        {
+            setupTestcase2to4(world, startPt, TT_STEPPE, deepWater, true, dir);
+            // 3 steps in dir
+            MapPoint endPt(startPt);
+            for(unsigned i = 0; i < 3; i++)
+                endPt = world.GetNeighbour(endPt, dir);
+            // We can't go directly so 1 step detour
+            unsigned length;
+            BOOST_REQUIRE_NE(world.FindHumanPath(startPt, endPt, 99, false, &length), INVALID_DIR);
+            BOOST_REQUIRE_EQUAL(length, 4u);
+            // Inverse route
+            BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length), INVALID_DIR);
+            BOOST_REQUIRE_EQUAL(length, 4u);
+            // But road must be constructible
+            world.SetFlag(startPt, 0);
+            std::vector<Direction> roadRoute(3, dir);
+            world.BuildRoad(0, false, startPt, roadRoute);
+            Direction revDir(dir.toUInt() + 3);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 1u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 1u);
+            world.DestroyFlag(endPt, 0);
+            // Reverse direction
+            std::vector<Direction> roadRouteRev(3, revDir);
+            world.SetFlag(endPt, 0);
+            world.BuildRoad(0, false, endPt, roadRouteRev);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 1u);
+            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 1u);
+            world.DestroyFlag(startPt, 0);
+            world.DestroyFlag(endPt, 0);
+        }
     }
 }
 
@@ -198,41 +234,47 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
     // Test cases 4         a)                 b)                     c)
     testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
-    BOOST_FOREACH(Direction dir, testDirections)
+    std::vector<TerrainType> deadlyTerrains;
+    deadlyTerrains += TT_SNOW, TT_LAVA, TT_LAVA2, TT_LAVA3, TT_LAVA4;
+
+    BOOST_FOREACH(TerrainType deadlyTerrain, deadlyTerrains)
     {
-        setupTestcase2to4(world, startPt, TT_STEPPE, TT_SNOW, false, dir);
-        // 3 steps in dir
-        MapPoint endPt(startPt);
-        for(unsigned i = 0; i < 3; i++)
-            endPt = world.GetNeighbour(endPt, dir);
-        MapPoint curStartPt(startPt);
-        // We test the green points first and the yellow points second
-        for(int i = 0; i < 2; i++)
+        BOOST_FOREACH(Direction dir, testDirections)
         {
-            unsigned length;
-            BOOST_REQUIRE_NE(world.FindHumanPath(curStartPt, endPt, 99, false, &length), INVALID_DIR);
-            BOOST_REQUIRE_EQUAL(length, 4u);
-            // Inverse route
-            BOOST_REQUIRE_NE(world.FindHumanPath(endPt, curStartPt, 99, false, &length), INVALID_DIR);
-            BOOST_REQUIRE_EQUAL(length, 4u);
-            // No road must be constructible
-            world.SetFlag(startPt, 0);
-            std::vector<Direction> roadRoute(3, dir);
-            world.BuildRoad(0, false, startPt, roadRoute);
-            Direction revDir(dir + 3u);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 0u);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 0u);
-            world.DestroyFlag(startPt, 0);
-            // Reverse direction
-            std::vector<Direction> roadRouteRev(3, revDir);
-            world.SetFlag(endPt, 0);
-            world.BuildRoad(0, false, endPt, roadRouteRev);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir), 0u);
-            BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir), 0u);
-            world.DestroyFlag(endPt, 0);
-            // Switch to yellow points. They are placed to be one step left than the direction
-            curStartPt = world.GetNeighbour(curStartPt, dir - 1u);
-            endPt = world.GetNeighbour(endPt, dir - 1u);
+            setupTestcase2to4(world, startPt, TT_STEPPE, deadlyTerrain, false, dir);
+            // 3 steps in dir
+            MapPoint endPt(startPt);
+            for(unsigned i = 0; i < 3; i++)
+                endPt = world.GetNeighbour(endPt, dir);
+            MapPoint curStartPt(startPt);
+            // We test the green points first and the yellow points second
+            for(int i = 0; i < 2; i++)
+            {
+                unsigned length;
+                BOOST_REQUIRE_NE(world.FindHumanPath(curStartPt, endPt, 99, false, &length), INVALID_DIR);
+                BOOST_REQUIRE_EQUAL(length, 4u);
+                // Inverse route
+                BOOST_REQUIRE_NE(world.FindHumanPath(endPt, curStartPt, 99, false, &length), INVALID_DIR);
+                BOOST_REQUIRE_EQUAL(length, 4u);
+                // No road must be constructible
+                world.SetFlag(startPt, 0);
+                std::vector<Direction> roadRoute(3, dir);
+                world.BuildRoad(0, false, startPt, roadRoute);
+                Direction revDir(dir + 3u);
+                BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, dir), 0u);
+                BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, revDir), 0u);
+                world.DestroyFlag(startPt, 0);
+                // Reverse direction
+                std::vector<Direction> roadRouteRev(3, revDir);
+                world.SetFlag(endPt, 0);
+                world.BuildRoad(0, false, endPt, roadRouteRev);
+                BOOST_REQUIRE_EQUAL(world.GetPointRoad(startPt, revDir), 0u);
+                BOOST_REQUIRE_EQUAL(world.GetPointRoad(endPt, dir), 0u);
+                world.DestroyFlag(endPt, 0);
+                // Switch to yellow points. They are placed to be one step left than the direction
+                curStartPt = world.GetNeighbour(curStartPt, dir - 1u);
+                endPt = world.GetNeighbour(endPt, dir - 1u);
+            }
         }
     }
 }
