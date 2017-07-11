@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
 #include "LobbyInterface.h"
 #include "ClientInterface.h"
@@ -29,8 +29,8 @@ class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
-class dskLobby :
-    public Desktop,
+class dskLobby:
+    public dskMenuBase,
     public ClientInterface,
     public LobbyInterface
 {

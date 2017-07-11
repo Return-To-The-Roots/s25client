@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,22 +14,36 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskMAINMENU_H_INCLUDED
-#define dskMAINMENU_H_INCLUDED
 
 #pragma once
 
-#include "desktops/dskMenuBase.h"
+#ifndef dskMenuBase_h__
+#define dskMenuBase_h__
 
-/// Klasse des Hauptmenü Desktops.
-class dskMainMenu: public dskMenuBase
+#include "Desktop.h"
+
+class glArchivItem_Bitmap;
+
+/// Base class for all the desktops making up the menus
+/// Adds the basic background logo and title and version texts at the bottom
+class dskMenuBase: public Desktop
 {
-    public:
-        dskMainMenu();
+public:
+    /// Create using the basic menu background
+    dskMenuBase();
+    /// Create using the specified background
+    dskMenuBase(glArchivItem_Bitmap* background);
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    enum ControlIds{
+        ID_txtVersion,
+        ID_txtURL,
+        ID_txtCopyright,
+        /// First free ID to use for own controls
+        ID_FIRST_FREE
+    };
+private:
+    void AddBottomTexts();
+
 };
 
-#endif // !dskMAINMENU_H_INCLUDED
+#endif // dskMenuBase_h__

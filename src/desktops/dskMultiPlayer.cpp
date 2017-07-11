@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
 #include "dskMultiPlayer.h"
 
 #include "WindowManager.h"
@@ -26,21 +25,15 @@
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskLAN.h"
 #include "ingameWindows/iwLobbyConnect.h"
-#include "ogl/glArchivItem_Font.h"
 
 /** @class dskMultiPlayer
  *
  *  Klasse des Multispieler Desktops.
  */
 
-dskMultiPlayer::dskMultiPlayer() : Desktop(LOADER.GetImageN("menu", 0))
+dskMultiPlayer::dskMultiPlayer()
 {
-    // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
-    // URL
-    AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
-    // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Internet - Lobby"
     AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Internet Lobby"), NormalFont);

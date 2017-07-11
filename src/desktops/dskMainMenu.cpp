@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
 #include "dskMainMenu.h"
 
 #include "WindowManager.h"
@@ -33,7 +32,6 @@
 #include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwTextfile.h"
-#include "ogl/glArchivItem_Font.h"
 
 enum{
     ID_txtVersion,
@@ -50,14 +48,9 @@ enum{
     ID_tmrDebugData
 };
 
-dskMainMenu::dskMainMenu() : Desktop(LOADER.GetImageN("menu", 0))
+dskMainMenu::dskMainMenu()
 {
-    // Version
-    AddVarText(ID_txtVersion, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
-    // URL
-    AddText(ID_txtURL, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
-    // Copyright
-    AddVarText(ID_txtCopyright, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Einzelspieler"
     AddTextButton(ID_btSingleplayer, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);

@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
-class dskDirectIP : public Desktop
+class dskDirectIP : public dskMenuBase
 {
     public:
         dskDirectIP();

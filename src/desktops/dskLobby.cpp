@@ -34,21 +34,17 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
+#include "helpers/containerUtils.h"
+#include "libutil/src/colors.h"
 
-#include <Log.h>
+#include "libutil/src/Log.h"
 #include <boost/lexical_cast.hpp>
 #include <set>
 
-dskLobby::dskLobby() : Desktop(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL)
+dskLobby::dskLobby(): dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL)
 {
-    // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
-    // URL
-    AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
-    // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Zurück"
     AddTextButton(3, 530, 530, 250, 22, TC_RED1, _("Back"), NormalFont);

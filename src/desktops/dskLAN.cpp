@@ -34,7 +34,7 @@
 
 namespace {
     enum{
-        ID_btBack = 3,
+        ID_btBack = dskMenuBase::ID_FIRST_FREE,
         ID_btConnect,
         ID_btAddServer,
         ID_tblServer,
@@ -43,15 +43,8 @@ namespace {
     };
 }
 
-dskLAN::dskLAN() : Desktop(LOADER.GetImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
+dskLAN::dskLAN(): dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
 {
-    // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
-    // URL
-    AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
-    // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
-
     // "Server hinzufügen"
     AddTextButton(ID_btAddServer, 530, 250, 250, 22, TC_GREEN2, _("Add Server"), NormalFont);
     // "Verbinden"
