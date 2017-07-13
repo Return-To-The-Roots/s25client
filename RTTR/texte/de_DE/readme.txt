@@ -32,7 +32,7 @@ B. Installation
   1. Windows
 
     Windows Vista, 7 und 10 werden unterstüzt. Windows XP und älter können
-    funktionieren werden aber nicht offiziell unterstützt.
+    funktionieren, werden aber nicht offiziell unterstützt.
 
     Zum Spielen sucht man die Verzeichnisse "DATA" und "GFX" im Original
     "Die Siedler 2 Gold" Spiel (oder S2 + Mission CD) und kopiert
@@ -113,7 +113,7 @@ C. Spiel
 
     Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus. Die
     Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu finden und
-    weitesgehend selbsterklärend. Man kann auch alleine im Mehrspieler-Modus
+    weitestgehend selbsterklärend. Man kann auch alleine im Mehrspieler-Modus
     spielen:
 
     1. Im Hauptmenü auf Mehrspieler gehen
@@ -192,7 +192,7 @@ C. Spiel
 
     Speichern ist im Spielmenü an der "originalen" Stelle möglich.
     Speichern ist auch aus dem Replaymodus an beliebiger Stelle möglich.
-    Laden von gespeicherten Spieleständen erfolt im Mehrspieler-Modus über den
+    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus über den
     Kartenauswahlbildschirm und im Einzelspieler-Modus über den entsprechenden
     Menüpunkt.
     Mitspieler benötigen kein eigenes Savegame, dieses wird automatisch
