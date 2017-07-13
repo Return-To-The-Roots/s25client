@@ -48,6 +48,9 @@ struct Point
     Point operator/(const T div) const;
 };
 
+/// Type for describing an extent/size etc.
+typedef Point<unsigned> Extent;
+
 template <typename T>
 inline const Point<T> Point<T>::Invalid()
 {
