@@ -24,7 +24,7 @@
 
 bool IsPointInRect(const Point<int>& pt, const Rect& rect)
 {
-    return (pt.x >= rect.left && pt.x <= rect.right && pt.y >= rect.top && pt.y <= rect.bottom);
+    return (pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y < rect.bottom);
 }
 
 bool Coll(const int x, const int y, const Rect& rect)

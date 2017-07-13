@@ -18,8 +18,11 @@
 #ifndef PointOutput_h__
 #define PointOutput_h__
 
+#include "Point.h"
+#include <iostream>
+
 template<typename T>
-std::ostream& operator<<(std::ostream &out, const Point<T>& point)
+std::ostream& operator<<(std::ostream& out, const Point<T>& point)
 {
     return out << "(" << point.x << ", " << point.y << ")";
 }
