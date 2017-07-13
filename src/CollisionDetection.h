@@ -18,9 +18,11 @@
 #ifndef COLLISIONDETECTION_H_INCLUDED
 #define COLLISIONDETECTION_H_INCLUDED
 
+#include "Point.h"
 
 struct Rect;
 
+bool IsPointInRect(const Point<int>& pt, const Rect& rect);
 // Punkt in einem Rechteck
 bool Coll(const int x, const int y, const Rect& rect);
 // Punkt in einem Rechteck

@@ -22,14 +22,19 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
+bool IsPointInRect(const Point<int>& pt, const Rect& rect)
+{
+    return (pt.x >= rect.left && pt.x <= rect.right && pt.y >= rect.top && pt.y <= rect.bottom);
+}
+
 bool Coll(const int x, const int y, const Rect& rect)
 {
-    return ( x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom );
+    return IsPointInRect(Point<int>(x, y), rect);
 }
 
 bool Coll(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight)
 {
-    return ( x >= rx && x < (rx + rwidth) && y >= ry && y < (ry + rheight));
+    return Coll(x, y, Rect(rx, ry, rwidth, rheight));
 }
 
 
