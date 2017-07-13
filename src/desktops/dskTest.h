@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,23 +14,23 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskMAINMENU_H_INCLUDED
-#define dskMAINMENU_H_INCLUDED
 
 #pragma once
 
+#ifndef dskTest_h__
+#define dskTest_h__
+
 #include "desktops/dskMenuBase.h"
 
-/// Klasse des Hauptmenü Desktops.
-class dskMainMenu: public dskMenuBase
+///  Klasse des Intro Desktops.
+class dskTest : public dskMenuBase
 {
     public:
-        dskMainMenu();
+        dskTest();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        bool Msg_LeftUp(const MouseCoords& mc) override;
+    private:
+
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
-#endif // !dskMAINMENU_H_INCLUDED
+#endif // dskTest_h__

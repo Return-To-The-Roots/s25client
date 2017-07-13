@@ -29,15 +29,16 @@
 #include "desktops/dskOptions.h"
 #include "desktops/dskIntro.h"
 #include "desktops/dskCredits.h"
+#include "desktops/dskTest.h"
+#include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwTextfile.h"
+#include "CollisionDetection.h"
 
-enum{
-    ID_txtVersion,
-    ID_txtURL,
-    ID_txtCopyright,
-    ID_btSingleplayer,
+enum
+{
+    ID_btSingleplayer = dskMenuBase::ID_FIRST_FREE,
     ID_btMultiplayer,
     ID_btOptions,
     ID_btIntro,
@@ -95,6 +96,17 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 
         SETTINGS.Save();
     }
+}
+
+bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
+{
+    ctrlText* txtVersion = GetCtrl<ctrlText>(dskMenuBase::ID_txtVersion);
+    if(mc.dbl_click && IsPointInRect(mc.GetPos(), txtVersion->GetBoundaryRect()))
+    {
+        WINDOWMANAGER.Switch(new dskTest);
+        return true;
+    }
+    return false;
 }
 
 void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
