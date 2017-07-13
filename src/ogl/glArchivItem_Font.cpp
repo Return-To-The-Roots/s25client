@@ -386,6 +386,26 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
     return getWidthInternal(text.begin(), text.begin() + length, max_width, maxNumChars);
 }
 
+Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsigned format) const
+{
+    if(text.empty())
+        return Rect(Point<int>(pos), 0, 0);
+    unsigned width = getWidth(text);
+    unsigned numLines = std::count(text.begin(), text.end(), '\n') + 1;
+    Rect result(Point<int>(pos), width, numLines * getHeight());
+    Point<int> offset(0,0);
+    if((format & 3) == DF_RIGHT)
+        offset.x = width;
+    else if((format & 3) == DF_CENTER)
+        offset.x = width / 2;
+    if((format & 12) == DF_BOTTOM)
+        offset.y = getHeight();
+    else if((format & 12) == DF_VCENTER)
+        offset.y = getHeight() / 2;
+    result.Move(-offset);
+    return result;
+}
+
 /**
  *  @brief
  */

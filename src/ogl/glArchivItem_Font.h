@@ -23,6 +23,7 @@
 #include "colors.h"
 #include "ogl/oglIncludes.h"
 #include "DrawPoint.h"
+#include "Rect.h"
 #include "helpers/containerUtils.h"
 #include "libsiedler2/src/ArchivItem_Font.h"
 #include "libutil/src/ucString.h"
@@ -48,7 +49,10 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
         unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
         /// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
-        inline unsigned short getHeight() const { return dy + 1; }
+        unsigned short getHeight() const { return dy + 1; }
+
+        /// Return the bounds of the text when draw at the specified position with the specified format
+        Rect getBounds(DrawPoint pos, const std::string& text, unsigned format) const;
 
         /// Gibt Infos, über die Unterbrechungspunkte in einem Text
         class WrapInfo
