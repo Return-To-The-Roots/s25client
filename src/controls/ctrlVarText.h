@@ -33,6 +33,8 @@ class ctrlVarText : public ctrlText
         ctrlVarText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int count, va_list liste);
         ~ctrlVarText() override;
 
+        Rect GetBoundaryRect() const override;
+
     protected:
         void Draw_() override;
         /// Returns the text with placeholders replaced by the actual vars

@@ -84,8 +84,10 @@ class Window
         unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width_) : width_; }
         /// liefert die Höhe des Fensters.
         unsigned short GetHeight(const bool scale = false) const { return (scale) ? ScaleY(height_) : height_; }
-        /// gets the extent of the window
-        Rect GetRect() const { return Rect(pos_, GetWidth(), GetHeight()); }
+        /// gets the extent of the window in absolute coordinates
+        Rect GetDrawRect() const;
+        /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to content)
+        virtual Rect GetBoundaryRect() const;
         /// setzt die Größe des Fensters
         virtual void Resize(unsigned short width, unsigned short height) { this->width_ = width; this->height_ = height; }
         /// setzt die Breite des Fensters

@@ -167,9 +167,9 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
         BOOST_REQUIRE_GT(wnd->GetWidth(), imgRect.right);
         BOOST_REQUIRE_GT(wnd->GetHeight(), imgRect.bottom);
         // Not over button or text
-        BOOST_REQUIRE(!Coll(imgRect, bt->GetRect()));
+        BOOST_REQUIRE(!Coll(imgRect, bt->GetDrawRect()));
         const ctrlMultiline* text = wnd->GetCtrls<ctrlMultiline>().front();
-        BOOST_REQUIRE(!Coll(imgRect, text->GetRect()));
+        BOOST_REQUIRE(!Coll(imgRect, text->GetDrawRect()));
     }
 }
 

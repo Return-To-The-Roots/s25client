@@ -136,6 +136,17 @@ DrawPoint Window::GetDrawPos() const
     return result;
 }
 
+Rect Window::GetDrawRect() const
+{
+    return Rect(GetDrawPos(), GetWidth(), GetHeight());
+}
+
+Rect Window::GetBoundaryRect() const
+{
+    // Default to draw rect
+    return GetDrawRect();
+}
+
 /**
  *  Sendet eine Fensternachricht an die Steuerelemente.
  *

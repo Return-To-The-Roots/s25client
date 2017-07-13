@@ -40,6 +40,18 @@ ctrlDeepening::ctrlDeepening(Window* parent,
     this->height_ = height;
 }
 
+Rect ctrlDeepening::GetBoundaryRect() const
+{
+    Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(width_, height_) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+    Rect drawRect = GetDrawRect();
+    Rect result;
+    result.left = std::min(txtRect.left, drawRect.left);
+    result.top = std::min(txtRect.top, drawRect.top);
+    result.right = std::max(txtRect.right, drawRect.right);
+    result.bottom = std::max(txtRect.bottom, drawRect.bottom);
+    return result;
+}
+
 /**
  *  zeichnet das Fenster.
  */

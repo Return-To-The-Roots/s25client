@@ -24,6 +24,16 @@ ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArch
 {
 }
 
+void ctrlBaseText::SetText(const std::string& text)
+{
+    this->text = text;
+}
+
+void ctrlBaseText::SetFont(glArchivItem_Font* font)
+{
+    this->font = font;
+}
+
 ctrlText::ctrlText(Window* parent,
                    unsigned int id,
                    unsigned short x,
@@ -34,6 +44,14 @@ ctrlText::ctrlText(Window* parent,
                    glArchivItem_Font* font)
     : Window(DrawPoint(x, y), id, parent), ctrlBaseText(text, color, font), format(format)
 {
+}
+
+Rect ctrlText::GetBoundaryRect() const
+{
+    if(text.empty())
+        return Rect(GetDrawPos(), 0, 0);
+    else
+        return font->getBounds(GetDrawPos(), text, format);
 }
 
 /**

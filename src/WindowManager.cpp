@@ -35,7 +35,7 @@
 
 WindowManager::WindowManager()
     : disable_mouse(false),
-      lastMousePos(Point<int>::Invalid()), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
+      lastMousePos(Point<int>::Invalid()), screenWidth(0), screenHeight(0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
 {
 }
 
@@ -267,7 +267,7 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
     for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
     {
         // FensterRect für Kollisionsabfrage
-        Rect window_rect = (*it)->GetRect();
+        Rect window_rect = (*it)->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
         if(Coll(mc.x, mc.y, window_rect)){
@@ -396,13 +396,16 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
     // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
-    if((time_now - last_left_click_time) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
-        && Point<int>(mc.x, mc.y) == last_left_click_point)
+    if((time_now - lastLeftClickTime) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
+        && mc.GetPos() == lastLeftClickPos)
+    {
         mc.dbl_click = true;
-
-    // Werte wieder erneut speichern
-    last_left_click_point = Point<int>(mc.x, mc.y);
-    last_left_click_time = time_now;
+    } else
+    {
+        // Werte wieder erneut speichern
+        lastLeftClickPos = mc.GetPos();
+        lastLeftClickTime = time_now;
+    }
 
     // ist der Maus-Klick-Fix aktiv?
     if(!disable_mouse)

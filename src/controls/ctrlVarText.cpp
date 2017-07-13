@@ -59,6 +59,11 @@ ctrlVarText::ctrlVarText(Window* parent,
 ctrlVarText::~ctrlVarText()
 {}
 
+Rect ctrlVarText::GetBoundaryRect() const
+{
+    return font->getBounds(GetDrawPos(), GetFormatedText(), format);
+}
+
 /**
  *  Zeichenmethode
  *

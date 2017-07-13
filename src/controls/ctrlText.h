@@ -30,9 +30,9 @@ class ctrlBaseText
         ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
 
         /// Setzt Text
-        void SetText(const std::string& text) { this->text = text; }
+        void SetText(const std::string& text);
         /// Setzt Schriftart
-        void SetFont(glArchivItem_Font* font) { this->font = font; }
+        void SetFont(glArchivItem_Font* font);
         /// Setzt Textfarbe
         void SetColor(const unsigned color) { this->color_ = color; }
 
@@ -40,10 +40,11 @@ class ctrlBaseText
         const std::string& GetText() const { return text; }
 
     protected:
-
         std::string text;
         unsigned int color_;
         glArchivItem_Font* font;
+    private:
+        Rect curTextBounds;
 };
 
 
@@ -51,6 +52,8 @@ class ctrlText : public Window, public ctrlBaseText
 {
     public:
         ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+
+        Rect GetBoundaryRect() const override;
     protected:
         void Draw_() override;
 

@@ -118,8 +118,8 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe
 
         // Für Doppelklick merken:
-        unsigned last_left_click_time; /// Zeit des letzten Links-Klicks
-        Point<int> last_left_click_point; /// Position beim letzten Links-Klick
+        unsigned lastLeftClickTime; /// Zeit des letzten Links-Klicks
+        Point<int> lastLeftClickPos; /// Position beim letzten Links-Klick
 
 };
 
