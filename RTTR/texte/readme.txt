@@ -32,7 +32,7 @@ B. Installation
   1. Windows
 
     Windows Vista, 7 and 10 are supported. Windows XP or older might work but
-    is not officially supported.
+    are not officially supported.
 
     To play the game search for the "DATA" und "GFX" directories in the original
     S2 Gold (or S2 + Mission CD) game (from a valid installation or directly from
@@ -57,7 +57,7 @@ B. Installation
     You will need the following packages:
     (Use your package-manager or do it manually)
 
-    libsndfile libsamplerate libsdl1.2 libsdl-mixer1.2 gettext
+    libsdl1.2 libsdl-mixer1.2 gettext
 
     Make sure that DirectRendering works:
 
@@ -109,8 +109,8 @@ C. Game
 
   1. Create a game
    
-    A singleplayer mode is not available yet, but you can play on your 
-    own by doing this:      
+    There is a Singleplayer- and a Multiplayer-Modus which can be found in the
+    main menu. You can also play alone in the Multiplayer-Modus:      
 
     1. Choose "Multiplayer"
     2. "Direct IP"
@@ -125,7 +125,10 @@ C. Game
        configuration.     
        Notice: To start the game you have to fill all player slots with 
        computer players or human players.
-       Alternatively you can close the slots by clicking on them. 
+       Alternatively you can close the slots by clicking on them.
+       
+    For a quick Singleplayer-Game click "Unlimited Play" in the
+    Singleplayer-Menu and follow the steps 5 & 6 above.
    
   2. Multiplayer game
 
@@ -182,8 +185,8 @@ C. Game
     
     Saving a game works just like in the original game. It also works at any
     position in a replay.
-    To load you have to make a multiplayer game and choose "Load game" in the
-    map menu.
+    To load a multiplayer savegame choose "Load game" in the map menu. For
+    singleplayer there is a button in the singleplayer menu.
     It is sufficient if only one player has the savegame file.
 
 
@@ -216,8 +219,9 @@ D. Crash and bugs
 
       https://github.com/Return-To-The-Roots/s25client
 
-  Github increases the facility of inspection and makes it easy for you to see
-  if your bug is already fixed. Also we might have further question for you.
+  By using Github we can keep the bug reports organized and it makes it easy for
+  you to see if your bug is already fixed. It also allows further communication
+  between you and us, e.g. when we need more information from you.
 
   Alternatively you can post the bug in the forum or visit us on IRC
   channel: irc.freenode.net:6667/#siedler2.5

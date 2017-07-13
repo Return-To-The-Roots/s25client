@@ -19,8 +19,8 @@ E. Übersicht: Updates und Änderungen
 
 A. Allgemeine Hinweise
 
-  Das Spiel benötigt eine OpenGL-fähige Grafikkarte mit schätzungsweise
-  mindestens 64 MiB Grafikspeicher. Ein Prozessor mit 800 MHz reicht aus.
+  Das Spiel benötigt eine OpenGL-fähige Grafikkarte mit mindestens
+  64 MB Grafikspeicher. Ein Prozessor mit 800 MHz reicht aus.
 
   Weiterhin benötigt man eine installierte "Siedler 2 Gold-Edition" oder die
   Originalversion + Missions-CD.
@@ -31,8 +31,8 @@ B. Installation
 
   1. Windows
 
-    Windows Vista, 7 und 10 werden unterstüzt. Windows XP und älter kann
-    funktionieren wird aber nicht offiziell unterstützt.
+    Windows Vista, 7 und 10 werden unterstüzt. Windows XP und älter können
+    funktionieren werden aber nicht offiziell unterstützt.
 
     Zum Spielen sucht man die Verzeichnisse "DATA" und "GFX" im Original
     "Die Siedler 2 Gold" Spiel (oder S2 + Mission CD) und kopiert
@@ -59,7 +59,7 @@ B. Installation
     Zunächst benötigt man folgende Pakete
     (ggf über Paketmanager/per Hand installieren):
 
-    libsndfile libsamplerate libsdl1.2 libsdl-mixer1.2 gettext timidity
+    libsdl1.2 libsdl-mixer1.2 gettext
 
     Weiterhin sollte man sicherstellen, dass DirectRendering funktioniert:
 
@@ -111,8 +111,10 @@ C. Spiel
 
   1. Erstellen eines Spiels
 
-    Einen richtigen Einzelspielermodus gibt es in dem Sinne noch nicht, man
-    kann aber trotzdem folgendermaßen alleine im Multiplayermodus siedeln:
+    Es gibt sowohl einen Einzelspieler- als auch einen Mehrspieler-Modus. Die
+    Einzelspieler-Modi sind unter dem entsprechenden Menüpunkt zu finden und
+    weitesgehend selbsterklärend. Man kann auch alleine im Mehrspieler-Modus
+    spielen:
 
     1. Im Hauptmenü auf Mehrspieler gehen
     2. Direkte IP
@@ -130,6 +132,9 @@ C. Spiel
        mit menschlichen oder KI-Spielern besetzt werden, oder die Slots
        müssen geschlossen werden (mit Klick auf die Buttons unter
        "Spielername").
+       
+    Im Einzelspieler-Modus klickt man auf "Endlosspiel" und folgt dann
+    obigen Schritten ab Schritt 5.
 
   2. Multiplayer-Spiele
 
@@ -147,9 +152,9 @@ C. Spiel
        Login-Daten für den Login in die Spiel-Lobby verwendet werden.
 
     c) LAN Spiele
-       Der LAN-Bereich ist ähnlich der Internet-Lobby funktioniert aber über das
+       Der LAN-Bereich ist ähnlich der Internet-Lobby, funktioniert aber über das
        lokale Netz und benötigt kein Login. Es können auch Programme wie Hamachi
-       verwendet werden um virtuelle LANs über das Internet zu erstellen.
+       verwendet werden, um virtuelle LANs über das Internet zu erstellen.
 
     Für das Spiel wird Port 3665 (TCP) genutzt. Dieser muss, falls man selbst
     das Spiel eröffnen möchte, u.a. bei Verwendung eines Routers, einer
@@ -166,8 +171,8 @@ C. Spiel
     Die Schneckensymbole im oberen Teil stehen für Lags der jeweiligen
     Spieler.
 
-    Wenn der Host das Spiel verlässt, können die übrigen Spieler noch nicht
-    das Spiel weiter fortführen.
+    Wenn der Host das Spiel verlässt, können die übrigen Spieler das Spiel
+    nicht weiter fortführen.
 
     Zum Pausieren/Fortführen dient die Taste "P" (nur vom Host möglich).
     Zum Chatten muss man "Enter" drücken, dann kommt ein Chatfenster.
@@ -187,7 +192,9 @@ C. Spiel
 
     Speichern ist im Spielmenü an der "originalen" Stelle möglich.
     Speichern ist auch aus dem Replaymodus an beliebiger Stelle möglich.
-    Laden von Spielen kann man nur aus dem Kartenauswahlbildschirm.
+    Laden von gespeicherten Spieleständen erfolt im Mehrspieler-Modus über den
+    Kartenauswahlbildschirm und im Einzelspieler-Modus über den entsprechenden
+    Menüpunkt.
     Mitspieler benötigen kein eigenes Savegame, dieses wird automatisch
     beim Verbinden übertragen.
 
@@ -200,13 +207,13 @@ C. Spiel
 
 D. Abstürze und Fehler
 
-  Wir arbeiten zwar hart daran, das Spiel immer weiter zu verbessern, leider
-  lassen sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler nicht
-  ganz ausschließen.
+  Wir arbeiten hart daran das Spiel immer weiter zu verbessern. Leider lassen
+  sich Abstürze, Asyncs, Speicherzugriffs- und sonstige Fehler nicht ganz
+  ausschließen.
 
   Durch Replays können Fehler leicht rekonstruiert werden. Ihr könnt uns
   mit dem Zusenden euer Replays helfen, weitere zu finden. Bitte stellt
-  aber sicher, dass ihr immer die neuste Nightly-Version verwendet. Fehler
+  dabei sicher, dass ihr immer die neuste Nightly-Version verwendet. Fehler
   aus möglicherweise veralteten Versionen sind mitunter schon lange behoben.
 
   Falls ein Async aufgetreten ist, findet ihr im LOGS-Verzeichnis
@@ -220,8 +227,9 @@ D. Abstürze und Fehler
       https://github.com/Return-To-The-Roots/s25client
 
   Github erhöht die Übersichtlichkeit für Bugs und ermöglicht euch zudem selber
-  einsehen zu können, wann der Bug gefixt wurde. Außerdem könnten wir weitere
-  Fragen an euch haben.
+  einsehen zu können, wann der Bug gefixt wurde. Außerdem bietet es eine gute
+  Möglichkeit der Kommunikation zwischen uns und euch, insbesondere, wenn wir
+  noch weitere Informationen von euch benötigen.
 
   Alternativ könnt ihr euch auch im Forum oder im IRC-Channel unter
   irc.freenode.net:6667/#siedler2.5 melden.
