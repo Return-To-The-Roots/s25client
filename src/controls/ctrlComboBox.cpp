@@ -107,14 +107,14 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
     ctrlList* list = GetCtrl<ctrlList>(0);
 
     // Irgendwo anders hingeklickt --> Liste ausblenden
-    if(!readonly && !Coll(mc.x, mc.y, GetX(), GetY(), width_, height_ + list->GetHeight()))
+    if(!readonly && !IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_ + list->GetHeight()))
     {
         // Liste wieder ausblenden
         ShowList(false);
         return false;
     }
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(!readonly && IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Liste wieder ein/ausblenden
         ShowList(!list->IsVisible());
@@ -139,7 +139,7 @@ bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
     bool ret = RelayMouseMessage(&Window::Msg_RightDown, mc);
 
     // Clicked on list -> close it
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()))
+    if(!readonly && IsPointInRect(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()))
     {
         // Liste wieder ausblenden
         ShowList(false);
@@ -157,9 +157,9 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
     if(list->IsVisible())
     {
         // Scrolled in opened list ->
-        if(Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()))
+        if(IsPointInRect(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()))
             return RelayMouseMessage(&Window::Msg_WheelUp, mc);
-    }else if(Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    }else if(IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Scrolled without list opened
         if (list->GetSelection() > 0)
@@ -174,13 +174,13 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
 {
     ctrlList* list = GetCtrl<ctrlList>(0);
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->IsVisible())
+    if(!readonly && IsPointInRect(mc.x, mc.y, GetX(), GetY() + height_, width_, height_ + list->GetHeight()) && list->IsVisible())
     {
         // Scrolled in opened list ->
         return RelayMouseMessage(&Window::Msg_WheelDown, mc);
     }
 
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(!readonly && IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         // Scrolled without list opened
         if (list->GetSelection() + 1 < list->GetLineCount())

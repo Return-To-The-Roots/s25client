@@ -120,7 +120,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
         LOADER.GetImageN("resource", 43)->getHeight()
         );
 
-    if(Coll(mc.x, mc.y, title_rect))
+    if(IsPointInRect(mc.x, mc.y, title_rect))
     {
         // Start mit Bewegung
         isMoving = true;
@@ -136,7 +136,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 
     for(unsigned char i = 0; i < 2; ++i)
     {
-        if(Coll(mc.x, mc.y, rec[i]))
+        if(IsPointInRect(mc.x, mc.y, rec[i]))
             button_state[i] = BUTTON_PRESSED;
     }
 }
@@ -156,7 +156,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
     for(unsigned i = 0; i < 2; ++i)
     {
         button_state[i] = BUTTON_UP;
-        if(Coll(mc.x, mc.y, rec[i]))
+        if(IsPointInRect(mc.x, mc.y, rec[i]))
         {
             if(i == 0 && (!IsModal() || closeOnRightClick_))
                 Close();
@@ -215,7 +215,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
 
     for(unsigned char i = 0; i < 2; ++i)
     {
-        if(Coll(mc.x, mc.y, rec[i]))
+        if(IsPointInRect(mc.x, mc.y, rec[i]))
         {
             if(mc.ldown)
                 button_state[i] = BUTTON_PRESSED;

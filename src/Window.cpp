@@ -1074,7 +1074,7 @@ bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
         if(it->first == window)
             continue; // Locking window can always access its locked regions
         // All others cannot:
-        if(Coll(mc.x, mc.y, it->second))
+        if(IsPointInRect(mc.x, mc.y, it->second))
             return true;
     }
     return false;

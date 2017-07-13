@@ -355,7 +355,7 @@ void dskGameInterface::Msg_PaintAfter()
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+    if(IsPointInRect(mc.x, mc.y, VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
             VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4, 37 * 4, 32 * 4))
         return false;
 

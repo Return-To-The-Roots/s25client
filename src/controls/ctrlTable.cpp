@@ -291,7 +291,7 @@ void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
 
 bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
+    if(IsPointInRect(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(parent_)
@@ -305,7 +305,7 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
 
 bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_))
+    if(IsPointInRect(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_))
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(parent_)
@@ -325,7 +325,7 @@ int ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
 bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
@@ -337,7 +337,7 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
 
 bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);
@@ -349,7 +349,7 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 
 bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
 {
-    if(Coll(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
+    if(IsPointInRect(mc.x, mc.y, GetX(), GetY() + header_height, width_ - 20, height_ - header_height))
     {
         if(mc.dbl_click && parent_){
             int selection = GetSelectionFromMouse(mc);

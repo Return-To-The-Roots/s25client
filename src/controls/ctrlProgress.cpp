@@ -157,7 +157,7 @@ void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
 bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
 {
     // Test if clicked on progress bar
-    if(Coll(mc.x, mc.y,
+    if(IsPointInRect(mc.x, mc.y,
             GetX() + height_ + 2 + padding.x, GetY() + 4 + padding.y,
             width_ - height_ * 2 - 4 - 2 * padding.x, height_ - 8 - 2 * padding.y))
     {
@@ -183,7 +183,7 @@ bool ctrlProgress::Msg_LeftUp(const MouseCoords& mc)
 bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         Msg_ButtonClick(1);
         return true;
@@ -194,7 +194,7 @@ bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 bool ctrlProgress::Msg_WheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         Msg_ButtonClick(0);
         return true;
@@ -207,7 +207,7 @@ bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
     // an Buttons weiterleiten
     RelayMouseMessage(&Window::Msg_MouseMove, mc);
 
-    if(Coll(mc.x, mc.y, GetX() + height_ + padding.x, GetY(), width_ - height_ * 2 - padding.x * 2, height_))
+    if(IsPointInRect(mc.x, mc.y, GetX() + height_ + padding.x, GetY(), width_ - height_ * 2 - padding.x * 2, height_))
     {
         WINDOWMANAGER.SetToolTip(this, tooltip_);
         return true;

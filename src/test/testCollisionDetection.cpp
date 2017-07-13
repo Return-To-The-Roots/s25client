@@ -41,6 +41,18 @@ BOOST_AUTO_TEST_CASE(RectCtor)
     BOOST_REQUIRE_EQUAL(rect3.GetSize(), size);
 }
 
+BOOST_AUTO_TEST_CASE(RectMove)
+{
+    const Rect rectOrig(Point<int>(10, 20), Extent(5, 10));
+    Rect rect = rectOrig;
+    rect.Move(Point<int>(5, 7));
+    BOOST_REQUIRE_EQUAL(rect.GetOrigin(), Point<int>(15, 27));
+    BOOST_REQUIRE_EQUAL(rect.GetSize(), rectOrig.GetSize());
+    rect.Move(-Point<int>(5, 7));
+    BOOST_REQUIRE_EQUAL(rect.GetOrigin(), rectOrig.GetOrigin());
+    BOOST_REQUIRE_EQUAL(rect.GetSize(), rectOrig.GetSize());
+}
+
 BOOST_AUTO_TEST_CASE(PointInRect)
 {
     Rect rect(Point<int>(10, 20), Extent(5, 10));
@@ -69,6 +81,52 @@ BOOST_AUTO_TEST_CASE(PointInRect)
     BOOST_REQUIRE(!IsPointInRect(Point<int>(12, 31), rect));
     // Right
     BOOST_REQUIRE(!IsPointInRect(Point<int>(16, 25), rect));
+}
+
+BOOST_AUTO_TEST_CASE(RectIntersect)
+{
+    Rect rect1(Point<int>(10, 20), Extent(5, 15));
+    Rect rect2(rect1);
+    // Identity
+    BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
+    // Just in and out on each line
+    // Right
+    rect2.Move(Point<int>(rect1.GetSize().x, 0));
+    BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
+    rect2.Move(-Point<int>(1, 0));
+    BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
+    // Left
+    rect2 = rect1;
+    rect2.Move(-Point<int>(rect1.GetSize().x, 0));
+    BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
+    rect2.Move(Point<int>(1, 0));
+    BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
+    // Bottom
+    rect2 = rect1;
+    rect2.Move(Point<int>(0, rect1.GetSize().y));
+    BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
+    rect2.Move(-Point<int>(0, 1));
+    BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
+    // Top
+    rect2 = rect1;
+    rect2.Move(-Point<int>(0, rect1.GetSize().y));
+    BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
+    rect2.Move(Point<int>(0, 1));
+    BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
+    BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
+
+    // Empty rect
+    Rect emptyRect(rect1.GetOrigin(), Extent(0, 0));
+    BOOST_REQUIRE(!DoRectsIntersect(rect1, emptyRect));
+    BOOST_REQUIRE(!DoRectsIntersect(emptyRect, rect1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -104,7 +104,7 @@ bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
     if(mc.ldown)
     {
         // Mauszeiger auf der Karte?
-        if(Coll(mc.x, mc.y, GetX() + GetLeft(), GetY() + GetTop(), width_show, height_show))
+        if(IsPointInRect(mc.x, mc.y, GetX() + GetLeft(), GetY() + GetTop(), width_show, height_show))
         {
             // Koordinate feststellen
             unsigned short map_x = (mc.x - (GetX() + GetLeft())) * minimap.GetMapWidth() / width_show;

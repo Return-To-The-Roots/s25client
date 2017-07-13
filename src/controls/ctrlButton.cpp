@@ -60,7 +60,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 
 bool ctrlButton::IsMouseOver(const int mouseX, const int mouseY) const
 {
-    return Coll(mouseX, mouseY, GetX(), GetY(), width_, height_);
+    return IsPointInRect(mouseX, mouseY, GetX(), GetY(), width_, height_);
 }
 
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)

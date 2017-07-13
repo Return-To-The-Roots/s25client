@@ -48,7 +48,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Neue Selektierung
         mouseover = (mc.y - (GetY() + 2) ) / font->getHeight();
@@ -71,7 +71,7 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
@@ -93,7 +93,7 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Tooltip löschen, sonst bleibt er ewig
         WINDOWMANAGER.SetToolTip(this, "");
@@ -114,7 +114,7 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - 22, height_ - 4))
     {
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
         if(mc.dbl_click && parent_ && selection_ >= 0)
@@ -130,7 +130,7 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
 bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
@@ -143,7 +143,7 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
 bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
 {
     // If mouse in list
-    if(Coll(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
+    if(IsPointInRect(mc.x, mc.y, GetX() + 2, GetY() + 2, width_ - /*2*/2, height_ - 4))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);

@@ -193,7 +193,7 @@ void ctrlEdit::Msg_PaintAfter()
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    if((newFocus_ = Coll(mc.x, mc.y, GetX(), GetY(), width_, height_)))
+    if((newFocus_ = IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_)))
         return false; /// vorläufig, um Fokus zu für andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
     else
         return false;
@@ -202,7 +202,7 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 // vorläufig
 bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 {
-    if(!Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(!IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
         newFocus_ = false;
 
     return false;

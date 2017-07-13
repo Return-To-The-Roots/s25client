@@ -48,7 +48,7 @@ ctrlCheck::ctrlCheck(Window* parent,
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(!readonly && Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(!readonly && IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
     {
         check = !check;
         parent_->Msg_CheckboxChange(GetID(), check);

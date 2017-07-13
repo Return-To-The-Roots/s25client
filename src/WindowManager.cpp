@@ -270,7 +270,7 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
         Rect window_rect = (*it)->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(Coll(mc.x, mc.y, window_rect)){
+        if(IsPointInRect(mc.x, mc.y, window_rect)){
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)

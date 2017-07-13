@@ -257,11 +257,11 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 
 bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 {
-    if (Coll(mc.x, mc.y, view->GetPos().x, view->GetPos().y, view->GetSize().x, view->GetSize().y) &&
-        !Coll(mc.x, mc.y, GetCtrl<ctrlImageButton>(1)->GetX(), GetCtrl<ctrlImageButton>(1)->GetY(), GetCtrl<ctrlImageButton>(1)->GetWidth(), GetCtrl<ctrlImageButton>(1)->GetHeight()) &&
-        !Coll(mc.x, mc.y, GetCtrl<ctrlImageButton>(2)->GetX(), GetCtrl<ctrlImageButton>(2)->GetY(), GetCtrl<ctrlImageButton>(2)->GetWidth(), GetCtrl<ctrlImageButton>(2)->GetHeight()) &&
-        !Coll(mc.x, mc.y, GetCtrl<ctrlImageButton>(3)->GetX(), GetCtrl<ctrlImageButton>(3)->GetY(), GetCtrl<ctrlImageButton>(3)->GetWidth(), GetCtrl<ctrlImageButton>(3)->GetHeight()) &&
-        !Coll(mc.x, mc.y, GetCtrl<ctrlImageButton>(4)->GetX(), GetCtrl<ctrlImageButton>(4)->GetY(), GetCtrl<ctrlImageButton>(4)->GetWidth(), GetCtrl<ctrlImageButton>(4)->GetHeight()))
+    if (IsPointInRect(mc.x, mc.y, view->GetPos().x, view->GetPos().y, view->GetSize().x, view->GetSize().y) &&
+        !IsPointInRect(mc.x, mc.y, GetCtrl<ctrlImageButton>(1)->GetX(), GetCtrl<ctrlImageButton>(1)->GetY(), GetCtrl<ctrlImageButton>(1)->GetWidth(), GetCtrl<ctrlImageButton>(1)->GetHeight()) &&
+        !IsPointInRect(mc.x, mc.y, GetCtrl<ctrlImageButton>(2)->GetX(), GetCtrl<ctrlImageButton>(2)->GetY(), GetCtrl<ctrlImageButton>(2)->GetWidth(), GetCtrl<ctrlImageButton>(2)->GetHeight()) &&
+        !IsPointInRect(mc.x, mc.y, GetCtrl<ctrlImageButton>(3)->GetX(), GetCtrl<ctrlImageButton>(3)->GetY(), GetCtrl<ctrlImageButton>(3)->GetWidth(), GetCtrl<ctrlImageButton>(3)->GetHeight()) &&
+        !IsPointInRect(mc.x, mc.y, GetCtrl<ctrlImageButton>(4)->GetX(), GetCtrl<ctrlImageButton>(4)->GetY(), GetCtrl<ctrlImageButton>(4)->GetWidth(), GetCtrl<ctrlImageButton>(4)->GetHeight()))
     {
         scrollOrigin.x = mc.x;
         scrollOrigin.y = mc.y;
