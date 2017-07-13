@@ -391,7 +391,7 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsign
     if(text.empty())
         return Rect(Point<int>(pos), 0, 0);
     unsigned width = getWidth(text);
-    unsigned numLines = std::count(text.begin(), text.end(), '\n') + 1;
+    unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
     Rect result(Point<int>(pos), width, numLines * getHeight());
     Point<int> offset(0,0);
     if((format & 3) == DF_RIGHT)

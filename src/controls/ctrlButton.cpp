@@ -23,6 +23,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
+#include "ExtensionList.h"
 #include <algorithm>
 
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
