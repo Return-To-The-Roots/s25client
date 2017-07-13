@@ -25,6 +25,7 @@
 #include "gameTypes/TextureColor.h"
 #include "Rect.h"
 #include "DrawPoint.h"
+#include "libutil/src/colors.h"
 #include <map>
 #include <vector>
 
@@ -203,7 +204,8 @@ class Window
                                               glArchivItem_Map* const map);
 
         /// Zeichnet einen 3D-Rahmen.
-        static void Draw3D(DrawPoint drawPt, const unsigned short width, unsigned short height, const TextureColor tc, const unsigned short type, const bool illuminated = false, const bool draw_content = true);
+        static void Draw3D(DrawPoint drawPt, unsigned short width, unsigned short height, TextureColor tc,
+            unsigned short type, bool illuminated = false, bool drawContent = true, unsigned color = COLOR_WHITE);
         /// Zeichnet ein Rechteck
         static void DrawRectangle(DrawPoint drawPt, unsigned short width, unsigned short height, unsigned int color);
         /// Zeichnet eine Linie

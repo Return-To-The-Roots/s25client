@@ -126,6 +126,7 @@ void ctrlButton::Draw_()
 
     if(tc != TC_INVISIBLE)
     {
+        unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
         if(hasBorder)
         {
             bool isCurIlluminated = isIlluminated;
@@ -137,7 +138,7 @@ void ctrlButton::Draw_()
                 type = BUTTON_UP;
                 isCurIlluminated |= isChecked;
             }
-            Draw3D(GetDrawPos(), width_, height_, tc, type, isCurIlluminated);
+            Draw3D(GetDrawPos(), width_, height_, tc, type, isCurIlluminated, true, color);
         } else
         {
             unsigned texture;
@@ -145,7 +146,6 @@ void ctrlButton::Draw_()
                 texture = tc * 2 + 1;
             else
                 texture = tc * 2;
-            unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
             if(isIlluminated)
             {
                 glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -172,10 +172,12 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 void ctrlTextButton::DrawContent() const
 {
-    const bool isHighlighted = state == BUTTON_PRESSED || isChecked;
+    const bool isPressed = state == BUTTON_PRESSED || isChecked;
     unsigned color;
-    if(this->color_ == COLOR_YELLOW && isHighlighted)
+    if(this->color_ == COLOR_YELLOW && isPressed)
         color = 0xFFFFAA00;
+    else if(!isEnabled)
+        color = COLOR_GREY;
     else
         color = this->color_;
 
@@ -189,7 +191,7 @@ void ctrlTextButton::DrawContent() const
             WINDOWMANAGER.SetToolTip(this, text);
     }
 
-    const unsigned short offset = isHighlighted ? 2 : 0;
+    const unsigned short offset = isPressed ? 2 : 0;
     font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset),
                text,
                glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,

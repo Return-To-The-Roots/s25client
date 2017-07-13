@@ -875,12 +875,13 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
  *  Zeichnet einen 3D-Rahmen.
  */
 void Window::Draw3D(DrawPoint drawPt,
-    const unsigned short width,
-    const unsigned short height,
-    const TextureColor tc,
-    const unsigned short type,
-    const bool illuminated,
-    const bool draw_content)
+    unsigned short width,
+    unsigned short height,
+    TextureColor tc,
+    unsigned short type,
+    bool illuminated,
+    bool drawContent,
+    unsigned color)
 {
     if(width < 4 || height < 4 || tc == TC_INVISIBLE)
         return;
@@ -929,7 +930,7 @@ void Window::Draw3D(DrawPoint drawPt,
     glEnd();
     glEnable(GL_TEXTURE_2D);
 
-    if(!draw_content)
+    if(!drawContent)
         return;
 
     if(illuminated)
@@ -942,14 +943,13 @@ void Window::Draw3D(DrawPoint drawPt,
     DrawPoint contentPos = drawPt + DrawPoint(2, 2);
     DrawPoint contentSize(width - 4, height - 4);
     DrawPoint contentOffset(0, 0);
-    unsigned texture = (type == 1) ? tc * 2 : tc * 2 + 1;
-    glArchivItem_Bitmap* contentImg = LOADER.GetImageN("io", texture);
     if(type <= 1)
     {
         // Move the content a bit to left upper for non-deepened version
         contentOffset = DrawPoint(2, 2);
     }
-    contentImg->Draw(contentPos, 0, 0, contentOffset.x, contentOffset.y, contentSize.x, contentSize.y);
+    unsigned texture = (type == 1) ? tc * 2 : tc * 2 + 1;
+    LOADER.GetImageN("io", texture)->Draw(contentPos, 0, 0, contentOffset.x, contentOffset.y, contentSize.x, contentSize.y, color);
 
     if(illuminated)
     {
