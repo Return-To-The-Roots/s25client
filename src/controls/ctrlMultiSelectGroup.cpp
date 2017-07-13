@@ -47,7 +47,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(true); break;
-        case CHECK:      button->SetCheck(true);       break;
+        case CHECK:      button->SetChecked(true);       break;
         case SHOW:       button->SetVisible(false);     break;
     }
 
@@ -68,7 +68,7 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(false); break;
-        case CHECK:      button->SetCheck(false);       break;
+        case CHECK:      button->SetChecked(false);       break;
         case SHOW:       button->SetVisible(true);        break;
     }
 

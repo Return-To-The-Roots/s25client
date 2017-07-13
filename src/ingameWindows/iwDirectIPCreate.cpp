@@ -175,7 +175,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
 void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool button)
 {
     // Text setzen
-    GetCtrl<ctrlText>(6)->SetColor(color);
+    GetCtrl<ctrlText>(6)->SetTextColor(color);
     GetCtrl<ctrlText>(6)->SetText(text);
 
     // Button (de)aktivieren

@@ -29,22 +29,19 @@ class ctrlBaseText
 
         ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
 
-        /// Setzt Text
         void SetText(const std::string& text);
+        const std::string& GetText() const { return text; }
         /// Setzt Schriftart
         void SetFont(glArchivItem_Font* font);
         /// Setzt Textfarbe
-        void SetColor(const unsigned color) { this->color_ = color; }
+        void SetTextColor(unsigned color) { this->color_ = color; }
+        unsigned GetTextColor(unsigned color) const { return color_; }
 
-        /// Gibt Text zurück
-        const std::string& GetText() const { return text; }
 
     protected:
         std::string text;
-        unsigned int color_;
+        unsigned color_;
         glArchivItem_Font* font;
-    private:
-        Rect curTextBounds;
 };
 
 

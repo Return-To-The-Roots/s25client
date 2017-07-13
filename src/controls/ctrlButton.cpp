@@ -23,11 +23,12 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
+#include <algorithm>
 
 ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
                        unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
-    : Window(DrawPoint(x, y), id, parent, width, height), tc(tc), state(BUTTON_UP), border(true),
-      check(false), illuminated(false), enabled(true)
+    : Window(DrawPoint(x, y), id, parent, width, height), tc(tc), state(BUTTON_UP), hasBorder(true),
+      isChecked(false), isIlluminated(false), isEnabled(true)
 {
     SetTooltip(tooltip);
 }
@@ -38,9 +39,14 @@ ctrlButton::~ctrlButton()
     WINDOWMANAGER.SetToolTip(this, "");
 }
 
+void ctrlButton::SwapTooltip(ctrlButton* otherBt)
+{
+    std::swap(tooltip_, otherBt->tooltip_);
+}
+
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
-    if(enabled && IsMouseOver(mc.x, mc.y))
+    if(isEnabled && IsMouseOver(mc.x, mc.y))
     {
         if(state != BUTTON_PRESSED)
             state = BUTTON_HOVER;
@@ -65,7 +71,7 @@ bool ctrlButton::IsMouseOver(const int mouseX, const int mouseY) const
 
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(enabled && IsMouseOver(mc.x, mc.y))
+    if(isEnabled && IsMouseOver(mc.x, mc.y))
     {
         state = BUTTON_PRESSED;
         return true;
@@ -80,7 +86,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
     {
         state =  BUTTON_UP;
 
-        if(enabled && IsMouseOver(mc.x, mc.y))
+        if(isEnabled && IsMouseOver(mc.x, mc.y))
         {
             parent_->Msg_ButtonClick(GetID());
             return true;
@@ -114,26 +120,26 @@ void ctrlButton::Draw_()
 
     if(tc != TC_INVISIBLE)
     {
-        if(border)
+        if(hasBorder)
         {
-            bool isCurIlluminated = illuminated;
+            bool isCurIlluminated = isIlluminated;
             unsigned short type;
-            if(enabled)
-                type = (unsigned short)(check ? 2 : state);
+            if(isEnabled)
+                type = (unsigned short)(isChecked ? 2 : state);
             else
             {
                 type = 0;
-                isCurIlluminated |= check;
+                isCurIlluminated |= isChecked;
             }
             Draw3D(GetDrawPos(), width_, height_, tc, type, isCurIlluminated);
         } else
         {
             unsigned texture;
-            if(enabled && (state == BUTTON_UP || state == BUTTON_PRESSED))
+            if(isEnabled && (state == BUTTON_UP || state == BUTTON_PRESSED))
                 texture = tc * 2 + 1;
             else
                 texture = tc * 2;
-            unsigned color = enabled ? COLOR_WHITE : 0xFF666666;
+            unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
             LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_, color);
         }
     }
@@ -153,7 +159,7 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 void ctrlTextButton::DrawContent() const
 {
-    const bool isHighlighted = state == BUTTON_PRESSED || check;
+    const bool isHighlighted = state == BUTTON_PRESSED || isChecked;
     unsigned color;
     if(this->color_ == COLOR_YELLOW && isHighlighted)
         color = 0xFFFFAA00;
@@ -192,9 +198,9 @@ void ctrlImageButton::DrawContent() const
     // Bild
     if(image)
     {
-        const unsigned short offset = ((state == BUTTON_PRESSED || check) && enabled) ? 2 : 0;
+        const unsigned short offset = ((state == BUTTON_PRESSED || isChecked) && isEnabled) ? 2 : 0;
         unsigned color = modulation_color;
-        if(!enabled && modulation_color == COLOR_WHITE)
+        if(!isEnabled && modulation_color == COLOR_WHITE)
             color = 0xFF555555;
         image->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset), 0, 0, 0, 0, 0, 0, color);
     }
@@ -206,7 +212,7 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short
                                  unsigned short width, unsigned short height, const TextureColor tc,
                                  unsigned int fillColor, const std::string& tooltip) :
     ctrlButton(parent, id, x, y, width, height, tc, tooltip),
-    fillColor(fillColor)
+    ctrlBaseColor(fillColor)
 {
 }
 
@@ -214,11 +220,5 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
 void ctrlColorButton::DrawContent() const
 {
-    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, fillColor);
-}
-
-
-void ctrlColorButton::SetColor(const unsigned int fill_color)
-{
-    this->fillColor = fill_color;
+    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, color_);
 }

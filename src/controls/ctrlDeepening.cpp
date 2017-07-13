@@ -73,14 +73,8 @@ ctrlColorDeepening::ctrlColorDeepening(Window* parent,
                                        TextureColor tc,
                                        unsigned int fillColor)
     : ctrlDeepening(parent, id, x, y, width, height, tc, "", NormalFont, COLOR_YELLOW),
-      fillColor(fillColor)
+      ctrlBaseColor(fillColor)
 {
-}
-
-/// Setzt die Farbe des Controls
-void ctrlColorDeepening::SetColor(const unsigned int fill_color)
-{
-    this->fillColor = fill_color;
 }
 
 /**
@@ -88,5 +82,5 @@ void ctrlColorDeepening::SetColor(const unsigned int fill_color)
  */
 void ctrlColorDeepening::DrawContent() const
 {
-    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, fillColor);
+    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, ctrlBaseColor::color_);
 }

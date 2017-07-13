@@ -147,7 +147,7 @@ void dskGameLoader::Msg_Timer(const unsigned int  /*ctrl_id*/)
         case 5: // nochmal text anzeigen
         {
             text->SetText(_("And let's go!"));
-            text->SetColor(COLOR_RED);
+            text->SetTextColor(COLOR_RED);
             interval = 50;
         } break;
 

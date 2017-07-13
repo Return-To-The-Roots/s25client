@@ -345,7 +345,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
-        text->SetColor(0xFF00FF00);
+        text->SetTextColor(0xFF00FF00);
 
     // Bei geschlossenem nicht sichtbar
     if(player.isUsed())
@@ -840,12 +840,12 @@ void dskHostGame::ChangePing(unsigned playerId)
         color = COLOR_YELLOW;
 
     // und setzen
-    GetCtrl<ctrlGroup>(58 - playerId)->GetCtrl<ctrlVarDeepening>(7)->SetColor(color);
+    GetCtrl<ctrlGroup>(58 - playerId)->GetCtrl<ctrlVarDeepening>(7)->SetTextColor(color);
 }
 
 void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
 {
-    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ColorControlInterface>(4)->SetColor(color);
+    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlBaseColor>(4)->SetColor(color);
 
     // Minimap-Startfarbe ändern
     if(GetCtrl<ctrlPreviewMinimap>(70))

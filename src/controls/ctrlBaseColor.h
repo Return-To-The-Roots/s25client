@@ -17,16 +17,17 @@
 #ifndef CTRL_RECTANGLE_H_
 #define CTRL_RECTANGLE_H_
 
-#include "Window.h"
 
-/// Interface für Klassen, in denen eine Farbe angezeigt wird
-class ColorControlInterface
+/// Base class for controls showing a color
+class ctrlBaseColor
 {
     public:
-        virtual ~ColorControlInterface() { }
-
-        /// Setzt die Farbe des Controls
-        virtual void SetColor(const unsigned int fill_color) = 0;
+        ctrlBaseColor(): color_(0){}
+        ctrlBaseColor(unsigned color): color_(color){}
+        void SetColor(unsigned color){ color_ = color; }
+        unsigned GetColor() const { return color_; }
+    protected:
+        unsigned color_;
 };
 
 

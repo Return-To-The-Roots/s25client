@@ -272,7 +272,7 @@ void ctrlComboBox::ShowList(bool show)
     liste->SetVisible(show);
 
     // Pfeilbutton entsprechend
-    GetCtrl<ctrlButton>(1)->SetCheck(show);
+    GetCtrl<ctrlButton>(1)->SetChecked(show);
 
     // Region sperren für die Liste, oder freigeben
     if(show)

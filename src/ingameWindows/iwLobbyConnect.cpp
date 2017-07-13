@@ -229,7 +229,7 @@ void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool b
     ctrlButton* b2 = GetCtrl<ctrlButton>(8);
 
     // Text setzen
-    t->SetColor(color);
+    t->SetTextColor(color);
     t->SetText(text);
 
     // Button (de)aktivieren

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "ctrlText.h"
-#include "ColorControlInterface.h"
+#include "ctrlBaseColor.h"
 class Window;
 class glArchivItem_Font;
 
@@ -40,19 +40,14 @@ class ctrlDeepening : public ctrlText
 };
 
 /// Colored Deepening
-class ctrlColorDeepening : public ctrlDeepening, public ColorControlInterface
+class ctrlColorDeepening : public ctrlDeepening, public ctrlBaseColor
 {
     public:
         ctrlColorDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
 
-        /// Setzt die Farbe des Controls
-        void SetColor(const unsigned int fill_color) override;
-
     protected:
         void DrawContent() const override;
 
-    protected:
-        unsigned int fillColor;
 };
 
 #endif // !CTRLDEEPENING_H_INCLUDED

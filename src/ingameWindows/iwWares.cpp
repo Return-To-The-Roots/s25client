@@ -210,7 +210,7 @@ void iwWares::Msg_PaintBefore()
         {
             ctrlVarText* text = group->GetCtrl<ctrlVarText>(600 + i);
             if(text)
-                text->SetColor((((curPage_ == pageWares) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW);
+                text->SetTextColor((((curPage_ == pageWares) ? inventory.goods[i] : inventory.people[i]) == 0) ? COLOR_RED : COLOR_YELLOW);
 
         }
     }

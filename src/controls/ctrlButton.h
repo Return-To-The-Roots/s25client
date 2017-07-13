@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include "ColorControlInterface.h"
+#include "ctrlBaseColor.h"
 #include "ctrlText.h"
 
 #include <string>
-#include <algorithm>
+
 class MouseCoords;
 class glArchivItem_Bitmap;
 class glArchivItem_Font;
@@ -36,8 +36,8 @@ class ctrlButton : public Window
                    const TextureColor tc, const std::string& tooltip);
         ~ctrlButton() override;
 
-        void SetEnabled(bool enable = true) { enabled = enable; }
-        bool GetEnabled() const { return enabled; }
+        void SetEnabled(bool enable = true) { isEnabled = enable; }
+        bool GetEnabled() const { return isEnabled; }
         TextureColor GetTexture() const { return tc; }
         void SetTexture(TextureColor tc) { this->tc = tc; }
 
@@ -46,13 +46,13 @@ class ctrlButton : public Window
         /// Liefert Tooltip zurück
         std::string GetTooltip() const { return tooltip_; }
         /// Tauscht Tooltips
-        void SwapTooltip(ctrlButton* two) { std::swap(tooltip_, two->tooltip_); }
+        void SwapTooltip(ctrlButton* otherBt);
 
-        void SetCheck(bool check) { this->check = check; }
-        bool GetCheck() { return check; }
-        void SetIlluminated(bool illuminated) { this->illuminated = illuminated; }
-        bool GetIlluminated() { return illuminated; }
-        void SetBorder(const bool border) { this->border = border; }
+        void SetChecked(bool checked) { this->isChecked = checked; }
+        bool GetCheck() { return isChecked; }
+        void SetIlluminated(bool illuminated) { this->isIlluminated = illuminated; }
+        bool GetIlluminated() { return isIlluminated; }
+        void SetBorder(bool hasBorder) { this->hasBorder = hasBorder; }
 
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -74,13 +74,13 @@ class ctrlButton : public Window
         /// Status des Buttons (gedrückt, erhellt usw. durch Maus ausgelöst)
         ButtonState state;
         /// Hat der Button einen 3D-Rand?
-        bool border;
+        bool hasBorder;
         /// Button dauerhaft gedrückt?
-        bool check;
+        bool isChecked;
         /// Button "erleuchtet"?
-        bool illuminated;
+        bool isIlluminated;
         /// Button angeschalten?
-        bool enabled;
+        bool isEnabled;
 };
 
 /// Button mit Text
@@ -135,7 +135,7 @@ class ctrlImageButton : public ctrlButton
 };
 
 /// Button mit Farbe
-class ctrlColorButton : public ctrlButton, public ColorControlInterface
+class ctrlColorButton : public ctrlButton, public ctrlBaseColor
 {
     public:
 
@@ -143,19 +143,10 @@ class ctrlColorButton : public ctrlButton, public ColorControlInterface
                         unsigned short width, unsigned short height, const TextureColor tc,
                         unsigned int fillColor, const std::string& tooltip);
 
-    public:
-
-        /// Setzt die Farbe des Controls
-        void SetColor(const unsigned int fill_color) override;
-
     protected:
 
         /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
         void DrawContent() const override;
-
-    protected:
-
-        unsigned int fillColor;
 };
 
 
