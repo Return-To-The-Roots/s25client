@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "../../src/Point.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /**
  *  Mausstatusstruct
@@ -30,12 +32,13 @@ class MouseCoords
         MouseCoords(int x, int y, bool ldown, bool rdown, const bool dbl_click)
             : x(x), y(y), ldown(ldown), rdown(rdown), dbl_click(dbl_click) {}
 
-    public:
         int x;      /// xKoordinate
         int y;      /// yKoordinate
         bool ldown; /// Linke Maustaste gedrückt
         bool rdown; /// Rechte Maustaste gedrückt
         bool dbl_click; /// Linke Maustaste - Doppelklick
+
+        Point<int> GetPos() const { return Point<int>(x, y); }
 };
 
 /// Maximale Zeitdifferenz in ms für einen Doppeklick
