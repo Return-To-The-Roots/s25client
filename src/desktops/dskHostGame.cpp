@@ -341,7 +341,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     if(GAMECLIENT.IsHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
         text = group->AddTextButton(1, 20, cy, 150, 22, tc, name, NormalFont);
     else
-        text = group->AddDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
+        text = group->AddTextDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
@@ -376,7 +376,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         if(allowNationChange)
             group->AddTextButton(3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont);
         else
-            group->AddDeepening(3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont, COLOR_YELLOW);
+            group->AddTextDeepening(3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont, COLOR_YELLOW);
 
         if(allowColorChange)
             group->AddColorButton(4, 340, cy, 30, 22, tc, 0);
@@ -386,7 +386,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         if(allowTeamChange)
             group->AddTextButton(5, 380, cy, 50, 22, tc, _("-"), NormalFont);
         else
-            group->AddDeepening(5, 380, cy, 50, 22, tc, _("-"), NormalFont, COLOR_YELLOW);
+            group->AddTextDeepening(5, 380, cy, 50, 22, tc, _("-"), NormalFont, COLOR_YELLOW);
 
         // Bereit (nicht bei KIs und Host)
         if(player.ps == PS_OCCUPIED && !player.isHost)

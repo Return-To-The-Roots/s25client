@@ -27,6 +27,7 @@
 #include "GamePlayer.h"
 #include "LobbyClient.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlText.h"
 #include "GameManager.h"
 #include "CollisionDetection.h"
 #include "ingameWindows/iwChat.h"

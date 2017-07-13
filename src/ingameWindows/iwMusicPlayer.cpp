@@ -83,7 +83,7 @@ iwMusicPlayer::iwMusicPlayer()
     AddImageButton(9, 370, 130, 40, 40, TC_RED1, LOADER.GetImageN("io", 220), _("Remove track"));
     AddImageButton(10, 370, 180, 40, 15, TC_GREY, LOADER.GetImageN("io", 33), _("Upwards"));
     AddImageButton(11, 370, 195, 40, 15, TC_GREY, LOADER.GetImageN("io", 34), _("Downwards"));
-    AddDeepening(12, 370, 220, 40, 20, TC_GREY, "1", NormalFont, COLOR_YELLOW);
+    AddTextDeepening(12, 370, 220, 40, 20, TC_GREY, "1", NormalFont, COLOR_YELLOW);
     AddImageButton(13, 370, 240, 20, 20, TC_RED1, LOADER.GetImageN("io", 139), _("Less repeats"));
     AddImageButton(14, 390, 240, 20, 20, TC_GREY, LOADER.GetImageN("io", 138), _("More repeats"));
     AddImageButton(15, 370, 270, 40, 40, TC_GREY, LOADER.GetImageN("io", 107), _("Playback in this order")); //225
@@ -252,14 +252,14 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // Less Repeats
         case 13:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlDeepening>(12)->GetText().c_str());
+            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
 
             if(repeats)
             {
                 --repeats;
                 char str[32];
                 sprintf(str, "%u", repeats);
-                GetCtrl<ctrlDeepening>(12)->SetText(str);
+                GetCtrl<ctrlTextDeepening>(12)->SetText(str);
                 changed = true;
             }
 
@@ -267,11 +267,11 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // More Repeats
         case 14:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlDeepening>(12)->GetText().c_str());
+            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
             ++repeats;
             char str[32];
             sprintf(str, "%u", repeats);
-            GetCtrl<ctrlDeepening>(12)->SetText(str);
+            GetCtrl<ctrlTextDeepening>(12)->SetText(str);
             changed = true;
         } break;
         // Play Order
@@ -386,7 +386,7 @@ void iwMusicPlayer::SetRepeats(const unsigned repeats)
 {
     char repeats_str[32];
     sprintf(repeats_str, "%u", repeats);
-    GetCtrl<ctrlDeepening>(12)->SetText(repeats_str);
+    GetCtrl<ctrlTextDeepening>(12)->SetText(repeats_str);
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
@@ -410,7 +410,7 @@ std::vector<std::string> iwMusicPlayer::GetSegments() const
 
 unsigned iwMusicPlayer::GetRepeats() const
 {
-    return atoi(GetCtrl<ctrlDeepening>(12)->GetText().c_str());
+    return atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
 }
 
 bool iwMusicPlayer::GetRandomPlayback() const

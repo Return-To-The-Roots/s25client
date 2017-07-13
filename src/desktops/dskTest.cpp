@@ -38,13 +38,13 @@ namespace{
 dskTest::dskTest()
 {
     AddText(ID_txtTitle, 300, 20, _("Internal test screen for developers"), COLOR_ORANGE, glArchivItem_Font::DF_CENTER, LargeFont);
-    ctrlTextButton* bt;
     boost::array<TextureColor, 4> textures = { { TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY } };
     boost::array<std::string, 4> labels = { { "Green1", "Green2", "Red1", "Grey" } };
     unsigned yPos = 50;
     unsigned curId = ID_grpBtStart;
+    ctrlTextButton* bt;
     for(unsigned i = 0; i < textures.size(); i++){
-        AddText(curId, 10, yPos, labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+        AddText(curId, 10, yPos + 3, labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
         bt = AddTextButton(curId + 1, 120, yPos, 95, 22, textures[i], "Nothing", NormalFont);
         bt->SetIlluminated(false);
         bt->SetBorder(false);

@@ -22,35 +22,13 @@
 class Window;
 
 ctrlDeepening::ctrlDeepening(Window* parent,
-                             unsigned int id,
-                             unsigned short x,
-                             unsigned short y,
+                             unsigned id,
+                             DrawPoint pos,
                              unsigned short width,
                              unsigned short height,
-                             TextureColor tc,
-                             const std::string& text,
-                             glArchivItem_Font* font,
-                             unsigned int color)
-    : ctrlText(parent, id, x, y, text, color, 0, font),
-    tc(tc)
-{
-    // We don't want to pass these through all those constructors
-    // of only-text objects down to the Window class.
-    this->width_ = width;
-    this->height_ = height;
-}
-
-Rect ctrlDeepening::GetBoundaryRect() const
-{
-    Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(width_, height_) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
-    Rect drawRect = GetDrawRect();
-    Rect result;
-    result.left = std::min(txtRect.left, drawRect.left);
-    result.top = std::min(txtRect.top, drawRect.top);
-    result.right = std::max(txtRect.right, drawRect.right);
-    result.bottom = std::max(txtRect.bottom, drawRect.bottom);
-    return result;
-}
+                             TextureColor tc)
+    : Window(pos, id, parent, width, height), tc(tc)
+{}
 
 /**
  *  zeichnet das Fenster.
@@ -58,29 +36,46 @@ Rect ctrlDeepening::GetBoundaryRect() const
 void ctrlDeepening::Draw_()
 {
     Draw3D(GetDrawPos(), width_, height_, tc, 2);
-
-    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
-
     DrawContent();
+}
+
+ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, unsigned short width, unsigned short height,
+    TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color):
+    ctrlDeepening(parent, id, pos, width, height, tc),
+    ctrlBaseText(text, color, font)
+{}
+
+Rect ctrlTextDeepening::GetBoundaryRect() const
+{
+    const Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(width_, height_) / 2, text,
+        glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+    const Rect parentRect = ctrlDeepening::GetBoundaryRect();
+    Rect result;
+    result.left = std::min(txtRect.left, parentRect.left);
+    result.top = std::min(txtRect.top, parentRect.top);
+    result.right = std::max(txtRect.right, parentRect.right);
+    result.bottom = std::max(txtRect.bottom, parentRect.bottom);
+    return result;
+}
+
+void ctrlTextDeepening::DrawContent() const
+{
+    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 }
 
 ctrlColorDeepening::ctrlColorDeepening(Window* parent,
                                        unsigned int id,
-                                       unsigned short x,
-                                       unsigned short y,
+                                       DrawPoint pos,
                                        unsigned short width,
                                        unsigned short height,
                                        TextureColor tc,
-                                       unsigned int fillColor)
-    : ctrlDeepening(parent, id, x, y, width, height, tc, "", NormalFont, COLOR_YELLOW),
-      ctrlBaseColor(fillColor)
+                                       unsigned int fillColor):
+    ctrlDeepening(parent, id, pos, width, height, tc),
+    ctrlBaseColor(fillColor)
 {
 }
 
-/**
- *  zeichnet das Fenster.
- */
 void ctrlColorDeepening::DrawContent() const
 {
-    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, ctrlBaseColor::color_);
+    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, color_);
 }

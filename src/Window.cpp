@@ -435,7 +435,7 @@ ctrlComboBox* Window::AddComboBox(unsigned int id,
 /**
  *  fügt ein vertieftes TextCtrl hinzu.
  */
-ctrlDeepening* Window::AddDeepening(unsigned int id,
+ctrlTextDeepening* Window::AddTextDeepening(unsigned int id,
                                     unsigned short x,
                                     unsigned short y,
                                     unsigned short width,
@@ -453,7 +453,7 @@ ctrlDeepening* Window::AddDeepening(unsigned int id,
         height = ScaleY(height);
     }
 
-    return AddCtrl(id, new ctrlDeepening(this, id, x, y, width, height, tc, text, font, color));
+    return AddCtrl(id, new ctrlTextDeepening(this, id, DrawPoint(x, y), width, height, tc, text, font, color));
 }
 
 /**
@@ -475,7 +475,7 @@ ctrlColorDeepening* Window::AddColorDeepening(unsigned int id,
         height = ScaleY(height);
     }
 
-    return AddCtrl(id, new ctrlColorDeepening(this, id, x, y, width, height, tc, fillColor));
+    return AddCtrl(id, new ctrlColorDeepening(this, id, DrawPoint(x, y), width, height, tc, fillColor));
 }
 
 /**

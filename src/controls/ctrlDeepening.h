@@ -19,31 +19,49 @@
 
 #pragma once
 
-#include "ctrlText.h"
-#include "ctrlBaseColor.h"
-class Window;
+#include "Window.h"
+#include "DrawPoint.h"
+#include "controls/ctrlBaseText.h"
+#include "controls/ctrlBaseColor.h"
+
 class glArchivItem_Font;
 
-class ctrlDeepening : public ctrlText
+/// Control with a "deepened" look by a 3D border
+class ctrlDeepening: public Window
 {
-    public:
-        ctrlDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
+public:
+    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, unsigned short width, unsigned short height,
+        TextureColor tc);
 
-        Rect GetBoundaryRect() const override;
-    protected:
-        void Draw_() override;
-        /// Derived classes cann draw extended content
-        virtual void DrawContent() const{}
+protected:
+    void Draw_() override;
+    /// Derived classes have to draw the content
+    virtual void DrawContent() const = 0;
 
-    private:
-        TextureColor tc;
+private:
+    TextureColor tc;
+};
+
+/// Deepening with text
+class ctrlTextDeepening: public ctrlDeepening, public ctrlBaseText
+{
+public:
+    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint position, unsigned short width, unsigned short height,
+        TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color);
+
+    Rect GetBoundaryRect() const override;
+protected:
+    void DrawContent() const override;
+
+
 };
 
 /// Colored Deepening
 class ctrlColorDeepening : public ctrlDeepening, public ctrlBaseColor
 {
     public:
-        ctrlColorDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
+        ctrlColorDeepening(Window* parent, unsigned int id, DrawPoint position, unsigned short width, unsigned short height,
+            TextureColor tc, unsigned fillColor);
 
     protected:
         void DrawContent() const override;

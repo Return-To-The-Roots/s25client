@@ -74,7 +74,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 
             if(player.ps == PS_OCCUPIED)
                 // Ping
-                AddDeepening(200 + i, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_WIDTH / 2,
+                AddTextDeepening(200 + i, LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_WIDTH / 2,
                              FIRST_LINE_Y + i * (CELL_HEIGHT + SPACE_HEIGHT) + CELL_HEIGHT / 2 - 11, PING_FIELD_WIDTH, 22, TC_GREY, "0", NormalFont, COLOR_YELLOW);
 
             // An sich selber braucht man keine Bündnisse zu schließen
@@ -144,7 +144,7 @@ void iwDiplomacy::Msg_PaintAfter()
             button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(NON_AGGRESSION_PACT, i)]);
 
         // Ggf. Ping aktualisieren
-        if(ctrlDeepening* pingfield = GetCtrl<ctrlDeepening>(200 + i))
+        if(ctrlTextDeepening* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
         {
             char ping[64];
             sprintf(ping, "%u", gwv.GetWorld().GetPlayer(i).ping);

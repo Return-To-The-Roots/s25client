@@ -53,7 +53,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
         {
             AddImageButton(100 + i * 2, 174, 25   + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  33), "+1");
             AddImageButton(101 + i * 2, 174, 25 + 13 + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  34), "-1");
-            AddDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, "", NormalFont, COLOR_YELLOW);
+            AddTextDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, "", NormalFont, COLOR_YELLOW);
         }
         UpdateTexts();
     }
@@ -111,7 +111,7 @@ void iwTools::UpdateTexts()
         const GamePlayer& localPlayer = gwv.GetPlayer();
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
-            ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + i);
+            ctrlTextDeepening* field = GetCtrl<ctrlTextDeepening>(200 + i);
             field->SetText(helpers::toString(isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i)));
         }
     }
@@ -141,7 +141,7 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         else
             ordersChanged |= me.ChangeToolOrderVisual(tool, +1);
 
-        ctrlDeepening* field = GetCtrl<ctrlDeepening>(200 + tool);
+        ctrlTextDeepening* field = GetCtrl<ctrlTextDeepening>(200 + tool);
         field->SetText(helpers::toString(me.GetToolsOrderedVisual(tool)));
     }
     else

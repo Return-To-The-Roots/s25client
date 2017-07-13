@@ -19,8 +19,9 @@
 
 #pragma once
 
+#include "Window.h"
 #include "ctrlBaseColor.h"
-#include "ctrlText.h"
+#include "ctrlBaseText.h"
 
 #include <string>
 

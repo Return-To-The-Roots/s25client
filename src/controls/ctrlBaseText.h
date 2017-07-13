@@ -14,28 +14,36 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRLTEXT_H_INCLUDED
-#define CTRLTEXT_H_INCLUDED
 
 #pragma once
 
-#include "Window.h"
-#include "ctrlBaseText.h"
+#ifndef ctrlBaseText_h__
+#define ctrlBaseText_h__
+
+#include <string>
 
 class glArchivItem_Font;
 
-class ctrlText : public Window, public ctrlBaseText
+/// Basisklasse für Controls mit Texten wie auch Buttons, damit diese alle einheitlich verändert werden können
+class ctrlBaseText
 {
     public:
-        ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
 
-        Rect GetBoundaryRect() const override;
+        ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
+
+        void SetText(const std::string& text);
+        const std::string& GetText() const { return text; }
+        /// Setzt Schriftart
+        void SetFont(glArchivItem_Font* font);
+        /// Setzt Textfarbe
+        void SetTextColor(unsigned color) { this->color_ = color; }
+        unsigned GetTextColor(unsigned color) const { return color_; }
+
+
     protected:
-        void Draw_() override;
-
-    protected:
-
-        unsigned int format;
+        std::string text;
+        unsigned color_;
+        glArchivItem_Font* font;
 };
 
-#endif // !CTRLTEXT_H_INCLUDED
+#endif // ctrlBaseText_h__

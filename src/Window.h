@@ -35,7 +35,7 @@ class ctrlImageButton;
 class ctrlChat;
 class ctrlCheck;
 class ctrlComboBox;
-class ctrlDeepening;
+class ctrlTextDeepening;
 class ctrlColorDeepening;
 class ctrlEdit;
 class ctrlGroup;
@@ -156,7 +156,7 @@ class Window
         /// fügt eine ComboBox hinzu.
         ctrlComboBox* AddComboBox(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly = false);
         /// fügt ein vertieftes TextCtrl hinzu.
-        ctrlDeepening* AddDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
+        ctrlTextDeepening* AddTextDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
         /// Deepening fille with a color
         ctrlColorDeepening* AddColorDeepening(unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
         /// fügt ein EditCtrl hinzu.
