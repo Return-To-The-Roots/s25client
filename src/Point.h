@@ -34,45 +34,46 @@ struct Point
     explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
 
     static const Point Invalid();
-    inline bool isValid() const;
+    bool isValid() const;
 
-    inline bool operator==(const Point& second) const;
-    inline bool operator!=(const Point& second) const;
-    inline bool operator<(const Point& second) const;
-    inline Point& operator+=(const Point& right);
-    inline Point& operator-=(const Point& right);
-    inline friend Point operator+(Point left, const Point& right) { return (left+=right); }
-    inline friend Point operator-(Point left, const Point& right) { return (left-=right); }
-    inline Point operator*(const T div) const;
-    inline Point operator/(const T div) const;
+    bool operator==(const Point& second) const;
+    bool operator!=(const Point& second) const;
+    bool operator<(const Point& second) const;
+    Point& operator+=(const Point& right);
+    Point& operator-=(const Point& right);
+    friend Point operator+(Point left, const Point& right) { return (left+=right); }
+    friend Point operator-(Point left, const Point& right) { return (left-=right); }
+    Point operator-() const;
+    Point operator*(const T factor) const;
+    Point operator/(const T div) const;
 };
 
 template <typename T>
-const Point<T> Point<T>::Invalid()
+inline const Point<T> Point<T>::Invalid()
 {
     return Point(std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
 }
 
 template <typename T>
-bool Point<T>::isValid() const
+inline bool Point<T>::isValid() const
 {
     return *this != Invalid();
 }
 
 template <typename T>
-bool Point<T>::operator==(const Point<T>& second) const
+inline bool Point<T>::operator==(const Point<T>& second) const
 {
     return (x == second.x && y == second.y);
 }
 
 template <typename T>
-bool Point<T>::operator!=(const Point<T>& second) const
+inline bool Point<T>::operator!=(const Point<T>& second) const
 {
     return !(*this == second);
 }
 
 template <typename T>
-bool Point<T>::operator<(const Point<T>& second) const
+inline bool Point<T>::operator<(const Point<T>& second) const
 {
     // Order by y, than x to correspond to memory layout
     if(y < second.y)
@@ -84,7 +85,7 @@ bool Point<T>::operator<(const Point<T>& second) const
 }
 
 template <typename T>
-Point<T>& Point<T>::operator+=(const Point<T>& right)
+inline Point<T>& Point<T>::operator+=(const Point<T>& right)
 {
     x += right.x;
     y += right.y;
@@ -92,7 +93,7 @@ Point<T>& Point<T>::operator+=(const Point<T>& right)
 }
 
 template <typename T>
-Point<T>& Point<T>::operator-=(const Point<T>& right)
+inline Point<T>& Point<T>::operator-=(const Point<T>& right)
 {
     x -= right.x;
     y -= right.y;
@@ -100,15 +101,21 @@ Point<T>& Point<T>::operator-=(const Point<T>& right)
 }
 
 template <typename T>
-Point<T> Point<T>::operator/(const T div) const
+inline Point<T> Point<T>::operator/(const T div) const
 {
     return Point(x / div, y / div);
 }
 
-template <typename T>
-Point<T> Point<T>::operator*(const T div) const
+template<typename T>
+inline Point<T> Point<T>::operator-() const
 {
-    return Point(x * div, y * div);
+    return Point(-x, -y);
+}
+
+template <typename T>
+inline Point<T> Point<T>::operator*(const T factor) const
+{
+    return Point(x * factor, y * factor);
 }
 
 #endif // Point_h__
