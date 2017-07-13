@@ -27,6 +27,17 @@ struct Rect
     Rect(int left, int top, int width, int height): left(left), top(top), right(left + width), bottom(top + height){}
     Rect(const Point<int>& lt, int width, int height): left(lt.x), top(lt.y), right(left + width), bottom(top + height){}
     Rect(const Point<int>& lt, const Point<int>& size): left(lt.x), top(lt.y), right(left + size.x), bottom(top + size.y){}
+    Point<int> GetOrigin() const { return Point<int>(left, top); }
+    Point<int> GetSize() const { return Point<int>(right - left, bottom - top); }
+    void Move(const Point<int>& offset);
 };
+
+inline void Rect::Move(const Point<int>& offset)
+{
+    left += offset.x;
+    right += offset.x;
+    top += offset.y;
+    bottom += offset.y;
+}
 
 #endif // Rect_h__
