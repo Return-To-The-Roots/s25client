@@ -875,136 +875,88 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
  *  Zeichnet einen 3D-Rahmen.
  */
 void Window::Draw3D(DrawPoint drawPt,
-                    const unsigned short width,
-                    const unsigned short height,
-                    const TextureColor tc,
-                    const unsigned short type,
-                    const bool illuminated,
-                    const bool draw_content)
+    const unsigned short width,
+    const unsigned short height,
+    const TextureColor tc,
+    const unsigned short type,
+    const bool illuminated,
+    const bool draw_content)
 {
     if(width < 4 || height < 4 || tc == TC_INVISIBLE)
         return;
 
+    // Position of the horizontal and vertical image border
+    DrawPoint horImgBorderPos(drawPt);
+    DrawPoint vertImgBorderPos(drawPt);
+
+    if(type > 1)
+    {
+        // For deepened effect the img border is at bottom and right
+        // else it stays top and left
+        horImgBorderPos += DrawPoint(0, height - 2);
+        vertImgBorderPos += DrawPoint(width - 2, 0);
+    }
+    // Draw img borders
+    glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + tc);
+    borderImg->Draw(horImgBorderPos, width, 2, 0, 0, width, 2);
+    borderImg->Draw(vertImgBorderPos, 2, height, 0, 0, 2, height);
+
+    // Draw black borders over the img borders
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_TRIANGLE_STRIP);
+    // Left lower point
+    DrawPoint lbPt = drawPt + DrawPoint(width, height);
     if(type <= 1)
     {
-        // äußerer Rahmen
-        LOADER.GetImageN("io", 12 + tc)->Draw(drawPt, width, 2,      0, 0, width, 2);
-        LOADER.GetImageN("io", 12 + tc)->Draw(drawPt, 2,     height, 0, 0, 2,     height);
-
-        if(illuminated)
-        {
-            // Modulate2x anmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-            glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-        }
-
-        // Inhalt der Box
-        if(draw_content)
-        {
-            DrawPoint contentPos = drawPt + DrawPoint(2, 2);
-            unsigned texture = (type) ? tc * 2 : tc * 2 + 1;
-            LOADER.GetImageN("io", texture)->Draw(contentPos, width - 4, height - 4, 0, 0, width - 4, height - 4);
-        }
-
-        if(illuminated)
-        {
-            // Modulate2x wieder ausmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
-
-        glDisable(GL_TEXTURE_2D);
-
-        glColor3f(0.0f, 0.0f, 0.0f);
-
-        glBegin(GL_QUADS);
-
-        glVertex2i(drawPt.x + width - 1, drawPt.y);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + height);
-        glVertex2i(drawPt.x + width, drawPt.y + height);
-        glVertex2i(drawPt.x + width, drawPt.y);
-
-        glVertex2i(drawPt.x + width - 2, drawPt.y + 1);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + 1);
-
-        glVertex2i(drawPt.x, drawPt.y + height - 1);
-        glVertex2i(drawPt.x, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 1);
-
-        glVertex2i(drawPt.x + 1, drawPt.y + height - 2);
-        glVertex2i(drawPt.x + 1, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + width - 2, drawPt.y + height - 2);
-
-        glEnd();
-    }
-    else
+        // Bottom line with edge in left top and right line with little edge on left top
+        glVertex2i(lbPt.x, drawPt.y);
+        glVertex2i(lbPt.x - 2, drawPt.y + 1);
+        glVertex2i(lbPt.x, lbPt.y);
+        glVertex2i(lbPt.x - 2, lbPt.y - 2);
+        glVertex2i(drawPt.x, lbPt.y);
+        glVertex2i(drawPt.x + 1, lbPt.y - 2);
+    } else
     {
-        DrawPoint botBorderPos = drawPt;
-        botBorderPos.y += height - 2;
-        LOADER.GetImageN("io", 12 + tc)->Draw(botBorderPos, width, 2, 0, 0, width, 2);
-        DrawPoint rightBorderPos = drawPt;
-        rightBorderPos.x += width - 2;
-        LOADER.GetImageN("io", 12 + tc)->Draw(rightBorderPos, 2, height, 0, 0, 2, height);
-
-        if(illuminated)
-        {
-            // Modulate2x anmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-            glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
-        }
-
-        glArchivItem_Bitmap* img = LOADER.GetImageN("io", tc * 2 + 1);
-        DrawPoint curDrawPos = drawPt + DrawPoint(2, 2);
-        // Top border part
-        img->Draw(curDrawPos, width - 4, 2, 0, 0, width - 4, 2);
-        // Left border part
-        img->Draw(curDrawPos, 2, height - 4, 0, 0, 2, height - 4);
-        curDrawPos += DrawPoint(2, 2);
-        // Filler
-        img->Draw(curDrawPos, width - 6, height - 6, 0, 0, width - 6, height - 6);
-
-        if(illuminated)
-        {
-            // Modulate2x wieder ausmachen
-            glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
-
-        // Black lines
-        glDisable(GL_TEXTURE_2D);
-
-        glColor3f(0.0f, 0.0f, 0.0f);
-
-        glBegin(GL_QUADS);
-        // Top
-        glVertex2i(drawPt.x,         drawPt.y);
-        glVertex2i(drawPt.x,         drawPt.y + 1);
-        glVertex2i(drawPt.x + width, drawPt.y + 1);
-        glVertex2i(drawPt.x + width, drawPt.y);
-        // Top inner
-        glVertex2i(drawPt.x,             drawPt.y + 1);
-        glVertex2i(drawPt.x,             drawPt.y + 2);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + 2);
-        glVertex2i(drawPt.x + width - 1, drawPt.y + 1);
-        // Left
-        glVertex2i(drawPt.x,     drawPt.y + 2);
-        glVertex2i(drawPt.x,     drawPt.y + height);
-        glVertex2i(drawPt.x + 1, drawPt.y + height); //-V525
-        glVertex2i(drawPt.x + 1, drawPt.y + 2);
-        // Left inner
-        glVertex2i(drawPt.x + 1, drawPt.y + 2);
-        glVertex2i(drawPt.x + 1, drawPt.y + height - 1);
-        glVertex2i(drawPt.x + 2, drawPt.y + height - 1);
+        // Top line with edge on right and left line with edge on bottom
+        glVertex2i(drawPt.x, lbPt.y);
+        glVertex2i(drawPt.x + 2, lbPt.y - 1);
+        glVertex2i(drawPt.x, drawPt.y);
         glVertex2i(drawPt.x + 2, drawPt.y + 2);
+        glVertex2i(lbPt.x, drawPt.y);
+        glVertex2i(lbPt.x - 1, drawPt.y + 2);
+    }
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
 
-        glEnd();
+    if(!draw_content)
+        return;
+
+    if(illuminated)
+    {
+        // Modulate2x anmachen
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
     }
 
-    glEnable(GL_TEXTURE_2D);
-}
+    DrawPoint contentPos = drawPt + DrawPoint(2, 2);
+    DrawPoint contentSize(width - 4, height - 4);
+    DrawPoint contentOffset(0, 0);
+    unsigned texture = (type == 1) ? tc * 2 : tc * 2 + 1;
+    glArchivItem_Bitmap* contentImg = LOADER.GetImageN("io", texture);
+    if(type <= 1)
+    {
+        // Move the content a bit to left upper for non-deepened version
+        contentOffset = DrawPoint(2, 2);
+    }
+    contentImg->Draw(contentPos, 0, 0, contentOffset.x, contentOffset.y, contentSize.x, contentSize.y);
 
+    if(illuminated)
+    {
+        // Modulate2x wieder ausmachen
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    }
+}
 /**
  *  zeichnet ein Rechteck.
  *
