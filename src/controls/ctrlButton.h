@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Point.h"
 #include "ctrlBaseColor.h"
 #include "ctrlBaseText.h"
 
@@ -37,7 +38,7 @@ class ctrlButton : public Window
                    const TextureColor tc, const std::string& tooltip);
         ~ctrlButton() override;
 
-        void SetEnabled(bool enable = true) { isEnabled = enable; }
+        void SetEnabled(bool enable = true);
         bool GetEnabled() const { return isEnabled; }
         TextureColor GetTexture() const { return tc; }
         void SetTexture(TextureColor tc) { this->tc = tc; }
@@ -66,7 +67,7 @@ class ctrlButton : public Window
         virtual void DrawContent() const = 0;
         // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
         void TestMouseOver();
-        bool IsMouseOver(const int mouseX, const int mouseY) const;
+        bool IsMouseOver(const Point<int>& mousePos) const;
 
     protected:
 

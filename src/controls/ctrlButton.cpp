@@ -39,6 +39,12 @@ ctrlButton::~ctrlButton()
     WINDOWMANAGER.SetToolTip(this, "");
 }
 
+void ctrlButton::SetEnabled(bool enable /*= true*/)
+{
+    isEnabled = enable;
+    state = BUTTON_UP;
+}
+
 void ctrlButton::SwapTooltip(ctrlButton* otherBt)
 {
     std::swap(tooltip_, otherBt->tooltip_);
@@ -46,7 +52,7 @@ void ctrlButton::SwapTooltip(ctrlButton* otherBt)
 
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc.x, mc.y))
+    if(isEnabled && IsMouseOver(mc.GetPos()))
     {
         if(state != BUTTON_PRESSED)
             state = BUTTON_HOVER;
@@ -64,14 +70,14 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     }
 }
 
-bool ctrlButton::IsMouseOver(const int mouseX, const int mouseY) const
+bool ctrlButton::IsMouseOver(const Point<int>& mousePos) const
 {
-    return IsPointInRect(mouseX, mouseY, GetX(), GetY(), width_, height_);
+    return IsPointInRect(mousePos, GetDrawRect());
 }
 
 bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc.x, mc.y))
+    if(isEnabled && IsMouseOver(mc.GetPos()))
     {
         state = BUTTON_PRESSED;
         return true;
@@ -86,7 +92,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
     {
         state =  BUTTON_UP;
 
-        if(isEnabled && IsMouseOver(mc.x, mc.y))
+        if(isEnabled && IsMouseOver(mc.GetPos()))
         {
             parent_->Msg_ButtonClick(GetID());
             return true;
@@ -101,7 +107,7 @@ void ctrlButton::TestMouseOver()
 {
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
     {
-        if(!IsMouseOver(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY()))
+        if(!IsMouseOver(VIDEODRIVER.GetMousePos()))
             // Nicht mehr drauf --> wieder normalen Zustand
             state = BUTTON_UP;
     }
@@ -123,12 +129,12 @@ void ctrlButton::Draw_()
         if(hasBorder)
         {
             bool isCurIlluminated = isIlluminated;
-            unsigned short type;
+            ButtonState type;
             if(isEnabled)
-                type = (unsigned short)(isChecked ? 2 : state);
+                type = isChecked ? BUTTON_PRESSED : state;
             else
             {
-                type = 0;
+                type = BUTTON_UP;
                 isCurIlluminated |= isChecked;
             }
             Draw3D(GetDrawPos(), width_, height_, tc, type, isCurIlluminated);
@@ -140,7 +146,14 @@ void ctrlButton::Draw_()
             else
                 texture = tc * 2;
             unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
+            if(isIlluminated)
+            {
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+                glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+            }
             LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_, color);
+            if(isIlluminated)
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         }
     }
 

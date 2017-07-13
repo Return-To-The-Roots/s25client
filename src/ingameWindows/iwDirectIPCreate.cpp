@@ -23,6 +23,7 @@
 #include "Settings.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlEdit.h"
+#include "controls/ctrlText.h"
 #include "controls/ctrlOptionGroup.h"
 #include "desktops/dskSelectMap.h"
 #include "ogl/glArchivItem_Font.h"
