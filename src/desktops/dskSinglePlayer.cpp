@@ -47,7 +47,7 @@ dskSinglePlayer::dskSinglePlayer()
     AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Resume last game"), NormalFont);
     AddTextButton(7, 115, 210, 220, 22, TC_GREEN2, _("Load game"), NormalFont);
 
-    AddTextButton(5, 115, 250, 220, 22, TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)->Enable(false);
+    AddTextButton(5, 115, 250, 220, 22, TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)->SetEnabled(false);
     AddTextButton(6, 115, 280, 220, 22, TC_GREEN2, _("Unlimited Play"), NormalFont);
 
     AddTextButton(4, 115, 320, 220, 22, TC_GREEN2, _("Play Replay"), NormalFont);

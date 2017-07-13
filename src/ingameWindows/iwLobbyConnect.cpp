@@ -233,8 +233,8 @@ void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool b
     t->SetText(text);
 
     // Button (de)aktivieren
-    b->Enable(button);
-    b2->Enable(button);
+    b->SetEnabled(button);
+    b2->SetEnabled(button);
 }
 
 /**
@@ -248,7 +248,7 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
     GetCtrl<ctrlEdit>(5)->SetText(email);
     LobbyForm(user, pass, email2);
 
-    GetCtrl<ctrlButton>(8)->Enable(false);
+    GetCtrl<ctrlButton>(8)->SetEnabled(false);
 
     WINDOWMANAGER.Switch(new dskLobby);
 }
@@ -261,7 +261,7 @@ void iwLobbyConnect::LC_Registered()
     // Registrierung erfolgreich
     SetText(_("Registration successful!"), COLOR_YELLOW, true);
 
-    GetCtrl<ctrlButton>(8)->Enable(false);
+    GetCtrl<ctrlButton>(8)->SetEnabled(false);
 }
 
 /**

@@ -116,7 +116,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection( (SETTINGS.server.ipv6 ? 302 : 303) );
 
     // ipv6-feld ggf (de-)aktivieren
-    ipv6->GetCtrl<ctrlTextButton>(302)->Enable( (SETTINGS.proxy.typ != 4 && SETTINGS.proxy.typ != 40) ); //-V807
+    ipv6->GetCtrl<ctrlTextButton>(302)->SetEnabled(SETTINGS.proxy.typ != 4 && SETTINGS.proxy.typ != 40); //-V807
 
     // Proxyserver
     groupAllgemein->AddText(36, 80, 280, _("Proxyserver:"), COLOR_YELLOW, 0, NormalFont);
@@ -392,12 +392,12 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
             if(SETTINGS.proxy.typ == 4 && SETTINGS.server.ipv6)
             {
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->SetSelection(303);
-                GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlTextButton>(302)->Enable(false);
+                GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlTextButton>(302)->SetEnabled(false);
                 SETTINGS.server.ipv6 = false;
             }
 
             if(SETTINGS.proxy.typ != 4)
-                GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlTextButton>(302)->Enable(true);
+                GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlTextButton>(302)->SetEnabled(true);
         } break;
         case 41: // Auflösung
         {

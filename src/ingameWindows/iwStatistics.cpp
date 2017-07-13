@@ -90,13 +90,13 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
             {
                 const bool visible = gwv.GetPlayer().IsAlly(i);
                 activePlayers[i] = visible;
-                GetCtrl<ctrlImageButton>(1 + i)->Enable(visible);
+                GetCtrl<ctrlImageButton>(1 + i)->SetEnabled(visible);
             } break;
             case 2: // Nur man selber
             {
                 const bool visible = (gwv.GetPlayerId() == i);
                 activePlayers[i] = visible;
-                GetCtrl<ctrlImageButton>(1 + i)->Enable(visible);
+                GetCtrl<ctrlImageButton>(1 + i)->SetEnabled(visible);
             } break;
         }
 

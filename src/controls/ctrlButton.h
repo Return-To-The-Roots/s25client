@@ -36,7 +36,8 @@ class ctrlButton : public Window
                    const TextureColor tc, const std::string& tooltip);
         ~ctrlButton() override;
 
-        void Enable(bool enable = true) { enabled = enable; }
+        void SetEnabled(bool enable = true) { enabled = enable; }
+        bool GetEnabled() const { return enabled; }
         TextureColor GetTexture() const { return tc; }
         void SetTexture(TextureColor tc) { this->tc = tc; }
 

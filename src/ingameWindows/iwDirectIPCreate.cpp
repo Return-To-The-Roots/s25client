@@ -179,7 +179,7 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool
     GetCtrl<ctrlText>(6)->SetText(text);
 
     // Button (de)aktivieren
-    GetCtrl<ctrlButton>(7)->Enable(button);
+    GetCtrl<ctrlButton>(7)->SetEnabled(button);
 }
 
 /**
