@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Msgbox.h"
+#include "animation/AnimationManager.h"
 #include "gameData/NationConsts.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/TextureColor.h"
@@ -67,8 +68,6 @@ struct ScreenResizeEvent;
 /// Die Basisklasse der Fenster.
 class Window
 {
-        friend class WindowManager;
-
     public:
         Window();
         Window(const DrawPoint& position, unsigned int id, Window* parent, unsigned short width = 0, unsigned short height = 0, const std::string& tooltip = "");
@@ -79,7 +78,8 @@ class Window
         DrawPoint::ElementType GetX(bool absolute = true) const;
         /// liefert die Y-Koordinate.
         DrawPoint::ElementType GetY(bool absolute = true) const;
-        // Gets the absolute (X,Y) position as when calling GetX/GetY for drawing
+        DrawPoint GetPos() const { return pos_; }
+        /// Get the absolute (X,Y) position as when calling GetX/GetY for drawing
         DrawPoint GetDrawPos() const;
         /// liefert die Breite des Fensters.
         unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width_) : width_; }
@@ -139,6 +139,8 @@ class Window
         std::vector<const T*> GetCtrls() const;
 
         void DeleteCtrl(unsigned int id);
+
+        AnimationManager& GetAnimationManager(){ return animations_; }
 
         /// fügt ein BuildingIcon hinzu.
         ctrlBuildingIcon* AddBuildingIcon(unsigned int id_, unsigned short x_, unsigned short y_, BuildingType type, const Nation nation, unsigned short size = 36, const std::string& tooltip_ = "");
@@ -269,6 +271,14 @@ class Window
         virtual void Msg_Group_TableLeftButton(const unsigned int group_id, const unsigned int ctrl_id, const int selection){}
 
     protected:
+        enum ButtonState
+        {
+            BUTTON_UP = 0,
+            BUTTON_HOVER,
+            BUTTON_PRESSED,
+            BUTTON_UNKNOWN = 0xFF
+        };
+        typedef std::map<unsigned, Window*> ControlMap;
 
         /// scales X- und Y values to fit the screen
         unsigned short ScaleX(const unsigned short val) const;
@@ -285,27 +295,7 @@ class Window
         virtual bool IsMessageRelayAllowed() const;
 
         template <typename T>
-        T* AddCtrl(unsigned int id, T* ctrl)
-        {
-            RTTR_Assert(childIdToWnd_.find(id) == childIdToWnd_.end());
-            // ID auf control mappen
-            childIdToWnd_.insert(std::make_pair(id, ctrl));
-
-            // scale-Eigenschaft weitervererben
-            ctrl->scale_ = scale_;
-
-            return ctrl;
-        }
-
-    protected:
-        enum ButtonState
-        {
-            BUTTON_UP = 0,
-            BUTTON_HOVER,
-            BUTTON_PRESSED,
-            BUTTON_UNKNOWN = 0xFF
-        };
-        typedef std::map<unsigned, Window*> ControlMap;
+        T* AddCtrl(unsigned int id, T* ctrl);
 
         DrawPoint pos_;            /// Position des Fensters.
         unsigned short width_;     /// Breite des Fensters.
@@ -321,7 +311,23 @@ class Window
         std::vector<Window*> tofreeAreas_;
         bool isInMouseRelay;
         ControlMap childIdToWnd_; /// Die Steuerelemente des Fensters.
+        AnimationManager animations_;
+
+        friend class WindowManager;
 };
+
+template <typename T>
+inline T* Window::AddCtrl(unsigned int id, T* ctrl)
+{
+    RTTR_Assert(childIdToWnd_.find(id) == childIdToWnd_.end());
+    // ID auf control mappen
+    childIdToWnd_.insert(std::make_pair(id, ctrl));
+
+    // scale-Eigenschaft weitervererben
+    ctrl->scale_ = scale_;
+
+    return ctrl;
+}
 
 template<typename T>
 inline T* Window::GetCtrl(unsigned int id)

@@ -103,12 +103,6 @@ inline Point<T>& Point<T>::operator-=(const Point<T>& right)
     return *this;
 }
 
-template <typename T>
-inline Point<T> Point<T>::operator/(const T div) const
-{
-    return Point(x / div, y / div);
-}
-
 template<typename T>
 inline Point<T> Point<T>::operator-() const
 {
@@ -116,9 +110,27 @@ inline Point<T> Point<T>::operator-() const
 }
 
 template <typename T>
+inline Point<T> Point<T>::operator/(const T div) const
+{
+    return Point(x / div, y / div);
+}
+
+template <typename T>
+inline Point<T> operator/(const T left, const Point<T>& div)
+{
+    return Point<T>(left / div.x, left / div.y);
+}
+
+template <typename T>
 inline Point<T> Point<T>::operator*(const T factor) const
 {
     return Point(x * factor, y * factor);
+}
+
+template <typename T>
+inline Point<T> operator*(const T left, const Point<T>& factor)
+{
+    return factor * left;
 }
 
 #endif // Point_h__

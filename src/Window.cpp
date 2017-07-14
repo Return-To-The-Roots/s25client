@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,8 +27,9 @@
 #include <boost/range/adaptor/map.hpp>
 #include <cstdarg>
 
-Window::Window()
-    : pos_(0, 0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""), isInMouseRelay(false)
+Window::Window():
+    pos_(0, 0), width_(0), height_(0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), tooltip_(""),
+    isInMouseRelay(false), animations_(this)
 {
 }
 
@@ -45,8 +46,9 @@ Window::Window(const DrawPoint& pos,
                Window* parent,
                unsigned short width,
                unsigned short height,
-               const std::string& tooltip)
-    : pos_(pos), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip), isInMouseRelay(false)
+               const std::string& tooltip):
+    pos_(pos), width_(width), height_(height), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), tooltip_(tooltip),
+    isInMouseRelay(false), animations_(this)
 {
 }
 

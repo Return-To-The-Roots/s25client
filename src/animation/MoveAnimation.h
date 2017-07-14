@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,20 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef mapTraits_h__
-#define mapTraits_h__
+#ifndef MoveAnimation_h__
+#define MoveAnimation_h__
 
-// This file defines the traits for std::map
-// You can include this instead of <map>
+#include "animation/Animation.h"
+#include "DrawPoint.h"
 
-#include "traits.h"
-#include <map>
+class MoveAnimation: public Animation
+{
+public:
+    MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat);
+protected:
+    void doUpdate(Window* element, double nextFramepartTime);
+private:
+    DrawPoint origPos_, newPos_;
+};
 
-namespace helpers{
-    template<class T, class Pr, class Alloc>
-    struct EraseIterValidyImpl<std::map<T, Pr, Alloc> >{
-        BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid; 
-    };
-} // namespace helpers
-
-#endif // mapTraits_h__
+#endif // MoveAnimation_h__
