@@ -121,7 +121,7 @@ C. Spiel
     3. Spiel erstellen
     4. Im folgenden Fenster einen Namen für das Spiel eingeben (Passwort
        kann weggelassen werden).
-    5. Im Kartenauswahl-Fenster kann oben eine Kategorie ausgewählt
+    5. In der Kartenauswahl kann oben eine Kategorie ausgewählt
        werden, ähnlich wie im Original.
        Alternativ kann unten über "Spiel laden" ein Spielstand geladen
        werden.
@@ -175,7 +175,7 @@ C. Spiel
     nicht weiter fortführen.
 
     Zum Pausieren/Fortführen dient die Taste "P" (nur vom Host möglich).
-    Zum Chatten muss man "Enter" drücken, dann kommt ein Chatfenster.
+    Zum Chatten muss man "Enter" drücken, dann öffnet sich ein Chatfenster.
 
   3. Replays
 
@@ -192,9 +192,8 @@ C. Spiel
 
     Speichern ist im Spielmenü an der "originalen" Stelle möglich.
     Speichern ist auch aus dem Replaymodus an beliebiger Stelle möglich.
-    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus über den
-    Kartenauswahlbildschirm und im Einzelspieler-Modus über den entsprechenden
-    Menüpunkt.
+    Laden von gespeicherten Spieleständen erfolgt im Mehrspieler-Modus über die
+    Kartenauswahl und im Einzelspieler-Modus über den entsprechenden Menüpunkt.
     Mitspieler benötigen kein eigenes Savegame, dieses wird automatisch
     beim Verbinden übertragen.
 
