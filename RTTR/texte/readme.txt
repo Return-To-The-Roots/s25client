@@ -31,7 +31,7 @@ B. Installation
 
   1. Windows
 
-    Windows Vista, 7 and 10 are supported. Windows XP or older might work but
+    Windows 7 and 10 are supported. Windows Vista or older might work but
     are not officially supported.
 
     To play the game search for the "DATA" und "GFX" directories in the original
