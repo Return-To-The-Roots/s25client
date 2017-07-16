@@ -234,7 +234,7 @@ void dskGameInterface::Msg_PaintBefore()
 
     /// Padding of the figures
     const DrawPoint figPadding(12, 12);
-    const DrawPoint screenSize = VIDEODRIVER.GetScreenSize();
+    const DrawPoint screenSize(VIDEODRIVER.GetScreenSize());
     // Rahmen zeichnen
     borders[0]->Draw(DrawPoint(0, 0)); // oben (mit Ecken)
     borders[1]->Draw(DrawPoint(0, screenSize.y - figPadding.y)); // unten (mit Ecken)

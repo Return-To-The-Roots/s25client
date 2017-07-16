@@ -33,11 +33,10 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
-WindowManager::WindowManager()
-    : disable_mouse(false),
-      lastMousePos(Point<int>::Invalid()), screenWidth(0), screenHeight(0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
-{
-}
+WindowManager::WindowManager():
+    disable_mouse(false), lastMousePos(Point<int>::Invalid()),
+    screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
+{}
 
 WindowManager::~WindowManager()
 {
@@ -700,7 +699,7 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHeight)
 {
     VIDEODRIVER.RenewViewport();
-    Msg_ScreenResize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
+    Msg_ScreenResize(VIDEODRIVER.GetScreenSize());
     LOG.writeToFile("Resized screen. Requested %ux%u, got %ux%u\n") % newWidth % newHeight % VIDEODRIVER.GetScreenWidth() % VIDEODRIVER.GetScreenHeight();
 }
 
@@ -711,26 +710,21 @@ void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHei
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
  */
-void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height)
+void WindowManager::Msg_ScreenResize(const Extent& newSize)
 {
     // Falls sich nichts ändert, brauchen wir auch nicht reagieren
     // (Evtl hat sich ja nur der Modus Fenster/Vollbild geändert)
-    if(screenWidth == width && screenHeight == height)
+    if(newSize == screenSize)
         return;
 
-    ScreenResizeEvent sr;
-    sr.oldWidth  = screenWidth;
-    sr.oldHeight = screenHeight;
-    sr.newWidth  = screenWidth  = (width < 800 ? 800 : width);
-    sr.newHeight = screenHeight = (height < 600 ? 600 : height);
+    ScreenResizeEvent sr(screenSize, Extent(std::max(800u, newSize.x), std::max(600u, newSize.y)));
 
     SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen(); //-V807
-    // Wenn es absolut nicht anders geht, lassen wir im temporï¿½r doch
-    // kleiner als 800x600 zu, abspeichern tun wir die aber nie.
+
     if(!SETTINGS.video.fullscreen)
     {
-        if(width  >= 800) SETTINGS.video.windowed_width  = width;
-        if(height >= 600) SETTINGS.video.windowed_height = height;
+        if(newSize.x  >= 800) SETTINGS.video.windowed_width  = newSize.x;
+        if(newSize.y >= 600) SETTINGS.video.windowed_height = newSize.y;
     }
 
     // ist unser Desktop gültig?
@@ -742,10 +736,9 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        const short dx = (*it)->GetX() + (*it)->GetWidth()  - sr.newWidth;
-        const short dy = (*it)->GetY() + (*it)->GetHeight() - sr.newHeight;
-        if(dx > 0 || dy > 0)
-            (*it)->Move((dx > 0 ? -dx : 0), (dy > 0 ? -dy : 0) , /*absolute=*/false);
+        DrawPoint delta = (*it)->GetPos() + DrawPoint((*it)->GetSize()) - DrawPoint(sr.newSize);
+        if(delta.x > 0 || delta.y > 0)
+            (*it)->Move(std::min(-delta.x, 0), -std::min(-delta.y, 0), /*absolute=*/false);
     }
 }
 

@@ -31,7 +31,7 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
     : Window(), background(background)
 {
     SetScale(true);
-    Resize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
+    Resize(VIDEODRIVER.GetScreenSize());
 }
 
 /**

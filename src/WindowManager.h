@@ -89,7 +89,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void ScreenResized(unsigned short width, unsigned short height) override;
         /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
         // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
-        void Msg_ScreenResize(unsigned short width, unsigned short height);
+        void Msg_ScreenResize(const Extent& newSize);
 
         /// Return the window currently on the top (probably active)
         const Window* GetTopMostWindow() const;
@@ -114,8 +114,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         std::vector<IngameWindow*> nextWnds;
         Point<int> lastMousePos;
         std::string curTooltip;
-        unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
-        unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe
+        Extent screenSize; /// last valid screen size
 
         // Für Doppelklick merken:
         unsigned lastLeftClickTime; /// Zeit des letzten Links-Klicks

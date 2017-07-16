@@ -134,7 +134,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     }
 
     // WindowManager informieren
-    WINDOWMANAGER.Msg_ScreenResize(screen_width, screen_height);
+    WINDOWMANAGER.Msg_ScreenResize(Extent(screen_width, screen_height));
 
     // VSYNC ggf abschalten/einschalten
     if(GLOBALVARS.ext_swapcontrol)
@@ -175,7 +175,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
 
     RenewViewport();
 
-    WINDOWMANAGER.Msg_ScreenResize(videodriver->GetScreenWidth(), videodriver->GetScreenHeight());
+    WINDOWMANAGER.Msg_ScreenResize(GetScreenSize());
 
     return result;
 }
@@ -544,4 +544,19 @@ void* VideoDriverWrapper::GetMapPointer() const
         return NULL;
 
     return videodriver->GetMapPointer();
+}
+
+unsigned short VideoDriverWrapper::GetScreenWidth() const
+{
+    return std::max<unsigned>(800u, videodriver->GetScreenWidth());
+}
+
+unsigned short VideoDriverWrapper::GetScreenHeight() const
+{
+    return std::max<unsigned>(600u, videodriver->GetScreenHeight());
+}
+
+Extent VideoDriverWrapper::GetScreenSize() const
+{
+    return Extent(GetScreenWidth(), GetScreenHeight());
 }

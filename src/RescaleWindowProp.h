@@ -25,7 +25,7 @@ struct ScaleWindowPropUp{
     ScaleWindowPropUp(const Extent& size): size(size){}
     
     template<typename T_Pt>
-    static T_Pt scale(const T_Pt& value, const Extent& size) const;
+    static T_Pt scale(const T_Pt& value, const Extent& size);
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& value) const;
 };
@@ -41,7 +41,7 @@ struct RescaleWindowProp
 };
 
 template<typename T_Pt>
-inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent & size) const
+inline T_Pt ScaleWindowPropUp::scale(const T_Pt& value, const Extent & size)
 {
     return T_Pt(value.x * size.x / 800, value.y * size.y / 600);
 }
