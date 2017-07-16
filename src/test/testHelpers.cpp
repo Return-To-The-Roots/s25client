@@ -23,7 +23,7 @@
 #include "WindowManager.h"
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "test/DummyVideoDriver.h"
+#include "test/MockupVideoDriver.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 #include <cstdlib>
@@ -81,7 +81,8 @@ void initGUITests()
 {
     installSegFaultHandler();
     BOOST_TEST_CHECKPOINT("Load video driver");
-    VIDEODRIVER.LoadDriver(new DummyVideoDriver());
+    VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
+    VIDEODRIVER.CreateScreen(800, 600, false);
     BOOST_TEST_CHECKPOINT("Load dummy files");
     LOADER.LoadDummyGUIFiles();
     BOOST_TEST_CHECKPOINT("Switch to Desktop");
@@ -89,4 +90,15 @@ void initGUITests()
     BOOST_TEST_CHECKPOINT("Dummy Draw");
     WINDOWMANAGER.Draw();
     BOOST_TEST_CHECKPOINT("GUI test initialized");
+}
+
+MockupVideoDriver* GetVideoDriver()
+{
+    MockupVideoDriver* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
+    if(!video)
+    {
+        initGUITests();
+        video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
+    }
+    return video;
 }

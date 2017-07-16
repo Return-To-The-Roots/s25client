@@ -20,7 +20,12 @@
 #include "animation/MoveAnimation.h"
 #include "Window.h"
 #include "Loader.h"
+#include "desktops/Desktop.h"
 #include "controls/ctrlButton.h"
+#include "WindowManager.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "MockupVideoDriver.h"
+#include "testHelpers.h"
 #include "PointOutput.h"
 #include "helpers/containerUtils.h"
 #include <boost/test/unit_test.hpp>
@@ -434,6 +439,33 @@ BOOST_AUTO_TEST_CASE(MoveAni)
     animMgr.update(time += 500);
     BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(109, 290));
     BOOST_REQUIRE(animMgr.isAnimationActive(animId));
+}
+
+BOOST_AUTO_TEST_CASE(MoveAniScale)
+{
+    MockupVideoDriver* video = GetVideoDriver();
+    Desktop* dsk = new Desktop(NULL);
+    WINDOWMANAGER.Switch(dsk);
+    WINDOWMANAGER.Draw();
+    bt = dsk->AddTextButton(0, 10, 20, 100, 150, TC_RED1, "", NormalFont);
+    ctrlTextButton* btReference = dsk->AddTextButton(1, 130, bt->GetPos().y, 100, 150, TC_RED1, "", NormalFont);
+    dsk->GetAnimationManager().addAnimation(new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RPT_None));
+    dsk->Msg_PaintBefore();
+    // Pass the animation
+    video->tickCount_ += 1100;
+    dsk->Msg_PaintBefore();
+    BOOST_REQUIRE_EQUAL(bt->GetPos(), btReference->GetPos());
+
+    // Restart
+    bt->Move(DrawPoint(10, 20));
+    dsk->GetAnimationManager().addAnimation(new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RPT_None));
+    video->tickCount_ += 1;
+    dsk->Msg_PaintBefore();
+    VIDEODRIVER.ResizeScreen(1024, 768, false);
+    // Pass the animation
+    video->tickCount_ += 1100;
+    dsk->Msg_PaintBefore();
+    BOOST_REQUIRE_EQUAL(bt->GetPos(), btReference->GetPos());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
