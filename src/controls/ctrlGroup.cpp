@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlGroup.h"
-#include "drivers/ScreenResizeEvent.h"
+
 class MouseCoords;
 struct KeyEvent;
 
@@ -38,38 +38,6 @@ void ctrlGroup::Draw_()
     DrawControls();
 }
 
-/**
- *  Reagiert auf Spielfenstergrößenänderung
- */
-void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
-{
-// Keep the following block the same as in Desktop class:
-    // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-    if (scale_)
-    {
-        //Zunächst an die Kinder weiterleiten
-        for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-        {
-            if(!it->second)
-                continue;
-            Window* ctrl = it->second;
-            // unskalierte Position und Größe bekommen
-            int realX = ctrl->GetX() * 800 / sr.oldWidth;
-            int realY = ctrl->GetY() * 600 / sr.oldHeight;
-            unsigned realWidth = ctrl->GetWidth() * 800 / sr.oldWidth;
-            unsigned realHeight = ctrl->GetHeight() * 600 / sr.oldHeight;
-            // Rundungsfehler?
-            if(realX * sr.oldWidth / 800 < ctrl->GetX()) ++realX;
-            if(realY * sr.oldHeight / 600 < ctrl->GetY()) ++realY;
-            if(realWidth  * sr.oldWidth / 800 < ctrl->GetWidth())  ++realWidth;
-            if(realHeight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realHeight;
-            // Und los
-            ctrl->Move(realX * sr.newWidth / 800, realY * sr.newHeight / 600);
-            ctrl->Msg_ScreenResize(sr);
-            ctrl->Resize(realWidth * sr.newWidth / 800, realHeight * sr.newHeight / 600);
-        }
-    }
-}
 void ctrlGroup::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);

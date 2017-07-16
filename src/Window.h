@@ -78,19 +78,23 @@ class Window
         DrawPoint::ElementType GetX(bool absolute = true) const;
         /// liefert die Y-Koordinate.
         DrawPoint::ElementType GetY(bool absolute = true) const;
+        /// Get the current position
         DrawPoint GetPos() const { return pos_; }
         /// Get the absolute (X,Y) position as when calling GetX/GetY for drawing
         DrawPoint GetDrawPos() const;
         /// liefert die Breite des Fensters.
-        unsigned short GetWidth(const bool scale = false) const { return (scale) ? ScaleX(width_) : width_; }
+        unsigned short GetWidth(const bool scale = false) const;
         /// liefert die Höhe des Fensters.
-        unsigned short GetHeight(const bool scale = false) const { return (scale) ? ScaleY(height_) : height_; }
+        unsigned short GetHeight(const bool scale = false) const;
+        /// Get the size of the window
+        Extent GetSize(bool scale = false) const;
         /// gets the extent of the window in absolute coordinates
         Rect GetDrawRect() const;
         /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to content)
         virtual Rect GetBoundaryRect() const;
         /// setzt die Größe des Fensters
         virtual void Resize(unsigned short width, unsigned short height) { this->width_ = width; this->height_ = height; }
+        void Resize(const Extent& newSize) { Resize(newSize.x, newSize.y); }
         /// setzt die Breite des Fensters
         void SetWidth(unsigned short width)   { Resize(width, this->height_); }
         /// setzt die Höhe des Fensters
@@ -230,7 +234,7 @@ class Window
         // NUR VORÜBERGEHEND für Edit-Controls, bis richtiger Steuerelement-Fokus
         // eingebaut wurde!
         virtual bool Msg_LeftDown_After(const MouseCoords& mc){ return false; }
-        virtual void Msg_ScreenResize(const ScreenResizeEvent& sr){}
+        virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
 
         // Nachrichten, die von unten (Controls) nach oben (Fenster) gereicht werden
         virtual void Msg_ButtonClick(const unsigned int ctrl_id){}

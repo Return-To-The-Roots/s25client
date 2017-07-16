@@ -16,13 +16,13 @@
 #ifndef ScreenResizeEvent_h__
 #define ScreenResizeEvent_h__
 
+#include "Point.h"
+
 /// ScreenResize-Event
 struct ScreenResizeEvent
 {
-    unsigned short oldWidth;
-    unsigned short oldHeight;
-    unsigned short newWidth;
-    unsigned short newHeight;
+    ScreenResizeEvent(const Extent& oldSize, const Extent& newSize): oldSize(oldSize), newSize(newSize){}
+    Extent oldSize, newSize;
 };
 
 #endif // ScreenResizeEvent_h__

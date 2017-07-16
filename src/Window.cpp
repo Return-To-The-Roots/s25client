@@ -20,6 +20,8 @@
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "controls/controls.h"
+#include "RescaleWindowProp.h"
+#include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "driver/src/MouseCoords.h"
 #include "ExtensionList.h"
@@ -56,8 +58,8 @@ Window::~Window()
 {
     RTTR_Assert(!isInMouseRelay);
     // Steuerelemente aufräumen
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-        delete it->second;
+    BOOST_FOREACH(Window* ctrl, childIdToWnd_ | boost::adaptors::map_values)
+        delete ctrl;
 }
 
 /**
@@ -136,6 +138,21 @@ DrawPoint Window::GetDrawPos() const
     }
 
     return result;
+}
+
+unsigned short Window::GetWidth(const bool scale /*= false*/) const
+{
+    return (scale) ? ScaleX(width_) : width_;
+}
+
+unsigned short Window::GetHeight(const bool scale /*= false*/) const
+{
+    return (scale) ? ScaleY(height_) : height_;
+}
+
+Extent Window::GetSize(bool scale /*= false*/) const
+{
+    return Extent(GetWidth(scale), GetHeight(scale));
 }
 
 Rect Window::GetDrawRect() const
@@ -1002,6 +1019,24 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
 void Window::Msg_PaintBefore()
 {
     animations_.update(VIDEODRIVER.GetTickCount());
+}
+
+void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
+{
+    // If the window elements don't get scaled there is nothing to do
+    if(!scale_)
+        return;
+    RescaleWindowProp rescale(sr.oldSize, sr.newSize);
+    BOOST_FOREACH(Window* ctrl, childIdToWnd_ | boost::adaptors::map_values)
+    {
+        if(!ctrl)
+            continue;
+        // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
+        Extent newSize = rescale(ctrl->GetSize());
+        ctrl->Move(rescale(ctrl->GetPos()));
+        ctrl->Msg_ScreenResize(sr);
+        ctrl->Resize(newSize);
+    }
 }
 
 /**

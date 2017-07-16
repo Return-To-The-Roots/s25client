@@ -23,10 +23,10 @@
 #include "Point.h"
 #include "helpers/Deleter.h"
 #include "libutil/src/Singleton.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class Window;
 class Desktop;

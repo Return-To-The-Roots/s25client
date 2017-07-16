@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,14 +28,11 @@ class Desktop : public Window
 {
     public:
         Desktop(glArchivItem_Bitmap* background);
-        void Show();
-
         void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
 
     protected:
         void Draw_() override;
 
-    protected:
         glArchivItem_Bitmap* background;
 };
 
