@@ -35,12 +35,12 @@ B. Installation
     funktionieren, werden aber nicht offiziell unterstützt.
 
     Zum Spielen sucht man die Verzeichnisse "DATA" und "GFX" im Original
-    "Die Siedler 2 Gold" Spiel (oder S2 + Mission CD) und kopiert
-    diese in das Nightly-Verzeichnis (in den Ordner wo sich auch die Datei
+    "Die Siedler 2 Gold" Spiel (oder S2 + Mission CD) und kopiert diese in das
+    Nightly-Verzeichnis (in den Ordner wo sich auch die Datei
     "Put your S2-Files in here" befindet). Diese können sowohl von einer
     Installation als auch direkt von der CD kommen.
 
-    Alternativ könenn auch NTFS symbolische Verknüpfungen als Admin erstellt werden:
+    Alternativ könenn auch symbolische Verknüpfungen als Admin erstellt werden:
     mklink /D DATA "C:\S2\DATA"
     mklink /D GFX "C:\S2\GFX"
 
@@ -49,8 +49,8 @@ B. Installation
 
     (In Nightlies kann man mit RTTR.BAT updaten.)
 
-    Es werden KEINE originalen Spieldateien verändert. Man kann
-    weiterhin das Original ohne Beeinträchtigung spielen.
+    Es werden KEINE originalen Spieldateien verändert. Man kann weiterhin das
+    Original ohne Beeinträchtigung spielen.
       
   ------------------------------------------------------------------------------
 
@@ -171,7 +171,7 @@ C. Spiel
     Die Schneckensymbole im oberen Teil stehen für Lags der jeweiligen
     Spieler.
 
-    Wenn der Host das Spiel verlässt, können die übrigen Spieler das Spiel
+    Wenn der Host das Spiel verlässt können die übrigen Spieler das Spiel
     nicht weiter fortführen.
 
     Zum Pausieren/Fortführen dient die Taste "P" (nur vom Host möglich).
