@@ -55,6 +55,8 @@ unsigned AnimationManager::addAnimation(Animation* animation)
     // Make sure we don't add an animation twice
     if(getAnimationId(animation) != 0u)
         return 0u;
+    // The element must be inside the parernt
+    RTTR_Assert(parent_->GetCtrl<Window>(animation->getElementId()));
     // Make the id non-zero
     if(!nextId_)
         nextId_ = 1;
@@ -82,6 +84,30 @@ unsigned AnimationManager::getAnimationId(const Animation* animation) const
             return val.first;
     }
     return 0u;
+}
+
+std::vector<Animation*> AnimationManager::getElementAnimations(unsigned elementId) const
+{
+    std::vector<Animation*> result;
+    BOOST_FOREACH(Animation* animation, animations_ | boost::adaptors::map_values)
+    {
+        if(animation->getElementId() == elementId)
+            result.push_back(animation);
+    }
+    return result;
+}
+
+void AnimationManager::removeElementAnimations(unsigned elementId)
+{
+    for(AnimationMap::iterator it = animations_.begin(); it != animations_.end(); /* no inc */)
+    {
+        if(it->second->getElementId() == elementId)
+        {
+            delete it->second;
+            it = helpers::erase(animations_, it);
+        } else
+            ++it;
+    }
 }
 
 void AnimationManager::removeAnimation(unsigned animId)

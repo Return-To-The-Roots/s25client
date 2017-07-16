@@ -46,6 +46,7 @@ iwChat::iwChat()
 
 void iwChat::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 

@@ -204,6 +204,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwPostWindow::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     ValidateMessages();
     if(lastHasMissionGoal != !postBox.GetCurrentMissionGoal().empty())
     {

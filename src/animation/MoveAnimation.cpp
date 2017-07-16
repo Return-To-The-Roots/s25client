@@ -19,6 +19,7 @@
 #include "MoveAnimation.h"
 #include "Window.h"
 #include <cmath>
+#include <boost/math/special_functions/round.hpp>
 
 MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat):
     Animation(element, 2, animTime, repeat), origPos_(element->GetPos()), newPos_(newPos)
@@ -34,8 +35,8 @@ void MoveAnimation::doUpdate(Window* element, double nextFramepartTime)
 {
     DrawPoint totalDiff = newPos_ - origPos_;
     Point<double> curDiff = Point<double>(totalDiff) * getCurLinearInterpolationFactor(nextFramepartTime);
-    curDiff.x = std::round(curDiff.x);
-    curDiff.y = std::round(curDiff.y);
-    DrawPoint curDiffInt(curDiff);
-    element->Move(curDiffInt);
+    DrawPoint curDiffInt;
+    curDiffInt.x = boost::math::iround(curDiff.x);
+    curDiffInt.y = boost::math::iround(curDiff.y);
+    element->Move(curDiffInt + origPos_);
 }

@@ -196,6 +196,8 @@ void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwWares::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
+
     // Farben ggf. aktualisieren
 
     if(curPage_ != pagePeople && curPage_ != pageWares)

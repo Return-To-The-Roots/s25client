@@ -37,6 +37,7 @@ public:
     Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat);
     virtual ~Animation();
 
+    unsigned getElementId() const { return elementId_; }
     unsigned getFrameRate() const { return frameRate_; }
     void setFrameRate(unsigned frameRate);
     unsigned getNumFrames() const { return numFrames_; }

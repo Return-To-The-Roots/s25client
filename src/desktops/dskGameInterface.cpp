@@ -227,6 +227,8 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void dskGameInterface::Msg_PaintBefore()
 {
+    Desktop::Msg_PaintBefore();
+
     // Spiel ausführen
     Run();
 

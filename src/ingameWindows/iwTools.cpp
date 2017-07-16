@@ -119,6 +119,8 @@ void iwTools::UpdateTexts()
 
 void iwTools::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
+
     if (shouldUpdateTexts)
     {
         UpdateTexts();

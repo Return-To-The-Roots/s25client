@@ -66,12 +66,6 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
 
 }
 
-
-void iwShip::Msg_PaintBefore()
-{
-
-}
-
 void iwShip::Msg_PaintAfter()
 {
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);

@@ -26,7 +26,7 @@ class MoveAnimation: public Animation
 public:
     MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat);
 protected:
-    void doUpdate(Window* element, double nextFramepartTime);
+    void doUpdate(Window* element, double nextFramepartTime) override;
 private:
     DrawPoint origPos_, newPos_;
 };

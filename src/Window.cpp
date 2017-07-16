@@ -999,6 +999,11 @@ void Window::DrawLine(unsigned short ax, unsigned short ay, unsigned short bx, u
     glEnable(GL_TEXTURE_2D);
 }
 
+void Window::Msg_PaintBefore()
+{
+    animations_.update(VIDEODRIVER.GetTickCount());
+}
+
 /**
  *  zeichnet die Steuerelemente.
  */

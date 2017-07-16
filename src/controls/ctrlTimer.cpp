@@ -59,6 +59,7 @@ void ctrlTimer::Stop()
 
 void ctrlTimer::Msg_PaintBefore()
 {
+    Window::Msg_PaintBefore();
     // timer ist deaktiviert, nix tun
     if(timer == 0)
         return;

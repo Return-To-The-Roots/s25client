@@ -216,7 +216,7 @@ class Window
         // GUI-Notify-Messages
 
         // Nachrichten, die von oben (WindowManager) nach unten (zu Controls) gereicht werden
-        virtual void Msg_PaintBefore(){}
+        virtual void Msg_PaintBefore();
         virtual void Msg_PaintAfter(){}
         virtual bool Msg_LeftDown(const MouseCoords& mc){ return false; }
         virtual bool Msg_RightDown(const MouseCoords& mc){ return false; }

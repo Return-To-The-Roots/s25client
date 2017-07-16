@@ -22,6 +22,7 @@
 #include "Loader.h"
 #include "controls/ctrlButton.h"
 #include "PointOutput.h"
+#include "helpers/containerUtils.h"
 #include <boost/test/unit_test.hpp>
 
 namespace{
@@ -41,13 +42,14 @@ namespace{
     {
         TestWindow wnd;
         AnimationManager& animMgr;
-        Window* bt;
+        Window* bt, *bt2;
         bool animFinished;
         double lastNextFramepartTime;
         unsigned lastFrame;
         WindowFixture(): wnd(DrawPoint(0, 0), 0, NULL, 800, 600), animMgr(wnd.GetAnimationManager()), animFinished(false)
         {
-            bt = wnd.AddTextButton(0, 10, 20, 100, 200, TC_RED1, "Test", NormalFont);
+            bt = wnd.AddTextButton(0, 10, 20, 100, 20, TC_RED1, "Test", NormalFont);
+            bt2 = wnd.AddTextButton(1, 10, 40, 100, 20, TC_RED1, "Test", NormalFont);
         }
 
         PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime);
@@ -130,11 +132,24 @@ BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
         BOOST_REQUIRE_EQUAL(animMgr.getAnimation(animIds[i]), anims[i]);
         BOOST_REQUIRE_EQUAL(animMgr.getAnimationId(anims[i]), animIds[i]);
     }
+    std::vector<Animation*> elAnims = animMgr.getElementAnimations(bt->GetID());
+    BOOST_REQUIRE_EQUAL(elAnims.size(), 3u);
+    for(unsigned i = 0; i < anims.size(); i++)
+        BOOST_REQUIRE(helpers::contains(anims, elAnims[i]));
     // Remove 2nd one
     animMgr.removeAnimation(animIds[1]);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 2u);
     BOOST_REQUIRE(!animMgr.isAnimationActive(animIds[1]));
     BOOST_REQUIRE_EQUAL(animMgr.getAnimation(animIds[1]), (Animation*) NULL);
+
+    // Add animation for another element so we can test that it isn't returned for getElementAnimations
+    // and not removed for removeElementAnimations
+    animMgr.addAnimation(new TestAnimation(*this, bt2, 10, 10, Animation::RPT_Repeat));
+    BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 3u);
+    BOOST_REQUIRE_EQUAL(animMgr.getElementAnimations(bt->GetID()).size(), 2u);
+    animMgr.removeElementAnimations(bt->GetID());
+    BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 1u);
+    BOOST_REQUIRE_EQUAL(animMgr.getElementAnimations(bt->GetID()).size(), 0u);
 }
 
 BOOST_AUTO_TEST_CASE(AnimationSetterGetter)
@@ -391,33 +406,33 @@ BOOST_AUTO_TEST_CASE(LinearInterpolationFactor)
 
 BOOST_AUTO_TEST_CASE(MoveAni)
 {
-    bt->Move(DrawPoint(0, 0));
-    DrawPoint targetPt(10, 100);
+    bt->Move(DrawPoint(100, 200));
+    DrawPoint targetPt(110, 300);
     animMgr.addAnimation(new MoveAnimation(bt, targetPt, 500, Animation::RPT_None));
     // Init with any start time
     unsigned time = 100;
     animMgr.update(time);
     // Move half way
     animMgr.update(time += 250);
-    BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(5, 50));
+    BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(105, 250));
     // Move over target
     animMgr.update(time += 270);
     BOOST_REQUIRE_EQUAL(bt->GetPos(), targetPt);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
 
-    bt->Move(DrawPoint(0, 0));
+    bt->Move(DrawPoint(100, 200));
     unsigned animId = animMgr.addAnimation(new MoveAnimation(bt, targetPt, 500, Animation::RPT_Repeat));
     unsigned frameRate = animMgr.getAnimation(animId)->getFrameRate();
     animMgr.update(time += 1);
     // Move over target: Animation is 500ms long and restarts after 1 frame -> 500 + frame + 50(10%)
     animMgr.update(time += (550 + frameRate));
-    BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(1, 10));
+    BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(101, 210));
     BOOST_REQUIRE(animMgr.isAnimationActive(animId));
 
     animMgr.getAnimation(animId)->setRepeat(Animation::RPT_Oscillate);
     // Move over target. Here we don't need the additional frame as we move directly to the 2nd last frame
     animMgr.update(time += 500);
-    BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(9, 90));
+    BOOST_REQUIRE_EQUAL(bt->GetPos(), DrawPoint(109, 290));
     BOOST_REQUIRE(animMgr.isAnimationActive(animId));
 }
 

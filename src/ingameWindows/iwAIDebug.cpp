@@ -104,6 +104,7 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
 
 void iwAIDebug::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     std::stringstream ss;
 
     AIJH::Job* currentJob = ais_[player_]->GetCurrentJob();

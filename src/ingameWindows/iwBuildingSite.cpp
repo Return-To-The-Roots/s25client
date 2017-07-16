@@ -69,6 +69,7 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwBuildingSite::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = buildingsite->GetBuildingImageShadow();
 

@@ -20,6 +20,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <map>
+#include <vector>
 
 class Animation;
 class Window;
@@ -42,6 +43,8 @@ public:
     Animation* getAnimation(unsigned animId);
     /// Return the id of a given animation
     unsigned getAnimationId(const Animation* animation) const;
+    std::vector<Animation*> getElementAnimations(unsigned elementId) const;
+    void removeElementAnimations(unsigned elementId);
     /// Remove the animation with the given id
     void removeAnimation(unsigned animId);
     /// Return the number of active animations

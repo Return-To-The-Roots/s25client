@@ -108,6 +108,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 
 void iwDiplomacy::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
     DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
     for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)

@@ -88,6 +88,7 @@ void dskLobby::Msg_Timer(const unsigned int  /*ctrl_id*/)
 
 void dskLobby::Msg_PaintBefore()
 {
+    dskMenuBase::Msg_PaintBefore();
     UpdateServerList();
     UpdatePlayerList();
     GetCtrl<ctrlEdit>(21)->SetFocus();

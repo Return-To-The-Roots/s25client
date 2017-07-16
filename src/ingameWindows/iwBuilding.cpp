@@ -101,6 +101,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
 
 void iwBuilding::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 

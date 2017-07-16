@@ -73,6 +73,7 @@ void dskLAN::Msg_Timer(const unsigned int ctrl_id)
 
 void dskLAN::Msg_PaintBefore()
 {
+    dskMenuBase::Msg_PaintBefore();
     discovery.Run();
 }
 

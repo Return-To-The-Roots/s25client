@@ -88,6 +88,8 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 
 void iwTrade::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
+
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType() + 1);
 

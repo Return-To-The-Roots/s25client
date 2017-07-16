@@ -431,6 +431,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
  */
 void dskHostGame::Msg_PaintBefore()
 {
+    Desktop::Msg_PaintBefore();
     // Chatfenster Fokus geben
     if (!IsSinglePlayer())
         GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
