@@ -64,6 +64,8 @@ protected:
     /// Return the current factor [0, 1] for linearly interpolating over the duration if the animation
     double getCurLinearInterpolationFactor(double nextFramepartTime) const;
 private:
+    /// Executes the current frame
+    void execFrame(Window* parent, unsigned remainingTime);
     /// Advance to frame according to passed time
     void advanceFrames(unsigned passedTime);
     /// Advance to next frame
@@ -85,6 +87,8 @@ private:
     bool countUp_;
     /// What to do when the passed time exceeds more than one frame
     SkipType skipType_;
+    /// Whether the animation has started (frame 0 called, time set) 
+    bool hasStarted_;
 };
 
 #endif // Animation_h__

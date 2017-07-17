@@ -21,7 +21,7 @@
 
 Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat):
     elementId_(element->GetID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat),
-    lastTime_(0), curFrame_(0), countUp_(true), skipType_(SKIP_FRAMES)
+    lastTime_(0), curFrame_(0), countUp_(true), skipType_(SKIP_FRAMES), hasStarted_(false)
 {
     // We need at least 2 frames: current state and next state
     RTTR_Assert(numFrames_ > 1);
@@ -48,22 +48,30 @@ void Animation::update(unsigned time, Window* parent)
 {
     RTTR_Assert(!isFinished());
     // First update: Just set time
-    if(lastTime_ == 0)
+    if(!hasStarted_)
     {
+        // Initialize and start
+        curFrame_ = 0u;
         lastTime_ = time;
-        return;
+        countUp_ = true;
+        hasStarted_ = true;
+    } else
+    {
+        unsigned passedTime = time - lastTime_;
+        // Next frame not there -> Out
+        if(passedTime < frameRate_)
+            return;
+        advanceFrames(passedTime);
     }
-    unsigned passedTime = time - lastTime_;
-    // Next frame not there -> Out
-    if(passedTime < frameRate_)
-        return;
-    advanceFrames(passedTime);
 
     unsigned remainingTime = time - lastTime_;
+    execFrame(parent, remainingTime);
+}
 
+void Animation::execFrame(Window* parent, unsigned remainingTime)
+{
     RTTR_Assert(curFrame_ < numFrames_);
     RTTR_Assert(remainingTime < frameRate_);
-    RTTR_Assert(lastTime_ + remainingTime == time);
     Window* element = parent->GetCtrl<Window>(elementId_);
     // Element missing -> Done
     if(!element)
@@ -74,9 +82,7 @@ void Animation::update(unsigned time, Window* parent)
     }
     // Do not overshoot on last frame unless we are in oscillate mode
     if(isLastFrame() && repeat_ != RPT_Oscillate)
-    {
         remainingTime = 0;
-    }
     doUpdate(element, static_cast<double>(remainingTime) / static_cast<double>(frameRate_));
 }
 

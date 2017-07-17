@@ -186,16 +186,14 @@ BOOST_AUTO_TEST_CASE(EnsureTiming)
     unsigned animId = animMgr.addAnimation(anim);
     // Any start time
     unsigned time = 100;
-    // Execute 10 timesteps: first will init the time so no update should be called
-    for(unsigned i = 0; i < 10; i++)
-    {
-        animMgr.update(time);
-        BOOST_REQUIRE(!anim->updateCalled);
-        time++;
-    }
+    // Init time and call first frame
+    BOOST_REQUIRE(testAdvanceTime(anim, time, true, 0u, 0.));
+    // Execute 9 timesteps: no update should be called
+    for(unsigned i = 0; i < 9; i++)
+        BOOST_REQUIRE(testAdvanceTime(anim, ++time, false, 0u, 0.));
     BOOST_REQUIRE_EQUAL(anim->getCurFrame(), 0u);
     // Now the update should be called
-    BOOST_REQUIRE(testAdvanceTime(anim, time, true, 1u, 0.));
+    BOOST_REQUIRE(testAdvanceTime(anim, ++time, true, 1u, 0.));
     // Skip 9 ms -> no update called
     BOOST_REQUIRE(testAdvanceTime(anim, time += 9, false, 1u, 0.));
     // Skip 6 ms -> update called with half way into next frame
