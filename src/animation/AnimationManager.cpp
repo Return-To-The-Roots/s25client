@@ -119,3 +119,9 @@ unsigned AnimationManager::getNumActiveAnimations() const
 {
     return animations_.size();
 }
+
+void AnimationManager::onRescale(const ScreenResizeEvent& rs)
+{
+    BOOST_FOREACH(Animation* animation, animations_ | boost::adaptors::map_values)
+        animation->onRescale(rs);
+}

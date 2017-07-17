@@ -1037,6 +1037,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         ctrl->Msg_ScreenResize(sr);
         ctrl->Resize(newSize);
     }
+    animations_.onRescale(sr);
 }
 
 /**

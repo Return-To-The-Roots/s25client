@@ -23,6 +23,7 @@
 #include <vector>
 
 class Animation;
+struct ScreenResizeEvent;
 class Window;
 
 /// Class to handle the animations for all controls of a window
@@ -49,6 +50,8 @@ public:
     void removeAnimation(unsigned animId);
     /// Return the number of active animations
     unsigned getNumActiveAnimations() const;
+    /// React when the parents elements have been rescaled
+    void onRescale(const ScreenResizeEvent& rs);
 private:
     typedef std::map<unsigned, Animation*> AnimationMap;
     Window* parent_;

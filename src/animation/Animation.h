@@ -19,6 +19,7 @@
 #define Animation_h__
 
 class Window;
+struct ScreenResizeEvent;
 
 class Animation
 {
@@ -53,6 +54,8 @@ public:
 
     /// Return true when the animation is done
     virtual bool isFinished() const;
+    /// React when the parents elements have been rescaled
+    virtual void onRescale(const ScreenResizeEvent& rs){}
 protected:
     /// Function for subclasses to override to do the actual animation
     /// Gets the element and the time into the next frame as a fraction of the frameRate [0..1)

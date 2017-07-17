@@ -718,6 +718,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
         return;
 
     ScreenResizeEvent sr(screenSize, Extent(std::max(800u, newSize.x), std::max(600u, newSize.y)));
+    screenSize = sr.newSize;
 
     SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen(); //-V807
 

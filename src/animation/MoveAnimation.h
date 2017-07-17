@@ -25,6 +25,8 @@ class MoveAnimation: public Animation
 {
 public:
     MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat);
+
+    void onRescale(const ScreenResizeEvent& rs) override;
 protected:
     void doUpdate(Window* element, double nextFramepartTime) override;
 private:

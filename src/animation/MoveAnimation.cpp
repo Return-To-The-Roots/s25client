@@ -18,8 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "MoveAnimation.h"
 #include "Window.h"
-#include <cmath>
+#include "RescaleWindowProp.h"
+#include "drivers/ScreenResizeEvent.h"
 #include <boost/math/special_functions/round.hpp>
+#include <cmath>
 
 MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat):
     Animation(element, 2, animTime, repeat), origPos_(element->GetPos()), newPos_(newPos)
@@ -29,6 +31,13 @@ MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTim
     double frameRate = std::max(1., std::floor(std::min(msPerPixel.x, msPerPixel.y)));
     setFrameRate(static_cast<unsigned>(frameRate));
     setNumFrames(static_cast<unsigned>(std::ceil(animTime / frameRate)) + 1u);
+}
+
+void MoveAnimation::onRescale(const ScreenResizeEvent& rs)
+{
+    RescaleWindowProp rescale(rs.oldSize, rs.newSize);
+    origPos_ = rescale(origPos_);
+    newPos_ = rescale(newPos_);
 }
 
 void MoveAnimation::doUpdate(Window* element, double nextFramepartTime)
