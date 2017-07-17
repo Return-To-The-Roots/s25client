@@ -102,12 +102,8 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             ctrlTextButton* btAniBg = GetCtrl<ctrlTextButton>(ID_btAniBg);
             ctrlTextButton* btAni = GetCtrl<ctrlTextButton>(ID_btAni);
-            std::vector<Animation*> anims = GetAnimationManager().getElementAnimations(btAni->GetID());
             // Stop all
-            BOOST_FOREACH(Animation* anim, anims)
-            {
-                GetAnimationManager().removeAnimation(GetAnimationManager().getAnimationId(anim));
-            }
+            GetAnimationManager().removeElementAnimations(btAni->GetID());
             DrawPoint startPos(btAniBg->GetPos());
             startPos.y += 5;
             btAni->Move(startPos);

@@ -15,23 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MoveAnimation_h__
-#define MoveAnimation_h__
+#ifndef BlinkButtonAnim_h__
+#define BlinkButtonAnim_h__
 
-#include "animation/Animation.h"
-#include "DrawPoint.h"
+#include "animation/ToggleAnimation.h"
 
-/// Animations which moves an element to a new location
-class MoveAnimation: public Animation
+class ctrlButton;
+
+/// Animation which makes a button blink (toggle illuminated)
+class BlinkButtonAnim: public ToggleAnimation<ctrlButton>
 {
 public:
-    MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat);
-
-    void onRescale(const ScreenResizeEvent& rs) override;
-protected:
-    void doUpdate(Window* element, double nextFramepartTime) override;
-private:
-    DrawPoint origPos_, newPos_;
+    BlinkButtonAnim(ctrlButton* element, bool startValue = true, unsigned frameRate = 1000, RepeatType repeat = Animation::RPT_Repeat);
 };
 
-#endif // MoveAnimation_h__
+#endif // BlinkButtonAnim_h__

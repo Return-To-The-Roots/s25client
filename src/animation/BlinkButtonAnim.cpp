@@ -15,23 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MoveAnimation_h__
-#define MoveAnimation_h__
+#include "defines.h" // IWYU pragma: keep
+#include "BlinkButtonAnim.h"
+#include "controls/ctrlButton.h"
 
-#include "animation/Animation.h"
-#include "DrawPoint.h"
-
-/// Animations which moves an element to a new location
-class MoveAnimation: public Animation
-{
-public:
-    MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat);
-
-    void onRescale(const ScreenResizeEvent& rs) override;
-protected:
-    void doUpdate(Window* element, double nextFramepartTime) override;
-private:
-    DrawPoint origPos_, newPos_;
-};
-
-#endif // MoveAnimation_h__
+BlinkButtonAnim::BlinkButtonAnim(ctrlButton* element, bool startValue, unsigned frameRate, RepeatType repeat):
+    ToggleAnimation<ctrlButton>(element, &ctrlTextButton::SetIlluminated, startValue, frameRate, repeat)
+{}

@@ -18,6 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "animation/AnimationManager.h"
 #include "animation/MoveAnimation.h"
+#include "animation/ToggleAnimation.h"
+#include "animation/BlinkButtonAnim.h"
 #include "Window.h"
 #include "Loader.h"
 #include "desktops/Desktop.h"
@@ -47,7 +49,7 @@ namespace{
     {
         TestWindow wnd;
         AnimationManager& animMgr;
-        Window* bt, *bt2;
+        ctrlTextButton *bt, *bt2;
         bool animFinished;
         double lastNextFramepartTime;
         unsigned lastFrame;
@@ -464,6 +466,24 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     video->tickCount_ += 1100;
     dsk->Msg_PaintBefore();
     BOOST_REQUIRE_EQUAL(bt->GetPos(), btReference->GetPos());
+}
+
+BOOST_AUTO_TEST_CASE(ToogleAnim)
+{
+    animMgr.addAnimation(new ToggleAnimation<Window>(bt, &Window::SetVisible, true, 1000));
+    animMgr.addAnimation(new BlinkButtonAnim(bt2, true, 1000));
+    // Init with any start time
+    unsigned time = 100;
+    animMgr.update(time);
+    BOOST_REQUIRE(bt->IsVisible());
+    BOOST_REQUIRE(bt2->GetIlluminated());
+    // Switch
+    animMgr.update(time += 1000);
+    BOOST_REQUIRE(!bt->IsVisible());
+    BOOST_REQUIRE(!bt2->GetIlluminated());
+    animMgr.update(time += 1000);
+    BOOST_REQUIRE(bt->IsVisible());
+    BOOST_REQUIRE(bt2->GetIlluminated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
