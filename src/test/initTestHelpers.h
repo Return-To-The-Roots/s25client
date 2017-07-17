@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef testHelpers_h__
-#define testHelpers_h__
+#ifndef initTestHelpers_h__
+#define initTestHelpers_h__
 
 class MockupVideoDriver;
 
@@ -36,4 +36,4 @@ void initGUITests();
 /// Return the video driver. Initializes the GUI tests if required
 MockupVideoDriver* GetVideoDriver();
 
-#endif // testHelpers_h__
+#endif // initTestHelpers_h__

@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Random.h"
 #include "random/XorShift.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include "libutil/src/Serializer.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/std/vector.hpp>

@@ -30,7 +30,7 @@
 #include "gameData/ShieldConsts.h"
 #include "gameData/MapConsts.h"
 #include "RTTR_AssertError.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include "test/CreateEmptyWorld.h"

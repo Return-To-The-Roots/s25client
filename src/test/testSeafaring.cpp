@@ -27,7 +27,7 @@
 #include "postSystem/ShipPostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "PointOutput.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 

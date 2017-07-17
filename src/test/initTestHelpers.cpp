@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include "Random.h"
 #include "desktops/Desktop.h"
 #include "WindowManager.h"

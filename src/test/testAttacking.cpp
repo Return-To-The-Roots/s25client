@@ -26,7 +26,7 @@
 #include "nodeObjs/noFlag.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>

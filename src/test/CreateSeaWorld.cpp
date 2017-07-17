@@ -19,7 +19,7 @@
 #include "CreateSeaWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 
 CreateSeaWorld::CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers):

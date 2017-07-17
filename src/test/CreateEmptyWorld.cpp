@@ -19,7 +19,7 @@
 #include "CreateEmptyWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 
 CreateEmptyWorld::CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers):
     width_(width), height_(height), playerNations_(numPlayers, NAT_AFRICANS)

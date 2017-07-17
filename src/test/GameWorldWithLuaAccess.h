@@ -25,7 +25,7 @@
 #include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/colors.h"
 #include "libutil/src/StringStreamWriter.h"

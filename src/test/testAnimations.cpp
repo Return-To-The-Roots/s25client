@@ -25,7 +25,7 @@
 #include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "MockupVideoDriver.h"
-#include "testHelpers.h"
+#include "initTestHelpers.h"
 #include "PointOutput.h"
 #include "helpers/containerUtils.h"
 #include <boost/test/unit_test.hpp>

@@ -33,7 +33,7 @@
 #include "addons/const_addons.h"
 #include "gameData/SettingTypeConv.h"
 #include "test/PointOutput.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
