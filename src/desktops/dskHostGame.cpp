@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameServer.h"
+#include "animation/BlinkButtonAnim.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlChat.h"
 #include "controls/ctrlCheck.h"
@@ -62,14 +63,13 @@ namespace{
         ID_CHAT_INPUT,
         ID_CHAT_TAB,
         TAB_GAMECHAT,
-        TAB_LOBBYCHAT,
-        ID_UNREAD_ANIM_TIMER
+        TAB_LOBBYCHAT
     };
 }
 
 dskHostGame::dskHostGame(const ServerType serverType) :
     Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(GAMECLIENT.GetGameLobby()),
-    hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), hasUnreadChat(false)
+    hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -136,7 +136,6 @@ dskHostGame::dskHostGame(const ServerType serverType) :
             gameChat  = AddChatCtrl(ID_GAME_CHAT,  20, 345, 360, 218 - 25, TC_GREY, NormalFont);
             lobbyChat = AddChatCtrl(ID_LOBBY_CHAT, 20, 345, 360, 218 - 25, TC_GREY, NormalFont);
             chatTab->SetSelection(TAB_GAMECHAT, true);
-            AddTimer(ID_UNREAD_ANIM_TIMER, 500);
         } else{
             // Chatfenster
             gameChat = AddChatCtrl(ID_GAME_CHAT, 20, 320, 360, 218, TC_GREY, NormalFont);
@@ -435,18 +434,6 @@ void dskHostGame::Msg_PaintBefore()
     // Chatfenster Fokus geben
     if (!IsSinglePlayer())
         GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
-}
-
-void dskHostGame::Msg_Timer(const unsigned timerId)
-{
-    if(timerId != ID_UNREAD_ANIM_TIMER || !hasUnreadChat)
-        return;
-    ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(gameChat->IsVisible() ? TAB_LOBBYCHAT : TAB_GAMECHAT);
-    if(bt->GetTexture() != TC_GREEN2)
-        bt->SetTexture(TC_GREEN2);
-    else
-        bt->SetTexture(TC_RED2);
-
 }
 
 void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
@@ -774,7 +761,7 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int select
         gameChat->SetVisible(selection == TAB_GAMECHAT);
         lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
         GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
-        hasUnreadChat = false;
+        GetAnimationManager().finishAnimation(selection == TAB_GAMECHAT ? localChatTabAnimId : lobbyChatTabAnimId, false);
     }
 }
 
@@ -973,7 +960,10 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination  /*cd*/
 
         gameChat->AddMessage(time, gameLobby.GetPlayer(playerId).name, gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
         if(!gameChat->IsVisible())
-            hasUnreadChat = true;
+        {
+            ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(TAB_GAMECHAT);
+            GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+        }
     }
 }
 
@@ -1017,5 +1007,8 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
         return;
     lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
     if(!lobbyChat->IsVisible())
-        hasUnreadChat = true;
+    {
+        ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
+        GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+    }
 }

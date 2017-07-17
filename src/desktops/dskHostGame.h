@@ -60,7 +60,6 @@ class dskHostGame :
         void ChangeColor(const unsigned i, const unsigned color);
 
         void Msg_PaintBefore() override;
-        void Msg_Timer(const unsigned timerId) override;
         void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
         void Msg_Group_CheckboxChange(const unsigned group_id, const unsigned ctrl_id, const bool checked) override;
         void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
@@ -105,7 +104,7 @@ class dskHostGame :
         boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
         bool wasActivated, allowAddonChange;
         ctrlChat *gameChat, *lobbyChat;
-        bool hasUnreadChat;
+        unsigned lobbyChatTabAnimId, localChatTabAnimId;
 };
 
 
