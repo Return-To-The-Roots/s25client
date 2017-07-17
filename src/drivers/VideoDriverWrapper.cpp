@@ -379,6 +379,9 @@ bool VideoDriverWrapper::Initialize()
  */
 void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
 {
+    if(!videodriver->IsOpenGL())
+        return;
+
     const unsigned short width  = videodriver->GetScreenWidth();
     const unsigned short height = videodriver->GetScreenHeight();
 

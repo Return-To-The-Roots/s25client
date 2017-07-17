@@ -66,9 +66,7 @@ void* MockupVideoDriver::GetFunction(const char* function) const
 }
 
 void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
-{
-    video_modes.push_back(VideoMode(800, 600));
-}
+{}
 
 void MockupVideoDriver::SetMousePos(int x, int y)
 {
