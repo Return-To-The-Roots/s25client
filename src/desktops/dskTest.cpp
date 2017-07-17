@@ -20,6 +20,7 @@
 
 #include "WindowManager.h"
 #include "Loader.h"
+#include "animation/BlinkButtonAnim.h"
 #include "animation/MoveAnimation.h"
 #include "desktops/dskMainMenu.h"
 #include "controls/ctrlButton.h"
@@ -104,6 +105,9 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
             ctrlTextButton* btAni = GetCtrl<ctrlTextButton>(ID_btAni);
             // Stop all
             GetAnimationManager().removeElementAnimations(btAni->GetID());
+            GetAnimationManager().finishElementAnimations(ID_btAnimate, false);
+            GetAnimationManager().finishElementAnimations(ID_btAnimateOscillate, false);
+            GetAnimationManager().finishElementAnimations(ID_btAnimateRepeat, false);
             DrawPoint startPos(btAniBg->GetPos());
             startPos.y += 5;
             btAni->Move(startPos);
@@ -115,6 +119,7 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
             else if(ctrl_id == ID_btAnimateRepeat)
                 repeat = Animation::RPT_Repeat;
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
+            GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlTextButton>(ctrl_id)));
         }
     }
 }

@@ -27,7 +27,8 @@ public:
     enum RepeatType{
         RPT_None,
         RPT_Repeat,
-        RPT_Oscillate
+        RPT_Oscillate,
+        RPT_OscillateOnce
     };
     enum SkipType{
         /// Skip on time, play every frame
@@ -51,6 +52,10 @@ public:
     void setSkipType(SkipType skipType) { skipType_ = skipType; }
 
     void update(unsigned time, Window* parent);
+    /// Finish the animations
+    /// If finishImmediatelly is true, then execute the last frame (skipping all frames in between)
+    /// else just let them play them to the end (setting repeat to oscillateOnce for oscillate or none for repeat) 
+    void finish(Window* parent, bool finishImmediately);
 
     /// Return true when the animation is done
     virtual bool isFinished() const;

@@ -99,20 +99,38 @@ std::vector<Animation*> AnimationManager::getElementAnimations(unsigned elementI
 
 void AnimationManager::removeElementAnimations(unsigned elementId)
 {
-    for(AnimationMap::iterator it = animations_.begin(); it != animations_.end(); /* no inc */)
+    std::vector<Animation*> elAnims = getElementAnimations(elementId);
+    BOOST_FOREACH(Animation* anim, elAnims)
     {
-        if(it->second->getElementId() == elementId)
-        {
-            delete it->second;
-            it = helpers::erase(animations_, it);
-        } else
-            ++it;
+        removeAnimation(getAnimationId(anim));
+    }
+}
+
+void AnimationManager::finishElementAnimations(unsigned elementId, bool finishImmediately)
+{
+    std::vector<Animation*> elAnims = getElementAnimations(elementId);
+    BOOST_FOREACH(Animation* anim, elAnims)
+    {
+        finishAnimation(getAnimationId(anim), finishImmediately);
     }
 }
 
 void AnimationManager::removeAnimation(unsigned animId)
 {
-    animations_.erase(animId);
+    AnimationMap::iterator it = animations_.find(animId);
+    if(it != animations_.end())
+    {
+        delete it->second;
+        animations_.erase(it);
+    }
+}
+
+void AnimationManager::finishAnimation(unsigned animId, bool finishImmediately)
+{
+    Animation* anim = getAnimation(animId);
+    anim->finish(parent_, finishImmediately);
+    if(anim->isFinished())
+        removeAnimation(animId);
 }
 
 unsigned AnimationManager::getNumActiveAnimations() const

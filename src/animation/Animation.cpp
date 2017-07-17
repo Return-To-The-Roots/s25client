@@ -81,7 +81,7 @@ void Animation::execFrame(Window* parent, unsigned remainingTime)
         curFrame_ = numFrames_ - 1u;
     }
     // Do not overshoot on last frame unless we are in oscillate mode
-    if(isLastFrame() && repeat_ != RPT_Oscillate)
+    if(isLastFrame() && repeat_ != RPT_Oscillate && (repeat_ != RPT_OscillateOnce || !countUp_))
         remainingTime = 0;
     doUpdate(element, static_cast<double>(remainingTime) / static_cast<double>(frameRate_));
 }
@@ -125,10 +125,15 @@ void Animation::advanceFrames(unsigned passedTime)
                 // We can reduce the number of passed frames by full cycles
                 // So passing 6 frames on an animation with 5 frames is the same as just passing 1 frame
                 numFramesPassed = numFramesPassed % numFrames_;
-            } else
+            } else if(repeat_ == RPT_Oscillate)
             {
                 // Oscillate is similar to repeat but we have twice as many frames less one (last is not played twice)
                 numFramesPassed = numFramesPassed % (numFrames_ * 2u - 2u);
+            } else
+            {
+                // Maximum number of frames passed are the number of remaining frames
+                unsigned numFramesLeft = (countUp_) ? numFrames_ * 2u - 2u - curFrame_ : curFrame_;
+                numFramesPassed = std::min(numFramesPassed, numFramesLeft);
             }
         }
     } else
@@ -149,7 +154,7 @@ void Animation::advanceFrame()
         if(curFrame_ >= numFrames_)
         {
             RTTR_Assert(repeat_ != RPT_None);
-            if(repeat_ == RPT_Oscillate)
+            if(repeat_ == RPT_Oscillate || repeat_ == RPT_OscillateOnce)
             {
                 countUp_ = false;
                 curFrame_ = numFrames_ - 2u;
@@ -160,7 +165,7 @@ void Animation::advanceFrame()
     {
         if(curFrame_ == 0)
         {
-            RTTR_Assert(repeat_ != RPT_None);
+            RTTR_Assert(repeat_ != RPT_None && repeat_ != RPT_OscillateOnce);
             if(repeat_ == RPT_Oscillate)
             {
                 countUp_ = true;
@@ -170,13 +175,50 @@ void Animation::advanceFrame()
         } else
             curFrame_--;
     }
-    if(isLastFrame() && repeat_ == RPT_Oscillate)
+    if((repeat_ == RPT_Oscillate && isLastFrame()) || (repeat_ == RPT_OscillateOnce && curFrame_ + 1u >= numFrames_))
         countUp_ = !countUp_;
+}
+
+void Animation::finish(Window* parent, bool finishImmediately)
+{
+    if(repeat_ == RPT_Repeat)
+        repeat_ = RPT_None;
+    else if(repeat_ == RPT_Oscillate)
+        repeat_ = RPT_OscillateOnce;
+    if(!hasStarted_)
+    {
+        // When we haven't started yet, just execute the last frame immediately
+        if(repeat_ == RPT_OscillateOnce)
+        {
+            curFrame_ = 0u;
+            countUp_ = false;
+        } else
+            curFrame_ = numFrames_ - 1u;
+        hasStarted_ = true;
+        execFrame(parent, 0u);
+        return;
+    }
+    // Finish immediately if we are at the start/end
+    if(repeat_ == RPT_OscillateOnce && curFrame_ == 0u && hasStarted_)
+        countUp_ = false;
+    if(!finishImmediately || isFinished())
+        return;
+    if(repeat_ == RPT_None)
+        curFrame_ = numFrames_ - 1u;
+    else
+    {
+        curFrame_ = 0u;
+        countUp_ = false;
+    }
+    execFrame(parent, 0u);
 }
 
 bool Animation::isFinished() const
 {
-    if(repeat_ != RPT_None)
+    if(repeat_ == RPT_None)
+        return isLastFrame();
+    else if(repeat_ == RPT_OscillateOnce)
+        return !countUp_ && curFrame_ == 0;
+    else
         return false;
-    return isLastFrame();
 }

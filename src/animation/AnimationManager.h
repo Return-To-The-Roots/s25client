@@ -45,9 +45,18 @@ public:
     /// Return the id of a given animation
     unsigned getAnimationId(const Animation* animation) const;
     std::vector<Animation*> getElementAnimations(unsigned elementId) const;
+    /// Remove all animations for this element (stopping them where they are)
     void removeElementAnimations(unsigned elementId);
+    /// Finish the elements animations
+    /// If finishImmediately is true, then execute their last frame (skipping all frames in between)
+    /// else just play them to the end (setting repeat to oscillateOnce for oscillate or none for repeat) 
+    void finishElementAnimations(unsigned elementId, bool finishImmediately);
     /// Remove the animation with the given id
     void removeAnimation(unsigned animId);
+    /// Finish the animation
+    /// If finishImmediately is true, then execute the last frame (skipping all frames in between)
+    /// else just play it to the end (setting repeat to oscillateOnce for oscillate or none for repeat) 
+    void finishAnimation(unsigned animId, bool finishImmediately);
     /// Return the number of active animations
     unsigned getNumActiveAnimations() const;
     /// React when the parents elements have been rescaled
