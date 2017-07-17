@@ -37,10 +37,10 @@ struct KeyEvent;
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
-        typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
-        typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
-
     public:
+        typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
+        typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
+
         WindowManager();
         ~WindowManager() override;
         void CleanUp();
@@ -52,9 +52,9 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 
         /// schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
         /// Sendet eine Tastaturnachricht an die Steuerelemente.
-        void RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke);
+        void RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
-        void RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc);
+        void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
 
         /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
         void Show(IngameWindow* window, bool mouse = false);
@@ -98,12 +98,14 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void DrawToolTip();
         IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
     private:
+        typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
+        typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
+
         /// wechselt einen Desktop
         void Switch();
         /// Actually close all ingame windows marked for closing
         void CloseMarkedIngameWnds();
 
-    private:
         boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     /// aktueller Desktop
         boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > nextdesktop;    /// der nächste Desktop
         bool disable_mouse;      /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s

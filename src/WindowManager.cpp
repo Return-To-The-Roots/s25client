@@ -119,7 +119,7 @@ bool WindowManager::IsDesktopActive()
  */
 
 /// Sendet eine Tastaturnachricht an die Fenster.
-void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
+void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // ist der Desktop gültig?
     if(!curDesktop)
@@ -128,7 +128,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
     if(curDesktop->IsActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (*curDesktop.*msg)(ke);
+        CALL_MEMBER_FN(*curDesktop, msg)(ke);
         curDesktop->RelayKeyboardMessage(msg, ke);
         return;
     }
@@ -143,19 +143,19 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
         return;
     }
     // Nein, dann Nachricht an letztes Fenster weiterleiten
-    if(!(windows.back()->*msg)(ke))
+    if(!CALL_MEMBER_FN(*windows.back(), msg)(ke))
     {
         if(!windows.back()->RelayKeyboardMessage(msg, ke))
         {
             // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
-            (*curDesktop.*msg)(ke);
+            CALL_MEMBER_FN(*curDesktop, msg)(ke);
             curDesktop->RelayKeyboardMessage(msg, ke);
         }
     }
 }
 
 /// Sendet eine Mausnachricht weiter an alle Fenster
-void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
+void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 {
     // ist der Desktop gültig?
     if(!curDesktop)
@@ -164,13 +164,13 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
     if(curDesktop->IsActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (*curDesktop.*msg)(mc);
+        CALL_MEMBER_FN(*curDesktop, msg)(mc);
         curDesktop->RelayMouseMessage(msg, mc);
     }
     else if(!windows.empty())
     {
         // Nein, dann Nachricht an letztes Fenster weiterleiten
-        (windows.back()->*msg)(mc);
+        CALL_MEMBER_FN(*windows.back() ,msg)(mc);
         windows.back()->RelayMouseMessage(msg, mc);
     }
 }

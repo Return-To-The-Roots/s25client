@@ -69,6 +69,9 @@ struct ScreenResizeEvent;
 class Window
 {
     public:
+        typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
+        typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
+
         Window();
         Window(const DrawPoint& position, unsigned int id, Window* parent, unsigned short width = 0, unsigned short height = 0, const std::string& tooltip = "");
         virtual ~Window();
@@ -100,9 +103,9 @@ class Window
         /// setzt die Höhe des Fensters
         void SetHeight(unsigned short height) { Resize(this->width_, height); }
         /// Sendet eine Tastaturnachricht an die Steuerelemente.
-        bool RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke);
+        bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
-        bool RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc);
+        bool RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
         /// aktiviert das Fenster.
         virtual void SetActive(bool activate = true);
         /// aktiviert die Steuerelemente des Fensters.

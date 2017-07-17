@@ -83,6 +83,9 @@
 #   define CHECK_HEAP_CORRUPTION
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
+/// Call a member function trough an object and a member function pointer
+#define CALL_MEMBER_FN(object, ptrToMember)  ((object).*(ptrToMember))
+
 /// Iterate over all points of an area using a point of TYPE named "pt"
 /// WIDTH and HEIGHT is evaluated at most once
 /// Use like:

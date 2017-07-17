@@ -173,7 +173,7 @@ Rect Window::GetBoundaryRect() const
  *  @param[in] id    Die ID des Quellsteuerelements.
  *  @param[in] param Ein nachrichtenspezifischer Parameter.
  */
-bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
+bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // Abgeleitete Klassen fragen, ob das Weiterleiten von Nachrichten erlaubt ist
     // (IngameFenster könnten ja z.B. minimiert sein)
@@ -182,17 +182,16 @@ bool Window::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const Ke
 
     // Alle Controls durchgehen
     // Falls das Fenster dann plötzlich nich mehr aktiv ist (z.b. neues Fenster geöffnet, sofort abbrechen!)
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end() && active_; ++it)
+    BOOST_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
     {
-        if(it->second->visible_ && it->second->active_)
-            if((it->second->*msg)(ke))
-                return true;
+        if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(ke))
+            return true;
     }
 
     return false;
 }
 
-bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
+bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 {
     // Abgeleitete Klassen fragen, ob das Weiterleiten von Mausnachrichten erlaubt ist
     // (IngameFenster könnten ja z.B. minimiert sein)
@@ -204,17 +203,13 @@ bool Window::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const Mo
 
     // Alle Controls durchgehen
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
-    for(std::map<unsigned int, Window*>::reverse_iterator it = childIdToWnd_.rbegin(); it != childIdToWnd_.rend() && active_; ++it)
+    BOOST_REVERSE_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
     {
-        if(!lockedAreas_.empty())
-            if(TestWindowInRegion(it->second, mc))
-                continue;
+        if(!lockedAreas_.empty() && TestWindowInRegion(wnd, mc))
+            continue;
 
-        if(it->second->visible_ && it->second->active_)
-        {
-            if((it->second->*msg)(mc))
-                processed = true;
-        }
+        if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
+            processed = true;
     }
 
     for(std::vector<Window*>::iterator it = tofreeAreas_.begin(); it != tofreeAreas_.end(); ++it)
