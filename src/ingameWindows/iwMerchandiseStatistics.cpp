@@ -168,7 +168,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const DrawPoint topLeft = pos_ + DrawPoint(34, 64);
+    const DrawPoint topLeft = GetPos() + DrawPoint(34, 64);
     const int stepX = sizeX / STAT_STEP_COUNT; // 6
 
     // Aktive Buttons holen (Achtung ID == BarColor + 1)
@@ -202,7 +202,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
     {
         // Testing only:
-        //DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft.x + sizeX, topLeft.y + 3 * (*it), 2, BarColors[(*it) - 1]);
+        //DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
 
 
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
@@ -212,8 +212,7 @@ void iwMerchandiseStatistics::DrawStatistic()
             drawPos.y += sizeY - ((stat.merchandiseData[(*it) - 1][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) * sizeY) / max;
             if (i != 0)
             {
-                DrawLine(drawPos.x, drawPos.y,
-                         previous.x, previous.y, 2, BarColors[(*it) - 1]);
+                DrawLine(drawPos, previous, 2, BarColors[(*it) - 1]);
             }
             previous = drawPos;
         }
@@ -226,23 +225,21 @@ void iwMerchandiseStatistics::DrawStatistic()
 // Lustige bunte Kästchen über den Buttons malen
 void iwMerchandiseStatistics::DrawRectangles()
 {
-    const unsigned sizeX = 30;
-    const unsigned sizeY = 4;
-    const unsigned stepX = 31;
-    const unsigned stepY = 35;
+    const Extent size(30, 4);
+    const DrawPoint step(31, 35);
 
     const DrawPoint pos = GetDrawPos();
     DrawPoint curOffset(17, 187);
 
     for (unsigned i = 0; i < 14; ++i)
     {
-        DrawRectangle(pos + curOffset, sizeX, sizeY, BarColors[i]);
+        DrawRectangle(Rect(pos + curOffset, size), BarColors[i]);
         if (i == 6)
         {
             curOffset.x = 17;
-            curOffset.y += stepY;
+            curOffset.y += step.y;
         } else
-            curOffset.x += stepX;
+            curOffset.x += step.x;
     }
 }
 
@@ -251,24 +248,24 @@ void iwMerchandiseStatistics::DrawAxis()
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const DrawPoint topLeft = pos_ + DrawPoint(34, 64);
+    const DrawPoint topLeft = GetPos() + DrawPoint(34, 64);
     const DrawPoint topLeftRel(37, 64);
 
     // X-Achse, horizontal, war irgendwie zu lang links :S
-    DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2, // bisschen tiefer, damit man nulllinien noch sieht
-             topLeft.x + sizeX, topLeft.y + sizeY + 1, 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(6, sizeY + 2), // bisschen tiefer, damit man nulllinien noch sieht
+             topLeft + DrawPoint(sizeX, sizeY + 1), 1, MakeColor(255, 88, 44, 16));
 
     // Y-Achse, vertikal
-    DrawLine(topLeft.x + sizeX, topLeft.y,
-             topLeft.x + sizeX, topLeft.y + sizeY + 5, 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX, 0),
+             topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der Y-Achse
-    DrawLine(topLeft.x + sizeX - 3, topLeft.y, topLeft.x + sizeX + 4, topLeft.y, 1, MakeColor(255, 88, 44, 16));
-    DrawLine(topLeft.x + sizeX - 3, topLeft.y + sizeY / 2, topLeft.x + sizeX + 4, topLeft.y + sizeY / 2, 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der X-Achse + Beschriftung
     // Zunächst die 0, die haben alle
-    timeAnnotations[6]->Move(topLeftRel.x + 180, topLeftRel.y + sizeY + 6);
+    timeAnnotations[6]->SetPos(topLeftRel + DrawPoint(180, sizeY + 6));
     timeAnnotations[6]->SetText("0");
     timeAnnotations[6]->SetVisible(true);
 
@@ -276,37 +273,37 @@ void iwMerchandiseStatistics::DrawAxis()
     {
         case STAT_15M:
             // -15
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-15");
             timeAnnotations[0]->SetVisible(true);
 
             // -12
-            DrawLine(topLeft.x + 40, topLeft.y + sizeY + 2,
-                     topLeft.x + 40, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 40, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(40, sizeY + 2),
+                     topLeft + DrawPoint(40, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, sizeY + 6));
             timeAnnotations[1]->SetText("-12");
             timeAnnotations[1]->SetVisible(true);
 
             // -9
-            DrawLine(topLeft.x + 75, topLeft.y + sizeY + 2,
-                     topLeft.x + 75, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 75, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(75, sizeY + 2),
+                     topLeft + DrawPoint(75, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, sizeY + 6));
             timeAnnotations[2]->SetText("-9");
             timeAnnotations[2]->SetVisible(true);
 
             // -6
-            DrawLine(topLeft.x + 110, topLeft.y + sizeY + 2,
-                     topLeft.x + 110, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 110, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(110, sizeY + 2),
+                     topLeft + DrawPoint(110, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, sizeY + 6));
             timeAnnotations[3]->SetText("-6");
             timeAnnotations[3]->SetVisible(true);
 
             // -3
-            DrawLine(topLeft.x + 145, topLeft.y + sizeY + 2,
-                     topLeft.x + 145, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->Move(topLeftRel.x + 145, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(145, sizeY + 2),
+                     topLeft + DrawPoint(145, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, sizeY + 6));
             timeAnnotations[4]->SetText("-3");
             timeAnnotations[4]->SetVisible(true);
 
@@ -314,73 +311,73 @@ void iwMerchandiseStatistics::DrawAxis()
             break;
         case STAT_1H:
             // -60
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-60");
             timeAnnotations[0]->SetVisible(true);
 
             // -50
-            DrawLine(topLeft.x + 35, topLeft.y + sizeY + 2,
-                     topLeft.x + 35, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 35, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(35, sizeY + 2),
+                     topLeft + DrawPoint(35, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, sizeY + 6));
             timeAnnotations[1]->SetText("-50");
             timeAnnotations[1]->SetVisible(true);
 
             // -40
-            DrawLine(topLeft.x + 64, topLeft.y + sizeY + 2,
-                     topLeft.x + 64, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 64, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(64, sizeY + 2),
+                     topLeft + DrawPoint(64, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, sizeY + 6));
             timeAnnotations[2]->SetText("-40");
             timeAnnotations[2]->SetVisible(true);
 
             // -30
-            DrawLine(topLeft.x + 93, topLeft.y + sizeY + 2,
-                     topLeft.x + 93, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 93, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
+                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[3]->SetText("-30");
             timeAnnotations[3]->SetVisible(true);
 
             // -20
-            DrawLine(topLeft.x + 122, topLeft.y + sizeY + 2,
-                     topLeft.x + 122, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->Move(topLeftRel.x + 122, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(122, sizeY + 2),
+                     topLeft + DrawPoint(122, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, sizeY + 6));
             timeAnnotations[4]->SetText("-20");
             timeAnnotations[4]->SetVisible(true);
 
             // -10
-            DrawLine(topLeft.x + 151, topLeft.y + sizeY + 2,
-                     topLeft.x + 151, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[5]->Move(topLeftRel.x + 151, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(151, sizeY + 2),
+                     topLeft + DrawPoint(151, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, sizeY + 6));
             timeAnnotations[5]->SetText("-10");
             timeAnnotations[5]->SetVisible(true);
             break;
         case STAT_4H:
             // -240
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-240");
             timeAnnotations[0]->SetVisible(true);
 
             // -180
-            DrawLine(topLeft.x + 49, topLeft.y + sizeY + 2,
-                     topLeft.x + 49, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 49, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2),
+                     topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-180");
             timeAnnotations[1]->SetVisible(true);
 
             // -120
-            DrawLine(topLeft.x + 93, topLeft.y + sizeY + 2,
-                     topLeft.x + 93, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 93, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
+                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-120");
             timeAnnotations[2]->SetVisible(true);
 
             // -60
-            DrawLine(topLeft.x + 136, topLeft.y + sizeY + 2,
-                     topLeft.x + 136, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 136, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2),
+                     topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-60");
             timeAnnotations[3]->SetVisible(true);
 
@@ -389,30 +386,30 @@ void iwMerchandiseStatistics::DrawAxis()
             break;
         case STAT_16H:
             // -960
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-960");
             timeAnnotations[0]->SetVisible(true);
 
             // -720
-            DrawLine(topLeft.x + 49, topLeft.y + sizeY + 2,
-                     topLeft.x + 49, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 49, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2),
+                     topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-720");
             timeAnnotations[1]->SetVisible(true);
 
             // -480
-            DrawLine(topLeft.x + 93, topLeft.y + sizeY + 2,
-                     topLeft.x + 93, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 93, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
+                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-480");
             timeAnnotations[2]->SetVisible(true);
 
             // -240
-            DrawLine(topLeft.x + 136, topLeft.y + sizeY + 2,
-                     topLeft.x + 136, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 136, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2),
+                     topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-240");
             timeAnnotations[3]->SetVisible(true);
 

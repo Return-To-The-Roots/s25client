@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -37,7 +37,7 @@ iwSettings::iwSettings()
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
     // "Vollbild"
-    ctrlOptionGroup* optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(3, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(1, 200, 70, 150, 22, TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(2, 200, 95, 150, 22, TC_GREY, _("Windowed"), NormalFont);
 

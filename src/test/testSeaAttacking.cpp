@@ -60,7 +60,7 @@ struct AttackFixture: public SeaWorldWithGCExecution<>
     AttackFixture(): gwv(curPlayer, world)
     {
         // Make sure attacking is not limited by visibility
-        RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             world.SetVisibility(pt, 2, VIS_VISIBLE, this->em.GetCurrentGF());
         }
@@ -331,7 +331,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, AttackFixture)
     BOOST_REQUIRE_EQUAL(world.GetNode(harborBot1).owner, 0u);
     BOOST_REQUIRE_EQUAL(world.GetNode(harborBot2).owner, 0u);
     // Place military bld for player 1, first make some owned land
-    const MapPoint bldPos = (harborBot1 + harborBot2) / 2u + MapPoint(6, 0);
+    const MapPoint bldPos = (harborBot1 + harborBot2) / MapCoord(2) + MapPoint(6, 0);
     // Distance: <= attack distance (+ reserve) but greater than range from military bld (current values)
     BOOST_REQUIRE_LE(world.CalcDistance(bldPos, harborBot2), 12u);
     BOOST_REQUIRE_GE(world.CalcDistance(bldPos, harborBot2), 9u);

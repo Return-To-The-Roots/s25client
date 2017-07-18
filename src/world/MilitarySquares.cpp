@@ -21,28 +21,28 @@
 #include "gameData/MilitaryConsts.h"
 #include "helpers/containerUtils.h"
 
-MilitarySquares::MilitarySquares(): width(0), height(0)
+MilitarySquares::MilitarySquares(): size_(MapExtent::all(0))
 {}
 
-void MilitarySquares::Init(const unsigned short mapWidth, const unsigned short mapHeight)
+void MilitarySquares::Init(const MapExtent& mapSize)
 {
-    RTTR_Assert(width == 0 && height == 0); // Already initialized
-    RTTR_Assert(mapWidth > 0 && mapHeight > 0); // No empty map
+    RTTR_Assert(size_ == MapExtent::all(0)); // Already initialized
+    RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     // Calculate size (rounding up)
-    width  = (mapWidth + MILITARY_SQUARE_SIZE - 1) / MILITARY_SQUARE_SIZE;
-    height = (mapHeight + MILITARY_SQUARE_SIZE - 1) / MILITARY_SQUARE_SIZE;
-    squares.resize(width * height);
+    size_ = (mapSize + MapExtent::all(MILITARY_SQUARE_SIZE - 1)) / MILITARY_SQUARE_SIZE;
+    squares.resize(size_.x * size_.y);
 }
 
 void MilitarySquares::Clear()
 {
     squares.clear();
-    width = height = 0;
+    size_ = MapExtent::all(0);
 }
 
 std::list<nobBaseMilitary*>& MilitarySquares::GetSquare(const MapPoint pt)
 {
-    return squares[(pt.y / MILITARY_SQUARE_SIZE) * width + pt.x / MILITARY_SQUARE_SIZE];
+    MapPoint milPt = pt / MILITARY_SQUARE_SIZE;
+    return squares[milPt.y * size_.x + milPt.x];
 }
 
 void MilitarySquares::Add(nobBaseMilitary* const bld)
@@ -59,11 +59,10 @@ void MilitarySquares::Remove(nobBaseMilitary* const bld)
 sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsigned short radius) const
 {
     // maximum radius is half the size (rounded up) to avoid overlapping
-    const Point<int> offsets = Point<int>(std::min<unsigned>((width  + 1 / 2), radius),
-                                          std::min<unsigned>((height + 1 / 2), radius));
+    const Point<int> offsets = elMin((size_ + Point<int>::all(1)) / 2, Point<int>::all(radius));
 
     // Convert to military coords
-    const Point<int> milPos = Point<int>(pt) / MILITARY_SQUARE_SIZE;
+    const Point<int> milPos(pt / MILITARY_SQUARE_SIZE);
 
     const Point<int> firstPt = milPos - offsets;
     const Point<int> lastPt  = milPos + offsets;
@@ -77,19 +76,19 @@ sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsig
         // Handle wrap-around
         int realY = cy;
         if(realY < 0)
-            realY += height;
-        else if(realY >= static_cast<int>(height))
-            realY -= height;
-        RTTR_Assert(realY >= 0 && realY < static_cast<int>(height));
+            realY += size_.y;
+        else if(realY >= static_cast<int>(size_.y))
+            realY -= size_.y;
+        RTTR_Assert(realY >= 0 && realY < static_cast<int>(size_.y));
         for(int cx = firstPt.x; cx <= lastPt.x; ++cx)
         {
             int realX = cx;
             if(realX < 0)
-                realX += width;
-            else if(realX >= static_cast<int>(width))
-                realX -= width;
-            RTTR_Assert(realX >= 0 && realX < static_cast<int>(width));
-            const std::list<nobBaseMilitary*>& milBuildings = squares[realY * width + realX];
+                realX += size_.x;
+            else if(realX >= static_cast<int>(size_.x))
+                realX -= size_.x;
+            RTTR_Assert(realX >= 0 && realX < static_cast<int>(size_.x));
+            const std::list<nobBaseMilitary*>& milBuildings = squares[realY * size_.x + realX];
             for(std::list<nobBaseMilitary*>::const_iterator it = milBuildings.begin(); it != milBuildings.end(); ++it)
                 buildings.insert(*it);
         }

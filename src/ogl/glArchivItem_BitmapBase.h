@@ -40,8 +40,9 @@ public:
 
     unsigned short GetTexWidth() const { return tex_width_; }
     unsigned short GetTexHeight() const { return tex_height_; }
+    /// Return the "Null point"
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
-    DrawPoint GetSize() const { return DrawPoint(getWidth(), getHeight()); }
+    Extent GetSize() const { return Extent(getWidth(), getHeight()); }
 
 private:
     /// Erzeugt die Textur.

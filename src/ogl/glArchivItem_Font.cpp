@@ -402,7 +402,7 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsign
         offset.y = getHeight();
     else if((format & 12) == DF_VCENTER)
         offset.y = getHeight() / 2;
-    result.Move(-offset);
+    result.move(-offset);
     return result;
 }
 

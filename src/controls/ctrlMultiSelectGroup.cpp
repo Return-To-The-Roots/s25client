@@ -19,11 +19,7 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
-        unsigned int id,
-        int select_type,
-        bool scale)
-    : ctrlGroup(parent, id, scale),
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type): ctrlGroup(parent, id),
       selectedItems_(std::set<unsigned short>()), select_type(select_type)
 {
 }
@@ -53,8 +49,8 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
 
     this->selectedItems_.insert(selection);
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
 /**
@@ -74,8 +70,8 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
 
     this->selectedItems_.erase(selection);
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
 

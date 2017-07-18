@@ -27,17 +27,15 @@
 
 ctrlEdit::ctrlEdit(Window* parent,
                    unsigned int id,
-                   unsigned short x,
-                   unsigned short y,
-                   unsigned short width,
-                   unsigned short height,
+                   const DrawPoint& pos,
+                   const Extent& size,
                    TextureColor tc,
                    glArchivItem_Font* font,
                    unsigned short maxlength,
                    bool password,
                    bool disabled,
                    bool notify)
-    : Window(DrawPoint(x, y), id, parent, width, height),
+    : Window(pos, id, parent, size),
       maxLength_(maxlength), texColor_(tc), font_(font), isPassword_(password), isDisabled_(disabled),
       focus_(false), newFocus_(false), notify_(notify), numberOnly_(false)
 {
@@ -86,7 +84,7 @@ std::string ctrlEdit::GetText() const
 void ctrlEdit::Draw_()
 {
     // Box malen
-    Draw3D(GetDrawPos(), width_, height_, texColor_, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), texColor_, 2);
 
     ucString dtext;
 
@@ -96,7 +94,7 @@ void ctrlEdit::Draw_()
     else
         dtext = text_;
 
-    const unsigned max_width = width_ - 8 - font_->getDx();
+    const unsigned max_width = GetSize().x - 8 - font_->getDx();
     unsigned max;
     font_->getWidth(dtext.substr(viewStart_), unsigned(text_.length()) - viewStart_, max_width, &max);
     while(max > 0 && text_.length() - viewStart_ > max)
@@ -122,18 +120,20 @@ void ctrlEdit::Draw_()
         start = cursorPos_ - 5;
     if(cursorPos_ <= 5)
         start = 0;
-    font_->Draw(GetDrawPos() + DrawPoint(4, height_ / 2), dtext.substr(start), glArchivItem_Font::DF_VCENTER,
-               (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, width_ - 8);
+    font_->Draw(GetDrawPos() + DrawPoint(4, GetSize().y / 2), dtext.substr(start), glArchivItem_Font::DF_VCENTER,
+               (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, GetSize().x - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
     if(focus_ && !isDisabled_ && VIDEODRIVER.GetTickCount() % 1000 < 500)
     {
-        unsigned short cwidth = 5;
-
+        DrawPoint cursorDrawPos = GetDrawPos();
         if(cursorPos_ > start)
-            cwidth = font_->getWidth(&dtext[start], cursorPos_ - start) + 4;
+            cursorDrawPos.x += font_->getWidth(&dtext[start], cursorPos_ - start) + 4;
+        else
+            cursorDrawPos.x += 5;
+        cursorDrawPos.y += (GetSize().y - (font_->getHeight() + 2)) / 2;
 
-        DrawRectangle(GetDrawPos() + DrawPoint(cwidth, (height_ - (font_->getHeight() + 2)) / 2), 1, font_->getHeight() + 2, 0xFFFFA000);
+        DrawRectangle(Rect(cursorDrawPos, 1, font_->getHeight() + 2), 0xFFFFA000);
     }
 }
 
@@ -177,10 +177,10 @@ void ctrlEdit::RemoveChar()
  */
 void ctrlEdit::Notify()
 {
-    if(!notify_ || !parent_)
+    if(!notify_ || !GetParent())
         return;
 
-    parent_->Msg_EditChange(GetID());
+    GetParent()->Msg_EditChange(GetID());
 }
 
 void ctrlEdit::Msg_PaintAfter()
@@ -193,7 +193,7 @@ void ctrlEdit::Msg_PaintAfter()
  */
 bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 {
-    if((newFocus_ = IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_)))
+    if((newFocus_ = IsPointInRect(mc.GetPos(), GetDrawRect())))
         return false; /// vorläufig, um Fokus zu für andere Edit-Felder zu kriegen, damit es zu keinen Doppelfokus kommt
     else
         return false;
@@ -202,7 +202,7 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 // vorläufig
 bool ctrlEdit::Msg_LeftDown_After(const MouseCoords& mc)
 {
-    if(!IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(!IsPointInRect(mc.GetPos(), GetDrawRect()))
         newFocus_ = false;
 
     return false;
@@ -303,8 +303,8 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
         case KT_RETURN: // Enter gedrückt
         {
-            if(!isDisabled_ && parent_)
-                parent_->Msg_EditEnter(GetID());
+            if(!isDisabled_ && GetParent())
+                GetParent()->Msg_EditEnter(GetID());
         } break;
 
         case KT_HOME: // Pos1 gedrückt

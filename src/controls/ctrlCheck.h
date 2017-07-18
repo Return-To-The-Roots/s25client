@@ -26,7 +26,7 @@ class glArchivItem_Font;
 class ctrlCheck : public Window
 {
     public:
-        ctrlCheck(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly);
+        ctrlCheck(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly);
 
         void SetCheck(bool check) { this->check = check; }
         bool GetCheck() const { return check; }

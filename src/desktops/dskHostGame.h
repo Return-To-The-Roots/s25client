@@ -42,7 +42,7 @@ class dskHostGame :
         dskHostGame(const ServerType serverType);
 
         /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         void SetActive(bool activate = true) override;
     private:
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -87,7 +87,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
                                                     40, TC_GREY, image, _("Treaty of alliance"));
 
                 // Verbleibende Zeit unter dem Button
-                AddText(500 + i, button->GetX(false) + button->GetWidth() / 2, button->GetY(false) + button->GetHeight() + 4, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
+                AddText(500 + i, button->GetPos().x + button->GetSize().x / 2, button->GetPos().y + button->GetSize().y + 4, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
 
                 // Nichtangriffspakt
                 image = LOADER.GetImageN("io", 100);
@@ -96,7 +96,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
                                         40, TC_GREY, image, _("Non-aggression pact"));
 
                 // Verbleibende Zeit unter dem Button
-                AddText(600 + i, button->GetX(false) + button->GetWidth() / 2, button->GetY(false) + button->GetHeight() + 4, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
+                AddText(600 + i, button->GetPos().x + button->GetSize().x / 2, button->GetPos().y + button->GetSize().y + 4, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
 
             }
         }
@@ -111,11 +111,12 @@ void iwDiplomacy::Msg_PaintBefore()
     IngameWindow::Msg_PaintBefore();
     // Die farbigen Zeilen malen
     DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
+    Rect curRect(curPos, Extent(GetSize().x - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT));
     for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        DrawRectangle(curPos, width_ - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
-        curPos.y += CELL_HEIGHT + SPACE_HEIGHT;
+        DrawRectangle(curRect, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
+        curRect.move(DrawPoint(0, CELL_HEIGHT + SPACE_HEIGHT));
     }
 }
 

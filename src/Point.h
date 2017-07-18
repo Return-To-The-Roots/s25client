@@ -18,9 +18,18 @@
 #ifndef Point_h__
 #define Point_h__
 
+// Next 3 includes for operations only
+#include <boost/type_traits/common_type.hpp>
+#include <boost/type_traits/conditional.hpp>
+#include <boost/type_traits/is_arithmetic.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/type_traits/make_signed.hpp>
+#include <algorithm>
+
 #include <limits>
 
-// 2D-Punkt
+/// Type for describing a 2D value (position, size, offset...)
+/// Note: Combining a signed with an unsigned point will result in a signed type!
 template <typename T>
 struct Point
 {
@@ -34,27 +43,32 @@ struct Point
     explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
 
     static const Point Invalid();
+    /// Create a new point with all coordinates set to value
+    static const Point all(const T& value);
     bool isValid() const;
 
     bool operator==(const Point& second) const;
     bool operator!=(const Point& second) const;
-    bool operator<(const Point& second) const;
-    Point& operator+=(const Point& right);
-    Point& operator-=(const Point& right);
-    friend Point operator+(Point left, const Point& right) { return (left+=right); }
-    friend Point operator-(Point left, const Point& right) { return (left-=right); }
-    Point operator-() const;
-    Point operator*(const T factor) const;
-    Point operator/(const T div) const;
 };
 
-/// Type for describing an extent/size etc.
+/// Type for describing a position/offset etc. (signed type)
+typedef Point<int> Position;
+/// Type for describing an extent/size etc. (unsigned type)
 typedef Point<unsigned> Extent;
+
+//////////////////////////////////////////////////////////////////////////
 
 template <typename T>
 inline const Point<T> Point<T>::Invalid()
 {
-    return Point(std::numeric_limits<T>::max(), std::numeric_limits<T>::max());
+    T val = std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max();
+    return Point::all(val);
+}
+
+template <typename T>
+inline const Point<T> Point<T>::all(const T& val)
+{
+    return Point(val, val);
 }
 
 template <typename T>
@@ -75,62 +89,135 @@ inline bool Point<T>::operator!=(const Point<T>& second) const
     return !(*this == second);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// operations on points and points and scalars
+//////////////////////////////////////////////////////////////////////////
+
+/// Compute the element wise minimum
 template <typename T>
-inline bool Point<T>::operator<(const Point<T>& second) const
+inline Point<T> elMin(const Point<T>& lhs, const Point<T>& rhs)
 {
-    // Order by y, than x to correspond to memory layout
-    if(y < second.y)
-        return true;
-    else if(y == second.y)
-        return x < second.x;
-    else
-        return false;
+    using std::min;
+    return Point<T>(min(lhs.x, rhs.x), min(lhs.y, rhs.y));
 }
 
+/// Compute the element wise maximum
 template <typename T>
-inline Point<T>& Point<T>::operator+=(const Point<T>& right)
+inline Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
 {
-    x += right.x;
-    y += right.y;
-    return *this;
+    using std::max;
+    return Point<T>(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
-template <typename T>
-inline Point<T>& Point<T>::operator-=(const Point<T>& right)
+//////////////////////////////////////////////////////////////////////////
+// Math ops: add/subtract/negate of Point(s). multiply/divide of points and or scalars
+
+namespace detail
 {
-    x -= right.x;
-    y -= right.y;
-    return *this;
+    template<typename T>
+    struct TryMakeSigned
+    {
+        typedef typename boost::conditional<
+            boost::is_integral<T>::value,
+            boost::make_signed<T>,
+            boost::common_type<T>
+        >::type::type type;
+    };
+    /// Creates a mixed type out of types T and U which is
+    /// the common type of T & U AND signed iff either is signed
+    /// fails for non-numeric types with SFINAE
+    template<typename T, typename U, bool T_areNumeric = boost::is_arithmetic<T>::value && boost::is_arithmetic<U>::value>
+    struct MixedType;
+
+    template<typename T, typename U>
+    struct MixedType<T, U, true>
+    {
+        typedef typename boost::common_type<T, U>::type Common;
+        // Convert to signed iff least one value is signed
+        typedef typename boost::conditional<
+            boost::is_signed<T>::value || boost::is_signed<U>::value,
+            typename TryMakeSigned<Common>::type,
+            Common
+        >::type type;
+    };
 }
 
+/// Unary negate
 template<typename T>
-inline Point<T> Point<T>::operator-() const
+inline Point<typename boost::make_signed<T>::type> operator-(const Point<T>& pt)
 {
-    return Point(-x, -y);
+    typedef typename boost::make_signed<T>::type Res;
+    return Point<Res>(-static_cast<Res>(pt.x), -static_cast<Res>(pt.y));
+}
+
+/// Add and subtract operations
+template <typename T>
+inline Point<T>& operator+=(Point<T>& lhs, const Point<T>& right)
+{
+    lhs.x += right.x;
+    lhs.y += right.y;
+    return lhs;
+}
+
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator+(const Point<T>& lhs, const Point<U>& rhs)
+{
+    typedef typename detail::MixedType<T, U>::type Res;
+    return Point<Res>(lhs.x + rhs.x, lhs.y + rhs.y);
 }
 
 template <typename T>
-inline Point<T> Point<T>::operator/(const T div) const
+inline Point<T>& operator-=(Point<T>& lhs, const Point<T>& right)
 {
-    return Point(x / div, y / div);
+    lhs.x -= right.x;
+    lhs.y -= right.y;
+    return lhs;
 }
 
-template <typename T>
-inline Point<T> operator/(const T left, const Point<T>& div)
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T,U>::type> operator-(const Point<T>& lhs, const Point<U>& rhs)
 {
-    return Point<T>(left / div.x, left / div.y);
+    typedef typename detail::MixedType<T, U>::type Res;
+    return Point<Res>(lhs.x - rhs.x, lhs.y - rhs.y);
 }
 
-template <typename T>
-inline Point<T> Point<T>::operator*(const T factor) const
+//////////////////////////////////////////////////////////////////////////
+// Multiply/divide
+
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator*(const Point<T>& pt, const U factor)
 {
-    return Point(x * factor, y * factor);
+    return Point<typename detail::MixedType<T, U>::type>(pt.x * factor, pt.y * factor);
 }
 
-template <typename T>
-inline Point<T> operator*(const T left, const Point<T>& factor)
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator*(const T left, const Point<U>& factor)
 {
     return factor * left;
+}
+
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator*(const Point<T>& lhs, const Point<U>& rhs)
+{
+    return Point<typename detail::MixedType<T, U>::type>(lhs.x * rhs.x, lhs.y * rhs.y);
+}
+
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator/(const Point<T>& pt, const U div)
+{
+    return Point<typename detail::MixedType<T, U>::type>(pt.x / div, pt.y / div);
+}
+
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator/(const T left, const Point<U>& div)
+{
+    return Point<typename detail::MixedType<T, U>::type>(left / div.x, left / div.y);
+}
+
+template <typename T, typename U>
+inline Point<typename detail::MixedType<T, U>::type> operator/(const Point<T>& lhs, const Point<U>& rhs)
+{
+    return Point<typename detail::MixedType<T, U>::type>(lhs.x / rhs.x, lhs.y / rhs.y);
 }
 
 #endif // Point_h__

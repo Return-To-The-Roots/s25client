@@ -446,13 +446,13 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier* other, const MapPoint figh_sp
 
 /// Looks for an appropriate fighting spot between the two soldiers
 /// Returns true if successful
-bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint * fight_spot)
+bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight_spot)
 {
     // Calc middle between the two soldiers and use this as origin spot for the search of more fight spots
     MapPoint otherPos = gwg->GetNeighbour(other->GetPos(), other->GetCurMoveDir());
-    MapPoint middle = (pos + otherPos) / 2;
+    MapPoint middle((pos + otherPos) / 2u);
 
-    // The point is supposed to be in the middle between the 2 soldiers (and guarenteed to be inside the map)
+    // The point is supposed to be in the middle between the 2 soldiers (and guaranteed to be inside the map)
     // Maximum distance between 2 points is mapSize/2 (due to wrap around)
     // --> maximum distance between each point and the middle is mapSize/4
     // So if we see, that this is not the case, we take the "middle" point on the other half of the map

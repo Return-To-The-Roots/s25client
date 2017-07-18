@@ -72,6 +72,21 @@ void glArchivItem_Bitmap::Draw(DrawPoint dst, short dst_w, short dst_h, short sr
     glDrawArrays(GL_QUADS, 0, 4);
 }
 
+void glArchivItem_Bitmap::Draw(const Rect& rect, const unsigned color)
+{
+    Draw(rect.getOrigin(), 0, 0, 0, 0, rect.getSize().x, rect.getSize().y, color);
+}
+
+void glArchivItem_Bitmap::DrawFull(const DrawPoint& dst, const unsigned color /*= COLOR_WHITE*/)
+{
+    Draw(Rect(dst, width_, height_), color);
+}
+
+void glArchivItem_Bitmap::DrawPart(const Rect& rect, const DrawPoint& offset, unsigned color)
+ {
+     Draw(DrawPoint(rect.getOrigin()), rect.getSize().x, rect.getSize().y, offset.x, offset.y, rect.getSize().x, rect.getSize().y, color);
+ }
+
 void glArchivItem_Bitmap::FillTexture()
 {
     int iformat = GetInternalFormat(), dformat = GL_BGRA;

@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     executeLua("rttr:PostMessageWithLocation(1, 'Hello Pos', 35, -5)");
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 2u);
     BOOST_REQUIRE_EQUAL(postBox.GetMsg(1)->GetText(), "Hello Pos");
-    BOOST_REQUIRE_EQUAL(postBox.GetMsg(1)->GetPos(), MapPoint(35 - 32, -5 + 32));
+    BOOST_REQUIRE_EQUAL(postBox.GetMsg(1)->GetPos(), MapPoint(35 - world.GetWidth(), -5 + world.GetHeight()));
 
     executeLua("assert(rttr:GetPlayer(0))");
     executeLua("assert(rttr:GetPlayer(1))");

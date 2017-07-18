@@ -43,14 +43,13 @@ class ctrlPreviewMinimap : public ctrlMinimap
 
         ctrlPreviewMinimap( Window* parent,
                             const unsigned int id,
-                            const unsigned short x,
-                            const unsigned short y,
-                            const unsigned short width,
-                            const unsigned short height,
+                            const DrawPoint& pos,
+                            const Extent& size,
                             glArchivItem_Map* s2map);
 
         /// Zeichnet die MapPreview
         void Draw_() override;
+        Rect GetBoundaryRect() const override;
 
         /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
         void SetPlayerColor(const unsigned id, const unsigned color)

@@ -236,7 +236,7 @@ void dskCredits::Msg_PaintAfter()
         }
 
         b.id = job;
-        b.pos.y = GetCtrl<ctrlButton>(0)->GetY() - 20 - rand() % 150;
+        b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
         bobs.push_back(b);
     }
 

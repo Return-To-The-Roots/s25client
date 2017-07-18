@@ -51,7 +51,7 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
     AttackFixture(): gwv(curPlayer, world)
     {
         // Make sure attacking is not limited by visibility
-        RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             world.SetVisibility(pt, 2, VIS_VISIBLE, this->em.GetCurrentGF());
         }

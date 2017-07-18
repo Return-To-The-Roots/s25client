@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -92,7 +92,7 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
         // Abbrennbutton hinzufügen
         // "Blättern" in Bretter stauchen und verschieben
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(32);
-        GetCtrl<ctrlButton>(ID_PAGINATE)->Move(86, 369, true);
+        GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, 369));
 
         AddImageButton(ID_DEMOLISH, 52, 369, 32, 32, TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
     }
@@ -227,19 +227,19 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
 					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
 					{
 						iwHQ* nextscrn=new iwHQ(gwv, gcFactory, *it);
-						nextscrn->Move(pos_);
+						nextscrn->SetPos(GetPos());
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
 					{
 						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-						nextscrn->Move(pos_);
+						nextscrn->SetPos(GetPos());
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
 					{
 						iwStorehouse* nextscrn=new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-						nextscrn->Move(pos_);
+						nextscrn->SetPos(GetPos());
 						WINDOWMANAGER.Show(nextscrn);
 					}
 					break;

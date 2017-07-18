@@ -48,10 +48,10 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
 GameWorldBase::~GameWorldBase()
 {}
 
-void GameWorldBase::Init(unsigned short width, unsigned short height, LandscapeType lt)
+void GameWorldBase::Init(const MapExtent& mapSize, LandscapeType lt)
 {
-    World::Init(width, height, lt);
-    freePathFinder->Init(GetWidth(), GetHeight());
+    World::Init(mapSize, lt);
+    freePathFinder->Init(mapSize);
 }
 
 void GameWorldBase::InitAfterLoad()

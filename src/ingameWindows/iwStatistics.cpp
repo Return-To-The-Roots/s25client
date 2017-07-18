@@ -253,7 +253,7 @@ void iwStatistics::Msg_PaintAfter()
             continue;
 
         if (activePlayers[i])
-            DrawRectangle(drawPt, 34, 12, player.color);
+            DrawRectangle(Rect(drawPt, Extent(34, 12)), player.color);
         drawPt.x += 34;
     }
 
@@ -267,10 +267,8 @@ void iwStatistics::Msg_PaintAfter()
 void iwStatistics::DrawStatistic(StatisticType type)
 {
     // Ein paar benötigte Werte...
-    const int sizeX = 180;
-    const int sizeY = 80;
-    const DrawPoint topLeft = pos_ + DrawPoint(34, 124);
-    const int stepX = sizeX / STAT_STEP_COUNT; // 6
+    const Extent size(180, 80);
+    const int stepX = size.x / STAT_STEP_COUNT;
 
     unsigned short currentIndex;
     unsigned int max = 1;
@@ -278,36 +276,33 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
     // Maximal- und Minimalwert suchen
     const GameWorldBase& world = gwv.GetWorld();
-    for (unsigned int p = 0; p < world.GetPlayerCount(); ++p)
+    for(unsigned int p = 0; p < world.GetPlayerCount(); ++p)
     {
-        if (!activePlayers[p])
+        if(!activePlayers[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
-        for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
         {
-            if (max < stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
+            if(max < stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
             {
                 max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }
-            if (SETTINGS.ingame.scale_statistics && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) //-V807
+            if(SETTINGS.ingame.scale_statistics && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) //-V807
             {
                 min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }
         }
     }
 
+    if(SETTINGS.ingame.scale_statistics && max == min)
+    {
+        --min;
+        ++max;
+    }
     // Maximalen/Minimalen Wert an die Achse schreiben
     std::stringstream ss;
-    if (SETTINGS.ingame.scale_statistics)
-    {
-        if (max - min == 0)
-        {
-            --min;
-            ++max;
-        };
-    }
     ss << max;
     maxValue->SetText(ss.str());
     if(SETTINGS.ingame.scale_statistics)
@@ -318,7 +313,9 @@ void iwStatistics::DrawStatistic(StatisticType type)
     }
 
     // Statistiklinien zeichnen
-    unsigned short previousX = 0, previousY = 0;
+    const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
+    DrawPoint previousPos(0, 0);
+
     for (unsigned p = 0; p < world.GetPlayerCount(); ++p)
     {
         if (!activePlayers[p])
@@ -328,30 +325,15 @@ void iwStatistics::DrawStatistic(StatisticType type)
         currentIndex = stat.currentIndex;
         for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
         {
-            if (i != 0)
-            {
-                if(SETTINGS.ingame.scale_statistics)
-                {
-                    DrawLine(topLeft.x + (STAT_STEP_COUNT - i) * stepX,
-                             topLeft.y + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)] - min)*sizeY) / (max - min),
-                             previousX, previousY, 2, world.GetPlayer(p).color);
-                }
-                else
-                {
-                    DrawLine(topLeft.x + (STAT_STEP_COUNT - i) * stepX,
-                             topLeft.y + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])*sizeY) / max,
-                             previousX, previousY, 2, world.GetPlayer(p).color);
-                }
-            }
-            previousX = topLeft.x + (STAT_STEP_COUNT - i) * stepX;
+            DrawPoint curPos = topLeft + DrawPoint((STAT_STEP_COUNT - i) * stepX, size.y);
+            unsigned curStatVal = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             if(SETTINGS.ingame.scale_statistics)
-            {
-                previousY = topLeft.y + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)] - min) * sizeY) / (max - min);
-            }
+                curPos.y -= ((curStatVal - min) * size.y) / (max - min);
             else
-            {
-                previousY = topLeft.y + sizeY - ((stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) * sizeY) / max;
-            }
+                curPos.y -= (curStatVal * size.y) / max;
+            if (i != 0)
+                DrawLine(curPos, previousPos, 2, world.GetPlayer(p).color);
+            previousPos = curPos;
         }
     }
 }
@@ -361,24 +343,24 @@ void iwStatistics::DrawAxis()
     // Ein paar benötigte Werte...
     const int sizeX = 180;
     const int sizeY = 80;
-    const DrawPoint topLeft = pos_ + DrawPoint(34, 124);
+    const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
     const DrawPoint topLeftRel(37, 124);
 
     // X-Achse, horizontal, war irgendwie zu lang links :S
-    DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2, // bisschen tiefer, damit man nulllinien noch sieht
-             topLeft.x + sizeX, topLeft.y + sizeY + 1, 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(6, sizeY + 2), // bisschen tiefer, damit man nulllinien noch sieht
+             topLeft + DrawPoint(sizeX, sizeY + 1), 1, MakeColor(255, 88, 44, 16));
 
     // Y-Achse, vertikal
-    DrawLine(topLeft.x + sizeX, topLeft.y,
-             topLeft.x + sizeX, topLeft.y + sizeY + 5, 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX, 0),
+             topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der Y-Achse
-    DrawLine(topLeft.x + sizeX - 3, topLeft.y, topLeft.x + sizeX + 4, topLeft.y, 1, MakeColor(255, 88, 44, 16));
-    DrawLine(topLeft.x + sizeX - 3, topLeft.y + sizeY / 2, topLeft.x + sizeX + 4, topLeft.y + sizeY / 2, 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der X-Achse + Beschriftung
     // Zunächst die 0, die haben alle
-    timeAnnotations[6]->Move(topLeftRel.x + 180, topLeftRel.y + sizeY + 6);
+    timeAnnotations[6]->SetPos(topLeftRel + DrawPoint(180, sizeY + 6));
     timeAnnotations[6]->SetText("0");
     timeAnnotations[6]->SetVisible(true);
 
@@ -386,37 +368,37 @@ void iwStatistics::DrawAxis()
     {
         case STAT_15M:
             // -15
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-15");
             timeAnnotations[0]->SetVisible(true);
 
             // -12
-            DrawLine(topLeft.x + 40, topLeft.y + sizeY + 2,
-                     topLeft.x + 40, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 40, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(40, sizeY + 2),
+                     topLeft + DrawPoint(40, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, sizeY + 6));
             timeAnnotations[1]->SetText("-12");
             timeAnnotations[1]->SetVisible(true);
 
             // -9
-            DrawLine(topLeft.x + 75, topLeft.y + sizeY + 2,
-                     topLeft.x + 75, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 75, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(75, sizeY + 2),
+                     topLeft + DrawPoint(75, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, sizeY + 6));
             timeAnnotations[2]->SetText("-9");
             timeAnnotations[2]->SetVisible(true);
 
             // -6
-            DrawLine(topLeft.x + 110, topLeft.y + sizeY + 2,
-                     topLeft.x + 110, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 110, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(110, sizeY + 2),
+                     topLeft + DrawPoint(110, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, sizeY + 6));
             timeAnnotations[3]->SetText("-6");
             timeAnnotations[3]->SetVisible(true);
 
             // -3
-            DrawLine(topLeft.x + 145, topLeft.y + sizeY + 2,
-                     topLeft.x + 145, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->Move(topLeftRel.x + 145, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(145, sizeY + 2),
+                     topLeft + DrawPoint(145, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, sizeY + 6));
             timeAnnotations[4]->SetText("-3");
             timeAnnotations[4]->SetVisible(true);
 
@@ -424,73 +406,73 @@ void iwStatistics::DrawAxis()
             break;
         case STAT_1H:
             // -60
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-60");
             timeAnnotations[0]->SetVisible(true);
 
             // -50
-            DrawLine(topLeft.x + 35, topLeft.y + sizeY + 2,
-                     topLeft.x + 35, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 35, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(35, sizeY + 2),
+                     topLeft + DrawPoint(35, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, sizeY + 6));
             timeAnnotations[1]->SetText("-50");
             timeAnnotations[1]->SetVisible(true);
 
             // -40
-            DrawLine(topLeft.x + 64, topLeft.y + sizeY + 2,
-                     topLeft.x + 64, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 64, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(64, sizeY + 2),
+                     topLeft + DrawPoint(64, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, sizeY + 6));
             timeAnnotations[2]->SetText("-40");
             timeAnnotations[2]->SetVisible(true);
 
             // -30
-            DrawLine(topLeft.x + 93, topLeft.y + sizeY + 2,
-                     topLeft.x + 93, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 93, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
+                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[3]->SetText("-30");
             timeAnnotations[3]->SetVisible(true);
 
             // -20
-            DrawLine(topLeft.x + 122, topLeft.y + sizeY + 2,
-                     topLeft.x + 122, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[4]->Move(topLeftRel.x + 122, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(122, sizeY + 2),
+                     topLeft + DrawPoint(122, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, sizeY + 6));
             timeAnnotations[4]->SetText("-20");
             timeAnnotations[4]->SetVisible(true);
 
             // -10
-            DrawLine(topLeft.x + 151, topLeft.y + sizeY + 2,
-                     topLeft.x + 151, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[5]->Move(topLeftRel.x + 151, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(151, sizeY + 2),
+                     topLeft + DrawPoint(151, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, sizeY + 6));
             timeAnnotations[5]->SetText("-10");
             timeAnnotations[5]->SetVisible(true);
             break;
         case STAT_4H:
             // -240
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-240");
             timeAnnotations[0]->SetVisible(true);
 
             // -180
-            DrawLine(topLeft.x + 49, topLeft.y + sizeY + 2,
-                     topLeft.x + 49, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 49, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2),
+                     topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-180");
             timeAnnotations[1]->SetVisible(true);
 
             // -120
-            DrawLine(topLeft.x + 93, topLeft.y + sizeY + 2,
-                     topLeft.x + 93, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 93, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
+                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-120");
             timeAnnotations[2]->SetVisible(true);
 
             // -60
-            DrawLine(topLeft.x + 136, topLeft.y + sizeY + 2,
-                     topLeft.x + 136, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 136, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2),
+                     topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-60");
             timeAnnotations[3]->SetVisible(true);
 
@@ -499,30 +481,30 @@ void iwStatistics::DrawAxis()
             break;
         case STAT_16H:
             // -960
-            DrawLine(topLeft.x + 6, topLeft.y + sizeY + 2,
-                     topLeft.x + 6, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[0]->Move(topLeftRel.x + 6, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
+                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-960");
             timeAnnotations[0]->SetVisible(true);
 
             // -720
-            DrawLine(topLeft.x + 49, topLeft.y + sizeY + 2,
-                     topLeft.x + 49, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[1]->Move(topLeftRel.x + 49, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2),
+                     topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-720");
             timeAnnotations[1]->SetVisible(true);
 
             // -480
-            DrawLine(topLeft.x + 93, topLeft.y + sizeY + 2,
-                     topLeft.x + 93, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[2]->Move(topLeftRel.x + 93, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
+                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-480");
             timeAnnotations[2]->SetVisible(true);
 
             // -240
-            DrawLine(topLeft.x + 136, topLeft.y + sizeY + 2,
-                     topLeft.x + 136, topLeft.y + sizeY + 4, 1, MakeColor(255, 88, 44, 16));
-            timeAnnotations[3]->Move(topLeftRel.x + 136, topLeftRel.y + sizeY + 6);
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2),
+                     topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-240");
             timeAnnotations[3]->SetVisible(true);
 

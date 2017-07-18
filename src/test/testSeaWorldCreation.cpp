@@ -31,16 +31,14 @@ namespace{
     /// Create a world, that has just default initialized nodes
     struct CreateDummyWorld
     {
-        CreateDummyWorld(unsigned width, unsigned height, unsigned numPlayers):
-            width_(width), height_(height)
-        {}
+        CreateDummyWorld(const MapExtent& size, unsigned numPlayers):size_(size) {}
         bool operator()(GameWorldGame& world) const
         {
-            world.Init(width_, height_, LT_GREENLAND);
+            world.Init(size_, LT_GREENLAND);
             return true;
         }
     private:
-        unsigned width_, height_;
+        MapExtent size_;
     };
     typedef WorldFixture<CreateDummyWorld, 0, 512, 512> DummyWorldFixture;
 

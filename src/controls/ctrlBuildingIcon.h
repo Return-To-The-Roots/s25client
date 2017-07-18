@@ -25,7 +25,7 @@ class Window;
 class ctrlBuildingIcon : public ctrlButton
 {
     public:
-        ctrlBuildingIcon(Window* const parent, const unsigned int id, const unsigned short x, const unsigned short y,
+        ctrlBuildingIcon(Window* const parent, const unsigned int id, const DrawPoint& pos,
                          const BuildingType type, const Nation nation, const unsigned short size = 36,  const std::string& tooltip = "");
         /// liefert den GebäudeTyp des Icons.
         BuildingType GetType() const { return type; }

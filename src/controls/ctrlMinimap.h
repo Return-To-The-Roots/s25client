@@ -29,35 +29,27 @@ class ctrlMinimap : public Window
 
         ctrlMinimap( Window* parent,
                      const unsigned int id,
-                     const unsigned short x,
-                     const unsigned short y,
-                     const unsigned short width,
-                     const unsigned short height,
-                     const unsigned short padding_x,
-                     const unsigned short padding_y,
-                     const unsigned short map_width,
-                     const unsigned short map_height);
+                     const DrawPoint& pos,
+                     const Extent& size,
+                     const Extent& padding,
+                     const Extent& mapSize);
 
-        /// Gibt width_show und height_show zurück
-        unsigned short GetWidthShow() const { return width_show; }
-        unsigned short GetHeightShow() const { return height_show; }
+        Extent GetCurMapSize() const { return curMapSize; }
 
-        /// Gibt die entsprechenden Kanten relativ zur oberen linken Ecke der Bounding-Box
-        DrawPoint GetBBOffset() const { return DrawPoint(GetLeft(), GetTop()); }
-        unsigned short GetLeft() const { return (width_ - width_show) / 2; }
-        unsigned short GetTop() const { return (height_ - height_show) / 2; }
-        unsigned short GetRight() const { return GetLeft() + width_show; }
-        unsigned short GetBottom() const { return GetTop() + height_show; }
+        /// Get area the map covers (relative to control origin)
+        Rect GetMapArea() const;
+        Rect GetBoundaryRect() const override;
+        Rect GetMapDrawArea() const;
 
         /// Größe ändern
-        void Resize(unsigned short width, unsigned short heigth) override;
-        void SetMapSize(const unsigned short map_width, const unsigned short map_height);
+        void Resize(const Extent& size) override;
+        void SetMapSize(const Extent& newMapSize);
 
         /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
         DrawPoint CalcMapCoord(MapPoint pt) const;
 
         /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box)
-        void RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min);
+        void RemoveBoundingBox(const Extent& minSize);
 
     protected:
 
@@ -65,10 +57,12 @@ class ctrlMinimap : public Window
         void DrawMap(Minimap& map);
 
         /// Real size of the minimap (gets scaled with retained aspect ratio)
-        unsigned short width_show, height_show;
+        Extent curMapSize;
         /// Abstand der Minimap vom Rand des Controls
-        DrawPoint padding;
-        unsigned short mapWidth_, mapHeight_;
+        Extent padding;
+        /// Requested size of the drawn map
+        Extent mapSize;
+        bool useBoundingBox;
 };
 
 

@@ -35,9 +35,21 @@
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)
 
+struct MapPointLess
+{
+    bool operator()(const MapPoint& lhs, const MapPoint& rhs) const
+    {
+        if(lhs.y < rhs.y)
+            return true;
+        if(lhs.y == rhs.y)
+            return lhs.x < rhs.x;
+        return false;
+    }
+};
+
 typedef WorldFixture<CreateEmptyWorld, 0, 22, 22> EmptyWorldFixture0P;
 typedef WorldFixture<CreateEmptyWorld, 1, 22, 22> EmptyWorldFixture1P;
-typedef std::map<MapPoint, BuildingQuality> ReducedBQMap;
+typedef std::map<MapPoint, BuildingQuality, MapPointLess> ReducedBQMap;
 
 /// Check that the BQ at all points is BQ_CASTLE except the points in the reducedBQs map which have given BQs
 boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const std::vector<MapPoint>& pts, const ReducedBQMap& reducedBQs)
@@ -153,7 +165,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
 {
     // Init BQ
     world.InitAfterLoad();
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         BuildingQuality bq = world.GetNode(pt).bq;
         BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bqNames[bq] << "!=" << bqNames[BQ_CASTLE] << " at " << pt.x << "," << pt.y);
@@ -190,7 +202,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1P){
     initGUITests();
     // Init BQ
     world.InitAfterLoad();
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 1);
         
     // Set player

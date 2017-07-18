@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -71,17 +71,17 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->GetMaxCoinCt();
-    DrawPoint goldPos = GetDrawPos() + DrawPoint((width_ - 22 * maxCoinCt) / 2, 60);
-    DrawRectangle(goldPos, 22 * maxCoinCt, 24, 0x96000000);
+    DrawPoint goldPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxCoinCt) / 2, 60);
+    DrawRectangle(Rect(goldPos, Extent(22 * maxCoinCt, 24)), 0x96000000);
     // Gold
     goldPos += DrawPoint(12, 12);
     for(unsigned short i = 0; i < maxCoinCt; ++i)
     {
-        LOADER.GetMapImageN(2278)->Draw(goldPos, 0, 0, 0, 0, 0, 0, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
+        LOADER.GetMapImageN(2278)->DrawFull(goldPos, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
         goldPos.x += 22;
     }
 
@@ -100,9 +100,9 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     }
 
     const unsigned maxSoldierCt = building->GetMaxTroopsCt();
-    DrawPoint troopsPos = GetDrawPos() + DrawPoint((width_ - 22 * maxSoldierCt) / 2, 98);
+    DrawPoint troopsPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxSoldierCt) / 2, 98);
     // Schwarzer Untergrund für Soldatenanzeige
-    DrawRectangle(troopsPos, 22 * maxSoldierCt, 24, 0x96000000);
+    DrawRectangle(Rect(troopsPos, Extent(22 * maxSoldierCt, 24)), 0x96000000);
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
@@ -117,7 +117,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         DrawPoint healthPos = troopsPos - DrawPoint(0, 14);
 
         // black background for hitpoints
-        DrawRectangle(healthPos, 22 * maxSoldierCt, 14, 0x96000000);
+        DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
         for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it) {
@@ -201,7 +201,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it=militaryBuildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
 					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gcFactory, *it);
-					nextscrn->Move(pos_);
+					nextscrn->SetPos(GetPos());
 					WINDOWMANAGER.Show(nextscrn);
 					break;
 				}

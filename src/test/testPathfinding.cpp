@@ -41,7 +41,7 @@ typedef WorldFixture<CreateEmptyWorld, 1, 10, 8> WorldFixtureEmpty1P;
 /// Sets all terrain to the given terrain
 void clearWorld(GameWorldGame& world, TerrainType terrain)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = terrain;
@@ -173,7 +173,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
 BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
 {
     // For road checking all the points must belong to us (or any owner)
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         world.SetOwner(pt, 1);
     }
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
 BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
 {
     // For road checking all the points must belong to us (or any owner)
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         world.SetOwner(pt, 1);
     }

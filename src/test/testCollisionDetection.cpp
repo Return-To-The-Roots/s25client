@@ -29,28 +29,27 @@ BOOST_AUTO_TEST_CASE(RectCtor)
     const Extent size(5, 7);
     // Compound ctor
     Rect rect1(origin, size);
-    BOOST_REQUIRE_EQUAL(rect1.GetOrigin(), origin);
-    BOOST_REQUIRE_EQUAL(rect1.GetSize(), size);
+    BOOST_REQUIRE_EQUAL(rect1.getOrigin(), origin);
+    BOOST_REQUIRE_EQUAL(rect1.getSize(), size);
     // Semi-Individual ctor
     Rect rect2(origin, size.x, size.y);
-    BOOST_REQUIRE_EQUAL(rect2.GetOrigin(), origin);
-    BOOST_REQUIRE_EQUAL(rect2.GetSize(), size);
+    BOOST_REQUIRE_EQUAL(rect2.getOrigin(), origin);
+    BOOST_REQUIRE_EQUAL(rect2.getSize(), size);
     // Individual ctor
     Rect rect3(origin.x, origin.y, size.x, size.y);
-    BOOST_REQUIRE_EQUAL(rect3.GetOrigin(), origin);
-    BOOST_REQUIRE_EQUAL(rect3.GetSize(), size);
+    BOOST_REQUIRE_EQUAL(rect3.getOrigin(), origin);
+    BOOST_REQUIRE_EQUAL(rect3.getSize(), size);
 }
 
-BOOST_AUTO_TEST_CASE(RectMove)
+BOOST_AUTO_TEST_CASE(Rectmove)
 {
     const Rect rectOrig(Point<int>(10, 20), Extent(5, 10));
-    Rect rect = rectOrig;
-    rect.Move(Point<int>(5, 7));
-    BOOST_REQUIRE_EQUAL(rect.GetOrigin(), Point<int>(15, 27));
-    BOOST_REQUIRE_EQUAL(rect.GetSize(), rectOrig.GetSize());
-    rect.Move(-Point<int>(5, 7));
-    BOOST_REQUIRE_EQUAL(rect.GetOrigin(), rectOrig.GetOrigin());
-    BOOST_REQUIRE_EQUAL(rect.GetSize(), rectOrig.GetSize());
+    Rect rect = Rect::move(rectOrig, Point<int>(5, 7));
+    BOOST_REQUIRE_EQUAL(rect.getOrigin(), Point<int>(15, 27));
+    BOOST_REQUIRE_EQUAL(rect.getSize(), rectOrig.getSize());
+    rect.move(-Point<int>(5, 7));
+    BOOST_REQUIRE_EQUAL(rect.getOrigin(), rectOrig.getOrigin());
+    BOOST_REQUIRE_EQUAL(rect.getSize(), rectOrig.getSize());
 }
 
 BOOST_AUTO_TEST_CASE(PointInRect)
@@ -92,39 +91,39 @@ BOOST_AUTO_TEST_CASE(RectIntersect)
     BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
     // Just in and out on each line
     // Right
-    rect2.Move(Point<int>(rect1.GetSize().x, 0));
+    rect2.move(Point<int>(rect1.getSize().x, 0));
     BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
-    rect2.Move(-Point<int>(1, 0));
+    rect2.move(-Point<int>(1, 0));
     BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
     // Left
     rect2 = rect1;
-    rect2.Move(-Point<int>(rect1.GetSize().x, 0));
+    rect2.move(-Point<int>(rect1.getSize().x, 0));
     BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
-    rect2.Move(Point<int>(1, 0));
+    rect2.move(Point<int>(1, 0));
     BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
     // Bottom
     rect2 = rect1;
-    rect2.Move(Point<int>(0, rect1.GetSize().y));
+    rect2.move(Point<int>(0, rect1.getSize().y));
     BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
-    rect2.Move(-Point<int>(0, 1));
+    rect2.move(-Point<int>(0, 1));
     BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
     // Top
     rect2 = rect1;
-    rect2.Move(-Point<int>(0, rect1.GetSize().y));
+    rect2.move(-Point<int>(0, rect1.getSize().y));
     BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
-    rect2.Move(Point<int>(0, 1));
+    rect2.move(Point<int>(0, 1));
     BOOST_REQUIRE(DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
 
     // Empty rect
-    Rect emptyRect(rect1.GetOrigin(), Extent(0, 0));
+    Rect emptyRect(rect1.getOrigin(), Extent(0, 0));
     BOOST_REQUIRE(!DoRectsIntersect(rect1, emptyRect));
     BOOST_REQUIRE(!DoRectsIntersect(emptyRect, rect1));
 }

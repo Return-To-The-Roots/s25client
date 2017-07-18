@@ -20,7 +20,7 @@
 
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/GoodTypes.h"
-#include "DrawPoint.h"
+#include "DrawPointInit.h"
 #include <boost/array.hpp>
 
 extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;

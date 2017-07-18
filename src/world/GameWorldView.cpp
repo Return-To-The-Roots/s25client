@@ -39,7 +39,7 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height):
+GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size):
 	selPt(0, 0),
 	debugNodePrinter(NULL),
 	show_bq(false),
@@ -52,7 +52,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
 	d_player(0),
 	d_active(false),
 	pos(pos),
-	width(width), height(height),
+	size_(size),
     zoomFactor_(1.f),
     targetZoomFactor_(1.f),
     zoomSpeed_(0.f)
@@ -137,14 +137,14 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
     mousePos -= Point<int>(pos);
 
-    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
+    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - size_.y, size_.x, size_.y);
     if(zoomFactor_ != 1.f)
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glScalef(zoomFactor_, zoomFactor_, 1);
         // Offset to center view
-        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
+        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
@@ -590,7 +590,7 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
     lastOffset = offset;
     Point<int> nodePos = GetWorld().GetNodePos(pt);
 
-    MoveTo(nodePos - DrawPoint(GetSize() / 2), true);
+    MoveTo(nodePos - GetSize() / 2u, true);
 }
 
 /// Springt zur letzten Position, bevor man "weggesprungen" ist
@@ -608,13 +608,13 @@ void GameWorldView::CalcFxLx()
     // Calc first and last point in map units (with 1 extra for incomplete triangles)
     firstPt.x = offset.x / TR_W - 1;
     firstPt.y = (offset.y - 10 * HEIGHT_FACTOR) / TR_H - 1; // base altitude = 10
-    lastPt.x = (offset.x + width) / TR_W + 1;
-    lastPt.y = (offset.y + height + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
+    lastPt.x = (offset.x + size_.x) / TR_W + 1;
+    lastPt.y = (offset.y + size_.y + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
 
     if(zoomFactor_ != 1.f)
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
-        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
+        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         // Stay centered by removing half the pixels from opposite sites
         diff = diff / 2.f;
         // Convert to map points
@@ -628,9 +628,8 @@ void GameWorldView::CalcFxLx()
     }
 }
 
-void GameWorldView::Resize(unsigned width, unsigned height)
+void GameWorldView::Resize(const Extent& newSize)
 {
-    this->width  = width;
-    this->height = height;
+    size_ = newSize;
     CalcFxLx();
 }

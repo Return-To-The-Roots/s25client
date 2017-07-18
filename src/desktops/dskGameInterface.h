@@ -81,7 +81,7 @@ class dskGameInterface :
         dskGameInterface(GameWorldBase& world);
         ~dskGameInterface() override;
 
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         void SetActive(bool activate = true) override;
 
         void LC_Status_ConnectionLost() override;

@@ -56,7 +56,7 @@ class World
     friend class MapSerializer;
 
     /// Size of the map in nodes
-    unsigned short width_, height_;
+    MapExtent size_;
     /// Landschafts-Typ
     LandscapeType lt;
 
@@ -83,13 +83,14 @@ public:
     virtual ~World();
 
     /// Initialize the world
-    virtual void Init(unsigned short width, unsigned short height, LandscapeType lt);
+    virtual void Init(const MapExtent& size, LandscapeType lt);
     /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 
     /// Return the size of the world
-    unsigned short GetWidth() const { return width_; }
-    unsigned short GetHeight() const { return height_; }
+    unsigned short GetWidth() const { return GetSize().x; }
+    unsigned short GetHeight() const { return GetSize().y; }
+    MapExtent GetSize() const { return size_; }
 
     /// Return the type of the landscape
     LandscapeType GetLandscapeType() const { return lt; }
@@ -254,8 +255,8 @@ inline MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const
 
 inline unsigned World::GetIdx(const MapPoint pt) const
 {
-    RTTR_Assert(pt.x < width_ && pt.y < height_);
-    return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x);
+    RTTR_Assert(pt.x < size_.x && pt.y < size_.y);
+    return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x);
 }
 
 inline const MapNode& World::GetNode(const MapPoint pt) const

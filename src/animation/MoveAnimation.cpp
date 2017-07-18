@@ -47,5 +47,5 @@ void MoveAnimation::doUpdate(Window* element, double nextFramepartTime)
     DrawPoint curDiffInt;
     curDiffInt.x = boost::math::iround(curDiff.x);
     curDiffInt.y = boost::math::iround(curDiff.y);
-    element->Move(curDiffInt + origPos_);
+    element->SetPos(curDiffInt + origPos_);
 }

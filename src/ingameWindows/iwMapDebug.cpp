@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -124,7 +124,9 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
     {
         printer->showDataIdx = 0;
         printer->playerIdx = 0;
-        SetIwHeight(GetIwHeight() - 40 - 10);
+        Extent iwSize = GetIwSize();
+        iwSize.y -= 40 + 10;
+        SetIwSize(iwSize);
     }
 
     printer->showCoords = cbShowCoords->GetCheck();

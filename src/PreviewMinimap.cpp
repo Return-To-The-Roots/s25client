@@ -32,8 +32,8 @@ PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
 {
     const libsiedler2::ArchivItem_Map_Header& header = s2map.getHeader();
-    map_width = header.getWidth();
-    map_height = header.getHeight();
+    mapSize.x = header.getWidth();
+    mapSize.y = header.getHeight();
 
     unsigned char gfxSet = header.getGfxSet();
     RTTR_Assert(gfxSet < LT_COUNT);
@@ -86,13 +86,13 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const
 {
     int altitude = altitudes[GetMMIdx(pt)];
-    MapPoint tmp = MakeMapPoint(GetNeighbour(Point<int>(pt), Direction::NORTHEAST), map_width, map_height);
+    MapPoint tmp = MakeMapPoint(GetNeighbour(Point<int>(pt), Direction::NORTHEAST), GetMapSize());
     int A = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour2(Point<int>(pt), 0), map_width, map_height);
+    tmp = MakeMapPoint(GetNeighbour2(Point<int>(pt), 0), GetMapSize());
     int B = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour(Point<int>(pt), Direction::WEST), map_width, map_height);
+    tmp = MakeMapPoint(GetNeighbour(Point<int>(pt), Direction::WEST), GetMapSize());
     int C = altitudes[GetMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(GetNeighbour2(Point<int>(pt), 7), map_width, map_height);
+    tmp = MakeMapPoint(GetNeighbour2(Point<int>(pt), 7), GetMapSize());
     int D = altitudes[GetMMIdx(tmp)] - altitude;
 
     int shadingS2 = 64 + 9 * A - 3 * B - 6 * C - 9 * D;
@@ -106,10 +106,7 @@ unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<u
 
 void PreviewMinimap::CalcShadows(const std::vector<unsigned char>& altitudes)
 {
-    shadows.resize(map_width * map_height);
-    for(MapPoint pt(0, 0); pt.y < map_height; ++pt.y)
-    {
-        for(pt.x = 0; pt.x < map_width; ++pt.x)
-            shadows[GetMMIdx(pt)] = CalcShading(pt, altitudes);
-    }
+    shadows.resize(altitudes.size());
+    RTTR_FOREACH_PT(MapPoint, GetMapSize())
+        shadows[GetMMIdx(pt)] = CalcShading(pt, altitudes);
 }

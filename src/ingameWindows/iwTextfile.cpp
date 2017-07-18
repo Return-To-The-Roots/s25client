@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 // Copyright (c) 2013 Nevik Rehnel (hai.kataker at gmx.de)
 //
 // This file is part of Return To The Roots.
@@ -27,7 +27,7 @@
 #include "gameData/const_gui_ids.h"
 #include "fileFuncs.h"
 
-#include <fstream>
+#include <boost/filesystem/fstream.hpp>
 
 /**
  *  Konstruktor von @p iwTextfile.
@@ -39,19 +39,19 @@
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("resource", 41))
 {
-    ctrlMultiline* text = AddMultiline(2, 10, 20, width_ - 20, 450, TC_GREEN1, NormalFont);
+    ctrlMultiline* text = AddMultiline(2, 10, 20, GetSize().x - 20, 450, TC_GREEN1, NormalFont);
 
     // Pfad mit gewählter Sprache auswählen
     std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;
 
-    std::ifstream file(path.c_str());
-    if(!file.good())
+    bfs::ifstream file(path);
+    if(!file)
     {
         // lokalisierte Vresion nicht gefunden, Standard öffnen
         path = FILE_PATHS[88] + filename;
         file.clear();
-        file.open(path.c_str());
-        if(!file.good())
+        file.open(path);
+        if(!file)
         {
             // immer noch nichts gefunden? --> Dann Fehlermeldung
             text->AddString(_("The readme file was not found!"), COLOR_RED, false);
@@ -61,8 +61,8 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
 
     std::string line; // buffer for one line
     while(std::getline(file, line))
-        text->AddString(line, COLOR_YELLOW, false); // add this line to the window contents
+        text->AddString(line, COLOR_YELLOW, false);
 
-    text->SetWidth(text->GetContentWidth());
-    SetIwWidth(text->GetWidth());
+    text->SetWidth(text->GetContentSize().x);
+    SetIwSize(Extent(text->GetSize().x, GetIwSize().y));
 }

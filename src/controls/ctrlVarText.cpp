@@ -19,7 +19,6 @@
 #include "ctrlVarText.h"
 #include "ogl/glArchivItem_Font.h"
 #include <sstream>
-class Window;
 
 /**
  *  Konstruktor des Textcontrols, welches variablen Inhalt haben kann.
@@ -37,15 +36,14 @@ class Window;
  */
 ctrlVarText::ctrlVarText(Window* parent,
                          unsigned int id,
-                         unsigned short x,
-                         unsigned short y,
+                         const DrawPoint& pos,
                          const std::string& formatstr,
                          unsigned int color,
                          unsigned int format,
                          glArchivItem_Font* font,
                          unsigned int count,
                          va_list liste)
-    : ctrlText(parent, id, x, y, formatstr, color, format, font)
+    : ctrlText(parent, id, pos, formatstr, color, format, font)
 {
     // Pointerliste einlesen
     if(count > 0)

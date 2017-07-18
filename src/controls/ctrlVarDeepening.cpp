@@ -18,29 +18,27 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlVarDeepening.h"
 #include "ogl/glArchivItem_Font.h"
+
 class Window;
 
 ctrlVarDeepening::ctrlVarDeepening(Window* parent,
                                    unsigned int id,
-                                   unsigned short x,
-                                   unsigned short y,
-                                   unsigned short width,
-                                   unsigned short height,
+                                   const DrawPoint& pos,
+                                   const Extent& size,
                                    TextureColor tc,
                                    const std::string& text,
                                    glArchivItem_Font* font,
                                    unsigned int color,
                                    unsigned int count,
                                    va_list liste)
-    : ctrlVarText(parent, id, x, y, text, color, 0, font, count, liste),
+    : ctrlVarText(parent, id, pos, text, color, 0, font, count, liste),
       tc(tc)
 {
     // We don't want to pass these through all those constructors
     // of only-text objects down to the Window class. This is a special
     // situation, as we are a Deepening _and_ a VarText instead
     // of owning the VarText.
-    this->width_  = width;
-    this->height_ = height;
+    Resize(size);
 }
 
 /**
@@ -48,7 +46,7 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
  */
 void ctrlVarDeepening::Draw_()
 {
-    Draw3D(GetDrawPos(), width_, height_, tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
 
-    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 }

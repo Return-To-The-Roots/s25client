@@ -30,7 +30,7 @@ class PreviewMinimap: public Minimap
 public:
     explicit PreviewMinimap(const glArchivItem_Map* const s2map);
 
-    void SetMap(const glArchivItem_Map& s2map) override;
+    void SetMap(const glArchivItem_Map& s2map);
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
     unsigned CalcPixelColor(const MapPoint pt, const unsigned t) override;

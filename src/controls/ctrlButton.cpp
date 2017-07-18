@@ -19,36 +19,27 @@
 #include "ctrlButton.h"
 #include "Loader.h"
 #include "CollisionDetection.h"
-#include "WindowManager.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "driver/src/MouseCoords.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ExtensionList.h"
 #include <algorithm>
 
-ctrlButton::ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                       unsigned short width, unsigned short height, TextureColor tc, const std::string& tooltip)
-    : Window(DrawPoint(x, y), id, parent, width, height), tc(tc), state(BUTTON_UP), hasBorder(true),
+ctrlButton::ctrlButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                       const Extent& size, TextureColor tc, const std::string& tooltip)
+    : Window(pos, id, parent, size), tc(tc), ctrlBaseTooltip(tooltip), state(BUTTON_UP), hasBorder(true),
       isChecked(false), isIlluminated(false), isEnabled(true)
-{
-    SetTooltip(tooltip);
-}
+{}
 
 
 ctrlButton::~ctrlButton()
-{
-    WINDOWMANAGER.SetToolTip(this, "");
-}
+{}
 
 void ctrlButton::SetEnabled(bool enable /*= true*/)
 {
     isEnabled = enable;
     state = BUTTON_UP;
-}
-
-void ctrlButton::SwapTooltip(ctrlButton* otherBt)
-{
-    std::swap(tooltip_, otherBt->tooltip_);
 }
 
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
@@ -58,15 +49,13 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
         if(state != BUTTON_PRESSED)
             state = BUTTON_HOVER;
 
-        WINDOWMANAGER.SetToolTip(this, tooltip_);
-
+        ShowTooltip();
         return true;
     }
     else
     {
         state =  BUTTON_UP;
-        WINDOWMANAGER.SetToolTip(this, "");
-
+        HideTooltip();
         return false;
     }
 }
@@ -95,7 +84,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 
         if(isEnabled && IsMouseOver(mc.GetPos()))
         {
-            parent_->Msg_ButtonClick(GetID());
+            GetParent()->Msg_ButtonClick(GetID());
             return true;
         }
     }
@@ -119,7 +108,7 @@ void ctrlButton::TestMouseOver()
  */
 void ctrlButton::Draw_()
 {
-    if(width_ == 0 || height_ == 0)
+    if(GetSize().x == 0 || GetSize().y == 0)
         return;
 
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
@@ -139,7 +128,7 @@ void ctrlButton::Draw_()
                 type = BUTTON_UP;
                 isCurIlluminated |= isChecked;
             }
-            Draw3D(GetDrawPos(), width_, height_, tc, type, isCurIlluminated, true, color);
+            Draw3D(Rect(GetDrawPos(), GetSize()), tc, type, isCurIlluminated, true, color);
         } else
         {
             unsigned texture;
@@ -152,7 +141,7 @@ void ctrlButton::Draw_()
                 glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
                 glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
             }
-            LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, width_, height_, color);
+            LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, GetSize().x, GetSize().y, color);
             if(isIlluminated)
                 glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         }
@@ -163,10 +152,10 @@ void ctrlButton::Draw_()
 }
 
 
-ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                               unsigned short width, unsigned short height, const TextureColor tc,
+ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                               const Extent& size, const TextureColor tc,
                                const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
-    : ctrlButton(parent, id, x, y, width, height, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
+    : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
 {}
 
 
@@ -182,18 +171,18 @@ void ctrlTextButton::DrawContent() const
     else
         color = this->color_;
 
-    const unsigned short maxTextWidth = width_ - 4; // reduced by border
+    const unsigned short maxTextWidth = GetSize().x - 4; // reduced by border
 
-    if(tooltip_.empty() && state == BUTTON_HOVER)
+    if(GetTooltip().empty() && state == BUTTON_HOVER)
     {
         unsigned maxNumChars;
         font->getWidth(text, 0, maxTextWidth, &maxNumChars);
         if(maxNumChars < text.length())
-            WINDOWMANAGER.SetToolTip(this, text);
+            ShowTooltip(text);
     }
 
     const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset),
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset),
                text,
                glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
                color,
@@ -202,32 +191,29 @@ void ctrlTextButton::DrawContent() const
 }
 
 
-ctrlImageButton::ctrlImageButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                                 unsigned short width, unsigned short height, const TextureColor tc,
+ctrlImageButton::ctrlImageButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                                 const Extent& size, const TextureColor tc,
                                  glArchivItem_Bitmap* const image, const std::string& tooltip)
-    : ctrlButton(parent, id, x, y, width, height, tc, tooltip), image(image), modulation_color(COLOR_WHITE)
-{
-}
+    : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseImage(image)
+{}
 
 void ctrlImageButton::DrawContent() const
 {
-    // Bild
-    if(image)
-    {
-        const unsigned short offset = ((state == BUTTON_PRESSED || isChecked) && isEnabled) ? 2 : 0;
-        unsigned color = modulation_color;
-        if(!isEnabled && modulation_color == COLOR_WHITE)
-            color = 0xFF555555;
-        image->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2 + DrawPoint(offset, offset), 0, 0, 0, 0, 0, 0, color);
-    }
+    DrawPoint pos = GetDrawPos() + DrawPoint(GetSize()) / 2;
+    if((state == BUTTON_PRESSED || isChecked) && isEnabled)
+        pos += DrawPoint::all(2);
+    if(!isEnabled && GetModulationColor() == COLOR_WHITE)
+        DrawImage(pos, 0xFF555555);
+    else
+        DrawImage(pos);
 }
 
 
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                                 unsigned short width, unsigned short height, const TextureColor tc,
+ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                                 const Extent& size, const TextureColor tc,
                                  unsigned int fillColor, const std::string& tooltip) :
-    ctrlButton(parent, id, x, y, width, height, tc, tooltip),
+    ctrlButton(parent, id, pos, size, tc, tooltip),
     ctrlBaseColor(fillColor)
 {
 }
@@ -236,5 +222,6 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, unsigned short
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
 void ctrlColorButton::DrawContent() const
 {
-    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, color_);
+    Extent rectSize = GetSize() - Extent(6, 6);
+    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), rectSize), color_);
 }

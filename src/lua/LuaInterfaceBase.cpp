@@ -162,7 +162,7 @@ void LuaInterfaceBase::MsgBoxEx(const std::string& title, const std::string& msg
 void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY)
 {
     iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
-    msgBox->MoveIcon(iconX, iconY);
+    msgBox->MoveIcon(DrawPoint(iconX, iconY));
     WINDOWMANAGER.Show(msgBox);
 }
 

@@ -26,27 +26,54 @@ struct Rect
 {
     int left, top, right, bottom;
     Rect(): left(0), top(0), right(0), bottom(0){}
-    Rect(int left, int top, unsigned width, unsigned height): left(left), top(top), right(left + width), bottom(top + height){}
-    Rect(const Point<int>& lt, unsigned width, unsigned height): left(lt.x), top(lt.y), right(left + width), bottom(top + height){}
-    Rect(const Point<int>& lt, const Extent& size): left(lt.x), top(lt.y), right(left + size.x), bottom(top + size.y){}
-    Point<int> GetOrigin() const { return Point<int>(left, top); }
-    Extent GetSize() const;
-    void Move(const Point<int>& offset);
+    Rect(int left, int top, unsigned width, unsigned height);
+    Rect(const Position& lt, unsigned width, unsigned height);
+    Rect(const Position& lt, const Extent& size);
+    Position getOrigin() const { return Position(left, top); }
+    Extent getSize() const;
+    void setSize(const Extent& newSize);
+    void move(const Position& offset);
+    static Rect move(Rect rect, const Position& offset);
 };
 
-inline Extent Rect::GetSize() const
+inline Rect::Rect(int left, int top, unsigned width, unsigned height): left(left), top(top)
+{
+    setSize(Extent(width, height));
+}
+inline Rect::Rect(const Position& lt, unsigned width, unsigned height): left(lt.x), top(lt.y)
+{
+    setSize(Extent(width, height));
+}
+inline Rect::Rect(const Position& lt, const Extent& size): left(lt.x), top(lt.y)
+{
+    setSize(Extent(size));
+}
+
+inline Extent Rect::getSize() const
 {
     RTTR_Assert(left <= right);
     RTTR_Assert(top <= bottom);
     return Extent(right - left, bottom - top);
 }
 
-inline void Rect::Move(const Point<int>& offset)
+inline void Rect::setSize(const Extent& newSize)
+{
+    right = left + newSize.x;
+    bottom = top + newSize.y;
+}
+
+inline void Rect::move(const Position& offset)
 {
     left += offset.x;
     right += offset.x;
     top += offset.y;
     bottom += offset.y;
+}
+
+inline Rect Rect::move(Rect rect, const Position& offset)
+{
+    rect.move(offset);
+    return rect;
 }
 
 #endif // Rect_h__

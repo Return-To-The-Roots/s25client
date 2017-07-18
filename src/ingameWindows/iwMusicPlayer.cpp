@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -40,7 +40,7 @@ iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned
     : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, 
                    300, 100, title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
 {
-    AddEdit(0, 20, 30, GetWidth() - 40, 22, TC_GREEN2, NormalFont);
+    AddEdit(0, 20, 30, GetSize().x - 40, 22, TC_GREEN2, NormalFont);
     AddTextButton(1, 20, 60, 100, 22, TC_GREEN1, _("OK"), NormalFont);
     AddTextButton(2, 130, 60, 100, 22, TC_RED1, _("Abort"), NormalFont);
 }
@@ -73,9 +73,9 @@ iwMusicPlayer::iwMusicPlayer()
     const unsigned short button_distance = 10;
     const unsigned short button_width = (330 - button_distance) / 2;
     ctrlButton* b1 = AddTextButton(3, 20, 290, button_width, 22, TC_GREEN2, _("Add"), NormalFont);
-    AddTextButton(4, b1->GetX(false) + button_width + button_distance, 290, button_width, 22, TC_GREEN2, _("Remove"), NormalFont);
-    //AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
-    //AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
+    AddTextButton(4, b1->GetPos().x + button_width + button_distance, 290, button_width, 22, TC_GREEN2, _("Remove"), NormalFont);
+    //AddTextButton(5,b1->GetPos().x,320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
+    //AddTextButton(6,b2->GetPos().x,320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
 
     // Buttons für die Musikstücke
     AddImageButton(7, 370, 30, 40, 40, TC_GREY, LOADER.GetImageN("io", 138), _("Add track"));
@@ -277,9 +277,9 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // Play Order
         case 15:
         {
-            GetCtrl<ctrlImageButton>(15)->SetImage(GetCtrl<ctrlImageButton>(15)->GetButtonImage() ==
+            GetCtrl<ctrlImageButton>(15)->SetImage(GetCtrl<ctrlImageButton>(15)->GetImage() ==
                                                    LOADER.GetImageN("io", 107) ? LOADER.GetImageN("io", 225) : LOADER.GetImageN("io", 107));
-            GetCtrl<ctrlImageButton>(15)->SetTooltip(GetCtrl<ctrlImageButton>(15)->GetButtonImage() ==
+            GetCtrl<ctrlImageButton>(15)->SetTooltip(GetCtrl<ctrlImageButton>(15)->GetImage() ==
                     LOADER.GetImageN("io", 107) ? _("Playback in this order") : _("Random playback"));
             changed = true;
         } break;
@@ -415,7 +415,7 @@ unsigned iwMusicPlayer::GetRepeats() const
 
 bool iwMusicPlayer::GetRandomPlayback() const
 {
-    return !(GetCtrl<ctrlImageButton>(15)->GetButtonImage() ==
+    return !(GetCtrl<ctrlImageButton>(15)->GetImage() ==
              LOADER.GetImageN("io", 107));
 }
 

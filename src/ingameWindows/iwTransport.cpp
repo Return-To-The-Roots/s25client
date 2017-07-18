@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -168,8 +168,10 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             while(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
+                ctrlImageButton& btPrev = *group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1);
+                ctrlImageButton& btNext = *group->GetCtrl<ctrlImageButton>(group->GetSelection());
+                btPrev.SwapImage(btNext);
+                btPrev.SwapTooltip(btNext);
                 group->SetSelection(group->GetSelection() - 1);
             }
 
@@ -183,8 +185,10 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             if(group->GetSelection() > 0 && group->GetSelection() != 0xFFFF)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() - 1]);
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1));
+                ctrlImageButton& btPrev = *group->GetCtrl<ctrlImageButton>(group->GetSelection() - 1);
+                ctrlImageButton& btNext = *group->GetCtrl<ctrlImageButton>(group->GetSelection());
+                btPrev.SwapImage(btNext);
+                btPrev.SwapTooltip(btNext);
                 group->SetSelection(group->GetSelection() - 1);
             }
 
@@ -198,8 +202,10 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             if(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
+                ctrlImageButton& btPrev = *group->GetCtrl<ctrlImageButton>(group->GetSelection());
+                ctrlImageButton& btNext = *group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1);
+                btPrev.SwapImage(btNext);
+                btPrev.SwapTooltip(btNext);
                 group->SetSelection(group->GetSelection() + 1);
             }
 
@@ -213,8 +219,10 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
             while(group->GetSelection() < 13 && group->GetSelection() != 0xFFFF)
             {
                 std::swap(GAMECLIENT.visual_settings.transport_order[group->GetSelection()], GAMECLIENT.visual_settings.transport_order[group->GetSelection() + 1]);
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapImage(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
-                group->GetCtrl<ctrlImageButton>(group->GetSelection())->SwapTooltip(group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1));
+                ctrlImageButton& btPrev = *group->GetCtrl<ctrlImageButton>(group->GetSelection());
+                ctrlImageButton& btNext = *group->GetCtrl<ctrlImageButton>(group->GetSelection() + 1);
+                btPrev.SwapImage(btNext);
+                btPrev.SwapTooltip(btNext);
                 group->SetSelection(group->GetSelection() + 1);
             }
 

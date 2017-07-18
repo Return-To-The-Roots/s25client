@@ -37,7 +37,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
         };
 
     public:
-        ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
+        ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type);
 
         /// Selektiert einen neuen Button
         void AddSelection(unsigned short selection, bool notify = false);

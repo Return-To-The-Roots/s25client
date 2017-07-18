@@ -20,26 +20,22 @@
 #pragma once
 
 #include "Window.h"
+#include "controls/ctrlBaseImage.h"
+#include "controls/ctrlBaseTooltip.h"
+
 class MouseCoords;
 class glArchivItem_Bitmap;
 
-class ctrlImage : public Window
+class ctrlImage : public Window, public ctrlBaseTooltip, public ctrlBaseImage
 {
     public:
-        ctrlImage(Window* parent, unsigned int id, unsigned short x, unsigned short y, glArchivItem_Bitmap* image, const std::string& tooltip);
+        ctrlImage(Window* parent, unsigned int id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip);
         ~ctrlImage() override;
-
-        void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
-        const glArchivItem_Bitmap* GetImage() const { return image; }
 
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
         void Draw_() override;
-
-    private:
-        glArchivItem_Bitmap* image;
-        std::string tooltip;
 };
 
 #endif // !CTRLIMAGE_H_INCLUDED

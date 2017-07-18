@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+﻿// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -332,12 +332,15 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
     main_tab->SetSelection(0, true);
 
-    if(pos_.x + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        pos_.x = mouse_x - GetWidth() - 40;
-    if(pos_.y + GetHeight() > VIDEODRIVER.GetScreenHeight())
-        pos_.y = mouse_y - GetHeight() - 40;
+    DrawPoint adjPos = GetPos();
+    if(GetPos().x + GetSize().x > VIDEODRIVER.GetScreenWidth())
+        adjPos.x = mouse_x - GetSize().x - 40;
+    if(GetPos().y + GetSize().y > VIDEODRIVER.GetScreenHeight())
+        adjPos.y = mouse_y - GetSize().y - 40;
+    if(adjPos != GetPos())
+        SetPos(adjPos);
 
-    VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
+    VIDEODRIVER.SetMousePos(GetDrawPos() + DrawPoint(20, 75));
 }
 
 void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned int& width)

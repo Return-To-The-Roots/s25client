@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -54,14 +54,15 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     glArchivItem_Bitmap* icon = LOADER.GetImageN(iconFile, iconIdx);
     if(icon)
         AddImage(ID_ICON, contentOffset.x + 30, contentOffset.y + 20, icon);
-    unsigned short textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetX(false) + paddingX : contentOffset.x + paddingX;
-    ctrlMultiline* multiline = AddMultiline(ID_TEXT, textX, contentOffset.y + 5, std::max<int>(minTextWidth, GetIwRightBoundary() - textX - paddingX), maxTextHeight, TC_GREEN2, NormalFont);
+    unsigned short textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetPos().x + paddingX : contentOffset.x + paddingX;
+    ctrlMultiline* multiline = AddMultiline(ID_TEXT, textX, contentOffset.y + 5, std::max<int>(minTextWidth, GetRightBottomBoundary().x - textX - paddingX), maxTextHeight, TC_GREEN2, NormalFont);
     multiline->ShowBackground(false);
     multiline->AddString(text, COLOR_YELLOW);
-    multiline->Resize(multiline->GetContentWidth(), multiline->GetContentHeight());
+    multiline->Resize(multiline->GetContentSize());
+    // 10 padding, button/button padding
+    Extent newIwSize(Extent(multiline->GetPos()) + multiline->GetSize() + Extent(paddingX, 10 + btHeight * 2));
     // Increase window size if required
-    SetIwWidth(std::max<unsigned short>(multiline->GetX(false) + multiline->GetWidth() + paddingX, GetIwWidth()));
-    SetIwHeight(std::max<unsigned short>(multiline->GetY(false) + multiline->GetHeight() + 10 + btHeight * 2, GetIwHeight())); // 10 padding, button/button padding
+    SetIwSize(elMax(GetIwSize(), newIwSize));
 
 
     unsigned defaultBt = 0;
@@ -69,45 +70,46 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     switch(button)
     {
     case MSB_OK:
-        AddButton(0, width_ / 2 - 45, _("OK"), TC_GREEN2);
+        AddButton(0, GetSize().x / 2 - 45, _("OK"), TC_GREEN2);
         defaultBt = 0;
         break;
 
     case MSB_OKCANCEL:
-        AddButton(0, width_ / 2 - 3 - 90, _("OK"), TC_GREEN2);
-        AddButton(1, width_ / 2 + 3, _("Cancel"), TC_RED1);
+        AddButton(0, GetSize().x / 2 - 3 - 90, _("OK"), TC_GREEN2);
+        AddButton(1, GetSize().x / 2 + 3, _("Cancel"), TC_RED1);
         defaultBt = 1;
         break;
 
     case MSB_YESNO:
-        AddButton(0, width_ / 2 - 3 - 90, _("Yes"), TC_GREEN2);
-        AddButton(1, width_ / 2 + 3, _("No"), TC_RED1);
+        AddButton(0, GetSize().x / 2 - 3 - 90, _("Yes"), TC_GREEN2);
+        AddButton(1, GetSize().x / 2 + 3, _("No"), TC_RED1);
         defaultBt = 1;
         break;
 
     case MSB_YESNOCANCEL:
-        AddButton(0, width_ / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
-        AddButton(1, width_ / 2 - 45, _("No"), TC_RED1);
-        AddButton(2, width_ / 2 + 45 + 6, _("Cancel"), TC_GREY);
+        AddButton(0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
+        AddButton(1, GetSize().x / 2 - 45, _("No"), TC_RED1);
+        AddButton(2, GetSize().x / 2 + 45 + 6, _("Cancel"), TC_GREY);
         defaultBt = 2;
         break;
     }
     const Window* defBt = GetCtrl<Window>(defaultBt + ID_BT_0);
     if(defBt)
-        VIDEODRIVER.SetMousePos(defBt->GetX() + defBt->GetWidth() / 2, defBt->GetY() + defBt->GetHeight() / 2);
+        VIDEODRIVER.SetMousePos(defBt->GetDrawPos() + DrawPoint(defBt->GetSize()) / 2);
 }
 
 iwMsgbox::~iwMsgbox()
 {}
 
 
-void iwMsgbox::MoveIcon(int x, int y)
+void iwMsgbox::MoveIcon(const DrawPoint& pos)
 {
     ctrlImage* icon = GetCtrl<ctrlImage>(ID_ICON);
     if(icon){
-        icon->Move(std::max(0, x), std::max(0, y));
-        DrawPoint iconPos(icon->GetX(false) - icon->GetImage()->getNx(), icon->GetY(false) - icon->GetImage()->getNy());
-        DrawPoint textPos, textMaxSize;
+        icon->SetPos(elMax(pos, DrawPoint(0, 0)));
+        DrawPoint iconPos(icon->GetPos() - icon->GetImage()->GetOrigin());
+        DrawPoint textPos;
+        Extent textMaxSize;
         if(iconPos.x < 100){
             // icon left
             textPos.x = iconPos.x + icon->GetImage()->getWidth() + paddingX;
@@ -140,21 +142,19 @@ void iwMsgbox::MoveIcon(int x, int y)
             textMaxSize.y = maxTextHeight;
         }
         ctrlMultiline* multiline = GetCtrl<ctrlMultiline>(ID_TEXT);
-        multiline->Move(textPos);
-        multiline->Resize(textMaxSize.x, textMaxSize.y);
-        multiline->Resize(multiline->GetContentWidth(), multiline->GetContentHeight());
+        multiline->SetPos(textPos);
+        multiline->Resize(textMaxSize);
+        multiline->Resize(multiline->GetContentSize());
 
-        int newW = std::max(iconPos.x + icon->GetImage()->getWidth(), multiline->GetX(false) + multiline->GetWidth() + paddingX) + contentOffsetEnd.x;
-        int newH = std::max(iconPos.y + icon->GetImage()->getHeight(), multiline->GetY(false) + multiline->GetHeight() + paddingX) + 10 + btHeight * 2 + contentOffsetEnd.y;
-        newW = std::max<int>(newW, GetWidth());
-        newH = std::max<int>(newH, GetHeight());
+        DrawPoint newSize = iconPos + DrawPoint(icon->GetImage()->GetSize());
+        newSize = elMax(newSize, multiline->GetPos() + DrawPoint(multiline->GetSize()) + DrawPoint::all(paddingX));
+        newSize += DrawPoint(0, 10 + btHeight * 2) + DrawPoint(contentOffsetEnd);
         for(unsigned i = 0; i < 3; i++){
             Window* bt = GetCtrl<Window>(i + ID_BT_0);
             if(bt)
-                bt->Move((newW - GetWidth()) / 2, newH - GetHeight(), false);
+                bt->SetPos(DrawPoint((newSize.x - GetSize().x) / 2, newSize.y - GetSize().y), false);
         }
-        SetWidth(newW);
-        SetHeight(newH);
+        Resize(Extent(newSize));
     }
 }
 
@@ -175,5 +175,5 @@ void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwMsgbox::AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc)
 {
-    Window::AddTextButton(ID_BT_0 + id, x, GetIwBottomBoundary() - btHeight * 2, 90, btHeight, tc, text, NormalFont);
+    AddTextButton(ID_BT_0 + id, x, GetRightBottomBoundary().y - btHeight * 2, 90, btHeight, tc, text, NormalFont);
 }

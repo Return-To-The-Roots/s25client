@@ -142,7 +142,7 @@ struct LuaTestsFixture{
         // For consistent results
         doInitGameRNG(0);
 
-        world.Init(32, 32, LT_GREENLAND);
+        world.Init(MapExtent(24, 32), LT_GREENLAND);
         hqPositions.push_back(MapPoint(0, 1));
         hqPositions.push_back(MapPoint(16, 17));
         std::vector<Nation> playerNations;

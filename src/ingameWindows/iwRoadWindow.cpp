@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -30,16 +30,17 @@ iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, in
 {
     // Bau abbrechen
     ctrlButton* cancel = AddImageButton(1, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 110), _("Interrupt road building"));
+    ctrlButton* defaultBt = cancel;
 
     if(flagpossible)
     {
         // Flagge platzieren
-        AddImageButton(0, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 70), _("Erect flag"));
-        // Abbrechenbutton daneben schieben
-        cancel->Move(46, 20);
+        defaultBt = AddImageButton(0, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 70), _("Erect flag"));
+        // Abbrechen button daneben schieben
+        cancel->SetPos(DrawPoint(46, 20));
     }
 
-    VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 45);
+    VIDEODRIVER.SetMousePos(defaultBt->GetDrawPos() + DrawPoint(defaultBt->GetSize()) / 2);
 }
 
 iwRoadWindow::~iwRoadWindow()

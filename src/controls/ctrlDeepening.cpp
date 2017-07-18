@@ -24,10 +24,9 @@ class Window;
 ctrlDeepening::ctrlDeepening(Window* parent,
                              unsigned id,
                              DrawPoint pos,
-                             unsigned short width,
-                             unsigned short height,
+                             const Extent& size,
                              TextureColor tc)
-    : Window(pos, id, parent, width, height), tc(tc)
+    : Window(pos, id, parent, size), tc(tc)
 {}
 
 /**
@@ -35,19 +34,19 @@ ctrlDeepening::ctrlDeepening(Window* parent,
  */
 void ctrlDeepening::Draw_()
 {
-    Draw3D(GetDrawPos(), width_, height_, tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
     DrawContent();
 }
 
-ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, unsigned short width, unsigned short height,
+ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size,
     TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color):
-    ctrlDeepening(parent, id, pos, width, height, tc),
+    ctrlDeepening(parent, id, pos, size, tc),
     ctrlBaseText(text, color, font)
 {}
 
 Rect ctrlTextDeepening::GetBoundaryRect() const
 {
-    const Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(width_, height_) / 2, text,
+    const Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(GetSize()) / 2, text,
         glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
     const Rect parentRect = ctrlDeepening::GetBoundaryRect();
     Rect result;
@@ -60,22 +59,21 @@ Rect ctrlTextDeepening::GetBoundaryRect() const
 
 void ctrlTextDeepening::DrawContent() const
 {
-    font->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 }
 
 ctrlColorDeepening::ctrlColorDeepening(Window* parent,
                                        unsigned int id,
                                        DrawPoint pos,
-                                       unsigned short width,
-                                       unsigned short height,
+                                       const Extent& size,
                                        TextureColor tc,
                                        unsigned int fillColor):
-    ctrlDeepening(parent, id, pos, width, height, tc),
+    ctrlDeepening(parent, id, pos, size, tc),
     ctrlBaseColor(fillColor)
 {
 }
 
 void ctrlColorDeepening::DrawContent() const
 {
-    DrawRectangle(GetDrawPos() + DrawPoint(3, 3), width_ - 6, height_ - 6, color_);
+    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), GetSize() - Extent(6, 6)), color_);
 }

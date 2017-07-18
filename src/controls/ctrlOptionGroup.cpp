@@ -19,11 +19,7 @@
 #include "ctrlOptionGroup.h"
 class MouseCoords;
 
-ctrlOptionGroup::ctrlOptionGroup(Window* parent,
-                                 unsigned int id,
-                                 int select_type,
-                                 bool scale)
-    : ctrlGroup(parent, id, scale),
+ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned int id, int select_type): ctrlGroup(parent, id),
       selection_(0xFFFF), select_type(select_type)
 {
 }
@@ -69,8 +65,8 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
 
     this->selection_ = selection;
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
 void ctrlOptionGroup::Msg_ButtonClick(const unsigned int ctrl_id)

@@ -62,7 +62,7 @@ public:
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
-    void Init(unsigned short width, unsigned short height, LandscapeType lt) override;
+    void Init(const MapExtent& mapSize, LandscapeType lt) override;
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 

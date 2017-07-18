@@ -25,15 +25,13 @@
 
 ctrlCheck::ctrlCheck(Window* parent,
                      unsigned int id,
-                     unsigned short x,
-                     unsigned short y,
-                     unsigned short width,
-                     unsigned short height,
+                     const DrawPoint& pos,
+                     const Extent& size,
                      TextureColor tc,
                      const std::string& text,
                      glArchivItem_Font* font,
                      bool readonly)
-    : Window(DrawPoint(x, y), id, parent, width, height),
+    : Window(pos, id, parent, size),
       tc(tc), text(text), font(font), check(false), readonly(readonly)
 {
 }
@@ -48,10 +46,10 @@ ctrlCheck::ctrlCheck(Window* parent,
 
 bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(!readonly && IsPointInRect(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(!readonly && IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         check = !check;
-        parent_->Msg_CheckboxChange(GetID(), check);
+        GetParent()->Msg_CheckboxChange(GetID(), check);
         return true;
     }
 
@@ -64,36 +62,35 @@ bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
 void ctrlCheck::Draw_()
 {
     const unsigned short boxSize = 20;
-    short spacing = (height_ - boxSize) / 2;
+    short spacing = (GetSize().y - boxSize) / 2;
     if(spacing < 0)
         spacing = 0;
-    DrawPoint drawPos = GetDrawPos();
-    unsigned short curWidth = width_;
+    Rect drawRect = GetDrawRect();
     const bool drawText = font && !text.empty();
     if(!drawText)
     {
         // If we draw only the check mark, draw surrounding box smaller and center checkbox
-        curWidth = boxSize + 2 * spacing;
-        drawPos.x += (width_ - curWidth)  / 2;
+        drawRect.setSize(Extent(boxSize + 2 * spacing, drawRect.getSize().y));
+        drawRect.move(DrawPoint((GetSize().x - drawRect.getSize().x)  / 2, 0));
     }
-    short boxStartOffsetX = curWidth - spacing - boxSize;
+    short boxStartOffsetX = drawRect.getSize().x - spacing - boxSize;
     if(boxStartOffsetX < 0)
         boxStartOffsetX = 0;
 
-    Draw3D(drawPos, curWidth, height_, tc, 2);
+    Draw3D(drawRect, tc, 2);
 
     if(drawText)
     {
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawPos + DrawPoint(4, height_ / 2), text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0, availableWidth);
+        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0, availableWidth);
     }
 
-    DrawPoint boxPos = drawPos + DrawPoint(boxStartOffsetX, spacing);
+    DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);
 
     if(!readonly)
-        Draw3D(boxPos, boxSize, boxSize, tc, 2);
+        Draw3D(Rect(boxPos, boxSize, boxSize), tc, 2);
 
     if(check)
         LOADER.GetImageN("io", 32)->Draw(boxPos + DrawPoint(boxSize, boxSize) / 2);

@@ -28,7 +28,7 @@ struct KeyEvent;
 class ctrlEdit : public Window
 {
     public:
-        ctrlEdit(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
+        ctrlEdit(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
         /// setzt den Text.
         void SetText(const std::string& text);
         void SetText(const unsigned int text);

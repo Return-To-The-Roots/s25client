@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,7 +33,7 @@
 iwPleaseWait::iwPleaseWait() : IngameWindow(CGI_PLEASEWAIT, IngameWindow::posLastOrCenter, 300, 60, _("Please wait..."), LOADER.GetImageN("resource", 41), true, false)
 {
     GAMEMANAGER.SetCursor(CURSOR_MOON);
-    AddText(0, GetWidth() / 2, GetHeight() / 2, _("Please wait..."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, NormalFont);
+    AddText(0, GetSize().x / 2, GetSize().y / 2, _("Please wait..."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, NormalFont);
 }
 
 iwPleaseWait::~iwPleaseWait()

@@ -110,9 +110,9 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
             GetAnimationManager().finishElementAnimations(ID_btAnimateRepeat, false);
             DrawPoint startPos(btAniBg->GetPos());
             startPos.y += 5;
-            btAni->Move(startPos);
+            btAni->SetPos(startPos);
             DrawPoint endPos(startPos);
-            endPos.x += btAniBg->GetWidth() - btAni->GetWidth();
+            endPos.x += btAniBg->GetSize().x - btAni->GetSize().x;
             Animation::RepeatType repeat = Animation::RPT_None;
             if(ctrl_id == ID_btAnimateOscillate)
                 repeat = Animation::RPT_Oscillate;

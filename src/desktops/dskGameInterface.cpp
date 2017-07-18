@@ -90,7 +90,7 @@
 dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gameClient(GAMECLIENT),
     worldViewer(gameClient.GetPlayerId(), world),
-    gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight()),
+    gwv(worldViewer, Point<int>(0,0), VIDEODRIVER.GetScreenSize()),
     cbb(LOADER.GetPaletteN("pal5")),
     actionwindow(NULL), roadwindow(NULL),
     selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
@@ -174,34 +174,39 @@ void dskGameInterface::SettingsChanged()
 {
 }
 
-void dskGameInterface::Resize(unsigned short width, unsigned short height)
+void dskGameInterface::Resize(const Extent& newSize)
 {
-    Window::Resize(width, height);
+    Window::Resize(newSize);
 
     // recreate borders
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
-    cbb.buildBorder(width, height, borders);
+    cbb.buildBorder(newSize.x, newSize.y, borders);
 
     // move buttons
-    int barx = (width - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44;
-    int bary = height - LOADER.GetImageN("resource", 29)->getHeight() + 4;
+    DrawPoint barPos((newSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
+        newSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
     ctrlImageButton* button = GetCtrl<ctrlImageButton>(0);
-    button->Move(barx, bary, true);
+    button->SetPos(barPos);
 
+    barPos.x += 37;
     button = GetCtrl<ctrlImageButton>(1);
-    button->Move(barx + 37, bary, true);
+    button->SetPos(barPos);
 
+    barPos.x += 37;
     button = GetCtrl<ctrlImageButton>(2);
-    button->Move(barx + 37 * 2, bary, true);
+    button->SetPos(barPos);
 
+    barPos.x += 37;
     button = GetCtrl<ctrlImageButton>(3);
-    button->Move(barx + 37 * 3, bary, true);
-    ctrlText* text = GetCtrl<ctrlText>(4);
-    text->Move(barx + 37 * 3 + 18, bary + 24);
+    button->SetPos(barPos);
 
-    gwv.Resize(width, height);
+    barPos += DrawPoint(18, 24);
+    ctrlText* text = GetCtrl<ctrlText>(4);
+    text->SetPos(barPos);
+
+    gwv.Resize(newSize);
 }
 
 void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -249,7 +254,7 @@ void dskGameInterface::Msg_PaintBefore()
     imgFigLeftTop.Draw(figPadding);
     imgFigRightTop.Draw(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
     imgFigLeftBot.Draw(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
-    imgFigRightBot.Draw(screenSize - figPadding - imgFigRightBot.GetSize());
+    imgFigRightBot.Draw(screenSize - figPadding - DrawPoint(imgFigRightBot.GetSize()));
 
     glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
     imgButtonBar.Draw(DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
@@ -358,8 +363,10 @@ void dskGameInterface::Msg_PaintAfter()
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.x, mc.y, VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-            VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4, 37 * 4, 32 * 4))
+    DrawPoint btOrig(VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+        VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    Extent btSize = Extent(37, 32) * 4u;
+    if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
         return false;
 
     // Start scrolling also on Ctrl + left click
@@ -837,7 +844,7 @@ void dskGameInterface::Run()
     // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
     if(gameClient.IsPaused())
     {
-        DrawRectangle(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), COLOR_SHADOW);
+        DrawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()), COLOR_SHADOW);
     }
 
     messenger.Draw();
@@ -854,7 +861,7 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
         worldViewer.RemoveVisualRoad(road.start, road.route);
     else {
         road.route.clear();
-        RTTR_Assert(selected.x < width_ && selected.y < height_);
+        RTTR_Assert(selected.x < GetSize().x && selected.y < GetSize().y);
         road.start = road.point = selected;
     }
 }

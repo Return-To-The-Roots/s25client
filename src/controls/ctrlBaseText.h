@@ -24,26 +24,22 @@
 
 class glArchivItem_Font;
 
-/// Basisklasse für Controls mit Texten wie auch Buttons, damit diese alle einheitlich verändert werden können
+/// Base class for controls containing a text
 class ctrlBaseText
 {
-    public:
+public:
+    ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
 
-        ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
+    void SetText(const std::string& text);
+    const std::string& GetText() const { return text; }
+    void SetFont(glArchivItem_Font* font);
+    void SetTextColor(unsigned color) { this->color_ = color; }
+    unsigned GetTextColor(unsigned color) const { return color_; }
 
-        void SetText(const std::string& text);
-        const std::string& GetText() const { return text; }
-        /// Setzt Schriftart
-        void SetFont(glArchivItem_Font* font);
-        /// Setzt Textfarbe
-        void SetTextColor(unsigned color) { this->color_ = color; }
-        unsigned GetTextColor(unsigned color) const { return color_; }
-
-
-    protected:
-        std::string text;
-        unsigned color_;
-        glArchivItem_Font* font;
+protected:
+    std::string text;
+    unsigned color_;
+    glArchivItem_Font* font;
 };
 
 #endif // ctrlBaseText_h__

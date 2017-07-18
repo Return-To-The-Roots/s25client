@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -44,11 +44,6 @@ class IngameWindow : public Window
             const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true, Window* parent = NULL);
         ~IngameWindow() override;
 
-        /// setzt die Fenster-ID.
-        void SetID(unsigned int id) { this->id_ = id; }
-        /// liefert die Fenster-ID.
-        unsigned int GetID() const { return id_; }
-
         /// setzt den Hintergrund.
         void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
         /// liefert den Hintergrund.
@@ -59,19 +54,13 @@ class IngameWindow : public Window
         /// liefert den Fenstertitel.
         const std::string& GetTitle() const { return title_; }
 
-        void Resize(unsigned short width, unsigned short height) override;
-        /// Set the height of the (expanded) content area
-        void SetIwHeight(unsigned short height);
-        /// Get the expanded content area height
-        unsigned short GetIwHeight() const;
-        /// Set the content area width
-        void SetIwWidth(unsigned short width);
-        /// Get the content area width
-        unsigned short GetIwWidth() const;
-        /// Get the right position of the content end
-        unsigned short GetIwRightBoundary() const;
-        /// Get the bottom position of the content end
-        unsigned short GetIwBottomBoundary() const;
+        void Resize(const Extent& newSize) override;
+        /// Set the size of the (expanded) content area
+        void SetIwSize(const Extent& newSize);
+        /// Get the size of the (expanded) content area
+        Extent GetIwSize() const;
+        /// Get the current lower right corner of the content area
+        DrawPoint GetRightBottomBoundary();
 
         /// merkt das Fenster zum Schließen vor.
         void Close(bool closeme = true) { this->closeme = closeme; }
@@ -119,12 +108,12 @@ class IngameWindow : public Window
         boost::array<ButtonState, 2> button_state;
 
         /// Offset from left and top to actual content
-        DrawPoint contentOffset;
+        Extent contentOffset;
         /// Offset from content to right and bottom boundary
-        DrawPoint contentOffsetEnd;
+        Extent contentOffsetEnd;
 
-        Rect GetLeftButtonRect()  const { return Rect(pos_, 16, 16); }
-        Rect GetRightButtonRect() const { return Rect(static_cast<unsigned short>(pos_.x + width_ - 16), pos_.y, 16, 16); }
+        Rect GetLeftButtonRect()  const;
+        Rect GetRightButtonRect() const;
 
     private:
         bool isModal_;

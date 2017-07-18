@@ -60,7 +60,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Optionen"
     AddText(1, 400, 10, _("Options"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK);
 
     AddTextButton(14, 520, 550, 200, 22, TC_GREEN2, _("Addons"), NormalFont);
 
@@ -71,9 +71,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // "Sound"
     optiongroup->AddTextButton(13, 520, 510, 200, 22, TC_GREEN2, _("Sound/Music"), NormalFont);
 
-    ctrlGroup* groupAllgemein = AddGroup(21, scale_);
-    ctrlGroup* groupGrafik = AddGroup(22, scale_);
-    ctrlGroup* groupSound = AddGroup(23, scale_);
+    ctrlGroup* groupAllgemein = AddGroup(21);
+    ctrlGroup* groupGrafik = AddGroup(22);
+    ctrlGroup* groupSound = AddGroup(23);
     ctrlComboBox* combo;
 
     // Allgemein
@@ -91,7 +91,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     bool selected = false;
     for(unsigned i = 0 ; i < LANGUAGES.getCount(); ++i)
     {
-        const Languages::Language l = LANGUAGES.getLanguage(i);
+        const Language& l = LANGUAGES.getLanguage(i);
 
         combo->AddString(_(l.name));
         if(SETTINGS.language.language == l.code )
@@ -110,7 +110,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // IPv4/6
     groupAllgemein->AddText(300, 80, 230, _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
 
-    ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(301, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* ipv6 = groupAllgemein->AddOptionGroup(301, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(302, 480, 225, 190, 22, TC_GREY, _("IPv6"), NormalFont);
     ipv6->AddTextButton(303, 280, 225, 190, 22, TC_GREY, _("IPv4"), NormalFont);
     ipv6->SetSelection( (SETTINGS.server.ipv6 ? 302 : 303) );
@@ -145,7 +145,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // }
 
     groupAllgemein->AddText(  70,  80, 360, _("Submit debug data:"), COLOR_YELLOW, 0, NormalFont);
-    optiongroup = groupAllgemein->AddOptionGroup(71, ctrlOptionGroup::CHECK, scale_);
+    optiongroup = groupAllgemein->AddOptionGroup(71, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(72, 480, 355, 190, 22, TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(73, 280, 355, 190, 22, TC_GREY, _("Off"), NormalFont);
 
@@ -153,13 +153,13 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // qx:upnp switch
     groupAllgemein->AddText(9999, 80, 390, _("Use UPnP"), COLOR_YELLOW, 0, NormalFont);
-    ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(9998, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* upnp = groupAllgemein->AddOptionGroup(9998, ctrlOptionGroup::CHECK);
     upnp->AddTextButton(10002, 280, 385, 190, 22, TC_GREY, _("Off"), NormalFont);
     upnp->AddTextButton(10001, 480, 385, 190, 22, TC_GREY, _("On"), NormalFont);
     upnp->SetSelection( (SETTINGS.global.use_upnp == 1) ? 10001 : 10002 );
 
     groupAllgemein->AddText(10100, 80, 420, _("Smart Cursor"), COLOR_YELLOW, 0, NormalFont);
-    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* smartCursor = groupAllgemein->AddOptionGroup(10101, ctrlOptionGroup::CHECK);
     smartCursor->AddTextButton(10103, 280, 415, 190, 22, TC_GREY, _("Off"), NormalFont,
         _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
     smartCursor->AddTextButton(10102, 480, 415, 190, 22, TC_GREY, _("On"), NormalFont,
@@ -172,7 +172,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Vollbild"
     groupGrafik->AddText(  46,  80, 130, _("Mode:"), COLOR_YELLOW, 0, NormalFont);
-    optiongroup = groupGrafik->AddOptionGroup(47, ctrlOptionGroup::CHECK, scale_);
+    optiongroup = groupGrafik->AddOptionGroup(47, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(48, 480, 125, 190, 22, TC_GREY, _("Fullscreen"), NormalFont);
     optiongroup->AddTextButton(49, 280, 125, 190, 22, TC_GREY, _("Windowed"), NormalFont);
 
@@ -182,7 +182,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "VBO"
     groupGrafik->AddText(  54,  80, 230, _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
-    optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK, scale_);
+    optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK);
 
     if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
         optiongroup->AddText(  56, 280, 230, _("not supported"), COLOR_YELLOW, 0, NormalFont);
@@ -204,7 +204,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     }
 
     groupGrafik->AddText(  74,  80, 320, _("Optimized Textures:"), COLOR_YELLOW, 0, NormalFont);
-    optiongroup = groupGrafik->AddOptionGroup(75, ctrlOptionGroup::CHECK, scale_);
+    optiongroup = groupGrafik->AddOptionGroup(75, ctrlOptionGroup::CHECK);
 
     optiongroup->AddTextButton(76, 280, 315, 190, 22, TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(77, 480, 315, 190, 22, TC_GREY, _("Off"), NormalFont);
@@ -225,7 +225,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // Musik
     groupSound->AddText(  62,  80, 80, _("Music"), COLOR_YELLOW, 0, NormalFont);
-    optiongroup = groupSound->AddOptionGroup(63, ctrlOptionGroup::CHECK, scale_);
+    optiongroup = groupSound->AddOptionGroup(63, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(64, 280, 75, 90, 22, TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(65, 380, 75, 90, 22, TC_GREY, _("Off"), NormalFont);
 
@@ -234,7 +234,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // Effekte
     groupSound->AddText(  66,  80, 130, _("Effects"), COLOR_YELLOW, 0, NormalFont);
-    optiongroup = groupSound->AddOptionGroup(67, ctrlOptionGroup::CHECK, scale_);
+    optiongroup = groupSound->AddOptionGroup(67, ctrlOptionGroup::CHECK);
     optiongroup->AddTextButton(68, 280, 125, 90, 22, TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(69, 380, 125, 90, 22, TC_GREY, _("Off"), NormalFont);
 

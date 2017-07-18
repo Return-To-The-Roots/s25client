@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -190,7 +190,7 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
     SetPort(port);
     GetCtrl<ctrlOptionGroup>(12)->SetSelection(isIPv6 ? 1 : 0, true);
     ctrlTextButton* btConnect = GetCtrl<ctrlTextButton>(7);
-    VIDEODRIVER.SetMousePos(btConnect->GetX() + btConnect->GetWidth() / 2, btConnect->GetY());
+    VIDEODRIVER.SetMousePos(btConnect->GetDrawPos() + DrawPoint(btConnect->GetSize()) / 2);
     if(!hasPwd)
         Msg_ButtonClick(7);
 }

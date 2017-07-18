@@ -23,30 +23,16 @@
 #include <string>
 #include <vector>
 
+struct Language
+{
+    Language(const std::string& name, const std::string& code): name(name), code(code) {}
+
+    std::string name;
+    std::string code;  // "normaler" locale-code
+};
+
 class Languages: public Singleton<Languages>
 {
-    public:
-        struct Language
-        {
-            Language(const std::string& name, const std::string& code) : name(name), code(code) {}
-
-            static bool compare(const Language& o1, const Language& o2)
-            {
-                if (o1.name < o2.name)
-                    return true;
-
-                if (o1.name == o2.name)
-                {
-                    if (o1.code < o2.code)
-                        return true;
-                }
-                return false;
-            }
-
-            std::string name;
-            std::string code;  // "normaler" locale-code
-        };
-
     public:
         Languages() : loaded(false) {}
 
@@ -56,10 +42,9 @@ class Languages: public Singleton<Languages>
         unsigned int getCount();
         const Language& getLanguage(unsigned int i);
 
-    protected:
+    private:
         void loadLanguages();
 
-    private:
         std::vector<Language> languages;
         bool loaded;
 };

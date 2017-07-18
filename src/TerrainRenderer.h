@@ -37,7 +37,7 @@ public:
     ~TerrainRenderer();
 
     /// Generates data structures (uninitialized)
-    void Init(MapCoord width, MapCoord height);
+    void Init(const MapExtent& size);
     /// Generate OpenGL structs and init data (also calls Init)
     void GenerateOpenGL(const GameWorldViewer& gwv);
 
@@ -119,7 +119,7 @@ private:
     };
 
     /// Size of the map
-    MapCoord width_, height_;
+    MapExtent size_;
     /// Map sized array of vertex related data
     std::vector<Vertex> vertices;
     /// Map sized array with terrain indices/textures (bottom, bottom right of node)
@@ -139,7 +139,7 @@ private:
     typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
 
     /// Returns the index of a vertex. Used to access vertices and borders
-    unsigned GetVertexIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(width_) + static_cast<unsigned>(pt.x); }
+    unsigned GetVertexIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x); }
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
     unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node
@@ -159,13 +159,13 @@ private:
     void UpdateBorderVertex(const MapPoint pt);
 
     /// Fills OGL vertex data from map vertex data (updateVBO = true updates also VBO if used)
-    void UpdateTrianglePos(const MapPoint pt, const bool updateVBO);
-    void UpdateTriangleColor(const MapPoint pt, const bool updateVBO);
-    void UpdateTriangleTerrain(const MapPoint pt, const bool updateVBO);
+    void UpdateTrianglePos(const MapPoint pt, bool updateVBO);
+    void UpdateTriangleColor(const MapPoint pt, bool updateVBO);
+    void UpdateTriangleTerrain(const MapPoint pt, bool updateVBO);
     /// Fills OGL border vertex data from map vertex data
-    void UpdateBorderTrianglePos(const MapPoint pt, const bool updateVBO);
-    void UpdateBorderTriangleColor(const MapPoint pt, const bool updateVBO);
-    void UpdateBorderTriangleTerrain(const MapPoint pt, const bool updateVBO);
+    void UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO);
+    void UpdateBorderTriangleColor(const MapPoint pt, bool updateVBO);
+    void UpdateBorderTriangleTerrain(const MapPoint pt, bool updateVBO);
 
     /// liefert den Vertex-Farbwert an der Stelle X,Y
     float GetColor(const MapPoint pt) const { return GetVertex(pt).color; }

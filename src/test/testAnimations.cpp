@@ -38,8 +38,8 @@ namespace{
 
     struct TestWindow: public Window
     {
-        TestWindow(const DrawPoint& position, unsigned id, Window* parent, unsigned short width, unsigned short height):
-            Window(position, id, parent, width, height)
+        TestWindow(const DrawPoint& position, unsigned id, Window* parent, const Extent& size):
+            Window(position, id, parent, size)
         {}
     protected:
         void Draw_() override{}
@@ -53,7 +53,7 @@ namespace{
         bool animFinished;
         double lastNextFramepartTime;
         unsigned lastFrame;
-        WindowFixture(): wnd(DrawPoint(0, 0), 0, NULL, 800, 600), animMgr(wnd.GetAnimationManager()), animFinished(false)
+        WindowFixture(): wnd(DrawPoint(0, 0), 0, NULL, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
         {
             bt = wnd.AddTextButton(0, 10, 20, 100, 20, TC_RED1, "Test", NormalFont);
             bt2 = wnd.AddTextButton(1, 10, 40, 100, 20, TC_RED1, "Test", NormalFont);
@@ -587,7 +587,7 @@ BOOST_AUTO_TEST_CASE(LinearInterpolationFactor)
 
 BOOST_AUTO_TEST_CASE(MoveAni)
 {
-    bt->Move(DrawPoint(100, 200));
+    bt->SetPos(DrawPoint(100, 200));
     DrawPoint targetPt(110, 300);
     animMgr.addAnimation(new MoveAnimation(bt, targetPt, 500, Animation::RPT_None));
     // Init with any start time
@@ -601,7 +601,7 @@ BOOST_AUTO_TEST_CASE(MoveAni)
     BOOST_REQUIRE_EQUAL(bt->GetPos(), targetPt);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
 
-    bt->Move(DrawPoint(100, 200));
+    bt->SetPos(DrawPoint(100, 200));
     unsigned animId = animMgr.addAnimation(new MoveAnimation(bt, targetPt, 500, Animation::RPT_Repeat));
     unsigned frameRate = animMgr.getAnimation(animId)->getFrameRate();
     animMgr.update(time += 1);
@@ -633,7 +633,7 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     BOOST_REQUIRE_EQUAL(bt->GetPos(), btReference->GetPos());
 
     // Restart
-    bt->Move(DrawPoint(10, 20));
+    bt->SetPos(DrawPoint(10, 20));
     dsk->GetAnimationManager().addAnimation(new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RPT_None));
     video->tickCount_ += 1;
     dsk->Msg_PaintBefore();

@@ -130,7 +130,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         // Enable lobby chat when we are logged in
         if(LOBBYCLIENT.IsLoggedIn())
         {
-            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK, scale_);
+            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK);
             chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 178, 22, TC_GREEN2, _("Game Chat"), NormalFont);
             chatTab->AddTextButton(TAB_LOBBYCHAT, 202, 320, 178, 22, TC_GREEN2, _("Lobby Chat"), NormalFont);
             gameChat  = AddChatCtrl(ID_GAME_CHAT,  20, 345, 360, 218 - 25, TC_GREY, NormalFont);
@@ -222,7 +222,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
             // verschieben, da diese Position sonst skaliert wird!
             ctrlText* text = AddText(71, 670, 0, _("Map: ") +  GAMECLIENT.GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
-            text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
+            text->SetPos(DrawPoint(text->GetDrawPos().x, preview->GetDrawPos().y + preview->GetMapArea().bottom + 10));
         }
     }
 
@@ -266,16 +266,20 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  */
-void dskHostGame::Resize(unsigned short width, unsigned short height)
+void dskHostGame::Resize(const Extent& newSize)
 {
-    Window::Resize(width, height);
+    Window::Resize(newSize);
 
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
     ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
     ctrlText* text = GetCtrl<ctrlText>(71);
     if(preview && text)
-        text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
+    {
+        DrawPoint txtPos = text->GetPos();
+        txtPos.y = preview->GetPos().y + preview->GetMapArea().bottom + 10;
+        text->SetPos(txtPos);
+    }
 }
 
 void dskHostGame::SetActive(bool activate /*= true*/)
@@ -298,7 +302,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     // Alle Controls erstmal zerstören (die ganze Gruppe)
     DeleteCtrl(58 - row);
     // und neu erzeugen
-    ctrlGroup* group = AddGroup(58 - row, scale_);
+    ctrlGroup* group = AddGroup(58 - row);
 
     std::string name;
     // Name
@@ -422,7 +426,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         ChangeReady(row, player.isReady);
         ChangeColor(row, player.color);
     }
-    group->SetActive(this->active_);
+    group->SetActive(IsActive());
 }
 
 /**

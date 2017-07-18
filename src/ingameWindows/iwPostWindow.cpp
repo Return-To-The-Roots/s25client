@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -246,15 +246,10 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 // Zeigt Nachricht an, passt Steuerelemente an
 void iwPostWindow::DisplayPostMessage()
 {
-    const unsigned xImgBottomCenter = 127;
-    const unsigned yImgBottomCenter = 210;
-
+    const DrawPoint imgBottomCenter(127, 210);
     // todo: koordinaten abschmecken
-    const unsigned xTextTopCenter = 127;
-    const unsigned yTextTopCenter = 110;
-
-    const unsigned xTextCenter = 126;
-    const unsigned yTextCenter = 151;
+    const DrawPoint textTopCenter(127, 110);
+    const DrawPoint textCenter(126, 151);
 
     // Hide everything
     GetCtrl<Window>(ID_IMG)->SetVisible(false);
@@ -270,7 +265,7 @@ void iwPostWindow::DisplayPostMessage()
     if (size == 0)
     {
         SetMessageText(_("No letters!"));
-        GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
+        GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
         curMsg = NULL;
         return;
     }
@@ -295,8 +290,7 @@ void iwPostWindow::DisplayPostMessage()
     {
         // We have an image, show it centered
         GetCtrl<ctrlImage>(ID_IMG)->SetImage(img);
-        GetCtrl<Window>(ID_IMG)->Move(xImgBottomCenter + img->getNx() - img->getWidth() / 2,
-            yImgBottomCenter + img->getNy() - img->getHeight());
+        GetCtrl<Window>(ID_IMG)->SetPos(imgBottomCenter + img->GetOrigin() - DrawPoint(img->getWidth() / 2, img->getHeight()));
 
         GetCtrl<Window>(ID_IMG)->SetVisible(true);
     }
@@ -307,9 +301,9 @@ void iwPostWindow::DisplayPostMessage()
     }
     // Place text at top or center depending on whether we have an img or the acceptButton
     if(img || GetCtrl<Window>(ID_ACCEPT)->IsVisible())
-        GetCtrl<Window>(ID_TEXT)->Move(xTextTopCenter, yTextTopCenter);
+        GetCtrl<Window>(ID_TEXT)->SetPos(textTopCenter);
     else
-        GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
+        GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
     // If message contains valid position, allow going to it
     if(curMsg->GetPos().isValid())
         GetCtrl<Window>(ID_GOTO)->SetVisible(true);

@@ -75,8 +75,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 void GameWorld::Serialize(SerializedGameData& sgd) const
 {
     // Headinformationen
-    sgd.PushUnsignedShort(GetWidth());
-    sgd.PushUnsignedShort(GetHeight());
+    sgd.PushPoint(GetSize());
     sgd.PushUnsignedChar(static_cast<unsigned char>(GetLandscapeType()));
 
     // Obj-ID-Counter reinschreiben
@@ -102,12 +101,11 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
 void GameWorld::Deserialize(SerializedGameData& sgd)
 {
     // Headinformationen
-    const unsigned short width = sgd.PopUnsignedShort();
-    const unsigned short height = sgd.PopUnsignedShort();
+    const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
     const LandscapeType lt = LandscapeType(sgd.PopUnsignedChar());
 
     // Initialisierungen
-    Init(width, height, lt);
+    Init(size, lt);
 
     // Obj-ID-Counter setzen
     GameObject::SetObjIDCounter(sgd.PopUnsignedInt());

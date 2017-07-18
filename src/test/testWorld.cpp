@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
 namespace{
     struct UninitializedWorldCreator
     {
-        UninitializedWorldCreator(unsigned w, unsigned h, unsigned numPlayers){}
+        UninitializedWorldCreator(const MapExtent& size, unsigned numPlayers){}
         bool operator()(GameWorldBase& world){ return true; }
     };
 
@@ -69,7 +69,7 @@ namespace{
         std::vector<MapPoint> hqs;
         const unsigned numPlayers_;
 
-        LoadWorldFromFileCreator(unsigned w, unsigned h, unsigned numPlayers): numPlayers_(numPlayers){}
+        LoadWorldFromFileCreator(const MapExtent& size, unsigned numPlayers): numPlayers_(numPlayers){}
         bool operator()(GameWorldBase& world)
         {
             bfs::ifstream mapFile(testMapPath, std::ios::binary);
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 
 BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, worldCreator.map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y));
     }
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
 {
     // Init BQ
     world.InitAfterLoad();
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         BuildingQuality s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;

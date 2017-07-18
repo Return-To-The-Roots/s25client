@@ -25,14 +25,14 @@ class MouseCoords;
 class ctrlScrollBar : public Window
 {
     public:
-        ctrlScrollBar(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, unsigned short button_height, TextureColor tc, unsigned short pagesize);
-        void Resize(unsigned short width, unsigned short height) override;
-        void SetPos(unsigned short scroll_pos);
+        ctrlScrollBar(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc, unsigned short pagesize);
+        void Resize(const Extent& newSize) override;
+        void SetScrollPos(unsigned short scroll_pos);
         void SetRange(unsigned short scroll_range);
         void SetPageSize(unsigned short pagesize);
 
         unsigned short GetPageSize() const { return pagesize; }
-        unsigned short GetPos() const { return scroll_pos; }
+        unsigned short GetScrollPos() const { return scroll_pos; }
         /// Scrolls by the given distance (less than 0 = up, else down)
         void Scroll(int distance);
 

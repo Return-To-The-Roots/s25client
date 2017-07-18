@@ -23,6 +23,8 @@
 #include "Point.h"
 #include "ctrlBaseColor.h"
 #include "ctrlBaseText.h"
+#include "ctrlBaseTooltip.h"
+#include "ctrlBaseImage.h"
 
 #include <string>
 
@@ -31,10 +33,10 @@ class glArchivItem_Bitmap;
 class glArchivItem_Font;
 
 /// Buttonklasse
-class ctrlButton : public Window
+class ctrlButton : public Window, public ctrlBaseTooltip
 {
     public:
-        ctrlButton(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height,
+        ctrlButton(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size,
                    const TextureColor tc, const std::string& tooltip);
         ~ctrlButton() override;
 
@@ -42,13 +44,6 @@ class ctrlButton : public Window
         bool GetEnabled() const { return isEnabled; }
         TextureColor GetTexture() const { return tc; }
         void SetTexture(TextureColor tc) { this->tc = tc; }
-
-        /// Setzt Tooltip
-        void SetTooltip(const std::string& tooltip) { this->tooltip_ = tooltip; }
-        /// Liefert Tooltip zurück
-        std::string GetTooltip() const { return tooltip_; }
-        /// Tauscht Tooltips
-        void SwapTooltip(ctrlButton* otherBt);
 
         void SetChecked(bool checked) { this->isChecked = checked; }
         bool GetCheck() { return isChecked; }
@@ -90,8 +85,8 @@ class ctrlTextButton : public ctrlButton, public ctrlBaseText
 {
     public:
 
-        ctrlTextButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                       unsigned short width, unsigned short height, const TextureColor tc,
+        ctrlTextButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                       const Extent& size, const TextureColor tc,
                        const std::string& text,  glArchivItem_Font* font, const std::string& tooltip);
 
     protected:
@@ -102,38 +97,16 @@ class ctrlTextButton : public ctrlButton, public ctrlBaseText
 
 
 /// Button mit einem Bild
-class ctrlImageButton : public ctrlButton
+class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
     public:
 
-        ctrlImageButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                        unsigned short width, unsigned short height, const TextureColor tc,
+        ctrlImageButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                        const Extent& size, const TextureColor tc,
                         glArchivItem_Bitmap* const image, const std::string& tooltip);
-
-    public:
-
-        /// Setzt Bild des Buttons
-        void SetImage(glArchivItem_Bitmap* image) { this->image = image; }
-        /// Tauscht Bilder
-        void SwapImage(ctrlImageButton* two) { std::swap(image, two->image); }
-        /// Gibt Bild zurück
-        glArchivItem_Bitmap* GetButtonImage() const { return image; }
-        /// Ändert Farbfilter, mit dem dieses Bild gezeichnet werden soll
-        void SetModulationColor(const unsigned modulation_color)
-        { this->modulation_color = modulation_color; }
-
-
     protected:
 
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
         void DrawContent() const override;
-
-    protected:
-
-        /// Bild
-        glArchivItem_Bitmap* image;
-        /// Farbe mit der das Bild gezeichnet werden soll
-        unsigned modulation_color;
 };
 
 /// Button mit Farbe
@@ -141,13 +114,12 @@ class ctrlColorButton : public ctrlButton, public ctrlBaseColor
 {
     public:
 
-        ctrlColorButton(Window* parent, unsigned int id, unsigned short x, unsigned short y,
-                        unsigned short width, unsigned short height, const TextureColor tc,
+        ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
+                        const Extent& size, const TextureColor tc,
                         unsigned int fillColor, const std::string& tooltip);
 
     protected:
 
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
         void DrawContent() const override;
 };
 

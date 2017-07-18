@@ -99,7 +99,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // random map settings
     AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("..."), NormalFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK);
     // "Alte"
     optiongroup->AddTextButton(0, 10,  35, 90,  22, TC_GREY, _("Old maps"), NormalFont);
     // "Neue"
@@ -185,11 +185,15 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int sel
 
                         ctrlText* text = GetCtrl<ctrlText>(12);
                         text->SetText(cvStringToUTF8(map->getHeader().getName()) );
-                        text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
+                        DrawPoint txtPos = text->GetPos();
+                        txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
+                        text->SetPos(txtPos);
 
                         text = GetCtrl<ctrlText>(13);
                         text->SetText(path);
-                        text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
+                        txtPos = text->GetPos();
+                        txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
+                        text->SetPos(txtPos);
                     }
                 }
             }

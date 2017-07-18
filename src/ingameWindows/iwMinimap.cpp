@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -44,7 +44,7 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, MINIMAP_SIZE, _("Outline map"),
         LOADER.GetImageN("resource", 41)), extended(false)
 {
-    AddCtrl(0, new ctrlIngameMinimap(this, 0, contentOffset.x, contentOffset.y, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, WINDOW_MAP_SPACE, minimap, gwv));
+    AddCtrl(0, new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     for(unsigned i = 0; i < 3; ++i)
@@ -53,31 +53,35 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     // Fenster vergrößern/verkleinern
     AddImageButton(4, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 109));
 
-    ChangeWindowSize(width_, height_);
+    Resize(GetSize());
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
-void iwMinimap::ChangeWindowSize(const unsigned short width, const unsigned short height)
+void iwMinimap::Resize(const Extent& newSize)
 {
-    Resize(width, height);
+    IngameWindow::Resize(newSize);
     ctrlIngameMinimap* im = GetCtrl<ctrlIngameMinimap>(0);
 
-    im->Resize(width, height);
+    im->Resize(newSize);
 
     // Control kürzen in der Höhe
-    im->RemoveBoundingBox(BUTTON_WIDTH * 4 + WINDOW_MAP_SPACE * 2, 0);
+    im->RemoveBoundingBox(Extent(BUTTON_WIDTH * 4 + WINDOW_MAP_SPACE * 2, 0));
 
     // Fensterbreite anpassen
-    SetIwWidth(im->GetWidth());
-    SetIwHeight(im->GetHeight() + WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_HEIGHT + BUTTON_WINDOW_SPACE);
+    SetIwSize(im->GetSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_HEIGHT + BUTTON_WINDOW_SPACE));
 
 
     // Buttonpositionen anpassen, nach unten verschieben
     for(unsigned i = 1; i < 4; ++i)
-        GetCtrl<ctrlImageButton>(i)->Move(GetCtrl<ctrlImageButton>(i)->GetX(false), GetIwBottomBoundary() - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
+    {
+        Window* ctrl = GetCtrl<ctrlImageButton>(i);
+        DrawPoint ctrlPos = ctrl->GetPos();
+        ctrlPos.y = GetRightBottomBoundary().y - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE;
+        ctrl->SetPos(ctrlPos);
+    }
 
     // Vergrößern/Verkleinern-Button nach unten rechts verschieben
-    GetCtrl<ctrlImageButton>(4)->Move(GetIwRightBoundary() - BUTTON_WIDTH - WINDOW_MAP_SPACE, GetIwBottomBoundary() - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE);
+    GetCtrl<ctrlImageButton>(4)->SetPos(GetRightBottomBoundary() - DrawPoint(BUTTON_WIDTH + WINDOW_MAP_SPACE, BUTTON_HEIGHT + BUTTON_WINDOW_SPACE));
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", extended ? 108 : 109));
@@ -95,8 +99,7 @@ void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
             // Fenster vergrößern/verkleinern
             this->extended = !extended;
 
-            ChangeWindowSize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE,
-                             extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
+            Resize(Extent::all(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE));
         } break;
     }
 }

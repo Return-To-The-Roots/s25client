@@ -18,23 +18,19 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlImage.h"
 #include "CollisionDetection.h"
-#include "WindowManager.h"
-#include "ogl/glArchivItem_Bitmap.h"
+#include "driver/src/MouseCoords.h"
 
 ctrlImage::ctrlImage(Window* parent,
                      unsigned int id,
-                     unsigned short x,
-                     unsigned short y,
+                     const DrawPoint& pos,
                      glArchivItem_Bitmap* image,
-                     const std::string& tooltip)
-    : Window(DrawPoint(x, y), id, parent),
-      image(image), tooltip(tooltip)
+                     const std::string& tooltip):
+    Window(pos, id, parent), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
 {
 }
 
 ctrlImage::~ctrlImage()
 {
-    WINDOWMANAGER.SetToolTip(this, "");
 }
 
 /**
@@ -42,21 +38,19 @@ ctrlImage::~ctrlImage()
  */
 void ctrlImage::Draw_()
 {
-    // gültiges Bild?
-    if(image)
-        image->Draw(GetDrawPos());
+    DrawImage(GetDrawPos());
 }
 
 bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
 {
-    // gültiges Bildz?
-    if(image)
+    // gültiges Bild?
+    if(GetImage())
     {
         // Jeweils Tooltip ein- und ausblenden, wenn die Maus über dem Bild ist
-        if(IsPointInRect(mc.x, mc.y, GetX() - image->getNx(), GetY() - image->getNy(), image->getWidth(), image->getHeight()))
-            WINDOWMANAGER.SetToolTip(this, tooltip_);
+        if(IsPointInRect(mc.GetPos(), Rect::move(GetImageRect(), GetDrawPos())))
+            ShowTooltip();
         else
-            WINDOWMANAGER.SetToolTip(this, "");
+            HideTooltip();
     }
 
     return false;

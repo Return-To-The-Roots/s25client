@@ -14,9 +14,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef CTRL_RECTANGLE_H_
-#define CTRL_RECTANGLE_H_
 
+#ifndef ctrlBaseColor_h__
+#define ctrlBaseColor_h__
 
 /// Base class for controls showing a color
 class ctrlBaseColor
@@ -30,5 +30,4 @@ class ctrlBaseColor
         unsigned color_;
 };
 
-
-#endif //!CTRL_RECTANGLE_H_
+#endif // ctrlBaseColor_h__

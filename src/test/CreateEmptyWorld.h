@@ -19,6 +19,7 @@
 #define CreateEmptyWorld_h__
 
 #include "gameTypes/Nation.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
 
 class GameWorldGame;
@@ -26,10 +27,10 @@ class GameWorldGame;
 /// Creates an empty world, with meadow terrain and the given number of players
 struct CreateEmptyWorld
 {
-    CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers);
+    CreateEmptyWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
 private:
-    unsigned width_, height_;
+    MapExtent size_;
     std::vector<Nation> playerNations_;
 };
 

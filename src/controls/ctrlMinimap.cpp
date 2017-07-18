@@ -22,73 +22,81 @@
 
 ctrlMinimap::ctrlMinimap( Window* parent,
                           const unsigned int id,
-                          const unsigned short x,
-                          const unsigned short y,
-                          const unsigned short width,
-                          const unsigned short height,
-                          const unsigned short padding_x,
-                          const unsigned short padding_y,
-                          const unsigned short map_width,
-                          const unsigned short map_height)
-    : Window(DrawPoint(x, y), id, parent, width, height), padding(padding_x, padding_y), mapWidth_(map_width), mapHeight_(map_height)
+                          const DrawPoint& pos,
+                          const Extent& size,
+                          const Extent& padding,
+                          const Extent& mapSize)
+    : Window(pos, id, parent, size), padding(padding), mapSize(mapSize), useBoundingBox(true)
 {
-    SetMapSize(map_width, map_height);
+    SetMapSize(mapSize);
 }
 
-/**
- *  Größe ändern
- */
-void ctrlMinimap::Resize(unsigned short width, unsigned short height)
+Rect ctrlMinimap::GetMapArea() const
 {
-    Window::Resize(width, height);
-    SetMapSize(mapWidth_, mapHeight_);
+    return Rect(DrawPoint(GetSize() - curMapSize) / 2, curMapSize);
 }
 
-void ctrlMinimap::SetMapSize(const unsigned short map_width, const unsigned short map_height)
+Rect ctrlMinimap::GetBoundaryRect() const
 {
-    this->mapWidth_ = map_width;
-    this->mapHeight_ = map_height;
+    return GetMapDrawArea();
+}
 
-    unsigned short scaled_map_width = static_cast<unsigned short>(map_width * MINIMAP_SCALE_X);
-    double x_scale = double(scaled_map_width) / double(width_ - padding.x * 2);
-    double y_scale = double(map_height) / double(height_ - padding.y * 2);
+Rect ctrlMinimap::GetMapDrawArea() const
+{
+    return Rect::move(GetMapArea(), GetDrawPos());
+}
+
+void ctrlMinimap::Resize(const Extent& newSize)
+{
+    Window::Resize(newSize);
+    SetMapSize(useBoundingBox ? mapSize : newSize);
+}
+
+void ctrlMinimap::SetMapSize(const Extent& newMapSize)
+{
+    mapSize = Extent(std::max(newMapSize.x, padding.x * 2u), std::max(newMapSize.y, padding.y * 2u));
+
+    if(!useBoundingBox)
+        return;
+
+    unsigned scaled_map_width = static_cast<unsigned>(mapSize.x * MINIMAP_SCALE_X);
+    double x_scale = double(scaled_map_width) / double(mapSize.x - padding.x * 2);
+    double y_scale = double(mapSize.y) / double(mapSize.y - padding.y * 2);
 
     bool scale_width = false;
 
     scale_width = x_scale <= y_scale;
 
-    RTTR_Assert(map_height != 0);
+    RTTR_Assert(mapSize.y != 0);
     RTTR_Assert(scaled_map_width != 0);
 
+    curMapSize = GetSize() - padding * 2u;
     if(scale_width)
-    {
-        height_show = height_ - padding.y * 2;
-        width_show = (scaled_map_width * height_show / map_height);
-    }
+        curMapSize.x = (scaled_map_width * curMapSize.y / mapSize.y);
     else
-    {
-        width_show  = width_ - padding.x * 2;
-        height_show = map_height * width_show / scaled_map_width;
-    }
+        curMapSize.y = mapSize.y * curMapSize.x / scaled_map_width;
 }
 
 DrawPoint ctrlMinimap::CalcMapCoord(MapPoint pt) const
 {
-    DrawPoint result = GetBBOffset();
-    result.x += width_show  * pt.x / mapWidth_;
-    result.y += height_show * pt.y / mapHeight_;
-
+    DrawPoint result = GetMapArea().getOrigin();
+    result += DrawPoint(curMapSize * Extent(pt) / mapSize);
     return result;
 }
 
 void ctrlMinimap::DrawMap(Minimap& map)
 {
-    // Map ansich zeichnen
-    map.Draw(GetDrawPos() + GetBBOffset(), width_show, height_show);
+    // Map an sich zeichnen
+    map.Draw(GetMapDrawArea());
 }
 
-void ctrlMinimap::RemoveBoundingBox(const unsigned short width_min, const unsigned short height_min)
+void ctrlMinimap::RemoveBoundingBox(const Extent& minSize)
 {
-    width_  = max<unsigned short>( width_show + padding.x * 2,  width_min);
-    height_ = max<unsigned short>(height_show + padding.y * 2, height_min);
+    if(!useBoundingBox)
+        return;
+    useBoundingBox = false;
+    Extent newSize = curMapSize + padding * 2u;
+    newSize = elMax(newSize, minSize);
+    padding = Extent(0, 0);
+    Resize(newSize);
 }

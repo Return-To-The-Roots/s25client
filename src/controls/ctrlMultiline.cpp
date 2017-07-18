@@ -25,13 +25,13 @@
 #include <algorithm>
 
 ctrlMultiline::ctrlMultiline(Window* parent, unsigned int id,
-                             const DrawPoint& pos, unsigned short width, unsigned short height,
+                             const DrawPoint& pos, const Extent& size,
                              TextureColor tc, glArchivItem_Font* font, unsigned format):
-    Window(pos, id, parent, width, height),
+    Window(pos, id, parent, size),
     tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
 {
     RecalcVisibleLines();
-    AddScrollBar(0, width - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, height, SCROLLBAR_WIDTH, tc, maxNumVisibleLines);
+    AddScrollBar(0, size.x - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, size.y, SCROLLBAR_WIDTH, tc, maxNumVisibleLines);
 }
 
 /**
@@ -43,8 +43,8 @@ void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool s
     RecalcWrappedLines();
 
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-    if (scroll && scrollbar->GetPos() + 1 + maxNumVisibleLines == lines.size())
-        scrollbar->SetPos(scrollbar->GetPos() + 1);
+    if (scroll && scrollbar->GetScrollPos() + 1 + maxNumVisibleLines == lines.size())
+        scrollbar->SetScrollPos(scrollbar->GetScrollPos() + 1);
 }
 
 void ctrlMultiline::Clear()
@@ -59,13 +59,13 @@ void ctrlMultiline::Clear()
 void ctrlMultiline::Draw_()
 {
     if(showBackground_)
-        Draw3D(GetDrawPos(), width_, height_, tc_, 2);
+        Draw3D(Rect(GetDrawPos(), GetSize()), tc_, 2);
 
     DrawControls();
 
     unsigned numVisibleLines = std::min<unsigned>(maxNumVisibleLines, drawLines.size());
 
-    unsigned scrollbarPos = GetCtrl<ctrlScrollBar>(0)->GetPos();
+    unsigned scrollbarPos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
     DrawPoint curPos = GetDrawPos() + DrawPoint(PADDING, PADDING);
     for(unsigned i = 0; i < numVisibleLines; ++i)
     {
@@ -76,10 +76,10 @@ void ctrlMultiline::Draw_()
 
 void ctrlMultiline::RecalcVisibleLines()
 {
-    if(GetHeight() < 2 * PADDING)
+    if(GetSize().y < 2 * PADDING)
         maxNumVisibleLines = 0;
     else
-        maxNumVisibleLines = (GetHeight() - 2 * PADDING) / font->getHeight();
+        maxNumVisibleLines = (GetSize().y - 2 * PADDING) / font->getHeight();
 }
 
 void ctrlMultiline::RecalcWrappedLines()
@@ -87,7 +87,7 @@ void ctrlMultiline::RecalcWrappedLines()
     drawLines.clear();
     cachedContentWidth = 0;
     // No space for a single line, or to narrow to even show the scrollbar -> Bail out
-    if(maxNumVisibleLines == 0 || width_ < 2 * PADDING + SCROLLBAR_WIDTH)
+    if(maxNumVisibleLines == 0 || GetSize().x < 2 * PADDING + SCROLLBAR_WIDTH)
     {
         GetCtrl<ctrlScrollBar>(0)->SetRange(0);
         return;
@@ -99,7 +99,7 @@ void ctrlMultiline::RecalcWrappedLines()
     do{
         wrapInfos.clear();
         unsigned curNumLines = 0;
-        unsigned maxTextWidth = width_ - 2 * PADDING;
+        unsigned maxTextWidth = GetSize().x - 2 * PADDING;
         if(needScrollBar)
             maxTextWidth -= SCROLLBAR_WIDTH;
         for(unsigned i = 0; i < lines.size(); i++)
@@ -151,7 +151,8 @@ bool ctrlMultiline::Msg_LeftUp(const MouseCoords& mc)
 }
 bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.x, mc.y, GetX() + PADDING, GetY() + PADDING, width_ - 2 * PADDING, height_ - 2 * PADDING))
+    const Extent padding(PADDING, PADDING);
+    if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(padding), GetSize() - padding * 2u)))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
@@ -164,7 +165,8 @@ bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
 
 bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.x, mc.y, GetX() + PADDING, GetY() + PADDING, width_ - 2 * PADDING, height_ - 2 * PADDING))
+    const Extent padding(PADDING, PADDING);
+    if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos() + DrawPoint(padding), GetSize() - padding * 2u)))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);
@@ -179,23 +181,23 @@ bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
     return GetCtrl<Window>(0)->Msg_MouseMove(mc);
 }
 
-void ctrlMultiline::Resize(unsigned short width, unsigned short height)
+void ctrlMultiline::Resize(const Extent& newSize)
 {
-    const Point<unsigned short> oldSize(GetWidth(), GetHeight());
+    const Extent oldSize(GetSize());
     const unsigned oldMaxNumVisLines = maxNumVisibleLines;
-    Window::Resize(width, height);
+    Window::Resize(newSize);
 
     RecalcVisibleLines();
     ctrlScrollBar* scrollBar = GetCtrl<ctrlScrollBar>(0);
     scrollBar->SetPageSize(maxNumVisibleLines);
-    scrollBar->SetHeight(GetHeight());
-    scrollBar->Move(width - SCROLLBAR_WIDTH, 0);
+    scrollBar->SetHeight(GetSize().y);
+    scrollBar->SetPos(DrawPoint(GetSize().y - SCROLLBAR_WIDTH, 0));
     // Recalc only if:
     // - we increased the size or decreased beyond content width
     // - scrollbar requirement has changed (e.g. now need one but did not need it before)
     const bool oldNeedScrollbar = oldMaxNumVisLines < drawLines.size();
     const bool newNeedScrollbar = maxNumVisibleLines < drawLines.size();
-    if(oldNeedScrollbar != newNeedScrollbar || GetWidth() > oldSize.x || GetWidth() < GetContentWidth())
+    if(oldNeedScrollbar != newNeedScrollbar || GetSize().x > oldSize.x || GetSize().x < GetContentWidth())
         RecalcWrappedLines();
 }
 
@@ -214,9 +216,9 @@ void ctrlMultiline::SetNumVisibleLines(unsigned numLines)
     SetHeight(numLines * font->getHeight() + 2 * PADDING);
 }
 
-unsigned ctrlMultiline::GetContentHeight() const
+Extent ctrlMultiline::GetContentSize() const
 {
-    return std::min<unsigned>(GetHeight(), drawLines.size() * font->getHeight() + 2 * PADDING);
+    return Extent(GetContentWidth(), std::min(GetSize().y, drawLines.size() * font->getHeight() + 2u * PADDING));
 }
 
 unsigned ctrlMultiline::GetContentWidth() const
@@ -234,10 +236,10 @@ unsigned ctrlMultiline::GetContentWidth() const
         if(curWidth > maxWidth)
         {
             maxWidth = curWidth;
-            if(maxWidth >= GetWidth())
-                return GetWidth();
+            if(maxWidth >= GetSize().x)
+                return GetSize().x;
         }
     }
-    cachedContentWidth = std::min<unsigned>(GetWidth(), maxWidth);
+    cachedContentWidth = std::min<unsigned>(GetSize().x, maxWidth);
     return cachedContentWidth;
 }

@@ -67,7 +67,7 @@ void ctrlTimer::Msg_PaintBefore()
     // Bei Timeout weiterschalten
     if(VIDEODRIVER.GetTickCount() - timer > timeout)
     {
-        parent_->Msg_Timer(GetID());
+        GetParent()->Msg_Timer(GetID());
 
         if (timer != 0)
         {

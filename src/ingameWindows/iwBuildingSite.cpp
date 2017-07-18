@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -80,7 +80,7 @@ void iwBuildingSite::Msg_PaintBefore()
 void iwBuildingSite::Msg_PaintAfter()
 {
     // Baukosten zeichnen
-    DrawPoint curPos = GetDrawPos() + DrawPoint(width_ / 2, 60);
+    DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
         unsigned int wares_count = 0;
@@ -105,7 +105,7 @@ void iwBuildingSite::Msg_PaintAfter()
 
         // "Schwarzer Rahmen"
         DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-        DrawRectangle(waresPos, 24 * wares_count, 24, 0x80000000);
+        DrawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
         waresPos += DrawPoint(12, 12);
 
         // Die Waren

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,14 +28,11 @@ class iwMinimap : public IngameWindow
         /// Fenster vergrößert?
         bool extended;
     private:
-
-        /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
-        void ChangeWindowSize(const unsigned short width, const unsigned short height);
-
         void Msg_ButtonClick(const unsigned ctrl_id) override;
 
     public:
         iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);
+        void Resize(const Extent& newSize) override;
 };
 
 

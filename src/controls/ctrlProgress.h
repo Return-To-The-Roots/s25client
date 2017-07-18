@@ -20,30 +20,28 @@
 #pragma once
 
 #include "Window.h"
+#include "controls/ctrlBaseTooltip.h"
 class MouseCoords;
 
-class ctrlProgress : public Window
+class ctrlProgress : public Window, public ctrlBaseTooltip
 {
     public:
         ctrlProgress(Window* parent,
                      const unsigned int id,
-                     const unsigned short x,
-                     const unsigned short y,
-                     const unsigned short width,
-                     const unsigned short height,
+                     const DrawPoint& pos,
+                     const Extent& size,
                      const TextureColor tc,
                      unsigned short button_minus,
                      unsigned short button_plus,
                      const unsigned short maximum,
-                     const unsigned short x_padding,
-                     const unsigned short y_padding,
+                     const Extent& padding,
                      const unsigned int force_color,
                      const std::string& tooltip,
                      const std::string& button_minus_tooltip = NULL,
                      const std::string& button_plus_tooltip = NULL,
                      unsigned short* const write_val = NULL);
 
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         void SetPosition(unsigned short position);
         const unsigned short& GetPosition() const { return position; }
 
@@ -64,7 +62,7 @@ class ctrlProgress : public Window
         unsigned short maximum;
 
         // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
-        DrawPoint padding;
+        Extent padding_;
 
         /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
         unsigned int force_color;

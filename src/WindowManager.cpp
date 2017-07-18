@@ -269,7 +269,7 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
         Rect window_rect = (*it)->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(IsPointInRect(mc.x, mc.y, window_rect)){
+        if(IsPointInRect(mc.GetPos(), window_rect)){
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
@@ -739,7 +739,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     {
         DrawPoint delta = (*it)->GetPos() + DrawPoint((*it)->GetSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
-            (*it)->Move(std::min(-delta.x, 0), -std::min(-delta.y, 0), /*absolute=*/false);
+            (*it)->SetPos(elMin(-delta, DrawPoint(0, 0)), /*absolute=*/false);
     }
 }
 
@@ -867,11 +867,11 @@ void WindowManager::CloseMarkedIngameWnds()
 
 }
 
-void WindowManager::SetToolTip(const Window* ttw, const std::string& tooltip)
+void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)
 {
     // Max width of tooltip
     const unsigned short MAX_TOOLTIP_WIDTH = 260;
-    static const Window* lttw = NULL;
+    static const ctrlBaseTooltip* lttw = NULL;
 
     if(tooltip.empty() && (!ttw || lttw == ttw))
         this->curTooltip.clear();
@@ -912,7 +912,8 @@ void WindowManager::DrawToolTip()
             pos = curTooltip.find('\n', pos + 1);
         }
 
-        Window::DrawRectangle(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy(), 0x9F000000);
+        Rect bgRect(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy());
+        Window::DrawRectangle(bgRect, 0x9F000000);
         NormalFont->Draw(ttPos, curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
     }
 }

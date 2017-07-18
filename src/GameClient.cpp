@@ -1623,7 +1623,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             char nwf_string[256];
             snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );
-            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2), nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }

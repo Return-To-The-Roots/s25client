@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -119,7 +119,7 @@ void iwBuilding::Msg_PaintAfter()
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)
 
         // "Schwarzer Rahmen"
-        DrawRectangle(GetDrawPos() + DrawPoint(40, 60), 144, 24, 0x80000000);
+        DrawRectangle(Rect(GetDrawPos() + DrawPoint(40, 60), Extent(144, 24)), 0x80000000);
         DrawPoint curPos = GetDrawPos() + DrawPoint(52, 72);
         for(unsigned char i = 0; i < 3; ++i)
         {
@@ -133,7 +133,7 @@ void iwBuilding::Msg_PaintAfter()
     }
     else
     {
-        DrawPoint curPos = GetDrawPos() + DrawPoint(width_ / 2, 60);
+        DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
         for(unsigned char i = 0; i < 2; ++i)
         {
             if(USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i] == GD_NOTHING)
@@ -144,7 +144,7 @@ void iwBuilding::Msg_PaintAfter()
 
             // "Schwarzer Rahmen"
             DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-            DrawRectangle(waresPos, 24 * wares_count, 24, 0x80000000);
+            DrawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
             waresPos += DrawPoint(12, 12);
 
             for(unsigned char z = 0; z < wares_count; ++z)
@@ -210,7 +210,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // Auch optisch den Button umstellen
                 ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);
-                if(button->GetButtonImage() == LOADER.GetImageN("io", IODAT_BOAT_ID))
+                if(button->GetImage() == LOADER.GetImageN("io", IODAT_BOAT_ID))
                     button->SetImage(LOADER.GetImageN("io", IODAT_SHIP_ID));
                 else
                     button->SetImage(LOADER.GetImageN("io", IODAT_BOAT_ID));
@@ -232,7 +232,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it=buildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
 					iwBuilding* nextscrn=new iwBuilding(gwv, gcFactory, *it);
-					nextscrn->Move(pos_);
+					nextscrn->SetPos(GetPos());
 					WINDOWMANAGER.Show(nextscrn);
 					break;
 				}

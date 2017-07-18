@@ -28,11 +28,11 @@ class glArchivItem_Font;
 class ctrlChat : public Window
 {
     public:
-        ctrlChat(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
+        ctrlChat(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
         ~ctrlChat() override;
 
         /// Größe ändern
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         /// Fügt eine Chatnachricht hinzu.
         void AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, unsigned int msg_color);
         /// Setzt Farbe der Zeitangaben.

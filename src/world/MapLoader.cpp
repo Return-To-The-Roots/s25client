@@ -43,7 +43,7 @@ MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations): wo
 
 bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration)
 {
-    world.Init(map.getHeader().getWidth(), map.getHeader().getHeight(), LandscapeType(map.getHeader().getGfxSet())); //-V807
+    world.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
     InitNodes(map, exploration);
     PlaceObjects(map);
@@ -65,13 +65,13 @@ bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Explorati
 
 void MapLoader::InitShadows(World& world)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.RecalcShadow(pt);
 }
 
 void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         // For every player
         for(unsigned i = 0; i < numPlayers; ++i)
@@ -86,7 +86,7 @@ void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
 void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 {
     // Init node data (everything except the objects and figures)
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         MapNode& node = world.GetNodeInt(pt);
 
@@ -166,7 +166,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 {
     hqPositions.clear();
 
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         unsigned char lc = map.GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
         noBase* obj = NULL;
@@ -334,7 +334,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
 {
     // Tiere auslesen
     MapPoint pt;
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         Species species;
         switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
@@ -399,7 +399,7 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 {
     world.harbor_pos.insert(world.harbor_pos.end(), additionalHarbors.begin(), additionalHarbors.end());
     // Clear current harbors and seas
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         MapNode& node = world.GetNodeInt(pt);
         node.seaId = 0u;
@@ -408,7 +408,7 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 
     /// Weltmeere vermessen
     world.seas.clear();
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         // Noch kein Meer an diesem Punkt  Aber trotzdem Teil eines noch nicht vermessenen Meeres?
         if(!world.GetNode(pt).seaId && world.IsSeaPoint(pt))
@@ -465,7 +465,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
     std::vector<unsigned int> ptIsSeaPt(world.nodes.size()); //-V656
 
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         if(shipPathChecker.IsNodeOk(pt))
             ptIsSeaPt[world.GetIdx(pt)] = 1;

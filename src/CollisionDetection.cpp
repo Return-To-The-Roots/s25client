@@ -40,7 +40,7 @@ bool IsPointInRect(const int x, const int y, const int rx, const int ry, const i
 bool DoRectsIntersect(const Rect& rect1, const Rect& rect2)
 {
     // Size = 0 -> No intersection possible
-    if(rect1.GetSize() == Extent(0, 0) || rect2.GetSize() == Extent(0, 0))
+    if(rect1.getSize() == Extent(0, 0) || rect2.getSize() == Extent(0, 0))
         return false;
     return ( IsPointInRect(rect1.left, rect1.top, rect2) || IsPointInRect(rect1.right - 1, rect1.top, rect2) ||
              IsPointInRect(rect1.left, rect1.bottom - 1, rect2) || IsPointInRect(rect1.right - 1, rect1.bottom - 1, rect2) );

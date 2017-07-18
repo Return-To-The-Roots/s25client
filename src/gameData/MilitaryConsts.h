@@ -19,7 +19,7 @@
 #define MILITARY_CONSTS_H_
 
 #include "gameData/NationConsts.h"
-#include "DrawPoint.h"
+#include "DrawPointInit.h"
 #include <boost/array.hpp>
 
 /// Größe der Militärquadrate (in Knotenpunkten), in die die Welt eingeteilt wurde für Militärgebäude

@@ -36,12 +36,9 @@ class ctrlIngameMinimap : public ctrlMinimap
 
         ctrlIngameMinimap( Window* parent,
                            const unsigned int id,
-                           const unsigned short x,
-                           const unsigned short y,
-                           const unsigned short width,
-                           const unsigned short height,
-                           const unsigned short padding_x,
-                           const unsigned short padding_y,
+                           const DrawPoint& pos,
+                           const Extent& size,
+                           const Extent& padding,
                            IngameMinimap& minimap,
                            GameWorldView& gwv);
 

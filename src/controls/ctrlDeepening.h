@@ -30,7 +30,7 @@ class glArchivItem_Font;
 class ctrlDeepening: public Window
 {
 public:
-    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, unsigned short width, unsigned short height,
+    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size,
         TextureColor tc);
 
 protected:
@@ -46,7 +46,7 @@ private:
 class ctrlTextDeepening: public ctrlDeepening, public ctrlBaseText
 {
 public:
-    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint position, unsigned short width, unsigned short height,
+    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size,
         TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color);
 
     Rect GetBoundaryRect() const override;
@@ -60,7 +60,7 @@ protected:
 class ctrlColorDeepening : public ctrlDeepening, public ctrlBaseColor
 {
     public:
-        ctrlColorDeepening(Window* parent, unsigned int id, DrawPoint position, unsigned short width, unsigned short height,
+        ctrlColorDeepening(Window* parent, unsigned int id, DrawPoint position, const Extent& size,
             TextureColor tc, unsigned fillColor);
 
     protected:

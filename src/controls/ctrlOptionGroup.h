@@ -36,7 +36,7 @@ class ctrlOptionGroup : public ctrlGroup
         };
 
     public:
-        ctrlOptionGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
+        ctrlOptionGroup(Window* parent, unsigned int id, int select_type);
 
         /// Selektiert einen neuen Button
         void SetSelection(unsigned short selection, bool notify = false);
