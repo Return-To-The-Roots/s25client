@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     // 15 lines of text, button must be below
     BOOST_REQUIRE_GT(wnd->GetCtrls<ctrlButton>().front()->GetPos().y, 15 * NormalFont->getHeight());
     // And window higher than button
-    BOOST_REQUIRE_GT(wnd->GetIwSize().y, wnd->GetCtrls<ctrlButton>().front()->GetPos().y);
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetIwSize().y), wnd->GetCtrls<ctrlButton>().front()->GetPos().y);
     WINDOWMANAGER.Close(wnd);
     // Error
     executeLua("rttr:MsgBox('Title', 'Text', true)");
@@ -152,8 +152,8 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     // button must be below start of image
     BOOST_REQUIRE_GT(bt->GetPos().y, img->GetPos().y - img->GetImage()->getNy());
     // and centered
-    BOOST_REQUIRE_LE(bt->GetPos().x, wnd->GetSize().x / 2);
-    BOOST_REQUIRE_GT(bt->GetPos().x, wnd->GetSize().x / 2 - bt->GetSize().x);
+    BOOST_REQUIRE_LE(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2));
+    BOOST_REQUIRE_GT(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2 - bt->GetSize().x));
 
     using namespace boost::assign;
     std::vector<DrawPoint> imgPts;

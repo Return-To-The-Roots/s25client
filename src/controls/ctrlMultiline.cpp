@@ -218,7 +218,7 @@ void ctrlMultiline::SetNumVisibleLines(unsigned numLines)
 
 Extent ctrlMultiline::GetContentSize() const
 {
-    return Extent(GetContentWidth(), std::min(GetSize().y, drawLines.size() * font->getHeight() + 2u * PADDING));
+    return Extent(GetContentWidth(), std::min<unsigned>(GetSize().y, drawLines.size() * font->getHeight() + 2u * PADDING));
 }
 
 unsigned ctrlMultiline::GetContentWidth() const
