@@ -33,13 +33,13 @@ struct DrawPointInit
 };
 
 // Helper for defining the operations
-#define DEF_DRAWPOINT_OP(OP)                                                           \
-    inline DrawPoint operator##OP (const DrawPoint& lhs, const DrawPointInit& rhs)     \
-    { return lhs ##OP DrawPoint(rhs);}                                                 \
-    inline DrawPoint operator##OP (const DrawPointInit& lhs, const DrawPoint& rhs)     \
-    { return DrawPoint(lhs) ##OP rhs;}                                                 \
-    inline DrawPoint operator##OP (const DrawPointInit& lhs, const DrawPointInit& rhs) \
-    { return DrawPoint(lhs) ##OP rhs;}
+#define DEF_DRAWPOINT_OP(OP)                                                          \
+    inline DrawPoint operator OP (const DrawPoint& lhs, const DrawPointInit& rhs)     \
+    { return lhs OP DrawPoint(rhs);}                                                  \
+    inline DrawPoint operator OP (const DrawPointInit& lhs, const DrawPoint& rhs)     \
+    { return DrawPoint(lhs) OP rhs;}                                                  \
+    inline DrawPoint operator OP (const DrawPointInit& lhs, const DrawPointInit& rhs) \
+    { return DrawPoint(lhs) OP rhs;}
 
 DEF_DRAWPOINT_OP(+)
 DEF_DRAWPOINT_OP(-)
