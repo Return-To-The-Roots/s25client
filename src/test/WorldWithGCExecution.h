@@ -23,7 +23,7 @@
 #ifndef WorldWithGCExecution_h__
 #define WorldWithGCExecution_h__
 
-template<unsigned T_numPlayers, unsigned T_width = 64, unsigned T_height = 64>
+template<unsigned T_numPlayers, unsigned T_width = WorldDefault::width, unsigned T_height = WorldDefault::height>
 class WorldWithGCExecution: public WorldFixture<CreateEmptyWorld, T_numPlayers, T_width, T_height>, public GCExecutor
 {
 public:

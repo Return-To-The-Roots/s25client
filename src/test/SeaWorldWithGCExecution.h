@@ -22,7 +22,7 @@
 #ifndef SeaWorldWithGCExecution_h__
 #define SeaWorldWithGCExecution_h__
 
-template<unsigned T_width = 64, unsigned T_height = 64>
+template<unsigned T_width = SeaWorldDefault::width, unsigned T_height = SeaWorldDefault::height>
 class SeaWorldWithGCExecution: public WorldFixture<CreateSeaWorld, 3, T_width, T_height>, public GCExecutor
 {
 public:

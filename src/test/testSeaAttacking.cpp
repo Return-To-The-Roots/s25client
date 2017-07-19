@@ -41,9 +41,9 @@
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 
 // Size is chosen based on current maximum attacking distances!
-struct AttackFixture: public SeaWorldWithGCExecution<>
+struct AttackFixture: public SeaWorldWithGCExecution<62, 64>
 {
-    typedef SeaWorldWithGCExecution<> Parent;
+    typedef SeaWorldWithGCExecution<62, 64> Parent;
     using Parent::world;
     using Parent::curPlayer;
     using Parent::ggs;
@@ -66,20 +66,22 @@ struct AttackFixture: public SeaWorldWithGCExecution<>
         }
 
         // Block diagonals with granite so no human path is possible
-        for(MapCoord i = 1; i < world.GetWidth() - 1; i++)
+        for(MapCoord i = 1; i < std::min(world.GetWidth(), world.GetHeight()); i++)
         {
             MapPoint pt(i, i);
             if(world.GetNode(pt).bq != BQ_NOTHING)
             {
                 world.SetNO(pt, new noGranite(GT_1, 5));
-                world.SetNO(pt + MapPoint(1, 0), new noGranite(GT_1, 5));
+                if(pt.x + 1 < world.GetWidth())
+                    world.SetNO(pt + MapPoint(1, 0), new noGranite(GT_1, 5));
                 world.RecalcBQAroundPointBig(pt);
             }
             pt = MapPoint(world.GetHeight() - i - 1u, i);
-            if(world.GetNode(pt).bq != BQ_NOTHING)
+            if(pt.x < world.GetWidth() && world.GetNode(pt).bq != BQ_NOTHING)
             {
                 world.SetNO(pt, new noGranite(GT_1, 5));
-                world.SetNO(pt + MapPoint(1, 0), new noGranite(GT_1, 5));
+                if(pt.x + 1 < world.GetWidth())
+                    world.SetNO(pt + MapPoint(1, 0), new noGranite(GT_1, 5));
                 world.RecalcBQAroundPointBig(pt);
             }
         }
@@ -125,17 +127,20 @@ struct AttackFixture: public SeaWorldWithGCExecution<>
 
         // Build some military buildings
 
-        milBld1NearPos = world.GetHarborPoint(3) + MapPoint(3, 2);
+        milBld1NearPos = FindBldPos(world.GetHarborPoint(3) + MapPoint(3, 2), BQ_HOUSE, 1);
+        BOOST_REQUIRE(milBld1NearPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1NearPos, 1), BQ_HOUSE);
         milBld1Near = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Near);
 
-        milBld1FarPos = world.GetHarborPoint(4) - MapPoint(1, 2);
+        milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 2), BQ_HOUSE, 1);
+        BOOST_REQUIRE(milBld1FarPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BQ_HOUSE);
         milBld1Far = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Far);
 
-        milBld2Pos = world.GetHarborPoint(6) - MapPoint(3, 2);
+        milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(3, 2), BQ_HOUSE, 2);
+        BOOST_REQUIRE(milBld2Pos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BQ_HOUSE);
         milBld2 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
         BOOST_REQUIRE(milBld2);
@@ -146,8 +151,29 @@ struct AttackFixture: public SeaWorldWithGCExecution<>
         // Skip near bld so we have an empty one for testing
 
         SetCurPlayer(2);
-        // Enemy harbors dont block
+        // Enemy harbors don't block
         ggs.setSelection(AddonId::SEA_ATTACK, 0);
+    }
+
+    struct HasBQ
+    {
+        const World& world;
+        unsigned player;
+        BuildingQuality bq;
+        HasBQ(const World& world, unsigned player, BuildingQuality bq):world(world), player(player), bq(bq){}
+
+        bool operator()(const MapPoint& pt) const
+        {
+            return world.GetBQ(pt, player) >= bq;
+        }
+    };
+
+    MapPoint FindBldPos(const MapPoint& preferedPos, BuildingQuality reqBQ, unsigned player)
+    {
+        std::vector<MapPoint> pts = world.GetPointsInRadius<1>(preferedPos, 2, Identity<MapPoint>(), HasBQ(world, player, reqBQ), true);
+        if(!pts.empty())
+            return pts[0];
+        return MapPoint::Invalid();
     }
 
     /// Constructs a road connecting 2 buildings and checks for success

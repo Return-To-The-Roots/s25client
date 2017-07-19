@@ -33,10 +33,16 @@
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
-// Size is choosen based on current maximum attacking distances!
-struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
+struct AttackDefaults
 {
-    typedef WorldWithGCExecution<3, 58, 38> Parent;
+    BOOST_STATIC_CONSTEXPR unsigned width = 58;
+    BOOST_STATIC_CONSTEXPR unsigned height = 38;
+};
+
+// Size is choosen based on current maximum attacking distances!
+struct AttackFixture: public WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height>
+{
+    typedef WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height> Parent;
     using Parent::world;
     using Parent::curPlayer;
 

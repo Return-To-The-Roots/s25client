@@ -27,7 +27,13 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = 64, unsigned T_height = 64>
+struct WorldDefault
+{
+    BOOST_STATIC_CONSTEXPR unsigned width = 32;
+    BOOST_STATIC_CONSTEXPR unsigned height = 60;
+};
+
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault::width, unsigned T_height = WorldDefault::height>
 struct WorldFixture
 {
     EventManager em;

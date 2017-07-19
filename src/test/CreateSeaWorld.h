@@ -24,6 +24,13 @@
 
 class GameWorldGame;
 
+struct SeaWorldDefault
+{
+    // Min size is 59
+    BOOST_STATIC_CONSTEXPR unsigned width = 60;
+    BOOST_STATIC_CONSTEXPR unsigned height = 62;
+};
+
 /// Creates a world for up to 4 players,
 /// with a sea on the outside and a lake on the inside with each player having access to both
 /// Harbors: 1: Top outside

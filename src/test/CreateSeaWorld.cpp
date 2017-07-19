@@ -87,9 +87,9 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
      * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
      * WWWWWWWWWWWWWWWWWWWWWWW
      */
-     // Init some land stripes of size 16 (a bit less than the HQ radius)
+     // Init some land stripes of size 15 (a bit less than the HQ radius)
     const MapCoord offset = 7;
-    const MapCoord landSize = 16;
+    const MapCoord landSize = 15;
     // We need the offset at each side, the land on each side
     // and at least the same amount of water between the land
     const MapCoord minSize = landSize * 3 + offset * 2;
