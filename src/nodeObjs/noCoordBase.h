@@ -20,7 +20,7 @@
 #pragma once
 
 #include "noBase.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 class SerializedGameData;
 
 class noCoordBase : public noBase

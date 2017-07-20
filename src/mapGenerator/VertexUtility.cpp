@@ -20,19 +20,17 @@
 #include <cmath>
 #include <algorithm>
 
-Point<uint16_t> VertexUtility::GetPosition(int index, int width, int height)
+Position VertexUtility::GetPosition(int index, const MapExtent& size)
 {
-    return Point<uint16_t>(index % width, index / width);
+    return Position(index % size.x, index / size.x);
 }
 
-int VertexUtility::GetIndexOf(const Point<int>& p, int width, int height)
+int VertexUtility::GetIndexOf(const Position& p, const MapExtent& size)
 {
-    return (p.x & (width - 1)) + (p.y & (height - 1)) * width;
+    return (p.x & (size.x - 1)) + (p.y & (size.y - 1)) * size.x;
 }
 
-std::vector<int> VertexUtility::GetNeighbors(const Point<int>& p,
-                                             int width,
-                                             int height,
+std::vector<int> VertexUtility::GetNeighbors(const Position& p, const MapExtent& size,
                                              int radius)
 {
     std::vector<int> neighbors;
@@ -41,10 +39,10 @@ std::vector<int> VertexUtility::GetNeighbors(const Point<int>& p,
     {
         for (int ny = p.y - radius; ny <= p.y + radius; ny++)
         {
-            const Point<int> neighbor(nx,ny);
-            if (VertexUtility::Distance(p, neighbor, width, height) <= radius)
+            const Position neighbor(nx,ny);
+            if (VertexUtility::Distance(p, neighbor, size) <= radius)
             {
-                neighbors.push_back(VertexUtility::GetIndexOf(neighbor, width, height));
+                neighbors.push_back(VertexUtility::GetIndexOf(neighbor, size));
             }
         }
     }
@@ -52,23 +50,19 @@ std::vector<int> VertexUtility::GetNeighbors(const Point<int>& p,
     return neighbors;
 }
 
-double VertexUtility::Distance(const Point<int>& p1,
-                               const Point<int>& p2,
-                               int width,
-                               int height)
+double VertexUtility::Distance(const Position& p1,
+                               const Position& p2,
+                               const MapExtent& size)
 {
-    int minX = std::min(p1.x, p2.x);
-    int minY = std::min(p1.y, p2.y);
-    int maxX = std::max(p1.x, p2.x);
-    int maxY = std::max(p1.y, p2.y);
+    Position minPos = elMin(p1, p2);
+    Position maxPos = elMax(p1, p2);
+    Position delta = maxPos - minPos;
     
-    int dx = (maxX - minX);
-    int dy = (maxY - minY);
+    if (delta.x > size.x / 2) delta.x = size.x - delta.x;
+    if (delta.y > size.y / 2) delta.y = size.y - delta.y;
     
-    if (dx > width / 2)  dx = width - dx;
-    if (dy > height / 2) dy = height - dy;
-    
-    return std::sqrt(dx * dx + dy * dy);
+    Position deltaSq = delta * delta;
+    return std::sqrt(deltaSq.x + deltaSq.y);
 }
 
 

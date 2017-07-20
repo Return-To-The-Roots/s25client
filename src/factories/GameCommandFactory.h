@@ -22,7 +22,7 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/ShipDirection.h"

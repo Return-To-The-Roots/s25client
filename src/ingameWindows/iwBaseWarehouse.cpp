@@ -58,7 +58,7 @@ namespace{
 }
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh):
-    iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, 167, 416, _("Storehouse"), true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+    iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _("Storehouse"), true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
     gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);

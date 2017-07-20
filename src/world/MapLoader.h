@@ -18,7 +18,7 @@
 #ifndef MapLoader_h__
 #define MapLoader_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/GameSettingTypes.h"
 #include "gameData/NationConsts.h"
 #include <vector>

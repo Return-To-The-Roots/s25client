@@ -18,7 +18,7 @@
 #ifndef RoadNote_h__
 #define RoadNote_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Direction.h"
 #include "notifications/notifications.h"
 #include <vector>

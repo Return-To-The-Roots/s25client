@@ -38,13 +38,13 @@ namespace{
 }
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned msgboxid)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, 420, 140, title, LOADER.GetImageN("resource", 41), true, false), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, "io", icon);
 }
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, 420, 140, title, LOADER.GetImageN("resource", 41), true, false), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, iconFile, iconIdx);
 }

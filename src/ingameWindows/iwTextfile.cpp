@@ -37,7 +37,7 @@
  *        schlecht.
  */
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
-    : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("resource", 41))
 {
     ctrlMultiline* text = AddMultiline(2, 10, 20, GetSize().x - 20, 450, TC_GREEN1, NormalFont);
 

@@ -18,7 +18,7 @@
 #ifndef FreePathFinder_h__
 #define FreePathFinder_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Direction.h"
 #include <vector>
 

@@ -21,17 +21,12 @@
 
 #include "Window.h"
 #include "DrawPoint.h"
-#include "controls/ctrlBaseText.h"
-#include "controls/ctrlBaseColor.h"
-
-class glArchivItem_Font;
 
 /// Control with a "deepened" look by a 3D border
 class ctrlDeepening: public Window
 {
 public:
-    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size,
-        TextureColor tc);
+    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc);
 
 protected:
     void Draw_() override;
@@ -42,31 +37,4 @@ private:
     TextureColor tc;
 };
 
-/// Deepening with text
-class ctrlTextDeepening: public ctrlDeepening, public ctrlBaseText
-{
-public:
-    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size,
-        TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color);
-
-    Rect GetBoundaryRect() const override;
-protected:
-    void DrawContent() const override;
-
-
-};
-
-/// Colored Deepening
-class ctrlColorDeepening : public ctrlDeepening, public ctrlBaseColor
-{
-    public:
-        ctrlColorDeepening(Window* parent, unsigned int id, DrawPoint position, const Extent& size,
-            TextureColor tc, unsigned fillColor);
-
-    protected:
-        void DrawContent() const override;
-
-};
-
 #endif // !CTRLDEEPENING_H_INCLUDED
-

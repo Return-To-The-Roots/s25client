@@ -19,7 +19,7 @@
 #define NO_SHIP_H_
 
 #include "noMovable.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/ShipDirection.h"
 #include <list>
 #include <vector>

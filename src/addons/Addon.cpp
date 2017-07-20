@@ -30,7 +30,7 @@ void Addon::hideGui(Window* window, unsigned int id) const
     if(text)
         text->SetVisible(false);
 
-    ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
+    ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
     if(button)
         button->SetVisible(false);
 }
@@ -38,7 +38,7 @@ void Addon::hideGui(Window* window, unsigned int id) const
 void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  /*readonly*/, unsigned int  /*status*/) const //-V669
 {
     DrawPoint btPos(20, y), txtPos(52, y + 4);
-    ctrlImageButton* button = window->GetCtrl<ctrlImageButton>(id + 1);
+    ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
     if(!button)
         button = window->AddImageButton(id + 1, btPos.x, btPos.y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), description_);
 

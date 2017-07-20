@@ -45,7 +45,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_MAINSELECTION, IngameWindow::posLastOrCenter, 190, 286, _("Main selection"), LOADER.GetImageN("io", 5)),
+    : IngameWindow(CGI_MAINSELECTION, IngameWindow::posLastOrCenter, Extent(190, 286), _("Main selection"), LOADER.GetImageN("io", 5)),
       gwv(gwv), gcFactory(gcFactory)
 {
     // Verteilung

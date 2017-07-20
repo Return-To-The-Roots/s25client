@@ -49,7 +49,7 @@ namespace{
     {
         TestWindow wnd;
         AnimationManager& animMgr;
-        ctrlTextButton *bt, *bt2;
+        ctrlButton *bt, *bt2;
         bool animFinished;
         double lastNextFramepartTime;
         unsigned lastFrame;
@@ -624,7 +624,7 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     WINDOWMANAGER.Switch(dsk);
     WINDOWMANAGER.Draw();
     bt = dsk->AddTextButton(0, 10, 20, 100, 150, TC_RED1, "", NormalFont);
-    ctrlTextButton* btReference = dsk->AddTextButton(1, 130, bt->GetPos().y, 100, 150, TC_RED1, "", NormalFont);
+    ctrlButton* btReference = dsk->AddTextButton(1, 130, bt->GetPos().y, 100, 150, TC_RED1, "", NormalFont);
     dsk->GetAnimationManager().addAnimation(new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RPT_None));
     dsk->Msg_PaintBefore();
     // Pass the animation

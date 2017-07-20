@@ -18,7 +18,7 @@
 #ifndef TERRITORY_REGION_H_
 #define TERRITORY_REGION_H_
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "Point.h"
 #include <vector>
 

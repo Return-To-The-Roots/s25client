@@ -19,10 +19,10 @@
 #include "iwMusicPlayer.h"
 
 #include "Loader.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlList.h"
-#include "controls/ctrlDeepening.h"
+#include "controls/ctrlTextDeepening.h"
 #include "controls/ctrlComboBox.h"
 #include "WindowManager.h"
 #include "iwMsgbox.h"
@@ -38,7 +38,7 @@
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, 
-                   300, 100, title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
+        Extent(300, 100), title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
 {
     AddEdit(0, 20, 30, GetSize().x - 40, 22, TC_GREEN2, NormalFont);
     AddTextButton(1, 20, 60, 100, 22, TC_GREEN1, _("OK"), NormalFont);
@@ -61,7 +61,7 @@ void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 
 
 iwMusicPlayer::iwMusicPlayer()
-    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter,  430, 330, _("Music player"),
+    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter, Extent(430, 330), _("Music player"),
                    LOADER.GetImageN("resource", 41)), changed(false)
 {
 

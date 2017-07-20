@@ -25,7 +25,7 @@
 #include "GameClient.h"
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
 {
     // Ja
     AddImageButton(0, 14, 140, 66, 40, TC_RED1, LOADER.GetImageN("io", 32), _("Yes")); //-V525

@@ -236,9 +236,6 @@ void Window::DeleteCtrl(unsigned id)
     childIdToWnd_.erase(it);
 }
 
-/**
- *  fügt ein BuildingIcon hinzu.
- */
 ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id,
         unsigned short x,
         unsigned short y,
@@ -252,24 +249,7 @@ ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id,
     return AddCtrl(id, new ctrlBuildingIcon(this, id, pos, type, nation, size, tooltip));
 }
 
-/**
- *  fügt einen ButtonCtrl hinzu.
- *
- *  @param[in] x      X-Koordinate des Steuerelements
- *  @param[in] y      Y-Koordinate des Steuerelements
- *  @param[in] width  Breite des Steuerelements
- *  @param[in] height Höhe des Steuerelements
- *  @param[in] tc     Farbe des Steuerelements
- *  @param[in] type   Typ des Steuerelements (@p false für Text, @p true für Bild)
- *  @param[in] text   Text des Buttons (nur für @p type gleich @p false)
- *  @param[in] font   Schrift des Buttons (nur für @p type gleich @p false)
- *  @param[in] image  Bild des Buttons (nur für @p type gleich @p true)
- *  @param[in] border Soll der Button einen Rahmen haben?
- */
-
-
-/// fügt einen Text-ButtonCtrl hinzu.
-ctrlTextButton* Window::AddTextButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
+ctrlButton* Window::AddTextButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
 {
     const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
     const Extent size(ScaleIf(Extent(width, height)));
@@ -277,8 +257,7 @@ ctrlTextButton* Window::AddTextButton(unsigned id, unsigned short x, unsigned sh
     return AddCtrl(id, new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip));
 }
 
-/// fügt einen Color-ButtonCtrl hinzu.
-ctrlColorButton* Window::AddColorButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned fillColor, const std::string& tooltip)
+ctrlButton* Window::AddColorButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned fillColor, const std::string& tooltip)
 {
     const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
     const Extent size(ScaleIf(Extent(width, height)));
@@ -287,8 +266,7 @@ ctrlColorButton* Window::AddColorButton(unsigned id, unsigned short x, unsigned 
 }
 
 
-/// fügt einen Image-ButtonCtrl hinzu.
-ctrlImageButton* Window::AddImageButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
+ctrlButton* Window::AddImageButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
 {
     const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
     const Extent size(ScaleIf(Extent(width, height)));
@@ -297,9 +275,6 @@ ctrlImageButton* Window::AddImageButton(unsigned id, unsigned short x, unsigned 
 }
 
 
-/**
- *  fügt ein ChatCtrl hinzu.
- */
 ctrlChat* Window::AddChatCtrl(unsigned id,
                               unsigned short x,
                               unsigned short y,
@@ -314,9 +289,6 @@ ctrlChat* Window::AddChatCtrl(unsigned id,
     return AddCtrl(id, new ctrlChat(this, id, pos, size, tc, font));
 }
 
-/**
- *  fügt eine Checkbox hinzu.
- */
 ctrlCheck* Window::AddCheckBox(unsigned id,
                                unsigned short x,
                                unsigned short y,
@@ -333,9 +305,6 @@ ctrlCheck* Window::AddCheckBox(unsigned id,
     return AddCtrl(id, new ctrlCheck(this, id, pos, size, tc, text, font, readonly));
 }
 
-/**
- *  fügt eine Combobox hinzu.
- */
 ctrlComboBox* Window::AddComboBox(unsigned id,
                                   unsigned short x,
                                   unsigned short y,
@@ -352,10 +321,7 @@ ctrlComboBox* Window::AddComboBox(unsigned id,
     return AddCtrl(id, new ctrlComboBox(this, id, pos, size, tc, font, max_list_height, readonly));
 }
 
-/**
- *  fügt ein vertieftes TextCtrl hinzu.
- */
-ctrlTextDeepening* Window::AddTextDeepening(unsigned id,
+ctrlDeepening* Window::AddTextDeepening(unsigned id,
                                     unsigned short x,
                                     unsigned short y,
                                     unsigned short width,
@@ -368,13 +334,10 @@ ctrlTextDeepening* Window::AddTextDeepening(unsigned id,
     const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
     const Extent size(ScaleIf(Extent(width, height)));
 
-    return AddCtrl(id, new ctrlTextDeepening(this, id, DrawPoint(x, y), size, tc, text, font, color));
+    return AddCtrl(id, new ctrlTextDeepening(this, id, pos, size, tc, text, font, color));
 }
 
-/**
- *  adds a colored Deepening
- */
-ctrlColorDeepening* Window::AddColorDeepening(unsigned id,
+ctrlDeepening* Window::AddColorDeepening(unsigned id,
         unsigned short x,
         unsigned short y,
         unsigned short width,
@@ -385,12 +348,9 @@ ctrlColorDeepening* Window::AddColorDeepening(unsigned id,
     const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
     const Extent size(ScaleIf(Extent(width, height)));
 
-    return AddCtrl(id, new ctrlColorDeepening(this, id, DrawPoint(x, y), size, tc, fillColor));
+    return AddCtrl(id, new ctrlColorDeepening(this, id, pos, size, tc, fillColor));
 }
 
-/**
- *  fügt ein EditCtrl hinzu.
- */
 ctrlEdit* Window::AddEdit(unsigned id,
                           unsigned short x,
                           unsigned short y,
@@ -409,17 +369,11 @@ ctrlEdit* Window::AddEdit(unsigned id,
     return AddCtrl(id, new ctrlEdit(this, id, pos, size, tc, font, maxlength, password, disabled, notify));
 }
 
-/**
- *  fügt eine Gruppe hinzu.
- */
 ctrlGroup* Window::AddGroup(unsigned id)
 {
     return AddCtrl(id, new ctrlGroup(this, id));
 }
 
-/**
- *  fügt ein ImageCtrl hinzu.
- */
 ctrlImage* Window::AddImage(unsigned id,
                             unsigned short x,
                             unsigned short y,
@@ -430,9 +384,6 @@ ctrlImage* Window::AddImage(unsigned id,
     return AddCtrl(id, new ctrlImage(this, id, pos, image, tooltip));
 }
 
-/**
- *  fügt ein ListCtrl hinzu.
- */
 ctrlList* Window::AddList(unsigned id,
                           unsigned short x,
                           unsigned short y,
@@ -447,9 +398,6 @@ ctrlList* Window::AddList(unsigned id,
     return AddCtrl(id, new ctrlList(this, id, pos, size, tc, font));
 }
 
-/**
- *  fügt ein mehrzeiliges TextCtrl hinzu.
- */
 ctrlMultiline* Window::AddMultiline(unsigned id,
                                     unsigned short x,
                                     unsigned short y,
@@ -462,7 +410,7 @@ ctrlMultiline* Window::AddMultiline(unsigned id,
     const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
     const Extent size(ScaleIf(Extent(width, height)));
 
-    return AddCtrl(id, new ctrlMultiline(this, id, DrawPoint(x, y), size, tc, font, format));
+    return AddCtrl(id, new ctrlMultiline(this, id, pos, size, tc, font, format));
 }
 
 /**
@@ -491,9 +439,6 @@ ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned id, int select_type)
     return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type));
 }
 
-/**
- *  fügt eine prozentuale ProgressBar hinzu.
- */
 ctrlPercent* Window::AddPercent(unsigned id,
                                 unsigned short x,
                                 unsigned short y,
@@ -510,9 +455,6 @@ ctrlPercent* Window::AddPercent(unsigned id,
     return AddCtrl(id, new ctrlPercent(this, id, pos, size, tc, text_color, font, percentage));
 }
 
-/**
- *  fügt eine ProgressBar hinzu.
- */
 ctrlProgress* Window::AddProgress(unsigned id,
                                   unsigned short x,
                                   unsigned short y,
@@ -535,9 +477,6 @@ ctrlProgress* Window::AddProgress(unsigned id,
     return AddCtrl(id, new ctrlProgress(this, id, pos, size, tc, button_minus, button_plus, maximum, Extent(x_padding, y_padding), force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
-/**
- *  fügt eine Scrollbar hinzu.
- */
 ctrlScrollBar* Window::AddScrollBar(unsigned id,
                                     unsigned short x,
                                     unsigned short y,
@@ -554,9 +493,6 @@ ctrlScrollBar* Window::AddScrollBar(unsigned id,
     return AddCtrl(id, new ctrlScrollBar(this, id, pos, size, button_height, tc, page_size));
 }
 
-/**
- *  fügt ein TabCtrl hinzu.
- */
 ctrlTab* Window::AddTabCtrl(unsigned id,
                             unsigned short x,
                             unsigned short y,
@@ -596,9 +532,6 @@ ctrlTable* Window::AddTable(unsigned id,
     return AddCtrl(id, ctrl);
 }
 
-/**
- *  fügt einen Timer hinzu.
- */
 ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
 {
     return AddCtrl(id, new ctrlTimer(this, id, timeout));
@@ -612,7 +545,7 @@ ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
  *  @param[in] text   Text
  *  @param[in] color  Textfarbe
  *  @param[in] format Formatierung des Textes
- *                      @p 0    - Text links ( standard )
+ *                      @p glArchivItem_Font::DF_LEFT    - Text links ( standard )
  *                      @p glArchivItem_Font::DF_CENTER  - Text mittig
  *                      @p glArchivItem_Font::DF_RIGHT   - Text rechts
  *                      @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
@@ -633,9 +566,6 @@ ctrlText* Window::AddText(unsigned id,
     return AddCtrl(id, new ctrlText(this, id, pos, text, color, format, font));
 }
 
-/**
- *  fügt ein vertieftes variables TextCtrl hinzu.
- */
 ctrlVarDeepening* Window::AddVarDeepening(unsigned id,
         unsigned short x,
         unsigned short y,
@@ -670,7 +600,7 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned id,
  *  @param[in] formatstr  Der Formatstring des Steuerelements
  *  @param[in] color      Textfarbe
  *  @param[in] format     Formatierung des Textes
- *                          @p 0    - Text links ( standard )
+ *                          @p glArchivItem_Font::DF_LEFT    - Text links ( standard )
  *                          @p glArchivItem_Font::DF_CENTER  - Text mittig
  *                          @p glArchivItem_Font::DF_RIGHT   - Text rechts
  *                          @p glArchivItem_Font::DF_TOP     - Text oben ( standard )

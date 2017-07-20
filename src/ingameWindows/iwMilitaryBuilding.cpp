@@ -33,13 +33,13 @@
 #include "figures/nofPassiveSoldier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "addons/const_addons.h"
 #include <boost/foreach.hpp>
 #include <set>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert

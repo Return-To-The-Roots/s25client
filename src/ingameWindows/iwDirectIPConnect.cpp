@@ -32,7 +32,7 @@
 #include "libutil/src/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
-    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, 300, 285, _("Join Game"), LOADER.GetImageN("resource", 41), true),
+    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"), LOADER.GetImageN("resource", 41), true),
       server_type(server_type)
 {
     ctrlEdit* host, *port;
@@ -189,7 +189,7 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
     SetHost(hostOrIp);
     SetPort(port);
     GetCtrl<ctrlOptionGroup>(12)->SetSelection(isIPv6 ? 1 : 0, true);
-    ctrlTextButton* btConnect = GetCtrl<ctrlTextButton>(7);
+    ctrlButton* btConnect = GetCtrl<ctrlButton>(7);
     VIDEODRIVER.SetMousePos(btConnect->GetDrawPos() + DrawPoint(btConnect->GetSize()) / 2);
     if(!hasPwd)
         Msg_ButtonClick(7);

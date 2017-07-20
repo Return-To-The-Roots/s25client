@@ -23,9 +23,9 @@
 #include "WindowManager.h"
 #include "GamePlayer.h"
 #include "iwMsgbox.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlComboBox.h"
-#include "controls/ctrlDeepening.h"
+#include "controls/ctrlTextDeepening.h"
 #include "controls/ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
@@ -52,7 +52,7 @@ const unsigned short TREATIES_POS = 240;
 const unsigned short TREATIE_BUTTON_SPACE = 20;
 
 iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter,  500, FIRST_LINE_Y + gwv.GetWorld().GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20,
+    IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter, Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20),
         _("Diplomacy"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory)
 {
@@ -238,7 +238,7 @@ const char* const DURATION_NAMES[DURATION_COUNT] =
 
 
 iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter,  320, 215, _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
     pt(pt), player(player), gcFactory(gcFactory)
 {
     glArchivItem_Bitmap* image;

@@ -49,7 +49,7 @@ dskTest::dskTest()
     unsigned curId = ID_grpBtStart;
     for(unsigned i = 0; i < textures.size(); i++){
         AddText(curId, 10, yPos + 3, labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
-        ctrlTextButton* bt;
+        ctrlButton* bt;
         bt = AddTextButton(curId + 1, 120, yPos, 95, 22, textures[i], "Nothing", NormalFont);
         bt->SetIlluminated(false);
         bt->SetBorder(false);
@@ -67,7 +67,7 @@ dskTest::dskTest()
     }
     RTTR_Assert(curId == ID_grpBtEnd);
 
-    ctrlTextButton* bt = AddTextButton(ID_btAniBg, 10, yPos, 700, 40, TC_GREEN2, "", NormalFont);
+    ctrlButton* bt = AddTextButton(ID_btAniBg, 10, yPos, 700, 40, TC_GREEN2, "", NormalFont);
     bt->SetBorder(false);
     bt->SetEnabled(false);
     bt = AddTextButton(ID_btAni, bt->GetPos().x, bt->GetPos().y + 5, 30, 30, TC_RED1, "", NormalFont);
@@ -92,7 +92,7 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
-                ctrlTextButton* bt = GetCtrl<ctrlTextButton>(i);
+                ctrlButton* bt = GetCtrl<ctrlButton>(i);
                 if(bt)
                     bt->SetEnabled(!bt->GetEnabled());
             }
@@ -101,8 +101,8 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
         case ID_btAnimateOscillate:
         case ID_btAnimateRepeat:
         {
-            ctrlTextButton* btAniBg = GetCtrl<ctrlTextButton>(ID_btAniBg);
-            ctrlTextButton* btAni = GetCtrl<ctrlTextButton>(ID_btAni);
+            ctrlButton* btAniBg = GetCtrl<ctrlButton>(ID_btAniBg);
+            ctrlButton* btAni = GetCtrl<ctrlButton>(ID_btAni);
             // Stop all
             GetAnimationManager().removeElementAnimations(btAni->GetID());
             GetAnimationManager().finishElementAnimations(ID_btAnimate, false);
@@ -119,7 +119,7 @@ void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
             else if(ctrl_id == ID_btAnimateRepeat)
                 repeat = Animation::RPT_Repeat;
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
-            GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlTextButton>(ctrl_id)));
+            GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
         }
     }
 }

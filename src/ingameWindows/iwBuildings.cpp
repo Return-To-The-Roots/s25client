@@ -87,7 +87,7 @@ const unsigned short font_distance_y = 20;
 
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_BUILDINGS, IngameWindow::posAtMouse,  185, 480, _("Buildings"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_BUILDINGS, IngameWindow::posAtMouse, Extent(185, 480), _("Buildings"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory)
 {
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;

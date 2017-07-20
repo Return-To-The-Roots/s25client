@@ -23,7 +23,7 @@
 #include "world/GameWorldGame.h"
 #include "PlayerInfo.h"
 #include "gameTypes/Nation.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 

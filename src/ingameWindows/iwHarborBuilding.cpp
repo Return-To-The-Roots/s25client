@@ -22,7 +22,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "ogl/glArchivItem_Font.h"
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)

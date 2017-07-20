@@ -22,7 +22,7 @@
 //#define DEBUG_AI
 
 #include "gameTypes/Direction.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/BuildingTypes.h"
 #include "AIEvents.h"
 #include "ai/AIResource.h"

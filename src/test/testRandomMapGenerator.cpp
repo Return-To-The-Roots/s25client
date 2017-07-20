@@ -19,6 +19,7 @@
 #include "mapGenerator/RandomMapGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "gameData/MaxPlayers.h"
+#include "PointOutput.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -32,8 +33,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
 {
     RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
-    settings.width = 32u;
-    settings.height = 8u;
+    settings.size = MapExtent(32, 8);
     settings.players = 2;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
@@ -42,8 +42,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     RandomMapGenerator generator(config);
     Map* map = generator.Create(settings);
 
-    BOOST_REQUIRE_EQUAL(map->width, settings.width);
-    BOOST_REQUIRE_EQUAL(map->height, settings.height);
+    BOOST_REQUIRE_EQUAL(map->size, settings.size);
     
     delete map;
 }
@@ -56,8 +55,7 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 {
     RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
-    settings.width = 16u;
-    settings.height = 32u;
+    settings.size = MapExtent(16u, 32u);
     settings.players = 2;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
@@ -74,8 +72,8 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
         BOOST_REQUIRE_NE(p.x, 0xFF);
         BOOST_REQUIRE_NE(p.y, 0xFF);
         
-        BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.width + p.x], i);
-        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.width + p.x], libsiedler2::OI_HeadquarterMask);
+        BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.size.x + p.x], i);
+        BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.size.x + p.x], libsiedler2::OI_HeadquarterMask);
     }
 
     for (unsigned i = settings.players; i < MAX_PLAYERS; i++)

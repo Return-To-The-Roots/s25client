@@ -20,7 +20,7 @@
 #include "ctrlMinimap.h"
 #include "PreviewMinimap.h"
 #include "gameData/MaxPlayers.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "ogl/glArchivItem_Map.h"
 class Window;
 

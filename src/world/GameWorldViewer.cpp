@@ -23,7 +23,7 @@
 #include "buildings/nobMilitary.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "nodeObjs/noShip.h"
 #include "notifications/NodeNote.h"
 #include "notifications/RoadNote.h"

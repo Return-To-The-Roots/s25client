@@ -47,7 +47,7 @@ enum
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
                                                 IngameWindow::posLastOrCenter,
-                                                250, 400, _("Map Generator"),
+                                                Extent(250, 400), _("Map Generator"),
                                                 LOADER.GetImageN("resource", 41), true, false), mapSettings(settings)
 {
     AddTextButton(0,  20, 360, 100, 20, TC_RED2, _("Back"), NormalFont);
@@ -162,24 +162,19 @@ void iwMapGenerator::Apply()
     switch (GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection())
     {
         case 0:
-            mapSettings.width = 64;
-            mapSettings.height = 64;
+            mapSettings.size = MapExtent::all(64);
             break;
         case 1:
-            mapSettings.width = 128;
-            mapSettings.height = 128;
+            mapSettings.size = MapExtent::all(128);
             break;
         case 2:
-            mapSettings.width = 256;
-            mapSettings.height = 256;
+            mapSettings.size = MapExtent::all(256);
             break;
         case 3:
-            mapSettings.width = 512;
-            mapSettings.height = 512;
+            mapSettings.size = MapExtent::all(512);
             break;
         case 4:
-            mapSettings.width = 1024;
-            mapSettings.height = 1024;
+            mapSettings.size = MapExtent::all(1024);
             break;
         default:
             break;
@@ -269,7 +264,7 @@ void iwMapGenerator::Reset()
     
     
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE);
-    switch (mapSettings.width)
+    switch (mapSettings.size.x)
     {
         case 64:
             combo->SetSelection(0);

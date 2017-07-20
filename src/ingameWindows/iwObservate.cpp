@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "math.h"
 #include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "Loader.h"
@@ -25,16 +24,21 @@
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
 #include "Settings.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GuiConsts.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/src/Log.h"
 #include "CollisionDetection.h"
 #include <boost/foreach.hpp>
+#include <cmath>
+
+const Extent SmallWndSize(260, 190);
+const Extent MediumWndSize(300, 250);
+const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
-    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse,  260, 190, _("Observation window"), NULL),
+    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, Extent(260, 190), _("Observation window"), NULL),
     parentView(gwv),
     view(new GameWorldView(gwv.GetViewer(), Point<int>(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
     selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),

@@ -28,7 +28,7 @@
 #include "libutil/src/colors.h"
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
-    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)
 {
     for(std::vector<AIBase*>::const_iterator it = ais.begin(); it != ais.end(); ++it)

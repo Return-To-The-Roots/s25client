@@ -18,7 +18,7 @@
 #define MINIMAP_H_
 
 #include "ogl/glArchivItem_Bitmap_Direct.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "DrawPoint.h"
 #include "Rect.h"
 #include <vector>

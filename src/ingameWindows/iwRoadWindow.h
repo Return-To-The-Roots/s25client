@@ -30,7 +30,7 @@ class iwRoadWindow : public IngameWindow
         Point<unsigned short> mousePosAtOpen_;
 
     public:
-        iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y);
+        iwRoadWindow(GameInterface& gi, bool flagpossible, const DrawPoint& mousePos);
         ~iwRoadWindow() override;
 
     private:

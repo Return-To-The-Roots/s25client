@@ -19,7 +19,7 @@
 #define LuaInterfaceGame_h__
 
 #include "LuaInterfaceBase.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <string>
 
 class GameWorldGame;

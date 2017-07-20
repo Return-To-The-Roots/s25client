@@ -26,27 +26,15 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent,
                                    const DrawPoint& pos,
                                    const Extent& size,
                                    TextureColor tc,
-                                   const std::string& text,
+                                   const std::string& fmtString,
                                    glArchivItem_Font* font,
                                    unsigned int color,
                                    unsigned int count,
-                                   va_list liste)
-    : ctrlVarText(parent, id, pos, text, color, 0, font, count, liste),
-      tc(tc)
-{
-    // We don't want to pass these through all those constructors
-    // of only-text objects down to the Window class. This is a special
-    // situation, as we are a Deepening _and_ a VarText instead
-    // of owning the VarText.
-    Resize(size);
-}
+                                   va_list fmtArgs)
+    : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseVarText(fmtString, color, font, count, fmtArgs)
+{}
 
-/**
- *  zeichnet das Fenster.
- */
-void ctrlVarDeepening::Draw_()
+void ctrlVarDeepening::DrawContent() const
 {
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
-
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetDrawPos() + GetSize() / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
 }

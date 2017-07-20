@@ -27,7 +27,7 @@
 #include <vector>
 
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image)
-    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, 640, 480, title, LOADER.GetImageN("io", 5), true, false), pauseGame_(pauseGame)
+    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("io", 5), true, false), pauseGame_(pauseGame)
 {
     glArchivItem_Bitmap* img = (image == IM_NONE) ? NULL : LOADER.GetImageN("io", image);
     const Extent imgSize(img ? img->GetSize() : Extent::all(0));

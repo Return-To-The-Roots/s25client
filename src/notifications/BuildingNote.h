@@ -19,7 +19,7 @@
 #define BuildingNote_h__
 
 #include "gameTypes/BuildingTypes.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
 
 struct BuildingNote

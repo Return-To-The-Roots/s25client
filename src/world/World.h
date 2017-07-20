@@ -22,6 +22,7 @@
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapNode.h"
 #include "gameTypes/HarborPos.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/Direction.h"

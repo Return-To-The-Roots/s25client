@@ -28,7 +28,7 @@
 #include "ogl/glArchivItem_Font.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
-    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
     // Bild des Gebäudes

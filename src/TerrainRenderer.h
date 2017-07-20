@@ -17,7 +17,7 @@
 #ifndef TERRAIN_RENDERER_H_
 #define TERRAIN_RENDERER_H_
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "Point.h"
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp>

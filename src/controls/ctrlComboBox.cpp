@@ -258,7 +258,7 @@ void ctrlComboBox::Draw_()
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.
-    ctrlImageButton* button = GetCtrl<ctrlImageButton>(1);
+    ctrlButton* button = GetCtrl<ctrlButton>(1);
     if(button)
         button->Draw();
 }

@@ -20,7 +20,7 @@
 
 #include "PostCategory.h"
 #include "SoundEffect.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include <string>
 

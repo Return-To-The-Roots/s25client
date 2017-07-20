@@ -19,29 +19,28 @@
 
 #pragma once
 
-#include "ctrlText.h"
+#include "Window.h"
+#include "controls/ctrlBaseVarText.h"
 #include <cstdarg>
 #include <vector>
 #include <string>
-class Window;
+
 class glArchivItem_Font;
 
-class ctrlVarText : public ctrlText
+class ctrlVarText: public Window, public ctrlBaseVarText
 {
     public:
-        /// liste contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-        ctrlVarText(Window* parent, unsigned int id, const DrawPoint& pos, const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int count, va_list liste);
+        /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+        ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr,
+            unsigned color, unsigned format, glArchivItem_Font* font, unsigned count, va_list fmtArgs);
         ~ctrlVarText() override;
 
         Rect GetBoundaryRect() const override;
 
     protected:
         void Draw_() override;
-        /// Returns the text with placeholders replaced by the actual vars
-        std::string GetFormatedText() const;
 
-    protected:
-        std::vector<void*> vars;
+        unsigned format_;
 };
 
 #endif // !CTRL_VARTEXT_H_INCLUDED

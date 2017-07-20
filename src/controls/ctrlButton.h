@@ -20,16 +20,12 @@
 #pragma once
 
 #include "Window.h"
-#include "Point.h"
-#include "ctrlBaseColor.h"
-#include "ctrlBaseText.h"
+#include "DrawPoint.h"
 #include "ctrlBaseTooltip.h"
-#include "ctrlBaseImage.h"
 
 #include <string>
 
 class MouseCoords;
-class glArchivItem_Bitmap;
 class glArchivItem_Font;
 
 /// Buttonklasse
@@ -79,50 +75,5 @@ class ctrlButton : public Window, public ctrlBaseTooltip
         /// Button angeschalten?
         bool isEnabled;
 };
-
-/// Button mit Text
-class ctrlTextButton : public ctrlButton, public ctrlBaseText
-{
-    public:
-
-        ctrlTextButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                       const Extent& size, const TextureColor tc,
-                       const std::string& text,  glArchivItem_Font* font, const std::string& tooltip);
-
-    protected:
-
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-        void DrawContent() const override;
-};
-
-
-/// Button mit einem Bild
-class ctrlImageButton : public ctrlButton, public ctrlBaseImage
-{
-    public:
-
-        ctrlImageButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                        const Extent& size, const TextureColor tc,
-                        glArchivItem_Bitmap* const image, const std::string& tooltip);
-    protected:
-
-        void DrawContent() const override;
-};
-
-/// Button mit Farbe
-class ctrlColorButton : public ctrlButton, public ctrlBaseColor
-{
-    public:
-
-        ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                        const Extent& size, const TextureColor tc,
-                        unsigned int fillColor, const std::string& tooltip);
-
-    protected:
-
-        void DrawContent() const override;
-};
-
-
 
 #endif // CTRLBUTTON_H_INCLUDED

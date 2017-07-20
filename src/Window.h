@@ -31,14 +31,11 @@
 #include <vector>
 
 class ctrlBuildingIcon;
-class ctrlTextButton;
-class ctrlColorButton;
-class ctrlImageButton;
+class ctrlButton;
 class ctrlChat;
 class ctrlCheck;
 class ctrlComboBox;
-class ctrlTextDeepening;
-class ctrlColorDeepening;
+class ctrlDeepening;
 class ctrlEdit;
 class ctrlGroup;
 class ctrlImage;
@@ -140,14 +137,14 @@ class Window
         AnimationManager& GetAnimationManager(){ return animations_; }
 
         ctrlBuildingIcon* AddBuildingIcon(unsigned id_, unsigned short x, unsigned short y, BuildingType type, const Nation nation, unsigned short size = 36, const std::string& tooltip_ = "");
-        ctrlTextButton* AddTextButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip = "");
-        ctrlColorButton* AddColorButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned fillColor, const std::string& tooltip = "");
-        ctrlImageButton* AddImageButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image, const std::string& tooltip = "");
+        ctrlButton* AddTextButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip = "");
+        ctrlButton* AddColorButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned fillColor, const std::string& tooltip = "");
+        ctrlButton* AddImageButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image, const std::string& tooltip = "");
         ctrlChat* AddChatCtrl(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
         ctrlCheck* AddCheckBox(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly = false);
         ctrlComboBox* AddComboBox(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly = false);
-        ctrlTextDeepening* AddTextDeepening(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color);
-        ctrlColorDeepening* AddColorDeepening(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned fillColor);
+        ctrlDeepening* AddTextDeepening(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color);
+        ctrlDeepening* AddColorDeepening(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned fillColor);
         ctrlEdit* AddEdit(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
         ctrlGroup* AddGroup(unsigned id);
         ctrlImage* AddImage(unsigned id, unsigned short x, unsigned short y, glArchivItem_Bitmap* image, const std::string& tooltip = "");

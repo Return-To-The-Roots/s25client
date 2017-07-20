@@ -18,58 +18,50 @@
 #ifndef VertexUtility_h__
 #define VertexUtility_h__
 
-#include "Point.h"
+#include "gameTypes/MapCoordinates.h"
 #include "stdint.h"
 #include <vector>
 
 class VertexUtility
 {
-    public:
+public:
     
     /**
      * Computes the position of the vertex with the specified index on the map.
      * @param index vertex index
-     * @param width width of the map
-     * @param height height of the map
+     * @param size of the map
      * @return the position of the vertex on the map
      */
-    static Point<uint16_t> GetPosition(int index, int width, int height);
-    
+    static Position GetPosition(int index, const MapExtent& size);
+
     /**
      * Computes the index of a vertex on the map. If the position is outside of the map's boundary, the
      * coordinates are continuing on the other side of the map again (fluent boundaries).
      * @param p position of the vertex on the map
-     * @param width map width (MUST be of the power of 2)
-     * @param height map height (MUST be of the power of 2)
+     * @param size of the map (MUST be of the power of 2)
      * @return the index of the vertex
      */
-    static int GetIndexOf(const Point<int>& p, int width, int height);
+    static int GetIndexOf(const Position& p, const MapExtent& size);
 
     /**
      * Computes indices of neighboring vertices within the specified radius around the position.
      * @param p center position to collect neighboring vertices around
-     * @param width map width
-     * @param height map height
+     * @param size of the map
      * @param radius radius for collecting neighbor vertices
      * @return vector of indices for neighbor vertices
      */
-    static std::vector<int> GetNeighbors(const Point<int>& p,
-                                         int width,
-                                         int height,
-                                         int radius);
+    static std::vector<int> GetNeighbors(const Position& p, const MapExtent& size, int radius);
 
     /**
      * Computes the distance between two vertices.
      * @param p1 position of the first vertex
      * @param p2 position of the second vertex
-     * @param width map width
-     * @param height map height
+     * @param size of the map
      * @return the distance between the two vertices
      */
-    static double Distance(const Point<int>& p1,
-                           const Point<int>& p2,
-                           int width,
-                           int height);
+    static double Distance(const Position& p1,
+                           const Position& p2,
+                           const MapExtent& size);
 };
 
 #endif // VertexUtility_h__

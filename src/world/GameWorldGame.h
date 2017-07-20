@@ -19,7 +19,7 @@
 #define GameWorldGame_h__
 
 #include "world/GameWorldBase.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class CatapultStone;

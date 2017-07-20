@@ -18,8 +18,8 @@
 #ifndef GameWorldView_h__
 #define GameWorldView_h__
 
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
-#include "Point.h"
 #include "DrawPoint.h"
 #include <vector>
 

@@ -30,7 +30,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_MILITARY, IngameWindow::posAtMouse,  168, 330, _("Military"), LOADER.GetImageN("io", 5)),
+    IngameWindow(CGI_MILITARY, IngameWindow::posAtMouse, Extent(168, 330), _("Military"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     // Einzelne Balken

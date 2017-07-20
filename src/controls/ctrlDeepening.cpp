@@ -17,9 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlDeepening.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
-class Window;
 
 ctrlDeepening::ctrlDeepening(Window* parent,
                              unsigned id,
@@ -36,44 +33,4 @@ void ctrlDeepening::Draw_()
 {
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
     DrawContent();
-}
-
-ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size,
-    TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color):
-    ctrlDeepening(parent, id, pos, size, tc),
-    ctrlBaseText(text, color, font)
-{}
-
-Rect ctrlTextDeepening::GetBoundaryRect() const
-{
-    const Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(GetSize()) / 2, text,
-        glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
-    const Rect parentRect = ctrlDeepening::GetBoundaryRect();
-    Rect result;
-    result.left = std::min(txtRect.left, parentRect.left);
-    result.top = std::min(txtRect.top, parentRect.top);
-    result.right = std::max(txtRect.right, parentRect.right);
-    result.bottom = std::max(txtRect.bottom, parentRect.bottom);
-    return result;
-}
-
-void ctrlTextDeepening::DrawContent() const
-{
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
-}
-
-ctrlColorDeepening::ctrlColorDeepening(Window* parent,
-                                       unsigned int id,
-                                       DrawPoint pos,
-                                       const Extent& size,
-                                       TextureColor tc,
-                                       unsigned int fillColor):
-    ctrlDeepening(parent, id, pos, size, tc),
-    ctrlBaseColor(fillColor)
-{
-}
-
-void ctrlColorDeepening::DrawContent() const
-{
-    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), GetSize() - Extent(6, 6)), color_);
 }

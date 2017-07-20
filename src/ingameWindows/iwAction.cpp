@@ -52,9 +52,9 @@ enum TabID
     TAB_SEAATTACK
 };
 
-iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
-    : IngameWindow(CGI_ACTION, DrawPoint(mouse_x, mouse_y), 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
-      gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)
+iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned int params, bool military_buildings)
+    : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)),
+      gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -333,10 +333,11 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     main_tab->SetSelection(0, true);
 
     DrawPoint adjPos = GetPos();
-    if(GetPos().x + GetSize().x > VIDEODRIVER.GetScreenWidth())
-        adjPos.x = mouse_x - GetSize().x - 40;
-    if(GetPos().y + GetSize().y > VIDEODRIVER.GetScreenHeight())
-        adjPos.y = mouse_y - GetSize().y - 40;
+    DrawPoint outerPt = GetPos() + GetSize();
+    if(outerPt.x > VIDEODRIVER.GetScreenWidth())
+        adjPos.x = mousePos.x - GetSize().x - 40;
+    if(outerPt.y > VIDEODRIVER.GetScreenHeight())
+        adjPos.y = mousePos.y - GetSize().y - 40;
     if(adjPos != GetPos())
         SetPos(adjPos);
 

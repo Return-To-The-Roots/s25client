@@ -20,7 +20,7 @@
 
 #include "world/GameWorldGame.h"
 #include "world/GameWorldViewer.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <string>
 
 class SerializedGameData;

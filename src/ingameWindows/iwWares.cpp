@@ -31,10 +31,10 @@
 
 //167, 416
 iwWares::iwWares(unsigned int id, const DrawPoint& pos,
-                 const unsigned short width, const unsigned short height,
+                 const Extent& size,
                  const std::string& title,
                  bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player)
-    : IngameWindow(id, pos, width, height, title, LOADER.GetImageN("io", 5)),
+    : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)),
       inventory(inventory), player(player), curPage_(0), pageCount(0)
 {
     if(!font)
@@ -170,9 +170,9 @@ iwWares::iwWares(unsigned int id, const DrawPoint& pos,
     }
 
     // "Blättern"
-    AddImageButton(0, 52, height - 47, 66, 32, TC_GREY, LOADER.GetImageN("io", 84), _("Next page"));
+    AddImageButton(0, 52, GetSize().y - 47, 66, 32, TC_GREY, LOADER.GetImageN("io", 84), _("Next page"));
     // Hilfe
-    AddImageButton(12,  16, height - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(12,  16, GetSize().y - 47, 32, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
     wares.SetVisible(true);
 }

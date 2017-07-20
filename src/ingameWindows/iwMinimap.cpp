@@ -19,13 +19,13 @@
 #include "iwMinimap.h"
 #include "controls/ctrlIngameMinimap.h"
 #include "Loader.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "gameData/const_gui_ids.h"
 
 /// (maximum) size of the minimap
-const unsigned short MINIMAP_SIZE = 170;
+const Extent MINIMAP_SIZE = Extent::all(170);
 /// (maximum) size of the zoomed minimap
-const unsigned short MINIMAP_SIZE_BIG = 370;
+const Extent MINIMAP_SIZE_BIG = Extent::all(370);
 
 /// Abstand der Kartenränder zum Fensterrand
 const unsigned short WINDOW_MAP_SPACE = 8;
@@ -41,7 +41,7 @@ const unsigned short BUTTON_WINDOW_SPACE = 5;
 
 
 iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
-    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, MINIMAP_SIZE, _("Outline map"),
+    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"),
         LOADER.GetImageN("resource", 41)), extended(false)
 {
     AddCtrl(0, new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
@@ -74,14 +74,14 @@ void iwMinimap::Resize(const Extent& newSize)
     // Buttonpositionen anpassen, nach unten verschieben
     for(unsigned i = 1; i < 4; ++i)
     {
-        Window* ctrl = GetCtrl<ctrlImageButton>(i);
+        Window* ctrl = GetCtrl<Window>(i);
         DrawPoint ctrlPos = ctrl->GetPos();
         ctrlPos.y = GetRightBottomBoundary().y - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE;
         ctrl->SetPos(ctrlPos);
     }
 
     // Vergrößern/Verkleinern-Button nach unten rechts verschieben
-    GetCtrl<ctrlImageButton>(4)->SetPos(GetRightBottomBoundary() - DrawPoint(BUTTON_WIDTH + WINDOW_MAP_SPACE, BUTTON_HEIGHT + BUTTON_WINDOW_SPACE));
+    GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - DrawPoint(BUTTON_WIDTH + WINDOW_MAP_SPACE, BUTTON_HEIGHT + BUTTON_WINDOW_SPACE));
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", extended ? 108 : 109));
@@ -99,7 +99,7 @@ void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
             // Fenster vergrößern/verkleinern
             this->extended = !extended;
 
-            Resize(Extent::all(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE));
+            Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
         } break;
     }
 }

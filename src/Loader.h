@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "../libutil/src/Singleton.h"
 #include "gameData/NationConsts.h"
 #include "Rect.h"
 #include "ogl/glSmartBitmap.h"
@@ -29,6 +28,7 @@
 #include "gameTypes/JobTypes.h"
 #include "helpers/multiArray.h"
 #include "libsiedler2/src/ArchivInfo.h"
+#include "libutil/src/Singleton.h"
 #include <boost/array.hpp>
 #include <string>
 #include <vector>

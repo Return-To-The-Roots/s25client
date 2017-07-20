@@ -22,13 +22,11 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "driver/src/MouseCoords.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
 #include "ExtensionList.h"
-#include <algorithm>
 
 ctrlButton::ctrlButton(Window* parent, unsigned int id, const DrawPoint& pos,
                        const Extent& size, TextureColor tc, const std::string& tooltip)
-    : Window(pos, id, parent, size), tc(tc), ctrlBaseTooltip(tooltip), state(BUTTON_UP), hasBorder(true),
+    : Window(pos, id, parent, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true),
       isChecked(false), isIlluminated(false), isEnabled(true)
 {}
 
@@ -149,79 +147,4 @@ void ctrlButton::Draw_()
 
     /// Inhalt malen (Text, Bilder usw.)
     DrawContent();
-}
-
-
-ctrlTextButton::ctrlTextButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                               const Extent& size, const TextureColor tc,
-                               const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
-    : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
-{}
-
-
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-void ctrlTextButton::DrawContent() const
-{
-    const bool isPressed = state == BUTTON_PRESSED || isChecked;
-    unsigned color;
-    if(this->color_ == COLOR_YELLOW && isPressed)
-        color = 0xFFFFAA00;
-    else if(!isEnabled)
-        color = COLOR_GREY;
-    else
-        color = this->color_;
-
-    const unsigned short maxTextWidth = GetSize().x - 4; // reduced by border
-
-    if(GetTooltip().empty() && state == BUTTON_HOVER)
-    {
-        unsigned maxNumChars;
-        font->getWidth(text, 0, maxTextWidth, &maxNumChars);
-        if(maxNumChars < text.length())
-            ShowTooltip(text);
-    }
-
-    const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset),
-               text,
-               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
-               color,
-               0,
-               maxTextWidth);
-}
-
-
-ctrlImageButton::ctrlImageButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                                 const Extent& size, const TextureColor tc,
-                                 glArchivItem_Bitmap* const image, const std::string& tooltip)
-    : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseImage(image)
-{}
-
-void ctrlImageButton::DrawContent() const
-{
-    DrawPoint pos = GetDrawPos() + DrawPoint(GetSize()) / 2;
-    if((state == BUTTON_PRESSED || isChecked) && isEnabled)
-        pos += DrawPoint::all(2);
-    if(!isEnabled && GetModulationColor() == COLOR_WHITE)
-        DrawImage(pos, 0xFF555555);
-    else
-        DrawImage(pos);
-}
-
-
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                                 const Extent& size, const TextureColor tc,
-                                 unsigned int fillColor, const std::string& tooltip) :
-    ctrlButton(parent, id, pos, size, tc, tooltip),
-    ctrlBaseColor(fillColor)
-{
-}
-
-
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Farbe in dem Fall)
-void ctrlColorButton::DrawContent() const
-{
-    Extent rectSize = GetSize() - Extent(6, 6);
-    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), rectSize), color_);
 }

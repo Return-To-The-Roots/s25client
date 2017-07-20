@@ -17,29 +17,28 @@
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
 
-Map::Map() : width(0), height(0){}
+Map::Map() : size(0, 0){}
 
-Map::Map(unsigned width,
-         unsigned height,
+Map::Map(const MapExtent& size,
          const std::string& name,
-         const std::string& author) : width(width), height(height), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
+         const std::string& author) : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
 {
-    const unsigned size = width * height;
+    const unsigned numNodes = size.x * size.y;
 
-    z.resize(size, 0x00);
-    textureRsu.resize(size, 0x08);
-    textureLsd.resize(size, 0x08);
-    build.resize(size, 0x04);
-    shading.resize(size, 0x80);
-    resource.resize(size, 0x21);
-    road.resize(size, 0x00);
-    objectType.resize(size, 0x00);
-    objectInfo.resize(size, 0x00);
-    animal.resize(size, 0x00);
-    unknown1.resize(size, 0x00);
-    unknown2.resize(size, 0x07);
-    unknown3.resize(size, 0x00);
-    unknown5.resize(size, 0x00);
+    z.resize(numNodes, 0x00);
+    textureRsu.resize(numNodes, 0x08);
+    textureLsd.resize(numNodes, 0x08);
+    build.resize(numNodes, 0x04);
+    shading.resize(numNodes, 0x80);
+    resource.resize(numNodes, 0x21);
+    road.resize(numNodes, 0x00);
+    objectType.resize(numNodes, 0x00);
+    objectInfo.resize(numNodes, 0x00);
+    animal.resize(numNodes, 0x00);
+    unknown1.resize(numNodes, 0x00);
+    unknown2.resize(numNodes, 0x07);
+    unknown3.resize(numNodes, 0x00);
+    unknown5.resize(numNodes, 0x00);
 }
 
 
@@ -53,8 +52,8 @@ libsiedler2::ArchivInfo* Map::CreateArchiv()
     // create header information for the archiv
     header->setName(name);
     header->setAuthor(author);
-    header->setWidth(width);
-    header->setHeight(height);
+    header->setWidth(size.x);
+    header->setHeight(size.y);
     header->setPlayer(players);
     header->setGfxSet(type);
     

@@ -29,7 +29,7 @@
 #include <cstdio>
 
 iwSettings::iwSettings()
-    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, 370, 172, _("Settings"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"), LOADER.GetImageN("resource", 41))
 {
     AddText(  46,  15,  40, _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
     AddText(  47,  15,  85, _("Mode:"), COLOR_YELLOW, 0, NormalFont);

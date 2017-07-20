@@ -24,7 +24,7 @@
 #include "libutil/src/colors.h"
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
-    : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, 300, 110, _("Skip GameFrames"), LOADER.GetImageN("resource", 41)), gwv(gwv)
+    : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 110), _("Skip GameFrames"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {
     // Text vor Editfeld
     AddText(0, 50, 36, _("to GameFrame:"), COLOR_YELLOW, 0, NormalFont);

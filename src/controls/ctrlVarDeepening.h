@@ -19,22 +19,22 @@
 
 #pragma once
 
-#include "ctrlVarText.h"
+#include "controls/ctrlDeepening.h"
+#include "controls/ctrlbaseVarText.h"
 #include <cstdarg>
 class Window;
 class glArchivItem_Font;
 
-class ctrlVarDeepening : public ctrlVarText
+class ctrlVarDeepening: public ctrlDeepening, public ctrlBaseVarText
 {
     public:
-        /// liste contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-        ctrlVarDeepening(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc,  const std::string& text, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list liste);
+        /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+        ctrlVarDeepening(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, 
+            const std::string& fmtString, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list fmtArgs);
 
     protected:
-        void Draw_() override;
+        void DrawContent() const override;
 
-    private:
-        TextureColor tc;
 };
 
 #endif // !CTRLVARDEEPENING_H_INCLUDED

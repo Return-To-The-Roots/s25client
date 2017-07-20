@@ -24,7 +24,8 @@
 #include "GameClient.h"
 #include "GameServer.h"
 #include "animation/BlinkButtonAnim.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlBaseColor.h"
+#include "controls/ctrlTextButton.h"
 #include "controls/ctrlChat.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
@@ -340,11 +341,11 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     }
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
-    ctrlBaseText* text;
     if(GAMECLIENT.IsHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
-        text = group->AddTextButton(1, 20, cy, 150, 22, tc, name, NormalFont);
+        group->AddTextButton(1, 20, cy, 150, 22, tc, name, NormalFont);
     else
-        text = group->AddTextDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
+        group->AddTextDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
+    ctrlBaseText* text = GetCtrl<ctrlBaseText>(1);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)

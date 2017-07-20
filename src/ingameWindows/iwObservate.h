@@ -21,7 +21,7 @@
 #define iwOBSERVATE_H_INCLUDED
 
 #include "IngameWindow.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "nodeObjs/noMovable.h"
 
 class GameWorldView;

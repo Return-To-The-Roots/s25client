@@ -19,7 +19,7 @@
 #define CreateEmptyWorld_h__
 
 #include "gameTypes/Nation.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class GameWorldGame;

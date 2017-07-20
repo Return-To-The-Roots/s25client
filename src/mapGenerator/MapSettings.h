@@ -20,6 +20,7 @@
 
 #include "mapGenerator/MapStyle.h"
 #include "gameTypes/LandscapeType.h"
+#include "gameTypes/MapCoordinates.h"
 
 /**
  * Settings used for map generation.
@@ -28,7 +29,7 @@ struct MapSettings
 {
     MapSettings()
         : players(2),
-          width(256),height(256),
+          size(MapExtent::all(256)),
           ratioGold(9),
           ratioIron(36),
           ratioCoal(40),
@@ -44,14 +45,9 @@ struct MapSettings
     unsigned players;
     
     /**
-     * Map width in vertices.
+     * Map size in vertices.
      */
-    unsigned width;
-
-    /**
-     * Map height in vertices.
-     */
-    unsigned height;
+    MapExtent size;
     
     /**
      * Ratio of gold distributed as resources on mountain terrain.

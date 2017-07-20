@@ -25,10 +25,10 @@ AreaDesc::AreaDesc(Point<double> center,
                    double minDist,
                    double maxDist,
                    double pHill,
-                   int pTree,
-                   int pStone,
-                   int minZ,
-                   int maxZ,
+                   unsigned pTree,
+                   unsigned pStone,
+                   unsigned minZ,
+                   unsigned maxZ,
                    int minPlayerDist,
                    int maxPlayerDist)
     : center(center),
@@ -40,10 +40,10 @@ AreaDesc::AreaDesc(Point<double> center,
     
 }
 
-bool AreaDesc::IsInArea(const Point<int>& point, double playerDistance, int width, int height)
+bool AreaDesc::IsInArea(const Position& point, double playerDistance, const MapExtent& size)
 {
-    Point<int> tile((int)(width * center.x), (int)(height * center.y));
-    double distance = VertexUtility::Distance(point, tile, width, height) / min(width / 2, height / 2);
+    Position tile(size * center);
+    double distance = VertexUtility::Distance(point, tile, size) / min(size.x / 2, size.y / 2);
     
     if (maxPlayerDistance <= 0)
     {

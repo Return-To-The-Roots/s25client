@@ -18,7 +18,7 @@
 #ifndef RoadPathFinder_h__
 #define RoadPathFinder_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <limits>
 
 class GameWorldBase;

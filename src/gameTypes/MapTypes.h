@@ -18,17 +18,6 @@
 #ifndef MapTypes_h__
 #define MapTypes_h__
 
-#include "Point.h"
-
-/// Datentyp für Map-Koordinaten
-typedef unsigned short MapCoord;
-typedef Point<MapCoord> MapPoint;
-//-V:MapPoint:801 
-//-V:MapPoint:813 
-typedef Point<MapCoord> MapExtent;
-//-V:MapExtent:801 
-//-V:MapExtent:813 
-
 /// Terrainarten
 enum TerrainType
 {

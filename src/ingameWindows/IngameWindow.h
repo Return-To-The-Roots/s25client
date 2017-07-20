@@ -40,7 +40,7 @@ class IngameWindow : public Window
         /// Used to be -2 or 0xFFFE
         static const DrawPoint posAtMouse;
 
-        IngameWindow(unsigned int id, const DrawPoint& pos, unsigned short width, unsigned short height,
+        IngameWindow(unsigned int id, const DrawPoint& pos, const Extent& size,
             const std::string& title, glArchivItem_Bitmap* background, bool modal = false, bool closeOnRightClick = true, Window* parent = NULL);
         ~IngameWindow() override;
 

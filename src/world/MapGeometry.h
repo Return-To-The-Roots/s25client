@@ -19,7 +19,7 @@
 
 #include "Point.h"
 #include "gameTypes/Direction.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 
 Point<int> GetNeighbour(const Point<int>& pt, const Direction dir);
 Point<int> GetNeighbour2(Point<int> pt, unsigned dir);

@@ -151,7 +151,4 @@ class fowGranite : public FOWObject
         FOW_Type GetType() const override { return FOW_GRANITE; }
 };
 
-
-
-
 #endif // !FOWOBJECT_H_INCLUDED

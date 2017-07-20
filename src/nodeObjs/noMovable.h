@@ -19,7 +19,7 @@
 #define NO_MOVABLE_H_
 
 #include "noCoordBase.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Direction.h"
 
 class SerializedGameData;

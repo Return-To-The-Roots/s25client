@@ -32,9 +32,9 @@ std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid()
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(), std::numeric_limits<DrawPoint::ElementType>::max());
 const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max()-1, std::numeric_limits<DrawPoint::ElementType>::max()-1);
 
-IngameWindow::IngameWindow(unsigned int id, const DrawPoint& pos, unsigned short width, unsigned short height,
+IngameWindow::IngameWindow(unsigned int id, const DrawPoint& pos, const Extent& size,
                            const std::string& title, glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
-    : Window(pos, id, parent, Extent(width, height)),
+    : Window(pos, id, parent, size),
       title_(title), background(background), lastMousePos(0, 0),
       last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeOnRightClick_(closeOnRightClick)
 {

@@ -146,8 +146,8 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE_EQUAL(img->GetPos().x, 500);
     BOOST_REQUIRE_EQUAL(img->GetPos().y, 200);
     // Window must be bigger than image pos+size
-    BOOST_REQUIRE_GT(wnd->GetSize().x, img->GetPos().x + img->GetImage()->getWidth() - img->GetImage()->getNx());
-    BOOST_REQUIRE_GT(wnd->GetSize().y, img->GetPos().y + img->GetImage()->getHeight() - img->GetImage()->getNy());
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), img->GetPos().x + img->GetImage()->getWidth() - img->GetImage()->getNx());
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), img->GetPos().y + img->GetImage()->getHeight() - img->GetImage()->getNy());
     const ctrlButton* bt = wnd->GetCtrls<ctrlButton>().front();
     // button must be below start of image
     BOOST_REQUIRE_GT(bt->GetPos().y, img->GetPos().y - img->GetImage()->getNy());
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
         const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i]);
         Rect imgRect(img->GetPos().x - img->GetImage()->getNx(), img->GetPos().y - img->GetImage()->getNy(), img->GetImage()->getWidth(), img->GetImage()->getHeight());
         // Image must be in wnd
-        BOOST_REQUIRE_GT(wnd->GetSize().x, imgRect.right);
-        BOOST_REQUIRE_GT(wnd->GetSize().y, imgRect.bottom);
+        BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgRect.right);
+        BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgRect.bottom);
         // Not over button or text
         BOOST_REQUIRE(!DoRectsIntersect(imgRect, bt->GetDrawRect()));
         const ctrlMultiline* text = wnd->GetCtrls<ctrlMultiline>().front();

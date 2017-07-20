@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "controls/ctrlDeepening.h"
+#include "controls/ctrlBaseText.h"
 #include "controls/ctrlProgress.h"
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
@@ -37,7 +37,7 @@
 #include <boost/lambda/lambda.hpp>
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_TOOLS, IngameWindow::posAtMouse,  166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432, _("Tools"), LOADER.GetImageN("io", 5)),
+    IngameWindow(CGI_TOOLS, IngameWindow::posAtMouse, Extent(166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432), _("Tools"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory),
     settings_changed(false), ordersChanged(false), shouldUpdateTexts(false), isReplay(GAMECLIENT.IsReplayModeOn())
 {
@@ -111,7 +111,7 @@ void iwTools::UpdateTexts()
         const GamePlayer& localPlayer = gwv.GetPlayer();
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
-            ctrlTextDeepening* field = GetCtrl<ctrlTextDeepening>(200 + i);
+            ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + i);
             field->SetText(helpers::toString(isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i)));
         }
     }
@@ -143,7 +143,7 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         else
             ordersChanged |= me.ChangeToolOrderVisual(tool, +1);
 
-        ctrlTextDeepening* field = GetCtrl<ctrlTextDeepening>(200 + tool);
+        ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + tool);
         field->SetText(helpers::toString(me.GetToolsOrderedVisual(tool)));
     }
     else

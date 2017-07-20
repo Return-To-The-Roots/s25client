@@ -18,7 +18,7 @@
 #ifndef TradePath_h__
 #define TradePath_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Direction.h"
 #include <vector>
 

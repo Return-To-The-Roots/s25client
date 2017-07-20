@@ -24,9 +24,9 @@
 #include "GameInterface.h"
 #include "gameData/const_gui_ids.h"
 
-iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, int mouse_x, int mouse_y)
-    : IngameWindow(CGI_ROADWINDOW, IngameWindow::posAtMouse, 200, 100, _("Activity window"), LOADER.GetImageN("io", 1)),
-      gi(gi), mousePosAtOpen_(mouse_x, mouse_y)
+iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, const DrawPoint& mousePos)
+    : IngameWindow(CGI_ROADWINDOW, IngameWindow::posAtMouse, Extent(200, 100), _("Activity window"), LOADER.GetImageN("io", 1)),
+      gi(gi), mousePosAtOpen_(mousePos)
 {
     // Bau abbrechen
     ctrlButton* cancel = AddImageButton(1, 10, 20, 36, 36, TC_GREY, LOADER.GetImageN("io", 110), _("Interrupt road building"));

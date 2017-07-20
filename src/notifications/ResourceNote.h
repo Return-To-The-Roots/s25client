@@ -19,7 +19,7 @@
 #define ResourceNote_h__
 
 #include "notifications/notifications.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
 
 struct ResourceNote

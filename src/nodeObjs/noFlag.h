@@ -18,6 +18,7 @@
 #define NO_FLAG_H_INCLUDED
 
 #include "noRoadNode.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
 class FOWObject;

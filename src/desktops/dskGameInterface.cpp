@@ -26,7 +26,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "LobbyClient.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
 #include "GameManager.h"
 #include "CollisionDetection.h"
@@ -79,13 +79,23 @@
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
 #include "helpers/converters.h"
+#include "Log.h"
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/bind.hpp>
 #include <sstream>
 #include <algorithm>
-#include "Log.h"
+
+namespace{
+    enum{
+        ID_btMap,
+        ID_btMainSelect,
+        ID_btConstructionAid,
+        ID_btPost,
+        ID_txt
+    };
+}
 
 dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
     gameClient(GAMECLIENT),
@@ -101,19 +111,24 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
 
     SetScale(false);
 
-    int barx = (VIDEODRIVER.GetScreenWidth() - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44;
-    int bary = VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4;
+    DrawPoint barPos(
+        (GetSize().x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
+        GetSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
-    AddImageButton(0, barx,        bary, 37, 32, TC_GREEN1, LOADER.GetImageN("io",  50), _("Map"))
-    ->SetBorder(false);
-    AddImageButton(1, barx + 37,   bary, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"))
-    ->SetBorder(false);
-    AddImageButton(2, barx + 37 * 2, bary, 37, 32, TC_GREEN1, LOADER.GetImageN("io",  83), _("Construction aid mode"))
-    ->SetBorder(false);
-    AddImageButton(3, barx + 37 * 3, bary, 37, 32, TC_GREEN1, LOADER.GetImageN("io",  62), _("Post office"))
-    ->SetBorder(false);
+    ctrlButton* button = AddImageButton(ID_btMap, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"));
+    button->SetBorder(false);
+    barPos.x += button->GetSize().x;
+    AddImageButton(ID_btMainSelect, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"));
+    button->SetBorder(false);
+    barPos.x += button->GetSize().x;
+    AddImageButton(ID_btConstructionAid, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 83), _("Construction aid mode"));
+    button->SetBorder(false);
+    barPos.x += button->GetSize().x;
+    AddImageButton(ID_btPost, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"));
+    button->SetBorder(false);
+    barPos += DrawPoint(18, 24);
 
-    AddText(4, barx + 37 * 3 + 18, bary + 24, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
+    AddText(ID_txt, barPos.x, barPos.y, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
 
     LOBBYCLIENT.SetInterface(this);
     gameClient.SetInterface(this);
@@ -187,23 +202,23 @@ void dskGameInterface::Resize(const Extent& newSize)
     DrawPoint barPos((newSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
         newSize.y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
-    ctrlImageButton* button = GetCtrl<ctrlImageButton>(0);
+    ctrlButton* button = GetCtrl<ctrlButton>(ID_btMap);
     button->SetPos(barPos);
 
-    barPos.x += 37;
-    button = GetCtrl<ctrlImageButton>(1);
+    barPos.x += button->GetSize().x;
+    button = GetCtrl<ctrlButton>(ID_btMainSelect);
     button->SetPos(barPos);
 
-    barPos.x += 37;
-    button = GetCtrl<ctrlImageButton>(2);
+    barPos.x += button->GetSize().x;
+    button = GetCtrl<ctrlButton>(ID_btConstructionAid);
     button->SetPos(barPos);
 
-    barPos.x += 37;
-    button = GetCtrl<ctrlImageButton>(3);
+    barPos.x += button->GetSize().x;
+    button = GetCtrl<ctrlButton>(ID_btPost);
     button->SetPos(barPos);
 
     barPos += DrawPoint(18, 24);
-    ctrlText* text = GetCtrl<ctrlText>(4);
+    ctrlText* text = GetCtrl<ctrlText>(ID_txt);
     text->SetPos(barPos);
 
     gwv.Resize(newSize);
@@ -213,17 +228,17 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 0: // Karte
+        case ID_btMap:
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             break;
-        case 1: // Optionen
+        case ID_btMainSelect:
             WINDOWMANAGER.Show(new iwMainMenu(gwv, gameClient));
             break;
-        case 2: // Baukosten
+        case ID_btConstructionAid:
             if(WINDOWMANAGER.IsDesktopActive())
                 gwv.ToggleShowBQ();
             break;
-        case 3: // Post
+        case ID_btPost:
             WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             break;
@@ -385,7 +400,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.x, mc.y);
+            ShowRoadWindow(mc.GetPos());
         }
         else
         {
@@ -399,7 +414,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             {
                 MapPoint targetPt = selPt;
                 if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.x, mc.y);
+                    ShowRoadWindow(mc.GetPos());
             }
             else if(worldViewer.GetBQ(selPt) != BQ_NOTHING)
             {
@@ -417,7 +432,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                             GI_BuildRoad();
                     }
                     else if (selPt == targetPt)
-                        ShowRoadWindow(mc.x, mc.y);
+                        ShowRoadWindow(mc.GetPos());
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
@@ -430,7 +445,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                         GI_BuildRoad();
                 }
                 else if (selPt == targetPt)
-                    ShowRoadWindow(mc.x, mc.y);
+                    ShowRoadWindow(mc.GetPos());
             } else
             {
                 unsigned tbr = GetIdInCurBuildRoad(selPt);
@@ -438,7 +453,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(tbr)
                     DemolishRoad(tbr);
                 else
-                    ShowRoadWindow(mc.x, mc.y);
+                    ShowRoadWindow(mc.GetPos());
             }
         }
     }
@@ -567,9 +582,9 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Bisheriges Actionfenster schließen, falls es eins gab
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         WINDOWMANAGER.Close(actionwindow);
-        VIDEODRIVER.SetMousePos(mc.x, mc.y);
+        VIDEODRIVER.SetMousePos(mc.GetPos());
 
-        ShowActionWindow(action_tabs, cSel, mc.x, mc.y, enable_military_buildings);
+        ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
 
         selected = cSel;
     }
@@ -925,13 +940,13 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
     return 0;
 }
 
-void dskGameInterface::ShowRoadWindow(int mouse_x, int mouse_y)
+void dskGameInterface::ShowRoadWindow(const DrawPoint& mousePos)
 {
-    roadwindow = new iwRoadWindow(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mouse_x, mouse_y);
+    roadwindow = new iwRoadWindow(*this, worldViewer.GetBQ(road.point) != BQ_NOTHING, mousePos);
     WINDOWMANAGER.Show(roadwindow, true);
 }
 
-void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings)
+void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos, const bool enable_military_buildings)
 {
     const GameWorldBase& world = worldViewer.GetWorld();
 
@@ -965,7 +980,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
         params = worldViewer.GetNumSoldiersForAttack(cSel);
     }
 
-    actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mouse_x, mouse_y, params, enable_military_buildings);
+    actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings);
     WINDOWMANAGER.Show(actionwindow, true);
 }
 

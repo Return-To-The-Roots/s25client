@@ -22,6 +22,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "WindowManager.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
@@ -46,7 +47,7 @@ const std::string TOOLTIPS[14] =
 };
 
 iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, 166, 333, _("Transport"), LOADER.GetImageN("io", 5)),
+    IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     AddImageButton(0, 18, 285, 30, 30, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));

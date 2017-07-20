@@ -90,7 +90,7 @@ public:
 };
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
-    IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, 230, 110, _("Map Debug"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
 {
     gwv.SetDebugNodePrinter(printer);

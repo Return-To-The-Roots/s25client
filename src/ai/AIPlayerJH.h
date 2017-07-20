@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AIBase.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "GamePlayer.h"
 #include "AIJHHelper.h"
 #include "AIEventManager.h"

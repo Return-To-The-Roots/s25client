@@ -22,7 +22,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "WindowManager.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
 #include "buildings/nobShipYard.h"
@@ -38,7 +38,7 @@ const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
 iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol

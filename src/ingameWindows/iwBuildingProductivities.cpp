@@ -79,8 +79,8 @@ const unsigned short percent_height = 18;
 
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posAtMouse, 
-                   left_x + 2 * percent_width + 2 * image_percent_x + percent_image_x + right_x,
-                   top_y + (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1), _("Productivity"), LOADER.GetImageN("resource", 41)),
+                   Extent(left_x + 2 * percent_width + 2 * image_percent_x + percent_image_x + right_x,
+                   top_y + (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1)), _("Productivity"), LOADER.GetImageN("resource", 41)),
     player(player), percents(BLD_COUNT, 0)
 {
     const Nation playerNation = player.nation;

@@ -34,7 +34,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv):
-    IngameWindow(CGI_STATISTICS, IngameWindow::posAtMouse,  252, 336, _("Statistics"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_STATISTICS, IngameWindow::posAtMouse, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)),
     gwv(gwv)
 {
     activePlayers = std::vector<bool>(MAX_PLAYERS);
@@ -90,13 +90,13 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
             {
                 const bool visible = gwv.GetPlayer().IsAlly(i);
                 activePlayers[i] = visible;
-                GetCtrl<ctrlImageButton>(1 + i)->SetEnabled(visible);
+                GetCtrl<ctrlButton>(1 + i)->SetEnabled(visible);
             } break;
             case 2: // Nur man selber
             {
                 const bool visible = (gwv.GetPlayerId() == i);
                 activePlayers[i] = visible;
-                GetCtrl<ctrlImageButton>(1 + i)->SetEnabled(visible);
+                GetCtrl<ctrlButton>(1 + i)->SetEnabled(visible);
             } break;
         }
 

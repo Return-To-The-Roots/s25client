@@ -22,7 +22,7 @@
 #include "gameData/const_gui_ids.h"
 
 iwSurrender::iwSurrender()
-    : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, 240, 100, _("Surrender game?"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, Extent(240, 100), _("Surrender game?"), LOADER.GetImageN("resource", 41))
 {
     // Ok
     AddImageButton(0,  85, 24, 68, 57, TC_GREEN2, LOADER.GetImageN("io", 32), _("Surrender"));

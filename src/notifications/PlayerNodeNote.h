@@ -18,7 +18,7 @@
 #ifndef PlayerNodeNote_h__
 #define PlayerNodeNote_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
 
 struct PlayerNodeNote

@@ -18,7 +18,7 @@
 #ifndef MilitarySquares_h__
 #define MilitarySquares_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 #include <list>
 
