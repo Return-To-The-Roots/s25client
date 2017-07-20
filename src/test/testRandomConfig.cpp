@@ -17,98 +17,27 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
+#include <boost/foreach.hpp>
+#include <boost/array.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(RandomConfigTest)
 
 /**
- * Tests the RandomConfig::CreateRandom method to ensure the maximum height of an area does
+ * Tests the RandomConfig constructor to ensure the maximum height of an area does
  * not exceed the number of textures.
  */
-BOOST_AUTO_TEST_CASE(CreateRandom_MaxHeightBelowTextureCount)
+BOOST_AUTO_TEST_CASE(MaxHeightBelowTextureCount)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
+    boost::array<MapStyle, 7> mapStyles = { { MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland,
+        MapStyle::Migration, MapStyle::Islands, MapStyle::Continent, MapStyle::Random } };
+    BOOST_FOREACH(MapStyle mapStyle, mapStyles)
     {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
-    }
-}
-
-/**
- * Tests the RandomConfig::CreateIslands method to ensure the maximum height of an area does
- * not exceed the number of textures.
- */
-BOOST_AUTO_TEST_CASE(CreateIslands_MaxHeightBelowTextureCount)
-{
-    RandomConfig config(MapStyle::Islands, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
-    {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
-    }
-}
-
-/**
- * Tests the RandomConfig::CreateRingland method to ensure the maximum height of an area does
- * not exceed the number of textures.
- */
-BOOST_AUTO_TEST_CASE(CreateRingland_MaxHeightBelowTextureCount)
-{
-    RandomConfig config(MapStyle::Ringland, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
-    {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
-    }
-}
-
-/**
- * Tests the RandomConfig::CreateContinent method to ensure the maximum height of an area does
- * not exceed the number of textures.
- */
-BOOST_AUTO_TEST_CASE(CreateContinent_MaxHeightBelowTextureCount)
-{
-    RandomConfig config(MapStyle::Continent, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
-    {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
-    }
-}
-
-/**
- * Tests the RandomConfig::CreateGreenland method to ensure the maximum height of an area does
- * not exceed the number of textures.
- */
-BOOST_AUTO_TEST_CASE(CreateGreenland_MaxHeightBelowTextureCount)
-{
-    RandomConfig config(MapStyle::Greenland, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
-    {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
-    }
-}
-
-/**
- * Tests the RandomConfig::CreateMigration method to ensure the maximum height of an area does
- * not exceed the number of textures.
- */
-BOOST_AUTO_TEST_CASE(CreateMigration_MaxHeightBelowTextureCount)
-{
-    RandomConfig config(MapStyle::Migration, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
-    {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
-    }
-}
-
-/**
- * Tests the RandomConfig::CreateRiverland method to ensure the maximum height of an area does
- * not exceed the number of textures.
- */
-BOOST_AUTO_TEST_CASE(CreateRiverland_MaxHeightBelowTextureCount)
-{
-    RandomConfig config(MapStyle::Riverland, 0x1337);
-    for (std::vector<AreaDesc>::iterator it = config.areas.begin(); it != config.areas.end(); ++it)
-    {
-        BOOST_REQUIRE_LT(it->maxElevation, config.textures.size());
+        RandomConfig config(mapStyle, 0x1337);
+        BOOST_FOREACH(const AreaDesc& area, config.areas)
+        {
+            BOOST_REQUIRE_LT(area.maxElevation, config.textures.size());
+        }
     }
 }
 
