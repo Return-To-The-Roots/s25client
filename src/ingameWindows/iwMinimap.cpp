@@ -29,10 +29,8 @@ const Extent MINIMAP_SIZE_BIG = Extent::all(370);
 
 /// Abstand der Kartenränder zum Fensterrand
 const unsigned short WINDOW_MAP_SPACE = 8;
-/// Breite der unteren Buttons
-const unsigned short BUTTON_WIDTH = 36;
-/// Höhe der unteren Buttons
-const unsigned short BUTTON_HEIGHT = 36;
+/// Size of the lower buttons
+const Extent BUTTON_SIZE(36, 36);
 /// Abstand zwischen Buttons und Karte (Y)
 const unsigned short BUTTON_MAP_SPACE = 3;
 /// Abstand zwischen Buttons und unteren Fensterrand
@@ -47,11 +45,15 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     AddCtrl(0, new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
+    DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);
     for(unsigned i = 0; i < 3; ++i)
-        AddImageButton(i + 1, contentOffset.x + WINDOW_MAP_SPACE + BUTTON_WIDTH * i, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 85 + i));
+    {
+        AddImageButton(i + 1, curPos, BUTTON_SIZE, TC_GREY, LOADER.GetImageN("io", 85 + i));
+        curPos.x += BUTTON_SIZE.x;
+    }
 
     // Fenster vergrößern/verkleinern
-    AddImageButton(4, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, TC_GREY, LOADER.GetImageN("io", 109));
+    AddImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TC_GREY, LOADER.GetImageN("io", 109));
 
     Resize(GetSize());
 }
@@ -65,10 +67,10 @@ void iwMinimap::Resize(const Extent& newSize)
     im->Resize(newSize);
 
     // Control kürzen in der Höhe
-    im->RemoveBoundingBox(Extent(BUTTON_WIDTH * 4 + WINDOW_MAP_SPACE * 2, 0));
+    im->RemoveBoundingBox(Extent(BUTTON_SIZE.x * 4 + WINDOW_MAP_SPACE * 2, 0));
 
     // Fensterbreite anpassen
-    SetIwSize(im->GetSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_HEIGHT + BUTTON_WINDOW_SPACE));
+    SetIwSize(im->GetSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_SIZE.y + BUTTON_WINDOW_SPACE));
 
 
     // Buttonpositionen anpassen, nach unten verschieben
@@ -76,12 +78,12 @@ void iwMinimap::Resize(const Extent& newSize)
     {
         Window* ctrl = GetCtrl<Window>(i);
         DrawPoint ctrlPos = ctrl->GetPos();
-        ctrlPos.y = GetRightBottomBoundary().y - BUTTON_HEIGHT - BUTTON_WINDOW_SPACE;
+        ctrlPos.y = GetRightBottomBoundary().y - BUTTON_SIZE.y - BUTTON_WINDOW_SPACE;
         ctrl->SetPos(ctrlPos);
     }
 
     // Vergrößern/Verkleinern-Button nach unten rechts verschieben
-    GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - DrawPoint(BUTTON_WIDTH + WINDOW_MAP_SPACE, BUTTON_HEIGHT + BUTTON_WINDOW_SPACE));
+    GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - BUTTON_SIZE - DrawPoint(WINDOW_MAP_SPACE, BUTTON_WINDOW_SPACE));
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", extended ? 108 : 109));

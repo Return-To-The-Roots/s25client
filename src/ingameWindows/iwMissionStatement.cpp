@@ -37,24 +37,24 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     const unsigned imgSpace = imgSpaceRight + imgSpaceLeft;
     const unsigned textSpace = 8u;
     const unsigned buttonSpace = 12u;
-    const unsigned buttonHeight = 22u;
+    const Extent buttonSize(100, 22);
 
     const unsigned short maxTextWidth = GetIwSize().x - imgSize.x - textSpace - imgSpace;
-    ctrlMultiline* text = AddMultiline(0, contentOffset.x + textSpace, contentOffset.y + textSpace, maxTextWidth, GetIwSize().y, TC_GREEN2, NormalFont);
+    ctrlMultiline* text = AddMultiline(0, contentOffset + DrawPoint::all(textSpace), Extent(maxTextWidth, GetIwSize().y), TC_GREEN2, NormalFont);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);
     text->Resize(text->GetContentSize());
 
     // set window width to our determined max width
-    Extent newIwSize = text->GetSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonHeight + 2);
+    Extent newIwSize = text->GetSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonSize.y + 2);
     newIwSize.y = std::max(newIwSize.y, imgSize.y + minImgSpaceTop) + buttonSpace;
     SetIwSize(newIwSize);
     
-    AddTextButton(1, (GetSize().x - 100) / 2, GetRightBottomBoundary().y - buttonSpace - buttonHeight, 100, buttonHeight, TC_GREY, _("Continue"), NormalFont);
+    AddTextButton(1, DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y), buttonSize, TC_GREY, _("Continue"), NormalFont);
     if(img)
     {
         DrawPoint imgPos = GetRightBottomBoundary() + img->GetOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
-        AddImage(2, imgPos.x, imgPos.y, img);
+        AddImage(2, imgPos, img);
     }
 }
 

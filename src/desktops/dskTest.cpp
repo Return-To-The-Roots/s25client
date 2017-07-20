@@ -42,24 +42,24 @@ namespace{
 
 dskTest::dskTest()
 {
-    AddText(ID_txtTitle, 300, 20, _("Internal test screen for developers"), COLOR_ORANGE, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, glArchivItem_Font::DF_CENTER, LargeFont);
     boost::array<TextureColor, 4> textures = { { TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY } };
     boost::array<std::string, 4> labels = { { "Green1", "Green2", "Red1", "Grey" } };
     unsigned yPos = 50;
     unsigned curId = ID_grpBtStart;
     for(unsigned i = 0; i < textures.size(); i++){
-        AddText(curId, 10, yPos + 3, labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+        AddText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
         ctrlButton* bt;
-        bt = AddTextButton(curId + 1, 120, yPos, 95, 22, textures[i], "Nothing", NormalFont);
+        bt = AddTextButton(curId + 1, DrawPoint(120, yPos), Extent(95, 22), textures[i], "Nothing", NormalFont);
         bt->SetIlluminated(false);
         bt->SetBorder(false);
-        bt = AddTextButton(curId + 2, 220, yPos, 95, 22, textures[i], "Illuminated", NormalFont);
+        bt = AddTextButton(curId + 2, DrawPoint(220, yPos), Extent(95, 22), textures[i], "Illuminated", NormalFont);
         bt->SetIlluminated(true);
         bt->SetBorder(false);
-        bt = AddTextButton(curId + 3, 320, yPos, 95, 22, textures[i], "Border", NormalFont);
+        bt = AddTextButton(curId + 3, DrawPoint(320, yPos), Extent(95, 22), textures[i], "Border", NormalFont);
         bt->SetIlluminated(false);
         bt->SetBorder(true);
-        bt = AddTextButton(curId + 4, 420, yPos, 95, 22, textures[i], "Both", NormalFont);
+        bt = AddTextButton(curId + 4, DrawPoint(420, yPos), Extent(95, 22), textures[i], "Both", NormalFont);
         bt->SetIlluminated(true);
         bt->SetBorder(true);
         curId += 5;
@@ -67,19 +67,19 @@ dskTest::dskTest()
     }
     RTTR_Assert(curId == ID_grpBtEnd);
 
-    ctrlButton* bt = AddTextButton(ID_btAniBg, 10, yPos, 700, 40, TC_GREEN2, "", NormalFont);
+    ctrlButton* bt = AddTextButton(ID_btAniBg, DrawPoint(10, yPos), Extent(700, 40), TC_GREEN2, "", NormalFont);
     bt->SetBorder(false);
     bt->SetEnabled(false);
-    bt = AddTextButton(ID_btAni, bt->GetPos().x, bt->GetPos().y + 5, 30, 30, TC_RED1, "", NormalFont);
+    bt = AddTextButton(ID_btAni, bt->GetPos() + DrawPoint(0, 5), Extent(30, 30), TC_RED1, "", NormalFont);
     bt->SetBorder(false);
     bt->SetEnabled(false);
     bt->SetIlluminated(true);
 
-    AddTextButton(ID_btDisable, 10, 550, 200, 22, TC_GREEN1, "Enable/Disable buttons", NormalFont);
-    AddTextButton(ID_btAnimate, 215, 550, 100, 22, TC_GREEN1, "Animate", NormalFont);
-    AddTextButton(ID_btAnimateRepeat, 320, 550, 130, 22, TC_GREEN1, "Animate-Repeat", NormalFont);
-    AddTextButton(ID_btAnimateOscillate, 455, 550, 130, 22, TC_GREEN1, "Animate-Oscillate", NormalFont);
-    AddTextButton(ID_btBack, 630, 550, 150, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btDisable, DrawPoint(10, 550), Extent(200, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
+    AddTextButton(ID_btAnimate, DrawPoint(215, 550), Extent(100, 22), TC_GREEN1, "Animate", NormalFont);
+    AddTextButton(ID_btAnimateRepeat, DrawPoint(320, 550), Extent(130, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
+    AddTextButton(ID_btAnimateOscillate, DrawPoint(455, 550), Extent(130, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(630, 550), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
 }
 
 void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)

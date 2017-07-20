@@ -23,14 +23,14 @@
 #include "nodeObjs/noStaticObject.h"
 #include "world/GameWorldViewer.h"
 #include "RTTR_AssertError.h"
+#include "desktops/dskGameInterface.h"
+#include "initTestHelpers.h"
 #include "test/BQOutput.h"
 #include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include "test/CreateEmptyWorld.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
-#include "desktops/dskGameInterface.h"
-#include "initTestHelpers.h"
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)

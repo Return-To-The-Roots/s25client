@@ -51,40 +51,40 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player):
     player(player), currentTime(STAT_1H)
 {
     // Statistikfeld
-    AddImage(0, 10 + 115, 23 + 81, LOADER.GetImageN("io", 228));
+    AddImage(0, DrawPoint(10 + 115, 23 + 81), LOADER.GetImageN("io", 228));
 
     // Waren-Buttons
     // obere Reihe
     ctrlMultiSelectGroup* types = AddMultiSelectGroup(22, ctrlOptionGroup::ILLUMINATE);
-    types->AddImageButton(1, 17, 192, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_WOOD), _("Wood"));
-    types->AddImageButton(2, 48, 192, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_BOARDS), _("Boards"));
-    types->AddImageButton(3, 79, 192, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_STONES), _("Stones"));
-    types->AddImageButton(4, 110, 192, 30, 30, TC_GREY, LOADER.GetImageN("io", 80), _("Food"));
-    types->AddImageButton(5, 141, 192, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_WATER), _("Water"));
-    types->AddImageButton(6, 172, 192, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_BEER), _("Beer"));
-    types->AddImageButton(7, 203, 192, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_COAL), _("Coal"));
+    types->AddImageButton(1, DrawPoint(17, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_WOOD), _("Wood"));
+    types->AddImageButton(2, DrawPoint(48, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_BOARDS), _("Boards"));
+    types->AddImageButton(3, DrawPoint(79, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_STONES), _("Stones"));
+    types->AddImageButton(4, DrawPoint(110, 192), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 80), _("Food"));
+    types->AddImageButton(5, DrawPoint(141, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_WATER), _("Water"));
+    types->AddImageButton(6, DrawPoint(172, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_BEER), _("Beer"));
+    types->AddImageButton(7, DrawPoint(203, 192), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_COAL), _("Coal"));
 
     // untere Reihe
-    types->AddImageButton(8, 17, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_IRONORE), _("Ironore"));
-    types->AddImageButton(9, 48, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_GOLD), _("Gold"));
-    types->AddImageButton(10, 79, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_IRON), _("Iron"));
-    types->AddImageButton(11, 110, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_COINS), _("Coins"));
-    types->AddImageButton(12, 141, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_HAMMER), _("Tools"));
-    types->AddImageButton(13, 172, 227, 30, 30, TC_GREY, LOADER.GetImageN("io", 111), _("Weapons"));
-    types->AddImageButton(14, 203, 227, 30, 30, TC_GREY, LOADER.GetMapImageN(2250 + GD_BOAT), _("Boats"));
+    types->AddImageButton(8, DrawPoint(17, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_IRONORE), _("Ironore"));
+    types->AddImageButton(9, DrawPoint(48, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_GOLD), _("Gold"));
+    types->AddImageButton(10, DrawPoint(79, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_IRON), _("Iron"));
+    types->AddImageButton(11, DrawPoint(110, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_COINS), _("Coins"));
+    types->AddImageButton(12, DrawPoint(141, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_HAMMER), _("Tools"));
+    types->AddImageButton(13, DrawPoint(172, 227), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 111), _("Weapons"));
+    types->AddImageButton(14, DrawPoint(203, 227), Extent(30, 30), TC_GREY, LOADER.GetMapImageN(2250 + GD_BOAT), _("Boats"));
 
     // Hilfe
-    AddImageButton(16, 17, 261, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(16, DrawPoint(17, 261), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
     // Mülleimer
-    AddImageButton(17, 49, 263, 30, 28, TC_GREY, LOADER.GetImageN("io", 106), _("Delete all"));
+    AddImageButton(17, DrawPoint(49, 263), Extent(30, 28), TC_GREY, LOADER.GetImageN("io", 106), _("Delete all"));
 
     // Zeiten
     ctrlOptionGroup* times = AddOptionGroup(23, ctrlOptionGroup::ILLUMINATE);
-    times->AddTextButton(18, 81, 263, 36, 28, TC_GREY, _("15 m"), NormalFont);
-    times->AddTextButton(19, 119, 263, 36, 28, TC_GREY, _("1 h"), NormalFont);
-    times->AddTextButton(20, 155, 263, 36, 28, TC_GREY, _("4 h"), NormalFont);
-    times->AddTextButton(21, 191, 263, 36, 28, TC_GREY, _("16 h"), NormalFont);
+    times->AddTextButton(18, DrawPoint(81, 263), Extent(36, 28), TC_GREY, _("15 m"), NormalFont);
+    times->AddTextButton(19, DrawPoint(119, 263), Extent(36, 28), TC_GREY, _("1 h"), NormalFont);
+    times->AddTextButton(20, DrawPoint(155, 263), Extent(36, 28), TC_GREY, _("4 h"), NormalFont);
+    times->AddTextButton(21, DrawPoint(191, 263), Extent(36, 28), TC_GREY, _("16 h"), NormalFont);
     times->SetSelection(19);
 
 
@@ -92,12 +92,12 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player):
     timeAnnotations = std::vector<ctrlText*>(7);
     for (unsigned i = 0; i < 7; ++i)
     {
-        timeAnnotations[i] = AddText(32 + i, 211 + i, 125 + i, "", MakeColor(255, 136, 96, 52),
+        timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
                                      glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
     }
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, 211, 55, "1", MakeColor(255, 136, 96, 52),
+    maxValue = AddText(31, DrawPoint(211, 55), "1", MakeColor(255, 136, 96, 52),
                        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
 }
 

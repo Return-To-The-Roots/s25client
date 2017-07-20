@@ -32,13 +32,13 @@ dskDirectIP::dskDirectIP()
 {
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
-    AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Create Game"), NormalFont);
-    AddTextButton(4, 115, 210, 220, 22, TC_GREEN2, _("Join Game"), NormalFont);
+    AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TC_GREEN2, _("Create Game"), NormalFont);
+    AddTextButton(4, DrawPoint(115, 210), Extent(220, 22), TC_GREEN2, _("Join Game"), NormalFont);
 
     // "Zurück"
-    AddTextButton(5, 115, 250, 220, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_RED1, _("Back"), NormalFont);
 
-    AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
+    AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
 

@@ -61,15 +61,15 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
 
         switch(curPlayer.nation)
         {
-            case NAT_AFRICANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 257), curPlayer.name)->SetBorder(false);
+            case NAT_AFRICANS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 257), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_JAPANESE: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 253), curPlayer.name)->SetBorder(false);
+            case NAT_JAPANESE: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 253), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_ROMANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 252), curPlayer.name)->SetBorder(false);
+            case NAT_ROMANS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 252), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_VIKINGS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io", 256), curPlayer.name)->SetBorder(false);
+            case NAT_VIKINGS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 256), curPlayer.name)->SetBorder(false);
                 break;
-            case NAT_BABYLONIANS: AddImageButton(1+i, startX + pos * 34 - 17, 45-23, 34, 47, TC_GREEN1, LOADER.GetImageN("io_new", 7), curPlayer.name)->SetBorder(false);
+            case NAT_BABYLONIANS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io_new", 7), curPlayer.name)->SetBorder(false);
                 break;
             case NAT_COUNT:
             case NAT_INVALID:
@@ -104,46 +104,46 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
     }
 
     // Statistikfeld
-    AddImage(10, 11 + 115, 84 + 81, LOADER.GetImageN("io", 228));
+    AddImage(10, DrawPoint(11 + 115, 84 + 81), LOADER.GetImageN("io", 228));
 
     // Die Buttons zum Wechseln der Statistiken
     ctrlOptionGroup* statChanger = AddOptionGroup(19, ctrlOptionGroup::ILLUMINATE);
-    statChanger->AddImageButton(11, 18, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 167), _("Size of country"));
-    statChanger->AddImageButton(12, 45, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 168), _("Buildings"));
-    statChanger->AddImageButton(13, 72, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 169), _("Inhabitants"));
-    statChanger->AddImageButton(14, 99, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 170), _("Merchandise"));
-    statChanger->AddImageButton(15, 126, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 171), _("Military strength"));
-    statChanger->AddImageButton(16, 153, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 172), _("Gold"));
-    statChanger->AddImageButton(17, 180, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 173), _("Productivity"));
-    statChanger->AddImageButton(18, 207, 250, 26, 30, TC_GREY, LOADER.GetImageN("io", 217), _("Vanquished enemies"));
+    statChanger->AddImageButton(11, DrawPoint(18, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 167), _("Size of country"));
+    statChanger->AddImageButton(12, DrawPoint(45, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 168), _("Buildings"));
+    statChanger->AddImageButton(13, DrawPoint(72, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 169), _("Inhabitants"));
+    statChanger->AddImageButton(14, DrawPoint(99, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 170), _("Merchandise"));
+    statChanger->AddImageButton(15, DrawPoint(126, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 171), _("Military strength"));
+    statChanger->AddImageButton(16, DrawPoint(153, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 172), _("Gold"));
+    statChanger->AddImageButton(17, DrawPoint(180, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 173), _("Productivity"));
+    statChanger->AddImageButton(18, DrawPoint(207, 250), Extent(26, 30), TC_GREY, LOADER.GetImageN("io", 217), _("Vanquished enemies"));
 
     // Zeit-Buttons
     ctrlOptionGroup* timeChanger = AddOptionGroup(20, ctrlOptionGroup::ILLUMINATE);
-    timeChanger->AddTextButton(21, 51, 288, 43, 28, TC_GREY, _("15 m"), NormalFont);
-    timeChanger->AddTextButton(22, 96, 288, 43, 28, TC_GREY, _("1 h"), NormalFont);
-    timeChanger->AddTextButton(23, 141, 288, 43, 28, TC_GREY, _("4 h"), NormalFont);
-    timeChanger->AddTextButton(24, 186, 288, 43, 28, TC_GREY, _("16 h"), NormalFont);
+    timeChanger->AddTextButton(21, DrawPoint(51, 288), Extent(43, 28), TC_GREY, _("15 m"), NormalFont);
+    timeChanger->AddTextButton(22, DrawPoint(96, 288), Extent(43, 28), TC_GREY, _("1 h"), NormalFont);
+    timeChanger->AddTextButton(23, DrawPoint(141, 288), Extent(43, 28), TC_GREY, _("4 h"), NormalFont);
+    timeChanger->AddTextButton(24, DrawPoint(186, 288), Extent(43, 28), TC_GREY, _("16 h"), NormalFont);
 
     // Hilfe-Button
-    AddImageButton(25, 18, 288, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(25, DrawPoint(18, 288), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 
     // Aktuelle Überschrift über der Statistik
-    headline = AddText(30, 130, 120, _("Size of country"), MakeColor(255, 136, 96, 52),
+    headline = AddText(30, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),
                        glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE, NormalFont); // qx: fix for bug #1106952
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, 211, 125, "1", MakeColor(255, 136, 96, 52),
+    maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
                        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
 
     // Aktueller Minimalwert an der y-Achse
-    minValue = AddText(40, 211, 200, "0", MakeColor(255, 136, 96, 52),
+    minValue = AddText(40, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
                        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
 
     // Zeit-Werte an der x-Achse
     timeAnnotations = std::vector<ctrlText*>(7); // TODO nach oben
     for (unsigned i = 0; i < 7; ++i)
     {
-        timeAnnotations[i] = AddText(32 + i, 211 + i, 125 + i, "", MakeColor(255, 136, 96, 52),
+        timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
                                      glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
     }
 

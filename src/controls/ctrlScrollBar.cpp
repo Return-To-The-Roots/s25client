@@ -35,8 +35,8 @@ ctrlScrollBar::ctrlScrollBar(Window* parent,
 {
     SetVisible(false);
 
-    AddImageButton(0, 0, 0, size.x, button_height, tc, LOADER.GetImageN("io", 33));
-    AddImageButton(1, 0, (size.y > button_height) ? size.y - button_height : 1, size.x, button_height, tc, LOADER.GetImageN("io", 34));
+    AddImageButton(0, DrawPoint(0, 0), Extent(size.x, button_height), tc, LOADER.GetImageN("io", 33));
+    AddImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1), Extent(size.x, button_height), tc, LOADER.GetImageN("io", 34));
 
     Resize(size);
 }

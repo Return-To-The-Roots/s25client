@@ -35,45 +35,44 @@ iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, IngameWindow::posLastOrCenter, Extent(500, 260), _("Connecting to Lobby"), LOADER.GetImageN("resource", 41))
 {
     // Benutzername
-    AddText(0,  20, 40, _("Username:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlEdit* user = AddEdit(1, 260, 40, 220, 22, TC_GREEN2, NormalFont, 15);
+    AddText(0, DrawPoint( 20, 40), _("Username:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* user = AddEdit(1, DrawPoint(260, 40), Extent(220, 22), TC_GREEN2, NormalFont, 15);
     user->SetFocus();
     user->SetText(SETTINGS.lobby.name); //-V807
 
     // Passwort
-    AddText(2,  20, 70, _("Password:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlEdit* pass = AddEdit(3, 260, 70, 220, 22, TC_GREEN2, NormalFont, 0, true);
+    AddText(2, DrawPoint( 20, 70), _("Password:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* pass = AddEdit(3, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
     pass->SetText(SETTINGS.lobby.password);
 
     // Emailadresse
-    AddText(4,  20, 100, _("Email Address:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlEdit* email = AddEdit(5, 260, 100, 220, 22, TC_GREEN2, NormalFont);
+    AddText(4, DrawPoint( 20, 100), _("Email Address:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* email = AddEdit(5, DrawPoint(260, 100), Extent(220, 22), TC_GREEN2, NormalFont);
     email->SetText(SETTINGS.lobby.email);
 
     // Passwort speichern ja/nein
-    AddText(6, 20, 130, _("Save Password?"), COLOR_YELLOW, 0, NormalFont);
+    AddText(6, DrawPoint(20, 130), _("Save Password?"), COLOR_YELLOW, 0, NormalFont);
 
+    Extent btSize = Extent(105, 22);
     ctrlOptionGroup* savepassword = AddOptionGroup(10, ctrlOptionGroup::CHECK);
-    savepassword->AddTextButton(0, 260, 130, 105,   22, TC_GREEN2, _("No"), NormalFont); // nein
-    savepassword->AddTextButton(1, 375, 130, 105,   22, TC_GREEN2, _("Yes"), NormalFont); // ja
+    savepassword->AddTextButton(0, DrawPoint(260, 130), btSize, TC_GREEN2, _("No"), NormalFont); // nein
+    savepassword->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("Yes"), NormalFont); // ja
     savepassword->SetSelection( (SETTINGS.lobby.save_password ? 1 : 0) );
 
     // ipv6 oder ipv4 benutzen
-    AddText(11, 20, 160, _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(11, DrawPoint(20, 160), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
-    ipv6->AddTextButton(0, 260, 160, 105,   22, TC_GREEN2, _("IPv4"), NormalFont);
-    ipv6->AddTextButton(1, 375, 160, 105,   22, TC_GREEN2, _("IPv6"), NormalFont);
+    ipv6->AddTextButton(0, DrawPoint(260, 160), btSize, TC_GREEN2, _("IPv4"), NormalFont);
+    ipv6->AddTextButton(1, DrawPoint(375, 160), btSize, TC_GREEN2, _("IPv6"), NormalFont);
     ipv6->SetSelection( (SETTINGS.server.ipv6 ? 1 : 0) );
 
-    // Verbinden
-    AddTextButton(7, 20, 220, 220,  22, TC_RED1, _("Connect"), NormalFont);
-
-    // Registrieren
-    AddTextButton(8, 260, 220, 220,  22, TC_GREEN2, _("Register"), NormalFont);
+    btSize = Extent(220, 22);
+    AddTextButton(7, DrawPoint(20, 220), btSize, TC_RED1, _("Connect"), NormalFont);
+    //AddTextButton(8, DrawPoint(260, 220), btSize, TC_GREEN2, _("Register"), NormalFont);
 
     // Status
-    AddText(9, 250, 195, "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(9, DrawPoint(250, 195), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Lobby-Interface setzen
     LOBBYCLIENT.SetInterface(this);

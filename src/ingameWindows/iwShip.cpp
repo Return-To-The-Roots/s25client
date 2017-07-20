@@ -25,6 +25,7 @@
 #include "nodeObjs/noShip.h"
 #include "figures/noFigure.h"
 #include "Ware.h"
+#include "DrawPointInit.h"
 #include "controls/ctrlButton.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
@@ -41,28 +42,28 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
     player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
     ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
 {
-    AddImage(  0, 126, 101, LOADER.GetImageN("io", 228));
-    AddImageButton( 2, 18, 192, 30, 35, TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton( 3, 51, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
-    AddImageButton( 4, 81, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
-    AddImageButton( 5, 111, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton( 6, 141, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
-    AddImageButton( 7, 181, 196, 30, 26, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place")); // "Gehe Zu Ort"
+    AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
+    AddImageButton( 2, DrawPoint(18, 192), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
+    AddImageButton( 3, DrawPoint(51, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
+    AddImageButton( 4, DrawPoint(81, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
+    AddImageButton( 5, DrawPoint(111, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton( 6, DrawPoint(141, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton( 7, DrawPoint(181, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place")); // "Gehe Zu Ort"
 
     // Die Expeditionsweiterfahrbuttons
-    AddImageButton(10, 60, 81, 18, 18, TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
+    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
 
-    const int BUTTON_POS[6][2] =
+    const DrawPointInit BUTTON_POS[6] =
     {
         {60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}
     };
 
     // Expedition abbrechen
-    AddImageButton(11, 200, 143, 18, 18, TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
+    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
 
     // Die 6 Richtungen
     for(unsigned i = 0; i < 6; ++i)
-        AddImageButton(12 + i, BUTTON_POS[i][0], BUTTON_POS[i][1], 18, 18, TC_GREY, LOADER.GetImageN("io", 181 + (i + 4) % 6))->SetVisible(false);
+        AddImageButton(12 + i, BUTTON_POS[i], Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 181 + (i + 4) % 6))->SetVisible(false);
 
 }
 

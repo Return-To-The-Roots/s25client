@@ -39,7 +39,7 @@
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("resource", 41))
 {
-    ctrlMultiline* text = AddMultiline(2, 10, 20, GetSize().x - 20, 450, TC_GREEN1, NormalFont);
+    ctrlMultiline* text = AddMultiline(2, DrawPoint(10, 20), Extent(GetSize().x - 20, 450), TC_GREEN1, NormalFont);
 
     // Pfad mit gewählter Sprache auswählen
     std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;

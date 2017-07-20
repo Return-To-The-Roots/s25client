@@ -36,13 +36,13 @@ ctrlComboBox::ctrlComboBox(Window* parent,
     : Window(pos, id, parent, size),
       tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), last_show(false)
 {
-    ctrlList* liste = AddList(0, 0, size.x, size.y, 4, tc, font);
+    ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);
 
     // Liste am Anfang nicht anzeigen
     liste->SetVisible(false);
 
     if(!readonly)
-        AddImageButton(1, size.x - size.y, 0, size.y, size.y, tc, LOADER.GetImageN("io", 34));
+        AddImageButton(1, DrawPoint(size.x - size.y, 0), size, tc, LOADER.GetImageN("io", 34));
 
     Resize(size);
 }

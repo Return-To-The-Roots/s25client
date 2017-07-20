@@ -31,7 +31,7 @@ ctrlMultiline::ctrlMultiline(Window* parent, unsigned int id,
     tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
 {
     RecalcVisibleLines();
-    AddScrollBar(0, size.x - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, size.y, SCROLLBAR_WIDTH, tc, maxNumVisibleLines);
+    AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc, maxNumVisibleLines);
 }
 
 /**

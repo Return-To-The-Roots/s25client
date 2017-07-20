@@ -31,7 +31,7 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
     : IngameWindow(gui_id, IngameWindow::posAtMouse, Extent(HELP_WINDOW_WIDTH, 480), _("What is this?"), LOADER.GetImageN("io", 1))
 {
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
-    ctrlMultiline* text = AddMultiline(2, contentOffset.x, contentOffset.y, GetIwSize().y, 0, TC_GREEN1, NormalFont);
+    ctrlMultiline* text = AddMultiline(2, DrawPoint(contentOffset), GetIwSize(), TC_GREEN1, NormalFont);
     text->SetNumVisibleLines(MAX_LINES);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);

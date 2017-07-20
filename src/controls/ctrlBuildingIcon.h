@@ -38,7 +38,6 @@ class ctrlBuildingIcon : public ctrlButton
     protected:
         const BuildingType type;       /// der GebäudeType des Icons.
         const Nation nation;       /// Volk
-        const unsigned short size; /// die Größe des Icons
 
 };
 

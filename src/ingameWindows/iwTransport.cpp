@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "DrawPointInit.h"
 #include "WindowManager.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlOptionGroup.h"
@@ -50,18 +51,18 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     IngameWindow(CGI_TRANSPORT, IngameWindow::posLastOrCenter, Extent(166, 333), _("Transport"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
-    AddImageButton(0, 18, 285, 30, 30, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(0, DrawPoint(18, 285), Extent(30, 30), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
 
     // Standard
-    AddImageButton(1, 60, 285, 48, 30, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(1, DrawPoint(60, 285), Extent(48, 30), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
     // ganz hoch
-    AddImageButton(2, 118, 235, 30, 20, TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
+    AddImageButton(2, DrawPoint(118, 235), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
     // hoch
-    AddImageButton(3, 118, 255, 30, 20, TC_GREY, LOADER.GetImageN("io",  33), _("Up"));
+    AddImageButton(3, DrawPoint(118, 255), Extent(30, 20), TC_GREY, LOADER.GetImageN("io",  33), _("Up"));
     // runter
-    AddImageButton(4, 118, 275, 30, 20, TC_GREY, LOADER.GetImageN("io",  34), _("Down"));
+    AddImageButton(4, DrawPoint(118, 275), Extent(30, 20), TC_GREY, LOADER.GetImageN("io",  34), _("Down"));
     // ganz runter
-    AddImageButton(5, 118, 295, 30, 20, TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
+    AddImageButton(5, DrawPoint(118, 295), Extent(30, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
 
     // Buttons der einzelnen Waren anlegen
     ctrlOptionGroup* group = AddOptionGroup(6, ctrlOptionGroup::ILLUMINATE);
@@ -83,7 +84,7 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     TRANSPORT_SPRITES[13] = LOADER.GetMapImageN(2250 + GD_BOAT);
 
     // Positionen der einzelnen Buttons
-    const unsigned short BUTTON_POS[14][2] =
+    const DrawPointInit BUTTON_POS[14] =
     {
         {20, 25},
         {52, 42},
@@ -103,7 +104,7 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 
     // Einstellungen festlegen
     for(unsigned char i = 0; i < 14; ++i)
-        group->AddImageButton(i, BUTTON_POS[i][0], BUTTON_POS[i][1], 30, 30, TC_GREY,
+        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TC_GREY,
                               TRANSPORT_SPRITES[GAMECLIENT.visual_settings.transport_order[i]],
                               _(TOOLTIPS[GAMECLIENT.visual_settings.transport_order[i]]));
 

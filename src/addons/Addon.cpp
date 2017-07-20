@@ -40,14 +40,14 @@ void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  
     DrawPoint btPos(20, y), txtPos(52, y + 4);
     ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
     if(!button)
-        button = window->AddImageButton(id + 1, btPos.x, btPos.y, 22, 22, TC_GREY, LOADER.GetImageN("io", 21), description_);
+        button = window->AddImageButton(id + 1, btPos, Extent(22, 22), TC_GREY, LOADER.GetImageN("io", 21), description_);
 
     button->SetVisible(true);
     button->SetPos(btPos);
 
     ctrlText* text = window->GetCtrl<ctrlText>(id);
     if(!text)
-        text = window->AddText(id, txtPos.x, txtPos.y, name_, COLOR_YELLOW, 0, NormalFont);
+        text = window->AddText(id, txtPos, name_, COLOR_YELLOW, 0, NormalFont);
 
     text->SetVisible(true);
     text->SetPos(txtPos);

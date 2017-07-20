@@ -96,18 +96,20 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory):
     {
         for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
         {
-			if(bts[y*4+x] != BLD_CHARBURNER)
-            {
-                AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16 + iconSpacing.y * y, 32, 32, TC_GREY, LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
-            }
-			else
-				AddImageButton(y * 4 + x, iconPadding.x - 16 + iconSpacing.x * x, iconPadding.y - 16  + iconSpacing.y * y,32,32,TC_GREY,LOADER.GetImageN("charburner", playerNation * 8 + 8) , _(BUILDING_NAMES[bts[y * 4 + x]]));
+            glArchivItem_Bitmap* img;
+            if(bts[y * 4 + x] != BLD_CHARBURNER)
+                img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 4 + x]);
+            else
+                img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
+            Extent btSize = Extent(32, 32);
+            DrawPoint btPos = iconPadding - btSize / 2 + iconSpacing * DrawPoint(x, y);
+            AddImageButton(y * 4 + x, btPos, btSize, TC_GREY, img, _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
     // Hilfe-Button
-    AddImageButton(32, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
-
+    Extent btSize = Extent(30, 32);
+    AddImageButton(32, GetSize() - DrawPoint(14, 20) - btSize, btSize, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 /// Anzahlen der Gebäude zeichnen

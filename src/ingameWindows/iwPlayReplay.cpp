@@ -63,13 +63,13 @@ std::vector<std::string> GetReplays()
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"), LOADER.GetImageN("resource", 41))
 {
-    AddTable(0, 20, 30, 560, 220, TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
+    AddTable(0, DrawPoint(20, 30), Extent(560, 220), TC_GREEN2, NormalFont, 5, _("Filename"), 300, ctrlTable::SRT_STRING, _("Stocktaking date"), 220, ctrlTable::SRT_DATE, _("Player"), 360, ctrlTable::SRT_STRING, _("Length"), 120, ctrlTable::SRT_NUMBER, "", 0, ctrlTable::SRT_DEFAULT);
 
-    AddTextButton(2, 20, 260, 100, 22, TC_RED1, _("Clear"), NormalFont);
-    AddTextButton(5, 130, 260, 160, 22, TC_RED1, "Delete Invalid", NormalFont, _("Removes all replays that cannot be loaded with the current game version"));
-    AddTextButton(3, 20, 290, 160, 22, TC_RED1, _("Delete selected"), NormalFont);
-    AddTextButton(4, 190, 290, 190, 22, TC_RED1, _("Back"), NormalFont);
-    AddTextButton(1, 390, 290, 190, 22, TC_GREEN2, _("Start"), NormalFont);
+    AddTextButton(2, DrawPoint(20, 260), Extent(100, 22), TC_RED1, _("Clear"), NormalFont);
+    AddTextButton(5, DrawPoint(130, 260), Extent(160, 22), TC_RED1, "Delete Invalid", NormalFont, _("Removes all replays that cannot be loaded with the current game version"));
+    AddTextButton(3, DrawPoint(20, 290), Extent(160, 22), TC_RED1, _("Delete selected"), NormalFont);
+    AddTextButton(4, DrawPoint(190, 290), Extent(190, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(1, DrawPoint(390, 290), Extent(190, 22), TC_GREEN2, _("Start"), NormalFont);
 
     PopulateTable();
 

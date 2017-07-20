@@ -49,40 +49,40 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
       gwv(gwv), gcFactory(gcFactory)
 {
     // Verteilung
-    AddImageButton( 0,  12,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
+    AddImageButton( 0, DrawPoint( 12,  22), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
     // Transport
-    AddImageButton( 1,  68,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
+    AddImageButton( 1, DrawPoint( 68,  22), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
     // Werkzeugproduktion
-    AddImageButton( 2, 124,  22,  53, 44, TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
+    AddImageButton( 2, DrawPoint(124,  22), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
 
     // Statistiken
-    AddImageButton( 3,  12,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
-    AddImageButton( 4,  54,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
-    AddImageButton( 5,  96,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
+    AddImageButton( 3, DrawPoint( 12,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
+    AddImageButton( 4, DrawPoint( 54,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
+    AddImageButton( 5, DrawPoint( 96,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
 
     // Inventur
-    AddImageButton( 6, 138,  70,  39, 44, TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
+    AddImageButton( 6, DrawPoint(138,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
 
     // Gebäude
-    AddImageButton( 7,  12, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
+    AddImageButton( 7, DrawPoint( 12, 118), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
     // Militär
-    AddImageButton( 8,  68, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
+    AddImageButton( 8, DrawPoint( 68, 118), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
     // Schiffe
-    AddImageButton( 9, 124, 118,  53, 44, TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
+    AddImageButton( 9, DrawPoint(124, 118), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
 
     // Baureihenfolge
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
-        AddImageButton( 10,  12, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
+        AddImageButton( 10, DrawPoint( 12, 166), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
 
     // Diplomatie (todo: besseres Bild suchen)
-    AddImageButton( 11,  68, 166,  53, 44, TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
+    AddImageButton( 11, DrawPoint( 68, 166), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
     // AI-Debug
     if(gwv.GetViewer().GetPlayer().isHost && gwv.GetWorld().GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW))
-        AddImageButton( 13,  80, 210,  20, 20, TC_GREY, NULL, _("AI Debug Window"));
+        AddImageButton( 13, DrawPoint( 80, 210), Extent( 20, 20), TC_GREY, NULL, _("AI Debug Window"));
 
     // Optionen
-    AddImageButton(30,  12, 231, 165, 32, TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
+    AddImageButton(30, DrawPoint( 12, 231), Extent(165, 32), TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
 }
 
 /**

@@ -20,35 +20,31 @@
 #pragma once
 
 #include "IngameWindow.h"
+#include <vector>
 
 class GameCommandFactory;
 class GameWorldViewer;
 
 class iwDistribution : public IngameWindow
 {
-    private:
-
-        enum
+        struct DistributionGroup
         {
-            TAB_FOOD = 1,
-            TAB_CORN,
-            TAB_IRON,
-            TAB_COAL,
-            TAB_WOOD,
-            TAB_BOARD,
-            TAB_WATER
+            DistributionGroup(){}
+            DistributionGroup(std::string name, glArchivItem_Bitmap* img):name(name), img(img){}
+            std::string name;
+            glArchivItem_Bitmap* img;
+            std::vector<std::string> entries;
         };
-
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
     public:
 
         iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
         ~iwDistribution() override;
 
     private:
+        const GameWorldViewer& gwv;
+        GameCommandFactory& gcFactory;
+        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+        bool settings_changed;
 
         /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
         void UpdateSettings();
@@ -59,6 +55,10 @@ class iwDistribution : public IngameWindow
         void Msg_Timer(const unsigned int ctrl_id) override;
         void Msg_ButtonClick(const unsigned ctrl_id) override;
 
+        /// Groups for the settings
+        static std::vector<DistributionGroup> groups;
+        /// Initialize the groups structure
+        static void CreateGroups();
 };
 
 #endif // !iwDISTRIBUTION_H_INCLUDED

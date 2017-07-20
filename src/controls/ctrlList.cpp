@@ -33,7 +33,7 @@ ctrlList::ctrlList(Window* parent,
 {
     pagesize = (GetSize().y - 4) / font->getHeight();
 
-    AddScrollBar(0, GetSize().x - 20, 0, 20, GetSize().y, 20, tc, pagesize);
+    AddScrollBar(0, DrawPoint(GetSize().x - 20, 0), Extent(20, GetSize().y), 20, tc, pagesize);
 }
 
 ctrlList::~ctrlList()

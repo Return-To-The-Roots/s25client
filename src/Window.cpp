@@ -30,8 +30,7 @@
 #include <cstdarg>
 
 Window::Window():
-    pos_(0, 0), size_(0, 0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false),
-    isInMouseRelay(false), animations_(this)
+    pos_(0, 0), size_(0, 0), id_(0), parent_(NULL), active_(false), visible_(true), scale_(false), isInMouseRelay(false), animations_(this)
 {
 }
 
@@ -43,12 +42,8 @@ Window::Window():
  *  @param[in] id     ID des Fensters
  *  @param[in] parent Handle auf das Parentfenster.
  */
-Window::Window(const DrawPoint& pos,
-               unsigned id,
-               Window* parent,
-               const Extent& size):
-    pos_(pos), size_(size), id_(id), parent_(parent), active_(false), visible_(true), scale_(false),
-    isInMouseRelay(false), animations_(this)
+Window::Window(const DrawPoint& pos, unsigned id, Window* parent, const Extent& size):
+    pos_(pos), size_(size), id_(id), parent_(parent), active_(false), visible_(true), scale_(false), isInMouseRelay(false), animations_(this)
 {
 }
 
@@ -210,12 +205,9 @@ void Window::FreeRegion(Window* window)
         lockedAreas_.erase(window);
 }
 
-void Window::SetPos(const DrawPoint& offsetOrPos, bool absolute /*= true*/)
+void Window::SetPos(const DrawPoint& newPos)
 {
-    if(absolute)
-        pos_ = offsetOrPos;
-    else
-        pos_ += offsetOrPos;
+    pos_ = newPos;
 }
 
 /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
@@ -236,137 +228,54 @@ void Window::DeleteCtrl(unsigned id)
     childIdToWnd_.erase(it);
 }
 
-ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id,
-        unsigned short x,
-        unsigned short y,
-        BuildingType type,
-        const Nation nation,
-        unsigned short size,
-        const std::string& tooltip)
+ctrlBuildingIcon* Window::AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, const Nation nation, unsigned short size, const std::string& tooltip)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-
-    return AddCtrl(id, new ctrlBuildingIcon(this, id, pos, type, nation, size, tooltip));
+    return AddCtrl(id, new ctrlBuildingIcon(this, id, ScaleIf(pos), type, nation, ScaleIf(Extent(size, 0)).x, tooltip));
 }
 
-ctrlButton* Window::AddTextButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
+ctrlButton* Window::AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlTextButton(this, id, pos, size, tc, text, font, tooltip));
+    return AddCtrl(id, new ctrlTextButton(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, tooltip));
 }
 
-ctrlButton* Window::AddColorButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, const unsigned fillColor, const std::string& tooltip)
+ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const unsigned fillColor, const std::string& tooltip)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlColorButton(this, id, pos, size, tc, fillColor, tooltip));
+    return AddCtrl(id, new ctrlColorButton(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor, tooltip));
 }
 
-
-ctrlButton* Window::AddImageButton(unsigned id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
+ctrlButton* Window::AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, glArchivItem_Bitmap* const image,  const std::string& tooltip)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlImageButton(this, id, pos, size, tc, image, tooltip));
+    return AddCtrl(id, new ctrlImageButton(this, id, ScaleIf(pos), ScaleIf(size), tc, image, tooltip));
 }
 
-
-ctrlChat* Window::AddChatCtrl(unsigned id,
-                              unsigned short x,
-                              unsigned short y,
-                              unsigned short width,
-                              unsigned short height,
-                              TextureColor tc,
-                              glArchivItem_Font* font)
+ctrlChat* Window::AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlChat(this, id, pos, size, tc, font));
+    return AddCtrl(id, new ctrlChat(this, id, ScaleIf(pos), ScaleIf(size), tc, font));
 }
 
-ctrlCheck* Window::AddCheckBox(unsigned id,
-                               unsigned short x,
-                               unsigned short y,
-                               unsigned short width,
-                               unsigned short height,
-                               TextureColor tc,
-                               const std::string& text,
-                               glArchivItem_Font* font,
-                               bool readonly)
+ctrlCheck* Window::AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlCheck(this, id, pos, size, tc, text, font, readonly));
+    return AddCtrl(id, new ctrlCheck(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, readonly));
 }
 
-ctrlComboBox* Window::AddComboBox(unsigned id,
-                                  unsigned short x,
-                                  unsigned short y,
-                                  unsigned short width,
-                                  unsigned short height,
-                                  TextureColor tc,
-                                  glArchivItem_Font* font,
-                                  unsigned short max_list_height,
-                                  bool readonly)
+ctrlComboBox* Window::AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlComboBox(this, id, pos, size, tc, font, max_list_height, readonly));
+    return AddCtrl(id, new ctrlComboBox(this, id, ScaleIf(pos), ScaleIf(size), tc, font, max_list_height, readonly));
 }
 
-ctrlDeepening* Window::AddTextDeepening(unsigned id,
-                                    unsigned short x,
-                                    unsigned short y,
-                                    unsigned short width,
-                                    unsigned short height,
-                                    TextureColor tc,
-                                    const std::string& text,
-                                    glArchivItem_Font* font,
-                                    unsigned color)
+ctrlDeepening* Window::AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlTextDeepening(this, id, pos, size, tc, text, font, color));
+    return AddCtrl(id, new ctrlTextDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, text, font, color));
 }
 
-ctrlDeepening* Window::AddColorDeepening(unsigned id,
-        unsigned short x,
-        unsigned short y,
-        unsigned short width,
-        unsigned short height,
-        TextureColor tc,
-        unsigned fillColor)
+ctrlDeepening* Window::AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned fillColor)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlColorDeepening(this, id, pos, size, tc, fillColor));
+    return AddCtrl(id, new ctrlColorDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor));
 }
 
-ctrlEdit* Window::AddEdit(unsigned id,
-                          unsigned short x,
-                          unsigned short y,
-                          unsigned short width,
-                          unsigned short height,
-                          TextureColor tc,
-                          glArchivItem_Font* font,
-                          unsigned short maxlength,
-                          bool password,
-                          bool disabled,
-                          bool notify)
+ctrlEdit* Window::AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength, bool password, bool disabled, bool notify)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlEdit(this, id, pos, size, tc, font, maxlength, password, disabled, notify));
+    return AddCtrl(id, new ctrlEdit(this, id, ScaleIf(pos), ScaleIf(size), tc, font, maxlength, password, disabled, notify));
 }
 
 ctrlGroup* Window::AddGroup(unsigned id)
@@ -374,43 +283,19 @@ ctrlGroup* Window::AddGroup(unsigned id)
     return AddCtrl(id, new ctrlGroup(this, id));
 }
 
-ctrlImage* Window::AddImage(unsigned id,
-                            unsigned short x,
-                            unsigned short y,
-                            glArchivItem_Bitmap* image, const std::string& tooltip)
+ctrlImage* Window::AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-
-    return AddCtrl(id, new ctrlImage(this, id, pos, image, tooltip));
+    return AddCtrl(id, new ctrlImage(this, id, ScaleIf(pos), image, tooltip));
 }
 
-ctrlList* Window::AddList(unsigned id,
-                          unsigned short x,
-                          unsigned short y,
-                          unsigned short width,
-                          unsigned short height,
-                          TextureColor tc,
-                          glArchivItem_Font* font)
+ctrlList* Window::AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlList(this, id, pos, size, tc, font));
+    return AddCtrl(id, new ctrlList(this, id, ScaleIf(pos), ScaleIf(size), tc, font));
 }
 
-ctrlMultiline* Window::AddMultiline(unsigned id,
-                                    unsigned short x,
-                                    unsigned short y,
-                                    unsigned short width,
-                                    unsigned short height,
-                                    TextureColor tc,
-                                    glArchivItem_Font* font,
-                                    unsigned format)
+ctrlMultiline* Window::AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned format)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlMultiline(this, id, pos, size, tc, font, format));
+    return AddCtrl(id, new ctrlMultiline(this, id, ScaleIf(pos), ScaleIf(size), tc, font, format));
 }
 
 /**
@@ -439,93 +324,40 @@ ctrlMultiSelectGroup* Window::AddMultiSelectGroup(unsigned id, int select_type)
     return AddCtrl(id, new ctrlMultiSelectGroup(this, id, select_type));
 }
 
-ctrlPercent* Window::AddPercent(unsigned id,
-                                unsigned short x,
-                                unsigned short y,
-                                unsigned short width,
-                                unsigned short height,
-                                TextureColor tc,
-                                unsigned text_color,
-                                glArchivItem_Font* font,
-                                const unsigned short* percentage)
+ctrlPercent* Window::AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color, glArchivItem_Font* font, const unsigned short* percentage)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlPercent(this, id, pos, size, tc, text_color, font, percentage));
+    return AddCtrl(id, new ctrlPercent(this, id, ScaleIf(pos), ScaleIf(size), tc, text_color, font, percentage));
 }
 
-ctrlProgress* Window::AddProgress(unsigned id,
-                                  unsigned short x,
-                                  unsigned short y,
-                                  unsigned short width,
-                                  unsigned short height,
-                                  TextureColor tc,
-                                  unsigned short button_minus,
-                                  unsigned short button_plus,
-                                  unsigned short maximum,
-                                  const std::string& tooltip,
-                                  unsigned short x_padding,
-                                  unsigned short y_padding,
-                                  unsigned force_color,
-                                  const std::string& button_minus_tooltip,
-                                  const std::string& button_plus_tooltip)
+ctrlProgress* Window::AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned short button_minus, unsigned short button_plus, unsigned short maximum, const std::string& tooltip, const Extent& padding, unsigned force_color, const std::string& button_minus_tooltip, const std::string& button_plus_tooltip)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlProgress(this, id, pos, size, tc, button_minus, button_plus, maximum, Extent(x_padding, y_padding), force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
+    return AddCtrl(id, new ctrlProgress(this, id, ScaleIf(pos), ScaleIf(size), tc, button_minus, button_plus, maximum, padding, force_color, tooltip, button_minus_tooltip, button_plus_tooltip));
 }
 
-ctrlScrollBar* Window::AddScrollBar(unsigned id,
-                                    unsigned short x,
-                                    unsigned short y,
-                                    unsigned short width,
-                                    unsigned short height,
-                                    unsigned short button_height,
-                                    TextureColor tc,
-                                    unsigned short page_size)
+ctrlScrollBar* Window::AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc, unsigned short page_size)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
     button_height = ScaleIf(Extent(0, button_height)).y;
 
-    return AddCtrl(id, new ctrlScrollBar(this, id, pos, size, button_height, tc, page_size));
+    return AddCtrl(id, new ctrlScrollBar(this, id, ScaleIf(pos), ScaleIf(size), button_height, tc, page_size));
 }
 
-ctrlTab* Window::AddTabCtrl(unsigned id,
-                            unsigned short x,
-                            unsigned short y,
-                            unsigned short width)
+ctrlTab* Window::AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    Extent size(width, 0);
-
-    return AddCtrl(id, new ctrlTab(this, id, pos, width));
+    return AddCtrl(id, new ctrlTab(this, id, ScaleIf(pos), ScaleIf(Extent(width, 0)).x));
 }
 
 /**
  *  fügt eine Tabelle hinzu.
  *  ... sollte eine Menge von const char*, int und SortType sein
  */
-ctrlTable* Window::AddTable(unsigned id,
-                            unsigned short x,
-                            unsigned short y,
-                            unsigned short width,
-                            unsigned short height,
-                            TextureColor tc,
-                            glArchivItem_Font* font,
-                            unsigned columns,
+ctrlTable* Window::AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned columns,
                             ...)
 {
     ctrlTable* ctrl;
     va_list liste;
     va_start(liste, columns);
 
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    ctrl = new ctrlTable(this, id, pos, size, tc, font, columns, liste);
+    ctrl = new ctrlTable(this, id, ScaleIf(pos), ScaleIf(size), tc, font, columns, liste);
 
     va_end(liste);
 
@@ -553,39 +385,19 @@ ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
  *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
  *  @param[in] font   Schriftart
  */
-ctrlText* Window::AddText(unsigned id,
-                          unsigned short x,
-                          unsigned short y,
-                          const std::string& text,
-                          unsigned color,
-                          unsigned format,
-                          glArchivItem_Font* font)
+ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format, glArchivItem_Font* font)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-
-    return AddCtrl(id, new ctrlText(this, id, pos, text, color, format, font));
+    return AddCtrl(id, new ctrlText(this, id, ScaleIf(pos), text, color, format, font));
 }
 
-ctrlVarDeepening* Window::AddVarDeepening(unsigned id,
-        unsigned short x,
-        unsigned short y,
-        unsigned short width,
-        unsigned short height,
-        TextureColor tc,
-        const std::string& formatstr,
-        glArchivItem_Font* font,
-        unsigned color,
-        unsigned parameters,
+ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& formatstr, glArchivItem_Font* font, unsigned color, unsigned parameters,
         ...)
 {
     ctrlVarDeepening* ctrl;
     va_list liste;
     va_start(liste, parameters);
 
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    ctrl = new ctrlVarDeepening(this, id, pos, size, tc, formatstr, font, color, parameters, liste);
+    ctrl = new ctrlVarDeepening(this, id, ScaleIf(pos), ScaleIf(size), tc, formatstr, font, color, parameters, liste);
 
     va_end(liste);
 
@@ -610,51 +422,29 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned id,
  *  @param[in] parameters Anzahl der nachfolgenden Parameter
  *  @param[in] ...        die variablen Parameter
  */
-ctrlVarText* Window::AddVarText(unsigned id,
-                                unsigned short x,
-                                unsigned short y,
-                                const std::string& formatstr,
-                                unsigned color,
-                                unsigned format,
-                                glArchivItem_Font* font,
-                                unsigned parameters,
+ctrlVarText* Window::AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format, glArchivItem_Font* font, unsigned parameters,
                                 ...)
 {
     ctrlVarText* ctrl;
     va_list liste;
     va_start(liste, parameters);
 
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-
-    ctrl = new ctrlVarText(this, id, pos, formatstr, color, format, font, parameters, liste);
+    ctrl = new ctrlVarText(this, id, ScaleIf(pos), formatstr, color, format, font, parameters, liste);
 
     va_end(liste);
 
     return AddCtrl(id, ctrl);
 }
 
-ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id,
-        unsigned short x,
-        unsigned short y,
-        unsigned short width,
-        unsigned short height,
-        glArchivItem_Map* const map)
+ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* const map)
 {
-    const DrawPoint pos(ScaleIf(DrawPoint(x, y)));
-    const Extent size(ScaleIf(Extent(width, height)));
-
-    return AddCtrl(id, new ctrlPreviewMinimap(this, id, pos, size, map));
+    return AddCtrl(id, new ctrlPreviewMinimap(this, id, ScaleIf(pos), ScaleIf(size), map));
 }
 
 /**
  *  Zeichnet einen 3D-Rahmen.
  */
-void Window::Draw3D(const Rect& rect,
-    TextureColor tc,
-    unsigned short type,
-    bool illuminated,
-    bool drawContent,
-    unsigned color)
+void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool illuminated, bool drawContent, unsigned color)
 {
     if(rect.getSize().x < 4 || rect.getSize().y < 4 || tc == TC_INVISIBLE)
         return;

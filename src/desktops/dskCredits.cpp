@@ -47,13 +47,13 @@ const unsigned FADING_TIME = 2000;
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
-    AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22),   TC_RED1, _("Back"), NormalFont);
 
     // "Die Siedler II.5 RTTR"
-    AddText(1, 400, 10, _("Return To The Roots"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     // "Credits"
-    AddText(2, 400, 33, _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
     entry.lines.push_back(_("Project management"));

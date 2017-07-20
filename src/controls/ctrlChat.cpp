@@ -52,7 +52,7 @@ ctrlChat::ctrlChat(Window* parent,
     page_size = (size.y - 4) / (font->getHeight() + 2);
 
     // Scrollbalken hinzufügen
-    AddScrollBar(0, size.x - SCROLLBAR_WIDTH, 0, SCROLLBAR_WIDTH, size.y, SCROLLBAR_WIDTH, tc, page_size);
+    AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc, page_size);
 
     // Breite der Klammern <> um die Spielernamen berechnen
     bracket1_size = font->getWidth("<");

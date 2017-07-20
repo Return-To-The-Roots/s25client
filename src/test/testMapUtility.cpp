@@ -318,7 +318,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, ObjGenFixture)
     
     Map map(size, "map", "author");
     
-    Point<int> p(size.x/2, size.y/2);
+    Point<int> p(size / 2);
     MapUtility::SetTree(map, objGen, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
@@ -341,7 +341,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
         map.textureRsu[i] = TT_DESERT;
     }
     
-    Point<int> p(size.x/2, size.y/2);
+    Point<int> p(size / 2);
     MapUtility::SetTree(map, objGen, p);
     
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
@@ -355,7 +355,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
 BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, ObjGenFixture)
 {
     const MapExtent size(16, 8);
-    Point<int> p(size.x/2, size.y/2);
+    Point<int> p(size / 2);
     const int index = p.y * size.x + p.x;
     
     Map map(size, "map", "author");
@@ -379,7 +379,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, ObjGenFixture)
     
     Map map(size, "map", "author");
     
-    Point<int> p(size.x/2, size.y/2);
+    Point<int> p(size / 2);
     MapUtility::SetStone(map, objGen, p);
     
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
@@ -393,7 +393,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, ObjGenFixture)
 BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, ObjGenFixture)
 {
     const MapExtent size(16, 8);
-    Point<int> p(size.x/2, size.y/2);
+    Point<int> p(size / 2);
     const int index = p.y * size.x + p.x;
     
     Map map(size, "map", "author");

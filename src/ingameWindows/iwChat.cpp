@@ -30,15 +30,15 @@ iwChat::iwChat()
     : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"), LOADER.GetImageN("resource", 41))
 {
     // Eingabefeld für Chattext
-    AddEdit(0, 20, 30, 260, 22, TC_GREY, NormalFont);
+    AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TC_GREY, NormalFont);
 
     ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
     // "Alle"
-    group->AddTextButton(0,  20,  80, 260, 22, TC_GREY, _("All"), NormalFont);
+    group->AddTextButton(0, DrawPoint( 20,  80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
     // "Verbündete"
-    group->AddTextButton(1,  20, 112, 125, 22, TC_GREEN2, _("Allies"), NormalFont);
+    group->AddTextButton(1, DrawPoint( 20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
     // "Feinde"
-    group->AddTextButton(2, 155, 112, 125, 22, TC_RED1, _("Enemies"), NormalFont);
+    group->AddTextButton(2, DrawPoint(155, 112), Extent(125, 22), TC_RED1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
     group->SetSelection(chat_dest);

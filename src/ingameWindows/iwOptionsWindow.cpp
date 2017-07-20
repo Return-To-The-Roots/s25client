@@ -40,55 +40,55 @@
 iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"), LOADER.GetImageN("resource", 41))
 {
     // Der Soldat oben
-    AddImage(1, 150, 36, LOADER.GetImageN("io", 30));
+    AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddVarText(2, 150, 76, _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
+    AddVarText(2, DrawPoint(150, 76), _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
     // Copyright
-    AddVarText(3, 150, 96, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
 
     // "Tastaturbelegung"
-    AddImageButton(4, 35, 120, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(5, 85, 140, _("Keyboard layout"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
+    AddText(5, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // "'Lies mich'-Datei laden"
-    AddImageButton(6, 35, 160, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(7, 85, 180, _("Load 'ReadMe' file"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddImageButton(6, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
+    AddText(7, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // "Spiel laden!"
     // TODO: Implement
-    //AddImageButton( 8, 35, 210, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 48));
-    //AddText(9, 85, 230, _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    //AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 48));
+    //AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // "Spiel speichern!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
-    AddImageButton(10, 35, 230, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 47));
-    AddText(11, 85, 255, _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddImageButton(10, DrawPoint(35, 230), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 47));
+    AddText(11, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // Geräusche an/aus
-    AddImageButton(12, 35, 300, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
+    AddImageButton(12, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807
 
     // Musik an/aus
-    AddImageButton(13, 35, 340, 35, 35, TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
+    AddImageButton(13, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
 
     // Geräuschlautstärke
-    AddProgress(14, 100, 306, 160, 22, TC_GREEN2, 139, 138, 10)
+    AddProgress(14, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)
     ->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
 
     // Musiklautstärke
-    AddProgress(15, 100, 346, 160, 22, TC_GREEN2, 139, 138, 10)
+    AddProgress(15, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)
     ->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
 
     //// Music Player
-    AddTextButton(16, 100, 380, 160, 22, TC_GREEN2, _("Music player"), NormalFont);
+    AddTextButton(16, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
 
     // Advanced Options
-    AddTextButton(18, 67, 412, 168, 24, TC_GREEN2, _("Advanced"), NormalFont);
+    AddTextButton(18, DrawPoint(67, 412), Extent(168, 24), TC_GREEN2, _("Advanced"), NormalFont);
 
     // "Spiel aufgeben"
-    AddTextButton(17, 67, 443, 168, 24, TC_RED1, _("Surrender"), NormalFont);
+    AddTextButton(17, DrawPoint(67, 443), Extent(168, 24), TC_RED1, _("Surrender"), NormalFont);
     // "Spiel beenden"
-    AddTextButton(0, 67, 474, 168, 24, TC_RED1, _("End game"), NormalFont);
+    AddTextButton(0, DrawPoint(67, 474), Extent(168, 24), TC_RED1, _("End game"), NormalFont);
 
 }
 

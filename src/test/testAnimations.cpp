@@ -55,8 +55,8 @@ namespace{
         unsigned lastFrame;
         WindowFixture(): wnd(DrawPoint(0, 0), 0, NULL, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
         {
-            bt = wnd.AddTextButton(0, 10, 20, 100, 20, TC_RED1, "Test", NormalFont);
-            bt2 = wnd.AddTextButton(1, 10, 40, 100, 20, TC_RED1, "Test", NormalFont);
+            bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
+            bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
         }
 
         PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime);
@@ -623,8 +623,8 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     Desktop* dsk = new Desktop(NULL);
     WINDOWMANAGER.Switch(dsk);
     WINDOWMANAGER.Draw();
-    bt = dsk->AddTextButton(0, 10, 20, 100, 150, TC_RED1, "", NormalFont);
-    ctrlButton* btReference = dsk->AddTextButton(1, 130, bt->GetPos().y, 100, 150, TC_RED1, "", NormalFont);
+    bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TC_RED1, "", NormalFont);
+    ctrlButton* btReference = dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TC_RED1, "", NormalFont);
     dsk->GetAnimationManager().addAnimation(new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RPT_None));
     dsk->Msg_PaintBefore();
     // Pass the animation

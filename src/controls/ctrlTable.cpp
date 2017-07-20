@@ -43,7 +43,7 @@ ctrlTable::ctrlTable(Window* parent,
     line_count = (GetSize().y - header_height - 2) / font->getHeight();
 
     // Scrollbar hinzufügen
-    AddScrollBar(0, GetSize().x - 20, 0, 20, GetSize().y, 20, tc, line_count);
+    AddScrollBar(0, DrawPoint(GetSize().x - 20, 0), Extent(20, GetSize().y), 20, tc, line_count);
 
     if(column_count > 0)
     {
@@ -59,7 +59,7 @@ ctrlTable::ctrlTable(Window* parent,
             c.sortType = (SortType)va_arg(liste, int);
 
             // Button für die Spalte hinzufügen
-            AddTextButton(i + 1, 0, 0, 0, header_height, tc, c.title, font);
+            AddTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, c.title, font);
 
             columns.push_back(c);
         }

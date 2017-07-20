@@ -95,11 +95,11 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
 {
     gwv.SetDebugNodePrinter(printer);
 
-    ctrlCheck* cbShowCoords = AddCheckBox(0, 15, 25, 200, 20, TC_GREY, _("Show coordinates"), NormalFont);
+    ctrlCheck* cbShowCoords = AddCheckBox(0, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
     if(allowCheating)
     {
-        ctrlComboBox* data = AddComboBox(1, 15, 50, 200, 20, TC_GREY, NormalFont, 100);
+        ctrlComboBox* data = AddComboBox(1, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
         data->AddString(_("Nothing"));
         data->AddString(_("Reserved"));
         data->AddString(_("Altitude"));
@@ -108,7 +108,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
         data->AddString(_("Owner"));
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
-        ctrlComboBox* players = AddComboBox(2, 15, 75, 200, 20, TC_GREY, NormalFont, 100);
+        ctrlComboBox* players = AddComboBox(2, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
         for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetPlayerCount(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);

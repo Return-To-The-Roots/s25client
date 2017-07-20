@@ -54,28 +54,28 @@ dskMainMenu::dskMainMenu()
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Einzelspieler"
-    AddTextButton(ID_btSingleplayer, 115, 180, 220, 22, TC_GREEN2, _("Singleplayer"), NormalFont);
+    AddTextButton(ID_btSingleplayer, DrawPoint(115, 180), Extent(220, 22), TC_GREEN2, _("Singleplayer"), NormalFont);
     // "Mehrspieler"
-    AddTextButton(ID_btMultiplayer, 115, 210, 220, 22, TC_GREEN2, _("Multiplayer"), NormalFont);
+    AddTextButton(ID_btMultiplayer, DrawPoint(115, 210), Extent(220, 22), TC_GREEN2, _("Multiplayer"), NormalFont);
     // "Optionen"
-    AddTextButton(ID_btOptions, 115, 250, 220, 22, TC_GREEN2, _("Options"), NormalFont);
+    AddTextButton(ID_btOptions, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, _("Options"), NormalFont);
     // "Intro"
-    AddTextButton(ID_btIntro, 115, 280, 220, 22, TC_GREEN2, _("Intro"), NormalFont);
+    AddTextButton(ID_btIntro, DrawPoint(115, 280), Extent(220, 22), TC_GREEN2, _("Intro"), NormalFont);
     // "ReadMe"
-    AddTextButton(ID_btReadme, 115, 310, 220, 22, TC_GREEN2, _("Readme"), NormalFont);
+    AddTextButton(ID_btReadme, DrawPoint(115, 310), Extent(220, 22), TC_GREEN2, _("Readme"), NormalFont);
     // "Credits"
-    AddTextButton(ID_btCredits, 115, 340, 220, 22, TC_GREEN2, _("Credits"), NormalFont);
+    AddTextButton(ID_btCredits, DrawPoint(115, 340), Extent(220, 22), TC_GREEN2, _("Credits"), NormalFont);
     // "Programm verlassen"
-    AddTextButton(ID_btQuit, 115, 390, 220, 22, TC_RED1, _("Quit program"), NormalFont);
+    AddTextButton(ID_btQuit, DrawPoint(115, 390), Extent(220, 22), TC_RED1, _("Quit program"), NormalFont);
 
-    AddImage(ID_logo, 20, 20, LOADER.GetImageN("logo", 0));
+    AddImage(ID_logo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 
     if (SETTINGS.global.submit_debug_data == 0)
         AddTimer(ID_tmrDebugData, 250);
 
-    /*AddText(20, 50, 450, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
-    AddText(21, 50, 470, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
-    AddText(22, 50, 490, _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, LargeFont);*/
+    /*AddText(20, DrawPoint(50, 450), _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
+    AddText(21, DrawPoint(50, 470), _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddText(22, DrawPoint(50, 490), _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, LargeFont);*/
     //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÇüéâäàåçêëèïîì©ÄÅôöòûùÖÜáíóúñ
 }
 

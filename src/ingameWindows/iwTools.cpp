@@ -22,6 +22,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "controls/ctrlBaseText.h"
+#include "controls/ctrlButton.h"
 #include "controls/ctrlProgress.h"
 #include "world/GameWorldViewer.h"
 #include "world/GameWorldBase.h"
@@ -51,19 +52,20 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
         // qx:tools
         for (unsigned i = 0; i < TOOL_COUNT; ++i)
         {
-            AddImageButton(100 + i * 2, 174, 25   + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  33), "+1");
-            AddImageButton(101 + i * 2, 174, 25 + 13 + i * 28, 20, 13, TC_GREY, LOADER.GetImageN("io",  34), "-1");
-            AddTextDeepening  (200 + i, 151, 25 + 4 + i * 28, 20, 18, TC_GREY, "", NormalFont, COLOR_YELLOW);
+            Extent btSize = Extent(20, 13);
+            ctrlButton* bt = AddImageButton(100 + i * 2, DrawPoint(174, 25 + i * 28), btSize, TC_GREY, LOADER.GetImageN("io",  33), "+1");
+            AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY, LOADER.GetImageN("io",  34), "-1");
+            AddTextDeepening(200 + i, DrawPoint(151, 4 + bt->GetPos().y), Extent(20, 18), TC_GREY, "", NormalFont, COLOR_YELLOW);
         }
         UpdateTexts();
     }
 
     // Info
-    AddImageButton(12,  18, 384, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(12, DrawPoint(18, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
-        AddImageButton(15, 130, 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
+        AddImageButton(15, DrawPoint(130, 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 216), _("Zero all production"));
     // Standard
-    AddImageButton(13, 118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(13, DrawPoint(118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
     UpdateSettings();
@@ -76,7 +78,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
 
 void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)
 {
-    ctrlProgress* el = AddProgress(id, 17, 25 + id * 28, 132, 26, TC_GREY, 140 + id * 2 + 1, 140 + id * 2, 10, _(WARE_NAMES[ware]), 4, 4, 0, _("Less often"), _("More often"));
+    ctrlProgress* el = AddProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TC_GREY, 140 + id * 2 + 1, 140 + id * 2, 10, _(WARE_NAMES[ware]), Extent(4, 4), 0, _("Less often"), _("More often"));
     if(isReplay)
         el->ActivateControls(false);
 }
@@ -94,13 +96,16 @@ void iwTools::TransmitSettings()
     if(settings_changed || ordersChanged)
     {
         // Einstellungen speichern
+        ToolSettings newSettings;
         for(unsigned i = 0; i < TOOL_COUNT; ++i)
-            GAMECLIENT.visual_settings.tools_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
+            newSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        gcFactory.ChangeTools(GAMECLIENT.visual_settings.tools_settings, ordersChanged ? gwv.GetPlayer().GetToolOrderDelta() : NULL);
-
-        settings_changed = false;
-        ordersChanged = false;
+        if(gcFactory.ChangeTools(newSettings, ordersChanged ? gwv.GetPlayer().GetToolOrderDelta() : NULL))
+        {
+            GAMECLIENT.visual_settings.tools_settings = newSettings;
+            settings_changed = false;
+            ordersChanged = false;
+        }
     }
 }
 

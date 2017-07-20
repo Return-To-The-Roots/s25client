@@ -42,34 +42,34 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol
-    AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
+    AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
 
     // Exception: charburner
     if (building->GetBuildingType() != BLD_CHARBURNER)
     {
-        AddImage(13, 28, 39, LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].job));
+        AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].job));
     }
     else
     {
-        AddImage(13, 28, 39, LOADER.GetImageN("io_new", 5));	
+        AddImage(13, DrawPoint(28, 39), LOADER.GetImageN("io_new", 5));	
     }
 
     // Gebäudesymbol
-    AddImage(1, 117, 114, building->GetBuildingImage());
+    AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     if(USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].produced_ware != GD_NOTHING)
     {
-        AddImage(2, 196, 39, LOADER.GetMapImageN(2298));
-        AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].produced_ware));
+        AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
+        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].produced_ware));
     }
 
     // Info
-    AddImageButton( 4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton( 4, DrawPoint( 16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Abreißen
-    AddImageButton( 5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
+    AddImageButton( 5, DrawPoint( 50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
-    Window* enable_productivity = AddImageButton( 6,  90, 147, 34, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)));
+    Window* enable_productivity = AddImageButton( 6, DrawPoint( 90, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)));
     if(building->GetBuildingType() == BLD_LOOKOUTTOWER)
         enable_productivity->SetVisible(false);
     // Bei Bootsbauer Button zum Umwählen von Booten und Schiffen
@@ -78,24 +78,24 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id = (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::BOATS)
                              ? IODAT_BOAT_ID : IODAT_SHIP_ID;
-        AddImageButton(11, 130, 147, 43, 32, TC_GREY, LOADER.GetImageN("io", io_dat_id));
+        AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TC_GREY, LOADER.GetImageN("io", io_dat_id));
     }
 
     // "Gehe Zum Ort"
-    AddImageButton( 7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));	
+    AddImageButton( 7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));	
 
     // Gebäudebild und dessen Schatten
-    AddImage( 8, 117, 114, LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage( 8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-    Window* productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, SmallFont, building->GetProductivityPointer());
+    Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TC_GREY, 0xFFFFFF00, SmallFont, building->GetProductivityPointer());
     if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
         productivity->SetVisible(false);
 
-    AddText(10, 113, 50, _("(House unoccupied)"), COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
 	// "Go to next" (building of same type)
-    AddImageButton( 12, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
+    AddImageButton( 12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
 }
 
 

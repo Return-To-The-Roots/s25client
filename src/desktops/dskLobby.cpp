@@ -47,23 +47,23 @@ dskLobby::dskLobby(): dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWn
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
     // "Zurück"
-    AddTextButton(3, 530, 530, 250, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(3, DrawPoint(530, 530), Extent(250, 22), TC_RED1, _("Back"), NormalFont);
     // "Verbinden"
-    AddTextButton(4, 530, 470, 250, 22, TC_GREEN2, _("Connect"), NormalFont);
+    AddTextButton(4, DrawPoint(530, 470), Extent(250, 22), TC_GREEN2, _("Connect"), NormalFont);
     // "Internet Ranking"
-    AddTextButton(5, 530, 500, 250, 22, TC_GREEN2, _("Internet Ranking"), NormalFont);
+    AddTextButton(5, DrawPoint(530, 500), Extent(250, 22), TC_GREEN2, _("Internet Ranking"), NormalFont);
     // "Server hinzufügen"
-    AddTextButton(6, 530, 440, 250, 22, TC_GREEN2, _("Add Server"), NormalFont);
+    AddTextButton(6, DrawPoint(530, 440), Extent(250, 22), TC_GREEN2, _("Add Server"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version", "Ping"
-    AddTable(10, 20, 20, 500, 262, TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300, ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100, ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
+    AddTable(10, DrawPoint(20, 20), Extent(500, 262), TC_GREY, NormalFont, 6, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300, ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100, ctrlTable::SRT_STRING, _("Ping"), 100, ctrlTable::SRT_NUMBER);
     // Spieler-Tabelle - "Name", "Punkte", "Version"
-    AddTable(11, 530, 20, 250, 410, TC_GREY, NormalFont, 3, _("Name"), 500, ctrlTable::SRT_STRING, _("Points"), 250, ctrlTable::SRT_STRING, _("Version"), 250, ctrlTable::SRT_STRING);
+    AddTable(11, DrawPoint(530, 20), Extent(250, 410), TC_GREY, NormalFont, 3, _("Name"), 500, ctrlTable::SRT_STRING, _("Points"), 250, ctrlTable::SRT_STRING, _("Version"), 250, ctrlTable::SRT_STRING);
 
     // Chatfenster
-    AddChatCtrl(20, 20, 290, 500, 238, TC_GREY, NormalFont);
+    AddChatCtrl(20, DrawPoint(20, 290), Extent(500, 238), TC_GREY, NormalFont);
     // Chatfenster-Edit
-    AddEdit(21, 20, 530, 500, 22, TC_GREY, NormalFont);
+    AddEdit(21, DrawPoint(20, 530), Extent(500, 22), TC_GREY, NormalFont);
 
     AddTimer(30, 5000);
 

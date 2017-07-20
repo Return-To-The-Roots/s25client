@@ -739,7 +739,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     {
         DrawPoint delta = (*it)->GetPos() + DrawPoint((*it)->GetSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
-            (*it)->SetPos(elMin(-delta, DrawPoint(0, 0)), /*absolute=*/false);
+            (*it)->SetPos((*it)->GetPos() - elMax(delta, DrawPoint(0, 0)));
     }
 }
 

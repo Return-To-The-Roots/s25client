@@ -32,7 +32,7 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
                                    const unsigned short size,
                                    const std::string& tooltip)
     : ctrlButton(parent, id, pos, Extent(size, size), TC_GREY, tooltip),
-      type(type), nation(nation), size(size)
+      type(type), nation(nation)
 {}
 
 /**
@@ -44,14 +44,14 @@ void ctrlBuildingIcon::Draw_()
     TestMouseOver();
 
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
-        LOADER.GetImageN("io", 0)->DrawPart(Rect(GetDrawPos(), size, size));
+        LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
 	glArchivItem_Bitmap* image;
 	if(type!=BLD_CHARBURNER)
 		image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
 	else
 		image = LOADER.GetImageN("charburner", nation*8+8);
     if(image)
-        image->DrawFull(GetDrawPos() + DrawPoint(size, size) / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
+        image->DrawFull(GetDrawPos() + GetSize() / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
 }
 
 

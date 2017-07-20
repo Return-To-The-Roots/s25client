@@ -90,10 +90,10 @@
 namespace{
     enum{
         ID_btMap,
-        ID_btMainSelect,
+        ID_btOptions,
         ID_btConstructionAid,
         ID_btPost,
-        ID_txt
+        ID_txtNumMsg
     };
 }
 
@@ -115,20 +115,21 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
         (GetSize().x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
         GetSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
-    ctrlButton* button = AddImageButton(ID_btMap, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"));
+    Extent btSize = Extent(37, 32);
+    ctrlButton* button = AddImageButton(ID_btMap, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"));
     button->SetBorder(false);
-    barPos.x += button->GetSize().x;
-    AddImageButton(ID_btMainSelect, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"));
+    barPos.x += btSize.x;
+    AddImageButton(ID_btOptions, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"));
     button->SetBorder(false);
-    barPos.x += button->GetSize().x;
-    AddImageButton(ID_btConstructionAid, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 83), _("Construction aid mode"));
+    barPos.x += btSize.x;
+    AddImageButton(ID_btConstructionAid, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 83), _("Construction aid mode"));
     button->SetBorder(false);
-    barPos.x += button->GetSize().x;
-    AddImageButton(ID_btPost, barPos.x, barPos.y, 37, 32, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"));
+    barPos.x += btSize.x;
+    AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"));
     button->SetBorder(false);
     barPos += DrawPoint(18, 24);
 
-    AddText(ID_txt, barPos.x, barPos.y, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
+    AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
 
     LOBBYCLIENT.SetInterface(this);
     gameClient.SetInterface(this);
@@ -206,7 +207,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     button->SetPos(barPos);
 
     barPos.x += button->GetSize().x;
-    button = GetCtrl<ctrlButton>(ID_btMainSelect);
+    button = GetCtrl<ctrlButton>(ID_btOptions);
     button->SetPos(barPos);
 
     barPos.x += button->GetSize().x;
@@ -218,7 +219,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     button->SetPos(barPos);
 
     barPos += DrawPoint(18, 24);
-    ctrlText* text = GetCtrl<ctrlText>(ID_txt);
+    ctrlText* text = GetCtrl<ctrlText>(ID_txtNumMsg);
     text->SetPos(barPos);
 
     gwv.Resize(newSize);
@@ -231,7 +232,7 @@ void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
         case ID_btMap:
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             break;
-        case ID_btMainSelect:
+        case ID_btOptions:
             WINDOWMANAGER.Show(new iwMainMenu(gwv, gameClient));
             break;
         case ID_btConstructionAid:
@@ -1217,10 +1218,10 @@ void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool sh
     {
         std::stringstream ss;
         ss << postmessages_count;
-        GetCtrl<ctrlText>(4)->SetText(ss.str());
+        GetCtrl<ctrlText>(ID_txtNumMsg)->SetText(ss.str());
     }
     else
-        GetCtrl<ctrlText>(4)->SetText("");
+        GetCtrl<ctrlText>(ID_txtNumMsg)->SetText("");
 
 }
 

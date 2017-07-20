@@ -38,7 +38,7 @@ void AddonBool::createGui(Window* window, unsigned int id, unsigned short& y, bo
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(!check)
     {
-        check = window->AddCheckBox(id + 2, 0, 0, 220, 20,  TC_GREY, _("Use"), NormalFont, readonly );
+        check = window->AddCheckBox(id + 2, DrawPoint(0, 0), Extent(220, 20),  TC_GREY, _("Use"), NormalFont, readonly );
         setGuiStatus(window, id, status);
     }
 

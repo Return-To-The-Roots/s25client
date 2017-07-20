@@ -592,7 +592,7 @@ void glArchivItem_Font::initFont()
         ++numChars;
     }
 
-    fontNoOutline->create(  w, h, &bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette);
+    fontNoOutline->create(w, h, &bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette);
     fontWithOutline->create(w, h, &bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette);
 
     // Set the placeholder for non-existant glyphs. Use '?' if possible (should always be)

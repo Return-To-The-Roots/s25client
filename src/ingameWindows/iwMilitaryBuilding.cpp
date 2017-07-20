@@ -43,29 +43,29 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
-    AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
-    AddImage(1, 28, 39, LOADER.GetMapImageN(2250 + GD_SWORD));
+    AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
+    AddImage(1, DrawPoint(28, 39), LOADER.GetMapImageN(2250 + GD_SWORD));
 
     // Schild
-    AddImage(2, 196, 39, LOADER.GetMapImageN(2298));
-    AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
+    AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
+    AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
 
     // Hilfe
-    AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(4, DrawPoint( 16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Abreißen
-    AddImageButton(5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
+    AddImageButton(5, DrawPoint( 50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io",  23));
     // Gold an/aus (227,226)
-    AddImageButton(6,  90, 147, 32, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
+    AddImageButton(6, DrawPoint( 90, 147), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
     // "Gehe Zu Ort"
-    AddImageButton(7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
-    AddImage(8, 117, 114, LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage(8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 	// "Go to next" (building of same type)
-    AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
+    AddImageButton( 9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
 	//addon military control active? -> show button
 	if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
-		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
+		AddImageButton( 10, DrawPoint(124, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()

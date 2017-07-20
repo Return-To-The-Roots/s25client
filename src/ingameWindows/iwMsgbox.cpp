@@ -31,7 +31,7 @@ namespace{
         ID_TEXT,
         ID_BT_0
     };
-    const unsigned short btHeight = 20;
+    const Extent btSize(90, 20);
     const unsigned short paddingX = 15; /// Padding in X/to image
     const unsigned short minTextWidth = 150;
     const unsigned short maxTextHeight = 200;
@@ -53,14 +53,16 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
 {
     glArchivItem_Bitmap* icon = LOADER.GetImageN(iconFile, iconIdx);
     if(icon)
-        AddImage(ID_ICON, contentOffset.x + 30, contentOffset.y + 20, icon);
-    unsigned short textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetPos().x + paddingX : contentOffset.x + paddingX;
-    ctrlMultiline* multiline = AddMultiline(ID_TEXT, textX, contentOffset.y + 5, std::max<int>(minTextWidth, GetRightBottomBoundary().x - textX - paddingX), maxTextHeight, TC_GREEN2, NormalFont);
+        AddImage(ID_ICON, contentOffset + DrawPoint(30, 20), icon);
+    int textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetPos().x : contentOffset.x;
+    textX += paddingX;
+    Extent txtSize = Extent(std::max<int>(minTextWidth, GetRightBottomBoundary().x - textX - paddingX), maxTextHeight);
+    ctrlMultiline* multiline = AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TC_GREEN2, NormalFont);
     multiline->ShowBackground(false);
     multiline->AddString(text, COLOR_YELLOW);
     multiline->Resize(multiline->GetContentSize());
     // 10 padding, button/button padding
-    Extent newIwSize(Extent(multiline->GetPos()) + multiline->GetSize() + Extent(paddingX, 10 + btHeight * 2));
+    Extent newIwSize(multiline->GetPos() + multiline->GetSize() + Extent(paddingX, 10 + btSize.y * 2));
     // Increase window size if required
     SetIwSize(elMax(GetIwSize(), newIwSize));
 
@@ -108,36 +110,28 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     if(icon){
         icon->SetPos(elMax(pos, DrawPoint(0, 0)));
         DrawPoint iconPos(icon->GetPos() - icon->GetImage()->GetOrigin());
-        DrawPoint textPos;
+        DrawPoint textPos = contentOffset + DrawPoint(paddingX, 5);
         Extent textMaxSize;
         if(iconPos.x < 100){
             // icon left
             textPos.x = iconPos.x + icon->GetImage()->getWidth() + paddingX;
-            textPos.y = contentOffset.y + 5;
             textMaxSize.x = std::max<int>(minTextWidth, 400 - textPos.x - paddingX);
             textMaxSize.y = maxTextHeight;
         }else if(iconPos.x > 300){
             // icon right
-            textPos.x = contentOffset.x + paddingX;
-            textPos.y = contentOffset.y + 5;
             textMaxSize.x = iconPos.x - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         }else if(iconPos.y + icon->GetImage()->getHeight() < 50){
             // icon top
-            textPos.x = contentOffset.x + paddingX;
             textPos.y = iconPos.y + icon->GetImage()->getHeight() + paddingX;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         }else if(iconPos.y > 150){
             // icon bottom
-            textPos.x = contentOffset.x + paddingX;
-            textPos.y = contentOffset.y + 5;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = iconPos.y - paddingX - textPos.y;
         }else{
             // Icon middle -> Overlay text
-            textPos.x = contentOffset.x + paddingX;
-            textPos.y = contentOffset.y + 5;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         }
@@ -148,11 +142,13 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
 
         DrawPoint newSize = iconPos + DrawPoint(icon->GetImage()->GetSize());
         newSize = elMax(newSize, multiline->GetPos() + DrawPoint(multiline->GetSize()) + DrawPoint::all(paddingX));
-        newSize += DrawPoint(0, 10 + btHeight * 2) + DrawPoint(contentOffsetEnd);
+        newSize += DrawPoint(0, 10 + btSize.y * 2) + DrawPoint(contentOffsetEnd);
+        DrawPoint btMoveDelta(newSize - GetSize());
+        btMoveDelta.x /= 2;
         for(unsigned i = 0; i < 3; i++){
             Window* bt = GetCtrl<Window>(i + ID_BT_0);
             if(bt)
-                bt->SetPos(DrawPoint((newSize.x - GetSize().x) / 2, newSize.y - GetSize().y), false);
+                bt->SetPos(bt->GetPos() + btMoveDelta);
         }
         Resize(Extent(newSize));
     }
@@ -175,5 +171,5 @@ void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwMsgbox::AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc)
 {
-    AddTextButton(ID_BT_0 + id, x, GetRightBottomBoundary().y - btHeight * 2, 90, btHeight, tc, text, NormalFont);
+    AddTextButton(ID_BT_0 + id, DrawPoint(x, GetRightBottomBoundary().y - btSize.y * 2), btSize, tc, text, NormalFont);
 }
