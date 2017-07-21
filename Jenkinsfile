@@ -22,8 +22,13 @@ def transformIntoStep(arch, wspwd) {
                                   BARCH=
                               fi
                               PARAMS=
-                              # if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
-                              if [ "${env.BRANCH_NAME}" == "master" ] ; then
+                              VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
+                                  -v /srv/backup/www/s25client:/archive \
+                                  "
+
+                              if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
+                                  VOLUMES=""
+                              elif [ "${env.BRANCH_NAME}" == "master" ] ; then
                                   PARAMS=create_nightly
                               #elif [ "${env.BRANCH_NAME}" == "latest" ] ; then
                               #    PARAMS=create_release
@@ -31,8 +36,7 @@ def transformIntoStep(arch, wspwd) {
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
-                                                         -v /srv/apache2/siedler25.org/nightly:/www \
-                                                         -v /srv/backup/www/s25client:/archive \
+                                                         \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
                                                          "cd build && ./cmake.sh --prefix=. \$BARCH -DENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= -RTTR_LIBDIR=share/s25rttr && make \$PARAMS"
