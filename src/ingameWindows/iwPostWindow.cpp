@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -63,39 +63,39 @@ namespace{
 }
 
 iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
-    IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, 254, 295, _("Post office"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, Extent(254, 295), _("Post office"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL), lastHasMissionGoal(true)
 {
-    AddImageButton(ID_SHOW_ALL,    18, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
-    AddImageButton(ID_SHOW_MIL,    56, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 30));  // Viewer:  31 - Soldat
-    AddImageButton(ID_SHOW_GEO,    91, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 20));  // Viewer:  21 - Geologe
-    AddImageButton(ID_SHOW_ECO,   126, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
-    AddImageButton(ID_SHOW_GEN, 161, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
-    AddImageButton(ID_SHOW_GOAL,   199, 25, 35, 35, TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
-    AddImage(0,                   126, 151, LOADER.GetImageN("io", 228));
-    AddImageButton(ID_HELP,        18, 242, 30, 35, TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
-    AddImageButton(ID_GO_START,    51, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK,     81, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(ID_GO_FWD,     111, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(ID_GO_END,     141, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
+    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 30));  // Viewer:  31 - Soldat
+    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 20));  // Viewer:  21 - Geologe
+    AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
+    AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
+    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
+    AddImage(0, DrawPoint(126, 151), LOADER.GetImageN("io", 228));
+    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+    AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
+    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
+    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
-    AddImageButton(ID_GOTO, 181, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
+    AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
     // Mülleimer, nur sichtbar, wenn Nachricht da
-    AddImageButton(ID_DELETE, 211, 246, 30, 26, TC_GREY, LOADER.GetImageN("io", 106))->SetVisible(false);
+    AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 106))->SetVisible(false);
 
-    AddText(ID_INFO, 127, 228, "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont)->SetVisible(false);
+    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont)->SetVisible(false);
 
-    AddImage(ID_IMG, 127, 155, LOADER.GetImageN("io", 225));
+    AddImage(ID_IMG, DrawPoint(127, 155), LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, 126, 141, 200, 0, TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
     text->SetNumVisibleLines(4);
     text->ShowBackground(false);
 
     // Button with OK and deny sign (tick and cross) for contracts
-    AddImageButton(ID_ACCEPT, 87, 185, 30, 26, TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
-    AddImageButton(ID_DENY, 137, 185, 30, 26, TC_RED1, LOADER.GetImageN("io", 40))->SetVisible(false);
+    AddImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TC_GREEN1, LOADER.GetImageN("io", 32))->SetVisible(false);
+    AddImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TC_RED1, LOADER.GetImageN("io", 40))->SetVisible(false);
 
     FilterMessages();
     curMsgId = curMsgIdxs.size();
@@ -204,6 +204,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwPostWindow::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     ValidateMessages();
     if(lastHasMissionGoal != !postBox.GetCurrentMissionGoal().empty())
     {
@@ -245,15 +246,10 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 // Zeigt Nachricht an, passt Steuerelemente an
 void iwPostWindow::DisplayPostMessage()
 {
-    const unsigned xImgBottomCenter = 127;
-    const unsigned yImgBottomCenter = 210;
-
+    const DrawPoint imgBottomCenter(127, 210);
     // todo: koordinaten abschmecken
-    const unsigned xTextTopCenter = 127;
-    const unsigned yTextTopCenter = 110;
-
-    const unsigned xTextCenter = 126;
-    const unsigned yTextCenter = 151;
+    const DrawPoint textTopCenter(127, 110);
+    const DrawPoint textCenter(126, 151);
 
     // Hide everything
     GetCtrl<Window>(ID_IMG)->SetVisible(false);
@@ -269,7 +265,7 @@ void iwPostWindow::DisplayPostMessage()
     if (size == 0)
     {
         SetMessageText(_("No letters!"));
-        GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
+        GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
         curMsg = NULL;
         return;
     }
@@ -294,8 +290,7 @@ void iwPostWindow::DisplayPostMessage()
     {
         // We have an image, show it centered
         GetCtrl<ctrlImage>(ID_IMG)->SetImage(img);
-        GetCtrl<Window>(ID_IMG)->Move(xImgBottomCenter + img->getNx() - img->getWidth() / 2,
-            yImgBottomCenter + img->getNy() - img->getHeight());
+        GetCtrl<Window>(ID_IMG)->SetPos(imgBottomCenter + img->GetOrigin() - DrawPoint(img->getWidth() / 2, img->getHeight()));
 
         GetCtrl<Window>(ID_IMG)->SetVisible(true);
     }
@@ -306,9 +301,9 @@ void iwPostWindow::DisplayPostMessage()
     }
     // Place text at top or center depending on whether we have an img or the acceptButton
     if(img || GetCtrl<Window>(ID_ACCEPT)->IsVisible())
-        GetCtrl<Window>(ID_TEXT)->Move(xTextTopCenter, yTextTopCenter);
+        GetCtrl<Window>(ID_TEXT)->SetPos(textTopCenter);
     else
-        GetCtrl<Window>(ID_TEXT)->Move(xTextCenter, yTextCenter);
+        GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
     // If message contains valid position, allow going to it
     if(curMsg->GetPos().isValid())
         GetCtrl<Window>(ID_GOTO)->SetVisible(true);

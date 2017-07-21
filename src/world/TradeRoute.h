@@ -18,7 +18,7 @@
 #ifndef TradeRoute_h__
 #define TradeRoute_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "world/TradePath.h"
 
 class SerializedGameData;

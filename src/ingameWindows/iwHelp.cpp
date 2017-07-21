@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,17 +28,16 @@ const unsigned short HELP_WINDOW_WIDTH = 280;
 const unsigned MAX_LINES = 15;
 
 iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
-    : IngameWindow(gui_id, IngameWindow::posAtMouse,  HELP_WINDOW_WIDTH, 480, _("What is this?"), LOADER.GetImageN("io", 1))
+    : IngameWindow(gui_id, IngameWindow::posAtMouse, Extent(HELP_WINDOW_WIDTH, 480), _("What is this?"), LOADER.GetImageN("io", 1))
 {
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
-    ctrlMultiline* text = AddMultiline(2, contentOffset.x, contentOffset.y, GetIwWidth(), 0, TC_GREEN1, NormalFont);
+    ctrlMultiline* text = AddMultiline(2, DrawPoint(contentOffset), GetIwSize(), TC_GREEN1, NormalFont);
     text->SetNumVisibleLines(MAX_LINES);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);
     // Shrink to content
-    text->Resize(text->GetContentWidth(), text->GetContentHeight());
-    SetIwWidth(text->GetWidth());
-    SetIwHeight(text->GetHeight());
+    text->Resize(text->GetContentSize());
+    SetIwSize(text->GetSize());
     MoveNextToMouse();
 }
 

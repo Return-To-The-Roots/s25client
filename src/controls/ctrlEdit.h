@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,7 +28,7 @@ struct KeyEvent;
 class ctrlEdit : public Window
 {
     public:
-        ctrlEdit(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
+        ctrlEdit(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
         /// setzt den Text.
         void SetText(const std::string& text);
         void SetText(const unsigned int text);
@@ -46,7 +46,7 @@ class ctrlEdit : public Window
         bool Msg_KeyDown(const KeyEvent& ke) override;
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         void AddChar(unsigned int c);

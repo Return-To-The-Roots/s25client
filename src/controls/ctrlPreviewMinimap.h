@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,7 @@
 #include "ctrlMinimap.h"
 #include "PreviewMinimap.h"
 #include "gameData/MaxPlayers.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "ogl/glArchivItem_Map.h"
 class Window;
 
@@ -43,14 +43,13 @@ class ctrlPreviewMinimap : public ctrlMinimap
 
         ctrlPreviewMinimap( Window* parent,
                             const unsigned int id,
-                            const unsigned short x,
-                            const unsigned short y,
-                            const unsigned short width,
-                            const unsigned short height,
+                            const DrawPoint& pos,
+                            const Extent& size,
                             glArchivItem_Map* s2map);
 
         /// Zeichnet die MapPreview
-        bool Draw_() override;
+        void Draw_() override;
+        Rect GetBoundaryRect() const override;
 
         /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
         void SetPlayerColor(const unsigned id, const unsigned color)

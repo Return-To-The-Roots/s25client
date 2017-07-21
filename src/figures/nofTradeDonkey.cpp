@@ -125,7 +125,7 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         if(gt != GD_NOTHING)
         {
             // Ware im Korb zeichnen
-            LOADER.GetMapImageN(2350 + gt)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
+            LOADER.GetMapImageN(2350 + gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
         }
     }
     else

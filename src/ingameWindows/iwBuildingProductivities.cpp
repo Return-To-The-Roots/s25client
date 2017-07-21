@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -59,8 +59,7 @@ const BuildingType bts[BUILDINGS_COUNT] =
 
 
 /// Abstand vom linken, oberen Fensterrand
-const unsigned short left_x = 50;
-const unsigned short top_y = 30;
+const Extent bldProdContentOffset(50, 30);
 /// Abstand vom rechten Fensterrand
 const unsigned short right_x = 40;
 /// Horizontaler Abstand zwischen Bild und Prozentbar
@@ -70,17 +69,18 @@ const unsigned short percent_image_x = 40;
 /// Vertikaler Abstand zwischen 2 nacheinanderfolgenden "Zeilen"
 const unsigned short distance_y = 35;
 
-/// Breite der Prozentbalken
-const unsigned short percent_width = 100;
-/// Höhe der Scrollbars
-const unsigned short percent_height = 18;
+/// Größe der Prozentbalken
+const Extent percentSize(100, 18);
 
 
 
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posAtMouse, 
-                   left_x + 2 * percent_width + 2 * image_percent_x + percent_image_x + right_x,
-                   top_y + (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1), _("Productivity"), LOADER.GetImageN("resource", 41)),
+                   Extent(
+                       2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x,
+                       (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1)
+                   ) + bldProdContentOffset
+        , _("Productivity"), LOADER.GetImageN("resource", 41)),
     player(player), percents(BLD_COUNT, 0)
 {
     const Nation playerNation = player.nation;
@@ -90,22 +90,22 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
         {
             if(y * 2 + x < BUILDINGS_COUNT)
             {
+                unsigned imgId = (y * 2 + x) * 2;
+                DrawPoint imgPos(x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y + percentSize.y / 2);
+                imgPos = imgPos + bldProdContentOffset;
                 if (player.IsBuildingEnabled(bts[y * 2 + x]))
                 {
+                    glArchivItem_Bitmap* img;
                     if(bts[y*2+x]!=BLD_CHARBURNER)
-                    {
-                        AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2, LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 2 + x]), _(BUILDING_NAMES[bts[y * 2 + x]]));
-                    }
+                        img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 2 + x]);
                     else
-                    {
-                        AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2,LOADER.GetImageN("charburner", playerNation * 8 + 8), _(BUILDING_NAMES[bts[y * 2 + x]]));
-                    }
-
-                    AddPercent((y * 2 + x) * 2 + 1, left_x + image_percent_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y,
-                           percent_width, percent_height, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
+                        img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
+                    AddImage(imgId, imgPos, img, _(BUILDING_NAMES[bts[y * 2 + x]]));
+                    DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y);
+                    AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
                 } else
                 {
-                    AddImage((y * 2 + x) * 2, left_x + x * (percent_image_x + percent_width + image_percent_x), top_y + distance_y * y + percent_height / 2, LOADER.GetImageN("io", 188));
+                    AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
                 }
             }
         }
@@ -115,7 +115,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 
     // Hilfe-Button
     // Original S2 does not have a Help button in this window. Add it if you have something to say.
-    //AddImageButton(500, width_ - 14 - 30, height_ - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    //AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 /// Aktualisieren der Prozente

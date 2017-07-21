@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -25,18 +25,18 @@
 #include "GameClient.h"
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  200, 200, _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
 {
     // Ja
-    AddImageButton(0, 14, 140, 66, 40, TC_RED1, LOADER.GetImageN("io", 32), _("Yes")); //-V525
+    AddImageButton(0, DrawPoint(14, 140), Extent(66, 40), TC_RED1, LOADER.GetImageN("io", 32), _("Yes")); //-V525
     // Nein
-    AddImageButton(1, 82, 140, 66, 40, TC_GREY, LOADER.GetImageN("io", 40), _("No"));
+    AddImageButton(1, DrawPoint(82, 140), Extent(66, 40), TC_GREY, LOADER.GetImageN("io", 40), _("No"));
     // Gehe zum Standort
-    AddImageButton(2, 150, 140, 36, 40, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(2, DrawPoint(150, 140), Extent(36, 40), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
     // Gebäudebild
-    AddImage(3, 104, 109, building->GetBuildingImage());
+    AddImage(3, DrawPoint(104, 109), building->GetBuildingImage());
     // Gebäudename
-    AddText(4, 100, 125, _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 }
 
 void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -73,10 +73,11 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 
 void iwDemolishBuilding::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetDrawPos() + DrawPoint(104, 109), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->DrawFull(GetDrawPos() + DrawPoint(104, 109), COLOR_SHADOW);
 }
 

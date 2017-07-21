@@ -19,10 +19,10 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
 /// Klasse des Einzelspieler Desktops.
-class dskSinglePlayer : public Desktop
+class dskSinglePlayer: public dskMenuBase
 {
     public:
         dskSinglePlayer();

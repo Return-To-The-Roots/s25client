@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,39 +20,18 @@
 #pragma once
 
 #include "Window.h"
+#include "ctrlBaseText.h"
+
 class glArchivItem_Font;
-
-/// Basisklasse für Controls mit Texten wie auch Buttons, damit diese alle einheitlich verändert werden können
-class ctrlBaseText
-{
-    public:
-
-        ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font);
-
-        /// Setzt Text
-        void SetText(const std::string& text) { this->text = text; }
-        /// Setzt Schriftart
-        void SetFont(glArchivItem_Font* font) { this->font = font; }
-        /// Setzt Textfarbe
-        void SetColor(const unsigned color) { this->color_ = color; }
-
-        /// Gibt Text zurück
-        const std::string& GetText() const { return text; }
-
-    protected:
-
-        std::string text;
-        unsigned int color_;
-        glArchivItem_Font* font;
-};
-
 
 class ctrlText : public Window, public ctrlBaseText
 {
     public:
-        ctrlText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+        ctrlText(Window* parent, unsigned int id, const DrawPoint& pos, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+
+        Rect GetBoundaryRect() const override;
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     protected:
 

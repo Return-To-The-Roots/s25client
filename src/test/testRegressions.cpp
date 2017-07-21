@@ -30,7 +30,7 @@
 #include "gameData/ShieldConsts.h"
 #include "gameData/MapConsts.h"
 #include "RTTR_AssertError.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include "test/CreateEmptyWorld.h"
@@ -104,19 +104,17 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
 {
     initGUITests();
     iwHelp wnd(CGI_HELP, "Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
-    const unsigned oldW = wnd.GetWidth();
-    const unsigned oldH = wnd.GetHeight();
-    BOOST_REQUIRE_GT(oldW, 50u);
-    BOOST_REQUIRE_GT(oldH, 50u);
+    const Extent oldSize = wnd.GetSize();
+    BOOST_REQUIRE_GT(oldSize.x, 50u);
+    BOOST_REQUIRE_GT(oldSize.y, 50u);
     // Window should reduce height (only)
     wnd.SetMinimized(true);
-    BOOST_REQUIRE_EQUAL(wnd.GetWidth(), oldW);
-    BOOST_REQUIRE_GT(wnd.GetHeight(), 0u);
-    BOOST_REQUIRE_LT(wnd.GetHeight(), oldH);
+    BOOST_REQUIRE_EQUAL(wnd.GetSize().x, oldSize.x);
+    BOOST_REQUIRE_GT(wnd.GetSize().y, 0u);
+    BOOST_REQUIRE_LT(wnd.GetSize().y, oldSize.y);
     // And fully expand to old size
     wnd.SetMinimized(false);
-    BOOST_REQUIRE_EQUAL(wnd.GetWidth(), oldW);
-    BOOST_REQUIRE_EQUAL(wnd.GetHeight(), oldH);
+    BOOST_REQUIRE_EQUAL(wnd.GetSize(), oldSize);
 }
 
 struct AddGoodsFixture: public WorldFixture<CreateEmptyWorld, 1, 10, 10>
@@ -387,7 +385,7 @@ typedef WorldFixture<CreateEmptyWorld, 0, 10, 10> WorldFixtureEmpty0P;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
 {
     world.RecalcBorderStones(Point<int>(0, 0), Point<int>(world.GetWidth() - 1, world.GetHeight() - 1));
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         const BoundaryStones& isValue = world.GetNode(pt).boundary_stones;
         const BoundaryStones& expectedValue = expected[world.GetIdx(pt)];
@@ -414,7 +412,7 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
     {
         std::vector<BoundaryStones> expectedBoundaryStones(world.GetWidth() * world.GetHeight());
         // Reset owner to 0 (None) and boundary stones to nothing
-        RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             world.SetOwner(pt, 0);
             std::fill(expectedBoundaryStones[world.GetIdx(pt)].begin(), expectedBoundaryStones[world.GetIdx(pt)].end(), 0u);
@@ -479,7 +477,7 @@ BOOST_AUTO_TEST_CASE(TR_ConvertCoords){
     TerrainRenderer tr;
     const int w = 23;
     const int h = 32;
-    tr.Init(w, h);
+    tr.Init(MapExtent(w, h));
     typedef Point<int> PointI;
     PointI offset;
     // Test border cases

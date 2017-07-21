@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,11 +28,11 @@ class glArchivItem_Font;
 class ctrlChat : public Window
 {
     public:
-        ctrlChat(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
+        ctrlChat(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
         ~ctrlChat() override;
 
         /// Größe ändern
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         /// Fügt eine Chatnachricht hinzu.
         void AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, unsigned int msg_color);
         /// Setzt Farbe der Zeitangaben.
@@ -49,7 +49,7 @@ class ctrlChat : public Window
 
     protected:
         /// Zeichnet das Chat-Control.
-        bool Draw_() override;
+        void Draw_() override;
         /// Converts an unwrapped line into a wrapped one and appends it
         void WrapLine(unsigned short i);
 

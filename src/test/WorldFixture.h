@@ -23,17 +23,24 @@
 #include "world/GameWorldGame.h"
 #include "PlayerInfo.h"
 #include "gameTypes/Nation.h"
+#include "gameTypes/MapCoordinates.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = 64, unsigned T_height = 64>
+struct WorldDefault
+{
+    BOOST_STATIC_CONSTEXPR unsigned width = 32;
+    BOOST_STATIC_CONSTEXPR unsigned height = 60;
+};
+
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault::width, unsigned T_height = WorldDefault::height>
 struct WorldFixture
 {
     EventManager em;
     GlobalGameSettings ggs;
     GameWorldGame world;
     T_WorldCreator worldCreator;
-    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em), worldCreator(T_width, T_height, T_numPlayers)
+    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em), worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {
         GameObject::SetPointers(&world);
         try

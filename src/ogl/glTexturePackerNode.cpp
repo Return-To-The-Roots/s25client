@@ -19,14 +19,13 @@
 #include "glTexturePackerNode.h"
 #include "ogl/glSmartBitmap.h"
 
-bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo)
+bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, const Extent& bufferSize, std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();
 
     todo.push_back(this);
 
-    int bw = b->getTexWidth();
-    int bh = b->getTexHeight();
+    const Extent texSize = b->getTexSize();
 
     while(!todo.empty())
     {
@@ -45,23 +44,23 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer
             continue;
 
         // no space left for this item
-        if((bw > current->w) || (bh > current->h))
+        if((texSize.x > current->size.x) || (texSize.y > current->size.y))
             continue;
 
-        if((bw == current->w) && (bh == current->h))
+        if(texSize == current->size)
         {
             current->bmp = b;
 
-            b->drawTo(buffer, gw, gh, current->x, current->y);
+            b->drawTo(buffer, bufferSize, current->size);
 
-            b->texCoords[0].x = b->texCoords[1].x = (float)current->x / (float)gw;
-            b->texCoords[2].x = b->texCoords[3].x = b->isPlayer() ? (float)(current->x + current->w / 2) / (float)gw : (float)(current->x + current->w) / (float)gw;
+            b->texCoords[0].x = b->texCoords[1].x = (float)current->pos.x / (float)bufferSize.x;
+            b->texCoords[2].x = b->texCoords[3].x = b->isPlayer() ? (float)(current->pos.x + current->size.x / 2) / (float)bufferSize.x : (float)(current->pos.x + current->size.x) / (float)bufferSize.x;
 
-            b->texCoords[0].y = b->texCoords[3].y = b->texCoords[4].y = b->texCoords[7].y = (float)current->y / (float)gh;
-            b->texCoords[1].y = b->texCoords[2].y = b->texCoords[5].y = b->texCoords[6].y = (float)(current->y + current->h) / (float)gh;
+            b->texCoords[0].y = b->texCoords[3].y = b->texCoords[4].y = b->texCoords[7].y = (float)current->pos.y / (float)bufferSize.y;
+            b->texCoords[1].y = b->texCoords[2].y = b->texCoords[5].y = b->texCoords[6].y = (float)(current->pos.y + current->size.y) / (float)bufferSize.y;
 
-            b->texCoords[4].x = b->texCoords[5].x = (float)(current->x + current->w / 2) / (float)gw;
-            b->texCoords[6].x = b->texCoords[7].x = (float)(current->x + current->w) / (float)gw;
+            b->texCoords[4].x = b->texCoords[5].x = (float)(current->pos.x + current->size.x / 2) / (float)bufferSize.x;
+            b->texCoords[6].x = b->texCoords[7].x = (float)(current->pos.x + current->size.x) / (float)bufferSize.x;
 
             return true;
         }
@@ -69,27 +68,24 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer
         current->child[0] = new glTexturePackerNode();
         current->child[1] = new glTexturePackerNode();
 
-        int dw = current->w - bw;
-        int dh = current->h - bh;
+        Extent deltaSize = current->size - texSize;
 
-        if(dw > dh)
+        if(deltaSize.x > deltaSize.y)
         {
             // split into left and right, put bitmap in left
-            current->child[0]->x = current->x;
-            current->child[1]->x = current->x + bw;
-            current->child[0]->y = current->child[1]->y = current->y;
-            current->child[0]->w = bw;
-            current->child[1]->w = current->w - bw;
-            current->child[0]->h = current->child[1]->h = current->h;
+            current->child[0]->pos = current->child[1]->pos = current->pos;
+            current->child[1]->pos.x += texSize.x;
+            current->child[0]->size.x = texSize.x;
+            current->child[1]->size.x = current->size.x - texSize.x;
+            current->child[0]->size.y = current->child[1]->size.y = current->size.y;
         } else
         {
             // split into top and bottom, put bitmap in top
-            current->child[0]->x = current->child[1]->x = current->x;
-            current->child[0]->y = current->y;
-            current->child[1]->y = current->y + bh;
-            current->child[0]->w = current->child[1]->w = current->w;
-            current->child[0]->h = bh;
-            current->child[1]->h = current->h - bh;
+            current->child[0]->pos = current->child[1]->pos = current->pos;
+            current->child[1]->pos.y += texSize.y;
+            current->child[0]->size.x = current->child[1]->size.x = current->size.x;
+            current->child[0]->size.y = texSize.y;
+            current->child[1]->size.y = current->size.y - texSize.y;
         }
 
         todo.push_back(current->child[0]);

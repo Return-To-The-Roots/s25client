@@ -77,17 +77,17 @@ Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
     return pt;
 }
 
-Point<unsigned short> MakeMapPoint(Point<int> pt, const unsigned short width, const unsigned short height)
+MapPoint MakeMapPoint(Point<int> pt, const MapExtent& size)
 {
     // Shift into range
-    pt.x %= width;
-    pt.y %= height;
+    pt.x %= size.x;
+    pt.y %= size.y;
     // Handle negative values (sign is implementation defined, but |value| < width)
     if(pt.x < 0)
-        pt.x += width;
+        pt.x += size.x;
     if(pt.y < 0)
-        pt.y += height;
+        pt.y += size.y;
     RTTR_Assert(pt.x >= 0 && pt.y >= 0);
-    RTTR_Assert(pt.x < width && pt.y < height);
+    RTTR_Assert(static_cast<unsigned>(pt.x) < size.x && static_cast<unsigned>(pt.y) < size.y);
     return Point<unsigned short>(pt);
 }

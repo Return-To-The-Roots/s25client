@@ -20,7 +20,7 @@
 
 #include "GamePlayerInfo.h"
 #include "GameMessage_GameCommand.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/StatisticTypes.h"
 #include "gameTypes/Inventory.h"
 #include "gameTypes/SettingsTypes.h"

@@ -59,7 +59,7 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
         unsigned int plColor = gwg->GetPlayer(player).color;
 
         LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
-        ->Draw(drawPt + offsets[wpNation], 0, 0, 0, 0, 0, 0, COLOR_WHITE, plColor);
+        ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         if((now_id % 8) == 5)
         {

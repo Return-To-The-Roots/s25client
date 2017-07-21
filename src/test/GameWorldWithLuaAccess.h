@@ -25,7 +25,7 @@
 #include "GamePlayer.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/colors.h"
 #include "libutil/src/StringStreamWriter.h"
@@ -142,7 +142,7 @@ struct LuaTestsFixture{
         // For consistent results
         doInitGameRNG(0);
 
-        world.Init(32, 32, LT_GREENLAND);
+        world.Init(MapExtent(24, 32), LT_GREENLAND);
         hqPositions.push_back(MapPoint(0, 1));
         hqPositions.push_back(MapPoint(16, 17));
         std::vector<Nation> playerNations;

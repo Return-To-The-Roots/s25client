@@ -27,7 +27,7 @@
 #include "postSystem/ShipPostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "PointOutput.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -120,7 +120,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(player.GetShipID(ship), 0u);
 }
 
-template<unsigned T_hbId = 1, unsigned T_width = 64, unsigned T_height = 64>
+template<unsigned T_hbId = 1, unsigned T_width = SeaWorldDefault::width, unsigned T_height = SeaWorldDefault::height>
 struct ShipReadyFixture: public SeaWorldWithGCExecution<T_width, T_height>
 {
     typedef SeaWorldWithGCExecution<T_width, T_height> Parent;

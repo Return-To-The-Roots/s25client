@@ -53,12 +53,6 @@
 #   define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) ) )
 #endif // !_WIN32 || !_MSC_VER
 
-#ifdef _MSC_VER
-#   define FORCE_INLINE __forceinline
-#else
-#   define FORCE_INLINE inline __attribute__((__always_inline__))
-#endif // _MSC_VER
-
 // Macro that can be used to suppress unused warnings. Required e.g. for const boost::arrays defined in headers
 // Don't use this if not absolutely necessary!
 #ifdef __GNUC__
@@ -83,18 +77,21 @@
 #   define CHECK_HEAP_CORRUPTION
 #endif // _WIN32 && _DEBUG && !NOCRTDBG
 
+/// Call a member function trough an object and a member function pointer
+#define CALL_MEMBER_FN(object, ptrToMember)  ((object).*(ptrToMember))
+
 /// Iterate over all points of an area using a point of TYPE named "pt"
 /// WIDTH and HEIGHT is evaluated at most once
 /// Use like:
-///     RTTR_FOREACH_PT(Point<int>, world.GetWidth(), world.GetHeight()) {
+///     RTTR_FOREACH_PT(Point<int>, world.GetSize()) {
 ///         std::cout << pt.x << "/" << pt.y;
 ///     }
-#define RTTR_FOREACH_PT(TYPE, WIDTH, HEIGHT)                 \
-    /* Create scoped temporaries holding width and height by \
-       using assignment in if to save potential accesses */  \
-    if( TYPE::ElementType rttrForeachPtWidth  = (WIDTH)  )   \
-    if( TYPE::ElementType rttrForeachPtHeight = (HEIGHT) )   \
-    for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)   \
+#define RTTR_FOREACH_PT(TYPE, SIZE)                                         \
+    /* Create scoped temporaries holding width and height by                \
+       using assignment in if to save potential accesses */                 \
+    if( TYPE::ElementType rttrForeachPtWidth  = TYPE::ElementType(SIZE.x) ) \
+    if( TYPE::ElementType rttrForeachPtHeight = TYPE::ElementType(SIZE.y) ) \
+    for(TYPE pt(0, 0); pt.y < rttrForeachPtHeight; ++pt.y)                  \
         for(pt.x = 0; pt.x < rttrForeachPtWidth; ++pt.x)
 
 #endif // !MACROS_H_INCLUDED

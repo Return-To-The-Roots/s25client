@@ -18,7 +18,7 @@
 #ifndef MilitarySquares_h__
 #define MilitarySquares_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 #include <list>
 
@@ -29,13 +29,13 @@ class MilitarySquares
 {
     /// military buildings (including HQs and harbors) per military square
     std::vector< std::list<nobBaseMilitary*> > squares;
-    unsigned width, height;
+    MapExtent size_;
     // Liefert das entsprechende Militärquadrat für einen bestimmten Punkt auf der Karte zurück (normale Koordinaten)
     std::list<nobBaseMilitary*>& GetSquare(const MapPoint pt);
 
 public:
     MilitarySquares();
-    void Init(const unsigned short mapWidth, const unsigned short mapHeight);
+    void Init(const MapExtent& mapSize);
     void Clear();
     void Add(nobBaseMilitary* const bld);
     void Remove(nobBaseMilitary* const bld);

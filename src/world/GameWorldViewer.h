@@ -22,6 +22,7 @@
 #include "notifications/Subscribtion.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 
 class GamePlayer;

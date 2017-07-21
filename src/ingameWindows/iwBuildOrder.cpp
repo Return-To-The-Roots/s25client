@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,10 +28,10 @@
 #include "gameData/const_gui_ids.h"
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
-    : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter,  320, 300, _("Building sequence"), LOADER.GetImageN("io", 5)),
+    : IngameWindow(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300), _("Building sequence"), LOADER.GetImageN("io", 5)),
       gwv(gwv), settings_changed(false)
 {
-    ctrlList* list = AddList(0, 15, 60, 150, 220, TC_GREY, NormalFont);
+    ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TC_GREY, NormalFont);
 
     // Liste füllen
     BuildOrders buildOrders = GAMECLIENT.visual_settings.build_order;
@@ -39,18 +39,18 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
         list->AddString(_(BUILDING_NAMES[buildOrders[i]])); //-V807
 
     // Nach ganz oben
-    AddImageButton(1, 250, 194, 48, 20, TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
+    AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
     // Hoch
-    AddImageButton(2, 250, 216, 48, 20, TC_GREY, LOADER.GetImageN("io",  33), _("Up"));
+    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TC_GREY, LOADER.GetImageN("io",  33), _("Up"));
     // Runter
-    AddImageButton(3, 250, 238, 48, 20, TC_GREY, LOADER.GetImageN("io",  34), _("Down"));
+    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TC_GREY, LOADER.GetImageN("io",  34), _("Down"));
     // Nach ganz unten
-    AddImageButton(4, 250, 260, 48, 20, TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
+    AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, 240, 150, LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + buildOrders[0] * 5));
+    AddImage(5, DrawPoint(240, 150), LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + buildOrders[0] * 5));
 
-    ctrlComboBox* combo = AddComboBox(6, 15, 30, 290, 20, TC_GREY, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Sequence of given order")); // "Reihenfolge der Auftraggebung"
     combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
 
@@ -58,7 +58,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     combo->SetSelection(GAMECLIENT.visual_settings.useCustomBuildOrder ? 1 : 0);
 
     // Standard
-    AddImageButton(10, 200, 250, 48, 30, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Absendetimer, in 2s-Abschnitten wird jeweils das ganze als Netzwerknachricht ggf. abgeschickt
     AddTimer(11, 2000);

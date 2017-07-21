@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -48,9 +48,9 @@ const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] =
 };
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
-    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, 600, 400 + add_height, window_title, LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title, LOADER.GetImageN("resource", 41))
 {
-    AddTable(0, 20, 30, 560, 300, TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250, ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER,  "", 0, ctrlTable::SRT_STRING);
+    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250, ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER,  "", 0, ctrlTable::SRT_STRING);
 }
 
 void iwSaveLoad::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
@@ -142,12 +142,12 @@ void iwSave::SaveLoad()
 
 iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 {
-    AddEdit(1, 20, 390, 510, 22, TC_GREEN2, NormalFont);
-    AddImageButton(2, 540, 386, 40, 40, TC_GREEN2, LOADER.GetImageN("io", 47));
+    AddEdit(1, DrawPoint(20, 390), Extent(510, 22), TC_GREEN2, NormalFont);
+    AddImageButton(2, DrawPoint(540, 386), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 47));
 
     // Autospeicherzeug
-    AddText(3, 20, 350, _("Auto-Save every:"), 0xFFFFFF00, 0, NormalFont);
-    ctrlComboBox* combo = AddComboBox(4, 270, 345, 130, 22, TC_GREEN2, NormalFont, 100);
+    AddText(3, DrawPoint(20, 350), _("Auto-Save every:"), 0xFFFFFF00, 0, NormalFont);
+    ctrlComboBox* combo = AddComboBox(4, DrawPoint(270, 345), Extent(130, 22), TC_GREEN2, NormalFont, 100);
 
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
@@ -196,8 +196,8 @@ void iwSave::Msg_ComboSelectItem(const unsigned int  /*ctrl_id*/, const int sele
 
 iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  csi(csi)
 {
-    AddEdit(1, 20, 350, 510, 22, TC_GREEN2, NormalFont);
-    AddImageButton(2, 540, 346, 40, 40, TC_GREEN2, LOADER.GetImageN("io", 48));
+    AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TC_GREEN2, NormalFont);
+    AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 48));
     // Tabelle ausfüllen beim Start
     RefreshTable();
 }

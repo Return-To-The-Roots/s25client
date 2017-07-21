@@ -19,12 +19,12 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 #include "LANDiscoveryClient.h"
 #include "gameTypes/LanGameInfo.h"
 #include <vector>
 
-class dskLAN : public Desktop
+class dskLAN: public dskMenuBase
 {
 public:
     struct GameInfo {

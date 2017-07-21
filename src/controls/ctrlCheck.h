@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,7 +26,7 @@ class glArchivItem_Font;
 class ctrlCheck : public Window
 {
     public:
-        ctrlCheck(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly);
+        ctrlCheck(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text, glArchivItem_Font* font, bool readonly);
 
         void SetCheck(bool check) { this->check = check; }
         bool GetCheck() const { return check; }
@@ -36,7 +36,7 @@ class ctrlCheck : public Window
         bool Msg_LeftDown(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         TextureColor tc;

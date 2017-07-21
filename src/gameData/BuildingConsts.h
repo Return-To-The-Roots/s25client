@@ -20,7 +20,7 @@
 
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
-#include "DrawPoint.h"
+#include "DrawPointInit.h"
 
 extern const boost::array<const char*, BLD_COUNT> BUILDING_NAMES;
 

@@ -19,7 +19,7 @@
 #define WARE_H_
 
 #include "GameObject.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/GoodTypes.h"
 
 class noBaseBuilding;

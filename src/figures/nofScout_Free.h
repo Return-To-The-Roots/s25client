@@ -18,7 +18,7 @@
 #define NOF_SCOUT_FREE_H_
 
 #include "nofFlagWorker.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 class SerializedGameData;
 class noRoadNode;
 

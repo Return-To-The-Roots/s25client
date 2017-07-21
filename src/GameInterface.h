@@ -17,7 +17,7 @@
 #ifndef GAMEINTERFACE_H_
 #define GAMEINTERFACE_H_
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadBuildMode.h"
 
 class Window;

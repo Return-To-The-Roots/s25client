@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,7 +22,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
 #include "GameClient.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "ogl/glArchivItem_Font.h"
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
@@ -35,17 +35,17 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     grpIdExpedition = harbor_page.GetID();
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(0, 83, 70, _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(1, 65, 100, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
+    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
     AdjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(2, 83, 140, _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(3, 65, 170, 30, 30, TC_GREY, LOADER.GetImageN("io", 176), _("Start exporation expedition"));
+    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176), _("Start exporation expedition"));
     AdjustExplorationExpeditionButton(false);
 }
 

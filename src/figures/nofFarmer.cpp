@@ -58,7 +58,7 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
     if(harvest)
     {
         LOADER.GetPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.Interpolate(88, current_ev)) % 8)
-        ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -71,7 +71,7 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
     else
     {
         LOADER.GetPlayerImage("rom_bobs", 132 + GAMECLIENT.Interpolate(88, current_ev) % 8)
-        ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
 
 

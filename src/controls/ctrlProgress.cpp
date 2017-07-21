@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,28 +22,25 @@
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
 #include "CollisionDetection.h"
-
+#include <boost/math/special_functions/round.hpp>
 #include <sstream>
 
 ctrlProgress::ctrlProgress(Window* parent,
                            const unsigned int id,
-                           const unsigned short x,
-                           const unsigned short y,
-                           const unsigned short width,
-                           const unsigned short height,
+                           const DrawPoint& pos,
+                           const Extent& size,
                            const TextureColor tc,
                            unsigned short button_minus,
                            unsigned short button_plus,
                            const unsigned short maximum,
-                           const unsigned short x_padding,
-                           const unsigned short y_padding,
+                           const Extent& padding,
                            const unsigned int force_color,
                            const std::string& tooltip,
                            const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip,
                            unsigned short* const  /*write_val*/)
-    : Window(DrawPoint(x, y), id, parent, width, height, tooltip),
-      tc(tc), position(0), maximum(maximum), padding(x_padding, y_padding), force_color(force_color)
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip),
+      tc(tc), position(0), maximum(maximum), padding_(padding), force_color(force_color)
 {
     const char* str1 = "io", * str2 = "io";
     if(button_minus >= 1000)
@@ -57,11 +54,12 @@ ctrlProgress::ctrlProgress(Window* parent,
         button_plus -= 1000;
     }
 
-    AddImageButton(0, 0,              0, height, height, tc, LOADER.GetImageN(str1, button_minus), (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")) );
-    AddImageButton(1, width - height, 0, height, height, tc, LOADER.GetImageN(str2, button_plus),  (button_plus_tooltip.length( ) ? button_plus_tooltip  : _("More")) );
+    Extent btSize = Extent::all(size.y);
+    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(str1, button_minus), (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")) );
+    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(str2, button_plus),  (button_plus_tooltip.length( ) ? button_plus_tooltip  : _("More")) );
 
     // Hide left and right 3D border by making the buttons overlap the bar
-    padding.x -= 2;
+    padding_.x -= 2;
 }
 
 /**
@@ -69,7 +67,7 @@ ctrlProgress::ctrlProgress(Window* parent,
  */
 void ctrlProgress::SetPosition(unsigned short position)
 {
-    this->position = (position > maximum ? maximum : position);
+    this->position = std::min(position, maximum);
 }
 
 /**
@@ -77,12 +75,13 @@ void ctrlProgress::SetPosition(unsigned short position)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool ctrlProgress::Draw_()
+void ctrlProgress::Draw_()
 {
-    DrawPoint barPos = GetDrawPos() + padding;
+    DrawPoint barPos = GetDrawPos() + DrawPoint(padding_);
     // Offset by button size
-    barPos.x += height_;
-    Draw3D(barPos, CalcBarWidth(), height_ - 2 * padding.y, tc, 2);
+    barPos.x += GetSize().y;
+    Extent barSize(CalcBarWidth(), GetSize().y - 2 * padding_.y);
+    Draw3D(Rect(barPos, barSize), tc, 2);
 
     // Buttons
     DrawControls();
@@ -109,30 +108,29 @@ bool ctrlProgress::Draw_()
     }
 
     // Leiste
-    DrawRectangle(barPos + innerPadding, progress, height_ - 2 * (innerPadding.y + padding.y), color);
+    DrawRectangle(Rect(barPos + innerPadding, progress, GetSize().y - 2 * (innerPadding.y + padding_.y)), color);
 
     // Prozentzahlen zeichnen
     std::stringstream percent;
     percent << percentage << "%";
-    SmallFont->Draw(GetDrawPos() + DrawPoint(width_, height_) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
-
-    return true;
+    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
 }
 
-void ctrlProgress::Resize(unsigned short width, unsigned short height)
+void ctrlProgress::Resize(const Extent& newSize)
 {
-    Window::Resize(width, height);
+    Window::Resize(newSize);
 
     Window* lessBt = GetCtrl<Window>(0);
     Window* moreBt = GetCtrl<Window>(1);
-    lessBt->Resize(height, height);
-    moreBt->Resize(height, height);
-    moreBt->Move(width - height, 0);
+    Extent btSize(newSize.y, newSize.y);
+    lessBt->Resize(btSize);
+    moreBt->Resize(btSize);
+    moreBt->SetPos(DrawPoint(newSize.x - btSize.x, 0));
 }
 
 unsigned ctrlProgress::CalcBarWidth() const
 {
-    return width_ - 2 * (padding.x + height_);
+    return GetSize().x - 2 * (padding_.x + GetSize().y);
 }
 
 void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
@@ -143,15 +141,15 @@ void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             if(position)
                 --position;
-            if(parent_)
-                parent_->Msg_ProgressChange(GetID(), position);
+            if(GetParent())
+                GetParent()->Msg_ProgressChange(GetID(), position);
         } break;
         case 1: // Plus
         {
             if(position < maximum)
                 ++position;
-            if(parent_)
-                parent_->Msg_ProgressChange(GetID(), position);
+            if(GetParent())
+                GetParent()->Msg_ProgressChange(GetID(), position);
         } break;
     }
 }
@@ -159,18 +157,14 @@ void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
 bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
 {
     // Test if clicked on progress bar
-    if(Coll(mc.x, mc.y,
-            GetX() + height_ + 2 + padding.x, GetY() + 4 + padding.y,
-            width_ - height_ * 2 - 4 - 2 * padding.x, height_ - 8 - 2 * padding.y))
+    DrawPoint progressOrigin = GetDrawPos() + DrawPoint(padding_) + DrawPoint(GetSize().y + 2, 4);
+    Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
+    if(IsPointInRect(mc.GetPos(), Rect(progressOrigin, progressSize)))
     {
-        // The additional check for (position > maximum) is
-        // mathematically redundant here; if there was more code than
-        // it in SetPosition() we had to call it here instead of simply:
-        position = ( mc.x - (GetX() + height_ + 2 + padding.x)
-                     + /*rounding:*/ (width_ - height_ * 2 - 4 - 2 * padding.x) / maximum / 2)
-                   * maximum / (width_ - height_ * 2 - 4 - 2 * padding.x);
+        position = boost::math::iround(static_cast<double>((mc.x - progressOrigin.x) * maximum) / progressSize.x);
 
-        if(parent_) parent_->Msg_ProgressChange(GetID(), position);
+        if(GetParent())
+            GetParent()->Msg_ProgressChange(GetID(), position);
         return true;
     }
     else
@@ -185,7 +179,7 @@ bool ctrlProgress::Msg_LeftUp(const MouseCoords& mc)
 bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         Msg_ButtonClick(1);
         return true;
@@ -196,7 +190,7 @@ bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
 bool ctrlProgress::Msg_WheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(Coll(mc.x, mc.y, GetX(), GetY(), width_, height_))
+    if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         Msg_ButtonClick(0);
         return true;
@@ -209,7 +203,10 @@ bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
     // an Buttons weiterleiten
     RelayMouseMessage(&Window::Msg_MouseMove, mc);
 
-    if(Coll(mc.x, mc.y, GetX() + height_ + padding.x, GetY(), width_ - height_ * 2 - padding.x * 2, height_))
+    Extent offset(GetSize().y + padding_.x, 0);
+    DrawPoint rectOrig = GetDrawPos() + DrawPoint(offset);
+    Extent rectSize = GetSize() - offset * 2u;
+    if(IsPointInRect(mc.GetPos(), Rect(rectOrig, rectSize)))
     {
         WINDOWMANAGER.SetToolTip(this, tooltip_);
         return true;

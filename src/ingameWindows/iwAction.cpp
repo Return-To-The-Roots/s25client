@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+﻿// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -52,9 +52,9 @@ enum TabID
     TAB_SEAATTACK
 };
 
-iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings)
-    : IngameWindow(CGI_ACTION, DrawPoint(mouse_x, mouse_y), 200, 254, _("Activity window"), LOADER.GetImageN("io", 1)),
-      gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mouse_x, mouse_y)
+iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned int params, bool military_buildings)
+    : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)),
+      gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -84,14 +84,14 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     const GamePlayer& player = gwv.GetViewer().GetPlayer();
 
     /// Haupttab
-    ctrlTab* main_tab = AddTabCtrl(0, 10, 20, 180);
+    ctrlTab* main_tab = AddTabCtrl(0, DrawPoint(10, 20), 180);
 
     // Bau-main_tab
     if(tabs.build)
     {
         ctrlGroup* group =  main_tab->AddTab(LOADER.GetImageN("io", 18), _("-> Build house"), TAB_BUILD);
 
-        ctrlTab* build_tab = group->AddTabCtrl(1, 0, 45, 180);
+        ctrlTab* build_tab = group->AddTabCtrl(1, DrawPoint(0, 45), 180);
 
         // Building tabs
         if(tabs.build_tabs == Tabs::BT_MINE) //mines
@@ -227,7 +227,8 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                     tooltip << (int)BUILDING_COSTS[player.nation][building_icons[bt][j]].stones << _(" stones");
                 }
 
-                build_tab->GetGroup(bt)->AddBuildingIcon(j, (k % 5) * 36, (k / 5) * 36 + 45, building_icons[bt][j], player.nation, 36, tooltip.str());
+                DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
+                build_tab->GetGroup(bt)->AddBuildingIcon(j, iconPos, building_icons[bt][j], player.nation, 36, tooltip.str());
 
                 ++k;
             }
@@ -247,27 +248,27 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         {
             case AWFT_NORMAL: // normal Flag
             {
-                group->AddImageButton(1,  0, 45, 45, 36, TC_GREY, LOADER.GetImageN("io",  65), _("Build road"));
-                group->AddImageButton(3,  45, 45, 45, 36, TC_GREY, LOADER.GetImageN("io", 118), _("Pull down flag"));
-                group->AddImageButton(4, 90, 45, 45, 36, TC_GREY, LOADER.GetImageN("io",  20), _("Call in geologist"));
-                group->AddImageButton(5, 135, 45, 45, 36, TC_GREY, LOADER.GetImageN("io",  96), _("Send out scout"));
+                group->AddImageButton(1, DrawPoint( 0, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io",  65), _("Build road"));
+                group->AddImageButton(3, DrawPoint( 45, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io", 118), _("Pull down flag"));
+                group->AddImageButton(4, DrawPoint(90, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io",  20), _("Call in geologist"));
+                group->AddImageButton(5, DrawPoint(135, 45), Extent(45, 36), TC_GREY, LOADER.GetImageN("io",  96), _("Send out scout"));
             } break;
             case AWFT_WATERFLAG: // Water flag
             {
-                group->AddImageButton(1,  0, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  65), _("Build road"));
-                group->AddImageButton(2,  36, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  95), _("Build waterway"));
-                group->AddImageButton(3,  72, 45, 36, 36, TC_GREY, LOADER.GetImageN("io", 118), _("Pull down flag"));
-                group->AddImageButton(4, 108, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  20), _("Call in geologist"));
-                group->AddImageButton(5, 144, 45, 36, 36, TC_GREY, LOADER.GetImageN("io",  96), _("Send out scout"));
+                group->AddImageButton(1, DrawPoint( 0, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io",  65), _("Build road"));
+                group->AddImageButton(2, DrawPoint( 36, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io",  95), _("Build waterway"));
+                group->AddImageButton(3, DrawPoint( 72, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io", 118), _("Pull down flag"));
+                group->AddImageButton(4, DrawPoint(108, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io",  20), _("Call in geologist"));
+                group->AddImageButton(5, DrawPoint(144, 45), Extent(36, 36), TC_GREY, LOADER.GetImageN("io",  96), _("Send out scout"));
             } break;
             case AWFT_HQ: // HQ
             {
-                group->AddImageButton(1, 0, 45, 180, 36, TC_GREY, LOADER.GetImageN("io", 65), _("Build road"));
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(180, 36), TC_GREY, LOADER.GetImageN("io", 65), _("Build road"));
             } break;
             case AWFT_STOREHOUSE: // Storehouse
             {
-                group->AddImageButton(1, 0, 45, 90, 36, TC_GREY, LOADER.GetImageN("io", 65), _("Build road"));
-                group->AddImageButton(3, 90, 45, 90, 36, TC_GREY, LOADER.GetImageN("io", 118), _("Demolish house"));
+                group->AddImageButton(1, DrawPoint(0, 45), Extent(90, 36), TC_GREY, LOADER.GetImageN("io", 65), _("Build road"));
+                group->AddImageButton(3, DrawPoint(90, 45), Extent(90, 36), TC_GREY, LOADER.GetImageN("io", 118), _("Demolish house"));
             } break;
         }
     }
@@ -282,10 +283,11 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             nr = 94;
 
         // Straße aufwerten ggf anzeigen
-        unsigned int btWidth = 180, btPosX = 90;
-        AddUpgradeRoad(group, btPosX, btWidth);
+        Extent btSize(180, 36);
+        unsigned int btPosX = 90;
+        AddUpgradeRoad(group, btPosX, btSize.x);
 
-        group->AddImageButton(1, 0, 45, btWidth, 36, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
+        group->AddImageButton(1, DrawPoint(0, 45), btSize, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
     }
 
     // Cut-main_tab
@@ -294,11 +296,12 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 19), _("Dig up road"), TAB_CUTROAD);
 
         // Straße aufwerten ggf anzeigen
-        unsigned int btWidth = 180, btPosX = 0;
+        Extent btSize(180, 36);
+        unsigned int btPosX = 0;
         if(!tabs.setflag)
-            AddUpgradeRoad(group, btPosX, btWidth);
+            AddUpgradeRoad(group, btPosX, btSize.x);
 
-        group->AddImageButton(1, btPosX, 45, btWidth, 36, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
+        group->AddImageButton(1, DrawPoint(btPosX, 45), btSize, TC_GREY, LOADER.GetImageN("io", 32), _("Dig up road"));
     }
 
     if(tabs.attack)
@@ -323,21 +326,27 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     if(tabs.watch)
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 36), _("Display options"), TAB_WATCH);
-
-        group->AddImageButton(1, 0, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 108), _("Observation window"));
-        group->AddImageButton(2,  45, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 179), _("House names"));
-        group->AddImageButton(3, 90, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 180), _("Go to headquarters"));
-		group->AddImageButton(4, 135, 45,  45, 36, TC_GREY, LOADER.GetImageN("io", 107), _("Notify allies of this location"));
+        const Extent btSize(45, 36);
+        DrawPoint curPos(0, 45);
+        group->AddImageButton(1, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 108), _("Observation window"));
+        curPos.x += btSize.x;
+        group->AddImageButton(2, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 179), _("House names"));
+        group->AddImageButton(3, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 180), _("Go to headquarters"));
+		group->AddImageButton(4, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 107), _("Notify allies of this location"));
     }
 
     main_tab->SetSelection(0, true);
 
-    if(pos_.x + GetWidth() > VIDEODRIVER.GetScreenWidth())
-        pos_.x = mouse_x - GetWidth() - 40;
-    if(pos_.y + GetHeight() > VIDEODRIVER.GetScreenHeight())
-        pos_.y = mouse_y - GetHeight() - 40;
+    DrawPoint adjPos = GetPos();
+    DrawPoint outerPt = GetPos() + GetSize();
+    if(outerPt.x > VIDEODRIVER.GetScreenWidth())
+        adjPos.x = mousePos.x - GetSize().x - 40;
+    if(outerPt.y > VIDEODRIVER.GetScreenHeight())
+        adjPos.y = mousePos.y - GetSize().y - 40;
+    if(adjPos != GetPos())
+        SetPos(adjPos);
 
-    VIDEODRIVER.SetMousePos(GetX() + 20, GetY() + 75);
+    VIDEODRIVER.SetMousePos(GetDrawPos() + DrawPoint(20, 75));
 }
 
 void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned int& width)
@@ -351,7 +360,7 @@ void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned i
         if(flag && flag->GetRoute(flag_dir)->GetRoadType() == RoadSegment::RT_NORMAL)
         {
             width = 90;
-            group->AddImageButton(2, 90, 45, width, 36, TC_GREY, LOADER.GetImageN("io", 44), _("Upgrade to donkey road"));
+            group->AddImageButton(2, DrawPoint(90, 45), Extent(width, 36), TC_GREY, LOADER.GetImageN("io", 44), _("Upgrade to donkey road"));
         }
     }
 }
@@ -371,20 +380,20 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
     if(attackers_count == 0)
     {
         // Angriff nicht  möglich!
-        group->AddText(1, 90, 56, _("Attack not possible."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        group->AddText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     }
     else
     {
         selected_soldiers_count = 1;
 
         // Minus und Plus - Button
-        group->AddImageButton(1, 3, 49, 26, 32, TC_GREY, LOADER.GetImageN("io", 139), _("Less attackers"));
-        group->AddImageButton(2, 89, 49, 26, 32, TC_GREY, LOADER.GetImageN("io", 138), _("More attackers"));
+        group->AddImageButton(1, DrawPoint(3, 49), Extent(26, 32), TC_GREY, LOADER.GetImageN("io", 139), _("Less attackers"));
+        group->AddImageButton(2, DrawPoint(89, 49), Extent(26, 32), TC_GREY, LOADER.GetImageN("io", 138), _("More attackers"));
 
         // Starke/Schwache Soldaten
         ctrlOptionGroup* ogroup = group->AddOptionGroup(3, ctrlOptionGroup::ILLUMINATE);
-        ogroup->AddImageButton(0, 146, 49, 30, 33, TC_GREY, LOADER.GetImageN("io", 31), _("Weak attackers"));
-        ogroup->AddImageButton(1, 117, 49, 30, 33, TC_GREY, LOADER.GetImageN("io", 30), _("Strong attackers"));
+        ogroup->AddImageButton(0, DrawPoint(146, 49), Extent(30, 33), TC_GREY, LOADER.GetImageN("io", 31), _("Weak attackers"));
+        ogroup->AddImageButton(1, DrawPoint(117, 49), Extent(30, 33), TC_GREY, LOADER.GetImageN("io", 30), _("Strong attackers"));
         // standardmäßig starke Soldaten
         ogroup->SetSelection(1);
 
@@ -393,10 +402,10 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
         unsigned short button_width = 112 / buttons_count;
 
         for(unsigned i = 0; i < buttons_count; ++i)
-            group->AddImageButton(10 + i, 3 + i * button_width, 83, button_width, 32, TC_GREY, LOADER.GetImageN("io", 204 + i), _("Number of attackers"));
+            group->AddImageButton(10 + i, DrawPoint(3 + i * button_width, 83), Extent(button_width, 32), TC_GREY, LOADER.GetImageN("io", 204 + i), _("Number of attackers"));
 
         // Angriffsbutton
-        group->AddImageButton(4, 117, 83, 59, 32, TC_RED1, LOADER.GetImageN("io", 25), _("Attack!"));
+        group->AddImageButton(4, DrawPoint(117, 83), Extent(59, 32), TC_RED1, LOADER.GetImageN("io", 25), _("Attack!"));
     }
 }
 

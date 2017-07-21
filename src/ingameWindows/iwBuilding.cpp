@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -22,7 +22,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "WindowManager.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
 #include "buildings/nobShipYard.h"
@@ -38,38 +38,38 @@ const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
 iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Arbeitersymbol
-    AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
+    AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
 
     // Exception: charburner
     if (building->GetBuildingType() != BLD_CHARBURNER)
     {
-        AddImage(13, 28, 39, LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].job));
+        AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].job));
     }
     else
     {
-        AddImage(13, 28, 39, LOADER.GetImageN("io_new", 5));	
+        AddImage(13, DrawPoint(28, 39), LOADER.GetImageN("io_new", 5));	
     }
 
     // Gebäudesymbol
-    AddImage(1, 117, 114, building->GetBuildingImage());
+    AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     if(USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].produced_ware != GD_NOTHING)
     {
-        AddImage(2, 196, 39, LOADER.GetMapImageN(2298));
-        AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].produced_ware));
+        AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
+        AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].produced_ware));
     }
 
     // Info
-    AddImageButton( 4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton( 4, DrawPoint( 16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Abreißen
-    AddImageButton( 5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
+    AddImageButton( 5, DrawPoint( 50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
-    Window* enable_productivity = AddImageButton( 6,  90, 147, 34, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)));
+    Window* enable_productivity = AddImageButton( 6, DrawPoint( 90, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)));
     if(building->GetBuildingType() == BLD_LOOKOUTTOWER)
         enable_productivity->SetVisible(false);
     // Bei Bootsbauer Button zum Umwählen von Booten und Schiffen
@@ -78,34 +78,35 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id = (static_cast<nobShipYard*>(building)->GetMode() == nobShipYard::BOATS)
                              ? IODAT_BOAT_ID : IODAT_SHIP_ID;
-        AddImageButton(11, 130, 147, 43, 32, TC_GREY, LOADER.GetImageN("io", io_dat_id));
+        AddImageButton(11, DrawPoint(130, 147), Extent(43, 32), TC_GREY, LOADER.GetImageN("io", io_dat_id));
     }
 
     // "Gehe Zum Ort"
-    AddImageButton( 7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));	
+    AddImageButton( 7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));	
 
     // Gebäudebild und dessen Schatten
-    AddImage( 8, 117, 114, LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage( 8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
-    Window* productivity = AddPercent(9, 59, 31, 106, 16, TC_GREY, 0xFFFFFF00, SmallFont, building->GetProductivityPointer());
+    Window* productivity = AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TC_GREY, 0xFFFFFF00, SmallFont, building->GetProductivityPointer());
     if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
         productivity->SetVisible(false);
 
-    AddText(10, 113, 50, _("(House unoccupied)"), COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
 	// "Go to next" (building of same type)
-    AddImageButton( 12, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
+    AddImageButton( 12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
 }
 
 
 void iwBuilding::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Haus unbesetzt ggf ausblenden
     GetCtrl<ctrlText>(10)->SetVisible(!building->HasWorker());
@@ -118,21 +119,21 @@ void iwBuilding::Msg_PaintAfter()
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)
 
         // "Schwarzer Rahmen"
-        DrawRectangle(GetDrawPos() + DrawPoint(40, 60), 144, 24, 0x80000000);
+        DrawRectangle(Rect(GetDrawPos() + DrawPoint(40, 60), Extent(144, 24)), 0x80000000);
         DrawPoint curPos = GetDrawPos() + DrawPoint(52, 72);
         for(unsigned char i = 0; i < 3; ++i)
         {
             for(unsigned char z = 0; z < 2; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(curPos, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
+                bitmap->DrawFull(curPos, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
                 curPos.x += 24;
             }
         }
     }
     else
     {
-        DrawPoint curPos = GetDrawPos() + DrawPoint(width_ / 2, 60);
+        DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
         for(unsigned char i = 0; i < 2; ++i)
         {
             if(USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i] == GD_NOTHING)
@@ -143,13 +144,13 @@ void iwBuilding::Msg_PaintAfter()
 
             // "Schwarzer Rahmen"
             DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-            DrawRectangle(waresPos, 24 * wares_count, 24, 0x80000000);
+            DrawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
             waresPos += DrawPoint(12, 12);
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(waresPos, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? COLOR_WHITE : 0xFF404040) );
+                bitmap->DrawFull(waresPos, (z < building->GetWares(i) ? COLOR_WHITE : 0xFF404040) );
                 waresPos.x += 24;
             }
 
@@ -209,7 +210,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // Auch optisch den Button umstellen
                 ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);
-                if(button->GetButtonImage() == LOADER.GetImageN("io", IODAT_BOAT_ID))
+                if(button->GetImage() == LOADER.GetImageN("io", IODAT_BOAT_ID))
                     button->SetImage(LOADER.GetImageN("io", IODAT_SHIP_ID));
                 else
                     button->SetImage(LOADER.GetImageN("io", IODAT_BOAT_ID));
@@ -231,7 +232,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it=buildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
 					iwBuilding* nextscrn=new iwBuilding(gwv, gcFactory, *it);
-					nextscrn->Move(pos_);
+					nextscrn->SetPos(GetPos());
 					WINDOWMANAGER.Show(nextscrn);
 					break;
 				}

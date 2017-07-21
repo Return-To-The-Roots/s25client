@@ -19,6 +19,7 @@
 #define IngameMinimap_h__
 
 #include "Minimap.h"
+#include "gameTypes/MapTypes.h"
 #include <vector>
 
 class GameWorldViewer;

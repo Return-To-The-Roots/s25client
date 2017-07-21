@@ -47,7 +47,7 @@ class MapUtility
      * @param center center point of the hill (highest elevation)
      * @param z maximum height (elevation) of the hill
      */
-    static void SetHill(Map& map, const Point<int>& center, int z);
+    static void SetHill(Map& map, const Position& center, int z);
     
     /**
      * Sets up a harbor position at the specified center. The surrounding area is flattened 
@@ -56,14 +56,14 @@ class MapUtility
      * @param center center point for the harbor position
      * @param waterLevel the height level of the surrounding water
      */
-    static void SetHarbour(Map& map, const Point<int>& center, int waterLevel);
+    static void SetHarbour(Map& map, const Position& center, int waterLevel);
     
     /**
      * Places a tree to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the tree
      */
-    static void SetTree(Map& map, ObjectGenerator& objGen, const Point<int>& position);
+    static void SetTree(Map& map, ObjectGenerator& objGen, const Position& position);
     
     /**
      * Sets stone on the map around the specified center within the specified radius.
@@ -72,14 +72,14 @@ class MapUtility
      * @param center center point for stone placement
      * @param radius radius around the center to place stone in
      */
-    static void SetStones(Map& map, ObjectGenerator& objGen, const Point<int>& center, double radius);
+    static void SetStones(Map& map, ObjectGenerator& objGen, const Position& center, double radius);
 
     /**
      * Places a stone to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the stone
      */
-    static void SetStone(Map& map, ObjectGenerator& objGen, const Point<int>& position);
+    static void SetStone(Map& map, ObjectGenerator& objGen, const Position& position);
     
     /**
      * Computes the size of a terrain body starting from the specified position.
@@ -89,7 +89,7 @@ class MapUtility
      * @return the number of vertices in a connected terrain area around the 
      * initial position
      */
-    static unsigned GetBodySize(Map& map, const Point<int>& p, unsigned max);
+    static unsigned GetBodySize(Map& map, const Position& p, unsigned max);
     
     /**
      * Computes a point on a circle. The circle has equally distributed points.
@@ -100,9 +100,9 @@ class MapUtility
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    static Point<int> ComputePointOnCircle(int index,
+    static Position ComputePointOnCircle(int index,
                                     int points,
-                                    const Point<int>& center,
+                                    const Position& center,
                                     double radius);
 };
 

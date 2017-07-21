@@ -18,8 +18,8 @@
 #ifndef Map_h__
 #define Map_h__
 
+#include "gameTypes/MapCoordinates.h"
 #include "libsiedler2/src/archives.h"
-#include "Point.h"
 #include <vector>
 #include <string>
 
@@ -37,25 +37,18 @@ struct Map
     
     /**
      * Creates a new, empty map with the specified width and height.
-     * @param width map width
-     * @param height map height
+     * @param size
      * @param name name of the map
      * @param author author of the map
      */
-    Map(unsigned width,
-        unsigned height,
+    Map(const MapExtent& size,
         const std::string& name,
         const std::string& author);
 
     /**
-     * Width of the map in vertices.
+     * size of the map in vertices.
      */
-    uint16_t width;
-    
-    /**
-     * Height of the map in vertices.
-     */
-    uint16_t height;
+    MapExtent size;
     
     /**
      * Name of the map.

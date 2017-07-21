@@ -20,7 +20,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "RTTR_AssertError.h"
 #include "addons/const_addons.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 

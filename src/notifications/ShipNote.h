@@ -18,7 +18,7 @@
 #ifndef ShipNote_h__
 #define ShipNote_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
 
 struct ShipNote

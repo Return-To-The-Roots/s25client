@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -90,16 +90,16 @@ public:
 };
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
-    IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, 230, 110, _("Map Debug"), LOADER.GetImageN("resource", 41)),
+    IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
     gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
 {
     gwv.SetDebugNodePrinter(printer);
 
-    ctrlCheck* cbShowCoords = AddCheckBox(0, 15, 25, 200, 20, TC_GREY, _("Show coordinates"), NormalFont);
+    ctrlCheck* cbShowCoords = AddCheckBox(0, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
     if(allowCheating)
     {
-        ctrlComboBox* data = AddComboBox(1, 15, 50, 200, 20, TC_GREY, NormalFont, 100);
+        ctrlComboBox* data = AddComboBox(1, DrawPoint(15, 50), Extent(200, 20), TC_GREY, NormalFont, 100);
         data->AddString(_("Nothing"));
         data->AddString(_("Reserved"));
         data->AddString(_("Altitude"));
@@ -108,7 +108,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
         data->AddString(_("Owner"));
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
-        ctrlComboBox* players = AddComboBox(2, 15, 75, 200, 20, TC_GREY, NormalFont, 100);
+        ctrlComboBox* players = AddComboBox(2, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
         for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetPlayerCount(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
@@ -124,7 +124,9 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
     {
         printer->showDataIdx = 0;
         printer->playerIdx = 0;
-        SetIwHeight(GetIwHeight() - 40 - 10);
+        Extent iwSize = GetIwSize();
+        iwSize.y -= 40 + 10;
+        SetIwSize(iwSize);
     }
 
     printer->showCoords = cbShowCoords->GetCheck();

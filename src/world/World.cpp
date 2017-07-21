@@ -31,7 +31,7 @@
 #include "helpers/containerUtils.h"
 #include <set>
 
-World::World(): width_(0), height_(0), lt(LT_GREENLAND), noNodeObj(NULL)
+World::World(): size_(MapExtent::all(0)), lt(LT_GREENLAND), noNodeObj(NULL)
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -42,16 +42,15 @@ World::~World()
     Unload();
 }
 
-void World::Init(unsigned short width, unsigned short height, LandscapeType lt)
+void World::Init(const MapExtent& mapSize, LandscapeType lt)
 {
-    RTTR_Assert(width_ == 0 && height_ == 0); // Already init
-    RTTR_Assert(width > 0 && height > 0);     // No empty map
-    width_ = width;
-    height_ = height;
+    RTTR_Assert(size_ == MapExtent::all(0)); // Already init
+    RTTR_Assert(mapSize.x > 0 && mapSize.y > 0);     // No empty map
+    size_ = mapSize;
     this->lt = lt;
     // Map-Knoten erzeugen
-    nodes.resize(width_ * height_);
-    militarySquares.Init(width, height);
+    nodes.resize(size_.x * size_.y);
+    militarySquares.Init(size_);
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());
@@ -101,7 +100,7 @@ void World::Unload()
 
     catapult_stones.clear();
 
-    width_ = height_ = 0;
+    size_ = MapExtent::all(0);
 
     nodes.clear();
     militarySquares.Clear();
@@ -126,34 +125,34 @@ MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
     switch(static_cast<Direction::Type>(dir))
     {
     case Direction::WEST: // -1|0   -1|0
-        res.x = ((pt.x == 0) ? width_ : pt.x) - 1;
+        res.x = ((pt.x == 0) ? size_.x : pt.x) - 1;
         res.y = pt.y;
         break;
     case Direction::NORTHWEST: // -1|-1   0|-1
-        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1);
-        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1);
+        res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
         break;
     case Direction::NORTHEAST: // 0|-1  -1|-1
-        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
-        res.y = ((pt.y == 0) ? height_ : pt.y) - 1;
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
+        res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
         break;
     case Direction::EAST: // 1|0    1|0
         res.x = pt.x + 1;
-        if(res.x == width_)
+        if(res.x == size_.x)
             res.x = 0;
         res.y = pt.y;
         break;
     case Direction::SOUTHEAST: // 1|1    0|1
-        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == width_ - 1) ? 0 : pt.x + 1);
+        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
         res.y = pt.y + 1;
-        if(res.y == height_)
+        if(res.y == size_.y)
             res.y = 0;
         break;
     default:
         RTTR_Assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
-        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? width_ : pt.x) - 1); //-V537
+        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1); //-V537
         res.y = pt.y + 1;
-        if(res.y == height_)
+        if(res.y == size_.y)
             res.y = 0;
         break;
     }
@@ -176,14 +175,14 @@ unsigned World::CalcDistance(Point<int> p1, Point<int> p2) const
     if(dx < 0)
         dx = -dx;
 
-    if(dy > height_)
+    if(dy > size_.y)
     {
-        dy = (height_ * 2) - dy;
+        dy = (size_.y * 2) - dy;
     }
 
-    if(dx > width_)
+    if(dx > size_.x)
     {
-        dx = (width_ * 2) - dx;
+        dx = (size_.x * 2) - dx;
     }
 
     dx -= dy / 2;
@@ -202,15 +201,15 @@ ShipDirection World::GetShipDir(MapPoint fromPt, MapPoint toPt) const
     unsigned dy = SafeDiff(fromPt.y, toPt.y);
     unsigned dx = SafeDiff(fromPt.x, toPt.x);
     // Handle wrapping. Also swap coordinates when wrapping (we reverse the direction)
-    if(dy > height_ / 2u)
+    if(dy > size_.y / 2u)
     {
-        dy = height_ - dy;
+        dy = size_.y - dy;
         using std::swap;
         swap(fromPt.y, toPt.y);
     }
-    if(dx > width_ / 2u)
+    if(dx > size_.x / 2u)
     {
-        dx = width_ - dx;
+        dx = size_.x - dx;
         using std::swap;
         swap(fromPt.x, toPt.x);
     }
@@ -240,7 +239,7 @@ ShipDirection World::GetShipDir(MapPoint fromPt, MapPoint toPt) const
 
 MapPoint World::MakeMapPoint(Point<int> pt) const
 {
-    return ::MakeMapPoint(pt, width_, height_);
+    return ::MakeMapPoint(pt, size_);
 }
 
 void World::AddFigure(noBase* fig, const MapPoint pt)

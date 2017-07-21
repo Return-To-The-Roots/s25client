@@ -6,7 +6,7 @@ if(MSVC)
     # Use full paths for defines (makes Boost.Test with the VS addin work better)
     add_definitions(/FC)
 endif()
-FILE(GLOB TEST_SOURCES *.cpp *.h)
+file(GLOB TEST_SOURCES *.cpp *.h)
 add_executable(Test ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/src/ProgramInitHelpers.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)
 target_link_libraries(Test
 						s25Main
@@ -14,6 +14,14 @@ target_link_libraries(Test
 					  )
 
 add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
+file(GLOB TEST_CASES test*.cpp)
+source_group(testCases FILES ${TEST_CASES})
+set(OTHER_SRC ${TEST_SOURCES})
+foreach(curFile ${TEST_CASES})
+    list(REMOVE_ITEM OTHER_SRC ${curFile})
+endforeach()
+source_group(other FILES ${OTHER_SRC})
 
 if(MSVC)
 	create_target_launcher(Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})

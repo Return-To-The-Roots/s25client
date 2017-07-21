@@ -33,27 +33,22 @@ typedef std::vector<FreePathNode> FreePathNodes;
 MapNodes nodes;
 FreePathNodes fpNodes;
 
-void FreePathFinder::Init(const unsigned mapWidth, const unsigned mapHeight)
+void FreePathFinder::Init(const MapExtent& mapSize)
 {
     currentVisit = 0;
-    width_ = mapWidth;
-    height_ = mapHeight;
+    size_ = Extent(mapSize);
     // Reset nodes
     nodes.clear();
     fpNodes.clear();
-    nodes.resize(width_ * height_);
-    fpNodes.resize(width_ * height_);
-    for(unsigned y = 0; y < height_; ++y)
+    nodes.resize(size_.x * size_.y);
+    fpNodes.resize(nodes.size());
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
-        for(unsigned x = 0; x < width_; ++x)
-        {
-            const MapPoint pt = MapPoint(x, y);
-            const unsigned idx = gwb_.GetIdx(pt);
-            nodes[idx].mapPt = pt;
-            fpNodes[idx].lastVisited = 0;
-            fpNodes[idx].mapPt = pt;
-            fpNodes[idx].idx = idx;
-        }
+        const unsigned idx = gwb_.GetIdx(pt);
+        nodes[idx].mapPt = pt;
+        fpNodes[idx].lastVisited = 0;
+        fpNodes[idx].mapPt = pt;
+        fpNodes[idx].idx = idx;
     }
 }
 

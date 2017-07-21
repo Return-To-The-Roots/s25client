@@ -72,7 +72,7 @@ void noBuilding::DrawDoor(DrawPoint drawPt)
         return;
     glArchivItem_Bitmap* doorImg = GetDoorImage();
     if(doorImg)
-        doorImg->Draw(drawPt);
+        doorImg->DrawFull(drawPt);
 }
 
 void noBuilding::GotWorker(Job  /*job*/, noFigure*  /*worker*/)

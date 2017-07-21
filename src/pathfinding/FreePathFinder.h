@@ -18,7 +18,7 @@
 #ifndef FreePathFinder_h__
 #define FreePathFinder_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Direction.h"
 #include <vector>
 
@@ -34,10 +34,10 @@ class FreePathFinder
 {
     GameWorldBase& gwb_;
     unsigned currentVisit;
-    unsigned width_, height_;
+    Extent size_;
 public:
-    FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0), width_(0), height_(0) {}
-    void Init(const unsigned mapWidth, const unsigned mapHeight);
+    FreePathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0), size_(0, 0) {}
+    void Init(const MapExtent& mapSize);
 
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
     /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)

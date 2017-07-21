@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -37,7 +37,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
         };
 
     public:
-        ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type, bool scale = false);
+        ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type);
 
         /// Selektiert einen neuen Button
         void AddSelection(unsigned short selection, bool notify = false);
@@ -61,7 +61,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
 
     protected:
         /// Zeichenmethode.
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         std::set<unsigned short> selectedItems_; /// aktuell ausgewählte Buttons

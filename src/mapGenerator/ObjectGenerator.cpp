@@ -71,21 +71,21 @@ bool ObjectGenerator::IsEmpty(const Map& map, int index)
             map.objectInfo[index] == libsiedler2::OI_Empty);
 }
     
-uint8_t ObjectGenerator::CreateDuck(int likelyhood)
+uint8_t ObjectGenerator::CreateDuck(int likelihood)
 {
-    return config.Rand(100) < likelyhood
+    return config.Rand(100) < likelihood
         ? libsiedler2::A_Duck : libsiedler2::A_None;
 }
     
-uint8_t ObjectGenerator::CreateSheep(int likelyhood)
+uint8_t ObjectGenerator::CreateSheep(int likelihood)
 {
-    return config.Rand(100) < likelyhood
+    return config.Rand(100) < likelihood
         ? libsiedler2::A_Sheep : libsiedler2::A_None;
 }
     
-uint8_t ObjectGenerator::CreateRandomForestAnimal(int likelyhood)
+uint8_t ObjectGenerator::CreateRandomForestAnimal(int likelihood)
 {
-    if (config.Rand(100) >= likelyhood)
+    if (config.Rand(100) >= likelihood)
     {
         return libsiedler2::A_None;
     }
@@ -105,9 +105,9 @@ uint8_t ObjectGenerator::CreateRandomForestAnimal(int likelyhood)
     }
 }
 
-uint8_t ObjectGenerator::CreateRandomAnimal(int likelyhood)
+uint8_t ObjectGenerator::CreateRandomAnimal(int likelihood)
 {
-    if (config.Rand(100) >= likelyhood)
+    if (config.Rand(100) >= likelihood)
     {
         return libsiedler2::A_None;
     }

@@ -109,7 +109,7 @@ void noFighting::Draw(DrawPoint drawPt)
             {
                 // Noch kurz dastehen und warten, bis man stirbt
                 glArchivItem_Bitmap_Player* image = LOADER.GetPlayerImage("rom_bobs", FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).nation][soldiers[turn - 3]->GetRank()][turn - 3].defending[0][0]);
-                image->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color);
+                image->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color);
             }
             else
             {
@@ -118,7 +118,7 @@ void noFighting::Draw(DrawPoint drawPt)
                     drawPt.x -= 12;
                 else
                     drawPt.x += 12;
-                LOADER.GetPlayerImage("rom_bobs", 903 + animation - 4)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color);
+                LOADER.GetPlayerImage("rom_bobs", 903 + animation - 4)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[turn - 3]->GetPlayer()).color);
             }
 
             // Sterbesound abspielen
@@ -155,7 +155,7 @@ void noFighting::Draw(DrawPoint drawPt)
                     // Angreifen
                     LOADER.GetPlayerImage("rom_bobs",
                                      FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].
-                                     attacking[animation])->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                                     attacking[animation])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
                 }
                 else
                 {
@@ -165,7 +165,7 @@ void noFighting::Draw(DrawPoint drawPt)
                         // Verteidigungsanimation
                         LOADER.GetPlayerImage("rom_bobs",
                                          FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].
-                                         defending[defending_animation][animation])->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                                         defending[defending_animation][animation])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
 
                         // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) und stärkere sich mit den Schwertern schützen (Ani 0)
                         // dann Schwert-aneinanderklirr-Sound abspielen
@@ -181,7 +181,7 @@ void noFighting::Draw(DrawPoint drawPt)
                             // weiß aufblinken
                             LOADER.GetPlayerImage("rom_bobs",
                                              HIT_SOLDIERS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()] + i)
-                            ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                            ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
 
                             // Treffersound
                             SOUNDMANAGER.PlayNOSound(105, this, 1);
@@ -190,7 +190,7 @@ void noFighting::Draw(DrawPoint drawPt)
                             // normal dastehen
                             LOADER.GetPlayerImage("rom_bobs",
                                              FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i].
-                                             defending[0][0])->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
+                                             defending[0][0])->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
                     }
                 }
             }

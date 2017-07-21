@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,8 +20,7 @@
 #pragma once
 
 #include "Window.h"
-
-#define MAX_TAB_COUNT 20
+#include <boost/array.hpp>
 
 class ctrlGroup;
 class MouseCoords;
@@ -30,7 +29,7 @@ class glArchivItem_Bitmap;
 class ctrlTab : public Window
 {
     public:
-        ctrlTab(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width);
+        ctrlTab(Window* parent, unsigned int id, const DrawPoint& pos, unsigned short width);
 
         /// fügt eine Tab hinzu.
         ctrlGroup* AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned int id);
@@ -67,13 +66,13 @@ class ctrlTab : public Window
         bool Msg_MouseMove(const MouseCoords& mc) override;
 
     protected:
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
         unsigned short tab_count;
         unsigned short tab_selection;
 
-        unsigned int tabs[MAX_TAB_COUNT];
+        boost::array<unsigned, 20> tabs;
 };
 
 #endif // !CTRLTAB_H_INCLUDED

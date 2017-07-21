@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -37,7 +37,6 @@ class iwShip : public IngameWindow
 
     private:
 
-        void Msg_PaintBefore() override;
         void Msg_PaintAfter() override;
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
 

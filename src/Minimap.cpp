@@ -18,59 +18,43 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Minimap.h"
 #include "Loader.h"
-#include "ogl/glArchivItem_Map.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "ogl/oglIncludes.h"
 
-Minimap::Minimap(const unsigned short map_width, const unsigned short map_height)
-    : map_width(map_width), map_height(map_height)
+Minimap::Minimap(const MapExtent& mapSize): mapSize(mapSize)
 {}
-
-void Minimap::SetMap(const glArchivItem_Map& s2map)
-{
-    map_width = s2map.getHeader().getWidth();
-    map_height = s2map.getHeader().getHeight();
-    CreateMapTexture();
-}
 
 void Minimap::CreateMapTexture()
 {
     map.DeleteTexture();
 
     /// Buffer für die Daten erzeugen
-    unsigned char* buffer = new unsigned char[map_width * 2 * map_height * 4];
+    std::vector<unsigned char> buffer(mapSize.x * 2 * mapSize.y * 4);
 
-    for(MapCoord y = 0; y < map_height; ++y)
+    RTTR_FOREACH_PT(MapPoint, mapSize)
     {
-        for(MapCoord x = 0; x < map_width; ++x)
+        // Die 2. Terraindreiecke durchgehen
+        for(unsigned t = 0; t < 2; ++t)
         {
-            // Die 2. Terraindreiecke durchgehen
-            for(unsigned t = 0; t < 2; ++t)
-            {
-                unsigned color = CalcPixelColor(MapPoint(x, y), t);
+            unsigned color = CalcPixelColor(pt, t);
 
-                unsigned pos  = y * map_width * 4 * 2 + (x * 4 * 2 + t * 4 + (y & 1) * 4) % (map_width * 4 * 2);
-                buffer[pos + 2] = GetRed(color);
-                buffer[pos + 1] = GetGreen(color);
-                buffer[pos]   = GetBlue(color);
-                buffer[pos + 3] = GetAlpha(color);
-            }
+            unsigned pos = pt.y * mapSize.x * 2 + (pt.x * 2 + t + (pt.y & 1)) % (mapSize.x * 2);
+            pos *= 4;
+            buffer[pos + 2] = GetRed(color);
+            buffer[pos + 1] = GetGreen(color);
+            buffer[pos] = GetBlue(color);
+            buffer[pos + 3] = GetAlpha(color);
         }
     }
 
     map.setFilter(GL_LINEAR);
-    map.create(map_width * 2, map_height, buffer, map_width * 2, map_height,
+    map.create(mapSize.x * 2, mapSize.y, &buffer[0], mapSize.x * 2, mapSize.y,
                libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("pal5"));
-
-    delete [] buffer;
 }
 
-void Minimap::Draw(DrawPoint drawPt, const unsigned short width, const unsigned short height)
+void Minimap::Draw(const Rect& rect)
 {
     BeforeDrawing();
-
-    // Map ansich zeichnen
-    map.Draw(drawPt, width, height, 0, 0, 0, 0, COLOR_WHITE);
+    map.DrawFull(rect);
 }
 
 void Minimap::BeforeDrawing()

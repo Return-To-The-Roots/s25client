@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -41,7 +41,7 @@ class iwMsgbox : public IngameWindow
         ~iwMsgbox() override;
 
         /// Moves the icon to given position
-        void MoveIcon(int x, int y);
+        void MoveIcon(const DrawPoint& pos);
 
     private:
         void Init(const std::string& text, const std::string& iconFile, unsigned iconIdx);

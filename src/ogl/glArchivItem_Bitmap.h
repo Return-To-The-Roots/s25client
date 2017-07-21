@@ -20,6 +20,8 @@
 #pragma once
 
 #include "glArchivItem_BitmapBase.h"
+#include "Rect.h"
+#include "DrawPoint.h"
 #include "libsiedler2/src/ArchivItem_Bitmap.h"
 #include "libutil/src/colors.h"
 
@@ -30,10 +32,27 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, p
         glArchivItem_Bitmap();
         glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
-        /// Erzeugt und zeichnet die Textur.
-        void Draw(DrawPoint dst, short dst_w = 0, short dst_h = 0, short src_x = 0, short src_y = 0, short src_w = 0, short src_h = 0, const unsigned int color = COLOR_WHITE);
+        /// Draw the texture in the given rect, stretching if required
+        /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)
+        void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE);
+        /// Draw the texture to the given position with full size
+        /// equivalent to Draw(dst, 0, 0, 0, 0, 0, 0, color)
+        void DrawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE);
+        /// Draw a rectangular part of the texture. offset specifies the offset from the origin of the texture
+        /// equivalent to Draw(origin, 0, 0, x, y, w, h, color)
+        /// or            Draw(origin, w, h, x, y, w, h, color)
+        void DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
+        /// Draw a rectangular part of the texture from the origin of it
+        void DrawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
+        /// Draw only percent% of the height of the image
+        /// equivalent to Draw(dst + DrawPoint(0, image->getHeight() - image->getHeight() * percent / 100), 0, 0, 0, (image->getHeight() - image->getHeight() * percent / 100), 0, image->getHeight() * percent / 100)
+        void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
 
     protected:
+        /// Draw the texture.
+        /// src_w/h default to the full bitmap size
+        /// dst_w/h default the src_w/h
+        void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE);
         void FillTexture() override;
 
 };

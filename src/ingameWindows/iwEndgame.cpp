@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,14 +24,14 @@
 #include "gameData/const_gui_ids.h"
 
 iwEndgame::iwEndgame()
-    : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, 240, 100, _("End game?"), LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, Extent(240, 100), _("End game?"), LOADER.GetImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0,  16, 24, 71, 57, TC_GREEN2, LOADER.GetImageN("io", 32)); //-V525
+    AddImageButton(0, DrawPoint( 16, 24), Extent(71, 57), TC_GREEN2, LOADER.GetImageN("io", 32)); //-V525
     // Abbrechen
-    AddImageButton(1,  88, 24, 71, 57, TC_RED1, LOADER.GetImageN("io", 40));
+    AddImageButton(1, DrawPoint( 88, 24), Extent(71, 57), TC_RED1, LOADER.GetImageN("io", 40));
     // Ok + Speichern
-    AddImageButton(2, 160, 24, 65, 57, TC_GREY, LOADER.GetImageN("io", 47));
+    AddImageButton(2, DrawPoint(160, 24), Extent(65, 57), TC_GREY, LOADER.GetImageN("io", 47));
 }
 
 

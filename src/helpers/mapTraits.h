@@ -18,8 +18,8 @@
 #ifndef mapTraits_h__
 #define mapTraits_h__
 
-// This file defines the traits for std::set
-// You can include this instead of <set>
+// This file defines the traits for std::map
+// You can include this instead of <map>
 
 #include "traits.h"
 #include <map>

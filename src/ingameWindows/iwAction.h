@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,7 +20,8 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
+#include <boost/array.hpp>
 
 class GameInterface;
 class GameWorldView;
@@ -59,7 +60,7 @@ class iwAction : public IngameWindow
         GameWorldView& gwv;
 
         MapPoint selectedPt;
-        Point<unsigned short> mousePosAtOpen_;
+        DrawPoint mousePosAtOpen_;
 
         /// Anzahl gewählter Soldaten für den Angriff und die Maximalanzahl
         unsigned int selected_soldiers_count;
@@ -68,10 +69,10 @@ class iwAction : public IngameWindow
         unsigned selected_soldiers_count_sea;
         unsigned int available_soldiers_count_sea;
         /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
-        unsigned short building_tab_heights[4];
+        boost::array<unsigned short, 4> building_tab_heights;
 
     public:
-        iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, int mouse_x, int mouse_y, unsigned int params, bool military_buildings);
+        iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned int params, bool military_buildings);
         ~iwAction() override;
 
         /// Gibt zurück, auf welchen Punkt es sich bezieht

@@ -21,7 +21,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "nodeObjs/noAnimal.h"
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)

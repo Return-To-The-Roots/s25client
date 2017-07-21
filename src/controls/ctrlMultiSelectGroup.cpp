@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,11 +19,7 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
-        unsigned int id,
-        int select_type,
-        bool scale)
-    : ctrlGroup(parent, id, scale),
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type): ctrlGroup(parent, id),
       selectedItems_(std::set<unsigned short>()), select_type(select_type)
 {
 }
@@ -31,11 +27,9 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent,
 /**
  *  Zeichenmethode.
  */
-bool ctrlMultiSelectGroup::Draw_()
+void ctrlMultiSelectGroup::Draw_()
 {
     DrawControls();
-
-    return true;
 }
 
 /**
@@ -49,14 +43,14 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(true); break;
-        case CHECK:      button->SetCheck(true);       break;
+        case CHECK:      button->SetChecked(true);       break;
         case SHOW:       button->SetVisible(false);     break;
     }
 
     this->selectedItems_.insert(selection);
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
 /**
@@ -70,14 +64,14 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(false); break;
-        case CHECK:      button->SetCheck(false);       break;
+        case CHECK:      button->SetChecked(false);       break;
         case SHOW:       button->SetVisible(true);        break;
     }
 
     this->selectedItems_.erase(selection);
 
-    if(notify && parent_)
-        parent_->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && GetParent())
+        GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
 

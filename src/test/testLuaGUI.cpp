@@ -112,9 +112,9 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE_EQUAL(wnd->GetCtrls<ctrlImage>().front()->GetImage(), LOADER.GetImageN("io", MSB_EXCLAMATIONGREEN));
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlButton>().empty());
     // 15 lines of text, button must be below
-    BOOST_REQUIRE_GT(wnd->GetCtrls<ctrlButton>().front()->GetY(false), 15 * NormalFont->getHeight());
+    BOOST_REQUIRE_GT(wnd->GetCtrls<ctrlButton>().front()->GetPos().y, 15 * NormalFont->getHeight());
     // And window higher than button
-    BOOST_REQUIRE_GT(wnd->GetIwHeight(), wnd->GetCtrls<ctrlButton>().front()->GetY(false));
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetIwSize().y), wnd->GetCtrls<ctrlButton>().front()->GetPos().y);
     WINDOWMANAGER.Close(wnd);
     // Error
     executeLua("rttr:MsgBox('Title', 'Text', true)");
@@ -143,17 +143,17 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     const ctrlImage* img = wnd->GetCtrls<ctrlImage>().front();
     BOOST_REQUIRE_EQUAL(img->GetImage(), LOADER.GetImageN("io", 101));
-    BOOST_REQUIRE_EQUAL(img->GetX(false), 500);
-    BOOST_REQUIRE_EQUAL(img->GetY(false), 200);
+    BOOST_REQUIRE_EQUAL(img->GetPos().x, 500);
+    BOOST_REQUIRE_EQUAL(img->GetPos().y, 200);
     // Window must be bigger than image pos+size
-    BOOST_REQUIRE_GT(wnd->GetWidth(), img->GetX(false) + img->GetImage()->getWidth() - img->GetImage()->getNx());
-    BOOST_REQUIRE_GT(wnd->GetHeight(), img->GetY(false) + img->GetImage()->getHeight() - img->GetImage()->getNy());
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), img->GetPos().x + img->GetImage()->getWidth() - img->GetImage()->getNx());
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), img->GetPos().y + img->GetImage()->getHeight() - img->GetImage()->getNy());
     const ctrlButton* bt = wnd->GetCtrls<ctrlButton>().front();
     // button must be below start of image
-    BOOST_REQUIRE_GT(bt->GetY(false), img->GetY(false) - img->GetImage()->getNy());
+    BOOST_REQUIRE_GT(bt->GetPos().y, img->GetPos().y - img->GetImage()->getNy());
     // and centered
-    BOOST_REQUIRE_LE(bt->GetX(false), wnd->GetWidth() / 2);
-    BOOST_REQUIRE_GT(bt->GetX(false), wnd->GetWidth() / 2 - bt->GetWidth());
+    BOOST_REQUIRE_LE(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2));
+    BOOST_REQUIRE_GT(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2 - bt->GetSize().x));
 
     using namespace boost::assign;
     std::vector<DrawPoint> imgPts;
@@ -161,15 +161,15 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     imgPts += DrawPoint(30, 30), DrawPoint(300, 30), DrawPoint(150, 30), DrawPoint(150, 300);
     for(unsigned i=0; i<imgPts.size(); i++)
     {
-        const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i].x, imgPts[i].y);
-        Rect imgRect(img->GetX(false) - img->GetImage()->getNx(), img->GetY(false) - img->GetImage()->getNy(), img->GetImage()->getWidth(), img->GetImage()->getHeight());
+        const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i]);
+        Rect imgRect(img->GetPos().x - img->GetImage()->getNx(), img->GetPos().y - img->GetImage()->getNy(), img->GetImage()->getWidth(), img->GetImage()->getHeight());
         // Image must be in wnd
-        BOOST_REQUIRE_GT(wnd->GetWidth(), imgRect.right);
-        BOOST_REQUIRE_GT(wnd->GetHeight(), imgRect.bottom);
+        BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgRect.right);
+        BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgRect.bottom);
         // Not over button or text
-        BOOST_REQUIRE(!Coll(imgRect, bt->GetRect()));
+        BOOST_REQUIRE(!DoRectsIntersect(imgRect, bt->GetDrawRect()));
         const ctrlMultiline* text = wnd->GetCtrls<ctrlMultiline>().front();
-        BOOST_REQUIRE(!Coll(imgRect, text->GetRect()));
+        BOOST_REQUIRE(!DoRectsIntersect(imgRect, text->GetDrawRect()));
     }
 }
 

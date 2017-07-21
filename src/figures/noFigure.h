@@ -18,7 +18,7 @@
 #define NOFIGURE_H_INCLUDED
 
 #include "nodeObjs/noMovable.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 
 class RoadSegment;
 class noRoadNode;

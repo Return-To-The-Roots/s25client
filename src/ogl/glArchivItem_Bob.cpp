@@ -36,8 +36,8 @@ void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat,
 
     glArchivItem_Bitmap_Player* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));
     if(koerper)
-        koerper->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        koerper->DrawFull(drawPt, COLOR_WHITE, color);
     glArchivItem_Bitmap_Player* ware = dynamic_cast<glArchivItem_Bitmap_Player*>(get(96 + links[good]));
     if(ware)
-        ware->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        ware->DrawFull(drawPt, COLOR_WHITE, color);
 }

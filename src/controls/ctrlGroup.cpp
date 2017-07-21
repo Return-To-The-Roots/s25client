@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,129 +17,90 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlGroup.h"
-#include "drivers/ScreenResizeEvent.h"
+
 class MouseCoords;
 struct KeyEvent;
 
-ctrlGroup::ctrlGroup(Window* parent,
-                     unsigned int id,
-                     bool scale)
-    : Window(DrawPoint(0, 0), id, parent)
-{
-    SetScale(scale);
-}
+ctrlGroup::ctrlGroup(Window* parent, unsigned int id): Window(parent, id, DrawPoint(0, 0))
+{}
 
 /**
  *  Zeichenmethode
  */
-bool ctrlGroup::Draw_()
+void ctrlGroup::Draw_()
 {
     // Steuerelemente zeichnen
     DrawControls();
-
-    return true;
 }
 
-/**
- *  Reagiert auf Spielfenstergrößenänderung
- */
-void ctrlGroup::Msg_ScreenResize(const ScreenResizeEvent& sr)
-{
-// Keep the following block the same as in Desktop class:
-    // Für skalierte Desktops ist alles einfach, die brauchen im besten Fall gar nichts selbst implementieren
-    if (scale_)
-    {
-        //Zunächst an die Kinder weiterleiten
-        for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
-        {
-            if(!it->second)
-                continue;
-            Window* ctrl = it->second;
-            // unskalierte Position und Größe bekommen
-            int realX = ctrl->GetX() * 800 / sr.oldWidth;
-            int realY = ctrl->GetY() * 600 / sr.oldHeight;
-            unsigned realWidth = ctrl->GetWidth() * 800 / sr.oldWidth;
-            unsigned realHeight = ctrl->GetHeight() * 600 / sr.oldHeight;
-            // Rundungsfehler?
-            if(realX * sr.oldWidth / 800 < ctrl->GetX()) ++realX;
-            if(realY * sr.oldHeight / 600 < ctrl->GetY()) ++realY;
-            if(realWidth  * sr.oldWidth / 800 < ctrl->GetWidth())  ++realWidth;
-            if(realHeight * sr.oldHeight / 600 < ctrl->GetHeight()) ++realHeight;
-            // Und los
-            ctrl->Move(realX * sr.newWidth / 800, realY * sr.newHeight / 600);
-            ctrl->Msg_ScreenResize(sr);
-            ctrl->Resize(realWidth * sr.newWidth / 800, realHeight * sr.newHeight / 600);
-        }
-    }
-}
 void ctrlGroup::Msg_ButtonClick(const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);
+    GetParent()->Msg_Group_ButtonClick(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_EditEnter(const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_EditEnter(this->id_, ctrl_id);
+    GetParent()->Msg_Group_EditEnter(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_EditChange(const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_EditChange(this->id_, ctrl_id);
+    GetParent()->Msg_Group_EditChange(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id)
 {
-    parent_->Msg_Group_TabChange(this->id_, ctrl_id, tab_id);
+    GetParent()->Msg_Group_TabChange(this->GetID(), ctrl_id, tab_id);
 }
 
 void ctrlGroup::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_ListSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_ComboSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
 {
-    parent_->Msg_Group_CheckboxChange(this->id_, ctrl_id, checked);
+    GetParent()->Msg_Group_CheckboxChange(this->GetID(), ctrl_id, checked);
 }
 
 void ctrlGroup::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
 {
-    parent_->Msg_Group_ProgressChange(this->id_, ctrl_id, position);
+    GetParent()->Msg_Group_ProgressChange(this->GetID(), ctrl_id, position);
 }
 
 void ctrlGroup::Msg_ScrollShow(const unsigned int ctrl_id, const bool visible)
 {
-    parent_->Msg_Group_ScrollShow(this->id_, ctrl_id, visible);
+    GetParent()->Msg_Group_ScrollShow(this->GetID(), ctrl_id, visible);
 }
 
 void ctrlGroup::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_OptionGroupChange(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_Timer(const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_Timer(this->id_, ctrl_id);
+    GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_TableSelectItem(const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_TableRightButton(const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_TableLeftButton(const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }
 
 bool ctrlGroup::Msg_LeftDown(const MouseCoords& mc)
@@ -185,70 +146,70 @@ bool ctrlGroup::Msg_KeyDown(const KeyEvent& ke)
 
 void ctrlGroup::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_ButtonClick(this->id_, ctrl_id);
+    GetParent()->Msg_Group_ButtonClick(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_Group_EditEnter(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_EditEnter(this->id_, ctrl_id);
+    GetParent()->Msg_Group_EditEnter(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_Group_EditChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_EditChange(this->id_, ctrl_id);
+    GetParent()->Msg_Group_EditChange(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_Group_TabChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short tab_id)
 {
-    parent_->Msg_Group_TabChange(this->id_, ctrl_id, tab_id);
+    GetParent()->Msg_Group_TabChange(this->GetID(), ctrl_id, tab_id);
 }
 
 void ctrlGroup::Msg_Group_ListSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_ListSelectItem(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_ListSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_Group_ComboSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_ComboSelectItem(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_ComboSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_Group_CheckboxChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const bool checked)
 {
-    parent_->Msg_Group_CheckboxChange(this->id_, ctrl_id, checked);
+    GetParent()->Msg_Group_CheckboxChange(this->GetID(), ctrl_id, checked);
 }
 
 void ctrlGroup::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short position)
 {
-    parent_->Msg_Group_ProgressChange(this->id_, ctrl_id, position);
+    GetParent()->Msg_Group_ProgressChange(this->GetID(), ctrl_id, position);
 }
 
 void ctrlGroup::Msg_Group_ScrollShow(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const bool visible)
 {
-    parent_->Msg_Group_ScrollShow(this->id_, ctrl_id, visible);
+    GetParent()->Msg_Group_ScrollShow(this->GetID(), ctrl_id, visible);
 }
 
 void ctrlGroup::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_OptionGroupChange(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_OptionGroupChange(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_Group_Timer(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
 {
-    parent_->Msg_Group_Timer(this->id_, ctrl_id);
+    GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
 }
 
 void ctrlGroup::Msg_Group_TableSelectItem(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_TableSelectItem(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_Group_TableRightButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_TableRightButton(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlGroup::Msg_Group_TableLeftButton(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
 {
-    parent_->Msg_Group_TableLeftButton(this->id_, ctrl_id, selection);
+    GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }

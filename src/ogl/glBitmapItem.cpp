@@ -23,13 +23,15 @@
 
 glBitmapItem::glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow, bool isOwning): bmp(b), type(shadow ? TYPE_ARCHIVITEM_BITMAP_SHADOW : TYPE_ARCHIVITEM_BITMAP), isOwning_(isOwning)
 {
-    b->getVisibleArea(x, y, w, h);
-    nx = b->getNx() - x;
-    ny = b->getNy() - y;
+    Point<int> iSize(size);
+    b->getVisibleArea(pos.x, pos.y, iSize.x, iSize.y);
+    size = Extent(iSize);
+    origin = Position(b->getNx(), b->getNy()) - pos;
 }
 glBitmapItem::glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning): bmp(b), type(TYPE_ARCHIVITEM_BITMAP_PLAYER), isOwning_(isOwning)
 {
-    b->getVisibleArea(x, y, w, h);
-    nx = b->getNx() - x;
-    ny = b->getNy() - y;
+    Point<int> iSize(size);
+    b->getVisibleArea(pos.x, pos.y, iSize.x, iSize.y);
+    size = Extent(iSize);
+    origin = Position(b->getNx(), b->getNy()) - pos;
 }

@@ -23,6 +23,7 @@
 #include "colors.h"
 #include "ogl/oglIncludes.h"
 #include "DrawPoint.h"
+#include "Rect.h"
 #include "helpers/containerUtils.h"
 #include "libsiedler2/src/ArchivItem_Font.h"
 #include "libutil/src/ucString.h"
@@ -47,8 +48,11 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         /// liefert die Länge einer Zeichenkette.
         unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
         unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
-        /// liefert die Höhe des Textes ( entspricht @p getDy()+1 )
-        inline unsigned short getHeight() const { return dy + 1; }
+        /// liefert die Höhe des Textes ( entspricht @p getDy() )
+        unsigned short getHeight() const { return dy + 1; }
+
+        /// Return the bounds of the text when draw at the specified position with the specified format
+        Rect getBounds(DrawPoint pos, const std::string& text, unsigned format) const;
 
         /// Gibt Infos, über die Unterbrechungspunkte in einem Text
         class WrapInfo
@@ -86,19 +90,18 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 
         struct CharInfo
         {
-            CharInfo() : x(0), y(0), width(0) {}
-            CharInfo(unsigned short x, unsigned short y, unsigned short width): x(x), y(y), width(width){}
-            unsigned short x;
-            unsigned short y;
-            unsigned short width;
+            CharInfo() : pos(0, 0), width(0) {}
+            CharInfo(const Position& pos, unsigned width): pos(pos), width(width){}
+            Position pos;
+            unsigned width;
         };
 
         /// prüft ob ein Buchstabe existiert.
-        inline bool CharExist(unsigned int c) const { return helpers::contains(utf8_mapping, c); }
+        bool CharExist(unsigned int c) const { return helpers::contains(utf8_mapping, c); }
 
         /// liefert die Breite eines Zeichens
-        inline unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
-        inline unsigned int CharWidth(CharInfo ci) const { return ci.width; }
+        unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
+        unsigned int CharWidth(CharInfo ci) const { return ci.width; }
 
     private:
 
@@ -111,7 +114,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         void initFont();
         /// liefert das Char-Info eines Zeichens
         const CharInfo& GetCharInfo(unsigned int c) const;
-        void DrawChar(const unsigned c, std::vector<GL_T2F_V3F_Struct>& vertices, short& cx, short& cy, float tw, float th) const;
+        void DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices, DrawPoint& curPos, const Point<float>& texSize) const;
 
         boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
         boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;

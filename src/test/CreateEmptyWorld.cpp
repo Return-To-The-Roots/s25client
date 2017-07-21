@@ -19,10 +19,10 @@
 #include "CreateEmptyWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 
-CreateEmptyWorld::CreateEmptyWorld(unsigned width, unsigned height, unsigned numPlayers):
-    width_(width), height_(height), playerNations_(numPlayers, NAT_AFRICANS)
+CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers):
+    size_(size), playerNations_(numPlayers, NAT_AFRICANS)
 {}
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
@@ -30,9 +30,9 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
-    world.Init(width_, height_, LT_GREENLAND);
+    world.Init(size_, LT_GREENLAND);
     // Set everything to meadow
-    RTTR_FOREACH_PT(MapPoint, width_, height_)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = TT_MEADOW1;
@@ -45,14 +45,14 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
         numPlayersPerDim.y = static_cast<unsigned>(ceil(sqrt(numPlayers)));
         numPlayersPerDim.x = static_cast<unsigned>(ceil(float(numPlayers) / numPlayersPerDim.y));
         // Distance between HQs
-        Point<unsigned> playerDist = Point<unsigned>(width_ / numPlayersPerDim.x, height_ / numPlayersPerDim.y);
+        Point<unsigned> playerDist = size_ / numPlayersPerDim;
         // Start with a little offset so we don't place them at the map border
-        MapPoint curPt(playerDist / 2);
+        MapPoint curPt(playerDist / 2u);
         std::vector<MapPoint> hqPositions;
         for(unsigned y = 0; y < numPlayersPerDim.y; y++)
         {
             numPlayersPerDim.x = min<unsigned>(numPlayersPerDim.x, numPlayers - hqPositions.size());
-            playerDist.x = width_ / numPlayersPerDim.x;
+            playerDist.x = size_.x / numPlayersPerDim.x;
             curPt.x = playerDist.x / 2;
             for (unsigned x = 0; x < numPlayersPerDim.x; x++)
             {

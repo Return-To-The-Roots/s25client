@@ -63,7 +63,7 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
     LOADER.GetPlayerImage("rom_bobs", 190 + (now_id % 23))
-    ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+    ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)

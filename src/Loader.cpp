@@ -127,9 +127,10 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         lst = ListDir(file, "eng", true, &lst);
         lst = ListDir(file, "ini", true, &lst);
 
+        libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
         for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-            if(!LoadFile( *i, GetPaletteN("pal5"), isOriginal ) )
+            if(!LoadFile( *i, pal5, isOriginal ) )
                 return false;
         }
         LOG.write(_("finished in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
@@ -145,7 +146,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         {
             glArchivItem_Bitmap* image = GetImageN("splash", 0);
             image->setFilter(GL_LINEAR);
-            image->Draw(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
+            image->DrawFull(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()));
             VIDEODRIVER.SwapBuffers();
         }
     }
@@ -258,12 +259,13 @@ bool Loader::LoadSounds()
         libsiedler2::ArchivInfo sng;
 
         LOG.write(_("Loading \"%s\": ")) % *it;
+        unsigned startTime = VIDEODRIVER.GetTickCount();
         if(libsiedler2::Load(*it, sng) != 0 )
         {
             LOG.write(_("failed\n"));
             return false;
         }
-        LOG.write(_("finished\n"));
+        LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
 
         sng_lst.setC(i++, *sng.get(0));
     }
@@ -1341,7 +1343,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     std::string name = fileName.stem().string();
 
     FileEntry& entry = files_[name];
-    bool isLoaded = entry.archiv.size() != 0;
+    bool isLoaded = !entry.archiv.empty();
     if(isLoaded && entry.hasOverrides && isOriginal)
     {
         // We are loading the original file which was already loaded but modified --> Clear it to reload

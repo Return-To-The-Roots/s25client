@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -30,22 +30,24 @@
 #include "gameData/const_gui_ids.h"
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory):
-    IngameWindow(CGI_MILITARY, IngameWindow::posAtMouse,  168, 330, _("Military"), LOADER.GetImageN("io", 5)),
+    IngameWindow(CGI_MILITARY, IngameWindow::posAtMouse, Extent(168, 330), _("Military"), LOADER.GetImageN("io", 5)),
     gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     // Einzelne Balken
-    AddProgress(0, 17, 25, 132, 26, TC_GREY, 119, 120, MILITARY_SETTINGS_SCALE[0], "", 4, 4, 0, _("Fewer recruits"), _("More recruits")); /* pitch: 4, 4 */
-    AddProgress(1, 17, 57, 132, 26, TC_GREY, 121, 122, MILITARY_SETTINGS_SCALE[1], "", 4, 4, 0, _("Weak defense"), _("Strong defense"));
-    AddProgress(2, 17, 89, 132, 26, TC_GREY, 123, 124, MILITARY_SETTINGS_SCALE[2], "", 4, 4, 0, _("Fewer defenders"), _("More defenders"));
-    AddProgress(3, 17, 121, 132, 26, TC_GREY, 209, 210, MILITARY_SETTINGS_SCALE[3], "", 4, 4, 0, _("Less attackers"), _("More attackers"));
-    AddProgress(4, 17, 153, 132, 26, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", 4, 4, 0, _("Interior"), _("Interior"));
-    AddProgress(5, 17, 185, 132, 26, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", 4, 4, 0, _("Center of country"), _("Center of country"));
-    AddProgress(6, 17, 217, 132, 26, TC_GREY, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "", 4, 4, 0, _("Near harbor points"), _("Near harbor points"));
-    AddProgress(7, 17, 249, 132, 26, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", 4, 4, 0, _("Border areas"), _("Border areas"));
+    const Extent progSize(132, 26);
+    const Extent progPadding(4, 4);
+    AddProgress(0, DrawPoint(17, 25), progSize, TC_GREY, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding, 0, _("Fewer recruits"), _("More recruits")); /* pitch: progPadding */
+    AddProgress(1, DrawPoint(17, 57), progSize, TC_GREY, 121, 122, MILITARY_SETTINGS_SCALE[1], "", progPadding, 0, _("Weak defense"), _("Strong defense"));
+    AddProgress(2, DrawPoint(17, 89), progSize, TC_GREY, 123, 124, MILITARY_SETTINGS_SCALE[2], "", progPadding, 0, _("Fewer defenders"), _("More defenders"));
+    AddProgress(3, DrawPoint(17, 121), progSize, TC_GREY, 209, 210, MILITARY_SETTINGS_SCALE[3], "", progPadding, 0, _("Less attackers"), _("More attackers"));
+    AddProgress(4, DrawPoint(17, 153), progSize, TC_GREY, 129, 130, MILITARY_SETTINGS_SCALE[4], "", progPadding, 0, _("Interior"), _("Interior"));
+    AddProgress(5, DrawPoint(17, 185), progSize, TC_GREY, 127, 128, MILITARY_SETTINGS_SCALE[5], "", progPadding, 0, _("Center of country"), _("Center of country"));
+    AddProgress(6, DrawPoint(17, 217), progSize, TC_GREY, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "", progPadding, 0, _("Near harbor points"), _("Near harbor points"));
+    AddProgress(7, DrawPoint(17, 249), progSize, TC_GREY, 125, 126, MILITARY_SETTINGS_SCALE[7], "", progPadding, 0, _("Border areas"), _("Border areas"));
 
     // unteren 2 Buttons
-    AddImageButton(20, 18, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
-    AddImageButton(21, 120, 282, 30, 32, TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(20, DrawPoint(18, 282), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(21, DrawPoint(120, 282), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 191), _("Default"));
 
     // Falls Verteidiger ändern verboten ist, einfach die Bar ausblenden
     if (gwv.GetWorld().GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 1)

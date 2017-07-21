@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -26,35 +26,32 @@
 
 ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
                                    const unsigned int id,
-                                   const unsigned short x,
-                                   const unsigned short y,
+                                   const DrawPoint& pos,
                                    const BuildingType type,
                                    const Nation nation,
                                    const unsigned short size,
                                    const std::string& tooltip)
-    : ctrlButton(parent, id, x, y, size, size, TC_GREY, tooltip),
-      type(type), nation(nation), size(size)
+    : ctrlButton(parent, id, pos, Extent(size, size), TC_GREY, tooltip),
+      type(type), nation(nation)
 {}
 
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlBuildingIcon::Draw_()
+void ctrlBuildingIcon::Draw_()
 {
     // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
     TestMouseOver();
 
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
-        LOADER.GetImageN("io", 0)->Draw(GetDrawPos(), size, size, size, size, 0, 0);
+        LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
 	glArchivItem_Bitmap* image;
 	if(type!=BLD_CHARBURNER)
 		image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
 	else
 		image = LOADER.GetImageN("charburner", nation*8+8);
     if(image)
-        image->Draw(GetDrawPos() + DrawPoint(size, size) / 2, 0, 0, 0, 0, 0, 0, (state == BUTTON_PRESSED ? 0xFFFFFF00 : 0xFFFFFFFF));
-
-    return true;
+        image->DrawFull(GetDrawPos() + GetSize() / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
 }
 
 

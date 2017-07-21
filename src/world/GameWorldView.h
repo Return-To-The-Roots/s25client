@@ -18,8 +18,8 @@
 #ifndef GameWorldView_h__
 #define GameWorldView_h__
 
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
-#include "Point.h"
 #include "DrawPoint.h"
 #include <vector>
 
@@ -74,7 +74,7 @@ class GameWorldView
     /// Top-Left position of the view (window)
     Point<int> pos;
     /// Size of the view
-    unsigned width, height;
+    Extent size_;
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor_;
@@ -82,7 +82,7 @@ class GameWorldView
     float zoomSpeed_;
 
 public:
-    GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height);
+    GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size);
     ~GameWorldView();
 
     const GameWorldViewer& GetViewer() const { return gwv; }
@@ -90,7 +90,7 @@ public:
 
     void SetPos(const Point<int>& newPos) { pos = newPos; }
     Point<int> GetPos() const { return pos; }
-    Point<unsigned> GetSize() const { return Point<unsigned>(width, height); }
+    Extent GetSize() const { return size_; }
 
     void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
     float GetCurrentTargetZoomFactor() const;
@@ -130,7 +130,7 @@ public:
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
     Point<int> GetLastPt() const { return lastPt; }
 
-    void Resize(unsigned width, unsigned height);
+    void Resize(const Extent& newSize);
 
     void SetAIDebug(unsigned what, unsigned player, bool active)
     {

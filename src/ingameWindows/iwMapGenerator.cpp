@@ -47,19 +47,19 @@ enum
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GENERATOR,
                                                 IngameWindow::posLastOrCenter,
-                                                250, 400, _("Map Generator"),
+                                                Extent(250, 400), _("Map Generator"),
                                                 LOADER.GetImageN("resource", 41), true, false), mapSettings(settings)
 {
-    AddTextButton(0,  20, 360, 100, 20, TC_RED2, _("Back"), NormalFont);
-    AddTextButton(1, 130, 360, 100, 20, TC_GREEN2, _("Apply"), NormalFont);
+    AddTextButton(0, DrawPoint( 20, 360), Extent(100, 20), TC_RED2, _("Back"), NormalFont);
+    AddTextButton(1, DrawPoint(130, 360), Extent(100, 20), TC_GREEN2, _("Apply"), NormalFont);
 
-    ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, 20, 30, 210, 20, TC_GREY, NormalFont, 100);
+    ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TC_GREY, NormalFont, 100);
     for (unsigned n = 2; n < MAX_PLAYERS; n++)
     {
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
     }
     
-    combo = AddComboBox(CTRL_MAP_STYLE, 20, 60, 210, 20, TC_GREY, NormalFont, 100);
+    combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Islands"));
     combo->AddString(_("Continent"));
     combo->AddString(_("Greenland"));
@@ -68,35 +68,35 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings) : IngameWindow(CGI_MAP_GEN
     combo->AddString(_("Ringland"));
     combo->AddString(_("Random"));
 
-    combo = AddComboBox(CTRL_MAP_SIZE, 20, 90, 210, 20, TC_GREY, NormalFont, 100);
+    combo = AddComboBox(CTRL_MAP_SIZE, DrawPoint(20, 90), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString("64 x 64");
     combo->AddString("128 x 128");
     combo->AddString("256 x 256");
     combo->AddString("512 x 512");
     combo->AddString("1024 x 1024");
 
-    AddText(2, 20, 120, _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(CTRL_PLAYER_RADIUS, 20, 140, 210, 20, TC_GREY, NormalFont, 100);
+    AddText(2, DrawPoint(20, 120), _("Player Distribution"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(CTRL_PLAYER_RADIUS, DrawPoint(20, 140), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Very Close"));
     combo->AddString(_("Close"));
     combo->AddString(_("Medium"));
     combo->AddString(_("Far"));
     combo->AddString(_("Very Far"));
 
-    AddText(3, 20, 170, _("Landscape"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(CTRL_MAP_TYPE, 20, 190, 210, 20, TC_GREY, NormalFont, 100);
+    AddText(3, DrawPoint(20, 170), _("Landscape"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 190), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Greenland"));
     combo->AddString(_("Winterworld"));
     combo->AddString(_("Wasteland"));
     
-    AddText(4, 20, 225, _("Gold:"), COLOR_YELLOW, 0, NormalFont);
-    AddProgress(CTRL_RATIO_GOLD, 100, 220, 130, 20, TC_GREY, 139, 138, 100);
-    AddText(5, 20, 255, _("Iron:"), COLOR_YELLOW, 0, NormalFont);
-    AddProgress(CTRL_RATIO_IRON, 100, 250, 130, 20, TC_GREY, 139, 138, 100);
-    AddText(6, 20, 285, _("Coal:"), COLOR_YELLOW, 0, NormalFont);
-    AddProgress(CTRL_RATIO_COAL, 100, 280, 130, 20, TC_GREY, 139, 138, 100);
-    AddText(7, 20, 315, _("Granite:"), COLOR_YELLOW, 0, NormalFont);
-    AddProgress(CTRL_RATIO_GRANITE, 100, 310, 130, 20, TC_GREY, 139, 138, 100);
+    AddText(4, DrawPoint(20, 225), _("Gold:"), COLOR_YELLOW, 0, NormalFont);
+    AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 220), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddText(5, DrawPoint(20, 255), _("Iron:"), COLOR_YELLOW, 0, NormalFont);
+    AddProgress(CTRL_RATIO_IRON, DrawPoint(100, 250), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddText(6, DrawPoint(20, 285), _("Coal:"), COLOR_YELLOW, 0, NormalFont);
+    AddProgress(CTRL_RATIO_COAL, DrawPoint(100, 280), Extent(130, 20), TC_GREY, 139, 138, 100);
+    AddText(7, DrawPoint(20, 315), _("Granite:"), COLOR_YELLOW, 0, NormalFont);
+    AddProgress(CTRL_RATIO_GRANITE, DrawPoint(100, 310), Extent(130, 20), TC_GREY, 139, 138, 100);
     
     Reset();
 }
@@ -162,24 +162,19 @@ void iwMapGenerator::Apply()
     switch (GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE)->GetSelection())
     {
         case 0:
-            mapSettings.width = 64;
-            mapSettings.height = 64;
+            mapSettings.size = MapExtent::all(64);
             break;
         case 1:
-            mapSettings.width = 128;
-            mapSettings.height = 128;
+            mapSettings.size = MapExtent::all(128);
             break;
         case 2:
-            mapSettings.width = 256;
-            mapSettings.height = 256;
+            mapSettings.size = MapExtent::all(256);
             break;
         case 3:
-            mapSettings.width = 512;
-            mapSettings.height = 512;
+            mapSettings.size = MapExtent::all(512);
             break;
         case 4:
-            mapSettings.width = 1024;
-            mapSettings.height = 1024;
+            mapSettings.size = MapExtent::all(1024);
             break;
         default:
             break;
@@ -269,7 +264,7 @@ void iwMapGenerator::Reset()
     
     
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_SIZE);
-    switch (mapSettings.width)
+    switch (mapSettings.size.x)
     {
         case 64:
             combo->SetSelection(0);

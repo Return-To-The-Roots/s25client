@@ -28,6 +28,16 @@
 
 #include <algorithm>
 
+bool operator<(const Language& o1, const Language& o2)
+{
+    if(o1.name < o2.name)
+        return true;
+
+    if(o1.name == o2.name)
+        return o1.code < o2.code;
+    return false;
+}
+
 void Languages::loadLanguages()
 {
     const libsiedler2::ArchivInfo& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
@@ -42,7 +52,7 @@ void Languages::loadLanguages()
     }
 
     // Sprachen sortieren
-    std::sort(languages.begin(), languages.end(), Language::compare);
+    std::sort(languages.begin(), languages.end());
 
     // Systemsprache hinzufügen
     Language l(gettext_noop("System language"), "");
@@ -51,13 +61,13 @@ void Languages::loadLanguages()
     loaded = true;
 }
 
-const Languages::Language& Languages::getLanguage(unsigned int i)
+const Language& Languages::getLanguage(unsigned int i)
 {
     if(!loaded)
         loadLanguages();
 
     if(i < languages.size())
-        return languages.at(i);
+        return languages[i];
 
     return languages.at(0);
 }
@@ -86,7 +96,7 @@ void Languages::setLanguage(const std::string& lang_code)
 
 const std::string Languages::setLanguage(unsigned int i)
 {
-    const Language l = getLanguage(i);
+    const Language& l = getLanguage(i);
 
     setLanguage(l.code);
 

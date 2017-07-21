@@ -123,50 +123,46 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(const unsigned c,
-                                        std::vector<GL_T2F_V3F_Struct>& vertices,
-                                        short& cx,
-                                        short& cy, //-V669
-                                        float tw,
-                                        float th) const
+inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices,
+    DrawPoint& curPos, const Point<float>& texSize) const
 {
-    CharInfo ci = GetCharInfo(c);
+    CharInfo ci = GetCharInfo(curChar);
 
-    float tx1 = static_cast<float>(ci.x) / tw;
-    float tx2 = static_cast<float>(ci.x + ci.width) / tw;
-    float ty1 = static_cast<float>(ci.y) / th;
-    float ty2 = static_cast<float>(ci.y + dy) / th;
+    Point<float> texCoord1 = ci.pos / texSize;
+    Point<float> texCoord2 = (ci.pos + Position(ci.width, dy)) / texSize;
+    Point<float> curPos1(curPos);
+    Point<float> curPos2(curPos + Position(ci.width, dy));
 
     GL_T2F_V3F_Struct tmp;
-    tmp.tx = tx1;
-    tmp.ty = ty1;
-    tmp.x = cx;
-    tmp.y = cy;
+    tmp.tx = texCoord1.x;
+    tmp.ty = texCoord1.y;
+    tmp.x = curPos1.x;
+    tmp.y = curPos1.y;
     tmp.z = 0.0f;
     vertices.push_back(tmp);
 
-    tmp.tx = tx1;
-    tmp.ty = ty2;
-    tmp.x = cx;
-    tmp.y = (GLfloat)(cy + dy);
+    tmp.tx = texCoord1.x;
+    tmp.ty = texCoord2.y;
+    tmp.x = curPos1.x;
+    tmp.y = curPos2.y;
     tmp.z = 0.0f;
     vertices.push_back(tmp);
 
-    tmp.tx = tx2;
-    tmp.ty = ty2;
-    tmp.x = (GLfloat)(cx + ci.width);
-    tmp.y = (GLfloat)(cy + dy);
+    tmp.tx = texCoord2.x;
+    tmp.ty = texCoord2.y;
+    tmp.x = curPos2.x;
+    tmp.y = curPos2.y;
     tmp.z = 0.0f;
     vertices.push_back(tmp);
 
-    tmp.tx = tx2;
-    tmp.ty = ty1;
-    tmp.x = (GLfloat)(cx + ci.width);
-    tmp.y = cy;
+    tmp.tx = texCoord2.x;
+    tmp.ty = texCoord1.y;
+    tmp.x = curPos2.x;
+    tmp.y = curPos1.y;
     tmp.z = 0.0f;
     vertices.push_back(tmp);
 
-    cx += ci.width;
+    curPos.x += ci.width;
 }
 
 /**
@@ -263,7 +259,7 @@ void glArchivItem_Font::Draw(DrawPoint pos,
     else if( (format & 12) == DF_VCENTER)
         pos.y -= dy / 2;
 
-    short cx = pos.x, cy = pos.y;
+    DrawPoint curPos(pos);
     if( (format & 3) == DF_CENTER)
     {
         unsigned short line_width;
@@ -272,33 +268,32 @@ void glArchivItem_Font::Draw(DrawPoint pos,
             line_width = getWidthInternal(text.begin(), itNl);
         else
             line_width = textWidth;
-        cx = pos.x - line_width / 2;
+        curPos.x = pos.x - line_width / 2;
     }
 
     std::vector<GL_T2F_V3F_Struct> texList;
     texList.reserve((maxNumChars + end.length()) * 4);
-    float tw = fontNoOutline->GetTexWidth();
-    float th = fontNoOutline->GetTexHeight();
+    const Point<float> texSize(fontNoOutline->GetTexSize());
     
     for(std::string::iterator it = text.begin(); it != itEnd;)
     {
         const uint32_t curChar = utf8::next(it, text.end());
         if(curChar == '\n')
         {
-            cy += dy;
             if( (format & 3) == DF_CENTER)
             {
                 unsigned short line_width;
                 std::string::iterator itNext = nextIt(it);
                 std::string::iterator itNl = std::find(itNext, itEnd, '\n');
                 line_width = getWidthInternal(itNext, itNl);
-                cx = pos.x - line_width / 2;
+                curPos.x = pos.x - line_width / 2;
             }
             else
-                cx = pos.x;
+                curPos.x = pos.x;
+            curPos.y += dy;
         }
         else
-            DrawChar(curChar, texList, cx, cy, tw, th);
+            DrawChar(curChar, texList, curPos, texSize);
     }
 
     if(drawEnd)
@@ -308,10 +303,10 @@ void glArchivItem_Font::Draw(DrawPoint pos,
             const uint32_t curChar = utf8::next(it, end.end());
             if(curChar == '\n')
             {
-                cy += dy;
-                cx = pos.x;
+                curPos.x = pos.x;
+                curPos.y += dy;
             } else
-                DrawChar(curChar, texList, cx, cy, tw, th);
+                DrawChar(curChar, texList, curPos, texSize);
         }
     }
 
@@ -384,6 +379,26 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
         length = unsigned(text.length());
 
     return getWidthInternal(text.begin(), text.begin() + length, max_width, maxNumChars);
+}
+
+Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsigned format) const
+{
+    if(text.empty())
+        return Rect(Point<int>(pos), 0, 0);
+    unsigned width = getWidth(text);
+    unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
+    Rect result(Point<int>(pos), width, numLines * getHeight());
+    Point<int> offset(0,0);
+    if((format & 3) == DF_RIGHT)
+        offset.x = width;
+    else if((format & 3) == DF_CENTER)
+        offset.x = width / 2;
+    if((format & 12) == DF_BOTTOM)
+        offset.y = getHeight();
+    else if((format & 12) == DF_VCENTER)
+        offset.y = getHeight() / 2;
+    result.move(-offset);
+    return result;
 }
 
 /**
@@ -539,15 +554,13 @@ void glArchivItem_Font::initFont()
     // Calc lines required (rounding up)
     const unsigned numLines = (numChars + numCharsPerLine - 1) / numCharsPerLine;
 
-    BOOST_CONSTEXPR_OR_CONST unsigned spacing = 1;
-    unsigned w = (dx + spacing * 2) * numCharsPerLine + spacing * 2;
-    unsigned h = (dy + spacing * 2) * numLines + spacing * 2;
-    std::vector<unsigned char> bufferWithOutline(w * h * 4); // RGBA Puffer für alle Buchstaben
-    std::vector<unsigned char> bufferNoOutline(w * h * 4); // RGBA Puffer für alle Buchstaben
+    BOOST_CONSTEXPR_OR_CONST Extent spacing(1, 1);
+    Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
+    std::vector<unsigned char> bufferWithOutline(texSize.x * texSize.y * 4); // RGBA Puffer für alle Buchstaben
+    std::vector<unsigned char> bufferNoOutline(texSize.x * texSize.y * 4); // RGBA Puffer für alle Buchstaben
 
     libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
-    unsigned x = spacing;
-    unsigned y = spacing;
+    Position curPos(spacing);
     numChars = 0;
     for(unsigned int i = 0; i < size(); ++i)
     {
@@ -557,23 +570,23 @@ void glArchivItem_Font::initFont()
 
         if((numChars % numCharsPerLine) == 0 && numChars > 0)
         {
-            y += dy + spacing * 2;
-            x = spacing;
+            curPos.y += dy + spacing.y * 2;
+            curPos.x = spacing.x;
         }
 
         // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
-        c->print(&bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette, 128, x, y, 0, 0, 0, 0, true);
-        c->print(&bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette, 128, x, y);
+        c->print(&bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
+        c->print(&bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette, 128, curPos.x, curPos.y);
 
-        CharInfo ci(x, y, std::min<unsigned short>(dx + 2, c->getWidth()));
+        CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));
 
         utf8_mapping[i] = ci;
-        x += dx + spacing * 2;
+        curPos.x += dx + spacing.x * 2;
         ++numChars;
     }
 
-    fontNoOutline->create(  w, h, &bufferNoOutline.front(),   w, h, libsiedler2::FORMAT_RGBA, palette);
-    fontWithOutline->create(w, h, &bufferWithOutline.front(), w, h, libsiedler2::FORMAT_RGBA, palette);
+    fontNoOutline->create(texSize.x, texSize.y, &bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette);
+    fontWithOutline->create(texSize.x, texSize.y, &bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette);
 
     // Set the placeholder for non-existant glyphs. Use '?' if possible (should always be)
     if(helpers::contains(utf8_mapping, '?'))

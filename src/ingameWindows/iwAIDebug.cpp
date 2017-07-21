@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -28,7 +28,7 @@
 #include "libutil/src/colors.h"
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
-    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, 300, 515, _("AI Debug"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv)
 {
     for(std::vector<AIBase*>::const_iterator it = ais.begin(); it != ais.end(); ++it)
@@ -44,7 +44,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
         return;
     }
 
-	ctrlComboBox* players = AddComboBox(1, 15, 30, 250, 20, TC_GREY, NormalFont, 100);
+	ctrlComboBox* players = AddComboBox(1, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
     for (std::vector<AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
     {
         players->AddString((*it)->GetPlayerName());
@@ -53,7 +53,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     player_ = 0;
     players->SetSelection(player_);
 
-    ctrlComboBox* overlays = AddComboBox(0, 15, 60, 250, 20, TC_GREY, NormalFont, 100);
+    ctrlComboBox* overlays = AddComboBox(0, DrawPoint(15, 60), Extent(250, 20), TC_GREY, NormalFont, 100);
     overlays->AddString("None");
     overlays->AddString("BuildingQuality");
     overlays->AddString("Reachability");
@@ -72,9 +72,9 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
 
 	
 
-    //jobs = AddList(1, 15, 60, 120, 220, TC_GREY, NormalFont);
+    //jobs = AddList(1, DrawPoint(15, 60), Extent(120, 220), TC_GREY, NormalFont);
 
-    text = AddText(2, 15, 120, "", COLOR_YELLOW,
+    text = AddText(2, DrawPoint(15, 120), "", COLOR_YELLOW,
                    glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
 
     //for(unsigned char i = 0; i < 31; ++i)
@@ -104,6 +104,7 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select
 
 void iwAIDebug::Msg_PaintBefore()
 {
+    IngameWindow::Msg_PaintBefore();
     std::stringstream ss;
 
     AIJH::Job* currentJob = ais_[player_]->GetCurrentJob();

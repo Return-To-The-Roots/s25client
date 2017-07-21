@@ -22,6 +22,7 @@
 
 #include "world/World.h"
 #include "gameData/TerrainData.h"
+#include <boost/config.hpp>
 
 struct PathConditionShip
 {
@@ -30,13 +31,13 @@ struct PathConditionShip
     PathConditionShip(const World& world): world(world){}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         return world.IsSeaPoint(pt);
     }
 
     // Called for every node
-    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
+    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // We must have shippable water on both sides
         return TerrainData::IsUsableByShip(world.GetLeftTerrain(fromPt, dir)) &&

@@ -61,10 +61,10 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
             draw_id = 9 + 12 + (now_id - 36);
 
 
-        LOADER.GetPlayerImage("charburner_bobs", draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetPlayerImage("charburner_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
     else
-        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
 }
 

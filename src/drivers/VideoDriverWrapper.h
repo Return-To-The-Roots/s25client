@@ -37,6 +37,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
 
         /// Loads a new driver. Takes the existing one, if given
         bool LoadDriver(IVideoDriver* existingDriver = NULL);
+        IVideoDriver* GetDriver() const { return videodriver; }
 
         /// Erstellt das Fenster.
         bool CreateScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
@@ -69,9 +70,9 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
         void* GetMapPointer() const;
 
-        unsigned short GetScreenWidth()  const { const unsigned short w = videodriver->GetScreenWidth(); return (w < 800 ? 800 : w); }
-        unsigned short GetScreenHeight() const { const unsigned short h = videodriver->GetScreenHeight(); return (h < 600 ? 600 : h); }
-        Point<int> GetScreenSize() const { return Point<int>(GetScreenWidth(), GetScreenHeight()); }
+        unsigned short GetScreenWidth()  const;
+        unsigned short GetScreenHeight() const;
+        Extent GetScreenSize() const;
         bool IsFullscreen() const { return videodriver->IsFullscreen(); }
 
         bool IsLeftDown();

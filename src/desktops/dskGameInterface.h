@@ -30,7 +30,7 @@
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "notifications/Subscribtion.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadBuildState.h"
 #include <boost/array.hpp>
 
@@ -81,7 +81,7 @@ class dskGameInterface :
         dskGameInterface(GameWorldBase& world);
         ~dskGameInterface() override;
 
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         void SetActive(bool activate = true) override;
 
         void LC_Status_ConnectionLost() override;
@@ -132,9 +132,9 @@ class dskGameInterface :
         void DemolishRoad(const unsigned start_id);
         // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
         // ansonsten gibt's nur nen Button zum Abbrechen
-        void ShowRoadWindow(int mouse_x, int mouse_y);
+        void ShowRoadWindow(const DrawPoint& mousePos);
         /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-        void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, int mouse_x, int mouse_y, const bool enable_military_buildings);
+        void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos, const bool enable_military_buildings);
 
         const GameWorldViewer& GetViewer() const { return worldViewer; }
         void SetSelectedMapPoint(const MapPoint pt);

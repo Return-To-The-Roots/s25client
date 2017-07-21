@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,55 +33,55 @@
 #include "figures/nofPassiveSoldier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "addons/const_addons.h"
 #include <boost/foreach.hpp>
 #include <set>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse,  226, 194, _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
     gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
-    AddImage(0, 28, 39, LOADER.GetMapImageN(2298));
-    AddImage(1, 28, 39, LOADER.GetMapImageN(2250 + GD_SWORD));
+    AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
+    AddImage(1, DrawPoint(28, 39), LOADER.GetMapImageN(2250 + GD_SWORD));
 
     // Schild
-    AddImage(2, 196, 39, LOADER.GetMapImageN(2298));
-    AddImage(3, 196, 39, LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
+    AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
+    AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
 
     // Hilfe
-    AddImageButton(4,  16, 147, 30, 32, TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(4, DrawPoint( 16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
     // Abreißen
-    AddImageButton(5,  50, 147, 34, 32, TC_GREY, LOADER.GetImageN("io",  23));
+    AddImageButton(5, DrawPoint( 50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io",  23));
     // Gold an/aus (227,226)
-    AddImageButton(6,  90, 147, 32, 32, TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
+    AddImageButton(6, DrawPoint( 90, 147), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
     // "Gehe Zu Ort"
-    AddImageButton(7, 179, 147, 30, 32, TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
-    AddImage(8, 117, 114, LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
+    AddImage(8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
 	// "Go to next" (building of same type)
-    AddImageButton( 9, 179, 115, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
+    AddImageButton( 9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
 	//addon military control active? -> show button
 	if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
-		AddImageButton( 10, 124, 147, 30, 32, TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
+		AddImageButton( 10, DrawPoint(124, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->GetMaxCoinCt();
-    DrawPoint goldPos = GetDrawPos() + DrawPoint((width_ - 22 * maxCoinCt) / 2, 60);
-    DrawRectangle(goldPos, 22 * maxCoinCt, 24, 0x96000000);
+    DrawPoint goldPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxCoinCt) / 2, 60);
+    DrawRectangle(Rect(goldPos, Extent(22 * maxCoinCt, 24)), 0x96000000);
     // Gold
     goldPos += DrawPoint(12, 12);
     for(unsigned short i = 0; i < maxCoinCt; ++i)
     {
-        LOADER.GetMapImageN(2278)->Draw(goldPos, 0, 0, 0, 0, 0, 0, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
+        LOADER.GetMapImageN(2278)->DrawFull(goldPos, (i >= building->GetNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
         goldPos.x += 22;
     }
 
@@ -100,15 +100,15 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     }
 
     const unsigned maxSoldierCt = building->GetMaxTroopsCt();
-    DrawPoint troopsPos = GetDrawPos() + DrawPoint((width_ - 22 * maxSoldierCt) / 2, 98);
+    DrawPoint troopsPos = GetDrawPos() + DrawPoint((GetSize().x - 22 * maxSoldierCt) / 2, 98);
     // Schwarzer Untergrund für Soldatenanzeige
-    DrawRectangle(troopsPos, 22 * maxSoldierCt, 24, 0x96000000);
+    DrawRectangle(Rect(troopsPos, Extent(22 * maxSoldierCt, 24)), 0x96000000);
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
     for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
     {
-        LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(curTroopsPos);
+        LOADER.GetMapImageN(2321 + (*it)->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
     }
 
@@ -117,7 +117,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         DrawPoint healthPos = troopsPos - DrawPoint(0, 14);
 
         // black background for hitpoints
-        DrawRectangle(healthPos, 22 * maxSoldierCt, 14, 0x96000000);
+        DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
         for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it) {
@@ -201,7 +201,7 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
 						it=militaryBuildings.begin();
 					gwv.MoveToMapPt((*it)->GetPos());
 					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gcFactory, *it);
-					nextscrn->Move(pos_);
+					nextscrn->SetPos(GetPos());
 					WINDOWMANAGER.Show(nextscrn);
 					break;
 				}

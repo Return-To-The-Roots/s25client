@@ -47,13 +47,13 @@ const unsigned FADING_TIME = 2000;
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
-    AddTextButton(0, 300, 550, 200, 22,   TC_RED1, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22),   TC_RED1, _("Back"), NormalFont);
 
     // "Die Siedler II.5 RTTR"
-    AddText(1, 400, 10, _("Return To The Roots"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     // "Credits"
-    AddText(2, 400, 33, _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(2, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     CreditsEntry entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
     entry.lines.push_back(_("Project management"));
@@ -236,7 +236,7 @@ void dskCredits::Msg_PaintAfter()
         }
 
         b.id = job;
-        b.pos.y = GetCtrl<ctrlButton>(0)->GetY() - 20 - rand() % 150;
+        b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
         bobs.push_back(b);
     }
 
@@ -288,20 +288,20 @@ void dskCredits::Msg_PaintAfter()
     transparency = transparency << 24;
 
     // draw text
-    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
 
     boost::array<unsigned int, 2> columnToY = {{150, 150}};
 
     for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
-        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, SetAlpha(COLOR_YELLOW, transparency));
         columnToY[line->column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
 
     if (itCurEntry->pic)
-        itCurEntry->pic->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
+        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), SetAlpha(COLOR_WHITE, transparency));
 }
 
 bool dskCredits::Close()
@@ -328,8 +328,3 @@ void dskCredits::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
 {
     Close();
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// EOF
-///////////////////////////////////////////////////////////////////////////////
-

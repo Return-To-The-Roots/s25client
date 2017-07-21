@@ -25,8 +25,8 @@
 #include "gameData/TerrainData.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
-    Minimap(gwv.GetWorld().GetWidth(), gwv.GetWorld().GetHeight()), gwv(gwv), nodes_updated(map_width*map_height, false),
-    dos(map_width*map_height, DO_INVALID), territory(true), houses(true), roads(true)
+    Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),
+    dos(GetMapSize().x * GetMapSize().y, DO_INVALID), territory(true), houses(true), roads(true)
 {
     CreateMapTexture();
 }
@@ -208,13 +208,12 @@ void IngameMinimap::BeforeDrawing()
     if(!nodesToUpdate.empty())
     {
         // Komplette Textur neu erzeugen, weil es zu viele Knoten sind?
-        if(nodesToUpdate.size() >= map_width * map_height / MAX_NODES_UPDATE_DENOMINATOR)
+        if(nodesToUpdate.size() >= nodes_updated.size() / MAX_NODES_UPDATE_DENOMINATOR)
         {
             // Ja, alles neu erzeugen
             UpdateAll();
-            for(MapPoint p(0, 0); p.y < map_height; p.y++)
-                for(p.x = 0; p.x < map_width; p.x++)
-                    nodes_updated[GetMMIdx(p)] = false;
+            RTTR_FOREACH_PT(MapPoint, GetMapSize())
+                nodes_updated[GetMMIdx(pt)] = false;
         } else
         {
             // Entsprechende Pixel updaten
@@ -223,7 +222,7 @@ void IngameMinimap::BeforeDrawing()
                 for(unsigned t = 0; t < 2; ++t)
                 {
                     unsigned color = CalcPixelColor(*it, t);
-                    map.tex_setPixel((it->x * 2 + t + (it->y & 1)) % (map_width * 2), it->y, GetRed(color), GetGreen(color),
+                    map.tex_setPixel((it->x * 2 + t + (it->y & 1)) % (GetMapSize().x * 2), it->y, GetRed(color), GetGreen(color),
                         GetBlue(color), GetAlpha(color));
                 }
                 nodes_updated[GetMMIdx(*it)] = false;
@@ -249,22 +248,18 @@ void IngameMinimap::UpdateAll()
 void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 {
     // Gesamte Karte neu berechnen
-    for(MapCoord y = 0; y < map_height; ++y)
+    RTTR_FOREACH_PT(MapPoint, GetMapSize())
     {
-        for(MapCoord x = 0; x < map_width; ++x)
+        for(unsigned t = 0; t < 2; ++t)
         {
-            MapPoint pt(x, y);
-            for(unsigned t = 0; t < 2; ++t)
+            if(dos[GetMMIdx(pt)] == drawn_object ||
+                (drawn_object == DO_PLAYER && // for DO_PLAYER check for not drawn buildings or roads as there is only the player territory visible
+                ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) ||
+                    (dos[GetMMIdx(pt)] == DO_ROAD && !roads))))
             {
-                if(dos[GetMMIdx(pt)] == drawn_object ||
-                    (drawn_object == DO_PLAYER && // for DO_PLAYER check for not drawn buildings or roads as there is only the player territory visible
-                        ((dos[GetMMIdx(pt)] == DO_BUILDING && !houses) ||
-                            (dos[GetMMIdx(pt)] == DO_ROAD && !roads))))
-                {
-                    unsigned color = CalcPixelColor(pt, t);
-                    map.tex_setPixel((x * 2 + t + (y & 1)) % (map_width * 2), y, GetRed(color), GetGreen(color),
-                        GetBlue(color), GetAlpha(color));
-                }
+                unsigned color = CalcPixelColor(pt, t);
+                map.tex_setPixel((pt.x * 2 + t + (pt.y & 1)) % (GetMapSize().x * 2), pt.y, GetRed(color), GetGreen(color),
+                    GetBlue(color), GetAlpha(color));
             }
         }
     }

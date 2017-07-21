@@ -19,7 +19,7 @@
 #define NOF_GEOLOGIST_H_
 
 #include "nofFlagWorker.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
 #include <boost/array.hpp>
 #include <vector>

@@ -194,7 +194,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
     for(unsigned i = 0; i < flags; ++i)
     {
         const unsigned flagTexture = 3162 + GAMECLIENT.GetGlobalAnimation(8, 2, 1, pos.x * pos.y * i);
-        LOADER.GetMapPlayerImage(flagTexture)->Draw(drawPt + TROOPS_FLAG_OFFSET[nation][size] + DrawPoint(0, i*3), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+        LOADER.GetMapPlayerImage(flagTexture)->DrawFull(drawPt + TROOPS_FLAG_OFFSET[nation][size] + DrawPoint(0, i*3), COLOR_WHITE, gwg->GetPlayer(player).color);
     }
 
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
@@ -217,11 +217,11 @@ void nobMilitary::Draw(DrawPoint drawPt)
         bitmap = LOADER.GetMapPlayerImage(3150 + frontier_distance_tmp * 4 + animationFrame);
     }
     if(bitmap)
-        bitmap->Draw(drawPt + BORDER_FLAG_OFFSET[nation][size]);
+        bitmap->DrawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
 
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(coinsDisabledVirtual)
-        LOADER.GetMapImageN(46)->Draw(drawPt + BUILDING_SIGN_CONSTS[nation][type_]);
+        LOADER.GetMapImageN(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][type_]);
 }
 
 void nobMilitary::HandleEvent(const unsigned int id)

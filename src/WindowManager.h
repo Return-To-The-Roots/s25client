@@ -23,24 +23,25 @@
 #include "Point.h"
 #include "helpers/Deleter.h"
 #include "libutil/src/Singleton.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class Window;
 class Desktop;
 class IngameWindow;
 class MouseCoords;
 struct KeyEvent;
+class ctrlBaseTooltip;
 
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
 class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderInterface
 {
-        typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
-        typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
-
     public:
+        typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
+        typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
+
         WindowManager();
         ~WindowManager() override;
         void CleanUp();
@@ -52,9 +53,9 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
 
         /// schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
         /// Sendet eine Tastaturnachricht an die Steuerelemente.
-        void RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke);
+        void RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
         /// Sendet eine Mausnachricht weiter an alle Steuerelemente
-        void RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc);
+        void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
 
         /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
         void Show(IngameWindow* window, bool mouse = false);
@@ -83,13 +84,13 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// Verarbeitung Keyboard-Event
         void Msg_KeyDown(const KeyEvent& ke) override;
         // setzt den Tooltip
-        void SetToolTip(const Window* ttw, const std::string& tooltip);
+        void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip);
 
         /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
         void ScreenResized(unsigned short width, unsigned short height) override;
         /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
         // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
-        void Msg_ScreenResize(unsigned short width, unsigned short height);
+        void Msg_ScreenResize(const Extent& newSize);
 
         /// Return the window currently on the top (probably active)
         const Window* GetTopMostWindow() const;
@@ -98,10 +99,14 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         void DrawToolTip();
         IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
     private:
+        typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
+        typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
+
         /// wechselt einen Desktop
         void Switch();
+        /// Actually close all ingame windows marked for closing
+        void CloseMarkedIngameWnds();
 
-    private:
         boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > curDesktop;     /// aktueller Desktop
         boost::interprocess::unique_ptr<Desktop, Deleter<Desktop> > nextdesktop;    /// der nächste Desktop
         bool disable_mouse;      /// Mausdeaktivator, zum beheben des "Switch-Anschließend-Drück-Bug"s
@@ -112,12 +117,11 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         std::vector<IngameWindow*> nextWnds;
         Point<int> lastMousePos;
         std::string curTooltip;
-        unsigned short screenWidth;  /// letzte gültige Bildschirm-/Fensterbreite
-        unsigned short screenHeight; /// letzte gültige Bildschirm-/Fensterhöhe
+        Extent screenSize; /// last valid screen size
 
         // Für Doppelklick merken:
-        unsigned last_left_click_time; /// Zeit des letzten Links-Klicks
-        Point<int> last_left_click_point; /// Position beim letzten Links-Klick
+        unsigned lastLeftClickTime; /// Zeit des letzten Links-Klicks
+        Point<int> lastLeftClickPos; /// Position beim letzten Links-Klick
 
 };
 

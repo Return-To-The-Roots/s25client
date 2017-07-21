@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,7 +33,7 @@ class iwWares : public IngameWindow
         unsigned pageWares, pagePeople;
 
     public:
-        iwWares(unsigned int id, const DrawPoint& pos, const unsigned short width, const unsigned short height, const std::string& title,
+        iwWares(unsigned int id, const DrawPoint& pos, const Extent& size, const std::string& title,
                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player);
 
     protected:

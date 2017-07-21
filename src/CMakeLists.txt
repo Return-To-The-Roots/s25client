@@ -1,3 +1,4 @@
+
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
@@ -39,6 +40,7 @@ ENDMACRO()
 
 AddDirectory(addons)
 AddDirectory(ai)
+AddDirectory(animation)
 AddDirectory(buildings)
 AddDirectory(controls)
 AddDirectory(desktops)

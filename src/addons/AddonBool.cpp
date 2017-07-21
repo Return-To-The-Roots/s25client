@@ -33,16 +33,17 @@ void AddonBool::hideGui(Window* window, unsigned int id) const
 void AddonBool::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
 {
     Addon::createGui(window, id, y, readonly, status);
+    DrawPoint cbPos(430, y);
 
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(!check)
     {
-        check = window->AddCheckBox(id + 2, 430, y, 220, 20,  TC_GREY, _("Use"), NormalFont, readonly );
+        check = window->AddCheckBox(id + 2, DrawPoint(0, 0), Extent(220, 20),  TC_GREY, _("Use"), NormalFont, readonly );
         setGuiStatus(window, id, status);
     }
 
     check->SetVisible(true);
-    check->Move(430, y);
+    check->SetPos(cbPos);
 
     y += 30;
 }

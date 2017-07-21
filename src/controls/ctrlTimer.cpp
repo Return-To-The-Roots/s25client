@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -33,7 +33,7 @@
 ctrlTimer::ctrlTimer(Window* parent,
                      unsigned int id,
                      unsigned int timeout)
-    : Window(DrawPoint(0, 0), id, parent)
+    : Window(parent, id, DrawPoint(0, 0))
 {
     Start(timeout);
 }
@@ -59,6 +59,7 @@ void ctrlTimer::Stop()
 
 void ctrlTimer::Msg_PaintBefore()
 {
+    Window::Msg_PaintBefore();
     // timer ist deaktiviert, nix tun
     if(timer == 0)
         return;
@@ -66,7 +67,7 @@ void ctrlTimer::Msg_PaintBefore()
     // Bei Timeout weiterschalten
     if(VIDEODRIVER.GetTickCount() - timer > timeout)
     {
-        parent_->Msg_Timer(GetID());
+        GetParent()->Msg_Timer(GetID());
 
         if (timer != 0)
         {

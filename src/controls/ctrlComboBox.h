@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,9 +27,9 @@ class glArchivItem_Font;
 class ctrlComboBox : public Window
 {
     public:
-        ctrlComboBox(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
+        ctrlComboBox(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
 
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
 
         void AddString(const std::string& text);
         void DeleteAllItems();
@@ -46,12 +46,13 @@ class ctrlComboBox : public Window
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
+
         void Msg_ListSelectItem(const unsigned int ctrl_id, const int selection) override;
 
     protected:
-        bool Draw_() override;
-
+        void Draw_() override;
         void ShowList(bool show);
+        Rect GetFullDrawRect(const ctrlList* list);
 
     private:
         TextureColor tc;

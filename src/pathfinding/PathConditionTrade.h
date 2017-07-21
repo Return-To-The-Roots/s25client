@@ -23,6 +23,7 @@
 #include "pathfinding/PathConditionHuman.h"
 #include "world/GameWorldBase.h"
 #include "GamePlayer.h"
+#include <boost/config.hpp>
 
 struct PathConditionTrade: public PathConditionHuman
 {
@@ -31,7 +32,7 @@ struct PathConditionTrade: public PathConditionHuman
     PathConditionTrade(const GameWorldBase& gwb, const unsigned char player): PathConditionHuman(gwb), player(gwb.GetPlayer(player)){}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         if(!PathConditionHuman::IsNodeOk(pt))
             return false;

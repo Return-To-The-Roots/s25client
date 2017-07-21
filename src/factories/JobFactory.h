@@ -19,7 +19,7 @@
 #define JobFactory_h__
 
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 
 class noFigure;
 class noRoadNode;

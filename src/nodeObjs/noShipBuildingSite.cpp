@@ -71,36 +71,26 @@ void noShipBuildingSite::Draw(DrawPoint drawPt)
     if(progress < PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
         glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 24);
-        unsigned height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
-                              unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        unsigned percentDone = progress * 100 / PROGRESS_PARTS[0];
+        image->DrawPercent(drawPt, percentDone);
         image =  LOADER.GetImageN("boot_z", 25);
-        height = std::min(image->getHeight() * unsigned(progress) / PROGRESS_PARTS[0],
-                     unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        image->DrawPercent(drawPt, percentDone);
     }
     if(progress > PROGRESS_PARTS[0])
     {
-        unsigned real_progress = progress - PROGRESS_PARTS[0];
+        unsigned percentDone = (progress - PROGRESS_PARTS[0]) * 100 / PROGRESS_PARTS[1];
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 26);
-        unsigned height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
-                              unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image->DrawPercent(drawPt, percentDone);
         image =  LOADER.GetImageN("boot_z", 27);
-        height = std::min(image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[1],
-                     unsigned(image->getHeight()));
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
+        image->DrawPercent(drawPt, percentDone);
     }
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
-        unsigned real_progress = progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1];
+        unsigned percentDone = (progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1]) * 100 / PROGRESS_PARTS[1];
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 28);
-        unsigned height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height);
+        image->DrawPercent(drawPt, percentDone);
         image =  LOADER.GetImageN("boot_z", 29);
-        height = image->getHeight() * unsigned(real_progress) / PROGRESS_PARTS[2];
-        image->Draw(drawPt + DrawPoint(0, image->getHeight() - height), 0, 0, 0, (image->getHeight() - height), 0, height, COLOR_SHADOW);
-
+        image->DrawPercent(drawPt, percentDone);
     }
 }
 

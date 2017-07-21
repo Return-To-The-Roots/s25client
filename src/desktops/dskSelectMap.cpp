@@ -83,45 +83,55 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
       csi(csi)
 {
     // Die Tabelle für die Maps
-    AddTable( 1, 110,  35, 680, 400, TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
+    AddTable( 1, DrawPoint(110,  35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
 
     // "Karten Auswahl"
-    AddText(  2, 400,   5, _("Selection of maps"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(2, DrawPoint(400,   5), _("Selection of maps"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     // "Zurück"
-    AddTextButton(3, 380, 560, 200, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
     // "Spiel laden..."
-    AddTextButton(4, 590, 530, 200, 22, TC_GREEN2, _("Load game..."), NormalFont);
+    AddTextButton(4, DrawPoint(590, 530), Extent(200, 22), TC_GREEN2, _("Load game..."), NormalFont);
     // "Weiter"
-    AddTextButton(5, 590, 560, 200, 22, TC_GREEN2, _("Continue"), NormalFont);
+    AddTextButton(5, DrawPoint(590, 560), Extent(200, 22), TC_GREEN2, _("Continue"), NormalFont);
     // random map generation
-    AddTextButton(6, 380, 530, 150, 22, TC_GREEN2, _("Random Map"), NormalFont);
+    AddTextButton(6, DrawPoint(380, 530), Extent(150, 22), TC_GREEN2, _("Random Map"), NormalFont);
     // random map settings
-    AddTextButton(7, 540, 530, 40, 22, TC_GREEN2, _("..."), NormalFont);
+    AddTextButton(7, DrawPoint(540, 530), Extent(40, 22), TC_GREEN2, _("..."), NormalFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK, scale_);
+    ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK);
+    Extent catBtSize = Extent(90, 22);
     // "Alte"
-    optiongroup->AddTextButton(0, 10,  35, 90,  22, TC_GREY, _("Old maps"), NormalFont);
+    DrawPoint curBtPos = DrawPoint(10, 35);
+    optiongroup->AddTextButton(0, curBtPos, catBtSize, TC_GREY, _("Old maps"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Neue"
-    optiongroup->AddTextButton(1, 10,  60, 90,  22, TC_GREY, _("New maps"), NormalFont);
+    optiongroup->AddTextButton(1, curBtPos, catBtSize, TC_GREY, _("New maps"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Eigene"
-    optiongroup->AddTextButton(2, 10,  85, 90,  22, TC_GREY, _("Own maps"), NormalFont);
+    optiongroup->AddTextButton(2, curBtPos, catBtSize, TC_GREY, _("Own maps"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Kontinente"
-    optiongroup->AddTextButton(3, 10, 110, 90,  22, TC_GREY, _("Continents"), NormalFont);
+    optiongroup->AddTextButton(3, curBtPos, catBtSize, TC_GREY, _("Continents"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Kampagne"
-    optiongroup->AddTextButton(4, 10, 135, 90,  22, TC_GREY, _("Campaign"), NormalFont);
+    optiongroup->AddTextButton(4, curBtPos, catBtSize, TC_GREY, _("Campaign"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "RTTR"
-    optiongroup->AddTextButton(5, 10, 160, 90,  22, TC_GREY, _("RTTR"), NormalFont);
+    optiongroup->AddTextButton(5, curBtPos, catBtSize, TC_GREY, _("RTTR"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Andere"
-    optiongroup->AddTextButton(6, 10, 185, 90,  22, TC_GREY, _("Other"), NormalFont);
+    optiongroup->AddTextButton(6, curBtPos, catBtSize, TC_GREY, _("Other"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Andere"
-    optiongroup->AddTextButton(7, 10, 210, 90,  22, TC_GREY, _("Sea"), NormalFont);
+    optiongroup->AddTextButton(7, curBtPos, catBtSize, TC_GREY, _("Sea"), NormalFont);
+    curBtPos.y += catBtSize.y + 3;
     // "Heruntergeladene"
-    optiongroup->AddTextButton(8, 10, 235, 90,  22, TC_GREY, _("Played"), NormalFont);
+    optiongroup->AddTextButton(8, curBtPos, catBtSize, TC_GREY, _("Played"), NormalFont);
 
-    AddPreviewMinimap(11, 110, 445, 140, 140, NULL);
-    AddText(12, 260, 470, _("Map: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
-    AddText(13, 260, 490, _("Mapfile: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), NULL);
+    AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
 
     // "Eigene" auswählen
     optiongroup->SetSelection(5, true);
@@ -185,11 +195,15 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int sel
 
                         ctrlText* text = GetCtrl<ctrlText>(12);
                         text->SetText(cvStringToUTF8(map->getHeader().getName()) );
-                        text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
+                        DrawPoint txtPos = text->GetPos();
+                        txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
+                        text->SetPos(txtPos);
 
                         text = GetCtrl<ctrlText>(13);
                         text->SetText(path);
-                        text->Move(preview->GetX(true) + preview->GetWidth() + 10, text->GetY(true), true);
+                        txtPos = text->GetPos();
+                        txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
+                        text->SetPos(txtPos);
                     }
                 }
             }

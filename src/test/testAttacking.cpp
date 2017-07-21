@@ -26,17 +26,23 @@
 #include "nodeObjs/noFlag.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
 
-// Size is choosen based on current maximum attacking distances!
-struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
+struct AttackDefaults
 {
-    typedef WorldWithGCExecution<3, 58, 38> Parent;
+    BOOST_STATIC_CONSTEXPR unsigned width = 58;
+    BOOST_STATIC_CONSTEXPR unsigned height = 38;
+};
+
+// Size is choosen based on current maximum attacking distances!
+struct AttackFixture: public WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height>
+{
+    typedef WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height> Parent;
     using Parent::world;
     using Parent::curPlayer;
 
@@ -51,7 +57,7 @@ struct AttackFixture: public WorldWithGCExecution<3, 58, 38>
     AttackFixture(): gwv(curPlayer, world)
     {
         // Make sure attacking is not limited by visibility
-        RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             world.SetVisibility(pt, 2, VIS_VISIBLE, this->em.GetCurrentGF());
         }

@@ -18,18 +18,13 @@
 #ifndef COLLISIONDETECTION_H_INCLUDED
 #define COLLISIONDETECTION_H_INCLUDED
 
+#include "Point.h"
 
 struct Rect;
 
-// Punkt in einem Rechteck
-bool Coll(const int x, const int y, const Rect& rect);
-// Punkt in einem Rechteck
-bool Coll(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight);
-// 1D (2 Linien)
-bool Coll(const int left1, const int right1, const int left2, const int right2);
-// 2D (2 Rechtecke)
-bool CollEdges(const Rect& rect1, const Rect& rect2);
-// 2D (2 Rechtecke)
-bool Coll(const Rect& rect1, const Rect& rec2);
+bool IsPointInRect(const Point<int>& pt, const Rect& rect);
+bool IsPointInRect(const int x, const int y, const Rect& rect);
+bool IsPointInRect(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight);
+bool DoRectsIntersect(const Rect& rect1, const Rect& rect2);
 
 #endif // COLLISIONDETECTION_H_INCLUDED

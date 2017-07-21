@@ -22,7 +22,7 @@
 #include "gameTypes/BuildingCount.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/Direction.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 #include <deque>
 

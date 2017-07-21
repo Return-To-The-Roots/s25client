@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,129 +16,96 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "world/MapLoader.h"
-#include "world/GameWorldGame.h"
-#include "GamePlayer.h"
-#include "GameObject.h"
-#include "nodeObjs/noBase.h"
-#include "EventManager.h"
-#include "GlobalGameSettings.h"
-#include "PlayerInfo.h"
-#include "ogl/glArchivItem_Map.h"
-#include "FileChecksum.h"
-#include "files.h"
-#include "test/WorldFixture.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/BQOutput.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "libutil/src/tmpFile.h"
+#include "mapGenerator/Map.h"
+#include "PointOutput.h"
 #include <boost/test/unit_test.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/foreach.hpp>
-#include <boost/filesystem/fstream.hpp>
 
-BOOST_AUTO_TEST_SUITE(MapTestSuite)
+BOOST_AUTO_TEST_SUITE(MapTest)
 
-const std::string testMapPath = std::string(FILE_PATHS[52]) + "Bergruft.swd";
-
-BOOST_AUTO_TEST_CASE(LoadSaveMap)
+/**
+ * Tests the default constructor of the Map class. Width and height of the map
+ * are expected to be zero.
+ */
+BOOST_AUTO_TEST_CASE(Constructor_DefaultZeroSize)
 {
-    // Check that loading and saving a map does not alter it
-    glArchivItem_Map map;
-    bfs::ifstream mapFile(testMapPath, std::ios::binary);
-    BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
-    TmpFile outMap(".swd");
-    BOOST_REQUIRE(outMap.IsValid());
-    BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
-    mapFile.close();
-    outMap.GetStream().close();
-    BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
+    Map map;
+    
+    BOOST_REQUIRE_EQUAL(map.size, MapExtent::all(0));
 }
 
-namespace{
-    struct UninitializedWorldCreator
-    {
-        UninitializedWorldCreator(unsigned w, unsigned h, unsigned numPlayers){}
-        bool operator()(GameWorldBase& world){ return true; }
-    };
+/**
+ * Tests the constructor of the Map class. The new map should have correct size 
+ * according to the constructor parameters.
+ */
+BOOST_AUTO_TEST_CASE(Constructor_CorrectSize)
+{
+    const MapExtent size(64, 32);
+    const unsigned numNodes = size.x * size.y;
+    Map map(size, "name", "author");
 
-    struct LoadWorldFromFileCreator
-    {
-        glArchivItem_Map map;
-        std::vector<MapPoint> hqs;
-        const unsigned numPlayers_;
-
-        LoadWorldFromFileCreator(unsigned w, unsigned h, unsigned numPlayers): numPlayers_(numPlayers){}
-        bool operator()(GameWorldBase& world)
-        {
-            bfs::ifstream mapFile(testMapPath, std::ios::binary);
-            BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
-            std::vector<Nation> nations;
-            for(unsigned i = 0; i < numPlayers_; i++)
-                nations.push_back(world.GetPlayer(i).nation);
-            MapLoader loader(world, nations);
-            BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
-            for(unsigned i = 0; i < numPlayers_; i++)
-                hqs.push_back(loader.GetHQPos(i));
-            return true;
-        }
-    };
-
-    struct WorldLoadedFixture: public WorldFixture<LoadWorldFromFileCreator>
-    {
-        using WorldFixture<LoadWorldFromFileCreator>::world;
-    };
-    struct WorldLoaded1PFixture: public WorldFixture<LoadWorldFromFileCreator, 1>
-    {
-        using WorldFixture<LoadWorldFromFileCreator, 1>::world;
-    };
+    BOOST_REQUIRE_EQUAL(map.size, size);
+    BOOST_REQUIRE_EQUAL(map.z.size(),          numNodes);
+    BOOST_REQUIRE_EQUAL(map.textureRsu.size(), numNodes);
+    BOOST_REQUIRE_EQUAL(map.textureLsd.size(), numNodes);
+    BOOST_REQUIRE_EQUAL(map.build.size(),      numNodes);
+    BOOST_REQUIRE_EQUAL(map.shading.size(),    numNodes);
+    BOOST_REQUIRE_EQUAL(map.resource.size(),   numNodes);
+    BOOST_REQUIRE_EQUAL(map.road.size(),       numNodes);
+    BOOST_REQUIRE_EQUAL(map.objectType.size(), numNodes);
+    BOOST_REQUIRE_EQUAL(map.objectInfo.size(), numNodes);
+    BOOST_REQUIRE_EQUAL(map.animal.size(),     numNodes);
+    BOOST_REQUIRE_EQUAL(map.unknown1.size(),   numNodes);
+    BOOST_REQUIRE_EQUAL(map.unknown2.size(),   numNodes);
+    BOOST_REQUIRE_EQUAL(map.unknown3.size(),   numNodes);
+    BOOST_REQUIRE_EQUAL(map.unknown5.size(),   numNodes);
 }
 
-BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
+/**
+ * Tests the constructor of the Map class. The name must match the name specified
+ * in the constructor arguments.
+ */
+BOOST_AUTO_TEST_CASE(Constructor_CorrectName)
 {
-    glArchivItem_Map map;
-    bfs::ifstream mapFile(testMapPath, std::ios::binary);
-    BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
-    const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
-    BOOST_CHECK_EQUAL(header.getWidth(), 176);
-    BOOST_CHECK_EQUAL(header.getHeight(), 80);
-    BOOST_CHECK_EQUAL(header.getPlayer(), 4);
-
-    std::vector<Nation> nations(0);
-    MapLoader loader(world, nations);
-    BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
-    BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
-    BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
+    std::string name("name");
+    Map map(MapExtent(64, 32), name, "author");
+    BOOST_REQUIRE_EQUAL(map.name, name);
+    
+    std::string name2("name2");
+    Map map2(MapExtent(64, 32), name2, "author");
+    BOOST_REQUIRE_EQUAL(map2.name, name2);
 }
 
-BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedFixture)
+/**
+ * Tests the constructor of the Map class. The author must match the author specified
+ * in the constructor arguments.
+ */
+BOOST_AUTO_TEST_CASE(Constructor_CorrectAuthor)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
-    {
-        BOOST_REQUIRE_EQUAL(world.GetNode(pt).altitude, worldCreator.map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y));
-    }
+    std::string author1("author1");
+    Map mapA(MapExtent(64, 32), "name", author1);
+    
+    BOOST_REQUIRE_EQUAL(mapA.author, author1);
+    
+    std::string author2("author2");
+    Map mapB(MapExtent(64, 32), "name", author2);
+    BOOST_REQUIRE_EQUAL(mapB.author, author2);
 }
 
-BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
+/**
+ * Tests the Map::CreateArchiv method. Ensure that the generated archiv for a map is 
+ * not null.
+ */
+BOOST_AUTO_TEST_CASE(CreateArchiv_NotNull)
 {
-    // Init BQ
-    world.InitAfterLoad();
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
-    {
-        BuildingQuality s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
-        BuildingQuality bq = world.GetNode(pt).bq;
-        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt.x << "," << pt.y
-            << " original:" << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
-    }
-}
+    std::string author("author");
+    Map map(MapExtent(64, 32), "name", author);
+    
+    libsiedler2::ArchivInfo* archiv = map.CreateArchiv();
+    
+    BOOST_REQUIRE(archiv != NULL);
 
-BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
-{
-    GamePlayer& player = world.GetPlayer(0);
-    BOOST_REQUIRE(player.isUsed());
-    BOOST_REQUIRE(worldCreator.hqs[0].isValid());
-    BOOST_REQUIRE_EQUAL(world.GetNO(worldCreator.hqs[0])->GetGOT(), GOT_NOB_HQ);
+    delete archiv;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+

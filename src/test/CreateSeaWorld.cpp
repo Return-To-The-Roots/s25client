@@ -19,11 +19,11 @@
 #include "CreateSeaWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 
-CreateSeaWorld::CreateSeaWorld(unsigned width, unsigned height, unsigned numPlayers):
-    width_(width), height_(height), playerNations_(numPlayers, NAT_ROMANS)
+CreateSeaWorld::CreateSeaWorld(const MapExtent& size, unsigned numPlayers):
+    size_(size), playerNations_(numPlayers, NAT_ROMANS)
 {}
 
 namespace{
@@ -65,9 +65,9 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
-    world.Init(width_, height_, LT_GREENLAND);
+    world.Init(size_, LT_GREENLAND);
     // Set everything to water
-    RTTR_FOREACH_PT(MapPoint, width_, height_)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = TT_WATER;
@@ -87,38 +87,38 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
      * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
      * WWWWWWWWWWWWWWWWWWWWWWW
      */
-     // Init some land stripes of size 16 (a bit less than the HQ radius)
+     // Init some land stripes of size 15 (a bit less than the HQ radius)
     const MapCoord offset = 7;
-    const MapCoord landSize = 16;
+    const MapCoord landSize = 15;
     // We need the offset at each side, the land on each side
     // and at least the same amount of water between the land
     const MapCoord minSize = landSize * 3 + offset * 2;
-    if(width_ < minSize || height_ < minSize)
+    if(size_.x < minSize || size_.y < minSize)
         throw std::runtime_error("World to small");
 
     // Vertical
-    for(MapPoint pt(offset, offset); pt.y < height_ - offset; ++pt.y)
+    for(MapPoint pt(offset, offset); pt.y < size_.y - offset; ++pt.y)
     {
         for(pt.x = offset; pt.x < offset + landSize; ++pt.x)
         {
             MapNode& node = world.GetNodeWriteable(pt);
             node.t1 = node.t2 = TT_MEADOW1;
         }
-        for(pt.x = width_ - offset - landSize; pt.x < width_ - offset; ++pt.x)
+        for(pt.x = size_.x - offset - landSize; pt.x < size_.x - offset; ++pt.x)
         {
             MapNode& node = world.GetNodeWriteable(pt);
             node.t1 = node.t2 = TT_MEADOW1;
         }
     }
     // Horizontal
-    for(MapPoint pt(offset, offset); pt.x < width_ - offset; ++pt.x)
+    for(MapPoint pt(offset, offset); pt.x < size_.x - offset; ++pt.x)
     {
         for(pt.y = offset; pt.y < offset + landSize; ++pt.y)
         {
             MapNode& node = world.GetNodeWriteable(pt);
             node.t1 = node.t2 = TT_MEADOW1;
         }
-        for(pt.y = height_ - offset - landSize; pt.y < height_ - offset; ++pt.y)
+        for(pt.y = size_.y - offset - landSize; pt.y < size_.y - offset; ++pt.y)
         {
             MapNode& node = world.GetNodeWriteable(pt);
             node.t1 = node.t2 = TT_MEADOW1;
@@ -127,10 +127,10 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
 
     // Place HQs at top, left, right, bottom
     std::vector<MapPoint> hqPositions;
-    hqPositions.push_back(MapPoint(width_ / 2, offset + landSize / 2));
-    hqPositions.push_back(MapPoint(offset + landSize / 2, height_ / 2));
-    hqPositions.push_back(MapPoint(width_ - offset - landSize / 2, height_ / 2));
-    hqPositions.push_back(MapPoint(width_ / 2, height_ - offset - landSize / 2));
+    hqPositions.push_back(MapPoint(size_.x / 2, offset + landSize / 2));
+    hqPositions.push_back(MapPoint(offset + landSize / 2, size_.y / 2));
+    hqPositions.push_back(MapPoint(size_.x - offset - landSize / 2, size_.y / 2));
+    hqPositions.push_back(MapPoint(size_.x / 2, size_.y - offset - landSize / 2));
 
     std::vector<MapPoint> harbors;
     // Place harbors
@@ -175,7 +175,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
 }
 
 
-CreateWaterWorld::CreateWaterWorld(unsigned width, unsigned height, unsigned numPlayers): width_(width), height_(height), playerNations_(numPlayers, NAT_ROMANS)
+CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers): size_(size), playerNations_(numPlayers, NAT_ROMANS)
 {
     // Only 2 players supported
     RTTR_Assert(numPlayers == 2u);
@@ -183,9 +183,9 @@ CreateWaterWorld::CreateWaterWorld(unsigned width, unsigned height, unsigned num
 
 bool CreateWaterWorld::operator()(GameWorldGame& world) const
 {
-    world.Init(width_, height_, LT_GREENLAND);
+    world.Init(size_, LT_GREENLAND);
     // Set everything to water
-    RTTR_FOREACH_PT(MapPoint, width_, height_)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = TT_WATER;

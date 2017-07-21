@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,40 +19,22 @@
 
 #pragma once
 
-#include "ctrlText.h"
-#include "ColorControlInterface.h"
-class Window;
-class glArchivItem_Font;
+#include "Window.h"
+#include "DrawPoint.h"
 
-class ctrlDeepening : public ctrlText
+/// Control with a "deepened" look by a 3D border
+class ctrlDeepening: public Window
 {
-    public:
-        ctrlDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color);
+public:
+    ctrlDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc);
 
-    protected:
-        bool Draw_() override;
-        /// Derived classes cann draw extended content
-        virtual void DrawContent() const{}
+protected:
+    void Draw_() override;
+    /// Derived classes have to draw the content
+    virtual void DrawContent() const = 0;
 
-    private:
-        TextureColor tc;
-};
-
-/// Colored Deepening
-class ctrlColorDeepening : public ctrlDeepening, public ColorControlInterface
-{
-    public:
-        ctrlColorDeepening(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, unsigned int fillColor);
-
-        /// Setzt die Farbe des Controls
-        void SetColor(const unsigned int fill_color) override;
-
-    protected:
-        void DrawContent() const override;
-
-    protected:
-        unsigned int fillColor;
+private:
+    TextureColor tc;
 };
 
 #endif // !CTRLDEEPENING_H_INCLUDED
-

@@ -249,7 +249,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Mond malen
     Point<int> moonPos = VIDEODRIVER.GetMousePos();
     moonPos.y -= 40;
-    LOADER.GetImageN("resource", 33)->Draw(moonPos);
+    LOADER.GetImageN("resource", 33)->DrawFull(moonPos);
     VIDEODRIVER.SwapBuffers();
 
     // Daten zurücksetzen
@@ -1623,7 +1623,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             char nwf_string[256];
             snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i, (i * 100 / gf) );
-            LargeFont->Draw(VIDEODRIVER.GetScreenSize() / 2, nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }
@@ -1654,7 +1654,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     // Mond malen
     Point<int> moonPos = VIDEODRIVER.GetMousePos();
     moonPos.y -= 40;
-    LOADER.GetImageN("resource", 33)->Draw(moonPos);
+    LOADER.GetImageN("resource", 33)->DrawFull(moonPos);
     VIDEODRIVER.SwapBuffers();
 
     Savegame save;

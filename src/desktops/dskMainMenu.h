@@ -19,18 +19,18 @@
 
 #pragma once
 
-#include "Desktop.h"
+#include "desktops/dskMenuBase.h"
 
 /// Klasse des Hauptmenü Desktops.
-class dskMainMenu : public Desktop
+class dskMainMenu: public dskMenuBase
 {
-        void Msg_PaintAfter() override;
     public:
         dskMainMenu();
 
         void Msg_ButtonClick(const unsigned int ctrl_id) override;
         void Msg_Timer(const unsigned int ctrl_id) override;
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+        bool Msg_LeftUp(const MouseCoords& mc) override;
 };
 
 #endif // !dskMAINMENU_H_INCLUDED

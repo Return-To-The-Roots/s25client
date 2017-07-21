@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,10 +32,10 @@ struct KeyEvent;
 class ctrlTable : public Window
 {
     public:
-        ctrlTable(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width,  unsigned short height, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
+        ctrlTable(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
         ~ctrlTable() override;
 
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
         /// löscht alle Items.
         void DeleteAllItems();
         /// fügt eine Zeile hinzu.
@@ -72,11 +72,15 @@ class ctrlTable : public Window
 
     protected:
 
-        bool Draw_() override;
+        void Draw_() override;
 
         /// Setzt die Breite und Position der Buttons ohne Scrolleiste
         void ResetButtonWidths();
         int GetSelectionFromMouse(const MouseCoords &mc);
+        /// Get the area of the content (table itself w/o header)
+        Rect GetContentDrawArea() const;
+        /// Get the full area (element less spacing)
+        Rect GetFullDrawArea() const;
 
     private:
         TextureColor tc;

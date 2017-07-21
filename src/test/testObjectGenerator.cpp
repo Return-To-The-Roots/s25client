@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(IsHarborAllowed_TerrainType)
 }
 
 /**
- * Tests the ObjectGenerator::CreateDuck method with a likelyhood of 100%. A duck should
+ * Tests the ObjectGenerator::CreateDuck method with a likelihood of 100%. A duck should
  * be returned ;-).
  */
 BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjGenFixture)
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(CreateDuck_FullLikelyhood, ObjGenFixture)
 }
 
 /**
- * Tests the ObjectGenerator::CreateDuck method with a likelyhood of 0%. An empty object
+ * Tests the ObjectGenerator::CreateDuck method with a likelihood of 0%. An empty object
  * should be returned.
  */
 BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjGenFixture)
@@ -85,7 +85,7 @@ BOOST_FIXTURE_TEST_CASE(CreateDuck_ZeroLikelyhood, ObjGenFixture)
  */
 BOOST_AUTO_TEST_CASE(IsTree_TreeExists)
 {
-    Map map(16, 8, "name", "author");
+    Map map(MapExtent(16, 8), "name", "author");
 
     map.objectInfo[0] = libsiedler2::OI_Palm;
     
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(IsTree_TreeExists)
  */
 BOOST_AUTO_TEST_CASE(IsTree_Empty)
 {
-    Map map(16, 8, "name", "author");
+    Map map(MapExtent(16, 8), "name", "author");
     
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), false);
 }
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(IsTree_Empty)
  */
 BOOST_AUTO_TEST_CASE(CreateTexture_NoHarbor)
 {
-    Map map(16, 8, "name", "author");
+    Map map(MapExtent(16, 8), "name", "author");
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
     
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(CreateTexture_NoHarbor)
  */
 BOOST_AUTO_TEST_CASE(CreateTexture_Harbor)
 {
-    Map map(16, 8, "name", "author");
+    Map map(MapExtent(16, 8), "name", "author");
     
     ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
     
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(CreateTexture_Harbor)
  */
 BOOST_AUTO_TEST_CASE(CreateTexture_HarborNotSupported)
 {
-    Map map(16, 8, "name", "author");
+    Map map(MapExtent(16, 8), "name", "author");
     
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
     

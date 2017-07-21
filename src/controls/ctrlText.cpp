@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -24,25 +24,40 @@ ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArch
 {
 }
 
+void ctrlBaseText::SetText(const std::string& text)
+{
+    this->text = text;
+}
+
+void ctrlBaseText::SetFont(glArchivItem_Font* font)
+{
+    this->font = font;
+}
+
 ctrlText::ctrlText(Window* parent,
                    unsigned int id,
-                   unsigned short x,
-                   unsigned short y,
+                   const DrawPoint& pos,
                    const std::string& text,
                    unsigned int color,
                    unsigned int format,
                    glArchivItem_Font* font)
-    : Window(DrawPoint(x, y), id, parent), ctrlBaseText(text, color, font), format(format)
+    : Window(parent, id, pos), ctrlBaseText(text, color, font), format(format)
 {
+}
+
+Rect ctrlText::GetBoundaryRect() const
+{
+    if(text.empty())
+        return Rect(GetDrawPos(), 0, 0);
+    else
+        return font->getBounds(GetDrawPos(), text, format);
 }
 
 /**
  *  zeichnet das Fenster.
  */
-bool ctrlText::Draw_()
+void ctrlText::Draw_()
 {
     if(!text.empty())
         font->Draw(GetDrawPos(), text, format, color_);
-
-    return true;
 }

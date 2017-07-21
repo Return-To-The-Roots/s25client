@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,10 +19,10 @@
 #include "iwMusicPlayer.h"
 
 #include "Loader.h"
-#include "controls/ctrlButton.h"
+#include "controls/ctrlImageButton.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlList.h"
-#include "controls/ctrlDeepening.h"
+#include "controls/ctrlTextDeepening.h"
 #include "controls/ctrlComboBox.h"
 #include "WindowManager.h"
 #include "iwMsgbox.h"
@@ -38,11 +38,11 @@
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
     : IngameWindow(CGI_INPUTWINDOW, IngameWindow::posAtMouse, 
-                   300, 100, title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
+        Extent(300, 100), title, LOADER.GetImageN("resource", 41), true), win_id(win_id), playerWnd_(playerWnd)
 {
-    AddEdit(0, 20, 30, GetWidth() - 40, 22, TC_GREEN2, NormalFont);
-    AddTextButton(1, 20, 60, 100, 22, TC_GREEN1, _("OK"), NormalFont);
-    AddTextButton(2, 130, 60, 100, 22, TC_RED1, _("Abort"), NormalFont);
+    AddEdit(0, DrawPoint(20, 30), Extent(GetSize().x - 40, 22), TC_GREEN2, NormalFont);
+    AddTextButton(1, DrawPoint(20, 60), Extent(100, 22), TC_GREEN1, _("OK"), NormalFont);
+    AddTextButton(2, DrawPoint(130, 60), Extent(100, 22), TC_RED1, _("Abort"), NormalFont);
 }
 
 
@@ -61,32 +61,32 @@ void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
 
 
 iwMusicPlayer::iwMusicPlayer()
-    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter,  430, 330, _("Music player"),
+    : IngameWindow(CGI_MUSICPLAYER, IngameWindow::posLastOrCenter, Extent(430, 330), _("Music player"),
                    LOADER.GetImageN("resource", 41)), changed(false)
 {
 
-    AddList(0, 20, 30, 330, 200, TC_GREEN1, NormalFont);
-    AddText(1, 20, 240, _("Playlist:"), COLOR_YELLOW, 0, NormalFont);
-    AddComboBox(2, 20, 260, 330, 22, TC_GREEN1, NormalFont, 200);
+    AddList(0, DrawPoint(20, 30), Extent(330, 200), TC_GREEN1, NormalFont);
+    AddText(1, DrawPoint(20, 240), _("Playlist:"), COLOR_YELLOW, 0, NormalFont);
+    AddComboBox(2, DrawPoint(20, 260), Extent(330, 22), TC_GREEN1, NormalFont, 200);
 
     // Playlistbuttons
     const unsigned short button_distance = 10;
-    const unsigned short button_width = (330 - button_distance) / 2;
-    ctrlButton* b1 = AddTextButton(3, 20, 290, button_width, 22, TC_GREEN2, _("Add"), NormalFont);
-    AddTextButton(4, b1->GetX(false) + button_width + button_distance, 290, button_width, 22, TC_GREEN2, _("Remove"), NormalFont);
-    //AddTextButton(5,b1->GetX(false),320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
-    //AddTextButton(6,b2->GetX(false),320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
+    const Extent buttonSize((330 - button_distance) / 2, 22);
+    ctrlButton* b1 = AddTextButton(3, DrawPoint(20, 290), buttonSize, TC_GREEN2, _("Add"), NormalFont);
+    AddTextButton(4, b1->GetPos() + DrawPoint(buttonSize.x + button_distance, 0), buttonSize, TC_GREEN2, _("Remove"), NormalFont);
+    //AddTextButton(5,b1->GetPos().x,320,button_width,22,TC_GREEN2,_("Save"),NormalFont);
+    //AddTextButton(6,b2->GetPos().x,320,button_width,22,TC_GREEN2,_("Load"),NormalFont);
 
     // Buttons für die Musikstücke
-    AddImageButton(7, 370, 30, 40, 40, TC_GREY, LOADER.GetImageN("io", 138), _("Add track"));
-    AddImageButton(8, 370, 80, 40, 40, TC_GREY, LOADER.GetImageN("io_new", 2), _("Add directory of tracks"));
-    AddImageButton(9, 370, 130, 40, 40, TC_RED1, LOADER.GetImageN("io", 220), _("Remove track"));
-    AddImageButton(10, 370, 180, 40, 15, TC_GREY, LOADER.GetImageN("io", 33), _("Upwards"));
-    AddImageButton(11, 370, 195, 40, 15, TC_GREY, LOADER.GetImageN("io", 34), _("Downwards"));
-    AddDeepening(12, 370, 220, 40, 20, TC_GREY, "1", NormalFont, COLOR_YELLOW);
-    AddImageButton(13, 370, 240, 20, 20, TC_RED1, LOADER.GetImageN("io", 139), _("Less repeats"));
-    AddImageButton(14, 390, 240, 20, 20, TC_GREY, LOADER.GetImageN("io", 138), _("More repeats"));
-    AddImageButton(15, 370, 270, 40, 40, TC_GREY, LOADER.GetImageN("io", 107), _("Playback in this order")); //225
+    AddImageButton(7, DrawPoint(370, 30), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 138), _("Add track"));
+    AddImageButton(8, DrawPoint(370, 80), Extent(40, 40), TC_GREY, LOADER.GetImageN("io_new", 2), _("Add directory of tracks"));
+    AddImageButton(9, DrawPoint(370, 130), Extent(40, 40), TC_RED1, LOADER.GetImageN("io", 220), _("Remove track"));
+    AddImageButton(10, DrawPoint(370, 180), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 33), _("Upwards"));
+    AddImageButton(11, DrawPoint(370, 195), Extent(40, 15), TC_GREY, LOADER.GetImageN("io", 34), _("Downwards"));
+    AddTextDeepening(12, DrawPoint(370, 220), Extent(40, 20), TC_GREY, "1", NormalFont, COLOR_YELLOW);
+    AddImageButton(13, DrawPoint(370, 240), Extent(20, 20), TC_RED1, LOADER.GetImageN("io", 139), _("Less repeats"));
+    AddImageButton(14, DrawPoint(390, 240), Extent(20, 20), TC_GREY, LOADER.GetImageN("io", 138), _("More repeats"));
+    AddImageButton(15, DrawPoint(370, 270), Extent(40, 40), TC_GREY, LOADER.GetImageN("io", 107), _("Playback in this order")); //225
 
     // Mit Werten füllen
     MUSICPLAYER.GetPlaylist().FillMusicPlayer(this);
@@ -252,14 +252,14 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // Less Repeats
         case 13:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlDeepening>(12)->GetText().c_str());
+            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
 
             if(repeats)
             {
                 --repeats;
                 char str[32];
                 sprintf(str, "%u", repeats);
-                GetCtrl<ctrlDeepening>(12)->SetText(str);
+                GetCtrl<ctrlTextDeepening>(12)->SetText(str);
                 changed = true;
             }
 
@@ -267,19 +267,19 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
         // More Repeats
         case 14:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlDeepening>(12)->GetText().c_str());
+            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
             ++repeats;
             char str[32];
             sprintf(str, "%u", repeats);
-            GetCtrl<ctrlDeepening>(12)->SetText(str);
+            GetCtrl<ctrlTextDeepening>(12)->SetText(str);
             changed = true;
         } break;
         // Play Order
         case 15:
         {
-            GetCtrl<ctrlImageButton>(15)->SetImage(GetCtrl<ctrlImageButton>(15)->GetButtonImage() ==
+            GetCtrl<ctrlImageButton>(15)->SetImage(GetCtrl<ctrlImageButton>(15)->GetImage() ==
                                                    LOADER.GetImageN("io", 107) ? LOADER.GetImageN("io", 225) : LOADER.GetImageN("io", 107));
-            GetCtrl<ctrlImageButton>(15)->SetTooltip(GetCtrl<ctrlImageButton>(15)->GetButtonImage() ==
+            GetCtrl<ctrlImageButton>(15)->SetTooltip(GetCtrl<ctrlImageButton>(15)->GetImage() ==
                     LOADER.GetImageN("io", 107) ? _("Playback in this order") : _("Random playback"));
             changed = true;
         } break;
@@ -386,7 +386,7 @@ void iwMusicPlayer::SetRepeats(const unsigned repeats)
 {
     char repeats_str[32];
     sprintf(repeats_str, "%u", repeats);
-    GetCtrl<ctrlDeepening>(12)->SetText(repeats_str);
+    GetCtrl<ctrlTextDeepening>(12)->SetText(repeats_str);
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
@@ -410,12 +410,12 @@ std::vector<std::string> iwMusicPlayer::GetSegments() const
 
 unsigned iwMusicPlayer::GetRepeats() const
 {
-    return atoi(GetCtrl<ctrlDeepening>(12)->GetText().c_str());
+    return atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
 }
 
 bool iwMusicPlayer::GetRandomPlayback() const
 {
-    return !(GetCtrl<ctrlImageButton>(15)->GetButtonImage() ==
+    return !(GetCtrl<ctrlImageButton>(15)->GetImage() ==
              LOADER.GetImageN("io", 107));
 }
 

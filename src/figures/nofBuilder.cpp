@@ -318,7 +318,7 @@ void nofBuilder::Draw(DrawPoint drawPt)
                 texture = 287 + (index / 2) % 4;
             }
             drawPt += building_site->GetDoorPoint() + DrawPoint(offsetSite);
-            LOADER.GetPlayerImage("rom_bobs", texture)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.GetPlayerImage("rom_bobs", texture)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
             if(soundId && index % 4 == 2)
                 SOUNDMANAGER.PlayNOSound(soundId, this, index, 160 - rand() % 60);
 

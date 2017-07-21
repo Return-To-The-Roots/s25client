@@ -22,6 +22,7 @@
 #include "FOWObjects.h"
 #include "Serializer.h"
 #include "gameTypes/GO_Type.h"
+#include "gameTypes/MapCoordinates.h"
 #include "helpers/ReserveElements.hpp"
 #include "helpers/GetInsertIterator.hpp"
 #include <boost/static_assert.hpp>

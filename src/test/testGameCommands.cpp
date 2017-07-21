@@ -32,7 +32,7 @@
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
-#include "test/testHelpers.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
@@ -847,7 +847,7 @@ BOOST_FIXTURE_TEST_CASE(Armageddon, WorldWithGCExecution2P)
     this->CheatArmageddon();
     BOOST_REQUIRE(!player1.GetHQPos().isValid());
     BOOST_REQUIRE(!player2.GetHQPos().isValid());
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         const MapNode& node = world.GetNode(pt);
         BOOST_REQUIRE_EQUAL(node.owner, 0u);
@@ -870,7 +870,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
     this->DestroyAll();
     BOOST_REQUIRE(!player1.GetHQPos().isValid());
     BOOST_REQUIRE(player2.GetHQPos().isValid());
-    RTTR_FOREACH_PT(MapPoint, world.GetWidth(), world.GetHeight())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         const MapNode& node = world.GetNode(pt);
         BOOST_REQUIRE_NE(node.owner, 1u);

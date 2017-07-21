@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,27 +19,28 @@
 
 #pragma once
 
-#include "ctrlText.h"
+#include "Window.h"
+#include "controls/ctrlBaseVarText.h"
 #include <cstdarg>
 #include <vector>
 #include <string>
-class Window;
+
 class glArchivItem_Font;
 
-class ctrlVarText : public ctrlText
+class ctrlVarText: public Window, public ctrlBaseVarText
 {
     public:
-        /// liste contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-        ctrlVarText(Window* parent, unsigned int id, unsigned short x, unsigned short y, const std::string& formatstr, unsigned int color, unsigned int format, glArchivItem_Font* font, unsigned int count, va_list liste);
+        /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+        ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr,
+            unsigned color, unsigned format, glArchivItem_Font* font, unsigned count, va_list fmtArgs);
         ~ctrlVarText() override;
 
-    protected:
-        bool Draw_() override;
-        /// Returns the text with placeholders replaced by the actual vars
-        std::string GetFormatedText() const;
+        Rect GetBoundaryRect() const override;
 
     protected:
-        std::vector<void*> vars;
+        void Draw_() override;
+
+        unsigned format_;
 };
 
 #endif // !CTRL_VARTEXT_H_INCLUDED

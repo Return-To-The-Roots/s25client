@@ -233,14 +233,14 @@ void nofCarrier::Draw(DrawPoint drawPt)
                         {
                             // Nein, dann Animation abspielen
                             LOADER.GetPlayerImage("rom_bobs", ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
-                            ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                            ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                         }
                         else     // Silvesteregg
                         {
                             glArchivItem_Bitmap_Player* bmp = LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
 
                             if (bmp)
-                                bmp->Draw(drawPt - DrawPoint(26, 104), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                                bmp->DrawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, gwg->GetPlayer(player).color);
                             else
                             {
                                 SetNewAnimationMoment();
@@ -291,7 +291,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 LOADER.donkey_cache[GetCurMoveDir().toUInt()][0].draw(drawPt);
 
                 // Ware im Korb zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][0]);
+                LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][0]);
             }
             else
             {
@@ -309,7 +309,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
                 }
             }
 
@@ -330,7 +330,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 LOADER.boat_cache[GetCurMoveDir().toUInt()][0].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 
                 // Ware im Boot zeichnen
-                LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
+                LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
             }
             else
             {
@@ -346,7 +346,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
-                    LOADER.GetMapImageN(2350 + carried_ware->type)->Draw(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
+                    LOADER.GetMapImageN(2350 + carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir().toUInt()]);
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)

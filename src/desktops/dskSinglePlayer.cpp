@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
 #include "dskSinglePlayer.h"
 
 #include "WindowManager.h"
@@ -32,7 +31,6 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "controls/ctrlButton.h"
-#include "ogl/glArchivItem_Font.h"
 #include "fileFuncs.h"
 #include "files.h"
 #include <boost/filesystem.hpp>
@@ -42,26 +40,21 @@
  *  Klasse des Einzelspieler Desktops.
  */
 
-dskSinglePlayer::dskSinglePlayer() : Desktop(LOADER.GetImageN("menu", 0))
+dskSinglePlayer::dskSinglePlayer()
 {
-    // Version
-    AddVarText(0, 0, 600, _("Return To The Roots - v%s-%s"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
-    // URL
-    AddText(1, 400, 600, _("http://www.siedler25.org"), COLOR_GREEN, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
-    // Copyright
-    AddVarText(2, 800, 600, _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
-    AddTextButton(3, 115, 180, 220, 22, TC_GREEN2, _("Resume last game"), NormalFont);
-    AddTextButton(7, 115, 210, 220, 22, TC_GREEN2, _("Load game"), NormalFont);
+    AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TC_GREEN2, _("Resume last game"), NormalFont);
+    AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TC_GREEN2, _("Load game"), NormalFont);
 
-    AddTextButton(5, 115, 250, 220, 22, TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)->Enable(false);
-    AddTextButton(6, 115, 280, 220, 22, TC_GREEN2, _("Unlimited Play"), NormalFont);
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)->SetEnabled(false);
+    AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TC_GREEN2, _("Unlimited Play"), NormalFont);
 
-    AddTextButton(4, 115, 320, 220, 22, TC_GREEN2, _("Play Replay"), NormalFont);
+    AddTextButton(4, DrawPoint(115, 320), Extent(220, 22), TC_GREEN2, _("Play Replay"), NormalFont);
 
-    AddTextButton(8, 115, 390, 220, 22, TC_RED1, _("Back"), NormalFont);
+    AddTextButton(8, DrawPoint(115, 390), Extent(220, 22), TC_RED1, _("Back"), NormalFont);
 
-    AddImage(11, 20, 20, LOADER.GetImageN("logo", 0));
+    AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
 

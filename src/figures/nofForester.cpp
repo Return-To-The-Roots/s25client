@@ -44,7 +44,7 @@ void nofForester::DrawWorking(DrawPoint drawPt)
     unsigned short now_id = GAMECLIENT.Interpolate(36, current_ev);
     // Baum pflanzen
     LOADER.GetPlayerImage("rom_bobs", 48 + now_id)
-    ->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     // Schaufel-Sound
     if(now_id == 7 || now_id == 18)

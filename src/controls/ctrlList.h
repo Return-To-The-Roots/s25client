@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+#include "controls/ctrlBaseTooltip.h"
 #include <string>
 #include <vector>
 class MouseCoords;
@@ -28,11 +29,11 @@ class glArchivItem_Font;
 class ctrlList : public Window
 {
     public:
-        ctrlList(Window* parent, unsigned int id, unsigned short x, unsigned short y, unsigned short width, unsigned short height, TextureColor tc, glArchivItem_Font* font);
+        ctrlList(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
         ~ctrlList() override;
 
         /// Größe verändern
-        void Resize(unsigned short width, unsigned short height) override;
+        void Resize(const Extent& newSize) override;
 
         /// Neuen String zur Listbox hinzufügen.
         void AddString(const std::string& text);
@@ -51,15 +52,7 @@ class ctrlList : public Window
 
         unsigned short GetLineCount() const { return static_cast<unsigned short>(lines.size()); }
         int GetSelection() const { return selection_; };
-        void SetSelection(unsigned selection)
-        {
-            if(static_cast<int>(selection) != selection_ && selection < lines.size())
-            {
-                selection_ = selection;
-                if(parent_)
-                    parent_->Msg_ListSelectItem(id_, selection);
-            }
-        }
+        void SetSelection(unsigned selection);
 
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -69,11 +62,15 @@ class ctrlList : public Window
         bool Msg_WheelDown(const MouseCoords& mc) override;
     protected:
         /// Zeichenmethode.
-        bool Draw_() override;
+        void Draw_() override;
 
     private:
+        Rect GetFullDrawArea() const;
+        Rect GetListDrawArea() const;
+
         TextureColor tc;
         glArchivItem_Font* font;
+        ctrlBaseTooltip tooltip_;
 
         std::vector<std::string> lines;
 

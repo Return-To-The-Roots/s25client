@@ -15,10 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef testHelpers_h__
-#define testHelpers_h__
+#ifndef initTestHelpers_h__
+#define initTestHelpers_h__
 
-/// Initializes the ingame-Random Number Generator with the given value
+class MockupVideoDriver;
+
+/// Initialize the ingame-Random Number Generator with the given value
 /// unless RTTR_RAND_TEST is defined in which case a random value is used
 void doInitGameRNG(unsigned defaultValue = 1337, const char* fileName = "", unsigned line = 0);
 /// Macro to automatically add file and line info. 2nd form takes a defaultValue
@@ -27,8 +29,11 @@ void doInitGameRNG(unsigned defaultValue = 1337, const char* fileName = "", unsi
 // Would work in C++11
 //#define initGameRNG(defaultValue) doInitGameRNG(__VA_ARGS__ + 0, __FILE__, __LINE__);
 
-/// Initializes data required for GUI tests:
+/// Initialize data required for GUI tests:
 /// Mockup VideoDriver loaded, Dummy files in LOADER, Dummy Desktop activated
 void initGUITests();
 
-#endif // testHelpers_h__
+/// Return the video driver. Initializes the GUI tests if required
+MockupVideoDriver* GetVideoDriver();
+
+#endif // initTestHelpers_h__

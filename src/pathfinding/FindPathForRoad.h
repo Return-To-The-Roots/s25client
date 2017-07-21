@@ -19,7 +19,7 @@
 #define FindRoad_h__
 
 #include "gameTypes/Direction.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class GameWorldBase;

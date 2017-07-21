@@ -21,7 +21,7 @@
 
 #include "BinaryFile.h"
 #include "SavedFile.h"
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <string>
 #include <vector>
 

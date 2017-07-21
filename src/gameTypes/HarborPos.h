@@ -18,7 +18,7 @@
 #ifndef HarborPos_h__
 #define HarborPos_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include <boost/array.hpp>
 #include <vector>
 

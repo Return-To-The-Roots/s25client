@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -36,17 +36,14 @@ class ctrlIngameMinimap : public ctrlMinimap
 
         ctrlIngameMinimap( Window* parent,
                            const unsigned int id,
-                           const unsigned short x,
-                           const unsigned short y,
-                           const unsigned short width,
-                           const unsigned short height,
-                           const unsigned short padding_x,
-                           const unsigned short padding_y,
+                           const DrawPoint& pos,
+                           const Extent& size,
+                           const Extent& padding,
                            IngameMinimap& minimap,
                            GameWorldView& gwv);
 
         /// Zeichnet die MapPreview
-        bool Draw_() override;
+        void Draw_() override;
 
         bool Msg_LeftDown(const MouseCoords& mc) override;
         bool Msg_MouseMove(const MouseCoords& mc) override;

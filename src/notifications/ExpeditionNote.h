@@ -18,7 +18,7 @@
 #ifndef ExpeditionNote_h__
 #define ExpeditionNote_h__
 
-#include "gameTypes/MapTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
 
 struct ExpeditionNote

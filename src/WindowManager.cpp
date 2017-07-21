@@ -30,14 +30,13 @@
 #include "ogl/glArchivItem_Sound.h"
 #include "Log.h"
 #include "gameData/const_gui_ids.h"
-
+#include <boost/foreach.hpp>
 #include <algorithm>
 
-WindowManager::WindowManager()
-    : disable_mouse(false),
-      lastMousePos(Point<int>::Invalid()), screenWidth(0), screenHeight(0), last_left_click_time(0), last_left_click_point(0, 0)
-{
-}
+WindowManager::WindowManager():
+    disable_mouse(false), lastMousePos(Point<int>::Invalid()),
+    screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
+{}
 
 WindowManager::~WindowManager()
 {
@@ -74,31 +73,21 @@ void WindowManager::Draw()
     // und Desktop zeichnen
     curDesktop->Draw();
 
-    // haben wir Fenster?
-    if(!windows.empty())
+    // First close all marked windows
+    CloseMarkedIngameWnds();
+    BOOST_FOREACH(IngameWindow* wnd, windows)
     {
-        for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
-        {
-            // Soll Fenster geschlossen werden?
-            if((*it)->ShouldBeClosed())
-            {
-                // Fenster schliessen
-                Close(*it);
-
-                // und raus (korruption der liste verhindern)
-                break;
-            }
-
-            // Fenster zeichnen
-            (*it)->Draw();
-
-            // wurde es minimiert?
-            if(!(*it)->IsMinimized())
-            {
-                // nein, Msg_PaintAfter aufrufen
-                (*it)->Msg_PaintAfter();
-            }
-        }
+        // If the window is not minimized, call paintAfter
+        if(!wnd->IsMinimized())
+            wnd->Msg_PaintBefore();
+    }
+    BOOST_FOREACH(IngameWindow* wnd, windows)
+        wnd->Draw();
+    BOOST_FOREACH(IngameWindow* wnd, windows)
+    {
+        // If the window is not minimized, call paintAfter
+        if(!wnd->IsMinimized())
+            wnd->Msg_PaintAfter();
     }
 
     DrawToolTip();
@@ -130,7 +119,7 @@ bool WindowManager::IsDesktopActive()
  */
 
 /// Sendet eine Tastaturnachricht an die Fenster.
-void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), const KeyEvent& ke)
+void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // ist der Desktop gültig?
     if(!curDesktop)
@@ -139,7 +128,7 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
     if(curDesktop->IsActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (*curDesktop.*msg)(ke);
+        CALL_MEMBER_FN(*curDesktop, msg)(ke);
         curDesktop->RelayKeyboardMessage(msg, ke);
         return;
     }
@@ -154,19 +143,19 @@ void WindowManager::RelayKeyboardMessage(bool (Window::*msg)(const KeyEvent&), c
         return;
     }
     // Nein, dann Nachricht an letztes Fenster weiterleiten
-    if(!(windows.back()->*msg)(ke))
+    if(!CALL_MEMBER_FN(*windows.back(), msg)(ke))
     {
         if(!windows.back()->RelayKeyboardMessage(msg, ke))
         {
             // Falls Nachrichten nicht behandelt wurden, an Desktop wieder senden
-            (*curDesktop.*msg)(ke);
+            CALL_MEMBER_FN(*curDesktop, msg)(ke);
             curDesktop->RelayKeyboardMessage(msg, ke);
         }
     }
 }
 
 /// Sendet eine Mausnachricht weiter an alle Fenster
-void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), const MouseCoords& mc)
+void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 {
     // ist der Desktop gültig?
     if(!curDesktop)
@@ -175,13 +164,13 @@ void WindowManager::RelayMouseMessage(bool (Window::*msg)(const MouseCoords&), c
     if(curDesktop->IsActive())
     {
         // Ja, dann Nachricht an Desktop weiterleiten
-        (*curDesktop.*msg)(mc);
+        CALL_MEMBER_FN(*curDesktop, msg)(mc);
         curDesktop->RelayMouseMessage(msg, mc);
     }
     else if(!windows.empty())
     {
         // Nein, dann Nachricht an letztes Fenster weiterleiten
-        (windows.back()->*msg)(mc);
+        CALL_MEMBER_FN(*windows.back() ,msg)(mc);
         windows.back()->RelayMouseMessage(msg, mc);
     }
 }
@@ -277,10 +266,10 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const{
     for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
     {
         // FensterRect für Kollisionsabfrage
-        Rect window_rect = (*it)->GetRect();
+        Rect window_rect = (*it)->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(Coll(mc.x, mc.y, window_rect)){
+        if(IsPointInRect(mc.GetPos(), window_rect)){
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
@@ -406,13 +395,16 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
     // Ggf. Doppelklick untersuche
     unsigned time_now = VIDEODRIVER.GetTickCount();
-    if((time_now - last_left_click_time) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
-        && Point<int>(mc.x, mc.y) == last_left_click_point)
+    if((time_now - lastLeftClickTime) * 1000 / CLOCKS_PER_SEC < DOUBLE_CLICK_INTERVAL
+        && mc.GetPos() == lastLeftClickPos)
+    {
         mc.dbl_click = true;
-
-    // Werte wieder erneut speichern
-    last_left_click_point = Point<int>(mc.x, mc.y);
-    last_left_click_time = time_now;
+    } else
+    {
+        // Werte wieder erneut speichern
+        lastLeftClickPos = mc.GetPos();
+        lastLeftClickTime = time_now;
+    }
 
     // ist der Maus-Klick-Fix aktiv?
     if(!disable_mouse)
@@ -707,7 +699,7 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHeight)
 {
     VIDEODRIVER.RenewViewport();
-    Msg_ScreenResize(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
+    Msg_ScreenResize(VIDEODRIVER.GetScreenSize());
     LOG.writeToFile("Resized screen. Requested %ux%u, got %ux%u\n") % newWidth % newHeight % VIDEODRIVER.GetScreenWidth() % VIDEODRIVER.GetScreenHeight();
 }
 
@@ -718,26 +710,22 @@ void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHei
  *  @param[in] width  neue Breite
  *  @param[in] height neue Höhe
  */
-void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height)
+void WindowManager::Msg_ScreenResize(const Extent& newSize)
 {
     // Falls sich nichts ändert, brauchen wir auch nicht reagieren
     // (Evtl hat sich ja nur der Modus Fenster/Vollbild geändert)
-    if(screenWidth == width && screenHeight == height)
+    if(newSize == screenSize)
         return;
 
-    ScreenResizeEvent sr;
-    sr.oldWidth  = screenWidth;
-    sr.oldHeight = screenHeight;
-    sr.newWidth  = screenWidth  = (width < 800 ? 800 : width);
-    sr.newHeight = screenHeight = (height < 600 ? 600 : height);
+    ScreenResizeEvent sr(screenSize, Extent(std::max(800u, newSize.x), std::max(600u, newSize.y)));
+    screenSize = sr.newSize;
 
     SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen(); //-V807
-    // Wenn es absolut nicht anders geht, lassen wir im temporï¿½r doch
-    // kleiner als 800x600 zu, abspeichern tun wir die aber nie.
+
     if(!SETTINGS.video.fullscreen)
     {
-        if(width  >= 800) SETTINGS.video.windowed_width  = width;
-        if(height >= 600) SETTINGS.video.windowed_height = height;
+        if(newSize.x  >= 800) SETTINGS.video.windowed_width  = newSize.x;
+        if(newSize.y >= 600) SETTINGS.video.windowed_height = newSize.y;
     }
 
     // ist unser Desktop gültig?
@@ -749,10 +737,9 @@ void WindowManager::Msg_ScreenResize(unsigned short width, unsigned short height
     // IngameWindow verschieben falls nötig, so dass sie komplett sichtbar sind
     for(IgwListIterator it = windows.begin(); it != windows.end(); ++it)
     {
-        const short dx = (*it)->GetX() + (*it)->GetWidth()  - sr.newWidth;
-        const short dy = (*it)->GetY() + (*it)->GetHeight() - sr.newHeight;
-        if(dx > 0 || dy > 0)
-            (*it)->Move((dx > 0 ? -dx : 0), (dy > 0 ? -dy : 0) , /*absolute=*/false);
+        DrawPoint delta = (*it)->GetPos() + DrawPoint((*it)->GetSize()) - DrawPoint(sr.newSize);
+        if(delta.x > 0 || delta.y > 0)
+            (*it)->SetPos((*it)->GetPos() - elMax(delta, DrawPoint(0, 0)));
     }
 }
 
@@ -861,11 +848,30 @@ void WindowManager::Switch()
     Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), false, false, false));
 }
 
-void WindowManager::SetToolTip(const Window* ttw, const std::string& tooltip)
+struct IsWndMarkedForClose
+{
+    bool operator()(const IngameWindow* wnd) const
+    {
+        return wnd->ShouldBeClosed();
+    }
+};
+
+void WindowManager::CloseMarkedIngameWnds()
+{
+    IgwListIterator it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+    while(it != windows.end())
+    {
+        Close(*it);
+        it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
+    }
+
+}
+
+void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)
 {
     // Max width of tooltip
     const unsigned short MAX_TOOLTIP_WIDTH = 260;
-    static const Window* lttw = NULL;
+    static const ctrlBaseTooltip* lttw = NULL;
 
     if(tooltip.empty() && (!ttw || lttw == ttw))
         this->curTooltip.clear();
@@ -906,7 +912,8 @@ void WindowManager::DrawToolTip()
             pos = curTooltip.find('\n', pos + 1);
         }
 
-        Window::DrawRectangle(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy(), 0x9F000000);
+        Rect bgRect(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy());
+        Window::DrawRectangle(bgRect, 0x9F000000);
         NormalFont->Draw(ttPos, curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
     }
 }

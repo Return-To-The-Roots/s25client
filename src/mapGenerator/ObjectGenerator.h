@@ -20,6 +20,7 @@
 
 #include "mapGenerator/Map.h"
 #include "gameData/TerrainData.h"
+#include "gameTypes/MapTypes.h"
 
 class RandomConfig;
 
@@ -83,24 +84,24 @@ class ObjectGenerator
 
     /**
      * Creates a new duck.
-     * @param likelyhood likelyhood for object generation in percent
+     * @param likelihood likelihood for object generation in percent
      * @return a new duck animal
      */
-    uint8_t CreateDuck(int likelyhood);
+    uint8_t CreateDuck(int likelihood);
 
     /**
      * Creates a new sheep.
-     * @param likelyhood likelyhood for object generation in percent
+     * @param likelihood likelihood for object generation in percent
      * @return a new sheep animal
      */
-    uint8_t CreateSheep(int likelyhood);
+    uint8_t CreateSheep(int likelihood);
 
     /**
      * Creates a new, random animal to be placed inside of a forest.
-     * @param likelyhood likelyhood for object generation in percent
+     * @param likelihood likelihood for object generation in percent
      * @return a new forest animal
      */
-    uint8_t CreateRandomForestAnimal(int likelyhood);
+    uint8_t CreateRandomForestAnimal(int likelihood);
     
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
@@ -117,10 +118,10 @@ class ObjectGenerator
 
     /**
      * Creates a new, random ground animal.
-     * @param likelyhood likelyhood for object generation in percent
+     * @param likelihood likelihood for object generation in percent
      * @return a new ground animal
      */
-    uint8_t CreateRandomAnimal(int likelyhood);
+    uint8_t CreateRandomAnimal(int likelihood);
     
     /**
      * Checks whether or not the specified object is a tree.

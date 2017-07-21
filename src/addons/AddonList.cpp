@@ -35,11 +35,12 @@ void AddonList::hideGui(Window* window, unsigned int id) const
 void AddonList::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
 {
     Addon::createGui(window, id, y, readonly, status);
+    DrawPoint cbPos(430, y);
 
     ctrlComboBox* combo = window->GetCtrl<ctrlComboBox>(id + 2);
     if(!combo)
     {
-        combo = window->AddComboBox(id + 2, 450, y, 220, 20,  TC_GREY, NormalFont, 100, readonly );
+        combo = window->AddComboBox(id + 2, DrawPoint(0, 0), Extent(220, 20),  TC_GREY, NormalFont, 100, readonly );
         for(std::vector<std::string>::const_iterator it = options.begin(); it != options.end(); ++it)
             combo->AddString(*it);
 
@@ -47,7 +48,7 @@ void AddonList::createGui(Window* window, unsigned int id, unsigned short& y, bo
     }
 
     combo->SetVisible(true);
-    combo->Move(430, y);
+    combo->SetPos(cbPos);
 
     y += 30;
 }

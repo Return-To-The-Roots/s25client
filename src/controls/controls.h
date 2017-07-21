@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,11 +18,14 @@
 #define CONTROLS_H_INCLUDED
 
 #include "ctrlBuildingIcon.h"
-#include "ctrlButton.h"
+#include "ctrlColorButton.h"
+#include "ctrlImageButton.h"
+#include "ctrlTextButton.h"
 #include "ctrlChat.h"
 #include "ctrlCheck.h"
 #include "ctrlComboBox.h"
-#include "ctrlDeepening.h"
+#include "ctrlColorDeepening.h"
+#include "ctrlTextDeepening.h"
 #include "ctrlEdit.h"
 #include "ctrlGroup.h"
 #include "ctrlImage.h"

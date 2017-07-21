@@ -23,7 +23,9 @@
 #include "Loader.h"
 #include "GameClient.h"
 #include "GameServer.h"
-#include "controls/ctrlButton.h"
+#include "animation/BlinkButtonAnim.h"
+#include "controls/ctrlBaseColor.h"
+#include "controls/ctrlTextButton.h"
 #include "controls/ctrlChat.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
@@ -62,14 +64,13 @@ namespace{
         ID_CHAT_INPUT,
         ID_CHAT_TAB,
         TAB_GAMECHAT,
-        TAB_LOBBYCHAT,
-        ID_UNREAD_ANIM_TIMER
+        TAB_LOBBYCHAT
     };
 }
 
 dskHostGame::dskHostGame(const ServerType serverType) :
     Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(GAMECLIENT.GetGameLobby()),
-    hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), hasUnreadChat(false)
+    hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -98,93 +99,92 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     allowAddonChange = GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() && (!lua || lua->IsChangeAllowed("addonsAll") || lua->IsChangeAllowed("addonsSome"));
 
     // Kartenname
-    AddText(0, 400, 5, GAMECLIENT.GetGameName(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(0, DrawPoint(400, 5), GAMECLIENT.GetGameName(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     // "Spielername"
-    AddText(10, 95, 40, _("Player Name"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(10, DrawPoint(95, 40), _("Player Name"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     // "Einstufung"
-    AddText(11, 205, 40, _("Classification"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(11, DrawPoint(205, 40), _("Classification"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     // "Volk"
-    AddText(12, 285, 40, _("Race"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(12, DrawPoint(285, 40), _("Race"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     // "Farbe"
-    AddText(13, 355, 40, _("Color"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(13, DrawPoint(355, 40), _("Color"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     // "Team"
-    AddText(14, 405, 40, _("Team"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(14, DrawPoint(405, 40), _("Team"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
     if (!IsSinglePlayer())
     {
         // "Bereit"
-        AddText(15, 465, 40, _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(15, DrawPoint(465, 40), _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
         // "Ping"
-        AddText(16, 515, 40, _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(16, DrawPoint(515, 40), _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     }
     // "Swap"
     if(GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame())
-        AddText(24, 10, 40, _("Swap"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(24, DrawPoint(10, 40), _("Swap"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
     // "Verschieben" (nur bei Savegames!)
     if(GAMECLIENT.IsSavegame())
-        AddText(17, 645, 40, _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(17, DrawPoint(645, 40), _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
     if (!IsSinglePlayer())
     {
         // Enable lobby chat when we are logged in
         if(LOBBYCLIENT.IsLoggedIn())
         {
-            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK, scale_);
-            chatTab->AddTextButton(TAB_GAMECHAT, 20, 320, 178, 22, TC_GREEN2, _("Game Chat"), NormalFont);
-            chatTab->AddTextButton(TAB_LOBBYCHAT, 202, 320, 178, 22, TC_GREEN2, _("Lobby Chat"), NormalFont);
-            gameChat  = AddChatCtrl(ID_GAME_CHAT,  20, 345, 360, 218 - 25, TC_GREY, NormalFont);
-            lobbyChat = AddChatCtrl(ID_LOBBY_CHAT, 20, 345, 360, 218 - 25, TC_GREY, NormalFont);
+            ctrlOptionGroup* chatTab = AddOptionGroup(ID_CHAT_TAB, ctrlOptionGroup::CHECK);
+            chatTab->AddTextButton(TAB_GAMECHAT, DrawPoint(20, 320), Extent(178, 22), TC_GREEN2, _("Game Chat"), NormalFont);
+            chatTab->AddTextButton(TAB_LOBBYCHAT, DrawPoint(202, 320), Extent(178, 22), TC_GREEN2, _("Lobby Chat"), NormalFont);
+            gameChat  = AddChatCtrl(ID_GAME_CHAT, DrawPoint( 20, 345), Extent(360, 218 - 25), TC_GREY, NormalFont);
+            lobbyChat = AddChatCtrl(ID_LOBBY_CHAT, DrawPoint(20, 345), Extent(360, 218 - 25), TC_GREY, NormalFont);
             chatTab->SetSelection(TAB_GAMECHAT, true);
-            AddTimer(ID_UNREAD_ANIM_TIMER, 500);
         } else{
             // Chatfenster
-            gameChat = AddChatCtrl(ID_GAME_CHAT, 20, 320, 360, 218, TC_GREY, NormalFont);
+            gameChat = AddChatCtrl(ID_GAME_CHAT, DrawPoint(20, 320), Extent(360, 218), TC_GREY, NormalFont);
         }
         // Edit für Chatfenster
-        AddEdit(ID_CHAT_INPUT, 20, 540, 360, 22, TC_GREY, NormalFont);
+        AddEdit(ID_CHAT_INPUT, DrawPoint(20, 540), Extent(360, 22), TC_GREY, NormalFont);
     }
 
     // "Spiel starten"
-    AddTextButton(2, 600, 560, 180, 22, TC_GREEN2, (GAMECLIENT.IsHost() ? _("Start game") : _("Ready")), NormalFont);
+    AddTextButton(2, DrawPoint(600, 560), Extent(180, 22), TC_GREEN2, (GAMECLIENT.IsHost() ? _("Start game") : _("Ready")), NormalFont);
 
     // "Zurück"
-    AddTextButton(3, 400, 560, 180, 22, TC_RED1, _("Return"), NormalFont);
+    AddTextButton(3, DrawPoint(400, 560), Extent(180, 22), TC_RED1, _("Return"), NormalFont);
 
     // "Teams sperren"
-    AddCheckBox(20, 400, 460, 180, 26, TC_GREY, _("Lock teams:"), NormalFont, readonlySettings);
+    AddCheckBox(20, DrawPoint(400, 460), Extent(180, 26), TC_GREY, _("Lock teams:"), NormalFont, readonlySettings);
     // "Gemeinsame Team-Sicht"
-    AddCheckBox(19, 600, 460, 180, 26, TC_GREY, _("Shared team view"), NormalFont, readonlySettings);
+    AddCheckBox(19, DrawPoint(600, 460), Extent(180, 26), TC_GREY, _("Shared team view"), NormalFont, readonlySettings);
     // "Random Start Locations"
-    AddCheckBox(23, 600, 430, 180, 26, TC_GREY, _("Random start locations"), NormalFont, readonlySettings);
+    AddCheckBox(23, DrawPoint(600, 430), Extent(180, 26), TC_GREY, _("Random start locations"), NormalFont, readonlySettings);
 
     // "Enhancements"
-    AddText(21, 400, 499, _("Addons:"), COLOR_YELLOW, 0, NormalFont);
-    AddTextButton(22, 600, 495, 180, 22, TC_GREEN2, allowAddonChange ? _("Change Settings...") : _("View Settings..."), NormalFont);
+    AddText(21, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, 0, NormalFont);
+    AddTextButton(22, DrawPoint(600, 495), Extent(180, 22), TC_GREEN2, allowAddonChange ? _("Change Settings...") : _("View Settings..."), NormalFont);
 
     ctrlComboBox* combo;
 
     // umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
 
     // "Aufklärung"
-    AddText(30, 400, 405, _("Exploration:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(40, 600, 400, 180, 20, TC_GREY, NormalFont, 100, readonlySettings);
+    AddText(30, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(40, DrawPoint(600, 400), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Off (all visible)"));
     combo->AddString(_("Classic (Settlers 2)"));
     combo->AddString(_("Fog of War"));
     combo->AddString(_("FoW - all explored"));
 
     // "Waren zu Beginn"
-    AddText(31, 400, 375, _("Goods at start:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(41, 600, 370, 180, 20, TC_GREY, NormalFont, 100, readonlySettings);
+    AddText(31, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(41, DrawPoint(600, 370), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("Very Low"));
     combo->AddString(_("Low"));
     combo->AddString(_("Normal"));
     combo->AddString(_("A lot"));
 
     // "Spielziel"
-    AddText(32, 400, 345, _("Goals:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(42, 600, 340, 180, 20, TC_GREY, NormalFont, 100, readonlySettings);
+    AddText(32, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(42, DrawPoint(600, 340), Extent(180, 20), TC_GREY, NormalFont, 100, readonlySettings);
     combo->AddString(_("None")); // Kein Spielziel
     combo->AddString(_("Conquer 3/4 of map")); // Besitz 3/4 des Landes
     combo->AddString(_("Total domination")); // Alleinherrschaft
@@ -201,8 +201,8 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     }
 
     // "Geschwindigkeit"
-    AddText(33, 400, 315, _("Speed:"), COLOR_YELLOW, 0, NormalFont);
-    combo = AddComboBox(43, 600, 310, 180, 20, TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost());
+    AddText(33, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, 0, NormalFont);
+    combo = AddComboBox(43, DrawPoint(600, 310), Extent(180, 20), TC_GREY, NormalFont, 100, !GAMECLIENT.IsHost());
     combo->AddString(_("Very slow")); // Sehr Langsam
     combo->AddString(_("Slow")); // Langsam
     combo->AddString(_("Normal")); // Normal
@@ -218,12 +218,12 @@ dskHostGame::dskHostGame(const ServerType serverType) :
         if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv) == 0)
         {
             glArchivItem_Map* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
-            ctrlPreviewMinimap* preview = AddPreviewMinimap(70, 560, 40, 220, 220, map);
+            ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
 
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
             // verschieben, da diese Position sonst skaliert wird!
-            ctrlText* text = AddText(71, 670, 0, _("Map: ") +  GAMECLIENT.GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
-            text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
+            ctrlText* text = AddText(71, DrawPoint(670, 0), _("Map: ") +  GAMECLIENT.GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+            text->SetPos(DrawPoint(text->GetDrawPos().x, preview->GetDrawPos().y + preview->GetMapArea().bottom + 10));
         }
     }
 
@@ -244,7 +244,7 @@ dskHostGame::dskHostGame(const ServerType serverType) :
     if(GAMECLIENT.IsHost() && !GAMECLIENT.IsSavegame() && (!lua || lua->IsChangeAllowed("swapping")))
     {
         for(unsigned char i = gameLobby.GetPlayerCount(); i; --i)
-            AddTextButton(ID_SWAP_BUTTON + i - 1, 5, 80 + (i - 1) * 30, 10, 22, TC_RED1, _("-"), NormalFont);;
+            AddTextButton(ID_SWAP_BUTTON + i - 1, DrawPoint(5, 80 + (i - 1) * 30), Extent(10, 22), TC_RED1, _("-"), NormalFont);;
     }
     CI_GGSChanged(gameLobby.GetSettings());
 
@@ -267,16 +267,20 @@ dskHostGame::dskHostGame(const ServerType serverType) :
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  */
-void dskHostGame::Resize(unsigned short width, unsigned short height)
+void dskHostGame::Resize(const Extent& newSize)
 {
-    Window::Resize(width, height);
+    Window::Resize(newSize);
 
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
     ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(70);
     ctrlText* text = GetCtrl<ctrlText>(71);
     if(preview && text)
-        text->Move(text->GetX(false), preview->GetY(false) + preview->GetBottom() + 10);
+    {
+        DrawPoint txtPos = text->GetPos();
+        txtPos.y = preview->GetPos().y + preview->GetMapArea().bottom + 10;
+        text->SetPos(txtPos);
+    }
 }
 
 void dskHostGame::SetActive(bool activate /*= true*/)
@@ -299,7 +303,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     // Alle Controls erstmal zerstören (die ganze Gruppe)
     DeleteCtrl(58 - row);
     // und neu erzeugen
-    ctrlGroup* group = AddGroup(58 - row, scale_);
+    ctrlGroup* group = AddGroup(58 - row);
 
     std::string name;
     // Name
@@ -337,21 +341,21 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
     }
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
-    ctrlBaseText* text;
     if(GAMECLIENT.IsHost() && !player.isHost && (!lua || lua->IsChangeAllowed("playerState")))
-        text = group->AddTextButton(1, 20, cy, 150, 22, tc, name, NormalFont);
+        group->AddTextButton(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont);
     else
-        text = group->AddDeepening(1, 20, cy, 150, 22, tc, name, NormalFont, COLOR_YELLOW);
+        group->AddTextDeepening(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont, COLOR_YELLOW);
+    ctrlBaseText* text = group->GetCtrl<ctrlBaseText>(1);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)
-        text->SetColor(0xFF00FF00);
+        text->SetTextColor(0xFF00FF00);
 
     // Bei geschlossenem nicht sichtbar
     if(player.isUsed())
     {
         /// Einstufung nur bei Lobbyspielen anzeigen @todo Einstufung ( "%d" )
-        group->AddVarDeepening(2, 180, cy, 50, 22, tc, (LOBBYCLIENT.IsLoggedIn() || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
+        group->AddVarDeepening(2, DrawPoint(180, cy), Extent(50, 22), tc, (LOBBYCLIENT.IsLoggedIn() || player.ps == PS_AI ? _("%d") : _("n/a")), NormalFont, COLOR_YELLOW, 1, &player.rating); //-V111
 
         // If not in savegame -> Player can change own row and host can change AIs
         const bool allowPlayerChange = ((GAMECLIENT.IsHost() && player.ps == PS_AI) || GAMECLIENT.GetPlayerId() == row) && !GAMECLIENT.IsSavegame();
@@ -374,31 +378,31 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         }
 
         if(allowNationChange)
-            group->AddTextButton(3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont);
+            group->AddTextButton(3, DrawPoint(240, cy), Extent(90, 22), tc, _(NationNames[0]), NormalFont);
         else
-            group->AddDeepening(3, 240, cy, 90, 22, tc, _(NationNames[0]), NormalFont, COLOR_YELLOW);
+            group->AddTextDeepening(3, DrawPoint(240, cy), Extent(90, 22), tc, _(NationNames[0]), NormalFont, COLOR_YELLOW);
 
         if(allowColorChange)
-            group->AddColorButton(4, 340, cy, 30, 22, tc, 0);
+            group->AddColorButton(4, DrawPoint(340, cy), Extent(30, 22), tc, 0);
         else
-            group->AddColorDeepening(4, 340, cy, 30, 22, tc, 0);
+            group->AddColorDeepening(4, DrawPoint(340, cy), Extent(30, 22), tc, 0);
 
         if(allowTeamChange)
-            group->AddTextButton(5, 380, cy, 50, 22, tc, _("-"), NormalFont);
+            group->AddTextButton(5, DrawPoint(380, cy), Extent(50, 22), tc, _("-"), NormalFont);
         else
-            group->AddDeepening(5, 380, cy, 50, 22, tc, _("-"), NormalFont, COLOR_YELLOW);
+            group->AddTextDeepening(5, DrawPoint(380, cy), Extent(50, 22), tc, _("-"), NormalFont, COLOR_YELLOW);
 
         // Bereit (nicht bei KIs und Host)
         if(player.ps == PS_OCCUPIED && !player.isHost)
-            group->AddCheckBox(6, 450, cy, 22, 22, tc, EMPTY_STRING, NULL, (GAMECLIENT.GetPlayerId() != row) );
+            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, EMPTY_STRING, NULL, (GAMECLIENT.GetPlayerId() != row) );
 
         // Ping ( "%d" )
-        ctrlVarDeepening* ping = group->AddVarDeepening(7, 490, cy, 50, 22, tc, _("%d"), NormalFont, COLOR_YELLOW, 1, &player.ping); //-V111
+        ctrlVarDeepening* ping = group->AddVarDeepening(7, DrawPoint(490, cy), Extent(50, 22), tc, _("%d"), NormalFont, COLOR_YELLOW, 1, &player.ping); //-V111
 
         // Verschieben (nur bei Savegames und beim Host!)
         if(GAMECLIENT.IsSavegame() && player.ps == PS_OCCUPIED)
         {
-            ctrlComboBox* combo = group->AddComboBox(8, 570, cy, 150, 22, tc, NormalFont, 150, !GAMECLIENT.IsHost());
+            ctrlComboBox* combo = group->AddComboBox(8, DrawPoint(570, cy), Extent(150, 22), tc, NormalFont, 150, !GAMECLIENT.IsHost());
 
             // Mit den alten Namen füllen
             for(unsigned i = 0; i < gameLobby.GetPlayerCount(); ++i)
@@ -423,7 +427,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         ChangeReady(row, player.isReady);
         ChangeColor(row, player.color);
     }
-    group->SetActive(this->active_);
+    group->SetActive(IsActive());
 }
 
 /**
@@ -431,21 +435,10 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
  */
 void dskHostGame::Msg_PaintBefore()
 {
+    Desktop::Msg_PaintBefore();
     // Chatfenster Fokus geben
     if (!IsSinglePlayer())
         GetCtrl<ctrlEdit>(ID_CHAT_INPUT)->SetFocus();
-}
-
-void dskHostGame::Msg_Timer(const unsigned timerId)
-{
-    if(timerId != ID_UNREAD_ANIM_TIMER || !hasUnreadChat)
-        return;
-    ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(gameChat->IsVisible() ? TAB_LOBBYCHAT : TAB_GAMECHAT);
-    if(bt->GetTexture() != TC_GREEN2)
-        bt->SetTexture(TC_GREEN2);
-    else
-        bt->SetTexture(TC_RED2);
-
 }
 
 void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
@@ -652,12 +645,11 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
         {
             iwAddons* w;
             if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                w = new iwAddons(gameLobby.GetSettings(), iwAddons::HOSTGAME);
+                w = new iwAddons(gameLobby.GetSettings(), this, iwAddons::HOSTGAME);
             else if(allowAddonChange)
-                w = new iwAddons(gameLobby.GetSettings(), iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                w = new iwAddons(gameLobby.GetSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
             else
-                w = new iwAddons(gameLobby.GetSettings(), iwAddons::READONLY);
-            w->SetParent(this);
+                w = new iwAddons(gameLobby.GetSettings(), this, iwAddons::READONLY);
             WINDOWMANAGER.Show(w);
         } break;
     }
@@ -773,7 +765,7 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int select
         gameChat->SetVisible(selection == TAB_GAMECHAT);
         lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
         GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
-        hasUnreadChat = false;
+        GetAnimationManager().finishAnimation(selection == TAB_GAMECHAT ? localChatTabAnimId : lobbyChatTabAnimId, false);
     }
 }
 
@@ -840,12 +832,12 @@ void dskHostGame::ChangePing(unsigned playerId)
         color = COLOR_YELLOW;
 
     // und setzen
-    GetCtrl<ctrlGroup>(58 - playerId)->GetCtrl<ctrlVarDeepening>(7)->SetColor(color);
+    GetCtrl<ctrlGroup>(58 - playerId)->GetCtrl<ctrlVarDeepening>(7)->SetTextColor(color);
 }
 
 void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
 {
-    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ColorControlInterface>(4)->SetColor(color);
+    GetCtrl<ctrlGroup>(58 - i)->GetCtrl<ctrlBaseColor>(4)->SetColor(color);
 
     // Minimap-Startfarbe ändern
     if(GetCtrl<ctrlPreviewMinimap>(70))
@@ -972,7 +964,10 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination  /*cd*/
 
         gameChat->AddMessage(time, gameLobby.GetPlayer(playerId).name, gameLobby.GetPlayer(playerId).color, msg, 0xFFFFFF00);
         if(!gameChat->IsVisible())
-            hasUnreadChat = true;
+        {
+            ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(TAB_GAMECHAT);
+            GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+        }
     }
 }
 
@@ -1016,5 +1011,8 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
         return;
     lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
     if(!lobbyChat->IsVisible())
-        hasUnreadChat = true;
+    {
+        ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
+        GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+    }
 }

@@ -39,7 +39,7 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, unsigned width, unsigned height):
+GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size):
 	selPt(0, 0),
 	debugNodePrinter(NULL),
 	show_bq(false),
@@ -52,7 +52,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
 	d_player(0),
 	d_active(false),
 	pos(pos),
-	width(width), height(height),
+	size_(size),
     zoomFactor_(1.f),
     targetZoomFactor_(1.f),
     zoomSpeed_(0.f)
@@ -137,14 +137,14 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
     mousePos -= Point<int>(pos);
 
-    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - height, width, height);
+    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - size_.y, size_.x, size_.y);
     if(zoomFactor_ != 1.f)
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glScalef(zoomFactor_, zoomFactor_, 1);
         // Offset to center view
-        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
+        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
@@ -277,19 +277,19 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     }
                 }
 
-                LOADER.GetMapImageN(mid)->Draw(curPos);
+                LOADER.GetMapImageN(mid)->DrawFull(curPos);
             }
 
             // Currently selected point
             if(draw_selected && selectedPt == curPt)
-                LOADER.GetMapImageN(20)->Draw(curPos);
+                LOADER.GetMapImageN(20)->DrawFull(curPos);
 
             // Wegbauzeug
             if(rb.mode == RM_DISABLED)
                 continue;
 
             if(rb.point == curPt)
-                LOADER.GetMapImageN(21)->Draw(curPos);
+                LOADER.GetMapImageN(21)->DrawFull(curPos);
 
             int altitude = GetWorld().GetNode(rb.point).altitude;
 
@@ -317,15 +317,15 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     default: id = 60; break;
                     }
 
-                    LOADER.GetMapImageN(id)->Draw(curPos);
+                    LOADER.GetMapImageN(id)->DrawFull(curPos);
                 }
 
                 // Flaggenanschluss? --> extra zeichnen
                 if(GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start)
-                    LOADER.GetMapImageN(20)->Draw(curPos);
+                    LOADER.GetMapImageN(20)->DrawFull(curPos);
 
                 if(!rb.route.empty() && rb.route.back() + 3u == Direction::fromInt(dir))
-                    LOADER.GetMapImageN(67)->Draw(curPos);
+                    LOADER.GetMapImageN(67)->DrawFull(curPos);
             }
         }
     }
@@ -444,12 +444,12 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
     {
         glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
         //Draw building quality icon
-        bm->Draw(curPos);
+        bm->DrawFull(curPos);
         //Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
             if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
-                LOADER.GetImageN("map_new", 20000)->Draw(curPos - DrawPoint(-1, bm->getHeight() + 5));
+                LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getHeight() + 5));
         }
     }
 }
@@ -475,7 +475,7 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
         || bt == BLD_HARBORBUILDING) //is it a military building?
     {
         if(gwv.GetNumSoldiersForAttack(building->GetPos())) //soldiers available for attack?
-            LOADER.GetImageN("map_new", 20000)->Draw(curPos + DrawPoint(1, -5));
+            LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
     }
 }
 
@@ -488,19 +488,19 @@ void GameWorldView::DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos)
     if(d_what == 1)
     {
         if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
-            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->Draw(curPos);
+            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->DrawFull(curPos);
     } else if(d_what == 2)
     {
         if(ai->GetAINode(pt).reachable)
-            LOADER.GetImageN("io", 32)->Draw(curPos);
+            LOADER.GetImageN("io", 32)->DrawFull(curPos);
         else
-            LOADER.GetImageN("io", 40)->Draw(curPos);
+            LOADER.GetImageN("io", 40)->DrawFull(curPos);
     } else if(d_what == 3)
     {
         if(ai->GetAINode(pt).farmed)
-            LOADER.GetImageN("io", 32)->Draw(curPos);
+            LOADER.GetImageN("io", 32)->DrawFull(curPos);
         else
-            LOADER.GetImageN("io", 40)->Draw(curPos);
+            LOADER.GetImageN("io", 40)->DrawFull(curPos);
     } else if(d_what > 3 && d_what < 13)
     {
         std::stringstream ss;
@@ -590,7 +590,7 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
     lastOffset = offset;
     Point<int> nodePos = GetWorld().GetNodePos(pt);
 
-    MoveTo(nodePos - DrawPoint(GetSize() / 2), true);
+    MoveTo(nodePos - GetSize() / 2u, true);
 }
 
 /// Springt zur letzten Position, bevor man "weggesprungen" ist
@@ -608,13 +608,13 @@ void GameWorldView::CalcFxLx()
     // Calc first and last point in map units (with 1 extra for incomplete triangles)
     firstPt.x = offset.x / TR_W - 1;
     firstPt.y = (offset.y - 10 * HEIGHT_FACTOR) / TR_H - 1; // base altitude = 10
-    lastPt.x = (offset.x + width) / TR_W + 1;
-    lastPt.y = (offset.y + height + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
+    lastPt.x = (offset.x + size_.x) / TR_W + 1;
+    lastPt.y = (offset.y + size_.y + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
 
     if(zoomFactor_ != 1.f)
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
-        Point<float> diff(width - width / zoomFactor_, height - height / zoomFactor_);
+        Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);
         // Stay centered by removing half the pixels from opposite sites
         diff = diff / 2.f;
         // Convert to map points
@@ -628,9 +628,8 @@ void GameWorldView::CalcFxLx()
     }
 }
 
-void GameWorldView::Resize(unsigned width, unsigned height)
+void GameWorldView::Resize(const Extent& newSize)
 {
-    this->width  = width;
-    this->height = height;
+    size_ = newSize;
     CalcFxLx();
 }
