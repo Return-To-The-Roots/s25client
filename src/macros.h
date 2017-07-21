@@ -53,12 +53,6 @@
 #   define GetTxtItem(type, nr) ( dynamic_cast<libsiedler2::ArchivItem_Text*>( LOADER.type.get(nr) ) )
 #endif // !_WIN32 || !_MSC_VER
 
-#ifdef _MSC_VER
-#   define FORCE_INLINE __forceinline
-#else
-#   define FORCE_INLINE inline __attribute__((__always_inline__))
-#endif // _MSC_VER
-
 // Macro that can be used to suppress unused warnings. Required e.g. for const boost::arrays defined in headers
 // Don't use this if not absolutely necessary!
 #ifdef __GNUC__

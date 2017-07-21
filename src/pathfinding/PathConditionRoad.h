@@ -20,6 +20,8 @@
 #ifndef PathConditionRoad_h__
 #define PathConditionRoad_h__
 
+#include <boost/config.hpp>
+
 template<class T_WorldOrViewer>
 struct PathConditionRoad
 {
@@ -29,13 +31,13 @@ struct PathConditionRoad
     PathConditionRoad(const T_WorldOrViewer& worldOrViewer, const bool isBoatRoad): worldOrViewer(worldOrViewer), isBoatRoad(isBoatRoad){}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         return worldOrViewer.IsPlayerTerritory(pt) && worldOrViewer.IsRoadAvailable(isBoatRoad, pt);
     }
 
     // Called for every edge (node to other node)
-    FORCE_INLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const Direction /*dir*/) const
+    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint&  /*fromPt*/, const Direction /*dir*/) const
     {
         return true;
     }

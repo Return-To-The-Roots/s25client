@@ -23,6 +23,7 @@
 #include "world/World.h"
 #include "nodeObjs/noBase.h"
 #include "gameData/TerrainData.h"
+#include <boost/config.hpp>
 
 struct PathConditionHuman
 {
@@ -31,7 +32,7 @@ struct PathConditionHuman
     PathConditionHuman(const World& world): world(world){}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    FORCE_INLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
         // Node blocked -> Can't go there
         const BlockingManner bm = world.GetNO(pt)->GetBM();
@@ -53,7 +54,7 @@ struct PathConditionHuman
     }
 
     // Called for every node
-    FORCE_INLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
+    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // If there is a road (but no boat road) we can pass
         unsigned char road = world.GetPointRoad(fromPt, dir);
