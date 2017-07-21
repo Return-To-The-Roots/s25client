@@ -18,6 +18,7 @@
 #ifndef glTexturePackerNode_h__
 #define glTexturePackerNode_h__
 
+#include "Point.h"
 #include <vector>
 #include <stdint.h>
 
@@ -26,17 +27,17 @@ class glTexturePackerNode;
 
 class glTexturePackerNode
 {
-    int x, y;
-    int w, h;
+    Position pos;
+    Extent size;
 
     glSmartBitmap* bmp;
     glTexturePackerNode* child[2];
 
 public:
-    glTexturePackerNode(): x(0), y(0), w(0), h(0), bmp(NULL) { child[0] = child[1] = NULL; }
-    glTexturePackerNode(int w, int h): x(0), y(0), w(w), h(h), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode(): pos(0, 0), size(0, 0), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode(const Extent& size): pos(0, 0), size(size), bmp(NULL) { child[0] = child[1] = NULL; }
 
-    bool insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, unsigned gw, unsigned gh, std::vector<glTexturePackerNode*>& todo);
+    bool insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, const Extent& bufferSize, std::vector<glTexturePackerNode*>& todo);
     void destroy(unsigned reserve = 0);
 };
 

@@ -34,8 +34,8 @@ namespace libsiedler2
 class glSmartBitmap
 {
     private:
-        int w, h;
-        DrawPoint origin;
+        Position origin;
+        Extent size;
 
         bool sharedTexture;
         unsigned int texture;
@@ -47,15 +47,13 @@ class glSmartBitmap
     public:
         Point<float> texCoords[8];
 
-        glSmartBitmap() : w(0), h(0), origin(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
+        glSmartBitmap() : origin(0, 0), size(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
         ~glSmartBitmap();
         void reset();
 
-        int getWidth() const {return w;}
-        int getHeight() const {return h;}
+        Extent getSize() const {return size;}
 
-        int getTexWidth() const {return hasPlayer ? getWidth() * 2 : getWidth();}
-        int getTexHeight() const {return getHeight();}
+        Extent getTexSize() const {return hasPlayer ? Extent(size.x *2, size.y) : size;}
 
         bool isGenerated() const {return texture != 0;}
         bool isPlayer() const {return hasPlayer;}
@@ -66,10 +64,10 @@ class glSmartBitmap
         void calcDimensions();
 
         void generateTexture();
-        void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
-        void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0x00000000);
+        void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
+        void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
 
-        void drawTo(std::vector<uint32_t>& buffer, const unsigned stride, const unsigned height, const int x_offset = 0, const int y_offset = 0);
+        void drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSize, const Extent& bufOffset = Extent(0, 0));
 
         void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, false, transferOwnership));}
         void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}

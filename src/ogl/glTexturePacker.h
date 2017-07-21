@@ -29,7 +29,6 @@ private:
     std::vector<glSmartBitmap*> items;
 
     bool packHelper(std::vector<glSmartBitmap*> &list);
-    static bool sortSmartBitmap(glSmartBitmap* a, glSmartBitmap* b);
 public:
     ~glTexturePacker();
 

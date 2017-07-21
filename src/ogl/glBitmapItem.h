@@ -18,6 +18,8 @@
 #ifndef glBitmapItem_h__
 #define glBitmapItem_h__
 
+#include "Point.h"
+
 namespace libsiedler2 {
     class baseArchivItem_Bitmap;
     class ArchivItem_Bitmap_Player;
@@ -42,9 +44,12 @@ public:
     /// If this is true, the owner of the bitmap item should also delete the bitmap
     bool isOwning_;
 
-    int nx, ny;
-    int w, h;
-    int x, y;
+    /// Start of the data in the original bitmap (skipping transparent pixels)
+    Position pos;
+    /// Size of the non-transparent data
+    Extent size;
+    /// Adjusted origin
+    Position origin;
 };
 
 #endif // glBitmapItem_h__
