@@ -145,7 +145,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
         {
             glArchivItem_Bitmap* image = GetImageN("splash", 0);
             image->setFilter(GL_LINEAR);
-            image->Draw(DrawPoint(0, 0), VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight());
+            image->DrawFull(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()));
             VIDEODRIVER.SwapBuffers();
         }
     }

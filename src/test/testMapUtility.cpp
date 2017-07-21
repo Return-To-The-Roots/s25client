@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Water)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Water)
     
     unsigned water = MapUtility::GetBodySize(map, position, limit);
     
-    BOOST_REQUIRE_EQUAL(water, size.x * size.y);
+    BOOST_REQUIRE_EQUAL(water, static_cast<unsigned>(size.x * size.y));
 }
 
 /**
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Limit)
     const unsigned limit = 100u; // limit is lower than body size (size.x * size.y = 128)
 
     Map map(size, "map", "author");
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowReplaced)
 
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowReplaced)
     
     MapUtility::Smooth(map);
 
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         BOOST_REQUIRE_EQUAL(map.textureLsd[i],
                             TerrainData::GetTextureIdentifier(TT_MEADOW1));
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowNotReplaced)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         if (i % size.x == 0) // mountain-meadow on the left
         {
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowNotReplaced)
     
     MapUtility::Smooth(map);
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         if (i % size.x == 0)
         {
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainIncreased)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.z[i] = z;
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainIncreased)
     
     MapUtility::Smooth(map);
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         BOOST_REQUIRE_GT(map.z[i], z); // mountain got increased for better visual appearance
     }
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(Smooth_SnowIncreased)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.z[i] = z;
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE(Smooth_SnowIncreased)
     
     MapUtility::Smooth(map);
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         // snow got increased for better visual appearance:
         // this assumes that snow is always placed on top of a mountain area,
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MeadowNotIncreased)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.z[i] = z;
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE(Smooth_MeadowNotIncreased)
     
     MapUtility::Smooth(map);
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         // texture other than snow/mountain remain their z values
         BOOST_REQUIRE_EQUAL(map.z[i], z);
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(Smooth_SingleTexturesReplaced)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
@@ -275,7 +275,7 @@ BOOST_AUTO_TEST_CASE(SetHarbor_HarborPlaceAvailable)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         if (i % size.x < size.x / 2)
         {
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(SetHarbor_HarborPlaceAvailable)
     MapUtility::SetHarbour(map, center, 0);
     
     int countHarbors = 0;
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         if ((map.textureLsd[i] & libsiedler2::HARBOR_MASK) &&
             (map.textureRsu[i] & libsiedler2::HARBOR_MASK))
@@ -335,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
     
     Map map(size, "map", "author");
     
-    for (unsigned i = 0; i < size.x * size.y; i++)
+    for(int i = 0; i < size.x * size.y; i++)
     {
         map.textureLsd[i] = TT_DESERT;
         map.textureRsu[i] = TT_DESERT;

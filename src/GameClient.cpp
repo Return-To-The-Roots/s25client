@@ -249,7 +249,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Mond malen
     Point<int> moonPos = VIDEODRIVER.GetMousePos();
     moonPos.y -= 40;
-    LOADER.GetImageN("resource", 33)->Draw(moonPos);
+    LOADER.GetImageN("resource", 33)->DrawFull(moonPos);
     VIDEODRIVER.SwapBuffers();
 
     // Daten zurücksetzen
@@ -1654,7 +1654,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     // Mond malen
     Point<int> moonPos = VIDEODRIVER.GetMousePos();
     moonPos.y -= 40;
-    LOADER.GetImageN("resource", 33)->Draw(moonPos);
+    LOADER.GetImageN("resource", 33)->DrawFull(moonPos);
     VIDEODRIVER.SwapBuffers();
 
     Savegame save;

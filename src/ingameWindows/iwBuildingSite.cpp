@@ -74,7 +74,7 @@ void iwBuildingSite::Msg_PaintBefore()
     glArchivItem_Bitmap* bitmap = buildingsite->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetDrawPos() + DrawPoint(113, 130), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->DrawFull(GetDrawPos() + DrawPoint(113, 130), COLOR_SHADOW);
 }
 
 void iwBuildingSite::Msg_PaintAfter()
@@ -112,11 +112,11 @@ void iwBuildingSite::Msg_PaintAfter()
         for(unsigned char z = 0; z < wares_count; ++z)
         {
             glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + (i == 0 ? GD_BOARDS : GD_STONES));
-            bitmap->Draw(waresPos, 0, 0, 0, 0, 0, 0, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040) );
+            bitmap->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040) );
 
             // Hammer wenn Ware verbaut
             if(z < wares_used)
-                LOADER.GetMapImageN(2250 + GD_HAMMER)->Draw(waresPos);
+                LOADER.GetMapImageN(2250 + GD_HAMMER)->DrawFull(waresPos);
             waresPos.x += 24;
         }
         curPos.y += 29;

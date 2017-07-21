@@ -252,17 +252,17 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
     // Hafenfeuer zeichnen // TODO auch für nicht-römer machen
     if (nation == NAT_ROMANS || nation == NAT_JAPANESE || nation == NAT_BABYLONIANS)
     {
-        LOADER.GetNationImage(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))->Draw(drawPt + FIRE_POS[nation]);
+        LOADER.GetNationImage(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))->DrawFull(drawPt + FIRE_POS[nation]);
     }
     else if (nation == NAT_AFRICANS || nation == NAT_VIKINGS)
     {
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(drawPt + FIRE_POS[nation]);
+        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->DrawFull(drawPt + FIRE_POS[nation]);
     }
 
     if (nation == NAT_ROMANS)
     {
         // Zusätzliches Feuer
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->Draw(drawPt + EXTRAFIRE_POS[nation]);
+        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->DrawFull(drawPt + EXTRAFIRE_POS[nation]);
     }
 
     // Läuft gerade eine Expedition?
@@ -273,11 +273,11 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(boardsPos - DrawPoint(0, i * 4));
+            LOADER.GetMapImageN(2200 + GD_BOARDS)->DrawFull(boardsPos - DrawPoint(0, i * 4));
         DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetMapImageN(2200 + GD_STONES)->Draw(stonesPos - DrawPoint(0, i * 4));
+            LOADER.GetMapImageN(2200 + GD_STONES)->DrawFull(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist
         if(expedition.builder)

@@ -75,7 +75,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         DrawPoint drawPos = destPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
-        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->Draw(drawPos);
+        LOADER.GetMapPlayerImage(3102 + GAMECLIENT.Interpolate(4, event))->DrawFull(drawPos);
     }
     else
     {
@@ -85,7 +85,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
         // Schatten auf linearer Linie zeichnen
-        LOADER.GetMapImageN(3101)->Draw(drawPos, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetMapImageN(3101)->DrawFull(drawPos, COLOR_SHADOW);
 
         Point<int> distance = destPos - startPos;
         double whole = std::sqrt(double(distance.x * distance.x + distance.y * distance.y));
@@ -101,7 +101,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;
-        LOADER.GetMapPlayerImage(3100)->Draw(drawPos);
+        LOADER.GetMapPlayerImage(3100)->DrawFull(drawPos);
     }
 }
 

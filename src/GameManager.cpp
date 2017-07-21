@@ -333,16 +333,16 @@ void GameManager::DrawCursor()
         case CURSOR_HAND:
         {
             if(VIDEODRIVER.IsLeftDown())
-                LOADER.GetImageN("resource", 31)->Draw(VIDEODRIVER.GetMousePos());
+                LOADER.GetImageN("resource", 31)->DrawFull(VIDEODRIVER.GetMousePos());
             else
-                LOADER.GetImageN("resource", 30)->Draw(VIDEODRIVER.GetMousePos());
+                LOADER.GetImageN("resource", 30)->DrawFull(VIDEODRIVER.GetMousePos());
         } break;
         case CURSOR_SCROLL:
         case CURSOR_MOON:
         case CURSOR_RM:
         case CURSOR_RM_PRESSED:
         {
-            LOADER.GetImageN("resource", cursor_next)->Draw(VIDEODRIVER.GetMousePos());
+            LOADER.GetImageN("resource", cursor_next)->DrawFull(VIDEODRIVER.GetMousePos());
         } break;
         case CURSOR_NONE:
         default:

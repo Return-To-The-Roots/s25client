@@ -116,17 +116,13 @@ dskGameInterface::dskGameInterface(GameWorldBase& world) : Desktop(NULL),
         GetSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
 
     Extent btSize = Extent(37, 32);
-    ctrlButton* button = AddImageButton(ID_btMap, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"));
-    button->SetBorder(false);
+    AddImageButton(ID_btMap, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 50), _("Map"))->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btOptions, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"));
-    button->SetBorder(false);
+    AddImageButton(ID_btOptions, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 192), _("Main selection"))->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btConstructionAid, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 83), _("Construction aid mode"));
-    button->SetBorder(false);
+    AddImageButton(ID_btConstructionAid, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 83), _("Construction aid mode"))->SetBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"));
-    button->SetBorder(false);
+    AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"))->SetBorder(false);
     barPos += DrawPoint(18, 24);
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
@@ -257,23 +253,23 @@ void dskGameInterface::Msg_PaintBefore()
     const DrawPoint figPadding(12, 12);
     const DrawPoint screenSize(VIDEODRIVER.GetScreenSize());
     // Rahmen zeichnen
-    borders[0]->Draw(DrawPoint(0, 0)); // oben (mit Ecken)
-    borders[1]->Draw(DrawPoint(0, screenSize.y - figPadding.y)); // unten (mit Ecken)
-    borders[2]->Draw(DrawPoint(0, figPadding.y)); // links
-    borders[3]->Draw(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
+    borders[0]->DrawFull(DrawPoint(0, 0)); // oben (mit Ecken)
+    borders[1]->DrawFull(DrawPoint(0, screenSize.y - figPadding.y)); // unten (mit Ecken)
+    borders[2]->DrawFull(DrawPoint(0, figPadding.y)); // links
+    borders[3]->DrawFull(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
 
     // The figure/statues and the button bar
     glArchivItem_Bitmap& imgFigLeftTop  = *LOADER.GetImageN("resource", 17);
     glArchivItem_Bitmap& imgFigRightTop = *LOADER.GetImageN("resource", 18);
     glArchivItem_Bitmap& imgFigLeftBot  = *LOADER.GetImageN("resource", 19);
     glArchivItem_Bitmap& imgFigRightBot = *LOADER.GetImageN("resource", 20);
-    imgFigLeftTop.Draw(figPadding);
-    imgFigRightTop.Draw(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
-    imgFigLeftBot.Draw(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
-    imgFigRightBot.Draw(screenSize - figPadding - DrawPoint(imgFigRightBot.GetSize()));
+    imgFigLeftTop.DrawFull(figPadding);
+    imgFigRightTop.DrawFull(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
+    imgFigLeftBot.DrawFull(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
+    imgFigRightBot.DrawFull(screenSize - figPadding - imgFigRightBot.GetSize());
 
     glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
-    imgButtonBar.Draw(DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
+    imgButtonBar.DrawFull(DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
 }
 
 void dskGameInterface::Msg_PaintAfter()
@@ -325,7 +321,7 @@ void dskGameInterface::Msg_PaintAfter()
     {
         const GamePlayer& player = world.GetPlayer(i);
         if(player.is_lagging)
-            LOADER.GetPlayerImage("rttr", 0)->Draw(snailPos, 30, 30, 0, 0, 0, 0,  COLOR_WHITE, player.color);
+            LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, player.color);
         snailPos.x -= 40;
     }
 
@@ -354,7 +350,7 @@ void dskGameInterface::Msg_PaintAfter()
         const DrawPoint drawPos(iconPos);
 
         iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
-        runnerImg->Draw(drawPos, 0, 0, 0, 0);
+        runnerImg->DrawFull(drawPos);
 
         if(speedStep != 1)
         {
@@ -370,7 +366,7 @@ void dskGameInterface::Msg_PaintAfter()
         const DrawPoint drawPos(iconPos);
 
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
-        magnifierImg->Draw(drawPos, 0, 0, 0, 0);
+        magnifierImg->DrawFull(drawPos);
 
         std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
         NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);

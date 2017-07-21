@@ -197,11 +197,11 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
             {
                 if (it->IsInArea(tile, distanceToPlayer, map.size))
                 {
-                    if (config.Rand(0, 100) < (*it).likelyhoodTree)
+                    if (static_cast<unsigned>(config.Rand(0, 100)) < (*it).likelyhoodTree)
                     {
                         helper.SetTree(map, objGen, tile);
                     }
-                    else if (config.Rand(0, 100) < (*it).likelyhoodStone)
+                    else if (static_cast<unsigned>(config.Rand(0, 100)) < (*it).likelyhoodStone)
                     {
                         helper.SetStone(map, objGen, tile);
                     }

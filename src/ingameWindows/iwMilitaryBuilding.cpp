@@ -108,7 +108,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
     for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it)
     {
-        LOADER.GetMapImageN(2321 + (*it)->GetRank())->Draw(curTroopsPos);
+        LOADER.GetMapImageN(2321 + (*it)->GetRank())->DrawFull(curTroopsPos);
         curTroopsPos.x += 22;
     }
 

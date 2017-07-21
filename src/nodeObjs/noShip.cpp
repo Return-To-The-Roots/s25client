@@ -203,23 +203,23 @@ void noShip::Draw(DrawPoint drawPt)
     }
 
     LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId()))->
-    Draw(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir().toUInt()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(ownerId_).color);
+        DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir().toUInt()], COLOR_WHITE, gwg->GetPlayer(ownerId_).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= STATE_EXPEDITION_LOADING && state <= STATE_EXPEDITION_DRIVING)
         LOADER.GetPlayerImage("boot_z", 40 + GAMECLIENT.GetGlobalAnimation(6, 1, 1, GetObjId() + 4))->
-        Draw(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir().toUInt()]);
+        DrawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][GetCurMoveDir().toUInt()]);
 
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
 void noShip::DrawFixed(DrawPoint drawPt, const bool draw_wares)
 {
-    LOADER.GetImageN("boot_z", (GetCurMoveDir() + 3u).toUInt() * 2 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", (GetCurMoveDir() + 3u).toUInt() * 2)->Draw(drawPt);
+    LOADER.GetImageN("boot_z", (GetCurMoveDir() + 3u).toUInt() * 2 + 1)->DrawFull(drawPt, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", (GetCurMoveDir() + 3u).toUInt() * 2)->DrawFull(drawPt);
 
     if(draw_wares)
         /// Waren zeichnen
-        LOADER.GetImageN("boot_z", 30 + (GetCurMoveDir() + 3u).toUInt())->Draw(drawPt);
+        LOADER.GetImageN("boot_z", 30 + (GetCurMoveDir() + 3u).toUInt())->DrawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
@@ -228,8 +228,8 @@ void noShip::DrawDriving(DrawPoint& drawPt)
     // Interpolieren zwischen beiden Knotenpunkten
     drawPt += CalcWalkingRelative();
 
-    LOADER.GetImageN("boot_z", 13 + (GetCurMoveDir() + 3u).toUInt() * 2)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
-    LOADER.GetImageN("boot_z", 12 + (GetCurMoveDir() + 3u).toUInt() * 2)->Draw(drawPt);
+    LOADER.GetImageN("boot_z", 13 + (GetCurMoveDir() + 3u).toUInt() * 2)->DrawFull(drawPt, COLOR_SHADOW);
+    LOADER.GetImageN("boot_z", 12 + (GetCurMoveDir() + 3u).toUInt() * 2)->DrawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -237,7 +237,7 @@ void noShip::DrawDrivingWithWares(DrawPoint& drawPt)
 {
     DrawDriving(drawPt);
     /// Waren zeichnen
-    LOADER.GetImageN("boot_z",  30 + (GetCurMoveDir() + 3u).toUInt())->Draw(drawPt);
+    LOADER.GetImageN("boot_z",  30 + (GetCurMoveDir() + 3u).toUInt())->DrawFull(drawPt);
 }
 
 void noShip::HandleEvent(const unsigned int id)

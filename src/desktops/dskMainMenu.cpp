@@ -100,7 +100,7 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 
 bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
 {
-    ctrlText* txtVersion = GetCtrl<ctrlText>(dskMenuBase::ID_txtVersion);
+    Window* txtVersion = GetCtrl<Window>(dskMenuBase::ID_txtVersion);
     if(mc.dbl_click && IsPointInRect(mc.GetPos(), txtVersion->GetBoundaryRect()))
     {
         WINDOWMANAGER.Switch(new dskTest);

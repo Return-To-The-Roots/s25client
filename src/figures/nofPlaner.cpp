@@ -178,7 +178,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
                 bobId = 253 + now_id - 41;
             else
                 bobId = 253 + now_id - 55;
-            LOADER.GetPlayerImage("rom_bobs", bobId)->Draw(drawPt, 0, 0, 0, 0, 0, 0,  COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.GetPlayerImage("rom_bobs", bobId)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(building_site->GetPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)

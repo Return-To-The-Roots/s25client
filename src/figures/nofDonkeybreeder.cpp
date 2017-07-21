@@ -54,18 +54,18 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 400)
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(drawPt);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->DrawFull(drawPt);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][4][(now_id / 70) % 8].draw(walkBasePos + DrawPoint(now_id / 100, now_id / 100), COLOR_WHITE, color);
     }
     else if(now_id < 1200)
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][3][((now_id - 400) / 70) % 8].draw(walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 2000)
-        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)->Draw(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), 0, 0, 0, 0, 0, 0, COLOR_WHITE, color);
+        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)->DrawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
     else if(now_id < 2800)
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][0][((now_id - 2000) / 70) % 8].draw(walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - now_id) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 3200)
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->Draw(drawPt);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->DrawFull(drawPt);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][1][((now_id - 2800) / 70) % 8].draw(walkBasePos + DrawPoint((3200 - now_id) / 100, (3200 - now_id) / 100), COLOR_WHITE, color);
     }
 }

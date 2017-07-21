@@ -92,7 +92,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
-                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->Draw(drawPt);
+                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->DrawFull(drawPt);
             }
             //else
             //  // Katapult schießend zeichnen
@@ -105,7 +105,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
-                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->Draw(drawPt);
+                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->DrawFull(drawPt);
             else
             {
                 step = (step - 6) / 2;
@@ -114,7 +114,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -(step);
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
-                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->Draw(drawPt);
+                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->DrawFull(drawPt);
             }
 
         } break;

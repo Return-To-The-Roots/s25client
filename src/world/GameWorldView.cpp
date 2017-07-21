@@ -277,19 +277,19 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     }
                 }
 
-                LOADER.GetMapImageN(mid)->Draw(curPos);
+                LOADER.GetMapImageN(mid)->DrawFull(curPos);
             }
 
             // Currently selected point
             if(draw_selected && selectedPt == curPt)
-                LOADER.GetMapImageN(20)->Draw(curPos);
+                LOADER.GetMapImageN(20)->DrawFull(curPos);
 
             // Wegbauzeug
             if(rb.mode == RM_DISABLED)
                 continue;
 
             if(rb.point == curPt)
-                LOADER.GetMapImageN(21)->Draw(curPos);
+                LOADER.GetMapImageN(21)->DrawFull(curPos);
 
             int altitude = GetWorld().GetNode(rb.point).altitude;
 
@@ -317,15 +317,15 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     default: id = 60; break;
                     }
 
-                    LOADER.GetMapImageN(id)->Draw(curPos);
+                    LOADER.GetMapImageN(id)->DrawFull(curPos);
                 }
 
                 // Flaggenanschluss? --> extra zeichnen
                 if(GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start)
-                    LOADER.GetMapImageN(20)->Draw(curPos);
+                    LOADER.GetMapImageN(20)->DrawFull(curPos);
 
                 if(!rb.route.empty() && rb.route.back() + 3u == Direction::fromInt(dir))
-                    LOADER.GetMapImageN(67)->Draw(curPos);
+                    LOADER.GetMapImageN(67)->DrawFull(curPos);
             }
         }
     }
@@ -444,12 +444,12 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
     {
         glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
         //Draw building quality icon
-        bm->Draw(curPos);
+        bm->DrawFull(curPos);
         //Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
             if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
-                LOADER.GetImageN("map_new", 20000)->Draw(curPos - DrawPoint(-1, bm->getHeight() + 5));
+                LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getHeight() + 5));
         }
     }
 }
@@ -475,7 +475,7 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
         || bt == BLD_HARBORBUILDING) //is it a military building?
     {
         if(gwv.GetNumSoldiersForAttack(building->GetPos())) //soldiers available for attack?
-            LOADER.GetImageN("map_new", 20000)->Draw(curPos + DrawPoint(1, -5));
+            LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
     }
 }
 
@@ -488,19 +488,19 @@ void GameWorldView::DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos)
     if(d_what == 1)
     {
         if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
-            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->Draw(curPos);
+            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->DrawFull(curPos);
     } else if(d_what == 2)
     {
         if(ai->GetAINode(pt).reachable)
-            LOADER.GetImageN("io", 32)->Draw(curPos);
+            LOADER.GetImageN("io", 32)->DrawFull(curPos);
         else
-            LOADER.GetImageN("io", 40)->Draw(curPos);
+            LOADER.GetImageN("io", 40)->DrawFull(curPos);
     } else if(d_what == 3)
     {
         if(ai->GetAINode(pt).farmed)
-            LOADER.GetImageN("io", 32)->Draw(curPos);
+            LOADER.GetImageN("io", 32)->DrawFull(curPos);
         else
-            LOADER.GetImageN("io", 40)->Draw(curPos);
+            LOADER.GetImageN("io", 40)->DrawFull(curPos);
     } else if(d_what > 3 && d_what < 13)
     {
         std::stringstream ss;

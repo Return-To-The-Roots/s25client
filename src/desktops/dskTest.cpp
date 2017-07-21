@@ -67,10 +67,11 @@ dskTest::dskTest()
     }
     RTTR_Assert(curId == ID_grpBtEnd);
 
-    ctrlButton* bt = AddTextButton(ID_btAniBg, DrawPoint(10, yPos), Extent(700, 40), TC_GREEN2, "", NormalFont);
+    DrawPoint btPos(10, yPos);
+    ctrlButton* bt = AddTextButton(ID_btAniBg, btPos, Extent(700, 40), TC_GREEN2, "", NormalFont);
     bt->SetBorder(false);
     bt->SetEnabled(false);
-    bt = AddTextButton(ID_btAni, bt->GetPos() + DrawPoint(0, 5), Extent(30, 30), TC_RED1, "", NormalFont);
+    bt = AddTextButton(ID_btAni, btPos + DrawPoint(0, 5), Extent(30, 30), TC_RED1, "", NormalFont);
     bt->SetBorder(false);
     bt->SetEnabled(false);
     bt->SetIlluminated(true);

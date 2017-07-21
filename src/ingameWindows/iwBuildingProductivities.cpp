@@ -59,7 +59,7 @@ const BuildingType bts[BUILDINGS_COUNT] =
 
 
 /// Abstand vom linken, oberen Fensterrand
-const Extent contentOffset(50, 30);
+const Extent bldProdContentOffset(50, 30);
 /// Abstand vom rechten Fensterrand
 const unsigned short right_x = 40;
 /// Horizontaler Abstand zwischen Bild und Prozentbar
@@ -79,7 +79,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
                    Extent(
                        2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x,
                        (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1)
-                   ) + contentOffset
+                   ) + bldProdContentOffset
         , _("Productivity"), LOADER.GetImageN("resource", 41)),
     player(player), percents(BLD_COUNT, 0)
 {
@@ -92,7 +92,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
             {
                 unsigned imgId = (y * 2 + x) * 2;
                 DrawPoint imgPos(x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y + percentSize.y / 2);
-                imgPos = imgPos + contentOffset;
+                imgPos = imgPos + bldProdContentOffset;
                 if (player.IsBuildingEnabled(bts[y * 2 + x]))
                 {
                     glArchivItem_Bitmap* img;
@@ -102,7 +102,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
                         img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
                     AddImage(imgId, imgPos, img, _(BUILDING_NAMES[bts[y * 2 + x]]));
                     DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y);
-                    AddPercent(imgId + 1, percentPos + contentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
+                    AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
                 } else
                 {
                     AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));

@@ -378,7 +378,7 @@ void nobHQ::Draw(DrawPoint drawPt)
         {
             glArchivItem_Bitmap_Player* bitmap = LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
             if(bitmap)
-                bitmap->Draw(flagsPos + DrawPoint(0, (i - 1) * 3), 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+                bitmap->DrawFull(flagsPos + DrawPoint(0, (i - 1) * 3), COLOR_WHITE, gwg->GetPlayer(player).color);
         }
     }
 }

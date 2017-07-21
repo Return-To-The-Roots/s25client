@@ -193,14 +193,14 @@ void noBuildingSite::Draw(DrawPoint drawPt)
     if(state == STATE_PLANING)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->Draw(drawPt);
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 451)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 450)->DrawFull(drawPt);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
     }
     else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 455)->Draw(drawPt);
-        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 456)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 455)->DrawFull(drawPt);
+        LOADER.GetNationImage(gwg->GetPlayer(player).nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
 
 
         // Waren auf der Baustelle
@@ -208,10 +208,10 @@ void noBuildingSite::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint doorPos = drawPt + DrawPoint(GetDoorPointX(), GetDoorPointY());
         for(unsigned char i = 0; i < boards; ++i)
-            LOADER.GetMapImageN(2200 + GD_BOARDS)->Draw(doorPos - DrawPoint(5, 10 + i * 4));
+            LOADER.GetMapImageN(2200 + GD_BOARDS)->DrawFull(doorPos - DrawPoint(5, 10 + i * 4));
         // Steine
         for(unsigned char i = 0; i < stones; ++i)
-            LOADER.GetMapImageN(2200 + GD_STONES)->Draw(doorPos + DrawPoint(8, -12 - i * 4));
+            LOADER.GetMapImageN(2200 + GD_STONES)->DrawFull(doorPos + DrawPoint(8, -12 - i * 4));
 
         // bis dahin gebautes Haus zeichnen
 

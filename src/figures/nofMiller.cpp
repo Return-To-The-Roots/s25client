@@ -55,7 +55,7 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 4) //hinauslaufen teil 1
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(drawPt);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->DrawFull(drawPt);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][4][now_id % 8].draw(drawPt + walkoffsets[now_id], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
@@ -66,17 +66,17 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     if( (now_id >= 8) && (now_id < 16)) //hinsetzen
     {
         LOADER.GetPlayerImage("rom_bobs", 166 + (now_id % 8))
-        ->Draw(drawPt + offsets_sitdown[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->DrawFull(drawPt + offsets_sitdown[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
     }
     if( (now_id >= 16) && (now_id < max_id - 16)) //schlafen
     {
         LOADER.GetPlayerImage("rom_bobs", 174 + (now_id % 8))
-        ->Draw(drawPt + offsets[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
     }
     if( (now_id >= max_id - 16) && (now_id < max_id - 8)) //aufstehn
     {
         LOADER.GetPlayerImage("rom_bobs", 166 + 7 - (now_id % 8))
-        ->Draw(drawPt + offsets_sitdown[workplace->GetNation()], 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+        ->DrawFull(drawPt + offsets_sitdown[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
     }
     if( (now_id >= max_id - 8) && (now_id < max_id - 4)) //zurücklaufen teil 1
     {
@@ -84,7 +84,7 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     }
     if( (now_id >= max_id - 4) && (now_id < max_id)) //zurücklaufen teil 2
     {
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->Draw(drawPt);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_MILL + 4)->DrawFull(drawPt);
         LOADER.bob_jobs_cache[workplace->GetNation()][JOB_MILLER][1][now_id % 8].draw(drawPt + walkoffsets[7 - (now_id % 8)], COLOR_WHITE, gwg->GetPlayer(player).color);
         rotate_sails = false;
     }
@@ -92,9 +92,9 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     if (rotate_sails)
     {
         // Flügel der Mühle
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * (42 + ((now_id + 4) % 8)))->Draw(drawPt);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * (42 + ((now_id + 4) % 8)))->DrawFull(drawPt);
         // Schatten der Flügel
-        LOADER.GetNationImage(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + (5 * (42 + ((now_id + 4) % 8))) + 1)->DrawFull(drawPt, COLOR_SHADOW);
 
         // Mühlensound abspielen in zufälligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
@@ -109,9 +109,9 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     else
     {
         // Flügel der Mühle
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49)->Draw(drawPt);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49)->DrawFull(drawPt);
         // Schatten der Flügel
-        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49 + 1)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * 49 + 1)->DrawFull(drawPt, COLOR_SHADOW);
     }
 
 }

@@ -139,7 +139,7 @@ void ctrlButton::Draw_()
                 glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
                 glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
             }
-            LOADER.GetImageN("io", texture)->Draw(GetDrawPos(), 0, 0, 0, 0, GetSize().x, GetSize().y, color);
+            LOADER.GetImageN("io", texture)->DrawPart(Rect(GetDrawPos(), GetSize()), DrawPoint::all(0), color);
             if(isIlluminated)
                 glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         }

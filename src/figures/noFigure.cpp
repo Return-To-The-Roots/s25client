@@ -293,7 +293,7 @@ void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Directi
 {
     glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(900 + (dir + 3u).toUInt() * 8 + anistep);
     if(bitmap)
-        bitmap->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->DrawFull(drawPt, COLOR_SHADOW);
 }
 
 void noFigure::WalkFigure()
@@ -883,7 +883,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned in
     if(!waiting_for_free_node || pause_walked_gf)
         drawPt += CalcFigurRelative();
 
-    LOADER.GetPlayerImage(file, id + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.GetPlayerImage(file, id + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
@@ -902,9 +902,9 @@ void noFigure::DrawWalking(DrawPoint drawPt)
                 drawPt += CalcFigurRelative();
 
             // Esel
-            LOADER.GetMapImageN(2000 + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->Draw(drawPt);
+            LOADER.GetMapImageN(2000 + (GetCurMoveDir() + 3u).toUInt() * 8 + ani_step)->DrawFull(drawPt);
             // Schatten des Esels
-            LOADER.GetMapImageN(2048 + GetCurMoveDir().toUInt() % 3)->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+            LOADER.GetMapImageN(2048 + GetCurMoveDir().toUInt() % 3)->DrawFull(drawPt, COLOR_SHADOW);
         } return;
         case JOB_CHARBURNER:
         {

@@ -93,5 +93,5 @@ void ctrlCheck::Draw_()
         Draw3D(Rect(boxPos, boxSize, boxSize), tc, 2);
 
     if(check)
-        LOADER.GetImageN("io", 32)->Draw(boxPos + DrawPoint(boxSize, boxSize) / 2);
+        LOADER.GetImageN("io", 32)->DrawFull(boxPos + DrawPoint(boxSize, boxSize) / 2);
 }

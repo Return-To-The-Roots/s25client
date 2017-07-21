@@ -108,11 +108,11 @@ void noStaticObject::Draw(DrawPoint drawPt)
     RTTR_Assert(bitmap);
 
     // Bild zeichnen
-    bitmap->Draw(drawPt);
+    bitmap->DrawFull(drawPt);
 
     // Schatten zeichnen
     if(shadow)
-        shadow->Draw(drawPt, 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        shadow->DrawFull(drawPt, COLOR_SHADOW);
 }
 
 /**

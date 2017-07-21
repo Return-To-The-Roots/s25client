@@ -345,7 +345,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
         group->AddTextButton(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont);
     else
         group->AddTextDeepening(1, DrawPoint(20, cy), Extent(150, 22), tc, name, NormalFont, COLOR_YELLOW);
-    ctrlBaseText* text = GetCtrl<ctrlBaseText>(1);
+    ctrlBaseText* text = group->GetCtrl<ctrlBaseText>(1);
 
     // Is das der Host? Dann farblich markieren
     if(player.isHost)

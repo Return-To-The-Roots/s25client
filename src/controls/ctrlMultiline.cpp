@@ -191,7 +191,7 @@ void ctrlMultiline::Resize(const Extent& newSize)
     ctrlScrollBar* scrollBar = GetCtrl<ctrlScrollBar>(0);
     scrollBar->SetPageSize(maxNumVisibleLines);
     scrollBar->SetHeight(GetSize().y);
-    scrollBar->SetPos(DrawPoint(GetSize().y - SCROLLBAR_WIDTH, 0));
+    scrollBar->SetPos(DrawPoint(GetSize().x - SCROLLBAR_WIDTH, 0));
     // Recalc only if:
     // - we increased the size or decreased beyond content width
     // - scrollbar requirement has changed (e.g. now need one but did not need it before)

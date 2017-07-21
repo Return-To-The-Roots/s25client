@@ -54,7 +54,7 @@ void Minimap::CreateMapTexture()
 void Minimap::Draw(const Rect& rect)
 {
     BeforeDrawing();
-    map.Draw(rect);
+    map.DrawFull(rect);
 }
 
 void Minimap::BeforeDrawing()

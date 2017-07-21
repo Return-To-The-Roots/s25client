@@ -59,7 +59,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
     {
         // Neue Selektierung
-        mouseover = (mc.y - (GetPos().y + 2) ) / font->getHeight();
+        mouseover = (mc.y - (GetDrawPos().y + 2) ) / font->getHeight();
         const std::string itemTxt = GetItemText(mouseover);
         tooltip_.ShowTooltip((font->getWidth(itemTxt) > GetListDrawArea().getSize().x) ? itemTxt : "");
         return true;

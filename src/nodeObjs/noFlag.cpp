@@ -146,7 +146,7 @@ void noFlag::Draw(DrawPoint drawPt)
     for(unsigned i = 8; i; --i)
     {
         if(wares[i - 1])
-            LOADER.GetMapImageN(2200 + wares[i - 1]->type)->Draw(drawPt + WARES_POS[i - 1]);
+            LOADER.GetMapImageN(2200 + wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
     }
 }
 

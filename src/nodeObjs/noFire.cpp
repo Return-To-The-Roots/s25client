@@ -78,8 +78,8 @@ void noFire::Draw(DrawPoint drawPt)
     if(id < FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]*2/3)
     {
         // Loderndes Feuer
-        LOADER.GetMapImageN(2500 + size * 8 + id % 8)->Draw(drawPt, 0, 0, 0, 0, 0, 0);
-        LOADER.GetMapImageN(2530 + size * 8 + id % 8)->Draw(drawPt, 0, 0, 0, 0, 0, 0, 0xC0101010);
+        LOADER.GetMapImageN(2500 + size * 8 + id % 8)->DrawFull(drawPt);
+        LOADER.GetMapImageN(2530 + size * 8 + id % 8)->DrawFull(drawPt, 0xC0101010);
 
         // Feuersound abspielen in zufälligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
@@ -94,7 +94,7 @@ void noFire::Draw(DrawPoint drawPt)
     else
     {
         // Schutt
-        LOADER.GetMapImageN(2524 + size)->Draw(drawPt, 0, 0, 0, 0, 0, 0);
+        LOADER.GetMapImageN(2524 + size)->DrawFull(drawPt);
     }
 }
 

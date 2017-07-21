@@ -96,7 +96,7 @@ void iwShip::Msg_PaintAfter()
     sprintf(str, "%u/%u", ship_id + 1, owner.GetShipCount());
     NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
-    LOADER.GetImageN("boot_z", 12)->Draw(GetDrawPos() + DrawPoint(138, 117));
+    LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
 
     // Expeditions-Buttons malen?
     if(ship->IsWaitingForExpeditionInstructions())
@@ -249,7 +249,7 @@ void iwShip::DrawCargo()
                 job_bobs_id += NATION_RTTR_TO_S2[gwv.GetWorld().GetPlayer(player).nation] * 6;
 
             if (i == JOB_PACKDONKEY)
-                LOADER.GetMapImageN(2016)->Draw(drawPt);
+                LOADER.GetMapImageN(2016)->DrawFull(drawPt);
             else if(i == JOB_BOATCARRIER)
                 LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, drawPt, owner.color);
             else
@@ -279,7 +279,7 @@ void iwShip::DrawCargo()
             if(draw_id == GD_SHIELDROMANS)
                 draw_id = SHIELD_TYPES[owner.nation];
 
-            LOADER.GetMapImageN(2200 + draw_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0);
+            LOADER.GetMapImageN(2200 + draw_id)->DrawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

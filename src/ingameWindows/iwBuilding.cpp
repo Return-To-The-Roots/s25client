@@ -106,7 +106,7 @@ void iwBuilding::Msg_PaintBefore()
     glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
 
     if(bitmap)
-        bitmap->Draw(GetDrawPos() + DrawPoint(117, 114), 0, 0, 0, 0, 0, 0, COLOR_SHADOW);
+        bitmap->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Haus unbesetzt ggf ausblenden
     GetCtrl<ctrlText>(10)->SetVisible(!building->HasWorker());
@@ -126,7 +126,7 @@ void iwBuilding::Msg_PaintAfter()
             for(unsigned char z = 0; z < 2; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(curPos, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
+                bitmap->DrawFull(curPos, (z < building->GetWares(i) ? 0xFFFFFFFF : 0xFF404040) );
                 curPos.x += 24;
             }
         }
@@ -150,7 +150,7 @@ void iwBuilding::Msg_PaintAfter()
             for(unsigned char z = 0; z < wares_count; ++z)
             {
                 glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].wares_needed[i]);
-                bitmap->Draw(waresPos, 0, 0, 0, 0, 0, 0, (z < building->GetWares(i) ? COLOR_WHITE : 0xFF404040) );
+                bitmap->DrawFull(waresPos, (z < building->GetWares(i) ? COLOR_WHITE : 0xFF404040) );
                 waresPos.x += 24;
             }
 

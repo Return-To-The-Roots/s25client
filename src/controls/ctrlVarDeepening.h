@@ -20,7 +20,7 @@
 #pragma once
 
 #include "controls/ctrlDeepening.h"
-#include "controls/ctrlbaseVarText.h"
+#include "controls/ctrlBaseVarText.h"
 #include <cstdarg>
 class Window;
 class glArchivItem_Font;

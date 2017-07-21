@@ -288,20 +288,20 @@ void dskCredits::Msg_PaintAfter()
     transparency = transparency << 24;
 
     // draw text
-    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
 
     boost::array<unsigned int, 2> columnToY = {{150, 150}};
 
     for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
-        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, (COLOR_YELLOW & 0x00FFFFFF) | transparency);
+        LargeFont->Draw(DrawPoint(60 + line->column * 350, columnToY[line->column]), line->line, 0, SetAlpha(COLOR_YELLOW, transparency));
         columnToY[line->column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, (COLOR_RED & 0x00FFFFFF) | transparency);
+    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
 
     if (itCurEntry->pic)
-        itCurEntry->pic->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), 0, 0, 0, 0, 0, 0, (COLOR_WHITE & 0x00FFFFFF) | transparency);
+        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), SetAlpha(COLOR_WHITE, transparency));
 }
 
 bool dskCredits::Close()
@@ -328,8 +328,3 @@ void dskCredits::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
 {
     Close();
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// EOF
-///////////////////////////////////////////////////////////////////////////////
-

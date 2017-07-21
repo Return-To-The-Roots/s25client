@@ -52,7 +52,7 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
 {
     // Bild
-    LOADER.GetMapImageN(map_id)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawColor());
+    LOADER.GetMapImageN(map_id)->DrawFull(drawPt, GetDrawColor());
     // Schatten
-    LOADER.GetMapImageN(map_id + 100)->Draw(drawPt, 0, 0, 0, 0, 0, 0, GetDrawShadowColor());
+    LOADER.GetMapImageN(map_id + 100)->DrawFull(drawPt, GetDrawShadowColor());
 }

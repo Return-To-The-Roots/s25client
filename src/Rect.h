@@ -30,6 +30,7 @@ struct Rect
     Rect(const Position& lt, unsigned width, unsigned height);
     Rect(const Position& lt, const Extent& size);
     Position getOrigin() const { return Position(left, top); }
+    Position getEndPt() const { return Position(right, bottom); }
     Extent getSize() const;
     void setSize(const Extent& newSize);
     void move(const Position& offset);
