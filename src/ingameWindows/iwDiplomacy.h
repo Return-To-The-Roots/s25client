@@ -36,7 +36,7 @@ class iwDiplomacy : public IngameWindow
         GameCommandFactory& gcFactory;
         void Msg_PaintBefore() override;
         void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 /// Kleines Fenster, über das einem Spieler ein neues Bündnis angeboten werden kann
@@ -48,7 +48,7 @@ class iwSuggestPact : public IngameWindow
 public:
     iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory);
 
-    void Msg_ButtonClick(const unsigned int ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

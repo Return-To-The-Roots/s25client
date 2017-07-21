@@ -104,7 +104,7 @@ void noBaseBuilding::Destroy_noBaseBuilding()
         noFlag* flag = GetFlag();
         if(flag)
         {
-            unsigned int percent_index = 0;
+            unsigned percent_index = 0;
 
             // wenn Rückerstattung aktiv ist, entsprechende Prozentzahl wählen
             if(settings.isEnabled(AddonId::REFUND_MATERIALS))
@@ -114,12 +114,12 @@ void noBaseBuilding::Destroy_noBaseBuilding()
                 percent_index = 2;
 
             // wieviel kriegt man von jeder Ware wieder?
-            const unsigned int percents[5] = { 0, 25, 50, 75, 100 };
-            const unsigned int percent = 10 * percents[percent_index];
+            const unsigned percents[5] = { 0, 25, 50, 75, 100 };
+            const unsigned percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
-            unsigned int boards = (percent * BUILDING_COSTS[nation][type_].boards) / 1000;
-            unsigned int stones = (percent * BUILDING_COSTS[nation][type_].stones) / 1000;
+            unsigned boards = (percent * BUILDING_COSTS[nation][type_].boards) / 1000;
+            unsigned stones = (percent * BUILDING_COSTS[nation][type_].stones) / 1000;
 
             GoodType goods[2] = {GD_BOARDS, GD_STONES};
             bool which = 0;

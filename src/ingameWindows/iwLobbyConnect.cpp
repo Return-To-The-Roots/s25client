@@ -121,13 +121,13 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
     }
 }
 
-void iwLobbyConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
+void iwLobbyConnect::Msg_EditChange(const unsigned  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(0, COLOR_RED, true);
 }
 
-void iwLobbyConnect::Msg_EditEnter(const unsigned int ctrl_id)
+void iwLobbyConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
     ctrlEdit* user = GetCtrl<ctrlEdit>(1);
     ctrlEdit* pass = GetCtrl<ctrlEdit>(3);
@@ -154,7 +154,7 @@ void iwLobbyConnect::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -202,7 +202,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -221,7 +221,7 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  */
-void iwLobbyConnect::SetText(const std::string& text, unsigned int color, bool button)
+void iwLobbyConnect::SetText(const std::string& text, unsigned color, bool button)
 {
     ctrlText* t = GetCtrl<ctrlText>(9);
     ctrlButton* b = GetCtrl<ctrlButton>(7);

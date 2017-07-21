@@ -27,7 +27,7 @@ class glArchivItem_Font;
 class ctrlComboBox : public Window
 {
     public:
-        ctrlComboBox(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
+        ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short max_list_height, bool readonly);
 
         void Resize(const Extent& newSize) override;
 
@@ -47,7 +47,7 @@ class ctrlComboBox : public Window
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
 
-        void Msg_ListSelectItem(const unsigned int ctrl_id, const int selection) override;
+        void Msg_ListSelectItem(const unsigned ctrl_id, const int selection) override;
 
     protected:
         void Draw_() override;

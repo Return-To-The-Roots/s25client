@@ -1547,7 +1547,7 @@ void GamePlayer::Surrender()
         gwg->GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
 }
 
-void GamePlayer::SetStatisticValue(StatisticType type, unsigned int value)
+void GamePlayer::SetStatisticValue(StatisticType type, unsigned value)
 {
     statisticCurrentData[type] = value;
 }
@@ -1591,12 +1591,12 @@ void GamePlayer::CalcStatistics()
 {
     // Waren aus der Inventur zählen
     statisticCurrentData[STAT_MERCHANDISE] = 0;
-    for (unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
+    for (unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
         statisticCurrentData[STAT_MERCHANDISE] += global_inventory.goods[i];
 
     // Bevölkerung aus der Inventur zählen
     statisticCurrentData[STAT_INHABITANTS] = 0;
-    for (unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
+    for (unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
         statisticCurrentData[STAT_INHABITANTS] += global_inventory.people[i];
 
     // Militär aus der Inventur zählen
@@ -1621,11 +1621,11 @@ void GamePlayer::StatisticStep()
     CalcStatistics();
 
     // 15-min-Statistik ein Feld weiterschieben
-    for (unsigned int i = 0; i < STAT_TYPE_COUNT; ++i)
+    for (unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
     {
         statistic[STAT_15M].data[i][incrStatIndex(statistic[STAT_15M].currentIndex)] = statisticCurrentData[i];
     }
-    for (unsigned int i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+    for (unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
     {
         statistic[STAT_15M].merchandiseData[i][incrStatIndex(statistic[STAT_15M].currentIndex)] = statisticCurrentMerchandiseData[i];
     }
@@ -1641,13 +1641,13 @@ void GamePlayer::StatisticStep()
         if (statistic[t].counter == 4)
         {
             statistic[t].counter = 0;
-            for (unsigned int i = 0; i < STAT_TYPE_COUNT; ++i)
+            for (unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
             {
                 statistic[t + 1].data[i][incrStatIndex(statistic[t + 1].currentIndex)] = statisticCurrentData[i];
             }
 
             // Summe für den Zeitraum berechnen (immer 4 Zeitschritte der jeweils kleineren Statistik)
-            for (unsigned int i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+            for (unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
             {
                 statistic[t + 1].merchandiseData[i][incrStatIndex(statistic[t + 1].currentIndex)] = statisticCurrentMerchandiseData[i]
                         + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 1)]
@@ -1661,7 +1661,7 @@ void GamePlayer::StatisticStep()
     }
 
     // Warenstatistikzähler nullen
-    for (unsigned int i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+    for (unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
     {
         statisticCurrentMerchandiseData[i] = 0;
     }
@@ -2241,7 +2241,7 @@ bool GamePlayer::CanBuildCatapult() const
 
     BuildingCount bc = GetBuildingCount();
 
-    unsigned int max = 0;
+    unsigned max = 0;
     // proportional?
     if(gwg->GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {

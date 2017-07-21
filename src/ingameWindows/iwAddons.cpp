@@ -67,7 +67,7 @@ iwAddons::~iwAddons()
 {
 }
 
-void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -80,9 +80,9 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
                 Close();
 
             // Einstellungen in ADDONMANAGER übertragen
-            for(unsigned int i = 0; i < ggs.getNumAddons(); ++i)
+            for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
             {
-                unsigned int status;
+                unsigned status;
                 const Addon* addon = ggs.getAddon(i, status);
 
                 if(!addon)
@@ -120,9 +120,9 @@ void iwAddons::Msg_ButtonClick(const unsigned int ctrl_id)
         case 3: // Load S2 Defaults
         {
             // Standardeinstellungen aufs Fenster übertragen
-            for(unsigned int i = 0; i < ggs.getNumAddons(); ++i)
+            for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
             {
-                unsigned int status;
+                unsigned status;
                 const Addon* addon = ggs.getAddon(i, status);
 
                 if(!addon)
@@ -142,21 +142,21 @@ void iwAddons::UpdateView(const unsigned short selection)
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
     unsigned short y = 90;
     unsigned short numAddonsInCurCategory = 0;
-    for(unsigned int i = 0; i < ggs.getNumAddons(); ++i)
+    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
-        unsigned int id = 10 + 20 * (ggs.getNumAddons() - i - 1);
-        unsigned int status;
+        unsigned id = 10 + 20 * (ggs.getNumAddons() - i - 1);
+        unsigned status;
         const Addon* addon = ggs.getAddon(i, status);
 
         if(!addon)
             continue;
-        unsigned int groups = addon->getGroups();
+        unsigned groups = addon->getGroups();
 
         if( (groups & selection) == selection)
             ++numAddonsInCurCategory;
         //hide addon's gui if addon is beyond selected group or is beyond current page scope
         if( ((groups & selection) != selection) || numAddonsInCurCategory < scrollbar->GetScrollPos() + 1
-                || numAddonsInCurCategory > (unsigned int)(scrollbar->GetScrollPos() + scrollbar->GetPageSize()) + 1 )
+                || numAddonsInCurCategory > (unsigned)(scrollbar->GetScrollPos() + scrollbar->GetPageSize()) + 1 )
         {
             addon->hideGui(this, id);
             continue;
@@ -172,7 +172,7 @@ void iwAddons::UpdateView(const unsigned short selection)
     }
 }
 
-void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -189,7 +189,7 @@ void iwAddons::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selec
 /**
  *  get scrollbar notification
  */
-void iwAddons::Msg_ScrollChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
+void iwAddons::Msg_ScrollChange(const unsigned  /*ctrl_id*/, const unsigned short  /*position*/)
 {
     ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(5);
     UpdateView(optiongroup->GetSelection());

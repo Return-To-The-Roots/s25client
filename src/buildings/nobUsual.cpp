@@ -265,7 +265,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         DrawFull(drawPt + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE]);
 }
 
-void nobUsual::HandleEvent(const unsigned int id)
+void nobUsual::HandleEvent(const unsigned id)
 {
     if(id)
     {

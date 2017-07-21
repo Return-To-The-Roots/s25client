@@ -111,12 +111,12 @@ void iwDistribution::TransmitSettings()
     }
 }
 
-void iwDistribution::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
+void iwDistribution::Msg_Group_ProgressChange(const unsigned  /*group_id*/, const unsigned  /*ctrl_id*/, const unsigned short  /*position*/)
 {
     settings_changed = true;
 }
 
-void iwDistribution::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void iwDistribution::Msg_Timer(const unsigned  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte

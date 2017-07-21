@@ -148,7 +148,7 @@ class dskGameInterface :
         /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
         void UpdatePostIcon(const unsigned postmessages_count, bool showPigeon);
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
         void Msg_PaintBefore() override;
         void Msg_PaintAfter() override;
         bool Msg_LeftDown(const MouseCoords& mc) override;

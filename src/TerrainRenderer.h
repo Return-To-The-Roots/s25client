@@ -42,7 +42,7 @@ public:
     void GenerateOpenGL(const GameWorldViewer& gwv);
 
     /// Draws the map between the given points. Optionally returns percentage of water drawn
-    void Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned int* water) const;
+    void Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned* water) const;
 
     /// Converts given point into a MapPoint (0 <= x < width and 0 <= y < height)
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
@@ -65,7 +65,7 @@ private:
     struct MapTile
     {
         unsigned tileOffset;
-        unsigned int count;
+        unsigned count;
         PointI posOffset;
         MapTile(unsigned tileOffset, PointI posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
     };
@@ -129,9 +129,9 @@ private:
     std::vector<Triangle> gl_texcoords;
     std::vector<ColorTriangle> gl_colors;
 
-    unsigned int vbo_vertices;
-    unsigned int vbo_texcoords;
-    unsigned int vbo_colors;
+    unsigned vbo_vertices;
+    unsigned vbo_texcoords;
+    unsigned vbo_colors;
     bool vboBuffersUsed;
 
     std::vector<Borders> borders;

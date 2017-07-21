@@ -407,7 +407,7 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
 
-    for (unsigned int i = 0; modes[i]; ++i)
+    for (unsigned i = 0; modes[i]; ++i)
     {
         VideoMode vm(modes[i]->w, modes[i]->h);
         if(!helpers::contains(video_modes, vm))

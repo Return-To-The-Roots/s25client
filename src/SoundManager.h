@@ -45,7 +45,7 @@ class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLonge
         //////////////////////////////////
 
         /// Wann wurde der letzte Vogelzwitschersound abgespielt?
-        unsigned int last_bird;
+        unsigned last_bird;
         /// Intervall zwischen den Vogelzwitschern
         unsigned bird_interval;
         /// Play-ID fürs Meeresrauschen
@@ -58,7 +58,7 @@ class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLonge
         ~SoundManager() override;
 
         /// Versucht ggf. Objekt-Sound abzuspielen
-        void PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned int id, unsigned char volume = 255);
+        void PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume = 255);
         /// Wenn die Arbeit (wo er Sounds von sich gegeben hat) von einem Objekt fertig ist bzw. abgebrochen wurde,
         /// wird diese Funktion aufgerufen, die alle Sounds von diesem Objekt entfernt
         void WorkingFinished(noBase* const obj);

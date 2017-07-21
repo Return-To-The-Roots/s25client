@@ -806,7 +806,7 @@ void WindowManager::Close(const IngameWindow* window)
  *
  *  @param[in] id ID des/der Fenster(s) welche(s) geschlossen werden soll
  */
-void WindowManager::Close(unsigned int id)
+void WindowManager::Close(unsigned id)
 {
     IgwListIterator it = std::find_if(windows.begin(), windows.end(), IsWindowId(id));
     while (it != windows.end())
@@ -904,7 +904,7 @@ void WindowManager::DrawToolTip()
         if(right_edge > VIDEODRIVER.GetScreenWidth() )
             ttPos.x = lastMousePos.x - spacing - text_width;
 
-        unsigned int numLines = 1;
+        unsigned numLines = 1;
         size_t pos = curTooltip.find('\n');
         while(pos != std::string::npos)
         {

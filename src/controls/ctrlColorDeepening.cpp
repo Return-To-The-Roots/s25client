@@ -19,11 +19,11 @@
 #include "ctrlColorDeepening.h"
 
 ctrlColorDeepening::ctrlColorDeepening(Window* parent,
-                                       unsigned int id,
+                                       unsigned id,
                                        DrawPoint pos,
                                        const Extent& size,
                                        TextureColor tc,
-                                       unsigned int fillColor):
+                                       unsigned fillColor):
     ctrlDeepening(parent, id, pos, size, tc),
     ctrlBaseColor(fillColor)
 {

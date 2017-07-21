@@ -86,7 +86,7 @@ class nofCarrier : public noFigure
         /// Make the carrier loose/destroy the ware if he has any
         void LooseWare();
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht ansonsten wieder in die Mitte
         void LookForWares();

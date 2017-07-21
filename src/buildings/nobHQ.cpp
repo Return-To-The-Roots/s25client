@@ -384,7 +384,7 @@ void nobHQ::Draw(DrawPoint drawPt)
 }
 
 
-void nobHQ::HandleEvent(const unsigned int id)
+void nobHQ::HandleEvent(const unsigned id)
 {
     HandleBaseEvent(id);
 }

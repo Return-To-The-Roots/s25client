@@ -190,12 +190,12 @@ bool GameCommandFactory::StartExpedition(const MapPoint pt)
     return AddGC( new gc::StartExpedition(pt) );
 }
 
-bool GameCommandFactory::FoundColony(unsigned int shipID)
+bool GameCommandFactory::FoundColony(unsigned shipID)
 {
     return AddGC( new gc::ExpeditionCommand(gc::ExpeditionCommand::FOUNDCOLONY, shipID) );
 }
 
-bool GameCommandFactory::TravelToNextSpot(ShipDirection direction, unsigned int shipID)
+bool GameCommandFactory::TravelToNextSpot(ShipDirection direction, unsigned shipID)
 {
     gc::ExpeditionCommand::Action action;
     switch (ShipDirection::Type(direction))
@@ -224,7 +224,7 @@ bool GameCommandFactory::TravelToNextSpot(ShipDirection direction, unsigned int 
     return AddGC( new gc::ExpeditionCommand(action, shipID) );
 }
 
-bool GameCommandFactory::CancelExpedition(unsigned int shipID)
+bool GameCommandFactory::CancelExpedition(unsigned shipID)
 {
     return AddGC( new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID) );
 }

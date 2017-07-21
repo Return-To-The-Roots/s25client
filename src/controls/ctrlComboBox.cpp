@@ -26,7 +26,7 @@
 #include "ogl/glArchivItem_Sound.h"
 
 ctrlComboBox::ctrlComboBox(Window* parent,
-                           unsigned int id,
+                           unsigned id,
                            const DrawPoint& pos,
                            const Extent& size,
                            TextureColor tc,
@@ -66,7 +66,7 @@ void ctrlComboBox::Resize(const Extent& newSize)
     Extent listSize(newSize.x, 4);
 
     // Langsam die Höhe der maximalen annähern
-    for(unsigned int i = 0; i < list->GetLineCount(); ++i)
+    for(unsigned i = 0; i < list->GetLineCount(); ++i)
     {
         // zu große geworden?
         listSize.y += font->getHeight();
@@ -198,7 +198,7 @@ Rect ctrlComboBox::GetFullDrawRect(const ctrlList* list)
     return myRect;
 }
 
-void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
+void ctrlComboBox::Msg_ListSelectItem(const unsigned ctrl_id, const int selection)
 {
     // Liste wieder ausblenden
     ShowList(false);

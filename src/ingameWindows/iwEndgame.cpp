@@ -35,7 +35,7 @@ iwEndgame::iwEndgame()
 }
 
 
-void iwEndgame::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwEndgame::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

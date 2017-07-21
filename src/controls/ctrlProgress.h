@@ -27,7 +27,7 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
 {
     public:
         ctrlProgress(Window* parent,
-                     const unsigned int id,
+                     const unsigned id,
                      const DrawPoint& pos,
                      const Extent& size,
                      const TextureColor tc,
@@ -35,7 +35,7 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
                      unsigned short button_plus,
                      const unsigned short maximum,
                      const Extent& padding,
-                     const unsigned int force_color,
+                     const unsigned force_color,
                      const std::string& tooltip,
                      const std::string& button_minus_tooltip = NULL,
                      const std::string& button_plus_tooltip = NULL,
@@ -45,7 +45,7 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
         void SetPosition(unsigned short position);
         const unsigned short& GetPosition() const { return position; }
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
         bool Msg_LeftUp(const MouseCoords& mc) override;
         bool Msg_WheelUp(const MouseCoords& mc) override;
@@ -65,7 +65,7 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
         Extent padding_;
 
         /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
-        unsigned int force_color;
+        unsigned force_color;
 
         unsigned CalcBarWidth() const;
 };

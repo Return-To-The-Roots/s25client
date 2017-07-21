@@ -56,7 +56,7 @@ void nobStorehouse::Draw(DrawPoint drawPt)
 }
 
 
-void nobStorehouse::HandleEvent(const unsigned int id)
+void nobStorehouse::HandleEvent(const unsigned id)
 {
     HandleBaseEvent(id);
 }

@@ -62,7 +62,7 @@ iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
 }
 
 
-void iwLobbyServerInfo::Msg_Timer(const unsigned int ctrl_id)
+void iwLobbyServerInfo::Msg_Timer(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

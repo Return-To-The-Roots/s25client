@@ -35,9 +35,9 @@ public:
 
 
 protected:
-    void Msg_Timer(const unsigned int ctrl_id) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
     void Msg_PaintBefore() override;
-    void Msg_ButtonClick(const unsigned int ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
     void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
     /**

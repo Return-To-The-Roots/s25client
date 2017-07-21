@@ -45,7 +45,7 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
     AddImageButton( 4, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 }
 
-void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -83,9 +83,9 @@ void iwBuildingSite::Msg_PaintAfter()
     DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
-        unsigned int wares_count = 0;
-        unsigned int wares_delivered = 0;
-        unsigned int wares_used = 0;
+        unsigned wares_count = 0;
+        unsigned wares_delivered = 0;
+        unsigned wares_used = 0;
 
         if(i == 0)
         {

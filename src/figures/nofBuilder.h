@@ -61,7 +61,7 @@ class nofBuilder : public noFigure
         void GoalReached() override;
         void Walked() override;
         void AbrogateWorkplace() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         /// In neue Richtung laufen (Freewalk)
         void StartFreewalk();

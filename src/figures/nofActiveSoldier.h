@@ -128,7 +128,7 @@ class nofActiveSoldier : public nofSoldier
         void Draw(DrawPoint drawPt) override;
 
         /// Event handling
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         /// Informs the different things that we are not coming anymore
         virtual void InformTargetsAboutCancelling();

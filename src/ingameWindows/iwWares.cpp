@@ -30,7 +30,7 @@
 #include "gameData/ShieldConsts.h"
 
 //167, 416
-iwWares::iwWares(unsigned int id, const DrawPoint& pos,
+iwWares::iwWares(unsigned id, const DrawPoint& pos,
                  const Extent& size,
                  const std::string& title,
                  bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player)
@@ -182,7 +182,7 @@ iwWares::iwWares(unsigned int id, const DrawPoint& pos,
     wares.SetVisible(true);
 }
 
-void iwWares::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -213,7 +213,7 @@ void iwWares::Msg_PaintBefore()
     {
         unsigned count = (curPage_ == pageWares) ? 36 : 32;
 
-        for(unsigned int i = 0; i < count; ++i)
+        for(unsigned i = 0; i < count; ++i)
         {
             ctrlVarText* text = group->GetCtrl<ctrlVarText>(600 + i);
             if(text)

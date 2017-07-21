@@ -74,13 +74,13 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     GAMECLIENT.SetInterface(this);
 }
 
-void iwDirectIPConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
+void iwDirectIPConnect::Msg_EditChange(const unsigned  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(EMPTY_STRING, COLOR_RED, true);
 }
 
-void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
+void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -109,7 +109,7 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -150,7 +150,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -165,7 +165,7 @@ void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const 
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  */
-void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, bool button)
+void iwDirectIPConnect::SetText(const std::string& text, unsigned color, bool button)
 {
     // Text setzen
     GetCtrl<ctrlText>(6)->SetTextColor(color);

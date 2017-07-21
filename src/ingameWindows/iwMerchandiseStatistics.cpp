@@ -28,7 +28,7 @@
 #include "gameData/const_gui_ids.h"
 
 // Farben für die einzelnen Balken
-const unsigned int iwMerchandiseStatistics::BarColors[14] =
+const unsigned iwMerchandiseStatistics::BarColors[14] =
 {
     0xFF00D3F7, // türkis
     0xFFFB9E49, // gelb
@@ -106,7 +106,7 @@ iwMerchandiseStatistics::~iwMerchandiseStatistics()
 
 }
 
-void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch (ctrl_id)
     {
@@ -130,7 +130,7 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -182,7 +182,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     unsigned short max = 1;
     for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
     {
-        for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
+        for (unsigned i = 0; i < STAT_STEP_COUNT; ++i)
         {
             if (max < stat.merchandiseData[(*it) - 1][i])
             {
@@ -205,7 +205,7 @@ void iwMerchandiseStatistics::DrawStatistic()
         //DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
 
 
-        for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
+        for (unsigned i = 0; i < STAT_STEP_COUNT; ++i)
         {
             DrawPoint drawPos = topLeft;
             drawPos.x += (STAT_STEP_COUNT - i) * stepX;

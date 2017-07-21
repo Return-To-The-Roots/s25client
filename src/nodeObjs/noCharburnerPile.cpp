@@ -109,7 +109,7 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
             LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))->DrawFull(drawPt);
 
             // Dann Qualm zeichnen
-            unsigned int globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
+            unsigned globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
             LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
             LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2,   06), 0x99EEEEEE);
             LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25,  11), 0x99EEEEEE);
@@ -128,7 +128,7 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
     }
 }
 
-void noCharburnerPile::HandleEvent(const unsigned int  /*id*/)
+void noCharburnerPile::HandleEvent(const unsigned  /*id*/)
 {
     // Smoldering is over
     // Pile is ready for the remove of the cover

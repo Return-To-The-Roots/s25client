@@ -27,7 +27,7 @@ class iwMsgbox : public IngameWindow
         /// Buttons, die auf der Box erscheinen sollen
         MsgboxButton button;
         /// ID für die Msgbox, um unterschiedliche
-        unsigned int msgboxid;
+        unsigned msgboxid;
 
         /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
         std::vector<std::string> strings;
@@ -48,7 +48,7 @@ class iwMsgbox : public IngameWindow
 
         void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwMSGBOX_H_INCLUDED

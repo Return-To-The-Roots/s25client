@@ -138,7 +138,7 @@ iwMapDebug::~iwMapDebug()
     delete printer;
 }
 
-void iwMapDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int select)
+void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int select)
 {
     if(ctrl_id == 1)
     {
@@ -152,7 +152,7 @@ void iwMapDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selec
     }
 }
 
-void iwMapDebug::Msg_CheckboxChange(const unsigned int ctrl_id, const bool checked)
+void iwMapDebug::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     if(ctrl_id != 0)
         return;

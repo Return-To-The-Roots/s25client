@@ -24,9 +24,9 @@
 class ctrlTimer : public Window
 {
     public:
-        ctrlTimer(Window* parent, unsigned int id, unsigned int timeout);
+        ctrlTimer(Window* parent, unsigned id, unsigned timeout);
 
-        void Start(unsigned int timeout);
+        void Start(unsigned timeout);
         void Stop();
 
         void Msg_PaintBefore() override;
@@ -35,8 +35,8 @@ class ctrlTimer : public Window
         void Draw_() override {};
 
     private:
-        unsigned int timeout;
-        unsigned int timer;
+        unsigned timeout;
+        unsigned timer;
 };
 
 #endif // !CTRLTIMER_H_INCLUDED

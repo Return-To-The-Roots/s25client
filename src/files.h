@@ -156,9 +156,9 @@ const char* const FILE_PATHS[] =
 const std::string UNIT_DATA_DIR = RTTRDIR "/Data/";  // Location with the data for all game units/objects (xml files)
 const std::string NATIONS_DATA_FILE = "nations.xml"; // filename for the xml containing the nation definitions
 
-const unsigned int FILE_SPLASH_ID = 104;
+const unsigned FILE_SPLASH_ID = 104;
 
-const unsigned int FILE_LOAD_IDS_COUNT = 21;
+const unsigned FILE_LOAD_IDS_COUNT = 21;
 const std::string FILE_LOAD_IDS[] =
 {
     "setup666", "setup667",
@@ -168,8 +168,8 @@ const std::string FILE_LOAD_IDS[] =
     "africa", "austra", "europe", "green", "japan", "namerica", "nasia", "samerica", "sasia"
 };
 
-const unsigned int GFXSET_COUNT = 3;
-const unsigned int NATION_COUNT = 5;
+const unsigned GFXSET_COUNT = 3;
+const unsigned NATION_COUNT = 5;
 
 const std::string NATION_ICON_IDS[NATION_COUNT] =
 {

@@ -99,7 +99,7 @@ void noFire::Draw(DrawPoint drawPt)
 }
 
 /// Benachrichtigen, wenn neuer gf erreicht wurde
-void noFire::HandleEvent(const unsigned int  /*id*/)
+void noFire::HandleEvent(const unsigned  /*id*/)
 {
     // Todesevent --> uns vernichten
     dead_event = NULL;

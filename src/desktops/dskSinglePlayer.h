@@ -28,7 +28,7 @@ class dskSinglePlayer: public dskMenuBase
         dskSinglePlayer();
     private:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
         void PrepareSinglePlayerServer();
         void PrepareLoadGame();
 };

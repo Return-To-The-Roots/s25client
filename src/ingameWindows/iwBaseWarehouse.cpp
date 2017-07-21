@@ -104,7 +104,7 @@ iwBaseWarehouse::~iwBaseWarehouse()
         wh->RemoveListener(this);
 }
 
-void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id)
+void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id != pageWares + 100 && group_id != pagePeople + 100)
         iwWares::Msg_Group_ButtonClick(group_id, ctrl_id);
@@ -135,7 +135,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned int group_id, const u
     }
 }
 
-void iwBaseWarehouse::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

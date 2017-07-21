@@ -32,16 +32,16 @@ class ctrlMultiline : public Window
 
         /// Creates a multiline control with automatic/transparent wrapping of long lines and automatic scrollbar
         /// Note: Using non-default font-formats may cause issues when the scrollbar is shown
-        ctrlMultiline(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned format);
+        ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned format);
 
         void Resize(const Extent& newSize) override;
-        void AddString(const std::string& str, unsigned int color, bool scroll = true);
+        void AddString(const std::string& str, unsigned color, bool scroll = true);
         /// Deletes all lines
         void Clear();
         unsigned GetLineCount() { return unsigned(lines.size()); }
         /// Gibt den index-ten Eintrag zurück
         const std::string& GetLine(const unsigned index) const { return lines[index].str; }
-        void SetLine(const unsigned index, const std::string& str, unsigned int color);
+        void SetLine(const unsigned index, const std::string& str, unsigned color);
         /// Resizes the height such that the given number of lines can be shown
         void SetNumVisibleLines(unsigned numLines);
         /// Return the currently used size including padding and the (possible) scrollbar (<=width,  <= height)

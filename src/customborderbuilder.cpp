@@ -167,7 +167,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo* archiveInfo)
     return 0;
 }
 
-int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned int height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo)
+int CustomBorderBuilder::buildBorder(const unsigned width, const unsigned height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo)
 {
     // simples Fehlerabfangen
     if (width < 640 || height < 480)
@@ -201,8 +201,8 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
 
         // Freie Flächen mit Kanten ausfüllen
         // Kanten
-        unsigned int emptyFromPixel;
-        unsigned int toFillPixel;
+        unsigned emptyFromPixel;
+        unsigned toFillPixel;
         boost::array<unsigned char, 3> countEdge = {{0, 0, 0}};
         boost::array<unsigned short, 3> lengthEdge;
         // obere Kante
@@ -248,7 +248,7 @@ int CustomBorderBuilder::buildBorder(const unsigned int width, const unsigned in
     }
 
     // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap_RLE kovertieren
-    for(unsigned int i = 0; i < 4; i++)
+    for(unsigned i = 0; i < 4; i++)
     {
         glArchivItem_Bitmap_RLE* customEdgeRLE = new glArchivItem_Bitmap_RLE;
         customEdgeRLE->setWidth(customEdge[i]->w); customEdgeRLE->setHeight(customEdge[i]->h); customEdgeRLE->tex_alloc();
@@ -276,15 +276,15 @@ void CustomBorderBuilder::BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE* bit
 
 void CustomBorderBuilder::BdrBitmap2BitmapRLE2(BdrBitmap* bdrBitmap, glArchivItem_Bitmap_RLE* bitmapRLE)
 {
-    for(unsigned int y = 0; y < bdrBitmap->h; y++)
-        for(unsigned int x = 0; x < bdrBitmap->w; x++)
+    for(unsigned y = 0; y < bdrBitmap->h; y++)
+        for(unsigned x = 0; x < bdrBitmap->w; x++)
         {
             bitmapRLE->tex_setPixel(x, y, bdrBitmap->get(x, y), palette);
         }
 }
 
 
-void CustomBorderBuilder::FindEdgeDistribution(unsigned int toFill, boost::array<unsigned short, 3>& lengths, boost::array<unsigned char, 3>& shouldCounts)
+void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, boost::array<unsigned short, 3>& lengths, boost::array<unsigned char, 3>& shouldCounts)
 {
     // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu prüfende
     shouldCounts[0] = 0; shouldCounts[1] = 0; shouldCounts[2] = 0;
@@ -292,7 +292,7 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned int toFill, boost::array
     unsigned char maxCounts[3]; // wieviel mal passt jedes Teil maximal in die Freifläche?
     for(unsigned char i = 0; i < 3; i++)
         maxCounts[i] = toFill / lengths[i];
-    unsigned int shouldBeFilled = 0;
+    unsigned shouldBeFilled = 0;
     unsigned char shouldNumDifferentTiles = 0;
     // Schleife über alle möglichen Kombinationen
     for(wouldCounts[0] = 0; wouldCounts[0] <= maxCounts[0]; wouldCounts[0]++)
@@ -300,7 +300,7 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned int toFill, boost::array
             for(wouldCounts[2] = 0; wouldCounts[2] <= maxCounts[2]; wouldCounts[2]++)
             {
                 // Finde, wieviel Platz die Kombination ausfüllen würde
-                unsigned int wouldBeFilled = 0;
+                unsigned wouldBeFilled = 0;
                 for(unsigned char i = 0; i < 3; i++)
                     wouldBeFilled += wouldCounts[i] * lengths[i];
                 // wenn die Kombination nicht zu groß ist und weniger oder gleich viel Platz frei ließe als/wie bisher
@@ -325,9 +325,9 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned int toFill, boost::array
 
 
 template<size_t T_numEdges, size_t T_numFillers>
-void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
-        const unsigned int y,
-        const unsigned int toFill,
+void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x,
+        const unsigned y,
+        const unsigned toFill,
         const bool direction, // false = waagerecht, true = senkrecht
         const boost::array<unsigned short, 3>& edgeLengths,
         boost::array<unsigned char, 3>& edgeCounts,
@@ -336,8 +336,8 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
         BdrBitmap* outBorder)
 // Schreibt die übergebene Verteilung ins Bild und füllt die restliche Fläche auf.
 {
-    unsigned int emptyFromPixel = direction ? y : x;
-    unsigned int toFillPixel = toFill;
+    unsigned emptyFromPixel = direction ? y : x;
+    unsigned toFillPixel = toFill;
 
     // Wieviele große Stücken zu schreiben?
     unsigned char edgesToDistribute = 0;
@@ -345,7 +345,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
         edgesToDistribute += edgeCounts[i];
 
     // Der Reihe nach schreiben
-    unsigned int takeEdgeNum = 0;
+    unsigned takeEdgeNum = 0;
     while (edgesToDistribute > 0)
     {
         if (edgeCounts[takeEdgeNum] > 0)
@@ -432,33 +432,33 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned int x,
 
 /*--- BdrBitmap-Klasse *******************************************************/
 // public
-CustomBorderBuilder::BdrBitmap::BdrBitmap(const unsigned int width, const unsigned int height)
+CustomBorderBuilder::BdrBitmap::BdrBitmap(const unsigned width, const unsigned height)
 {
     w = width;
     h = height;
     values.resize(w*h);
 }
 
-CustomBorderBuilder::BdrBitmap* CustomBorderBuilder::BdrBitmap::get(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height) const
+CustomBorderBuilder::BdrBitmap* CustomBorderBuilder::BdrBitmap::get(const unsigned x, const unsigned y, const unsigned width, const unsigned height) const
 {
     BdrBitmap* pic = new BdrBitmap(width, height);
-    for(unsigned int i = 0; i < pic->h; i++)
-        for(unsigned int j = 0; j < pic->w; j++)
+    for(unsigned i = 0; i < pic->h; i++)
+        for(unsigned j = 0; j < pic->w; j++)
         {
             pic->values[pic->getpos(j, i)] = values[getpos(x + j, y + i)];
         }
     return pic;
 }
 
-inline unsigned char CustomBorderBuilder::BdrBitmap::get(const unsigned int x, const unsigned int y) const
+inline unsigned char CustomBorderBuilder::BdrBitmap::get(const unsigned x, const unsigned y) const
 {
     return values[getpos(x, y)];
 }
 
-void CustomBorderBuilder::BdrBitmap::put(const unsigned int x, const unsigned int y, BdrBitmap* pic, bool picGetted)
+void CustomBorderBuilder::BdrBitmap::put(const unsigned x, const unsigned y, BdrBitmap* pic, bool picGetted)
 {
-    for(unsigned int i = 0; i < pic->h; i++)
-        for(unsigned int j = 0; j < pic->w; j++)
+    for(unsigned i = 0; i < pic->h; i++)
+        for(unsigned j = 0; j < pic->w; j++)
         {
             values[getpos(x + j, y + i)] = pic->values[pic->getpos(j, i)];
         }
@@ -466,14 +466,14 @@ void CustomBorderBuilder::BdrBitmap::put(const unsigned int x, const unsigned in
         delete pic;
 }
 
-inline void CustomBorderBuilder::BdrBitmap::put(const unsigned int x, const unsigned int y, const unsigned char c)
+inline void CustomBorderBuilder::BdrBitmap::put(const unsigned x, const unsigned y, const unsigned char c)
 {
     values[getpos(x, y)] = c;
 }
 
 // private
 
-inline const unsigned int CustomBorderBuilder::BdrBitmap::getpos(const unsigned int x, const unsigned int y) const
+inline const unsigned CustomBorderBuilder::BdrBitmap::getpos(const unsigned x, const unsigned y) const
 // liefert den Index eines Pixels (x,y) im internen Speicher value[]
 {
     return w * y + x;

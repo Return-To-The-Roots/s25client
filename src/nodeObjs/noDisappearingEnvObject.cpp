@@ -60,7 +60,7 @@ unsigned noDisappearingEnvObject::GetDrawColor() const
 {
     if(disappearing)
     {
-        unsigned int transparency = 0xFF - GAMECLIENT.Interpolate(0xFF, dead_event);
+        unsigned transparency = 0xFF - GAMECLIENT.Interpolate(0xFF, dead_event);
         return transparency | (transparency << 8) | (transparency << 16) | (transparency << 24);
     }
     else
@@ -72,7 +72,7 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 {
     if(disappearing)
     {
-        unsigned int transparency = 0x40 - GAMECLIENT.Interpolate(0x40, dead_event);
+        unsigned transparency = 0x40 - GAMECLIENT.Interpolate(0x40, dead_event);
         return (transparency << 24);
     }
     else
@@ -83,7 +83,7 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 /**
  *  Benachrichtigen, wenn neuer GF erreicht wurde.
  */
-void noDisappearingEnvObject::HandleEvent(const unsigned int id)
+void noDisappearingEnvObject::HandleEvent(const unsigned id)
 {
     if(id)
     {

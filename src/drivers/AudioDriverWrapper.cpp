@@ -118,7 +118,7 @@ bool AudioDriverWrapper::LoadDriver()
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned size)
 {
     if(!audiodriver)
         return NULL;
@@ -126,7 +126,7 @@ Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* d
     return audiodriver->LoadMusic(data_type, data, size);
 }
 
-Sound* AudioDriverWrapper::LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadEffect(AudioType data_type, const unsigned char* data, unsigned size)
 {
     if(!audiodriver)
         return NULL;
@@ -143,7 +143,7 @@ unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume
     return audiodriver->PlayEffect(sound, volume, loop);
 }
 
-void AudioDriverWrapper::StopEffect(const unsigned int play_id)
+void AudioDriverWrapper::StopEffect(const unsigned play_id)
 {
     if(!audiodriver)
         return;

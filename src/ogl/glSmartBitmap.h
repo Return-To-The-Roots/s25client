@@ -39,7 +39,7 @@ class glSmartBitmap
         Extent size_;
 
         bool sharedTexture;
-        unsigned int texture;
+        unsigned texture;
 
         bool hasPlayer;
 

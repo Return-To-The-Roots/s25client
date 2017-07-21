@@ -158,7 +158,7 @@ void iwPlayReplay::PopulateTable()
     loadedOnce = true;
 }
 
-void iwPlayReplay::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

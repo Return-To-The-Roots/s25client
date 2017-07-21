@@ -83,7 +83,7 @@ dskTest::dskTest()
     AddTextButton(ID_btBack, DrawPoint(630, 550), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
 }
 
-void dskTest::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

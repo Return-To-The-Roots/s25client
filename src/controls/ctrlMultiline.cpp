@@ -24,7 +24,7 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
-ctrlMultiline::ctrlMultiline(Window* parent, unsigned int id,
+ctrlMultiline::ctrlMultiline(Window* parent, unsigned id,
                              const DrawPoint& pos, const Extent& size,
                              TextureColor tc, glArchivItem_Font* font, unsigned format):
     Window(parent, id, pos, size),
@@ -37,7 +37,7 @@ ctrlMultiline::ctrlMultiline(Window* parent, unsigned int id,
 /**
  *  fügt eine Zeile hinzu.
  */
-void ctrlMultiline::AddString(const std::string& str, unsigned int color, bool scroll)
+void ctrlMultiline::AddString(const std::string& str, unsigned color, bool scroll)
 {
     lines.push_back(Line(str, color));
     RecalcWrappedLines();
@@ -202,7 +202,7 @@ void ctrlMultiline::Resize(const Extent& newSize)
 }
 
 /// Textzeile ersetzen. Klappt bestimmt nicht mit Scrollbar-Kram
-void ctrlMultiline::SetLine(const unsigned index, const std::string& str, unsigned int color)
+void ctrlMultiline::SetLine(const unsigned index, const std::string& str, unsigned color)
 {
     if (index < lines.size())
     {

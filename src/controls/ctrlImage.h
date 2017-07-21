@@ -29,7 +29,7 @@ class glArchivItem_Bitmap;
 class ctrlImage : public Window, public ctrlBaseTooltip, public ctrlBaseImage
 {
     public:
-        ctrlImage(Window* parent, unsigned int id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip);
+        ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip);
         ~ctrlImage() override;
 
         bool Msg_MouseMove(const MouseCoords& mc) override;

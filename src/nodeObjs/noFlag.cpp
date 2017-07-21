@@ -62,7 +62,7 @@ noFlag::noFlag(const MapPoint pos,
     }
 }
 
-noFlag::noFlag(SerializedGameData& sgd, const unsigned int obj_id)
+noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id),
       ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
 {
@@ -360,7 +360,7 @@ void noFlag::Capture(const unsigned char new_owner)
 bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 {
     // Zeitintervall, in der die Zugänglichkeit der Flaggen von einer bestimmten BWU überprüft wird
-    const unsigned int MAX_BWU_INTERVAL = 2000;
+    const unsigned MAX_BWU_INTERVAL = 2000;
 
     // BWU-ID erstmal suchen
     for(unsigned i = 0; i < bwus.size(); ++i)

@@ -18,9 +18,9 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlColorButton.h"
 
-ctrlColorButton::ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
+ctrlColorButton::ctrlColorButton(Window* parent, unsigned id, const DrawPoint& pos,
                                  const Extent& size, const TextureColor tc,
-                                 unsigned int fillColor, const std::string& tooltip) :
+                                 unsigned fillColor, const std::string& tooltip) :
     ctrlButton(parent, id, pos, size, tc, tooltip),
     ctrlBaseColor(fillColor)
 {

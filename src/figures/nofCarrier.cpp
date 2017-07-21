@@ -123,7 +123,7 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos,
 {
 }
 
-nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned int obj_id)
+nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     : noFigure(sgd, obj_id),
       ct( CarrierType(sgd.PopUnsignedChar()) ),
       state( CarrierState(sgd.PopUnsignedChar()) ),
@@ -789,7 +789,7 @@ void nofCarrier::RoadSplitted(RoadSegment* rs1, RoadSegment* rs2)
         otherRoad->setCarrier(1, gwg->GetPlayer(player).OrderDonkey(otherRoad));
 }
 
-void nofCarrier::HandleDerivedEvent(const unsigned int id)
+void nofCarrier::HandleDerivedEvent(const unsigned id)
 {
     switch(id)
     {

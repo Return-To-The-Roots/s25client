@@ -31,7 +31,7 @@ class dskSplash : public Desktop
 
     private:
 
-        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_Timer(const unsigned ctrl_id) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
 };
 

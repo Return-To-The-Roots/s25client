@@ -28,8 +28,8 @@
 /**
  *  Objekt-ID-Counter.
  */
-unsigned int GameObject::objIdCounter_ = 1;
-unsigned int GameObject::objCounter_ = 0;
+unsigned GameObject::objIdCounter_ = 1;
+unsigned GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
 

@@ -301,7 +301,7 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
     }
 }
 
-void nobHarborBuilding::HandleEvent(const unsigned int id)
+void nobHarborBuilding::HandleEvent(const unsigned id)
 {
     switch(id)
     {

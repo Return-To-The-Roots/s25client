@@ -195,7 +195,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
 }
 
 
-void nofPlaner::HandleDerivedEvent(const unsigned int id)
+void nofPlaner::HandleDerivedEvent(const unsigned id)
 {
     if(id == 1)
     {

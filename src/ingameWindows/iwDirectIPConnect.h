@@ -36,12 +36,12 @@ class iwDirectIPConnect : public IngameWindow, public ClientInterface
         void Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd);
 
     private:
-        void SetText(const std::string& text, unsigned int color, bool button);
+        void SetText(const std::string& text, unsigned color, bool button);
 
-        void Msg_EditChange(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
+        void Msg_EditChange(const unsigned ctrl_id) override;
+        void Msg_EditEnter(const unsigned ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
         void CI_Error(const ClientError ce) override;
         void CI_NextConnectState(const ConnectState cs) override;

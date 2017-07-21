@@ -133,14 +133,14 @@ void iwTools::Msg_PaintBefore()
     }
 }
 
-void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(isReplay)
         return;
     // qx:tools
     if ( ctrl_id >= 100 && ctrl_id < (100 + 2 * TOOL_COUNT) )
     {
-        unsigned int tool = (ctrl_id - 100) / 2;
+        unsigned tool = (ctrl_id - 100) / 2;
         const GamePlayer& me = gwv.GetPlayer();
 
         if (ctrl_id & 0x1)
@@ -172,13 +172,13 @@ void iwTools::Msg_ButtonClick(const unsigned int ctrl_id)
         }
 }
 
-void iwTools::Msg_ProgressChange(const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
+void iwTools::Msg_ProgressChange(const unsigned  /*ctrl_id*/, const unsigned short  /*position*/)
 {
     // Einstellungen wurden geändert
     settings_changed = true;
 }
 
-void iwTools::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void iwTools::Msg_Timer(const unsigned  /*ctrl_id*/)
 {
     if(isReplay)
         // Im Replay aktualisieren wir die Werte

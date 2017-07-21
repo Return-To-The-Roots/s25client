@@ -42,7 +42,7 @@ dskDirectIP::dskDirectIP()
 }
 
 
-void dskDirectIP::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

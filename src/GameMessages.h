@@ -194,8 +194,8 @@ public:
 class GameMessage_Server_Start : public GameMessage
 {
 public:
-	unsigned int random_init;
-	unsigned int nwf_length;
+	unsigned random_init;
+	unsigned nwf_length;
 
 	GameMessage_Server_Start(): GameMessage(NMS_SERVER_START) { } //-V730
 	GameMessage_Server_Start(const unsigned random_init, const unsigned nwf_length): GameMessage(NMS_SERVER_START, 0xFF), random_init(random_init), nwf_length(nwf_length){}
@@ -341,7 +341,7 @@ public:
     {
          GameMessage::Serialize(ser);
          ser.PushUnsignedInt(unsigned(checksums.size()));
-         for(unsigned int i = 0; i < checksums.size(); ++i)
+         for(unsigned i = 0; i < checksums.size(); ++i)
              ser.PushSignedInt(checksums[i]);
     }
 
@@ -350,7 +350,7 @@ public:
         GameMessage::Deserialize(ser);
         unsigned size = ser.PopUnsignedInt();
         checksums.resize(size);
-        for(unsigned int i = 0; i < size; ++i)
+        for(unsigned i = 0; i < size; ++i)
             checksums[i] = ser.PopSignedInt();
     }
 
@@ -365,10 +365,10 @@ public:
 class GameMessage_Player_Id : public GameMessage
 {
 public:
-    unsigned int playerId;
+    unsigned playerId;
 
     GameMessage_Player_Id(): GameMessage(NMS_PLAYER_ID) { } //-V730
-    GameMessage_Player_Id(const unsigned int playerId): GameMessage(NMS_PLAYER_ID, 0xFF), playerId(playerId)
+    GameMessage_Player_Id(const unsigned playerId): GameMessage(NMS_PLAYER_ID, 0xFF), playerId(playerId)
     {
         LOG.writeToFile(">>> NMS_PLAYER_ID(%d)\n") % playerId;
     }
@@ -917,10 +917,10 @@ public:
 class GameMessage_Server_Speed : public GameMessage
 {
 public:
-	unsigned int gf_length; // new speed
+	unsigned gf_length; // new speed
 
 	GameMessage_Server_Speed(): GameMessage(NMS_SERVER_SPEED) { } //-V730
-	GameMessage_Server_Speed(const unsigned int gf_length): GameMessage(NMS_SERVER_SPEED, 0xFF), gf_length(gf_length)
+	GameMessage_Server_Speed(const unsigned gf_length): GameMessage(NMS_SERVER_SPEED, 0xFF), gf_length(gf_length)
 	{
 		LOG.writeToFile(">>> NMS_SERVER_SPEED(%d)\n") % gf_length;
 	}
@@ -947,12 +947,12 @@ public:
 class GameMessage_Server_NWFDone : public GameMessage
 {
 public:
-	unsigned int nr; // GF
-	unsigned int gf_length; // new speed
+	unsigned nr; // GF
+	unsigned gf_length; // new speed
 	bool first;
 
 	GameMessage_Server_NWFDone(): GameMessage(NMS_SERVER_NWF_DONE) { } //-V730
-	GameMessage_Server_NWFDone(const unsigned char player, const unsigned int nr, const unsigned int gf_length, const bool first = false):
+	GameMessage_Server_NWFDone(const unsigned char player, const unsigned nr, const unsigned gf_length, const bool first = false):
         GameMessage(NMS_SERVER_NWF_DONE, player), nr(nr), gf_length(gf_length), first(first)
 	{
 		LOG.writeToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);

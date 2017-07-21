@@ -21,7 +21,7 @@
 
 #ifdef _WIN32
 #include <ctime>
-typedef unsigned int useconds_t;
+typedef unsigned useconds_t;
 
 #if !defined(_TIMESPEC_DEFINED) && (!defined(_MSC_VER) || _MSC_VER < 1900)
 #define _TIMESPEC_DEFINED

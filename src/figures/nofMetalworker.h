@@ -50,7 +50,7 @@ class nofMetalworker : public nofWorkman
         void Serialize(SerializedGameData& sgd) const override;
 
         GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 };
 
 #endif

@@ -32,11 +32,11 @@ public:
     glArchivItem_BitmapBase& operator=(const glArchivItem_BitmapBase& item);
 
     /// liefert das GL-Textur-Handle.
-    unsigned int GetTexture();
+    unsigned GetTexture();
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
     virtual void DeleteTexture();
     /// Setzt den Texturfilter auf einen bestimmten Wert.
-    virtual void setFilter(unsigned int filter);
+    virtual void setFilter(unsigned filter);
 
     /// Return the "Null point"
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
@@ -46,8 +46,8 @@ private:
     /// Erzeugt die Textur.
     void GenerateTexture();
 
-    unsigned int texture; /// Das GL-Textur-Handle
-    unsigned int filter;  /// Der aktuell gewählte Texturfilter
+    unsigned texture; /// Das GL-Textur-Handle
+    unsigned filter;  /// Der aktuell gewählte Texturfilter
 
 protected:
     /// Returns the internal texure format

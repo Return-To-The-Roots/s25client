@@ -154,7 +154,7 @@ class noShip : public noMovable
         // An x,y zeichnen
         void Draw(DrawPoint drawPt) override;
         // Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         /// Gibt den Besitzer zurück
         unsigned char GetPlayerId() const { return ownerId_; }

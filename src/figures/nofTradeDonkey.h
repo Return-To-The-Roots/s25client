@@ -37,7 +37,7 @@ class nofTradeDonkey : public noFigure
 
         void GoalReached() override;
         void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
         void AbrogateWorkplace() override;
 
         /// Returns next direction

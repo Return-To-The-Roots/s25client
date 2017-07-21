@@ -72,7 +72,7 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
 }
 
 
-void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
+void BurnedWarehouse::HandleEvent(const unsigned  /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
@@ -93,7 +93,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
         // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
         GetEvMgr().AddToKillList(this);
         // restliche Leute von der Inventur abziehen
-        for(unsigned int i = 0; i < people.size(); ++i)
+        for(unsigned i = 0; i < people.size(); ++i)
             gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), people[i]);
 
         return;

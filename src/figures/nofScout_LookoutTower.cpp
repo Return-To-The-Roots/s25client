@@ -51,7 +51,7 @@ void nofScout_LookoutTower::WalkedDerived()
 void nofScout_LookoutTower::DrawWorking(DrawPoint /*drawPt*/)
 {}
 
-void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofScout_LookoutTower::HandleDerivedEvent(const unsigned  /*id*/)
 {}
 
 void nofScout_LookoutTower::WorkAborted()

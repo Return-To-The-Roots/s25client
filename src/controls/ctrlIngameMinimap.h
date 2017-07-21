@@ -35,7 +35,7 @@ class ctrlIngameMinimap : public ctrlMinimap
     public:
 
         ctrlIngameMinimap( Window* parent,
-                           const unsigned int id,
+                           const unsigned id,
                            const DrawPoint& pos,
                            const Extent& size,
                            const Extent& padding,

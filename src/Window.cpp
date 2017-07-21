@@ -160,7 +160,7 @@ void Window::SetActive(bool activate)
  */
 void Window::ActivateControls(bool activate)
 {
-    for(std::map<unsigned int, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
+    for(std::map<unsigned, Window*>::iterator it = childIdToWnd_.begin(); it != childIdToWnd_.end(); ++it)
         it->second->SetActive(activate);
 }
 
@@ -205,7 +205,7 @@ bool Window::IsMessageRelayAllowed() const
 
 void Window::DeleteCtrl(unsigned id)
 {
-    std::map<unsigned int, Window*>::iterator it = childIdToWnd_.find(id);
+    std::map<unsigned, Window*>::iterator it = childIdToWnd_.find(id);
 
     if(it == childIdToWnd_.end())
         return;

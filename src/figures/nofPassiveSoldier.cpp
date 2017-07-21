@@ -71,7 +71,7 @@ void nofPassiveSoldier::Draw(DrawPoint drawPt)
     DrawSoldierWalking(drawPt);
 }
 
-void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
+void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
 {
     switch(id)
     {

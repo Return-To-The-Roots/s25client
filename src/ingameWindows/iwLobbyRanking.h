@@ -29,8 +29,8 @@ class iwLobbyRanking : public IngameWindow
     protected:
         void UpdateRankings(bool first = false);
 
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_Timer(const unsigned ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // iwLOBBYRANKING_H_INCLUDED

@@ -34,7 +34,7 @@ class nofScout_Free : public nofFlagWorker
 
         void GoalReached() override;
         void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         /// Erkundet (quasi ein Umherirren)
         void Scout();

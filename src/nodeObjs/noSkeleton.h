@@ -46,7 +46,7 @@ class noSkeleton: public noCoordBase
         void Destroy_noSkeleton();
 
         void Draw(DrawPoint drawPt) override;
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
     private:
         /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)

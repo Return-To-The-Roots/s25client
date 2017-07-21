@@ -22,14 +22,14 @@
 class Window;
 
 ctrlVarDeepening::ctrlVarDeepening(Window* parent,
-                                   unsigned int id,
+                                   unsigned id,
                                    const DrawPoint& pos,
                                    const Extent& size,
                                    TextureColor tc,
                                    const std::string& fmtString,
                                    glArchivItem_Font* font,
-                                   unsigned int color,
-                                   unsigned int count,
+                                   unsigned color,
+                                   unsigned count,
                                    va_list fmtArgs)
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseVarText(fmtString, color, font, count, fmtArgs)
 {}

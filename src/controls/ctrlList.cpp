@@ -23,7 +23,7 @@
 #include "ogl/glArchivItem_Font.h"
 
 ctrlList::ctrlList(Window* parent,
-                   unsigned int id,
+                   unsigned id,
                    const DrawPoint& pos,
                    const Extent& size,
                    TextureColor tc,

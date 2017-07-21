@@ -31,8 +31,8 @@ class iwMusicPlayer : public IngameWindow
 
                 InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title);
 
-                void Msg_ButtonClick(const unsigned int ctrl_id) override;
-                void Msg_EditEnter(const unsigned int ctrl_id) override;
+                void Msg_ButtonClick(const unsigned ctrl_id) override;
+                void Msg_EditEnter(const unsigned ctrl_id) override;
         };
 
         /// Merken, ob Veränderungen an den Musikeinstellungen durchgeführt wurden und ob deswegen
@@ -48,7 +48,7 @@ class iwMusicPlayer : public IngameWindow
         void SetSegments(const std::vector<std::string>& segments);
         void SetRepeats(const unsigned repeats);
         void SetRandomPlayback(const bool random_playback);
-        void SetCurrentSong(const unsigned int selection);
+        void SetCurrentSong(const unsigned selection);
 
         /// Gibt Werte zurück
         std::vector<std::string> GetSegments() const;
@@ -63,11 +63,11 @@ class iwMusicPlayer : public IngameWindow
 
     private:
 
-        void Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned selection) override;
+        void Msg_ListChooseItem(const unsigned ctrl_id, const unsigned selection) override;
         void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        void Msg_Input(const unsigned int win_id, const std::string& msg);
+        void Msg_Input(const unsigned win_id, const std::string& msg);
 
 
 };

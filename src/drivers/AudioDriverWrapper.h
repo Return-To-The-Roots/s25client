@@ -43,13 +43,13 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
         bool LoadDriver();
 
         /// Lädt einen Sound.
-        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size);
-        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size);
+        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned size);
+        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned size);
 
         /// Spielt einen Sound
         unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop);
         /// Stoppt einen Sound
-        void StopEffect(const unsigned int play_id);
+        void StopEffect(const unsigned play_id);
 
         /// Spielt Midi ab
         void PlayMusic(Sound* sound, const unsigned repeats);

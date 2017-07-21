@@ -35,34 +35,34 @@ class CustomBorderBuilder
         CustomBorderBuilder(const libsiedler2::ArchivItem_Palette* const palette);
         ~CustomBorderBuilder();
         int loadEdges(const libsiedler2::ArchivInfo* archiveInfo);
-        int buildBorder(const unsigned int width, const unsigned int height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo);
+        int buildBorder(const unsigned width, const unsigned height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo);
         const libsiedler2::ArchivItem_Palette* palette;
 
     private:
         class BdrBitmap
         {
             public:
-                BdrBitmap(const unsigned int width, const unsigned int height);
-                BdrBitmap* get(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height) const;
-                inline unsigned char get(const unsigned int x, const unsigned int y) const;
-                void put(const unsigned int x, const unsigned int y, BdrBitmap* pic, bool picGetted = false); // mit true wird das übergebene BdrBitmap wieder zerstört. Das ist genau dann sinnvoll, wenn es mit BdrBitmap::get() erstellt wurde, da der Zeiger ja außeralb von BdrBitmap::put() nicht mehr verfügbar ist.
-                inline void put(const unsigned int x, const unsigned int y, const unsigned char c);
-                unsigned int w;
-                unsigned int h;
+                BdrBitmap(const unsigned width, const unsigned height);
+                BdrBitmap* get(const unsigned x, const unsigned y, const unsigned width, const unsigned height) const;
+                inline unsigned char get(const unsigned x, const unsigned y) const;
+                void put(const unsigned x, const unsigned y, BdrBitmap* pic, bool picGetted = false); // mit true wird das übergebene BdrBitmap wieder zerstört. Das ist genau dann sinnvoll, wenn es mit BdrBitmap::get() erstellt wurde, da der Zeiger ja außeralb von BdrBitmap::put() nicht mehr verfügbar ist.
+                inline void put(const unsigned x, const unsigned y, const unsigned char c);
+                unsigned w;
+                unsigned h;
 
             private:
-                inline const unsigned int getpos(const unsigned int x, const unsigned int y) const;
+                inline const unsigned getpos(const unsigned x, const unsigned y) const;
                 std::vector<unsigned char> values;
         };
 
         void BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE* bitmapRLE, BdrBitmap* bdrBitmap);
         void BdrBitmap2BitmapRLE2(BdrBitmap* bdrBitmap, glArchivItem_Bitmap_RLE* bitmapRLE);
 
-        void FindEdgeDistribution(unsigned int toFill, boost::array<unsigned short, 3>& lengths, boost::array<unsigned char, 3>& counts);
+        void FindEdgeDistribution(unsigned toFill, boost::array<unsigned short, 3>& lengths, boost::array<unsigned char, 3>& counts);
         template<size_t T_numEdges, size_t T_numFillers>
-        void WriteEdgeDistribution(const unsigned int x,
-                                   const unsigned int y,
-                                   const unsigned int toFill,
+        void WriteEdgeDistribution(const unsigned x,
+                                   const unsigned y,
+                                   const unsigned toFill,
                                    const bool direction, // false = waagerecht, true = senkrecht
                                    const boost::array<unsigned short, 3>& edgeLengths,
                                    boost::array<unsigned char, 3>& edgeCounts, // wird verändert, nicht weiterbenutzen

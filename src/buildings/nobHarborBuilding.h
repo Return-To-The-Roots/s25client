@@ -123,7 +123,7 @@ public:
         void Serialize(SerializedGameData& sgd) const override;
         GO_Type GetGOT() const override { return GOT_NOB_HARBORBUILDING; }
         void Draw(DrawPoint drawPt) override;
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         /// Eine bestellte Ware konnte doch nicht kommen
         void WareLost(Ware* ware) override;

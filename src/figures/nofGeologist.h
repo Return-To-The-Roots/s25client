@@ -47,7 +47,7 @@ class nofGeologist : public nofFlagWorker
 
         void GoalReached() override;
         void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         /// Kann man an diesem Punkt ein Schild aufstellen?
         bool IsNodeGood(const MapPoint pt) const;

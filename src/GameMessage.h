@@ -39,7 +39,7 @@ class GameMessage : public Message
         /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
         virtual void Run(MessageInterface* callback) = 0;
 
-        void run(MessageInterface* callback, unsigned int id) override
+        void run(MessageInterface* callback, unsigned id) override
         {
             if(id != 0xFFFFFFFF)
                 player = static_cast<unsigned char>(id);

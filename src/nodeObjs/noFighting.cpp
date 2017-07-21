@@ -206,7 +206,7 @@ void noFighting::Draw(DrawPoint drawPt)
 
 }
 
-void noFighting::HandleEvent(const unsigned int id)
+void noFighting::HandleEvent(const unsigned id)
 {
     // Normales Ablaufevent?
     if(id == 0)

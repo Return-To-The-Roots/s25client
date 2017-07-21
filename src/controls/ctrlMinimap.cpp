@@ -21,7 +21,7 @@
 #include "Minimap.h"
 
 ctrlMinimap::ctrlMinimap( Window* parent,
-                          const unsigned int id,
+                          const unsigned id,
                           const DrawPoint& pos,
                           const Extent& size,
                           const Extent& padding,

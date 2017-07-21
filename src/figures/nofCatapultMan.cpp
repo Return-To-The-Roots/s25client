@@ -122,7 +122,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
     }
 }
 
-void nofCatapultMan::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
 {
     switch(state)
     {

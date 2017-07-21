@@ -33,7 +33,7 @@ class nofPassiveWorker : public noFigure
         void Walked() override; // wenn man gelaufen ist
         void GoalReached() override; // wenn das Ziel erreicht wurde
         void AbrogateWorkplace() override;
-        void HandleDerivedEvent(const unsigned int id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+        void HandleDerivedEvent(const unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
     public:
 

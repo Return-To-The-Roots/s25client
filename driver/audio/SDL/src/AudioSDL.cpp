@@ -253,7 +253,7 @@ Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsig
 /**
  *  Spielt einen Sound ab.
  */
-unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
+unsigned AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
     if(sound == NULL)
         return 0xFFFFFFFF;
@@ -300,7 +300,7 @@ void AudioSDL::StopMusic()
 void AudioSDL::StopEffect(const unsigned play_id)
 {
     // Alle Channels nach dieser ID abfragen und den jeweiligen zum Schweigen bringen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
             Mix_HaltChannel(i);
@@ -311,7 +311,7 @@ void AudioSDL::StopEffect(const unsigned play_id)
 bool AudioSDL::IsEffectPlaying(const unsigned play_id)
 {
     // Play-ID suchen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
             // und wird dieser Channel auch noch gespielt?
@@ -325,7 +325,7 @@ bool AudioSDL::IsEffectPlaying(const unsigned play_id)
 void AudioSDL::ChangeVolume(const unsigned play_id, const unsigned char volume)
 {
     // Play-ID suchen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
             // Lautstärke verändern

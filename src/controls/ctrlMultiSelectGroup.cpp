@@ -19,7 +19,7 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type): ctrlGroup(parent, id),
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type): ctrlGroup(parent, id),
       selectedItems_(std::set<unsigned short>()), select_type(select_type)
 {
 }
@@ -91,7 +91,7 @@ bool ctrlMultiSelectGroup::IsSelected(unsigned short selection) const
     return (this->selectedItems_.count(selection) == 1);
 }
 
-void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned ctrl_id)
 {
     ToggleSelection(ctrl_id, true);
 }

@@ -26,7 +26,7 @@
 #include <sstream>
 
 ctrlProgress::ctrlProgress(Window* parent,
-                           const unsigned int id,
+                           const unsigned id,
                            const DrawPoint& pos,
                            const Extent& size,
                            const TextureColor tc,
@@ -34,7 +34,7 @@ ctrlProgress::ctrlProgress(Window* parent,
                            unsigned short button_plus,
                            const unsigned short maximum,
                            const Extent& padding,
-                           const unsigned int force_color,
+                           const unsigned force_color,
                            const std::string& tooltip,
                            const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip,
@@ -87,11 +87,11 @@ void ctrlProgress::Draw_()
     DrawControls();
 
     const DrawPoint innerPadding(4, 4);
-    unsigned int percentage = position * 100 / maximum;
-    unsigned int progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
+    unsigned percentage = position * 100 / maximum;
+    unsigned progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
 
     // Farbe herausfinden
-    unsigned int color = 0xFFD70000;
+    unsigned color = 0xFFD70000;
 
     // Feste Farbe?
     if(force_color)
@@ -133,7 +133,7 @@ unsigned ctrlProgress::CalcBarWidth() const
     return GetSize().x - 2 * (padding_.x + GetSize().y);
 }
 
-void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlProgress::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

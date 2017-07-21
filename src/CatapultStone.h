@@ -60,7 +60,7 @@ public:     void Serialize(SerializedGameData& sgd) const override { Serialize_C
     void Draw(DrawPoint drawOffset);
 
     /// Event-Handler
-    void HandleEvent(const unsigned int id) override;
+    void HandleEvent(const unsigned id) override;
 
     GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
 };

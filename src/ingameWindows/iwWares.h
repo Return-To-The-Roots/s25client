@@ -33,7 +33,7 @@ class iwWares : public IngameWindow
         unsigned pageWares, pagePeople;
 
     public:
-        iwWares(unsigned int id, const DrawPoint& pos, const Extent& size, const std::string& title,
+        iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title,
                 bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player);
 
     protected:
@@ -42,7 +42,7 @@ class iwWares : public IngameWindow
         /// Add a new page and return it. ID will be in range 100+
         ctrlGroup& AddPage();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
         void Msg_PaintBefore() override;
 
         unsigned GetCurPage() const { return curPage_; }

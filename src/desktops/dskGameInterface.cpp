@@ -221,7 +221,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     gwv.Resize(newSize);
 }
 
-void dskGameInterface::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -317,7 +317,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenWidth() - 70, 35);
-    for(unsigned int i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
         const GamePlayer& player = world.GetPlayer(i);
         if(player.is_lagging)
@@ -402,7 +402,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         else
         {
             // altes Roadwindow schließen
-            WINDOWMANAGER.Close((unsigned int)CGI_ROADWINDOW);
+            WINDOWMANAGER.Close((unsigned)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
             if(worldViewer.IsRoadAvailable(road.mode == RM_BOAT, selPt) &&
@@ -947,7 +947,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 {
     const GameWorldBase& world = worldViewer.GetWorld();
 
-    unsigned int params = 0;
+    unsigned params = 0;
 
     // Sind wir am Wasser?
     if(action_tabs.setflag)

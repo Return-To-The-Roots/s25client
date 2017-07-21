@@ -44,7 +44,7 @@ class nobHQ : public nobBaseWarehouse
 
         unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
 
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
         bool IsTent() const { return isTent_; }
         void SetIsTent(const bool isTent) { isTent_ = isTent; }
 };

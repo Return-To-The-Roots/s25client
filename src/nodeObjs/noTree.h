@@ -99,7 +99,7 @@ class noTree : public noCoordBase
 
         void Draw(DrawPoint drawPt) override;
 
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         BlockingManner GetBM() const override { return BlockingManner::Tree; }
 

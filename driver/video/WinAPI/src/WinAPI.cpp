@@ -541,7 +541,7 @@ void VideoWinAPI::SetMousePos(int x, int y)
  *
  *  @param[in] c Tastencode
  */
-void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
+void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
 {
     // Keine Leerzeichen als Extra-Zeichen senden!
     if(c == ' ')
@@ -568,7 +568,7 @@ void VideoWinAPI::OnWMChar(unsigned int c, bool disablepaste, LPARAM lParam)
  *
  *  @param[in] c Tastencode
  */
-void VideoWinAPI::OnWMKeyDown(unsigned int c, LPARAM lParam)
+void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
 {
     KeyEvent ke = {KT_INVALID, 0,
                    (GetKeyState(VK_CONTROL) & 0x8000) != 0,
@@ -751,12 +751,12 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
         case WM_KEYDOWN:
 //  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
         {
-            pVideoWinAPI->OnWMKeyDown((unsigned int)wParam, lParam);
+            pVideoWinAPI->OnWMKeyDown((unsigned)wParam, lParam);
         } return 0;
         case WM_CHAR:
         case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
         {
-            pVideoWinAPI->OnWMChar((unsigned int)wParam, false, lParam);
+            pVideoWinAPI->OnWMChar((unsigned)wParam, false, lParam);
         } return 0;
     }
     return DefWindowProcW(window, msg, wParam, lParam);

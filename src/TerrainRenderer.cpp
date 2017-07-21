@@ -274,7 +274,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 
 void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, bool updateVBO)
 {
-    unsigned int pos = GetTriangleIdx(pt);
+    unsigned pos = GetTriangleIdx(pt);
 
     gl_vertices[pos][0] = GetNeighbourPos(pt, 4);
     gl_vertices[pos][1] = GetNodePos(pt);
@@ -296,7 +296,7 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, bool updateVBO)
 
 void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, bool updateVBO)
 {
-    unsigned int pos = GetTriangleIdx(pt);
+    unsigned pos = GetTriangleIdx(pt);
 
     Color& clr0 = gl_colors[pos][0];
     Color& clr1 = gl_colors[pos][1];
@@ -403,7 +403,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
 /// Erzeugt die Dreiecke für die Ränder
 void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
 {
-    unsigned int pos = GetVertexIdx(pt);
+    unsigned pos = GetVertexIdx(pt);
 
     // Für VBO-Aktualisierung:
     // Erzeugte Ränder zählen
@@ -417,7 +417,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
     {
         if(!borders[pos].left_right[i])
             continue;
-        unsigned int offset = borders[pos].left_right_offset[i];
+        unsigned offset = borders[pos].left_right_offset[i];
 
         if(!first_offset)
             first_offset = offset;
@@ -434,7 +434,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
     {
         if(!borders[pos].right_left[i])
             continue;
-        unsigned int offset = borders[pos].right_left_offset[i];
+        unsigned offset = borders[pos].right_left_offset[i];
 
         if(!first_offset)
             first_offset = offset;
@@ -455,7 +455,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
     {
         if(!borders[pos].top_down[i])
             continue;
-        unsigned int offset = borders[pos].top_down_offset[i];
+        unsigned offset = borders[pos].top_down_offset[i];
 
         if(!first_offset)
             first_offset = offset;
@@ -481,7 +481,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
 
 void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVBO)
 {
-    unsigned int pos = GetVertexIdx(pt);
+    unsigned pos = GetVertexIdx(pt);
 
     // Für VBO-Aktualisierung:
     // Erzeugte Ränder zählen
@@ -495,7 +495,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
     {
         if(!borders[pos].left_right[i])
             continue;
-        unsigned int offset = borders[pos].left_right_offset[i];
+        unsigned offset = borders[pos].left_right_offset[i];
 
         if(!first_offset)
             first_offset = offset;
@@ -512,7 +512,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
     {
         if(!borders[pos].right_left[i])
             continue;
-        unsigned int offset = borders[pos].right_left_offset[i];
+        unsigned offset = borders[pos].right_left_offset[i];
 
         if(!first_offset)
             first_offset = offset;
@@ -532,7 +532,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
     {
         if(!borders[pos].top_down[i])
             continue;
-        unsigned int offset = borders[pos].top_down_offset[i];
+        unsigned offset = borders[pos].top_down_offset[i];
 
         if(!first_offset)
             first_offset = offset;
@@ -558,7 +558,7 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
 
 void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool updateVBO)
 {
-    unsigned int pos = GetVertexIdx(pt);
+    unsigned pos = GetVertexIdx(pt);
 
     // Für VBO-Aktualisierung:
     // Erzeugte Ränder zählen
@@ -572,7 +572,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
     {
         if(borders[pos].left_right[i])
         {
-            unsigned int offset = borders[pos].left_right_offset[i];
+            unsigned offset = borders[pos].left_right_offset[i];
 
             if(!first_offset)
                 first_offset = offset;
@@ -590,7 +590,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
     {
         if(borders[pos].right_left[i])
         {
-            unsigned int offset = borders[pos].right_left_offset[i];
+            unsigned offset = borders[pos].right_left_offset[i];
 
             if(!first_offset)
                 first_offset = offset;
@@ -608,7 +608,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
     {
         if(borders[pos].top_down[i])
         {
-            unsigned int offset = borders[pos].top_down_offset[i];
+            unsigned offset = borders[pos].top_down_offset[i];
 
             if(!first_offset)
                 first_offset = offset;
@@ -632,7 +632,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
 /**
  *  zeichnet den Kartenausschnitt.
  */
-void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned int* water) const
+void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned* water) const
 {
     RTTR_Assert(!gl_vertices.empty());
     RTTR_Assert(!borders.empty());

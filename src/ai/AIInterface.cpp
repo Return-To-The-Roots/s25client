@@ -223,7 +223,7 @@ bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHar
     return IsExplorationDirectionPossible(pt, originHarbor->GetHarborPosID(), direction);
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const
+bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID, ShipDirection direction) const
 {
     return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_) > 0;
 }

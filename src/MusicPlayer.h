@@ -55,11 +55,11 @@ class Playlist
         void SetStartSong(const unsigned id);
 
     protected:
-        unsigned int current;
-        unsigned int repeats;               /// Anzahl der Wiederholungen
+        unsigned current;
+        unsigned repeats;               /// Anzahl der Wiederholungen
         bool random;                        /// Zufallswiedergabe?
         std::vector<std::string> songs;     /// Dateinamen der abzuspielenden Titel
-        std::vector<unsigned int> order;    /// Reihenfolge der Titel
+        std::vector<unsigned> order;    /// Reihenfolge der Titel
 };
 
 /// Globaler Musikplayer bzw. eine abspielbare Playlist

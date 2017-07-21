@@ -44,10 +44,10 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
     const DrawPointInit offsets[NAT_COUNT] = { {10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2} };
     const DrawPointInit walkstart[NAT_COUNT] = { { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6} };
 
-    unsigned int max_id = 240;
+    unsigned max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = gwg->GetPlayer(player).color;
+    unsigned plColor = gwg->GetPlayer(player).color;
     int walksteps = 16;
 
     if(now_id < 16)

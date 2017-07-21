@@ -50,9 +50,9 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         /// räumt die Texturen auf
         void CleanUp();
         /// erstellt eine Textur
-        unsigned int GenerateTexture();
-        void BindTexture(unsigned int t);
-        void DeleteTexture(unsigned int t);
+        unsigned GenerateTexture();
+        void BindTexture(unsigned t);
+        void DeleteTexture(unsigned t);
 
         /// Swapped den Buffer
         bool SwapBuffers();
@@ -86,7 +86,7 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         // Nachrichtenschleife
         bool Run();
 
-        unsigned int GetTickCount();
+        unsigned GetTickCount();
 
         std::string GetName() const { return (videodriver) ? videodriver->GetName() : ""; }
         bool IsLoaded() const { return videodriver != NULL; }
@@ -111,9 +111,9 @@ class VideoDriverWrapper : public Singleton<VideoDriverWrapper, SingletonPolicie
         /// (Some) OpenGL can be disabled for testing
         bool isOglEnabled_;
 
-        boost::array<unsigned int, 100000> texture_list;
-        unsigned int texture_pos;
-        unsigned int texture_current;
+        boost::array<unsigned, 100000> texture_list;
+        unsigned texture_pos;
+        unsigned texture_current;
 };
 
 #define VIDEODRIVER VideoDriverWrapper::inst()

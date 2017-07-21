@@ -28,7 +28,7 @@ class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {
     public:
         /// Zeichnet einen Animationsstep.
-        void Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, DrawPoint drawPt, unsigned int color);
+        void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED

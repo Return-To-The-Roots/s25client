@@ -39,7 +39,7 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
     AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 }
 
-void iwDemolishBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

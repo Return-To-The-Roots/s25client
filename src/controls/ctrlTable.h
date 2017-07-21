@@ -32,7 +32,7 @@ struct KeyEvent;
 class ctrlTable : public Window
 {
     public:
-        ctrlTable(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
+        ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short column_count, va_list liste);
         ~ctrlTable() override;
 
         void Resize(const Extent& newSize) override;
@@ -57,8 +57,8 @@ class ctrlTable : public Window
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
         bool Msg_MouseMove(const MouseCoords& mc) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_ScrollShow(const unsigned int ctrl_id, const bool visible) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_ScrollShow(const unsigned ctrl_id, const bool visible) override;
         bool Msg_KeyDown(const KeyEvent& ke) override;
 
         enum SortType

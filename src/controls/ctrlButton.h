@@ -32,7 +32,7 @@ class glArchivItem_Font;
 class ctrlButton : public Window, public ctrlBaseTooltip
 {
     public:
-        ctrlButton(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size,
+        ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size,
                    const TextureColor tc, const std::string& tooltip);
         ~ctrlButton() override;
 

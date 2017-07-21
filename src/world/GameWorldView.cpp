@@ -355,7 +355,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Draw object name
             if(show_names)
             {
-                unsigned int color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
+                unsigned color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
                 SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
                 curPos.y += SmallFont->getHeight();
             }
@@ -373,7 +373,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     if(got == GOT_BUILDINGSITE)
     {
         char text[256];
-        unsigned int color = COLOR_GREY;
+        unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
         snprintf(text, 256, "(%d %%)", p);
@@ -382,7 +382,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     {
         const nobUsual& n = static_cast<const nobUsual&>(no);
         std::string text;
-        unsigned int color = COLOR_0_PERCENT;
+        unsigned color = COLOR_0_PERCENT;
 
         if(!n.HasWorker())
             text = _("(House unoccupied)");

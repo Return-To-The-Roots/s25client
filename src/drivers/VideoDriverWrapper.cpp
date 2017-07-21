@@ -193,7 +193,7 @@ bool VideoDriverWrapper::DestroyScreen()
 
     // Texturen aufräumen
     LOG.write("Saeubere Texturespeicher: ");
-    unsigned int ladezeit = GetTickCount();
+    unsigned ladezeit = GetTickCount();
     CleanUp();
     LOG.write("fertig (nach %dms)\n") % (GetTickCount() - ladezeit);
 
@@ -250,7 +250,7 @@ void VideoDriverWrapper::CleanUp()
     texture_pos = 0;
 }
 
-unsigned int VideoDriverWrapper::GenerateTexture()
+unsigned VideoDriverWrapper::GenerateTexture()
 {
     if(texture_pos >= texture_list.size())
     {
@@ -269,7 +269,7 @@ unsigned int VideoDriverWrapper::GenerateTexture()
     return texture_list[texture_pos++];
 }
 
-void VideoDriverWrapper::BindTexture(unsigned int t)
+void VideoDriverWrapper::BindTexture(unsigned t)
 {
     if (t != texture_current)
     {
@@ -279,7 +279,7 @@ void VideoDriverWrapper::BindTexture(unsigned int t)
     }
 }
 
-void VideoDriverWrapper::DeleteTexture(unsigned int t)
+void VideoDriverWrapper::DeleteTexture(unsigned t)
 {
     if (t == texture_current)
         texture_current = 0;
@@ -446,12 +446,12 @@ bool VideoDriverWrapper::LoadAllExtensions()
     return true;
 }
 
-unsigned int VideoDriverWrapper::GetTickCount()
+unsigned VideoDriverWrapper::GetTickCount()
 {
     if(!videodriver)
-        return (unsigned int)time(NULL);
+        return (unsigned)time(NULL);
 
-    return (unsigned int)videodriver->GetTickCount();
+    return (unsigned)videodriver->GetTickCount();
 }
 
 /**

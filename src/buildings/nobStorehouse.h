@@ -41,7 +41,7 @@ class nobStorehouse : public nobBaseWarehouse
 
         void Draw(DrawPoint drawPt) override;
 
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 };
 
 

@@ -30,7 +30,7 @@ class noFlag : public noRoadNode
 {
     public:
         noFlag(const MapPoint pt, const unsigned char player, const unsigned char dis_dir = 0xFF);
-        noFlag(SerializedGameData& sgd, const unsigned int obj_id);
+        noFlag(SerializedGameData& sgd, const unsigned obj_id);
         ~noFlag() override;
 
         void Destroy() override  {   Destroy_noFlag();   }
@@ -64,9 +64,9 @@ class noFlag : public noRoadNode
         /// Feind übernimmt die Flagge.
         void Capture(const unsigned char new_owner);
         /// Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
-        bool IsImpossibleForBWU(const unsigned int bwu_id) const;
+        bool IsImpossibleForBWU(const unsigned bwu_id) const;
         /// Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
-        void ImpossibleForBWU(const unsigned int bwu_id);
+        void ImpossibleForBWU(const unsigned bwu_id);
 
     protected:
         void Destroy_noFlag();
@@ -81,13 +81,13 @@ class noFlag : public noRoadNode
 
         /// Wieviele BWU-Teile es maximal geben soll, also wieviele abgebrannte Lagerhausgruppen
         /// gleichzeitig die Flagge als nicht begehbar deklarieren können.
-        static const unsigned int MAX_BWU = 4;
+        static const unsigned MAX_BWU = 4;
 
         /// Nicht erreichbar für Massenflüchtlinge
         struct BurnedWarehouseUnit
         {
-            unsigned int id;        /// ID der Gruppe
-            unsigned int last_gf;   /// letzter TÜV, ob man auch nicht hinkommt, in GF
+            unsigned id;        /// ID der Gruppe
+            unsigned last_gf;   /// letzter TÜV, ob man auch nicht hinkommt, in GF
         };
         boost::array<BurnedWarehouseUnit, MAX_BWU> bwus;
 };

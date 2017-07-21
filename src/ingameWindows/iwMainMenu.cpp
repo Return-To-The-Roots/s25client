@@ -88,7 +88,7 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
 /**
  *  Button-Click-Handler.
  */
-void iwMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

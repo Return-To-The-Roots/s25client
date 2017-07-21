@@ -34,7 +34,7 @@ class nofPassiveSoldier : public nofSoldier
     private:
 
         /// Eventhandling
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         // informieren, wenn ...
         void GoalReached() override; // das Ziel erreicht wurde

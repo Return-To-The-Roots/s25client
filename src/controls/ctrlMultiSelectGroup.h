@@ -37,7 +37,7 @@ class ctrlMultiSelectGroup : public ctrlGroup
         };
 
     public:
-        ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type);
+        ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type);
 
         /// Selektiert einen neuen Button
         void AddSelection(unsigned short selection, bool notify = false);
@@ -50,9 +50,9 @@ class ctrlMultiSelectGroup : public ctrlGroup
         /// Prüft ob ein Button ausgewählt ist
         bool IsSelected(unsigned short selection) const;
         // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
-        ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
+        ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
         bool Msg_LeftUp(const MouseCoords& mc) override;
         bool Msg_WheelUp(const MouseCoords& mc) override;

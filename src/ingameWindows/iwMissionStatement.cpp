@@ -58,7 +58,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     }
 }
 
-void iwMissionStatement::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
+void iwMissionStatement::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
 {
     // TODO: Make something better, this is quite hacky (Client and server dependency)
     if(pauseGame_)

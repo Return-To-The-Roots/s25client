@@ -25,7 +25,7 @@ class MouseCoords;
 class ctrlScrollBar : public Window
 {
     public:
-        ctrlScrollBar(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc, unsigned short pagesize);
+        ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height, TextureColor tc, unsigned short pagesize);
         void Resize(const Extent& newSize) override;
         void SetScrollPos(unsigned short scroll_pos);
         void SetRange(unsigned short scroll_range);
@@ -39,7 +39,7 @@ class ctrlScrollBar : public Window
         bool Msg_LeftUp(const MouseCoords& mc) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
         bool Msg_MouseMove(const MouseCoords& mc) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 
     protected:
         void Draw_() override;

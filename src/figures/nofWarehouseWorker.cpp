@@ -189,7 +189,7 @@ void nofWarehouseWorker::LooseWare()
     }
 }
 
-void nofWarehouseWorker::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofWarehouseWorker::HandleDerivedEvent(const unsigned  /*id*/)
 {
 }
 

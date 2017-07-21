@@ -58,7 +58,7 @@ class nofWorkman : public nofBuildingWorker
     protected:  void Serialize_nofWorkman(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
 
 };

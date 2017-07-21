@@ -21,7 +21,7 @@
 #include "driver/src/MouseCoords.h"
 
 ctrlImage::ctrlImage(Window* parent,
-                     unsigned int id,
+                     unsigned id,
                      const DrawPoint& pos,
                      glArchivItem_Bitmap* image,
                      const std::string& tooltip):

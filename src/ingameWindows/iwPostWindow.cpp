@@ -102,7 +102,7 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     DisplayPostMessage();
 }
 
-void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

@@ -30,7 +30,7 @@ class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
     public:
 
-        ctrlImageButton(Window* parent, unsigned int id, const DrawPoint& pos,
+        ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos,
                         const Extent& size, const TextureColor tc,
                         glArchivItem_Bitmap* const image, const std::string& tooltip);
     protected:

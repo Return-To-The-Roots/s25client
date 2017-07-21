@@ -65,7 +65,7 @@ class AIConstruction
 		bool MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos);
 
         /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the future road.
-        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned int maxSearchRadius = 14);
+        bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius = 14);
 
         /// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
         bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction> &route);

@@ -38,10 +38,10 @@ class dskGameLoader :
         void LC_Status_Error(const std::string& error) override;
 
     private:
-        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+        void Msg_Timer(const unsigned ctrl_id) override;
 
-        unsigned int position;
+        unsigned position;
         GameWorldBase& world;
 };
 

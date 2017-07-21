@@ -28,9 +28,9 @@ class ctrlColorButton : public ctrlButton, public ctrlBaseColor
 {
     public:
 
-        ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
+        ctrlColorButton(Window* parent, unsigned id, const DrawPoint& pos,
                         const Extent& size, const TextureColor tc,
-                        unsigned int fillColor, const std::string& tooltip);
+                        unsigned fillColor, const std::string& tooltip);
 
     protected:
 

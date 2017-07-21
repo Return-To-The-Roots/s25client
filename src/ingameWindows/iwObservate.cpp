@@ -64,7 +64,7 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
     AddImageButton(4, btPos, btSize, TC_GREY, LOADER.GetImageN("io", 109), _("Resize window"));
 }
 
-void iwObservate::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch (ctrl_id)
     {

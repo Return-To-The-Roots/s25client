@@ -345,7 +345,7 @@ class GamePlayer: public GamePlayerInfo
         //////////////////////////////////////////////////////////////////////////
         // Statistik-Sachen
 
-        void SetStatisticValue(StatisticType type, unsigned int value);
+        void SetStatisticValue(StatisticType type, unsigned value);
         void ChangeStatisticValue(StatisticType type, int change);
 
         void IncreaseMerchandiseStatistic(GoodType type);
@@ -355,7 +355,7 @@ class GamePlayer: public GamePlayerInfo
         void StatisticStep();
 
         const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
-        const unsigned int GetStatisticCurrentValue(unsigned int idx) const { RTTR_Assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
+        const unsigned GetStatisticCurrentValue(unsigned idx) const { RTTR_Assert(idx < STAT_TYPE_COUNT); return(statisticCurrentData[idx]);}
 
         // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
         void TestForEmergencyProgramm();

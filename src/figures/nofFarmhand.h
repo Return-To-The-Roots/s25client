@@ -76,7 +76,7 @@ class nofFarmhand : public nofBuildingWorker
     protected:  void Serialize_nofFarmhand(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmhand(sgd); }
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
         /// Findet heraus, ob der Beruf an diesem Punkt arbeiten kann
         bool IsPointAvailable(const MapPoint pt) const;
         /// Returns the quality of this working point or determines if the worker can work here at all

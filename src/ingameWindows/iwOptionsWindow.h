@@ -26,8 +26,8 @@ class iwOptionsWindow : public IngameWindow
         iwOptionsWindow();
 
     private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position) override;
 };
 
 #endif

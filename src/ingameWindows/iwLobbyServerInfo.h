@@ -37,7 +37,7 @@ class iwLobbyServerInfo : public IngameWindow
     protected:
         void UpdateServerInfo();
 
-        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_Timer(const unsigned ctrl_id) override;
 
 
 };

@@ -100,7 +100,7 @@ bool Loader::LoadFilesAtStart()
  *
  *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
  */
-bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal)
+bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal)
 {
     if(file.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + file);
@@ -114,7 +114,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
     if(bfs::is_directory(file))
     {
         // yes, load all files in the directory
-        unsigned int ladezeit = VIDEODRIVER.GetTickCount();
+        unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
         LOG.write(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % GetFilePath(file);
 
@@ -160,10 +160,10 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned int file_id, 
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal)
+bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* files, bool isOriginal)
 {
     // load the files or directorys
-    for(unsigned int i = 0; i < files_count; ++i)
+    for(unsigned i = 0; i < files_count; ++i)
     {
         if(files[i] == 0xFFFFFFFF)
             continue;
@@ -184,11 +184,11 @@ bool Loader::LoadFilesFromArray(const unsigned int files_count, const unsigned i
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadLsts(unsigned int dir)
+bool Loader::LoadLsts(unsigned dir)
 {
     // systemweite lsts laden
-    unsigned int files_count;
-    unsigned int files[2] = {dir, dir + 3};
+    unsigned files_count;
+    unsigned files[2] = {dir, dir + 3};
 
     if(GetFilePath(FILE_PATHS[dir]) == GetFilePath(FILE_PATHS[dir + 3]))
         files_count = 1;
@@ -252,7 +252,7 @@ bool Loader::LoadSounds()
 
     std::vector<std::string> oggFiles = ListDir(GetFilePath(FILE_PATHS[50]), "ogg");
 
-    unsigned int i = 0;
+    unsigned i = 0;
     sng_lst.alloc(oggFiles.size());
     for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
     {
@@ -309,13 +309,13 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
  *  zerlegt einen String in Einzelteile
  *  Wird für das richtige Laden der Dateien benutzt.
  */
-std::vector<std::string> Loader::ExplodeString(std::string const& line, const char delim, const unsigned int max)
+std::vector<std::string> Loader::ExplodeString(std::string const& line, const char delim, const unsigned max)
 {
     std::istringstream in(line);
     std::vector<std::string> result;
     std::string token;
 
-    unsigned int len = 0;
+    unsigned len = 0;
     while(std::getline(in, token, delim) && result.size() < max - 1)
     {
         len += token.size() + 1;
@@ -427,7 +427,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 {
     RTTR_Assert(gfxset <= LT_WINTERWORLD);
     using namespace boost::assign; // Adds the vector += operator
-    std::vector<unsigned int> files;
+    std::vector<unsigned> files;
 
     files += 26, 44, 45, 86, 92,                             // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
             58, 59, 60, 61, 62, 63,                          // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
@@ -456,7 +456,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     lastgfx = gfxset;
 
-    for (unsigned int nation = 0; nation < NAT_COUNT; ++nation)
+    for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
         nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
 
     map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
@@ -622,8 +622,8 @@ void Loader::fillCaches()
                         }
                     }
 
-                    unsigned int good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
-                    unsigned int body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
+                    unsigned good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
+                    unsigned body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
 
                     if (bob_jobs->getLink(good) == 92)
                     {
@@ -773,8 +773,8 @@ void Loader::fillCaches()
                         id = ware;
                     }
 
-                    unsigned int good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
-                    unsigned int body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
+                    unsigned good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
+                    unsigned body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
 
                     /*if(bob_jobs->getLink(good) == 92)
                     {
@@ -816,9 +816,9 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                for(unsigned int x = 0; x < width; ++x)
+                for(unsigned x = 0; x < width; ++x)
                 {
-                    for(unsigned int y = 0; y < height; ++y)
+                    for(unsigned y = 0; y < height; ++y)
                     {
                         if(buffer[y * width + x] >= start_index && buffer[y * width + x] < start_index + color_count)
                         {
@@ -943,7 +943,7 @@ bool Loader::CreateTerrainTextures()
     return true;
 }
 
-glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned int nr)
+glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.get(nr));
 }
@@ -953,27 +953,27 @@ glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.find(name));
 }
 
-glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned int nr)
+glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv.get(nr));
 }
 
-glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned int nr)
+glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned nr)
 {
     return dynamic_cast<glArchivItem_Font*>(files_[file].archiv.get(nr));
 }
 
-libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned int nr)
+libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
 {
     return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv.get(nr));
 }
 
-glArchivItem_Sound* Loader::GetSoundN(const std::string& file, unsigned int nr)
+glArchivItem_Sound* Loader::GetSoundN(const std::string& file, unsigned nr)
 {
     return dynamic_cast<glArchivItem_Sound*>(files_[file].archiv.get(nr));
 }
 
-std::string Loader::GetTextN(const std::string& file, unsigned int nr)
+std::string Loader::GetTextN(const std::string& file, unsigned nr)
 {
     libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv.get(nr)); return archiv ? archiv->getText() : "text missing";
 }
@@ -988,41 +988,41 @@ glArchivItem_Bob* Loader::GetBobN(const std::string& file)
     return dynamic_cast<glArchivItem_Bob*>(files_[file].archiv.get(0));
 }
 
-glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned int nation, unsigned int nr)
+glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned nation, unsigned nr)
 {
     return dynamic_cast<glArchivItem_BitmapBase*>(nation_gfx[nation]->get(nr));
 }
 
-glArchivItem_Bitmap* Loader::GetNationImage(unsigned int nation, unsigned int nr)
+glArchivItem_Bitmap* Loader::GetNationImage(unsigned nation, unsigned nr)
 {
     glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
     RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap*>(bmp));
     return static_cast<glArchivItem_Bitmap*>(bmp);
 }
 
-glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned int nation, unsigned int nr)
+glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned nation, unsigned nr)
 {
     glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
     RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap_Player*>(bmp));
     return static_cast<glArchivItem_Bitmap_Player*>(bmp);
 }
 
-glArchivItem_Bitmap* Loader::GetMapImageN(unsigned int nr)
+glArchivItem_Bitmap* Loader::GetMapImageN(unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr));
 }
 
-glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned int nr)
+glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
 }
 
-glArchivItem_Bitmap* Loader::GetTexImageN(unsigned int nr)
+glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
 {
     return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr));
 }
 
-libsiedler2::ArchivItem_Palette* Loader::GetTexPaletteN(unsigned int nr)
+libsiedler2::ArchivItem_Palette* Loader::GetTexPaletteN(unsigned nr)
 {
     return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr));
 }
@@ -1148,7 +1148,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
  */
 bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv)
 {
-    unsigned int ladezeit = VIDEODRIVER.GetTickCount();
+    unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
     std::string file = GetFilePath(pfad);
 
@@ -1385,7 +1385,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     if(newEntries.size() > existing->size())
         existing->alloc_inc(newEntries.size() - existing->size());
 
-    for(unsigned int i = 0; i < newEntries.size(); ++i)
+    for(unsigned i = 0; i < newEntries.size(); ++i)
     {
         if(newEntries.get(i))
         {

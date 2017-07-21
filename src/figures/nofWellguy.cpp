@@ -60,10 +60,10 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
         {4, 5, 0, 3, 2, 1}
     };
 
-    unsigned int max_id = 112;
+    unsigned max_id = 112;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = gwg->GetPlayer(player).color;
+    unsigned plColor = gwg->GetPlayer(player).color;
 
     //position zum rauslaufen berechnen
     DrawPoint walkOutPos = drawPt + walkoffsets[wpNation][now_id % 8];

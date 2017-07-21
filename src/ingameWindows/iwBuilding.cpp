@@ -155,7 +155,7 @@ void iwBuilding::Msg_PaintAfter()
             }
 
             std::stringstream text;
-            text << (unsigned int)building->GetWares(i) << "/" << wares_count;
+            text << (unsigned)building->GetWares(i) << "/" << wares_count;
             NormalFont->Draw(curPos + DrawPoint(0, 12), text.str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
             curPos.y += 29;
         }
@@ -163,7 +163,7 @@ void iwBuilding::Msg_PaintAfter()
 }
 
 
-void iwBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

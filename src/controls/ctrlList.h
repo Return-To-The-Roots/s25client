@@ -29,7 +29,7 @@ class glArchivItem_Font;
 class ctrlList : public Window
 {
     public:
-        ctrlList(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
+        ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
         ~ctrlList() override;
 
         /// Größe verändern
@@ -76,7 +76,7 @@ class ctrlList : public Window
 
         int selection_;
         int mouseover;
-        unsigned int pagesize;
+        unsigned pagesize;
 
 };
 

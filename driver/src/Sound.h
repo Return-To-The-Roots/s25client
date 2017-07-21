@@ -29,8 +29,8 @@ class Sound
         void SetNr(int nr) { this->nr = nr; }
         int GetNr() { return nr; }
 
-        void SetType(unsigned int type) { this->type = (SoundType)type; }
-        unsigned int GetType() { return type; }
+        void SetType(unsigned type) { this->type = (SoundType)type; }
+        unsigned GetType() { return type; }
 
         bool IsMusic() { return (type == SD_MUSIC); }
         bool IsEffect() { return (type == SD_EFFECT); }

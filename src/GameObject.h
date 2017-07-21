@@ -44,7 +44,7 @@ class GameObject
         virtual void Destroy() = 0;
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        virtual void HandleEvent(const unsigned int  /*id*/) {}
+        virtual void HandleEvent(const unsigned  /*id*/) {}
 
         /// Gibt Objekt-ID zurück.
         unsigned GetObjId() const { return objId; }
@@ -67,7 +67,7 @@ class GameObject
 
 
     private:
-        unsigned int objId; /// eindeutige Objekt-ID
+        unsigned objId; /// eindeutige Objekt-ID
 
 // Static members
     public:

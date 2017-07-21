@@ -61,7 +61,7 @@ dskLAN::dskLAN(): dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DI
     AddTimer(ID_tmrRefreshList, 2000);
 }
 
-void dskLAN::Msg_Timer(const unsigned int ctrl_id)
+void dskLAN::Msg_Timer(const unsigned ctrl_id)
 {
     if (ctrl_id == ID_tmrRefreshServers)
         discovery.Refresh();
@@ -77,7 +77,7 @@ void dskLAN::Msg_PaintBefore()
     discovery.Run();
 }
 
-void dskLAN::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -124,7 +124,7 @@ void dskLAN::UpdateServerList()
 
     ctrlTable* servertable = GetCtrl<ctrlTable>(ID_tblServer);
 
-    unsigned int selection = servertable->GetSelection();
+    unsigned selection = servertable->GetSelection();
     if(selection == 0xFFFF)
         selection = 0;
     unsigned short column = servertable->GetSortColumn();
@@ -153,7 +153,7 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     ctrlTable* table = GetCtrl<ctrlTable>(ID_tblServer);
-    unsigned int selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
+    unsigned selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
     if (selection >= openGames.size())
         return false;
 

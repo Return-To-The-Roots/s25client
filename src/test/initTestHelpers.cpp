@@ -34,7 +34,7 @@
 
 void SegFaultHandler(int /*sig*/)
 {
-    const unsigned int maxTrace = 256;
+    const unsigned maxTrace = 256;
     void* stacktrace[maxTrace];
     unsigned num_frames = backtrace(stacktrace, maxTrace);
     char** stacktraceNames = backtrace_symbols(stacktrace, num_frames);

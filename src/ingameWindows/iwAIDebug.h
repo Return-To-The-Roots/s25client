@@ -32,9 +32,9 @@ class iwAIDebug : public IngameWindow
         iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais);
 
     private:
-        void Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection) override;
-        //void Msg_ButtonClick(const unsigned int ctrl_id);
-        //void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position);
+        void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+        //void Msg_ButtonClick(const unsigned ctrl_id);
+        //void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position);
         void Msg_PaintBefore() override;
 
     private:

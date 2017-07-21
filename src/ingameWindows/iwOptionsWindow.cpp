@@ -93,7 +93,7 @@ iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow
 }
 
 
-void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -151,7 +151,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwOptionsWindow::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
+void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {

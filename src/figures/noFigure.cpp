@@ -431,7 +431,7 @@ void noFigure::WalkToGoal()
     }
 }
 
-void noFigure::HandleEvent(const unsigned int id)
+void noFigure::HandleEvent(const unsigned id)
 {
     // Bei ID = 0 ists ein Laufevent, bei allen anderen an abgeleitete Klassen weiterleiten
     if(id)
@@ -829,7 +829,7 @@ void noFigure::CorrectSplitData_Derived()
 {
 }
 
-void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned int ware, bool fat)
+void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
 {
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
@@ -842,7 +842,7 @@ void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned int ware, bool f
 }
 
 
-void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned int job)
+void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned job)
 {
     if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
     {
@@ -860,7 +860,7 @@ void noFigure::DrawWalkingBobJobs(DrawPoint drawPt, unsigned int job)
     LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][job][GetCurMoveDir().toUInt()][ani_step].draw(drawPt, 0xFFFFFFFF, gwg->GetPlayer(player).color);
 }
 
-void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned int id, bool fat, bool waitingsoldier)
+void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat, bool waitingsoldier)
 {
     // Wenn wir warten auf ein freies Plätzchen, müssen wir den stehend zeichnen!
     unsigned ani_step = waiting_for_free_node || waitingsoldier ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;
@@ -874,7 +874,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned in
 }
 
 /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned int id)
+void noFigure::DrawWalking(DrawPoint drawPt, const char* const file, unsigned id)
 {
     // Wenn wir warten, ani-step 2 benutzen
     unsigned ani_step = waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[ascent], current_ev) % 8;

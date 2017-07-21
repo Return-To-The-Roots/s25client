@@ -239,7 +239,7 @@ bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned lis
 	return false;
 }
 
-bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned int maxSearchRadius /*= 14*/)
+bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius /*= 14*/)
 {
     // TODO: die methode kann  ganz schön böse Laufzeiten bekommen... Optimieren?
 
@@ -278,7 +278,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 #endif
 
     std::vector<const noFlag*>::iterator shortest = flags.end();
-    unsigned int shortestLength = 99999;
+    unsigned shortestLength = 99999;
     std::vector<Direction> tmpRoute;
     bool found = false;
 
@@ -287,7 +287,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     {
         const noFlag& curFlag = **flagIt;
         tmpRoute.clear();
-        unsigned int length;
+        unsigned length;
 		// the flag should not be at a military building!		
 		if (aii.IsMilitaryBuildingOnNode(aii.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST)))
 			continue;
@@ -794,7 +794,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
             continue;
 
         route.clear();
-        unsigned int newLength;
+        unsigned newLength;
 		// the flag should not be at a military building!		
 		if (aii.IsMilitaryBuildingOnNode(aii.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST)))
 			continue;
@@ -807,7 +807,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
             continue;
 
         // Wenn ja, dann gucken ob unser momentaner Weg zu dieser Flagge vielleicht voll weit ist und sich eine Straße lohnt
-        unsigned int oldLength = 0;
+        unsigned oldLength = 0;
 
         // Aktuelle Strecke zu der Flagge
         bool pathAvailable = aii.FindPathOnRoads(curFlag, *flag, &oldLength);

@@ -21,11 +21,11 @@
 #include <cstdio>
 
 ctrlPercent::ctrlPercent(Window* parent,
-                         unsigned int id,
+                         unsigned id,
                          const DrawPoint& pos,
                          const Extent& size,
                          TextureColor tc,
-                         unsigned int text_color,
+                         unsigned text_color,
                          glArchivItem_Font* font,
                          const unsigned short* percentage)
     : Window(parent, id, pos, size),

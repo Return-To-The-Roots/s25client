@@ -25,7 +25,7 @@
 #include <string>
 
 ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
-                                   const unsigned int id,
+                                   const unsigned id,
                                    const DrawPoint& pos,
                                    const BuildingType type,
                                    const Nation nation,

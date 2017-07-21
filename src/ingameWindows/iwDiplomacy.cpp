@@ -170,7 +170,7 @@ void iwDiplomacy::Msg_PaintAfter()
     }
 }
 
-void iwDiplomacy::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if (gwv.GetWorld().GetGGS().lockedTeams)
     {
@@ -277,7 +277,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
 }
 
 
-void iwSuggestPact::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
+void iwSuggestPact::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
 {
     /// Dauer auswählen (wenn id == DURATION_COUNT, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();

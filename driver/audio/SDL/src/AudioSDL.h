@@ -51,7 +51,7 @@ class AudioSDL : public AudioDriver
         Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size) override;
 
         /// Spielt Sound ab
-        unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;
+        unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;
         /// Spielt Midi ab
         void PlayMusic(Sound* sound, const unsigned repeats) override;
         /// Stoppt die Musik.

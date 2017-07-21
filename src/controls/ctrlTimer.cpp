@@ -31,8 +31,8 @@
  */
 
 ctrlTimer::ctrlTimer(Window* parent,
-                     unsigned int id,
-                     unsigned int timeout)
+                     unsigned id,
+                     unsigned timeout)
     : Window(parent, id, DrawPoint(0, 0))
 {
     Start(timeout);
@@ -41,7 +41,7 @@ ctrlTimer::ctrlTimer(Window* parent,
 /**
  *  startet den Timer.
  */
-void ctrlTimer::Start(unsigned int timeout)
+void ctrlTimer::Start(unsigned timeout)
 {
     this->timeout = timeout;
 

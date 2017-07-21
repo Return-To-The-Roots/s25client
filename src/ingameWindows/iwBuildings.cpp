@@ -134,7 +134,7 @@ void iwBuildings::Msg_PaintAfter()
     }
 }
 
-void iwBuildings::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 {	
     if (ctrl_id == 32) // Help button
     {

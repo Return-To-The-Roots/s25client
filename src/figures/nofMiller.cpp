@@ -49,7 +49,7 @@ void nofMiller::DrawWorking(DrawPoint drawPt)
     const DrawPointInit offsets_sitdown[NAT_COUNT] = { {23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8} };
     const DrawPointInit walkoffsets[8] = { {8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8} };
 
-    unsigned int max_id = 120;
+    unsigned max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     bool rotate_sails = true;
 

@@ -200,7 +200,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
     // Die Fahne, die anzeigt wie weit das Gebäude von der Grenze entfernt ist, zeichnen
     unsigned frontier_distance_tmp = frontier_distance;
     glArchivItem_Bitmap_Player* bitmap = NULL;
-    unsigned int animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
+    unsigned animationFrame = GAMECLIENT.GetGlobalAnimation(4, 1, 1, pos.x * pos.y * GetObjId());
     if(new_built)
     {
         // don't draw a flag for new buildings - fixes bug #215
@@ -224,7 +224,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
         LOADER.GetMapImageN(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][type_]);
 }
 
-void nobMilitary::HandleEvent(const unsigned int id)
+void nobMilitary::HandleEvent(const unsigned id)
 {
     switch(id)
     {
@@ -317,7 +317,7 @@ void nobMilitary::HandleEvent(const unsigned int id)
     }
 }
 
-unsigned int nobMilitary::GetMilitaryRadius() const
+unsigned nobMilitary::GetMilitaryRadius() const
 {
     return MILITARY_RADIUS[size];
 }
@@ -809,7 +809,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
         (GetTroopsCount() > 1) ?
         ((GetTroopsCount() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / 5) : 0;
 
-    unsigned int distance = gwg->CalcDistance(pos, dest);
+    unsigned distance = gwg->CalcDistance(pos, dest);
 
     // Falls Entfernung größer als Basisreichweite, Soldaten subtrahieren
     if (distance > BASE_ATTACKING_DISTANCE)

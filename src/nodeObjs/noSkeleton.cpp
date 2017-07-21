@@ -66,7 +66,7 @@ void noSkeleton::Draw(DrawPoint drawPt)
     LOADER.GetMapImageN(547 + type)->DrawFull(drawPt);
 }
 
-void noSkeleton::HandleEvent(const unsigned int  /*id*/)
+void noSkeleton::HandleEvent(const unsigned  /*id*/)
 {
     if(!type)
     {

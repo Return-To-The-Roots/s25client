@@ -59,7 +59,7 @@ glArchivItem_BitmapBase& glArchivItem_BitmapBase::operator=(const glArchivItem_B
 /**
  *  Liefert das GL-Textur-Handle.
  */
-unsigned int glArchivItem_BitmapBase::GetTexture()
+unsigned glArchivItem_BitmapBase::GetTexture()
 {
     if(texture == 0)
         GenerateTexture();
@@ -79,7 +79,7 @@ void glArchivItem_BitmapBase::DeleteTexture()
 /**
  *  Setzt den Texturfilter auf einen bestimmten Wert.
  */
-void glArchivItem_BitmapBase::setFilter(unsigned int filter)
+void glArchivItem_BitmapBase::setFilter(unsigned filter)
 {
     if(this->filter == filter)
         return;

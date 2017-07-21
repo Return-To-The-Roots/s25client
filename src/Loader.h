@@ -101,30 +101,30 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
         libsiedler2::ArchivInfo* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift = 0);
 
-        bool LoadFilesFromArray(const unsigned int files_count, const unsigned int* files, bool isOriginal);
-        bool LoadLsts(unsigned int dir);
-        bool LoadFileOrDir(const std::string& file, const unsigned int file_id, bool isOriginal);
+        bool LoadFilesFromArray(const unsigned files_count, const unsigned* files, bool isOriginal);
+        bool LoadLsts(unsigned dir);
+        bool LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal);
 
         static bool SortFilesHelper(const std::string& lhs, const std::string& rhs);
-        static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned int max = 0xFFFFFFFF);
+        static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned max = 0xFFFFFFFF);
 
     public:
-        glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned int nr);
+        glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
         glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
-        glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned int nr);
-        glArchivItem_Font* GetFontN(const std::string& file, unsigned int nr);
-        libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned int nr = 0);
-        glArchivItem_Sound* GetSoundN(const std::string& file, unsigned int nr);
-        std::string GetTextN(const std::string& file, unsigned int nr);
+        glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
+        glArchivItem_Font* GetFontN(const std::string& file, unsigned nr);
+        libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
+        glArchivItem_Sound* GetSoundN(const std::string& file, unsigned nr);
+        std::string GetTextN(const std::string& file, unsigned nr);
         libsiedler2::ArchivInfo* GetInfoN(const std::string& file);
         glArchivItem_Bob* GetBobN(const std::string& file);
-        glArchivItem_BitmapBase* GetNationImageN(unsigned int nation, unsigned int nr);
-        glArchivItem_Bitmap* GetNationImage(unsigned int nation, unsigned int nr);
-        glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned int nation, unsigned int nr);
-        glArchivItem_Bitmap* GetMapImageN(unsigned int nr);
-        glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned int nr);
-        glArchivItem_Bitmap* GetTexImageN(unsigned int nr);
-        libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned int nr);
+        glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
+        glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
+        glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned nation, unsigned nr);
+        glArchivItem_Bitmap* GetMapImageN(unsigned nr);
+        glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
+        glArchivItem_Bitmap* GetTexImageN(unsigned nr);
+        libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned nr);
         libsiedler2::ArchivItem_Ini* GetSettingsIniN(const std::string& name);
         /// Returns the texture for the given terrain. For animated textures the given frame is returned
         glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);

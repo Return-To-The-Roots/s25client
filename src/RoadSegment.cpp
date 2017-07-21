@@ -38,7 +38,7 @@ RoadSegment::RoadSegment(const RoadType rt,
     carriers_[0] = carriers_[1] = NULL;
 }
 
-RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned int obj_id)
+RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id),
       rt(static_cast<RoadType>(sgd.PopUnsignedChar())),
       f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
@@ -129,7 +129,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     std::vector<Direction> old_route(route);
 
     // Stelle herausfinden, an der der Weg zerschnitten wird ( = Länge des ersten Teilstücks )
-    unsigned int length1, length2;
+    unsigned length1, length2;
     MapPoint t = f1->GetPos();
     for(length1 = 0; length1 < route.size(); ++length1)
     {
@@ -142,7 +142,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     length2 = this->route.size() - length1;
 
     std::vector<Direction> second_route(length2);
-    for(unsigned int i = 0; i < length2; ++i)
+    for(unsigned i = 0; i < length2; ++i)
         second_route[i] = this->route[length1 + i];
 
     RoadSegment* second = new RoadSegment(rt, splitflag, f2, second_route);
@@ -205,7 +205,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
  */
 bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware_immediately) const
 {
-    unsigned int jobs_count;
+    unsigned jobs_count;
 
     // Anzahl der Waren, die getragen werden wollen, ermitteln
     if(flag)

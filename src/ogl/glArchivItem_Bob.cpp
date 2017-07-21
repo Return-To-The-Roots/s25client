@@ -24,10 +24,10 @@
 /**
  *  Zeichnet einen Animationsstep.
  */
-void glArchivItem_Bob::Draw(unsigned int item, unsigned int direction, bool fat, unsigned int animationstep, DrawPoint drawPt, unsigned int color)
+void glArchivItem_Bob::Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color)
 {
-    unsigned int good = item * 96 + animationstep * 12 + ( (direction + 3) % 6 ) + fat * 6;
-    unsigned int body = fat * 48 + ( (direction + 3) % 6 ) * 8 + animationstep;
+    unsigned good = item * 96 + animationstep * 12 + ( (direction + 3) % 6 ) + fat * 6;
+    unsigned body = fat * 48 + ( (direction + 3) % 6 ) * 8 + animationstep;
     if(links[good] == 92)
     {
         good -= fat * 6;

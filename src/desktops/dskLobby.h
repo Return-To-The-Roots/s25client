@@ -55,12 +55,12 @@ class dskLobby:
         void LC_Chat(const std::string& player, const std::string& text) override;
 
     protected:
-        void Msg_Timer(const unsigned int ctrl_id) override;
+        void Msg_Timer(const unsigned ctrl_id) override;
         void Msg_PaintBefore() override;
         void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_TableRightButton(const unsigned int ctrl_id, const int selection) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_EditEnter(const unsigned ctrl_id) override;
+        void Msg_TableRightButton(const unsigned ctrl_id, const int selection) override;
         void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
         /**

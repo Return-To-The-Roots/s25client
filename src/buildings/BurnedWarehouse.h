@@ -51,7 +51,7 @@ class BurnedWarehouse : public noCoordBase
         GO_Type GetGOT() const override { return GOT_BURNEDWAREHOUSE; }
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         void Draw(DrawPoint /*drawPt*/) override {}
 };

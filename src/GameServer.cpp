@@ -816,7 +816,7 @@ void GameServer::ExecuteGameFrame()
     if(framesinfo.isPaused)
         return;
 
-    unsigned int currentTime = VIDEODRIVER.GetTickCount();
+    unsigned currentTime = VIDEODRIVER.GetTickCount();
 
     // prüfen ob GF vergangen
     if(currentTime - framesinfo.lastTime >= framesinfo.gf_length || skiptogf > currentGF)
@@ -980,7 +980,7 @@ unsigned char GameServer::GetLaggingPlayer() const
 /**
  *  Sendet ein NC-Paket ohne Befehle.
  */
-void GameServer::SendNothingNC(const unsigned int& id)
+void GameServer::SendNothingNC(const unsigned& id)
 {
     SendToAll(GameMessage_GameCommand(id, AsyncChecksum(0), std::vector<gc::GameCommandPtr>()));
 }
@@ -1076,7 +1076,7 @@ inline void GameServer::OnGameMessage(const GameMessage_Pong& msg)
 
     GameServerPlayer& player = players[msg.player];
 
-    unsigned int currenttime = VIDEODRIVER.GetTickCount();
+    unsigned currenttime = VIDEODRIVER.GetTickCount();
 
     player.ping = (unsigned short)(currenttime - player.lastping);
     player.pinging = false;

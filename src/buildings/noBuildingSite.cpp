@@ -218,18 +218,18 @@ void noBuildingSite::Draw(DrawPoint drawPt)
         // Rohbau
 
         // ausrechnen, wie weit er ist
-        unsigned int p1 = 0, p2 = 0;
+        unsigned p1 = 0, p2 = 0;
 
         if(BUILDING_COSTS[nation][GetBuildingType()].stones)
         {
             // Haus besteht aus Steinen und Brettern
-            p1 = min<unsigned int>(build_progress, BUILDING_COSTS[nation][GetBuildingType()].boards * 8);
+            p1 = min<unsigned>(build_progress, BUILDING_COSTS[nation][GetBuildingType()].boards * 8);
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 8;
         }
         else
         {
             // Haus besteht nur aus Brettern, dann 50:50
-            p1 = min<unsigned int>(build_progress, BUILDING_COSTS[nation][GetBuildingType()].boards * 4);
+            p1 = min<unsigned>(build_progress, BUILDING_COSTS[nation][GetBuildingType()].boards * 4);
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 

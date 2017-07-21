@@ -34,8 +34,8 @@
 #   include <cstring>
 #endif
 
-const unsigned int Settings::SETTINGS_VERSION = 12;
-const unsigned int Settings::SETTINGS_SECTIONS = 11;
+const unsigned Settings::SETTINGS_VERSION = 12;
+const unsigned Settings::SETTINGS_SECTIONS = 11;
 const std::string Settings::SETTINGS_SECTION_NAMES[] =
 {
     "global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"
@@ -177,7 +177,7 @@ bool Settings::Load()
     // ist eine der Kategorien nicht vorhanden?
     if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface || !iniIngame || !iniAddons ||
             // stimmt die Settingsversion?
-            ((unsigned int)iniGlobal->getValueI("version") != SETTINGS_VERSION)
+            ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION)
       )
     {
         // nein, dann Standardeinstellungen laden
@@ -288,7 +288,7 @@ bool Settings::Load()
 
     // addons
     // {
-    for(unsigned int addon = 0; addon < iniAddons->size(); ++addon)
+    for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
     {
         const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
 
@@ -309,7 +309,7 @@ void Settings::Save()
     {
         libsiedler2::ArchivItem_Ini item;
         configInfo.alloc(SETTINGS_SECTIONS);
-        for(unsigned int i = 0; i < SETTINGS_SECTIONS; ++i)
+        for(unsigned i = 0; i < SETTINGS_SECTIONS; ++i)
         {
             item.setName(SETTINGS_SECTION_NAMES[i]);
             configInfo.setC(i, item);
@@ -420,7 +420,7 @@ void Settings::Save()
     // addons
     // {
     iniAddons->clear();
-    for(std::map<unsigned int, unsigned int>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
+    for(std::map<unsigned, unsigned>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
     {
         std::stringstream name, value;
         name << it->first;

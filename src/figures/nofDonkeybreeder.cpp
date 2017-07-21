@@ -34,7 +34,7 @@ nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nob
 {
 }
 
-nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned int obj_id)
+nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id)
     : nofWorkman(sgd, obj_id)
 {
 }

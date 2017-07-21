@@ -32,7 +32,7 @@ SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(0)
 SoundManager::~SoundManager()
 {}
 
-void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned int id, unsigned char volume)
+void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume)
 {
     if (GAMECLIENT.IsPaused())
         return;
@@ -98,7 +98,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
         return;
 
     // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
-    unsigned interval;
+    unsignederval;
     if(1000 > tree_count * 10)
         interval = 1000 - tree_count * 10;
     else

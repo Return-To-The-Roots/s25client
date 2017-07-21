@@ -32,7 +32,7 @@ class iwMainMenu : public IngameWindow
         GameWorldView& gwv;
         GameCommandFactory& gcFactory;
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwMAINMENU_H_INCLUDED

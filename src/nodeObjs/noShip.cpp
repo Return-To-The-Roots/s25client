@@ -38,7 +38,7 @@
 #include "gameData/GameConsts.h"
 #include "Log.h"
 
-const unsigned int ship_count = 55;
+const unsigned ship_count = 55;
 
 /// Zeit zum Beladen des Schiffes
 const unsigned LOADING_TIME = 200;
@@ -240,7 +240,7 @@ void noShip::DrawDrivingWithWares(DrawPoint& drawPt)
     LOADER.GetImageN("boot_z",  30 + (GetCurMoveDir() + 3u).toUInt())->DrawFull(drawPt);
 }
 
-void noShip::HandleEvent(const unsigned int id)
+void noShip::HandleEvent(const unsigned id)
 {
     RTTR_Assert(current_ev);
     RTTR_Assert(current_ev->id == id);

@@ -242,7 +242,7 @@ class AIInterface: public GameCommandFactory
         bool IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const;
 
         /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a given starting harbor
-        bool IsExplorationDirectionPossible(const MapPoint pt, unsigned int originHarborID, ShipDirection direction) const;
+        bool IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
 
         void SetCoinsAllowed(const nobMilitary* building, const bool enabled);
         using GameCommandFactory::SetCoinsAllowed;

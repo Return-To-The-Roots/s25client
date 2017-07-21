@@ -102,7 +102,7 @@ void nofTradeLeader::Walked()
     }
 }
 
-void nofTradeLeader::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofTradeLeader::HandleDerivedEvent(const unsigned  /*id*/)
 {
 }
 void nofTradeLeader::AbrogateWorkplace()

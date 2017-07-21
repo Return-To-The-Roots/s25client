@@ -64,7 +64,7 @@ class WindowManager : public Singleton<WindowManager>, public VideoDriverLoaderI
         /// schliesst ein IngameWindow und entfernt es aus der Fensterliste.
         void Close(const IngameWindow* window);
         /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
-        void Close(unsigned int id);
+        void Close(unsigned id);
         /// merkt einen Desktop zum Wechsel vor.
         void Switch(Desktop* desktop, bool mouse = false);
         /// Verarbeitung des Drückens der Linken Maustaste.

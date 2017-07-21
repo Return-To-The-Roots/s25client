@@ -47,9 +47,9 @@ class dskCredits : public Desktop
             {
                 Line(const char* const text): line(text), column(0) { }
                 Line(const std::string& text): line(text), column(0) { }
-                Line(const std::string& text, unsigned int c): line(text), column(0) { }
+                Line(const std::string& text, unsigned c): line(text), column(0) { }
                 std::string line;
-                unsigned int column;
+                unsigned column;
             };
             std::string title;
             std::string lastLine;
@@ -76,9 +76,9 @@ class dskCredits : public Desktop
 
         std::vector<Bob> bobs;
 
-        unsigned int startTime;
-        unsigned int bobTime;
-        unsigned int bobSpawnTime;
+        unsigned startTime;
+        unsigned bobTime;
+        unsigned bobSpawnTime;
 };
 
 #endif // !dskCREDITS_H_INCLUDED

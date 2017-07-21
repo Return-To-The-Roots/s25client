@@ -100,7 +100,7 @@ void WaitForEnter()
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
  *  @param[in] exception_pointer Genaue Beschreibung der Exception (siehe GetExceptionInformation)
  */
-void ExceptionHandler (unsigned int exception_type, _EXCEPTION_POINTERS* exception_pointer)
+void ExceptionHandler (unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
     fatal_error("C-Exception caught\n");
 }
@@ -353,7 +353,7 @@ int RunProgram(const std::string& argv0, po::variables_map& options)
         return 1;
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
-    srand(static_cast<unsigned int>(std::time(NULL)));
+    srand(static_cast<unsigned>(std::time(NULL)));
 
     // Exit-Handler initialisieren
     atexit(&ExitHandler);

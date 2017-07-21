@@ -27,7 +27,7 @@
  *  @param[in] volume Lautstärke des Sounds.
  *  @param[in] loop   Endlosschleife ja/nein
  */
-unsigned int glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
+unsigned glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {
     if(!SETTINGS.sound.effekte/* || !VIDEODRIVER.audiodriver*/)
         return 0xFFFFFFFF;

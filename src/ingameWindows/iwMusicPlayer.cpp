@@ -46,7 +46,7 @@ iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned
 }
 
 
-void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 1)
         playerWnd_.Msg_Input(win_id, GetCtrl<ctrlEdit>(0)->GetText());
@@ -54,7 +54,7 @@ void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned int ctrl_id)
     Close();
 }
 
-void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned int  /*ctrl_id*/)
+void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned  /*ctrl_id*/)
 {
     Msg_ButtonClick(1);
 }
@@ -148,7 +148,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned  /*ctrl_id*/, const int s
 
 }
 
-void iwMusicPlayer::Msg_ListChooseItem(const unsigned int ctrl_id, const unsigned selection)
+void iwMusicPlayer::Msg_ListChooseItem(const unsigned ctrl_id, const unsigned selection)
 {
     // Werte in Musikplayer bringen
     MUSICPLAYER.GetPlaylist().ReadMusicPlayer(this);
@@ -164,7 +164,7 @@ std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& combo_str)
     return (GetFilePath(FILE_PATHS[90]) + combo_str + ".pll");
 }
 
-void iwMusicPlayer::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -302,7 +302,7 @@ bool ValidateFile(const std::string& filename)
 }
 
 
-void iwMusicPlayer::Msg_Input(const unsigned int win_id, const std::string& msg)
+void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
 {
     switch(win_id)
     {
@@ -395,7 +395,7 @@ void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
         random_playback ? LOADER.GetImageN("io", 225) : LOADER.GetImageN("io", 107));
 }
 
-void iwMusicPlayer::SetCurrentSong(const unsigned int selection)
+void iwMusicPlayer::SetCurrentSong(const unsigned selection)
 {
     GetCtrl<ctrlList>(0)->SetSelection(selection);
 }

@@ -118,7 +118,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
     }
 }
 
-void nofHunter::HandleDerivedEvent(const unsigned int id)
+void nofHunter::HandleDerivedEvent(const unsigned id)
 {
     switch(state)
     {

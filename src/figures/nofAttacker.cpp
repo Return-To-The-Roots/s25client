@@ -965,7 +965,7 @@ void nofAttacker::SwitchStateAttackingWaitingForDefender()
     blocking_event = GetEvMgr().AddEvent(this, BLOCK_OFFSET, 5);
 }
 
-void nofAttacker::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofAttacker::HandleDerivedEvent(const unsigned  /*id*/)
 {
     // abfragen, nich dass er evtl schon losgelaufen ist wieder, weil das Gebäude abgebrannt wurde etc.
     if(state == STATE_ATTACKING_WAITINGFORDEFENDER)

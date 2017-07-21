@@ -774,7 +774,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
             (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
             ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1) * GetPlayer(player_attacker).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) : 0;
 
-        unsigned int distance = CalcDistance(pt, (*it)->GetPos());
+        unsigned distance = CalcDistance(pt, (*it)->GetPos());
 
         // Falls Entfernung größer als Basisreichweite, Soldaten subtrahieren
         if (distance > BASE_ATTACKING_DISTANCE)

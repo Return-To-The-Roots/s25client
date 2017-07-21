@@ -51,7 +51,7 @@ class nofScout_LookoutTower : public nofBuildingWorker
 
         GO_Type GetGOT() const override { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 };
 
 

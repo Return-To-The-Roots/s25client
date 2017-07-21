@@ -48,8 +48,8 @@ class iwBaseWarehouse : public iwWares, public IDataChangedListener
         void UpdateOverlay(unsigned i, bool isWare);
         void UpdateOverlays();
 
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 
         void SetPage(unsigned page) override;
 };

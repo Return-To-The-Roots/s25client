@@ -75,8 +75,8 @@ class VideoWinAPI : public VideoDriver
 
     private:
         /// Funktion zum Senden einer gedrückten Taste.
-        void OnWMChar(unsigned int c, bool disablepaste = false, LPARAM lParam = 0);
-        void OnWMKeyDown(unsigned int c, LPARAM lParam = 0);
+        void OnWMChar(unsigned c, bool disablepaste = false, LPARAM lParam = 0);
+        void OnWMKeyDown(unsigned c, LPARAM lParam = 0);
 
         /// Funktion zum Pasten von Text aus dem Clipboard.
         void OnWMPaste();

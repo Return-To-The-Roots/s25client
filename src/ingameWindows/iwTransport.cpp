@@ -132,7 +132,7 @@ void iwTransport::TransmitSettings()
 }
 
 
-void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;
@@ -233,7 +233,7 @@ void iwTransport::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwTransport::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void iwTransport::Msg_Timer(const unsigned  /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte

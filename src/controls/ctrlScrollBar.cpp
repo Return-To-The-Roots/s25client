@@ -23,7 +23,7 @@
 #include "driver/src/MouseCoords.h"
 
 ctrlScrollBar::ctrlScrollBar(Window* parent,
-                             unsigned int id,
+                             unsigned id,
                              const DrawPoint& pos,
                              const Extent& size,
                              unsigned short button_height,
@@ -126,7 +126,7 @@ bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlScrollBar::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

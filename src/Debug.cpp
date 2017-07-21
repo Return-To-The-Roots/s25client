@@ -156,7 +156,7 @@ bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
 bool DebugInfo::SendStackTrace()
 #endif
 {
-    const unsigned int maxTrace = 256;
+    const unsigned maxTrace = 256;
     void* stacktrace[maxTrace];
 
 #ifdef _WIN32
@@ -291,7 +291,7 @@ bool DebugInfo::SendReplay()
 
         f->ReadRawData(replay.get(), replay_len);
 
-        unsigned int compressed_len = replay_len * 2 + 600;
+        unsigned compressed_len = replay_len * 2 + 600;
         boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
 
         // send size of replay via socket
@@ -301,7 +301,7 @@ bool DebugInfo::SendReplay()
         }
 
         LOG.write("- Compressing...\n");
-        if (BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned int*) &compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
+        if (BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*) &compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
         {
             LOG.write("- Sending...\n");
 

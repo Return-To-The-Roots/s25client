@@ -42,7 +42,7 @@ class ctrlPreviewMinimap : public ctrlMinimap
     public:
 
         ctrlPreviewMinimap( Window* parent,
-                            const unsigned int id,
+                            const unsigned id,
                             const DrawPoint& pos,
                             const Extent& size,
                             glArchivItem_Map* s2map);

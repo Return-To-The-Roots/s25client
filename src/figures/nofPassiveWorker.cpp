@@ -60,7 +60,7 @@ void nofPassiveWorker::Draw(DrawPoint drawPt)
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-void nofPassiveWorker::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofPassiveWorker::HandleDerivedEvent(const unsigned  /*id*/)
 {
 
 }

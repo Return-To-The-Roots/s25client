@@ -54,24 +54,24 @@ class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevi
             frame_count = 0;
         }
 
-        inline unsigned int GetRuntime()
+        inline unsigned GetRuntime()
         {
             return run_time;
         }
 
-        inline unsigned int GetFrameCount()
+        inline unsigned GetFrameCount()
         {
             return frame_count;
         }
 
-        inline unsigned int GetAverageFPS()
+        inline unsigned GetAverageFPS()
         {
             if(run_time == 0)
                 return 0;
             return (frame_count / run_time);
         }
 
-        inline unsigned int GetFPS()
+        inline unsigned GetFPS()
         {
             return framerate;
         }
@@ -83,14 +83,14 @@ class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevi
         void DrawCursor();
 
     private:
-        unsigned int frames;
-        unsigned int frame_count;
-        unsigned int framerate;
-        unsigned int frame_time;
-        unsigned int run_time;
-        unsigned int last_time;
-		unsigned int skipgf_last_time;
-		unsigned int skipgf_last_report_gf;
+        unsigned frames;
+        unsigned frame_count;
+        unsigned framerate;
+        unsigned frame_time;
+        unsigned run_time;
+        unsigned last_time;
+		unsigned skipgf_last_time;
+		unsigned skipgf_last_report_gf;
         CursorType cursor_;
         CursorType cursor_next;
 };

@@ -27,7 +27,7 @@ class glArchivItem_Font;
 class ctrlText : public Window, public ctrlBaseText
 {
     public:
-        ctrlText(Window* parent, unsigned int id, const DrawPoint& pos, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+        ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format, glArchivItem_Font* font);
 
         Rect GetBoundaryRect() const override;
     protected:
@@ -35,7 +35,7 @@ class ctrlText : public Window, public ctrlBaseText
 
     protected:
 
-        unsigned int format;
+        unsigned format;
 };
 
 #endif // !CTRLTEXT_H_INCLUDED

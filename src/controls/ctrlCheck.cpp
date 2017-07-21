@@ -24,7 +24,7 @@
 #include "ogl/glArchivItem_Font.h"
 
 ctrlCheck::ctrlCheck(Window* parent,
-                     unsigned int id,
+                     unsigned id,
                      const DrawPoint& pos,
                      const Extent& size,
                      TextureColor tc,

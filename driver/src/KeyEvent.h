@@ -46,7 +46,7 @@ enum KeyType
 struct KeyEvent
 {
     KeyType kt;
-    unsigned int c;
+    unsigned c;
     bool ctrl, shift, alt;
 };
 

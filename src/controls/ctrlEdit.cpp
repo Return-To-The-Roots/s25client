@@ -26,7 +26,7 @@
 #include <sstream>
 
 ctrlEdit::ctrlEdit(Window* parent,
-                   unsigned int id,
+                   unsigned id,
                    const DrawPoint& pos,
                    const Extent& size,
                    TextureColor tc,
@@ -59,7 +59,7 @@ void ctrlEdit::SetText(const std::string& text)
         AddChar(*it);
 }
 
-void ctrlEdit::SetText(const unsigned int text)
+void ctrlEdit::SetText(const unsigned text)
 {
     cursorPos_ = 0;
     viewStart_ = 0;
@@ -142,7 +142,7 @@ void ctrlEdit::Draw_()
  *
  *  @param[in] text Das Zeichen
  */
-void ctrlEdit::AddChar(unsigned int c)
+void ctrlEdit::AddChar(unsigned c)
 {
     // Number-only text fields accept numbers only ;)
     if(numberOnly_ && !(c >= '0' && c <= '9'))

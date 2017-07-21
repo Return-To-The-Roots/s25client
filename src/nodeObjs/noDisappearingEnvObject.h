@@ -33,7 +33,7 @@ class noDisappearingEnvObject : public noCoordBase
     public:     void Serialize(SerializedGameData& sgd) const override;
 
         /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
     protected:
 

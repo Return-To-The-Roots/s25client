@@ -66,7 +66,7 @@ class nofBuildingWorker : public noFigure
         /// Wieviel er von den letzen 100gf NICHT gearbeitet hat (fürs Ausrechnen der Produktivität)
         unsigned short not_working;
         /// Seit welchem Zeitpunkt (in gf) er ggf. NICHT mehr arbeitet (0xFFFFFFFF = er arbeitet gerade)
-        unsigned int since_not_working;
+        unsigned since_not_working;
 
         /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gebeben (zu Optimeriungszwecken)
         bool was_sounding;

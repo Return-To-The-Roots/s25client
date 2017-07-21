@@ -37,7 +37,7 @@ class nofArmorer : public nofWorkman
         unsigned short GetCarryID() const override;
         /// Der Arbeiter erzeugt eine Ware
         GoodType ProduceWare() override;
-		void HandleDerivedEvent(const unsigned int id) override;
+		void HandleDerivedEvent(const unsigned id) override;
 
         bool AreWaresAvailable() override;
 

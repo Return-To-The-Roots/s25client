@@ -62,7 +62,7 @@ namespace{
     };
 }
 
-void nofShipWright::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofShipWright::HandleDerivedEvent(const unsigned  /*id*/)
 {
     switch(state)
     {

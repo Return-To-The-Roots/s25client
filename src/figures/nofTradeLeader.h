@@ -37,7 +37,7 @@ class nofTradeLeader : public noFigure
 
         void GoalReached() override;
         void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
         void AbrogateWorkplace() override;
 
         /// Tries to go to the home ware house and returns whether this is possible

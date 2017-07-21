@@ -52,7 +52,7 @@ class iwObservate : public IngameWindow
 
     private:
         void Draw_() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_RightDown(const MouseCoords& mc) override;
         bool Msg_RightUp(const MouseCoords& mc) override;

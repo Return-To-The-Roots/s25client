@@ -106,7 +106,7 @@ class nobMilitary : public nobBaseMilitary
         GO_Type GetGOT() const override { return GOT_NOB_MILITARY; }
 
         void Draw(DrawPoint drawPt) override;
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         /// Wurde das Militärgebäude neu gebaut und noch nicht besetzt und kann somit abgerissen werden bei Land-verlust?
         bool IsNewBuilt() const { return new_built; }

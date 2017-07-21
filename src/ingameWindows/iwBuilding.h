@@ -38,7 +38,7 @@ class iwBuilding : public IngameWindow
 
         void Msg_PaintBefore() override;
         void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwBUILDING_H_INCLUDED

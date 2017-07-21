@@ -42,8 +42,8 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         glArchivItem_Font& operator=(const glArchivItem_Font& obj);
 
         /// Zeichnet einen Text.
-        void Draw(DrawPoint pos, const ucString& wtext,   unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
-        void Draw(DrawPoint pos, const std::string& text, unsigned int format, unsigned int color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
+        void Draw(DrawPoint pos, const ucString& wtext,   unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
+        void Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");
 
         /// liefert die Länge einer Zeichenkette.
         unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
@@ -62,7 +62,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
                 std::vector<std::string> CreateSingleStrings(const std::string& origin_text);
 
                 /// Array von Positionen, wo der Text umbrochen werden soll (jeweils der Anfang vom String)
-                std::vector<unsigned int> positions;
+                std::vector<unsigned> positions;
         };
 
         /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
@@ -97,11 +97,11 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         };
 
         /// prüft ob ein Buchstabe existiert.
-        bool CharExist(unsigned int c) const { return helpers::contains(utf8_mapping, c); }
+        bool CharExist(unsigned c) const { return helpers::contains(utf8_mapping, c); }
 
         /// liefert die Breite eines Zeichens
-        unsigned int CharWidth(unsigned int c) const { return GetCharInfo(c).width; }
-        unsigned int CharWidth(CharInfo ci) const { return ci.width; }
+        unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
+        unsigned CharWidth(CharInfo ci) const { return ci.width; }
 
     private:
 
@@ -113,13 +113,13 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 
         void initFont();
         /// liefert das Char-Info eines Zeichens
-        const CharInfo& GetCharInfo(unsigned int c) const;
+        const CharInfo& GetCharInfo(unsigned c) const;
         void DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices, DrawPoint& curPos, const Point<float>& texSize) const;
 
         boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
         boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
-        std::map<unsigned int, CharInfo> utf8_mapping;
+        std::map<unsigned, CharInfo> utf8_mapping;
         CharInfo placeHolder; /// Placeholder if glyph is missing
 
         /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)

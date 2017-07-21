@@ -29,7 +29,7 @@ class dskAboutRTTR : public Desktop
 
     private:
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !dskABOUTRTTR_H_INCLUDED

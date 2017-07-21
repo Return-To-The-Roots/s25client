@@ -81,7 +81,7 @@ dskLobby::dskLobby(): dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWn
     GAMECLIENT.SetInterface(this);
 }
 
-void dskLobby::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void dskLobby::Msg_Timer(const unsigned  /*ctrl_id*/)
 {
     LOBBYCLIENT.SendServerListRequest();
 }
@@ -101,7 +101,7 @@ void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*
         WINDOWMANAGER.Switch(new dskMultiPlayer);
 }
 
-void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -131,7 +131,7 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
+void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -144,7 +144,7 @@ void dskLobby::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const int selection)
+void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
@@ -195,7 +195,7 @@ void dskLobby::UpdatePlayerList(bool first)
         LOADER.GetSoundN("sound", 114)->Play(255, false);
     }
 
-    unsigned int selection = playertable->GetSelection();
+    unsigned selection = playertable->GetSelection();
     if(selection == 0xFFFF)
         selection = 0;
     unsigned short column = playertable->GetSortColumn();
@@ -238,7 +238,7 @@ void dskLobby::UpdateServerList(bool first)
 
     LOBBYCLIENT.receivedNewServerList = false;
 
-    unsigned int selection = servertable->GetSelection();
+    unsigned selection = servertable->GetSelection();
     if(selection == 0xFFFF)
         selection = 0;
     unsigned short column = servertable->GetSortColumn();
@@ -281,7 +281,7 @@ bool dskLobby::ConnectToSelectedGame()
         return false;
 
     ctrlTable* table = GetCtrl<ctrlTable>(10);
-    unsigned int selection = table->GetSelection();
+    unsigned selection = table->GetSelection();
     if(selection >= serverlist->getCount())
         return false;
 

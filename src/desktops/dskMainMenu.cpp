@@ -79,7 +79,7 @@ dskMainMenu::dskMainMenu()
     //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÇüéâäàåçêëèïîì©ÄÅôöòûùÖÜáíóúñ
 }
 
-void dskMainMenu::Msg_Timer(const unsigned int ctrl_id)
+void dskMainMenu::Msg_Timer(const unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
     WINDOWMANAGER.Show( new iwMsgbox(_("Submit debug data?"), _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this, MSB_YESNO, MSB_QUESTIONRED, 100) );
@@ -109,7 +109,7 @@ bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
     return false;
 }
 
-void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

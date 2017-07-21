@@ -165,7 +165,7 @@ bool GameManager::Run()
     	    static unsigned long vsync = vsync_wanted;
     	
             // immer 10% dazu/weg bis man über der Framerate liegt
-            if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
+            if(vsync < 200 && 1000 * framerate < (unsigned)(960 * vsync) )
                 vsync = (1100 * vsync) / 1000;
             else if(vsync > vsync_wanted)
                 vsync = (900 * vsync) / 1000;

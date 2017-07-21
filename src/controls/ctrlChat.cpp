@@ -40,7 +40,7 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] font   Schriftart
  */
 ctrlChat::ctrlChat(Window* parent,
-                   unsigned int id,
+                   unsigned id,
                    const DrawPoint& pos,
                    const Extent& size,
                    TextureColor tc,
@@ -135,8 +135,8 @@ void ctrlChat::Draw_()
     // Listeneinträge zeichnen
     // Add margin
     DrawPoint textPos = GetDrawPos() + DrawPoint(2, 2);
-    unsigned int pos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
-    for(unsigned int i = 0; i < show_lines; ++i)
+    unsigned pos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    for(unsigned i = 0; i < show_lines; ++i)
     {
         // eine zweite oder n-nte Zeile?
         if(chat_lines[i + pos].secondary)
@@ -192,7 +192,7 @@ void ctrlChat::WrapLine(unsigned short i)
     std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
 
     // Zeilen hinzufügen
-    for(unsigned int i = 0; i < strings.size(); ++i)
+    for(unsigned i = 0; i < strings.size(); ++i)
     {
         ChatLine wrap_line;
         // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
@@ -212,7 +212,7 @@ void ctrlChat::WrapLine(unsigned short i)
 
 }
 
-void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, const unsigned int msg_color)
+void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color, const std::string& msg, const unsigned msg_color)
 {
     ChatLine line;
 

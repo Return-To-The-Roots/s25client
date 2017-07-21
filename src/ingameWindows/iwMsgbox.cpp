@@ -162,7 +162,7 @@ const MsgboxResult RET_IDS[MSB_YESNOCANCEL + 1][3] =
     {MSR_YES, MSR_NO,      MSR_CANCEL}
 };
 
-void iwMsgbox::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(msgHandler_)
         msgHandler_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);

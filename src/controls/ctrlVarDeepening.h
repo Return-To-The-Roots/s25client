@@ -29,8 +29,8 @@ class ctrlVarDeepening: public ctrlDeepening, public ctrlBaseVarText
 {
     public:
         /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-        ctrlVarDeepening(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, 
-            const std::string& fmtString, glArchivItem_Font* font, unsigned int color, unsigned int count, va_list fmtArgs);
+        ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, 
+            const std::string& fmtString, glArchivItem_Font* font, unsigned color, unsigned count, va_list fmtArgs);
 
     protected:
         void DrawContent() const override;

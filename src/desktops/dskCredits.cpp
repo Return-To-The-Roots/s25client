@@ -170,7 +170,7 @@ dskCredits::~dskCredits()
 
 void dskCredits::Msg_PaintAfter()
 {
-    unsigned int time = VIDEODRIVER.GetTickCount() - startTime;
+    unsigned time = VIDEODRIVER.GetTickCount() - startTime;
 
     if (time > PAGE_TIME)
     {
@@ -216,7 +216,7 @@ void dskCredits::Msg_PaintAfter()
         }
 
         b.color = PLAYER_COLORS[rand() % PLAYER_COLORS.size()];
-        unsigned int job = rand() % 29;
+        unsigned job = rand() % 29;
 
         // exclude "headless" bobs
         if (job == 8 || job == 9 || job == 12 || job == 18)
@@ -290,7 +290,7 @@ void dskCredits::Msg_PaintAfter()
     // draw text
     LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
 
-    boost::array<unsigned int, 2> columnToY = {{150, 150}};
+    boost::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {

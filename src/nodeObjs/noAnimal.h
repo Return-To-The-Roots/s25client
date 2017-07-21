@@ -46,7 +46,7 @@ class noAnimal : public noMovable
         /// Jäger, der das Tier jagt (0, falls nicht gejagt)
         nofHunter* hunter;
         /// Nächster Zeitpunkt, ab wann der Sound gespielt werden soll (bei Enten und Schafen)
-        unsigned int sound_moment;
+        unsigned sound_moment;
 
     private:
 
@@ -80,7 +80,7 @@ class noAnimal : public noMovable
         // An x,y zeichnen
         void Draw(DrawPoint drawPt) override;
         // Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
         void StartLiving();

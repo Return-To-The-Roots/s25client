@@ -654,11 +654,11 @@ std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const
 }
 
 /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
-unsigned int GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount)const
+unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount)const
 {
     // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
-    unsigned int attackercount = 0;
+    unsigned attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
     const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetHarbors();
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)

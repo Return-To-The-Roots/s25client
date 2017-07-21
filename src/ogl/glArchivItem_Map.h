@@ -62,9 +62,9 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
         bool HasLayer(MapLayer type) const;
 
         /// liefert die Mapdaten an einer bestimmten Stelle zurück.
-        unsigned char GetMapDataAt(MapLayer type, unsigned int pos) const;
+        unsigned char GetMapDataAt(MapLayer type, unsigned pos) const;
         /// setzt die Mapdaten an einer bestimmten Stelle.
-        void SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value);
+        void SetMapDataAt(MapLayer type, unsigned pos, unsigned char value);
 
         /// liefert die Mapdaten an der Stelle X,Y zurück.
         unsigned char GetMapDataAt(MapLayer type, unsigned short x, unsigned short y) const;

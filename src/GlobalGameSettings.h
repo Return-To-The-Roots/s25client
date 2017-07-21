@@ -47,15 +47,15 @@ class GlobalGameSettings
         bool teamView;
         bool randomStartPosition;
 
-        unsigned int getNumAddons() const { return addons.size(); }
-        const Addon* getAddon(unsigned int nr, unsigned int& status) const;
-        const Addon* getAddon(unsigned int nr) const;
+        unsigned getNumAddons() const { return addons.size(); }
+        const Addon* getAddon(unsigned nr, unsigned& status) const;
+        const Addon* getAddon(unsigned nr) const;
         /// clears the addon memory.
         void clearAddons(bool recreate = true);
 
         bool isEnabled(AddonId id) const;
-        unsigned int getSelection(AddonId id) const;
-        void setSelection(AddonId id, unsigned int selection);
+        unsigned getSelection(AddonId id) const;
+        void setSelection(AddonId id, unsigned selection);
 
         /// loads the saved addon configuration from the SETTINGS.
         void LoadSettings();
@@ -64,9 +64,9 @@ class GlobalGameSettings
 
         /// Get current maximum rank for soldiers
         /// 0 = Private, 1 = Private First Class, ...
-        unsigned int GetMaxMilitaryRank() const;
+        unsigned GetMaxMilitaryRank() const;
         /// Returns number of scouts required for exploration expeditions
-        unsigned int GetNumScoutsExedition() const;
+        unsigned GetNumScoutsExedition() const;
 
     private:
         void registerAddon(Addon* addon);

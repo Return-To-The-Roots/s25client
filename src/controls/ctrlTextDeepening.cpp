@@ -20,7 +20,7 @@
 #include "ogl/glArchivItem_Font.h"
 
 ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size,
-    TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned int color):
+    TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color):
     ctrlDeepening(parent, id, pos, size, tc),
     ctrlBaseText(text, color, font)
 {}

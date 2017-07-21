@@ -22,7 +22,7 @@
 #include "controls/ctrlCheck.h"
 #include "mygettext.h"
 
-void AddonBool::hideGui(Window* window, unsigned int id) const
+void AddonBool::hideGui(Window* window, unsigned id) const
 {
     Addon::hideGui(window, id);
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
@@ -30,7 +30,7 @@ void AddonBool::hideGui(Window* window, unsigned int id) const
         check->SetVisible(false);
 }
 
-void AddonBool::createGui(Window* window, unsigned int id, unsigned short& y, bool readonly, unsigned int status) const
+void AddonBool::createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const
 {
     Addon::createGui(window, id, y, readonly, status);
     DrawPoint cbPos(430, y);
@@ -48,7 +48,7 @@ void AddonBool::createGui(Window* window, unsigned int id, unsigned short& y, bo
     y += 30;
 }
 
-void AddonBool::setGuiStatus(Window* window, unsigned int id, unsigned int status) const
+void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const
 {
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
 
@@ -56,7 +56,7 @@ void AddonBool::setGuiStatus(Window* window, unsigned int id, unsigned int statu
         check->SetCheck( (status != 0) );
 }
 
-unsigned int AddonBool::getGuiStatus(Window* window, unsigned int id, bool& failed) const
+unsigned AddonBool::getGuiStatus(Window* window, unsigned id, bool& failed) const
 {
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(!check)

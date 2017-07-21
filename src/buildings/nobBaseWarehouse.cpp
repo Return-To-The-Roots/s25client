@@ -111,7 +111,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     waiting_wares.clear();
 
     // restliche Warenbestände von der Inventur wieder abziehen
-    for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
@@ -284,7 +284,7 @@ nofCarrier* nobBaseWarehouse::OrderDonkey(RoadSegment* road, noRoadNode* const g
 }
 
 
-void nobBaseWarehouse::HandleBaseEvent(const unsigned int id)
+void nobBaseWarehouse::HandleBaseEvent(const unsigned id)
 {
     switch(id)
     {
@@ -1165,10 +1165,10 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 void nobBaseWarehouse::AddToInventory()
 {
     GamePlayer& owner = gwg->GetPlayer(player);
-    for(unsigned int i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
         owner.IncreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
-    for(unsigned int i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
         owner.IncreaseInventoryJob(Job(i), inventory[Job(i)]);
 }
 

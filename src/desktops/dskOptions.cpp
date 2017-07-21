@@ -347,7 +347,7 @@ dskOptions::~dskOptions()
     ggs.SaveSettings();
 }
 
-void dskOptions::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const unsigned short position)
+void dskOptions::Msg_Group_ProgressChange(const unsigned  /*group_id*/, const unsigned ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -364,7 +364,7 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, cons
     }
 }
 
-void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const unsigned int ctrl_id, const int selection)
+void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection)
 {
     ctrlGroup* group = GetCtrl<ctrlGroup>(group_id);
     ctrlComboBox* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
@@ -439,7 +439,7 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned int group_id, const un
     }
 }
 
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, const unsigned int ctrl_id, const int selection)
+void dskOptions::Msg_Group_OptionGroupChange(const unsigned  /*group_id*/, const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -523,7 +523,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned int  /*group_id*/, c
     }
 }
 
-void dskOptions::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -535,7 +535,7 @@ void dskOptions::Msg_OptionGroupChange(const unsigned int ctrl_id, const int sel
     }
 }
 
-void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -594,7 +594,7 @@ void dskOptions::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void dskOptions::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
+void dskOptions::Msg_Group_ButtonClick(const unsigned  /*group_id*/, const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -611,7 +611,7 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const u
     }
 }
 
-void dskOptions::Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult  /*mbr*/)
+void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*mbr*/)
 {
     switch(msgbox_id)
     {

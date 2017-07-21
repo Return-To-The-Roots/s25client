@@ -105,7 +105,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
     }
 }
 
-void CatapultStone::HandleEvent(const unsigned int  /*id*/)
+void CatapultStone::HandleEvent(const unsigned  /*id*/)
 {
     if(explode)
     {

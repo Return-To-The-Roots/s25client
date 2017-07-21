@@ -70,7 +70,7 @@ class nofCatapultMan : public nofBuildingWorker
 
         GO_Type GetGOT() const override { return GOT_NOF_CATAPULTMAN; }
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
         void WorkAborted() override;

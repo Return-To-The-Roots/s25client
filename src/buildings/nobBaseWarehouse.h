@@ -126,7 +126,7 @@ class nobBaseWarehouse : public nobBaseMilitary, public DataChangedObservable
         /// Stellt Verteidiger zur Verfügung
         nofDefender* ProvideDefender(nofAttacker* const attacker) override;
 
-        void HandleBaseEvent(const unsigned int id);
+        void HandleBaseEvent(const unsigned id);
 
         /// Versucht ein Rekrutierungsevent anzumelden, falls ausreichend Waffen und Bier sowie genügend Gehilfen
         /// vorhanden sind (je nach Militäreinstellungen)

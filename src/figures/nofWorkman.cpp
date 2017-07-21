@@ -42,7 +42,7 @@ nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuil
 {}
 
 
-void nofWorkman::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofWorkman::HandleDerivedEvent(const unsigned  /*id*/)
 {
     switch(state)
     {

@@ -28,15 +28,15 @@ class glArchivItem_Font;
 class ctrlChat : public Window
 {
     public:
-        ctrlChat(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
+        ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
         ~ctrlChat() override;
 
         /// Größe ändern
         void Resize(const Extent& newSize) override;
         /// Fügt eine Chatnachricht hinzu.
-        void AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, unsigned int msg_color);
+        void AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color, const std::string& msg, unsigned msg_color);
         /// Setzt Farbe der Zeitangaben.
-        void SetTimeColor(const unsigned int color) { time_color = color; }
+        void SetTimeColor(const unsigned color) { time_color = color; }
 
         bool Msg_MouseMove(const MouseCoords& mc) override;
         bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -64,11 +64,11 @@ class ctrlChat : public Window
             /// Spielername
             std::string player;
             /// Farbe des Spieler(namens) (optional, 0 wenn nicht benutzt)
-            unsigned int player_color;
+            unsigned player_color;
             /// Chatnachricht
             std::string msg;
             /// Farbe der Chatnachricht
-            unsigned int msg_color;
+            unsigned msg_color;
         };
 
     private:
@@ -78,8 +78,8 @@ class ctrlChat : public Window
         std::vector<ChatLine> raw_chat_lines;  /// Chatzeilen, noch nicht umgebrochen
         std::vector<ChatLine> chat_lines;  /// Chatzeilen
 
-        unsigned int page_size;  /// Chatzeilen pro Seite
-        unsigned int time_color; /// Farbe der Zeitangaben
+        unsigned page_size;  /// Chatzeilen pro Seite
+        unsigned time_color; /// Farbe der Zeitangaben
 
         unsigned short bracket1_size; /// Breite der Klammer "<" um den Spielernamen
         unsigned short bracket2_size; /// Breite der Klammer ">" um den Spielernamen

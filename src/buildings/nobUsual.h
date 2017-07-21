@@ -80,7 +80,7 @@ protected:
         bool HasWorker() const;
 
         /// Event-Handler
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
         /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
         void AddWare(Ware*& ware) override;
         /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
@@ -95,7 +95,7 @@ protected:
         void WorkerLost();
 
         /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
-        unsigned char GetWares(const unsigned int id) const { return wares[id]; }
+        unsigned char GetWares(const unsigned id) const { return wares[id]; }
         /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
         bool WaresAvailable();
         /// Verbraucht Waren

@@ -58,7 +58,7 @@ class nofShipWright : public nofWorkman
         nofShipWright(const MapPoint pt, const unsigned char player, nobUsual* workplace);
         nofShipWright(SerializedGameData& sgd, const unsigned obj_id);
         GO_Type GetGOT() const override { return GOT_NOF_SHIPWRIGHT; }
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
         void Serialize(SerializedGameData& sgd) const override;
 };
 

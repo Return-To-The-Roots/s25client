@@ -51,12 +51,12 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
     const DrawPointInit offsets[NAT_COUNT] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
 
-    unsigned int max_id = 280;
+    unsigned max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     if(now_id < 200)
     {
         unsigned char wpNation = workplace->GetNation();
-        unsigned int plColor = gwg->GetPlayer(player).color;
+        unsigned plColor = gwg->GetPlayer(player).color;
 
         LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
         ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
@@ -95,7 +95,7 @@ unsigned short nofArmorer::GetCarryID() const
     }
 }
 
-void nofArmorer::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofArmorer::HandleDerivedEvent(const unsigned  /*id*/)
 {	
     switch(state)
     {

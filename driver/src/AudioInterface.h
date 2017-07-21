@@ -38,13 +38,13 @@ public:
     virtual Sound* LoadMusic (AudioType data_type, const unsigned char* data, unsigned long size) = 0;
 
     /// Spielt Sound ab
-    virtual unsigned int PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;
+    virtual unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;
     /// Spielt Midi ab
     virtual void PlayMusic(Sound* sound, const unsigned repeats) = 0;
     /// Stoppt die Musik.
     virtual void StopMusic() = 0;
     /// Stoppt einen Sound
-    virtual void StopEffect(const unsigned int play_id) = 0;
+    virtual void StopEffect(const unsigned play_id) = 0;
     /// Wird ein Sound (noch) abgespielt?
     virtual bool IsEffectPlaying(const unsigned play_id) = 0;
     /// Changes volume of a played sound (if it is still playing)

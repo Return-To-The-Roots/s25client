@@ -148,7 +148,7 @@ void noTree::Draw(DrawPoint drawPt)
     }
 }
 
-void noTree::HandleEvent(const unsigned int id)
+void noTree::HandleEvent(const unsigned id)
 {
     // Ein Tier-Produzier-Event?
     if(id == 3)

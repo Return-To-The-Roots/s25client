@@ -185,7 +185,7 @@ public:
     /// Return all soldiers that can be used to attack the given point via a sea
     std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint targetPt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned int GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
+    unsigned GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
     void RecalcBQ(const MapPoint pt);

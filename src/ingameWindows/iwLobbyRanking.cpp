@@ -39,7 +39,7 @@ void iwLobbyRanking::UpdateRankings(bool first)
 
         if(rankinglist.getCount() > 0)
         {
-            for(unsigned int i = 0; i < rankinglist.getCount() && i < 10; ++i)
+            for(unsigned i = 0; i < rankinglist.getCount() && i < 10; ++i)
             {
                 const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
                 std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
@@ -64,7 +64,7 @@ iwLobbyRanking::iwLobbyRanking()
     AddTextButton(3, DrawPoint(20, 370), Extent(400, 20), TC_RED1, _("Back"), NormalFont);
 }
 
-void iwLobbyRanking::Msg_Timer(const unsigned int ctrl_id)
+void iwLobbyRanking::Msg_Timer(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -79,7 +79,7 @@ void iwLobbyRanking::Msg_Timer(const unsigned int ctrl_id)
     }
 }
 
-void iwLobbyRanking::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwLobbyRanking::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

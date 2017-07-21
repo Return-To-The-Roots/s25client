@@ -57,7 +57,7 @@ class nofWarehouseWorker : public noFigure
 
         void LooseWare();
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
     public:
 

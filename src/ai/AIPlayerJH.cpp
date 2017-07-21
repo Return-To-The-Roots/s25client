@@ -326,7 +326,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
         std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin();
         std::advance(it, randomStore);
         UpdateNodesAroundNoBorder((*it)->GetPos(), 15); //update the area we want to build in first
-        for (unsigned int i = 0; i < bldToTest.size(); i++)
+        for (unsigned i = 0; i < bldToTest.size(); i++)
         {
             if (construction->Wanted(bldToTest[i]))
             {
@@ -348,7 +348,7 @@ void AIPlayerJH::PlanNewBuildings( const unsigned gf )
     MapPoint bldPos = (*it2)->GetPos();
     UpdateReachableNodes(bldPos, 15);
     //resource gathering buildings only around military; processing only close to warehouses
-    for (unsigned int i = 0; i < resGatherBldCount; i++)
+    for (unsigned i = 0; i < resGatherBldCount; i++)
     {
         if (construction->Wanted(bldToTest[i]))
         {
@@ -1370,7 +1370,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
         }
     }
 
-    for (unsigned int i = numBldToTest; i < 11; ++i)
+    for (unsigned i = numBldToTest; i < 11; ++i)
     {
         if (construction->Wanted(bldToTest[i]))
         {
@@ -1902,7 +1902,7 @@ void AIPlayerJH::TrySeaAttack()
     if(aii.GetHarbors().empty())
         return;
     std::vector<unsigned short>seaidswithattackers;
-    std::vector<unsigned int>attackersatseaid;
+    std::vector<unsigned>attackersatseaid;
     std::vector<int> invalidseas;
     std::deque<const nobBaseMilitary*> potentialTargets;
     std::deque<const nobBaseMilitary*> undefendedTargets;
@@ -1913,7 +1913,7 @@ void AIPlayerJH::TrySeaAttack()
         //sea id not already listed as valid or invalid?
         if(!helpers::contains(seaidswithattackers, (*it)->GetSeaID()) && !helpers::contains(invalidseas, (*it)->GetSeaID()))
         {
-            unsigned int attackercount = gwb.GetNumSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
+            unsigned attackercount = gwb.GetNumSoldiersForSeaAttackAtSea(playerId, (*it)->GetSeaID(), false);
             if(attackercount) //got attackers at this sea id? -> add to valid list
             {
                 seaidswithattackers.push_back((*it)->GetSeaID());

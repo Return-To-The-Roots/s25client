@@ -111,9 +111,9 @@ glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
     return *this;
 }
 
-inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned int c) const
+inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned c) const
 {
-    std::map<unsigned int, CharInfo>::const_iterator it = utf8_mapping.find(c);
+    std::map<unsigned, CharInfo>::const_iterator it = utf8_mapping.find(c);
     if(it != utf8_mapping.end())
         return it->second;
 
@@ -170,8 +170,8 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F
  */
 void glArchivItem_Font::Draw(DrawPoint pos,
                              const ucString& wtext,
-                             unsigned int format,
-                             unsigned int color,
+                             unsigned format,
+                             unsigned color,
                              unsigned short length,
                              unsigned short max,
                              const ucString& wend)
@@ -203,8 +203,8 @@ void glArchivItem_Font::Draw(DrawPoint pos,
  */
 void glArchivItem_Font::Draw(DrawPoint pos,
                              const std::string& textIn,
-                             unsigned int format,
-                             unsigned int color,
+                             unsigned format,
+                             unsigned color,
                              unsigned short length,
                              unsigned short max,
                              const std::string& end)
@@ -540,8 +540,8 @@ void glArchivItem_Font::initFont()
     fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
 
     // first, we have to find how much chars we really have
-    unsigned int numChars = 0;
-    for(unsigned int i = 0; i < size(); ++i)
+    unsigned numChars = 0;
+    for(unsigned i = 0; i < size(); ++i)
     {
         if(get(i))
             ++numChars;
@@ -562,7 +562,7 @@ void glArchivItem_Font::initFont()
     libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
     Position curPos(spacing);
     numChars = 0;
-    for(unsigned int i = 0; i < size(); ++i)
+    for(unsigned i = 0; i < size(); ++i)
     {
         const libsiedler2::ArchivItem_Bitmap_Player* c = dynamic_cast<const libsiedler2::ArchivItem_Bitmap_Player*>(get(i));
         if(!c)

@@ -142,7 +142,7 @@ GoodType nofMetalworker::GetRandomTool()
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
-    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
         all_size += gwg->GetPlayer(player).GetToolPriority(i);
 
 	// if they're all zero
@@ -160,7 +160,7 @@ GoodType nofMetalworker::GetRandomTool()
     std::vector<unsigned char> random_array(all_size);
     unsigned curIdx = 0;
 
-    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {
         for(unsigned g = 0; g < gwg->GetPlayer(player).GetToolPriority(i); ++g)
             random_array[curIdx++] = i;
@@ -195,7 +195,7 @@ GoodType nofMetalworker::ProduceWare()
     return nextProducedTool;
 }
 
-void nofMetalworker::HandleDerivedEvent(const unsigned int id)
+void nofMetalworker::HandleDerivedEvent(const unsigned id)
 {
     if(id != 2)
     {

@@ -90,7 +90,7 @@ class noFigure : public noMovable
         virtual void Walked() = 0; // man gelaufen ist
 
         /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-        virtual void HandleDerivedEvent(const unsigned int id) = 0;
+        virtual void HandleDerivedEvent(const unsigned id) = 0;
 
         /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
         virtual unsigned GetVisualRange() const;
@@ -136,7 +136,7 @@ class noFigure : public noMovable
     protected:  void Serialize_noFigure(SerializedGameData& sgd) const;
     public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noFigure(sgd); }
 
-        void HandleEvent(const unsigned int id) override;
+        void HandleEvent(const unsigned id) override;
 
         /// Ziel setzen
         void SetGoalToNULL() { goal_ = NULL; }
@@ -156,13 +156,13 @@ class noFigure : public noMovable
         /// Returns true if this is a soldier (they get some special handling at some points)
         bool IsSoldier() const;
         /// Zeichnet eine Figur aus "carrier.bob" beim Laufen.
-        void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned int ware, bool fat);
+        void DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat);
         /// Zeichnet eine Figur aus "jobs.bob", wenn sie läuft.
-        void DrawWalkingBobJobs(DrawPoint drawPt, unsigned int id);
+        void DrawWalkingBobJobs(DrawPoint drawPt, unsigned id);
         /// Zeichnet standardmäßig die Figur, wenn sie läuft
-        void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned int item, bool fat, bool waitingsoldier = false);
+        void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned item, bool fat, bool waitingsoldier = false);
         /// Zeichnet standardmäßig die Figur, wenn sie läuft aus einem bestimmten normalen LST Archiv
-        void DrawWalking(DrawPoint drawPt, const char* const file, unsigned int id);
+        void DrawWalking(DrawPoint drawPt, const char* const file, unsigned id);
         /// Zeichnet standardmäßig die Figur, wenn sie läuft, nimmt automatisch richtige Job-ID/Datei
         void DrawWalking(DrawPoint drawPt);
         /// Interpoliert die Positon zwischen zwei Knotenpunkten

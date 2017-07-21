@@ -38,7 +38,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
     boost::scoped_array<char> uncompressedData(new char[length]);
 
-    unsigned int outLength = length;
+    unsigned outLength = length;
 
     int err = BZ2_bzBuffToBuffDecompress(uncompressedData.get(), &outLength, &data[0], data.size(), 0, 0);
     if(err != BZ_OK)

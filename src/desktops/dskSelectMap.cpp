@@ -144,7 +144,7 @@ dskSelectMap::~dskSelectMap()
 {
 }
 
-void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const int selection)
+void dskSelectMap::Msg_OptionGroupChange(const unsigned  /*ctrl_id*/, const int selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(1);
 
@@ -169,7 +169,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
 /**
  *  Occurs when user changes the selection in the table of maps.
  */
-void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int selection)
+void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -223,7 +223,7 @@ void dskSelectMap::GoBack()
         WINDOWMANAGER.Switch(new dskDirectIP);
 }
 
-void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

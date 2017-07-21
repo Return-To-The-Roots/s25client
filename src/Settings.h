@@ -43,8 +43,8 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
     public:
         struct
         {
-            unsigned int submit_debug_data;
-            unsigned int use_upnp;
+            unsigned submit_debug_data;
+            unsigned use_upnp;
             bool smartCursor;
             bool debugMode;
         } global;
@@ -98,13 +98,13 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
         struct
         {
             std::string proxy; /// Serveradresse / Hostname
-            unsigned int port; /// Port
+            unsigned port; /// Port
             unsigned char typ; /// Socks 4 oder 5
         } proxy;
 
         struct
         {
-            unsigned int autosave_interval;
+            unsigned autosave_interval;
             bool revert_mouse;
         } interface;
 
@@ -115,15 +115,15 @@ class Settings : public Singleton<Settings, SingletonPolicies::WithLongevity>
 
         struct
         {
-            std::map<unsigned int, unsigned int> configuration;
+            std::map<unsigned, unsigned> configuration;
         } addons;
 
         static const unsigned char SCREEN_REFRESH_RATES_COUNT;
         static const unsigned short SCREEN_REFRESH_RATES[];
 
     private:
-        static const unsigned int SETTINGS_VERSION;
-        static const unsigned int SETTINGS_SECTIONS;
+        static const unsigned SETTINGS_VERSION;
+        static const unsigned SETTINGS_SECTIONS;
         static const std::string SETTINGS_SECTION_NAMES[];
 };
 

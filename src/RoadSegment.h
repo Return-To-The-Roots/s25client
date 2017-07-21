@@ -96,7 +96,7 @@ class RoadSegment : public GameObject
         /// zerteilt die Straße in 2 Teile.
         void SplitRoad(noFlag* splitflag);
         /// Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
-        bool AreWareJobs(const bool flag, unsigned int carrier_type, const bool take_ware_immediately) const;
+        bool AreWareJobs(const bool flag, unsigned carrier_type, const bool take_ware_immediately) const;
         /// Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
         void AddWareJob(const noRoadNode* rn);
         /// Eine Ware will nicht mehr befördert werden.

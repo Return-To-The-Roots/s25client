@@ -91,11 +91,11 @@ public:
     /// Starts Preparation of an sea expedition in a habor
     bool StartExpedition(const MapPoint pt);
     /// Lets a ship found a colony
-    bool FoundColony(unsigned int shipID);
+    bool FoundColony(unsigned shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
-    bool TravelToNextSpot(ShipDirection direction, unsigned int shipID);
+    bool TravelToNextSpot(ShipDirection direction, unsigned shipID);
     /// Cancels an expedition
-    bool CancelExpedition(unsigned int shipID);
+    bool CancelExpedition(unsigned shipID);
     bool StartExplorationExpedition(const MapPoint pt);
     bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 

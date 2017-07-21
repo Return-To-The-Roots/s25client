@@ -45,9 +45,9 @@ class iwAddons : public IngameWindow
         ~iwAddons() override;
 
     protected:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void Msg_ScrollChange(const unsigned int ctrl_id, const unsigned short position) override;
+        void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+        void Msg_ScrollChange(const unsigned ctrl_id, const unsigned short position) override;
         bool Msg_WheelUp(const MouseCoords& mc) override;
         bool Msg_WheelDown(const MouseCoords& mc) override;
 

@@ -25,8 +25,8 @@
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory
 {
-    boost::array<unsigned int, WARE_TYPES_COUNT> goods;
-    boost::array<unsigned int, JOB_TYPES_COUNT> people;
+    boost::array<unsigned, WARE_TYPES_COUNT> goods;
+    boost::array<unsigned, JOB_TYPES_COUNT> people;
 
     Inventory() { clear(); }
     /// Sets everything to 0

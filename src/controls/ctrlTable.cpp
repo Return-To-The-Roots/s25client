@@ -27,7 +27,7 @@
 #include <cstdarg>
 
 ctrlTable::ctrlTable(Window* parent,
-                     unsigned int id,
+                     unsigned id,
                      const DrawPoint& pos,
                      const Extent& size,
                      TextureColor tc,
@@ -280,7 +280,7 @@ void ctrlTable::Draw_()
     }
 }
 
-void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlTable::Msg_ButtonClick(const unsigned ctrl_id)
 {
     SortRows(ctrl_id - 1);
     SetSelection(selection_);
@@ -382,7 +382,7 @@ bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-void ctrlTable::Msg_ScrollShow(const unsigned int  /*ctrl_id*/, const bool visible)
+void ctrlTable::Msg_ScrollShow(const unsigned  /*ctrl_id*/, const bool visible)
 {
     if(visible)
     {

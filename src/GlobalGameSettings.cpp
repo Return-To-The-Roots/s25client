@@ -137,7 +137,7 @@ void GlobalGameSettings::clearAddons(bool recreate)
     }
 }
 
-const Addon* GlobalGameSettings::getAddon(unsigned int nr, unsigned int& status) const
+const Addon* GlobalGameSettings::getAddon(unsigned nr, unsigned& status) const
 {
     const Addon* addon = getAddon(nr);
     if(!addon)
@@ -147,7 +147,7 @@ const Addon* GlobalGameSettings::getAddon(unsigned int nr, unsigned int& status)
     return addon;
 }
 
-const Addon* GlobalGameSettings::getAddon(unsigned int nr) const
+const Addon* GlobalGameSettings::getAddon(unsigned nr) const
 {
     if(nr >= addons.size())
         return NULL;
@@ -161,7 +161,7 @@ bool GlobalGameSettings::isEnabled(AddonId id) const
     return it != addons.end() && it->status != it->addon->getDefaultStatus();
 }
 
-unsigned int GlobalGameSettings::getSelection(AddonId id) const
+unsigned GlobalGameSettings::getSelection(AddonId id) const
 {
    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
@@ -188,7 +188,7 @@ void GlobalGameSettings::LoadSettings()
 {
     clearAddons();
 
-    for( std::map<unsigned int, unsigned int>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
+    for( std::map<unsigned, unsigned>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
         setSelection((AddonId::type_)it->first, it->second);
 }
 
@@ -240,16 +240,16 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
     teamView = ser.PopBool();
     randomStartPosition = ser.PopBool();
 
-    unsigned int count = ser.PopUnsignedInt();
+    unsigned count = ser.PopUnsignedInt();
 
     clearAddons();
 
     LOG.writeToFile("<<< Addon Status:\n");
 
-    for(unsigned int i = 0; i < count; ++i)
+    for(unsigned i = 0; i < count; ++i)
     {
         AddonId addon = AddonId::type_(ser.PopUnsignedInt());
-        unsigned int status = ser.PopUnsignedInt();
+        unsigned status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
         LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(addon) % status;
@@ -257,7 +257,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 }
 
 
-void GlobalGameSettings::setSelection(AddonId id, unsigned int selection)
+void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
    AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())

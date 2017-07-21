@@ -101,7 +101,7 @@ private:
         void FillPlayerQueues();
 
         /// Sendet ein NC-Paket ohne Befehle
-        void SendNothingNC(const unsigned int& id);
+        void SendNothingNC(const unsigned& id);
 
         unsigned GetFilledSlots() const;
         /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
@@ -198,7 +198,7 @@ private:
 
     public:
         AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
-		unsigned int skiptogf;
+		unsigned skiptogf;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

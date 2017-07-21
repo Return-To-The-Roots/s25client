@@ -73,7 +73,7 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 /**
  *  Statustext resetten
  */
-void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
+void iwDirectIPCreate::Msg_EditChange(const unsigned  /*ctrl_id*/)
 {
     // Statustext resetten
     SetText("", COLOR_RED, true);
@@ -82,7 +82,7 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned int  /*ctrl_id*/)
 /**
  *  Bei Enter nächstes Steuerelement auswählen
  */
-void iwDirectIPCreate::Msg_EditEnter(const unsigned int ctrl_id)
+void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
 {
     ctrlEdit* name = GetCtrl<ctrlEdit>(1);
     ctrlEdit* port = GetCtrl<ctrlEdit>(3);
@@ -110,7 +110,7 @@ void iwDirectIPCreate::Msg_EditEnter(const unsigned int ctrl_id)
     }
 }
 
-void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -124,7 +124,7 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned int ctrl_id, const i
 /**
  *  Button Clicki-Di-Bunti-Li
  */
-void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -174,7 +174,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned int ctrl_id)
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  */
-void iwDirectIPCreate::SetText(const std::string& text, unsigned int color, bool button)
+void iwDirectIPCreate::SetText(const std::string& text, unsigned color, bool button)
 {
     // Text setzen
     GetCtrl<ctrlText>(6)->SetTextColor(color);

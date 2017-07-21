@@ -162,7 +162,7 @@ iwStatistics::~iwStatistics()
 
 }
 
-void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch (ctrl_id)
     {
@@ -180,7 +180,7 @@ void iwStatistics::Msg_ButtonClick(const unsigned int ctrl_id)
     }
 }
 
-void iwStatistics::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -271,19 +271,19 @@ void iwStatistics::DrawStatistic(StatisticType type)
     const int stepX = size.x / STAT_STEP_COUNT;
 
     unsigned short currentIndex;
-    unsigned int max = 1;
-    unsigned int min = 65000;
+    unsigned max = 1;
+    unsigned min = 65000;
 
     // Maximal- und Minimalwert suchen
     const GameWorldBase& world = gwv.GetWorld();
-    for(unsigned int p = 0; p < world.GetPlayerCount(); ++p)
+    for(unsigned p = 0; p < world.GetPlayerCount(); ++p)
     {
         if(!activePlayers[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
-        for(unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned i = 0; i < STAT_STEP_COUNT; ++i)
         {
             if(max < stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
             {
@@ -323,7 +323,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
-        for (unsigned int i = 0; i < STAT_STEP_COUNT; ++i)
+        for (unsigned i = 0; i < STAT_STEP_COUNT; ++i)
         {
             DrawPoint curPos = topLeft + DrawPoint((STAT_STEP_COUNT - i) * stepX, size.y);
             unsigned curStatVal = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];

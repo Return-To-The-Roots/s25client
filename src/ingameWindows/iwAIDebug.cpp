@@ -82,7 +82,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     //list->SetSelection(0);
 }
 
-void iwAIDebug::Msg_ComboSelectItem(const unsigned int ctrl_id, const int selection)
+void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {

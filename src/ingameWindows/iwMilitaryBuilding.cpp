@@ -123,7 +123,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
         for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it) {
             int hitpoints = static_cast<int>((*it)->GetHitpoints());
             int maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][(*it)->GetRank()]);
-            unsigned int hitpointsColour;
+            unsigned hitpointsColour;
             if (hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;
             else
@@ -142,7 +142,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
 }
 
 
-void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

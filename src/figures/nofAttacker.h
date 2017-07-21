@@ -101,7 +101,7 @@ class nofAttacker : public nofActiveSoldier
         GO_Type GetGOT() const override { return GOT_NOF_ATTACKER; }
         const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
         /// Blockt der Angreifer noch?
         bool IsBlockingRoads() const;
 

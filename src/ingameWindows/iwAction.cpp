@@ -52,7 +52,7 @@ enum TabID
     TAB_SEAATTACK
 };
 
-iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned int params, bool military_buildings)
+iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos, unsigned params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)),
       gi(gi), gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos)
 {
@@ -278,13 +278,13 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     {
         ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 45), _("Erect flag"), TAB_SETFLAG);
 
-        unsigned int nr = 70;
+        unsigned nr = 70;
         if(params == AWFT_WATERFLAG)
             nr = 94;
 
         // Straße aufwerten ggf anzeigen
         Extent btSize(180, 36);
-        unsigned int btPosX = 90;
+        unsigned btPosX = 90;
         AddUpgradeRoad(group, btPosX, btSize.x);
 
         group->AddImageButton(1, DrawPoint(0, 45), btSize, TC_GREY, LOADER.GetImageN("io", nr), _("Erect flag"));
@@ -297,7 +297,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
         // Straße aufwerten ggf anzeigen
         Extent btSize(180, 36);
-        unsigned int btPosX = 0;
+        unsigned btPosX = 0;
         if(!tabs.setflag)
             AddUpgradeRoad(group, btPosX, btSize.x);
 
@@ -349,7 +349,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     VIDEODRIVER.SetMousePos(GetDrawPos() + DrawPoint(20, 75));
 }
 
-void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned int&  /*x*/, unsigned int& width)
+void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned&  /*x*/, unsigned& width)
 {
     RTTR_Assert(group);
 
@@ -398,7 +398,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
         ogroup->SetSelection(1);
 
         // Schnellauswahl-Buttons
-        unsigned int buttons_count = (attackers_count > 3) ? 4 : attackers_count;
+        unsigned buttons_count = (attackers_count > 3) ? 4 : attackers_count;
         unsigned short button_width = 112 / buttons_count;
 
         for(unsigned i = 0; i < buttons_count; ++i)
@@ -416,7 +416,7 @@ iwAction::~iwAction()
     gi.GI_WindowClosed(this);
 }
 
-void iwAction::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const unsigned int ctrl_id)
+void iwAction::Msg_Group_ButtonClick(const unsigned  /*group_id*/, const unsigned ctrl_id)
 {
     switch(GetCtrl<ctrlTab>(0)->GetCurrentTab())
     {
@@ -461,7 +461,7 @@ void iwAction::Msg_Group_ButtonClick(const unsigned int  /*group_id*/, const uns
 }
 
 
-void iwAction::Msg_TabChange(const unsigned int ctrl_id, const unsigned short tab_id)
+void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
 {
     switch(ctrl_id)
     {
@@ -501,7 +501,7 @@ void iwAction::Msg_TabChange(const unsigned int ctrl_id, const unsigned short ta
 
 }
 
-void iwAction::Msg_Group_TabChange(const unsigned  /*group_id*/, const unsigned int ctrl_id, const unsigned short tab_id)
+void iwAction::Msg_Group_TabChange(const unsigned  /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
 {
     switch(ctrl_id)
     {
@@ -536,7 +536,7 @@ void iwAction::Msg_PaintAfter()
 
 
 
-void iwAction::Msg_ButtonClick_TabAttack(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -572,7 +572,7 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned int ctrl_id)
 }
 
 
-void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -608,7 +608,7 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned int ctrl_id)
 }
 
 
-void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -666,7 +666,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned int ctrl_id)
     }
 }
 
-void iwAction::Msg_ButtonClick_TabBuild(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabBuild(const unsigned ctrl_id)
 {
     // Klick auf Gebäudebauicon
     GAMECLIENT.SetBuildingSite(selectedPt,
@@ -677,7 +677,7 @@ void iwAction::Msg_ButtonClick_TabBuild(const unsigned int ctrl_id)
     Close();
 }
 
-void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -694,7 +694,7 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned int ctrl_id)
     Close();
 }
 
-void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -714,7 +714,7 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned int ctrl_id)
     Close();
 }
 
-void iwAction::Msg_ButtonClick_TabWatch(const unsigned int ctrl_id)
+void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

@@ -50,7 +50,7 @@ class GameServerPlayer: public JoinPlayerInfo
 
     private:
 
-        unsigned int connecttime;
+        unsigned connecttime;
         /// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
         unser_time_t last_command_timeout;
 
@@ -63,7 +63,7 @@ class GameServerPlayer: public JoinPlayerInfo
 
         std::vector<GameMessage_GameCommand> gc_queue;
 
-        unsigned int lastping;
+        unsigned lastping;
 };
 
 

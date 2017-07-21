@@ -118,7 +118,7 @@ void iwShip::Msg_PaintAfter()
 }
 
 
-void iwShip::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if (ctrl_id == 2) // Hilfe
     {

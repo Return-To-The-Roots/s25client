@@ -74,7 +74,7 @@ class nofHunter : public nofBuildingWorker
 
         GO_Type GetGOT() const override { return GOT_NOF_HUNTER; }
 
-        void HandleDerivedEvent(const unsigned int id) override;
+        void HandleDerivedEvent(const unsigned id) override;
 
         void TryStartHunting();
 
