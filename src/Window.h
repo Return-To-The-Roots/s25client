@@ -69,8 +69,7 @@ class Window
         typedef bool (Window::*KeyboardMsgHandler)(const KeyEvent&);
         typedef bool (Window::*MouseMsgHandler)(const MouseCoords&);
 
-        Window();
-        Window(const DrawPoint& position, unsigned id, Window* parent, const Extent& size = Extent(0, 0));
+        Window(Window* parent, unsigned id, const DrawPoint& position, const Extent& size = Extent(0, 0));
         virtual ~Window();
         /// zeichnet das Fenster.
         void Draw();
@@ -104,8 +103,6 @@ class Window
         void FreeRegion(Window* window);
         /// Größe verändern oder überhaupt setzen
 
-        /// setzt das Parentfenster.
-        void SetParent(Window* parent) { this->parent_ = parent; }
         /// Set the position for the window
         void SetPos(const DrawPoint& newPos);
 
@@ -263,13 +260,13 @@ class Window
         virtual bool IsMessageRelayAllowed() const;
 
         template <typename T>
-        T* AddCtrl(unsigned id, T* ctrl);
+        T* AddCtrl(T* ctrl);
 
     private:
+        Window* const parent_;/// Handle auf das Parentfenster.
+        const unsigned id_;   /// ID des Fensters.
         DrawPoint pos_;       /// Position des Fensters.
         Extent size_;         /// Höhe des Fensters.
-        unsigned id_;     /// ID des Fensters.
-        Window* parent_;      /// Handle auf das Parentfenster.
         bool active_;         /// Fenster aktiv?
         bool visible_;        /// Fenster sichtbar?
         bool scale_;          /// Sollen Controls an Fenstergröße angepasst werden?
@@ -284,11 +281,11 @@ class Window
 };
 
 template <typename T>
-inline T* Window::AddCtrl(unsigned id, T* ctrl)
+inline T* Window::AddCtrl(T* ctrl)
 {
-    RTTR_Assert(childIdToWnd_.find(id) == childIdToWnd_.end());
+    RTTR_Assert(childIdToWnd_.find(ctrl->GetID()) == childIdToWnd_.end());
     // ID auf control mappen
-    childIdToWnd_.insert(std::make_pair(id, ctrl));
+    childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
     // scale-Eigenschaft weitervererben
     ctrl->scale_ = scale_;

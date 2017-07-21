@@ -27,7 +27,7 @@ ctrlTab::ctrlTab(Window* parent,
                  unsigned int id,
                  const DrawPoint& pos,
                  unsigned short width)
-    : Window(pos, id, parent, Extent(width, 45)),
+    : Window(parent, id, pos, Extent(width, 45)),
       tab_count(0), tab_selection(0)
 {}
 

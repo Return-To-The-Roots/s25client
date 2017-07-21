@@ -26,7 +26,7 @@ ctrlMinimap::ctrlMinimap( Window* parent,
                           const Extent& size,
                           const Extent& padding,
                           const Extent& mapSize)
-    : Window(pos, id, parent, size), padding(padding), mapSize(mapSize), useBoundingBox(true)
+    : Window(parent, id, pos, size), padding(padding), mapSize(mapSize), useBoundingBox(true)
 {
     SetMapSize(mapSize);
 }

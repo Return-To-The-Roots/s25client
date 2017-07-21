@@ -33,7 +33,7 @@ ctrlComboBox::ctrlComboBox(Window* parent,
                            glArchivItem_Font* font,
                            unsigned short max_list_height,
                            bool readonly)
-    : Window(pos, id, parent, size),
+    : Window(parent, id, pos, size),
       tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), last_show(false)
 {
     ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);

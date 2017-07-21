@@ -28,10 +28,9 @@
  *  @param[in] background Hintergrund des Desktops
  */
 Desktop::Desktop(glArchivItem_Bitmap* background)
-    : Window(), background(background)
+    : Window(NULL, 0, DrawPoint::all(0), VIDEODRIVER.GetScreenSize()), background(background)
 {
     SetScale(true);
-    Resize(VIDEODRIVER.GetScreenSize());
 }
 
 /**

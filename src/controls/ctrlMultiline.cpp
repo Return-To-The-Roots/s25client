@@ -27,7 +27,7 @@
 ctrlMultiline::ctrlMultiline(Window* parent, unsigned int id,
                              const DrawPoint& pos, const Extent& size,
                              TextureColor tc, glArchivItem_Font* font, unsigned format):
-    Window(pos, id, parent, size),
+    Window(parent, id, pos, size),
     tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
 {
     RecalcVisibleLines();

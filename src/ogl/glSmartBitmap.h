@@ -67,7 +67,7 @@ class glSmartBitmap
         void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
         void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
 
-        void drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSize, const Extent& bufOffset = Extent(0, 0));
+        void drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSize, const Extent& bufOffset = Extent(0, 0)) const;
 
         void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, false, transferOwnership));}
         void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}

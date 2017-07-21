@@ -41,7 +41,7 @@ class iwAddons : public IngameWindow
         };
 
     public:
-        iwAddons(GlobalGameSettings& ggs, ChangePolicy policy = SETDEFAULTS, const std::vector<AddonId>& addonIds = std::vector<AddonId>());
+        iwAddons(GlobalGameSettings& ggs, Window* parent = NULL, ChangePolicy policy = SETDEFAULTS, const std::vector<AddonId>& addonIds = std::vector<AddonId>());
         ~iwAddons() override;
 
     protected:

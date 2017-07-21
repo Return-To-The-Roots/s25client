@@ -39,7 +39,7 @@ ctrlProgress::ctrlProgress(Window* parent,
                            const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip,
                            unsigned short* const  /*write_val*/)
-    : Window(pos, id, parent, size), ctrlBaseTooltip(tooltip),
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip),
       tc(tc), position(0), maximum(maximum), padding_(padding), force_color(force_color)
 {
     const char* str1 = "io", * str2 = "io";

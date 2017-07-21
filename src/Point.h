@@ -42,10 +42,10 @@ struct Point
     template<typename U>
     BOOST_CONSTEXPR explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
 
-    static const Point Invalid();
+    static BOOST_CONSTEXPR Point Invalid();
     /// Create a new point with all coordinates set to value
-    static BOOST_CONSTEXPR_OR_CONST Point all(const T& value);
-    bool isValid() const;
+    static BOOST_CONSTEXPR Point all(const T& value);
+    BOOST_CONSTEXPR bool isValid() const;
 
     bool operator==(const Point& second) const;
     bool operator!=(const Point& second) const;
@@ -59,20 +59,20 @@ typedef Point<unsigned> Extent;
 //////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-inline const Point<T> Point<T>::Invalid()
+inline BOOST_CONSTEXPR Point<T> Point<T>::Invalid()
 {
     T val = std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max();
     return Point::all(val);
 }
 
 template <typename T>
-inline const Point<T> Point<T>::all(const T& val)
+inline BOOST_CONSTEXPR Point<T> Point<T>::all(const T& val)
 {
     return Point(val, val);
 }
 
 template <typename T>
-inline bool Point<T>::isValid() const
+inline BOOST_CONSTEXPR bool Point<T>::isValid() const
 {
     return *this != Invalid();
 }

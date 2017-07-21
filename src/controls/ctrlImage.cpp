@@ -25,7 +25,7 @@ ctrlImage::ctrlImage(Window* parent,
                      const DrawPoint& pos,
                      glArchivItem_Bitmap* image,
                      const std::string& tooltip):
-    Window(pos, id, parent), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
+    Window(parent, id, pos), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
 {
 }
 

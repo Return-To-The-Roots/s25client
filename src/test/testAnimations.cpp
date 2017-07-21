@@ -39,7 +39,7 @@ namespace{
     struct TestWindow: public Window
     {
         TestWindow(const DrawPoint& position, unsigned id, Window* parent, const Extent& size):
-            Window(position, id, parent, size)
+            Window(parent, id, position, size)
         {}
     protected:
         void Draw_() override{}

@@ -23,7 +23,7 @@ ctrlDeepening::ctrlDeepening(Window* parent,
                              DrawPoint pos,
                              const Extent& size,
                              TextureColor tc)
-    : Window(pos, id, parent, size), tc(tc)
+    : Window(parent, id, pos, size), tc(tc)
 {}
 
 /**

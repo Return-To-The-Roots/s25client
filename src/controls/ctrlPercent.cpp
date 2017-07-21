@@ -28,7 +28,7 @@ ctrlPercent::ctrlPercent(Window* parent,
                          unsigned int text_color,
                          glArchivItem_Font* font,
                          const unsigned short* percentage)
-    : Window(pos, id, parent, size),
+    : Window(parent, id, pos, size),
       tc(tc), text_color(text_color), font(font), percentage_(percentage)
 {
 }

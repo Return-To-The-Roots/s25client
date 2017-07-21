@@ -34,7 +34,7 @@ ctrlTable::ctrlTable(Window* parent,
                      glArchivItem_Font* font,
                      unsigned short column_count,
                      va_list liste)
-    : Window(pos, id, parent, elMax(size, Extent(20, 30))),
+    : Window(parent, id, pos, elMax(size, Extent(20, 30))),
       tc(tc), font(font),
       selection_(-1),
       sort_column(-1), sort_direction(true)

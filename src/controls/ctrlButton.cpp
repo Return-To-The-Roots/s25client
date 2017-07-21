@@ -26,7 +26,7 @@
 
 ctrlButton::ctrlButton(Window* parent, unsigned int id, const DrawPoint& pos,
                        const Extent& size, TextureColor tc, const std::string& tooltip)
-    : Window(pos, id, parent, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true),
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true),
       isChecked(false), isIlluminated(false), isEnabled(true)
 {}
 

@@ -28,7 +28,7 @@ ctrlList::ctrlList(Window* parent,
                    const Extent& size,
                    TextureColor tc,
                    glArchivItem_Font* font)
-    : Window(pos, id, parent, elMax(size, Extent(22, 4))),
+    : Window(parent, id, pos, elMax(size, Extent(22, 4))),
       tc(tc), font(font), selection_(-1), mouseover(-1)
 {
     pagesize = (GetSize().y - 4) / font->getHeight();

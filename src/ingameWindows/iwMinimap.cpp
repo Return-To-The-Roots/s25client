@@ -42,7 +42,7 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"),
         LOADER.GetImageN("resource", 41)), extended(false)
 {
-    AddCtrl(0, new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
+    AddCtrl(new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);

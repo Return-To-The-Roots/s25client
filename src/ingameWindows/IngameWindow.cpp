@@ -34,7 +34,7 @@ const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementT
 
 IngameWindow::IngameWindow(unsigned int id, const DrawPoint& pos, const Extent& size,
                            const std::string& title, glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
-    : Window(pos, id, parent, size),
+    : Window(parent, id, pos, size),
       title_(title), background(background), lastMousePos(0, 0),
       last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeOnRightClick_(closeOnRightClick)
 {

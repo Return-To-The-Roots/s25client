@@ -93,7 +93,6 @@ void dskLAN::Msg_ButtonClick(const unsigned int ctrl_id)
         else
         {
             iwDirectIPCreate* servercreate = new iwDirectIPCreate(ServerType::LAN);
-            servercreate->SetParent(this);
             WINDOWMANAGER.Show(servercreate, true);
         }
     }

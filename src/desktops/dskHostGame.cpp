@@ -645,12 +645,11 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
         {
             iwAddons* w;
             if(allowAddonChange && (!lua || lua->IsChangeAllowed("addonsAll")))
-                w = new iwAddons(gameLobby.GetSettings(), iwAddons::HOSTGAME);
+                w = new iwAddons(gameLobby.GetSettings(), this, iwAddons::HOSTGAME);
             else if(allowAddonChange)
-                w = new iwAddons(gameLobby.GetSettings(), iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
+                w = new iwAddons(gameLobby.GetSettings(), this, iwAddons::HOSTGAME_WHITELIST, lua->GetAllowedAddons());
             else
-                w = new iwAddons(gameLobby.GetSettings(), iwAddons::READONLY);
-            w->SetParent(this);
+                w = new iwAddons(gameLobby.GetSettings(), this, iwAddons::READONLY);
             WINDOWMANAGER.Show(w);
         } break;
     }

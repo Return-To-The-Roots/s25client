@@ -21,7 +21,7 @@
 class MouseCoords;
 struct KeyEvent;
 
-ctrlGroup::ctrlGroup(Window* parent, unsigned int id): Window(DrawPoint(0, 0), id, parent)
+ctrlGroup::ctrlGroup(Window* parent, unsigned int id): Window(parent, id, DrawPoint(0, 0))
 {}
 
 /**

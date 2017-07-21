@@ -29,7 +29,7 @@ ctrlScrollBar::ctrlScrollBar(Window* parent,
                              unsigned short button_height,
                              TextureColor tc,
                              unsigned short pagesize)
-    : Window(pos, id, parent, size),
+    : Window(parent, id, pos, size),
       button_height(button_height), tc(tc), pagesize(pagesize),
       scroll_range(0), scroll_pos(0), scroll_height(0), sliderHeight(0), sliderPos(0), isMouseScrolling(false), last_y(0)
 {

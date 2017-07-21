@@ -125,7 +125,6 @@ void dskLobby::Msg_ButtonClick(const unsigned int ctrl_id)
             else
             {
                 createServerWnd = new iwDirectIPCreate(ServerType::LOBBY);
-                createServerWnd->SetParent(this);
                 WINDOWMANAGER.Show(createServerWnd, true);
             }
         } break;
@@ -165,7 +164,6 @@ void dskLobby::Msg_TableRightButton(const unsigned int ctrl_id, const int select
                 }
 
                 serverInfoWnd = new iwLobbyServerInfo(atoi(item.c_str()));
-                serverInfoWnd->SetParent(this);
                 serverInfoWnd->SetTitle(table->GetItemText(selection, 1));
                 WINDOWMANAGER.Show(serverInfoWnd, true);
             }

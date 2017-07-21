@@ -41,7 +41,7 @@ ctrlText::ctrlText(Window* parent,
                    unsigned int color,
                    unsigned int format,
                    glArchivItem_Font* font)
-    : Window(pos, id, parent), ctrlBaseText(text, color, font), format(format)
+    : Window(parent, id, pos), ctrlBaseText(text, color, font), format(format)
 {
 }
 
