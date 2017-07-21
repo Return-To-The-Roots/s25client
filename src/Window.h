@@ -78,7 +78,7 @@ class Window
         /// Get the absolute (X,Y) position as when calling GetX/GetY for drawing
         DrawPoint GetDrawPos() const;
         /// Get the size of the window
-        Extent GetSize(bool scale = false) const;
+        Extent GetSize() const;
         /// gets the extent of the window in absolute coordinates
         Rect GetDrawRect() const;
         /// Get the actual extents of the rect (might be different to the draw rect if the window resizes according to content)

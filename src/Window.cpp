@@ -72,9 +72,9 @@ DrawPoint Window::GetDrawPos() const
     return result;
 }
 
-Extent Window::GetSize(bool scale /*= false*/) const
+Extent Window::GetSize() const
 {
-    return scale ? Scale(size_) : size_;
+    return size_;
 }
 
 Rect Window::GetDrawRect() const
@@ -582,6 +582,9 @@ T_Pt Window::ScaleIf(const T_Pt& pt) const
     return scale_ ? Scale(pt) : pt;
 }
 
+// Inlining removes those. so add it here
+template DrawPoint Window::ScaleIf(const DrawPoint&) const;
+template Extent Window::ScaleIf(const Extent&) const;
 
 /**
  *  zeichnet die Steuerelemente.

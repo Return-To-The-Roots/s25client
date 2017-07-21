@@ -61,8 +61,7 @@ typedef Point<unsigned> Extent;
 template <typename T>
 inline BOOST_CONSTEXPR Point<T> Point<T>::Invalid()
 {
-    T val = std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max();
-    return Point::all(val);
+    return Point::all(std::numeric_limits<T>::has_quiet_NaN ? std::numeric_limits<T>::quiet_NaN() : std::numeric_limits<T>::max());
 }
 
 template <typename T>

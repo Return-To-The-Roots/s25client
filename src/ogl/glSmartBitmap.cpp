@@ -70,7 +70,7 @@ void glSmartBitmap::calcDimensions()
         return;
     }
 
-    Position maxPos;
+    Position maxPos(0, 0);
 
     origin.x = origin.y = std::numeric_limits<int>::min();
 
