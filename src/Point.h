@@ -36,15 +36,15 @@ struct Point
     typedef T ElementType;
 
     T x, y;
-    Point() {} //-V730
-    Point(const T x, const T y): x(x), y(y) {}
-    Point(const Point& other): x(other.x), y(other.y){}
+    BOOST_CONSTEXPR Point() {} //-V730
+    BOOST_CONSTEXPR Point(const T x, const T y): x(x), y(y) {}
+    BOOST_CONSTEXPR Point(const Point& other): x(other.x), y(other.y){}
     template<typename U>
-    explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
+    BOOST_CONSTEXPR explicit Point(const Point<U>& pt): x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y)) {}
 
     static const Point Invalid();
     /// Create a new point with all coordinates set to value
-    static const Point all(const T& value);
+    static BOOST_CONSTEXPR_OR_CONST Point all(const T& value);
     bool isValid() const;
 
     bool operator==(const Point& second) const;

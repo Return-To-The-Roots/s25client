@@ -594,7 +594,7 @@ T_Pt Window::Scale(const T_Pt& pt) const
 template<class T_Pt>
 T_Pt Window::ScaleIf(const T_Pt& pt) const
 {
-    return scale_ ? ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetScreenSize()) : pt;
+    return scale_ ? Scale(pt) : pt;
 }
 
 

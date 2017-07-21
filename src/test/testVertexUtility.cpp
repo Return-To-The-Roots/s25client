@@ -31,8 +31,8 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_IndexOutOfBounds, VertexUtility)
 {
     Position v = VertexUtility::GetPosition(10, MapExtent(2, 2));
         
-    BOOST_REQUIRE_EQUAL(v.x, 0u);
-    BOOST_REQUIRE_EQUAL(v.y, 5u);
+    BOOST_REQUIRE_EQUAL(v.x, 0);
+    BOOST_REQUIRE_EQUAL(v.y, 5);
 }
 
 /**
@@ -43,8 +43,8 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_CornerIndex, VertexUtility)
 {
     Position v = VertexUtility::GetPosition(8, MapExtent(3, 3));
         
-    BOOST_REQUIRE_EQUAL(v.x, 2u);
-    BOOST_REQUIRE_EQUAL(v.y, 2u);
+    BOOST_REQUIRE_EQUAL(v.x, 2);
+    BOOST_REQUIRE_EQUAL(v.y, 2);
 }
     
 /**
@@ -58,8 +58,8 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_ZeroIndex, VertexUtility)
         for (int height = 1; height < 100; height++)
         {
             Position v = VertexUtility::GetPosition(0, MapExtent(width, height));
-            BOOST_REQUIRE_EQUAL(v.x, 0u);
-            BOOST_REQUIRE_EQUAL(v.y, 0u);
+            BOOST_REQUIRE_EQUAL(v.x, 0);
+            BOOST_REQUIRE_EQUAL(v.y, 0);
         }
     }
 }
