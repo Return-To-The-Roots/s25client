@@ -1,5 +1,6 @@
 sudo: false
 language: cpp
+dist: trusty
 branches:
     only:
         - master
@@ -22,8 +23,8 @@ addons:
         sources:
             - boost-latest
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.5
-            - george-edison55-precise-backports # cmake 3.2.3
+            - llvm-toolchain-trusty-3.5
+            - george-edison55-trusty-backports # cmake 3.2.3
         packages:
             - libboost-filesystem1.55-dev
             - libboost-iostreams1.55-dev
