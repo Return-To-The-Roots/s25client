@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "SavedFile.h"
-#include <build_version.h>
+#include "build_version.h"
 #include "libutil/src/BinaryFile.h"
 #include "BasePlayerInfo.h"
 #include "libutil/src/Serializer.h"
@@ -27,7 +27,7 @@
 
 SavedFile::SavedFile() : save_time(0)
 {
-    const char* rev = GetWindowRevision();
+    const char* rev = RTTR_Version::GetRevision();
     std::copy(rev, rev + revision.size(), revision.begin());
 }
 

@@ -22,8 +22,8 @@
 #endif
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
-#include <VideoInterface.h>
-#include <build_version.h>
+#include "VideoInterface.h"
+#include "build_version.h"
 
 #include <SDL.h>
 #include <algorithm>
@@ -173,7 +173,7 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
         return false;
     }
 
-    sprintf(title, "%s - v%s-%s", GetWindowTitle(), GetWindowVersion(), GetWindowRevision());
+    sprintf(title, "%s - v%s-%s", RTTR_Version::GetTitle(), RTTR_Version::GetVersion(), RTTR_Version::GetRevision());
     SDL_WM_SetCaption(title, 0);
 
 #ifdef _WIN32

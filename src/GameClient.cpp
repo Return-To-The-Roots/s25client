@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
+#include "build_version.h"
 #include "GameClient.h"
 
 #include "GameManager.h"
@@ -394,7 +394,7 @@ void GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     this->playerId_ = msg.playerId;
 
     // Server-Typ senden
-    send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, GetWindowVersion()));
+    send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, RTTR_Version::GetVersion()));
 }
 
 /**

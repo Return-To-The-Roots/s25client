@@ -81,8 +81,8 @@ DebugInfo::DebugInfo()
     // Bits
     SendUnsigned(sizeof(void*) << 3);
 
-    SendString(GetWindowVersion());
-    SendString(GetWindowRevision());
+    SendString(RTTR_Version::GetVersion());
+    SendString(RTTR_Version::GetRevision());
 
     SendUnsigned(GAMECLIENT.GetGFNumber());
 }

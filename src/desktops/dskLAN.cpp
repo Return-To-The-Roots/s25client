@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
+#include "build_version.h"
 #include "dskLAN.h"
 
 #include "WindowManager.h"
@@ -158,7 +158,7 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     GameInfo game = openGames[selection];
-    if(game.info.version == std::string(GetWindowVersion()))
+    if(game.info.version == std::string(RTTR_Version::GetVersion()))
     {
         iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);

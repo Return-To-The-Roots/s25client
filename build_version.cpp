@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include <build_version.h>
-#include <build_version_defines.h>
+#include "build_version.h"
+#include "build_version_defines.h"
 #include <cstring>
 
-const char* GetWindowTitle()
+const char* RTTR_Version::GetTitle()
 {
     static char title[256];
     std::memset(title, 0, 256);
@@ -27,7 +27,7 @@ const char* GetWindowTitle()
     return title;
 }
 
-const char* GetWindowVersion()
+const char* RTTR_Version::GetVersion()
 {
     static char version[256];
     std::memset(version, 0, 256);
@@ -35,7 +35,7 @@ const char* GetWindowVersion()
     return version;
 }
 
-const char* GetWindowRevision()
+const char* RTTR_Version::GetRevision()
 {
     static char revision[256];
     std::memset(revision, 0, 256);
@@ -43,7 +43,7 @@ const char* GetWindowRevision()
     return revision;
 }
 
-const char* GetWindowRevisionShort()
+const char* RTTR_Version::GetShortRevision()
 {
     static char revision[8];
     std::memset(revision, 0, 8);
@@ -51,8 +51,9 @@ const char* GetWindowRevisionShort()
     return revision;
 }
 
-const char* GetCurrentYear() //nasty but works, if versioning principle changes, we should make it use date function
+const char* RTTR_Version::GetYear()
 {
+    //nasty but works, if versioning principle changes, we should make it use date function
     static char year[5];
     std::memset(year, 0, 5);
     std::strncpy(year, WINDOW_VERSION, 4);

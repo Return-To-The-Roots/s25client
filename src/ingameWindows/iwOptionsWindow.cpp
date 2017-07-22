@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
+#include "build_version.h"
 #include "iwOptionsWindow.h"
 
 #include "WindowManager.h"
@@ -43,9 +43,9 @@ iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow
     AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddVarText(2, DrawPoint(150, 76), _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
+    AddVarText(2, DrawPoint(150, 76), _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, RTTR_Version::GetVersion(), RTTR_Version::GetShortRevision());
     // Copyright
-    AddVarText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, RTTR_Version::GetYear());
 
     // "Tastaturbelegung"
     AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));

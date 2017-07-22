@@ -20,8 +20,8 @@
 
 #include "../../../../win32/resource.h"
 #include "VideoDriverLoaderInterface.h"
-#include <build_version.h>
-#include <VideoInterface.h>
+#include "build_version.h"
+#include "VideoInterface.h"
 #include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>
@@ -173,7 +173,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     if(!initialized)
         return false;
 
-    std::wstring wTitle = AnsiToUtf8(GetWindowTitle());
+    std::wstring wTitle = AnsiToUtf8(RTTR_Version::GetTitle());
 
     WNDCLASSW  wc;
     wc.style            = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -217,7 +217,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     SetClipboardViewer(screen);
 
     std::stringstream title;
-    title << GetWindowTitle() << " - v" << GetWindowVersion() << "-" << GetWindowRevisionShort();
+    title << RTTR_Version::GetTitle() << " - v" << RTTR_Version::GetVersion() << "-" << RTTR_Version::GetShortRevision();
 
     wTitle = AnsiToUtf8(title.str().c_str());
 
@@ -425,7 +425,7 @@ void VideoWinAPI::DestroyScreen(void)
 
     screen = NULL;
 
-    UnregisterClassA(GetWindowTitle(), GetModuleHandle(NULL));
+    UnregisterClassA(RTTR_Version::GetTitle(), GetModuleHandle(NULL));
 
     isFullscreen_ = false;
 }

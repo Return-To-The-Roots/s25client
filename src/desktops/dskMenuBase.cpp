@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
+#include "build_version.h"
 #include "dskMenuBase.h"
 #include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
@@ -35,9 +35,9 @@ dskMenuBase::dskMenuBase(glArchivItem_Bitmap* background): Desktop(background)
 void dskMenuBase::AddBottomTexts()
 {
     AddVarText(ID_txtVersion, DrawPoint(0, 600), _("Return To The Roots - v%s-%s"), COLOR_YELLOW,
-        glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
+        glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, RTTR_Version::GetVersion(), RTTR_Version::GetShortRevision());
     AddText(ID_txtURL, DrawPoint(400, 600), _("http://www.siedler25.org"), COLOR_GREEN,
         glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont);
     AddVarText(ID_txtCopyright, DrawPoint(800, 600), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW,
-        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, RTTR_Version::GetYear());
 }

@@ -15,7 +15,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
+#include "build_version.h"
 #include "dskLobby.h"
 
 #include "WindowManager.h"
@@ -291,7 +291,7 @@ bool dskLobby::ConnectToSelectedGame()
         if(it->getId() != selection)
             continue;
 
-        if(it->getVersion() == std::string(GetWindowVersion()))
+        if(it->getVersion() == std::string(RTTR_Version::GetVersion()))
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
             connect->Connect(it->getHost(), it->getPort(), false, it->hasPassword());
