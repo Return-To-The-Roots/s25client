@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <VideoDriver.h>
+#include "VideoDriver.h"
 class VideoDriverLoaderInterface;
 struct VideoMode;
 struct SDL_Surface;
@@ -42,7 +42,7 @@ class VideoSDL : public VideoDriver
         void CleanUp() override;
 
         /// Erstellt das Fenster mit entsprechenden Werten.
-        bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
+        bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) override;
 
         /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
         bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) override;

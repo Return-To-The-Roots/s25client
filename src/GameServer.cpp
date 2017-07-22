@@ -182,7 +182,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
     // erstellen dürfen
     if(config.servertype == ServerType::LOBBY)
     {
-        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
+        LOBBYCLIENT.AddServer(config.gamename, RTTR_Version::GetVersion(), mapinfo.title, (config.password.length() != 0), config.port);
         return true;
     }
     else

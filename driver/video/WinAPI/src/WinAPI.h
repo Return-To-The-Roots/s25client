@@ -19,9 +19,10 @@
 
 #pragma once
 
-#include <VideoDriver.h>
+#include "VideoDriver.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <string>
 
 /// Klasse für den WinAPI Videotreiber.
 class VideoWinAPI : public VideoDriver
@@ -29,34 +30,34 @@ class VideoWinAPI : public VideoDriver
     public:
         VideoWinAPI(VideoDriverLoaderInterface* CallBack);
 
-        ~VideoWinAPI(void);
+        ~VideoWinAPI();
 
         /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName(void) const override;
+        const char* GetName() const override;
 
         /// Treiberinitialisierungsfunktion.
-        bool Initialize(void) override;
+        bool Initialize() override;
 
         /// Treiberaufräumfunktion.
-        void CleanUp(void) override;
+        void CleanUp() override;
 
         /// Erstellt das Fenster mit entsprechenden Werten.
-        bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
+        bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) override;
 
         /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
         bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
 
         /// Schliesst das Fenster.
-        void DestroyScreen(void) override;
+        void DestroyScreen() override;
 
         /// Wechselt die OpenGL-Puffer.
-        bool SwapBuffers(void) override;
+        bool SwapBuffers() override;
 
         /// Die Nachrichtenschleife.
-        bool MessageLoop(void) override;
+        bool MessageLoop() override;
 
         /// Funktion zum Auslesen des TickCounts.
-        unsigned long GetTickCount(void) const override;
+        unsigned long GetTickCount() const override;
 
         /// Funktion zum Holen einer Subfunktion.
         void* GetFunction(const char* function) const override;
@@ -68,7 +69,7 @@ class VideoWinAPI : public VideoDriver
         void SetMousePos(int x, int y) override;
 
         /// Get state of the modifier keys
-        KeyEvent GetModKeyState(void) const override;
+        KeyEvent GetModKeyState() const override;
 
         /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
         void* GetMapPointer() const override;
@@ -93,6 +94,7 @@ class VideoWinAPI : public VideoDriver
         HDC   screen_dc; /// Zeichenkontext des Fensters.
         HGLRC screen_rc; /// OpenGL-Kontext des Fensters.
         bool isWindowResizable, isMinimized;
+        std::wstring windowClassName;
 };
 
 #endif // !WINAPI_H_INCLUDED

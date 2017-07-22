@@ -37,7 +37,7 @@ bool MockupVideoDriver::Initialize()
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
 {
     return ResizeScreen(width, height, fullscreen);
 }

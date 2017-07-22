@@ -23,7 +23,6 @@
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
-#include "build_version.h"
 
 #include <SDL.h>
 #include <algorithm>
@@ -55,7 +54,7 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
  *
  *  @return liefert den Namen des Treibers.
  */
-DRIVERDLLAPI const char* GetDriverName(void)
+DRIVERDLLAPI const char* GetDriverName()
 {
     return "(SDL) OpenGL via SDL-Library";
 }
@@ -142,10 +141,8 @@ void VideoSDL::CleanUp()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
 {
-    char title[512];
-
     if(!initialized)
         return false;
 
@@ -173,11 +170,10 @@ bool VideoSDL::CreateScreen(unsigned short width, unsigned short height, const b
         return false;
     }
 
-    sprintf(title, "%s - v%s-%s", RTTR_Version::GetTitle(), RTTR_Version::GetVersion(), RTTR_Version::GetRevision());
-    SDL_WM_SetCaption(title, 0);
+    SDL_WM_SetCaption(title.c_str(), 0);
 
 #ifdef _WIN32
-    SetWindowTextA(GetConsoleWindow(), title);
+    SetWindowTextA(GetConsoleWindow(), title.c_str());
 #endif
 
     std::fill(keyboard.begin(), keyboard.end(), false);

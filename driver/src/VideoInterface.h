@@ -21,6 +21,7 @@
 
 #include "KeyEvent.h"
 #include <vector>
+#include <string>
 
 /// Window size or resolution
 struct VideoMode
@@ -47,7 +48,7 @@ public:
     virtual void CleanUp() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
+    virtual bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) = 0;
 
     virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
 

@@ -16,16 +16,13 @@ ELSE()
 						${Boost_INCLUDE_DIR}
 					   )
 	
-	INCLUDE(AddFileDependencies)
-	ADD_FILE_DEPENDENCIES("${PROJECT_SOURCE_DIR}/build_version.cpp" "${CMAKE_BINARY_DIR}/build_version_defines.h")
-
 	SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
 	IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 		ADD_DEFINITIONS(-DBUILD_DLL)
 		SET(SL_PREFIX "")
 	ENDIF ()
 		
-	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp)
+	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h)
 	ADD_DEPENDENCIES(audioSDL updateversion)
 	TARGET_LINK_LIBRARIES(audioSDL audiodrv endian s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${Boost_LIBRARIES})
 	

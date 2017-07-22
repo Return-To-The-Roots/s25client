@@ -24,11 +24,13 @@
 #include "driver/src/VideoInterface.h"
 
 #include "WindowManager.h"
+#include "build_version.h"
 #include "libutil/src/error.h"
 #include "libutil/src/Log.h"
 
 #include <ctime>
 #include <algorithm>
+#include <sstream>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #   include <valgrind/memcheck.h>
 #endif
@@ -100,13 +102,16 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
         return false;
     }
 
+    std::stringstream title;
+    title << RTTR_Version::GetTitle() << " - v" << RTTR_Version::GetVersion() << "-" << RTTR_Version::GetShortRevision();
+
     // Fenster erstellen
     // On Windows it is necessary to open a windowed mode window at first and then resize it
 #ifdef _WIN32
     // We need this doubled up here
     // - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI implementation)
     // - With SDL in the fullscreen case
-    if(!videodriver->CreateScreen(screen_width, screen_height, false))
+    if(!videodriver->CreateScreen(title.str(), screen_width, screen_height, false))
     {
         s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;
@@ -119,7 +124,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     // Set this, as there is no message sent for the resize by the driver
     SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
 #else
-    if(!videodriver->CreateScreen(screen_width, screen_height, fullscreen))
+    if(!videodriver->CreateScreen(title.str(), screen_width, screen_height, fullscreen))
     {
         s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;

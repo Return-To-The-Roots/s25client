@@ -20,12 +20,10 @@
 
 #include "../../../../win32/resource.h"
 #include "VideoDriverLoaderInterface.h"
-#include "build_version.h"
 #include "VideoInterface.h"
 #include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>
-#include <sstream>
 
 /**
  *  Zeiger auf die aktuelle Instanz.
@@ -49,7 +47,7 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver)
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName(void)
+DRIVERDLLAPI const char* GetDriverName()
 {
     return "(WinAPI) OpenGL via the glorious WinAPI";
 }
@@ -93,7 +91,7 @@ VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack):
     pVideoWinAPI = this;
 }
 
-VideoWinAPI::~VideoWinAPI(void)
+VideoWinAPI::~VideoWinAPI()
 {
     pVideoWinAPI = NULL;
 }
@@ -103,7 +101,7 @@ VideoWinAPI::~VideoWinAPI(void)
  *
  *  @return liefert den Treibernamen zurück
  */
-const char* VideoWinAPI::GetName(void) const
+const char* VideoWinAPI::GetName() const
 {
     return GetDriverName();
 }
@@ -113,7 +111,7 @@ const char* VideoWinAPI::GetName(void) const
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoWinAPI::Initialize(void)
+bool VideoWinAPI::Initialize()
 {
     memset(&dm_prev, 0, sizeof(DEVMODE));
     dm_prev.dmSize = sizeof(DEVMODE);
@@ -131,7 +129,7 @@ bool VideoWinAPI::Initialize(void)
 /**
  *  Treiberaufräumfunktion.
  */
-void VideoWinAPI::CleanUp(void)
+void VideoWinAPI::CleanUp()
 {
     // Fenster zerstören
     DestroyScreen();
@@ -143,7 +141,7 @@ void VideoWinAPI::CleanUp(void)
     initialized = false;
 }
 
-std::wstring AnsiToUtf8(LPCSTR tSource, int nLength = -1)
+std::wstring Utf8ToWidestring(LPCSTR tSource, int nLength = -1)
 {
     int nConvertedLength = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, NULL, 0);
     if(!nConvertedLength)
@@ -168,12 +166,13 @@ std::wstring AnsiToUtf8(LPCSTR tSource, int nLength = -1)
  *  @bug Hardwarecursor ist bei Fenstermodus sichtbar,
  *       Cursor deaktivieren ist fehlerhaft
  */
-bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
 {
     if(!initialized)
         return false;
 
-    std::wstring wTitle = AnsiToUtf8(RTTR_Version::GetTitle());
+    std::wstring wTitle = Utf8ToWidestring(title.c_str());
+    windowClassName = wTitle.substr(0, wTitle.find(' '));
 
     WNDCLASSW  wc;
     wc.style            = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -185,7 +184,7 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
     wc.hCursor          = NULL;
     wc.hbrBackground    = NULL;
     wc.lpszMenuName     = NULL;
-    wc.lpszClassName    = wTitle.c_str();
+    wc.lpszClassName    = windowClassName.c_str();
 
     // Fensterklasse registrieren
     if (!RegisterClassW(&wc))
@@ -215,11 +214,6 @@ bool VideoWinAPI::CreateScreen(unsigned short width, unsigned short height, cons
         return false;
 
     SetClipboardViewer(screen);
-
-    std::stringstream title;
-    title << RTTR_Version::GetTitle() << " - v" << RTTR_Version::GetVersion() << "-" << RTTR_Version::GetShortRevision();
-
-    wTitle = AnsiToUtf8(title.str().c_str());
 
     SetWindowTextW(screen, wTitle.c_str());
     SetWindowTextW(GetConsoleWindow(), wTitle.c_str());
@@ -396,7 +390,7 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
 /**
  *  Schliesst das Fenster.
  */
-void VideoWinAPI::DestroyScreen(void)
+void VideoWinAPI::DestroyScreen()
 {
     // Fenster schliessen
     EndDialog(screen, 0);
@@ -425,7 +419,7 @@ void VideoWinAPI::DestroyScreen(void)
 
     screen = NULL;
 
-    UnregisterClassA(RTTR_Version::GetTitle(), GetModuleHandle(NULL));
+    UnregisterClassW(windowClassName.c_str(), GetModuleHandle(NULL));
 
     isFullscreen_ = false;
 }
@@ -435,7 +429,7 @@ void VideoWinAPI::DestroyScreen(void)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoWinAPI::SwapBuffers(void)
+bool VideoWinAPI::SwapBuffers()
 {
     if(!screen_dc)
         return false;
@@ -451,7 +445,7 @@ bool VideoWinAPI::SwapBuffers(void)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoWinAPI::MessageLoop(void)
+bool VideoWinAPI::MessageLoop()
 {
     MSG msg;
     if(PeekMessage(&msg, screen, 0, 0, PM_REMOVE))
@@ -470,7 +464,7 @@ bool VideoWinAPI::MessageLoop(void)
  *
  *  @return liefert den TickCount
  */
-unsigned long VideoWinAPI::GetTickCount(void) const
+unsigned long VideoWinAPI::GetTickCount() const
 {
     return ::GetTickCount();
 }
@@ -765,7 +759,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
 /**
  *  Get state of the modifier keys
  */
-KeyEvent VideoWinAPI::GetModKeyState(void) const
+KeyEvent VideoWinAPI::GetModKeyState() const
 {
     const KeyEvent ke = { KT_INVALID, 0,
                           (GetKeyState(VK_CONTROL) & 0x8000) != 0,
