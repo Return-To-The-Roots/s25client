@@ -22,7 +22,7 @@ ELSE()
 		SET(SL_PREFIX "")
 	ENDIF ()
 		
-	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h)
+	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	ADD_DEPENDENCIES(audioSDL updateversion)
 	TARGET_LINK_LIBRARIES(audioSDL audiodrv endian s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${Boost_LIBRARIES})
 	
