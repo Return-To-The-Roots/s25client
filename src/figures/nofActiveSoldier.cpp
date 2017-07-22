@@ -26,7 +26,7 @@
 #include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include <stdexcept>
 
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player,

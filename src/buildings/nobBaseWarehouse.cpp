@@ -41,7 +41,7 @@
 #include "gameData/ShieldConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "helpers/containerUtils.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include <algorithm>
 
 /// Intervall für Ausleerung (in gf)

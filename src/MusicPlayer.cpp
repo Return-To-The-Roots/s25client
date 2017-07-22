@@ -21,7 +21,7 @@
 #include "drivers/AudioDriverWrapper.h"
 
 #include "Loader.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 #include "../libsiedler2/src/prototypen.h"
 #include "ogl/glArchivItem_Music.h"

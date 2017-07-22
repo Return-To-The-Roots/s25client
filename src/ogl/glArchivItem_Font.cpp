@@ -22,7 +22,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "Loader.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/src/libsiedler2.h"

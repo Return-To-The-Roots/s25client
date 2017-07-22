@@ -19,7 +19,7 @@
 #include "Messenger.h"
 
 #include "Loader.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Font.h"
 #include "mygettext/src/mygettext.h"

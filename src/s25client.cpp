@@ -24,8 +24,8 @@
 #include "GameManager.h"
 
 #include "Settings.h"
-#include "Log.h"
-#include "error.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/error.h"
 #include "files.h"
 
 // This is for catching crashes and reporting bugs, it does not slow down anything.
@@ -33,8 +33,8 @@
 
 #include "QuickStartGame.h"
 #include "GlobalVars.h"
-#include "fileFuncs.h"
-#include "System.h"
+#include "libutil/src/fileFuncs.h"
+#include "libutil/src/System.h"
 
 #include "ogl/glAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"

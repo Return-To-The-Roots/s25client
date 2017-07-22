@@ -11,8 +11,6 @@ ELSE()
 	CORRECT_LIB(SDLMIXER_LIBRARY SDL_mixer)
 
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}
-						"${PROJECT_SOURCE_DIR}/driver/src"
-						"${PROJECT_SOURCE_DIR}/libendian/src"
 						${SDL_INCLUDE_DIR}
 						${SDLMIXER_INCLUDE_DIR}
 						${Boost_INCLUDE_DIR}
@@ -27,7 +25,7 @@ ELSE()
 		SET(SL_PREFIX "")
 	ENDIF ()
 		
-	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
+	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/build_version.cpp)
 	ADD_DEPENDENCIES(audioSDL updateversion)
 	TARGET_LINK_LIBRARIES(audioSDL audiodrv endian s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${Boost_LIBRARIES})
 	

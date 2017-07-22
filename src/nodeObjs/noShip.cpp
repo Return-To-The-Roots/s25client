@@ -36,7 +36,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "addons/const_addons.h"
 #include "gameData/GameConsts.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 const unsigned ship_count = 55;
 

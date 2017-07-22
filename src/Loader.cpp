@@ -25,10 +25,10 @@
 #include "Settings.h"
 
 #include "drivers/VideoDriverWrapper.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 #include "ListDir.h"
-#include "fileFuncs.h"
+#include "libutil/src/fileFuncs.h"
 
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

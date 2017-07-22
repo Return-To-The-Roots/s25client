@@ -28,7 +28,7 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/foreach.hpp>
 #include <algorithm>

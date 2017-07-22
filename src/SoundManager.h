@@ -18,7 +18,7 @@
 #ifndef SOUNDMANAGER_H_
 #define SOUNDMANAGER_H_
 
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 #include <list>
 
 class noBase;

@@ -20,7 +20,7 @@
 
 #include "Desktop.h"
 #include "ClientInterface.h"
-#include "LobbyInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 #include "GlobalGameSettings.h"
 #include "gameTypes/ServerType.h"
 #include "helpers/Deleter.h"

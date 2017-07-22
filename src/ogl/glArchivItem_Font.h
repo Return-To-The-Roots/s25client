@@ -20,7 +20,7 @@
 #pragma once
 
 #include "ogl/glArchivItem_Bitmap.h"
-#include "colors.h"
+#include "libutil/src/colors.h"
 #include "ogl/oglIncludes.h"
 #include "DrawPoint.h"
 #include "Rect.h"

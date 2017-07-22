@@ -20,7 +20,7 @@
 #pragma once
 
 #include "desktops/dskMenuBase.h"
-#include "LANDiscoveryClient.h"
+#include "libutil/src/LANDiscoveryClient.h"
 #include "gameTypes/LanGameInfo.h"
 #include <vector>
 

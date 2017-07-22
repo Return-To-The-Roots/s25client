@@ -7,15 +7,7 @@ FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system program_options
 
 ################################################################################
 
-INCLUDE_DIRECTORIES(
-	${CMAKE_SOURCE_DIR}
-	"${CMAKE_SOURCE_DIR}/liblobby/src/"
-	"${CMAKE_SOURCE_DIR}/libutil/src/"
-	"${CMAKE_SOURCE_DIR}/mygettext/src/"
-	"${CMAKE_SOURCE_DIR}/libsiedler2/src/"
-	"${CMAKE_SOURCE_DIR}/libendian/src/"
-	"${CMAKE_SOURCE_DIR}/src"
-	)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/src)
 INCLUDE_DIRECTORIES(SYSTEM
 	${BZIP2_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
@@ -23,7 +15,7 @@ INCLUDE_DIRECTORIES(SYSTEM
 	${CMAKE_SOURCE_DIR}/contrib/kaguya/include
 	)
 
-LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
+#LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
 
 ################################################################################
 

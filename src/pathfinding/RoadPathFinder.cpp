@@ -21,7 +21,7 @@
 #include "world/GameWorldBase.h"
 #include "buildings/nobHarborBuilding.h"
 #include "nodeObjs/noRoadNode.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include "gameData/GameConsts.h"
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListVector.h"

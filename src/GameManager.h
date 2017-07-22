@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx
 enum CursorType

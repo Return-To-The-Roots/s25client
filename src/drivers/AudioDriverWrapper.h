@@ -18,7 +18,7 @@
 #define AUDIODRIVERWRAPPER_H_INCLUDED
 
 
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 #include "DriverWrapper.h"
 #include "driver/src/AudioDriverLoaderInterface.h"
 #include "driver/src/AudioType.h"

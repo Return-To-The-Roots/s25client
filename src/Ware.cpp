@@ -33,7 +33,7 @@
 #include "gameData/GameConsts.h"
 #include "SerializedGameData.h"
 #include "EventManager.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location) :
     next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),

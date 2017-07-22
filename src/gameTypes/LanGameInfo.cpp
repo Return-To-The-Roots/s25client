@@ -16,7 +16,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LanGameInfo.h"
-#include "Serializer.h"
+#include "libutil/src/Serializer.h"
 
 bool LanGameInfo::Serialize(Serializer& serializer)
 {

@@ -20,13 +20,13 @@
 
 #include "ListDir.h"
 #include "files.h"
-#include "fileFuncs.h"
-#include "../driver/src/Interface.h"
-#include "../driver/src/AudioInterface.h"
-#include "../driver/src/VideoInterface.h"
-#include "../driver/src/DriverInterfaceVersion.h"
-#include "Log.h"
-#include "error.h"
+#include "libutil/src/fileFuncs.h"
+#include "driver/src/Interface.h"
+#include "driver/src/AudioInterface.h"
+#include "driver/src/VideoInterface.h"
+#include "driver/src/DriverInterfaceVersion.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/error.h"
 #include "mygettext/src/mygettext.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 

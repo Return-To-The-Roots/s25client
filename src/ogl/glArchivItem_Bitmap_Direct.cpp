@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ArchivItem_Palette.h"
+#include "libsiedler2/src/ArchivItem_Palette.h"
 #include "ogl/oglIncludes.h"
 
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct()

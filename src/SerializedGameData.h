@@ -20,7 +20,7 @@
 #pragma once
 
 #include "FOWObjects.h"
-#include "Serializer.h"
+#include "libutil/src/Serializer.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
 #include "helpers/ReserveElements.hpp"

@@ -31,7 +31,7 @@
 #include "Loader.h"
 #include "GameInterface.h"
 #include "world/GameWorldGame.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
     : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000), door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])

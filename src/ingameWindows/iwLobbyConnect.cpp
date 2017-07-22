@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "Settings.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"

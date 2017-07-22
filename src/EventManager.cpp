@@ -21,7 +21,7 @@
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mapTraits.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include <vector>
 
 EventManager::EventManager(unsigned startGF): currentGF(startGF), curActiveEvent(NULL)

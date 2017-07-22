@@ -22,7 +22,7 @@
 #include "WindowManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "GameManager.h"
 #include "world/GameWorldBase.h"
 #include "dskGameInterface.h"

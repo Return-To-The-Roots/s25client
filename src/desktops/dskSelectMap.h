@@ -22,7 +22,7 @@
 #include "Desktop.h"
 #include "mapGenerator/MapSettings.h"
 
-#include "LobbyInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 #include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include <string>

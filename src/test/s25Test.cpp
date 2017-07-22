@@ -24,7 +24,7 @@
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
-#include "libsiedler2.h"
+#include "libsiedler2/src/libsiedler2.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/test/unit_test.hpp>

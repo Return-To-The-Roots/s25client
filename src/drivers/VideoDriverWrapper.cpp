@@ -21,11 +21,11 @@
 #include "Settings.h"
 #include "GlobalVars.h"
 #include "ExtensionList.h"
-#include "../driver/src/VideoInterface.h"
+#include "driver/src/VideoInterface.h"
 
 #include "WindowManager.h"
-#include "error.h"
-#include "Log.h"
+#include "libutil/src/error.h"
+#include "libutil/src/Log.h"
 
 #include <ctime>
 #include <algorithm>

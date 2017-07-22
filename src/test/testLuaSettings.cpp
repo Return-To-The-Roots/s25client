@@ -28,7 +28,7 @@
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
 #include <vector>
-#include "colors.h"
+#include "libutil/src/colors.h"
 
 namespace{
 

@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIInfo.h"
-#include "Serializer.h"
+#include "libutil/src/Serializer.h"
 
 namespace AI{
     Info::Info(Serializer& ser):

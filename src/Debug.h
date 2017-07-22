@@ -18,7 +18,7 @@
 #define DEBUG_H_
 
 #include "Random.h"
-#include "Socket.h"
+#include "libutil/src/Socket.h"
 
 class DebugInfo
 {

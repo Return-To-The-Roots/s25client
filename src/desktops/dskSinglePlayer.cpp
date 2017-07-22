@@ -31,7 +31,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "controls/ctrlButton.h"
-#include "fileFuncs.h"
+#include "libutil/src/fileFuncs.h"
 #include "files.h"
 #include <boost/filesystem.hpp>
 

@@ -21,7 +21,7 @@
 #include "Window.h"
 #include "controls/ctrlComboBox.h"
 #include "helpers/containerUtils.h"
-#include "mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 void AddonList::hideGui(Window* window, unsigned id) const
 {

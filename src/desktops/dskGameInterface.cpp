@@ -25,7 +25,7 @@
 #include "GameServer.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
 #include "GameManager.h"
@@ -79,7 +79,7 @@
 #include "driver/src/MouseCoords.h"
 #include "Loader.h"
 #include "helpers/converters.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/if.hpp>

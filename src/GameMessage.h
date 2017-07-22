@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Message.h"
+#include "libutil/src/Message.h"
 class MessageInterface;
 class Serializer;
 

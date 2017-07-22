@@ -6,7 +6,7 @@ IF (SDL_FOUND)
 	
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/driver/src ${SDL_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+	INCLUDE_DIRECTORIES(${SDL_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
 	INCLUDE(AddFileDependencies)
 	ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
@@ -17,7 +17,7 @@ IF (SDL_FOUND)
 		SET(SL_PREFIX "")
 	ENDIF ()
 
-	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/build_version.cpp ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
+	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/build_version.cpp)
 	ADD_DEPENDENCIES(videoSDL updateversion)
 	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
 

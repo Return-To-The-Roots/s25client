@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "BuildingConsts.h"
-#include "mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 const boost::array<const char*, BLD_COUNT> BUILDING_NAMES =
 {{

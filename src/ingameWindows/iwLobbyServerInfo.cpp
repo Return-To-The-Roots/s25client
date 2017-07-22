@@ -19,7 +19,7 @@
 #include "iwLobbyServerInfo.h"
 #include "controls/ctrlEdit.h"
 #include "Loader.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "gameData/const_gui_ids.h"
 #include "helpers/converters.h"
 #include "libutil/src/colors.h"

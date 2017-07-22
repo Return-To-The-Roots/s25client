@@ -21,7 +21,7 @@
 #include "WindowManager.h"
 #include "Loader.h"
 #include "GameClient.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "Settings.h"
 
 #include "dskHostGame.h"

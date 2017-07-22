@@ -98,7 +98,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
         return;
 
     // Abstände zwischen den Vogelsounds berechnen (je nachdem wieviel Bäume)
-    unsignederval;
+    unsigned interval;
     if(1000 > tree_count * 10)
         interval = 1000 - tree_count * 10;
     else

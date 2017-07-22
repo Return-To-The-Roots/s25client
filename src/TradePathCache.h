@@ -19,7 +19,7 @@
 #define TradePathCache_h__
 
 #include "world/TradePath.h"
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 #include <boost/array.hpp>
 
 class GameWorldGame;

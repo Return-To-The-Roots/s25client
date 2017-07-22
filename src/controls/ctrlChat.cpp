@@ -20,7 +20,7 @@
 #include "ctrlScrollBar.h"
 #include "ogl/glArchivItem_Font.h"
 #include "CollisionDetection.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 #include "driver/src/MouseCoords.h"
 #include "FileChecksum.h"
 

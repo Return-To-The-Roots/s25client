@@ -19,7 +19,7 @@
 #include "iwLobbyRanking.h"
 #include "controls/ctrlTable.h"
 #include "Loader.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/lexical_cast.hpp>
 

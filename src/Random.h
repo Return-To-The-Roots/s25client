@@ -20,7 +20,7 @@
 #ifndef RANDOM_H_INCLUDED
 #define RANDOM_H_INCLUDED
 
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 #include "random/OldLCG.h"
 #include <boost/array.hpp>
 #include <vector>

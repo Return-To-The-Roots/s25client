@@ -19,7 +19,7 @@
 #include <build_version.h>
 #include "GameServer.h"
 
-#include "SocketSet.h"
+#include "libutil/src/SocketSet.h"
 
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -28,7 +28,7 @@
 #include "GameClient.h"
 
 #include "GlobalGameSettings.h"
-#include "LobbyClient.h"
+#include "liblobby/src/LobbyClient.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 
 #include "GameServerPlayer.h"
@@ -37,7 +37,7 @@
 #include "ai/AIBase.h"
 #include "Settings.h"
 #include "Debug.h"
-#include "fileFuncs.h"
+#include "libutil/src/fileFuncs.h"
 #include "ogl/glArchivItem_Map.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "GameMessage_GameCommand.h"

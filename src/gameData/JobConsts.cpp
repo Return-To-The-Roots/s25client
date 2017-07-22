@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "gameData/JobConsts.h"
-#include "mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES =
 {{

@@ -18,7 +18,7 @@
 #ifndef GAMEPROTOCOL_H_INCLUDED
 #define GAMEPROTOCOL_H_INCLUDED
 
-#include "Protocol.h"
+#include "libutil/src/Protocol.h"
 #include "gameTypes/ServerType.h"
 
 ///////////////////////////////////////////////////////////////////////////////

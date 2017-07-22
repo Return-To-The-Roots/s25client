@@ -24,7 +24,7 @@
 #include "world/GameWorldGame.h"
 #include "GameEvent.h"
 #include "gameData/MapConsts.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)

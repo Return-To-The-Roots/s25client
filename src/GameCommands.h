@@ -2,7 +2,7 @@
 #define GAME_COMMANDS_H_
 
 #include "GameCommand.h"
-#include "Serializer.h"
+#include "libutil/src/Serializer.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/Direction.h"

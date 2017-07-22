@@ -18,7 +18,7 @@
 #ifndef GoodTypes_h__
 #define GoodTypes_h__
 
-#include "mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 // Warentypen
 enum GoodType

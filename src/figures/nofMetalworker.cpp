@@ -32,7 +32,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "addons/const_addons.h"
 #include "gameData/ToolConsts.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)

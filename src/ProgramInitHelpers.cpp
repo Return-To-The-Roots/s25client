@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
-#include "System.h"
+#include "libutil/src/System.h"
 #include "libutil/src/Log.h"
 #include <build_paths.h>
 

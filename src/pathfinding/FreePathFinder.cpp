@@ -21,7 +21,7 @@
 #include "pathfinding/NewNode.h"
 #include "world/GameWorldBase.h"
 #include "EventManager.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 //////////////////////////////////////////////////////////////////////////
 /// FreePathFinder implementation

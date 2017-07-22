@@ -25,7 +25,7 @@
 #include "ListDir.h"
 #include "GameClient.h"
 #include "files.h"
-#include "fileFuncs.h"
+#include "libutil/src/fileFuncs.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlTextButton.h"
 #include "iwMsgbox.h"

@@ -26,7 +26,7 @@
 #include "customborderbuilder.h"
 #include "ClientInterface.h"
 #include "GameInterface.h"
-#include "LobbyInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "notifications/Subscribtion.h"

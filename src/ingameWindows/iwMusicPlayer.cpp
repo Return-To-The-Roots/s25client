@@ -28,7 +28,7 @@
 #include "iwMsgbox.h"
 #include "MusicPlayer.h"
 #include "files.h"
-#include "fileFuncs.h"
+#include "libutil/src/fileFuncs.h"
 #include "ListDir.h"
 #include "Settings.h"
 #include "gameData/const_gui_ids.h"

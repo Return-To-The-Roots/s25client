@@ -21,7 +21,7 @@
 
 #include "Desktop.h"
 
-#include "LobbyInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 #include "ClientInterface.h"
 
 class GameWorldBase;

@@ -21,7 +21,7 @@
 
 #include "desktops/dskMenuBase.h"
 
-#include "LobbyInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 #include "ClientInterface.h"
 
 class iwLobbyServerInfo;

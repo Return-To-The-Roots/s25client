@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SavedFile.h"
 #include <build_version.h>
-#include "BinaryFile.h"
+#include "libutil/src/BinaryFile.h"
 #include "BasePlayerInfo.h"
 #include "libutil/src/Serializer.h"
 #include <boost/format.hpp>

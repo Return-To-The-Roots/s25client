@@ -20,7 +20,7 @@
 #include "Loader.h"
 #include "Window.h"
 #include "controls/ctrlCheck.h"
-#include "mygettext.h"
+#include "mygettext/src/mygettext.h"
 
 void AddonBool::hideGui(Window* window, unsigned id) const
 {
