@@ -81,7 +81,7 @@ void glSmartBitmap::calcDimensions()
         if (bmpItem.type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             hasPlayer = true;
 
-        origin = elMin(origin, bmpItem.origin);
+        origin = elMax(origin, bmpItem.origin);
         maxPos = elMax(maxPos, bmpItem.size - bmpItem.origin);
     }
 
@@ -113,7 +113,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSi
 
             for(unsigned y = 0; y < size.y; ++y)
             {
-                unsigned idx = (offset.y + y) * bufferSize.x + offset.x;
+                unsigned idx = (bufOffset.y + y) * bufferSize.x + bufOffset.x;
 
                 for(unsigned x = 0; x < size.x; ++x)
                 {
@@ -156,12 +156,12 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSi
                 for(unsigned x = offset.x; x < size.x; x++)
                 {
                     // Check for non-transparent pixels
-                    if(tmp[y * offset.y + x])
+                    if(tmp[y * size.x + x])
                     {
                         // Copy to buffer
-                        buffer[(y + offset.y) * bufferSize.x + x + offset.x] = tmp[y * size.y + x];
+                        buffer[(y + bufOffset.y) * bufferSize.x + x + bufOffset.x] = tmp[y * size.x + x];
                         // Reset player color to transparent
-                        buffer[(y + offset.y) * bufferSize.x + x + offset.x + size.x] = 0;
+                        buffer[(y + bufOffset.y) * bufferSize.x + x + bufOffset.x + size.x] = 0;
                     }
                 }
             }
