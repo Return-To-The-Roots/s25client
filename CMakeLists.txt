@@ -69,7 +69,7 @@ ELSE (CMAKE_CROSSCOMPILING)
 ENDIF (CMAKE_CROSSCOMPILING)
 
 #Include generic platform config
-OPTION(ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
+OPTION(RTTR_ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
 MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
@@ -95,7 +95,7 @@ else(Boost_USE_STATIC_LIBS)
 endif(Boost_USE_STATIC_LIBS)
 
 # For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
-SET(TMP_VERSIONS "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
+SET(TMP_VERSIONS "1.64" "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
 foreach(I_VERSION ${TMP_VERSIONS})
 	list(APPEND Boost_ADDITIONAL_VERSIONS "${I_VERSION}.0" "${I_VERSION}")
 endforeach()
@@ -224,20 +224,20 @@ MACRO(CheckAndAddFlag flag)
 	unset(checkedFlag)
 ENDMACRO()
 
-OPTION(ENABLE_WERROR "Build with warnings turned into errors" OFF)
+OPTION(RTTR_ENABLE_WERROR "Build with warnings turned into errors" ON)
 IF (MSVC)
 	ADD_DEFINITIONS(/W3)
 	ADD_DEFINITIONS(/MP) # parallel compilation
 	# Signed/Unsigned operations
 	ADD_DEFINITIONS(/w34389)
-	IF(ENABLE_WERROR)
+	IF(RTTR_ENABLE_WERROR)
 		ADD_DEFINITIONS(/WX) # warning = error
-	ENDIF(ENABLE_WERROR)
+	ENDIF()
 ELSE (MSVC)
 	CheckAndAddFlag("-Wall")
-	IF(ENABLE_WERROR)
+	IF(RTTR_ENABLE_WERROR)
 		CheckAndAddFlag("-Werror")
-	ENDIF(ENABLE_WERROR)
+	ENDIF()
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wpedantic")
