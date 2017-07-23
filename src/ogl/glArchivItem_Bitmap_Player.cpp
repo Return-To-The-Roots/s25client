@@ -23,6 +23,12 @@
 #include "oglIncludes.h"
 #include <vector>
 
+Extent glArchivItem_Bitmap_Player::GetTexSize() const
+{
+    // We have the texture 2 times: one with non-player colors and one with them
+    return Extent(tex_width_ * 2u, tex_height_);
+}
+
 void glArchivItem_Bitmap_Player::DrawFull(const Rect& destArea, unsigned color, unsigned player_color)
 {
     Draw(destArea, Rect(Position::all(0), GetSize()), color, player_color);

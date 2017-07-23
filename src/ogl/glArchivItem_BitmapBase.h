@@ -38,7 +38,6 @@ public:
     /// Setzt den Texturfilter auf einen bestimmten Wert.
     virtual void setFilter(unsigned int filter);
 
-    Extent GetTexSize() const { return Extent(tex_width_, tex_height_); }
     /// Return the "Null point"
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
     Extent GetSize() const { return Extent(getWidth(), getHeight()); }

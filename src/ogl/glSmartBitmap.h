@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "ogl/glBitmapItem.h"
 #include "DrawPoint.h"
 #include <vector>
 #include <stdint.h>
@@ -31,11 +30,13 @@ namespace libsiedler2
     class ArchivItem_Bitmap_Player;
 }
 
+class glBitmapItem;
+
 class glSmartBitmap
 {
     private:
-        Position origin;
-        Extent size;
+        DrawPoint origin_;
+        Extent size_;
 
         bool sharedTexture;
         unsigned int texture;
@@ -47,13 +48,12 @@ class glSmartBitmap
     public:
         Point<float> texCoords[8];
 
-        glSmartBitmap() : origin(0, 0), size(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
+        glSmartBitmap();
         ~glSmartBitmap();
         void reset();
 
-        Extent getSize() const {return size;}
-
-        Extent getTexSize() const {return hasPlayer ? Extent(size.x *2, size.y) : size;}
+        Extent getWidth() const { return size_; }
+        Extent getTexSize() const;
 
         bool isGenerated() const {return texture != 0;}
         bool isPlayer() const {return hasPlayer;}
@@ -69,9 +69,9 @@ class glSmartBitmap
 
         void drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSize, const Extent& bufOffset = Extent(0, 0)) const;
 
-        void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, false, transferOwnership));}
-        void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, transferOwnership));}
-        void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false) {if (bmp) items.push_back(glBitmapItem(bmp, true, transferOwnership));}
+        void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
+        void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
+        void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
 
         static unsigned nextPowerOfTwo(unsigned k);
 };

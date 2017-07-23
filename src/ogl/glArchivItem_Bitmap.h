@@ -32,6 +32,8 @@ class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, p
         glArchivItem_Bitmap();
         glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
+        Extent GetTexSize() const { return Extent(tex_width_, tex_height_); }
+
         /// Draw the texture in the given rect, stretching if required
         /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)
         void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE);

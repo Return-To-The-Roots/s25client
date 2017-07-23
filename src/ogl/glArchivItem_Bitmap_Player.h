@@ -30,8 +30,9 @@ class glArchivItem_Bitmap_Player : public libsiedler2::ArchivItem_Bitmap_Player,
 {
     public:
         glArchivItem_Bitmap_Player() {}
-
         glArchivItem_Bitmap_Player(const glArchivItem_Bitmap_Player& item) : ArchivItem_BitmapBase(item), ArchivItem_Bitmap_Player(item), glArchivItem_BitmapBase(item) {}
+
+        Extent GetTexSize() const;
 
         /// Draw the texture in the given rect, stretching if required
         /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)
