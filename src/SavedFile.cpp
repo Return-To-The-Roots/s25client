@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "SavedFile.h"
-#include "build_version.h"
+#include "RTTR_Version.h"
 #include "libutil/src/BinaryFile.h"
 #include "BasePlayerInfo.h"
 #include "libutil/src/Serializer.h"

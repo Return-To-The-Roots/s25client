@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "build_version.h"
+#include "RTTR_Version.h"
 #include "iwOptionsWindow.h"
 
 #include "WindowManager.h"

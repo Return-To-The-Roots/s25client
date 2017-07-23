@@ -24,7 +24,7 @@
 #include "driver/src/VideoInterface.h"
 
 #include "WindowManager.h"
-#include "build_version.h"
+#include "RTTR_Version.h"
 #include "libutil/src/error.h"
 #include "libutil/src/Log.h"
 

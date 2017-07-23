@@ -80,10 +80,10 @@ IF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 ENDIF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 
 INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
+ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 SET(s25client_SRCS
-	${PROJECT_SOURCE_DIR}/build_version.cpp
+	${PROJECT_SOURCE_DIR}/RTTR_Version.cpp
 	${SOURCES_OTHER}
 	${SOURCES_SUBDIRS}
 )

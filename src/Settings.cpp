@@ -22,7 +22,7 @@
 #include "libutil/src/fileFuncs.h"
 #include "Loader.h"
 #include "languages.h"
-#include "build_version.h"
+#include "RTTR_Version.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "libsiedler2/src/ArchivItem_Ini.h"

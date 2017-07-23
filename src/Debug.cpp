@@ -19,7 +19,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Debug.h"
-#include "build_version.h"
+#include "RTTR_Version.h"
 
 #include "Settings.h"
 #include "GameClient.h"
