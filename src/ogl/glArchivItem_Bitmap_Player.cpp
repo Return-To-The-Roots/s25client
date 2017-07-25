@@ -113,7 +113,7 @@ void glArchivItem_Bitmap_Player::FillTexture()
 {
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
-    setPalette(LOADER.GetPaletteN("colors"));
+    setPalette(*LOADER.GetPaletteN("colors"));
 
     int iformat = GetInternalFormat(), dformat = GL_BGRA; //GL_BGRA_EXT;
 

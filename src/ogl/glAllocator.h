@@ -23,7 +23,7 @@
 
 class GlAllocator: public libsiedler2::StandardAllocator{
 public:
-    libsiedler2::ArchivItem* create(libsiedler2::BOBTYPES type, libsiedler2::SOUNDTYPES subtype = libsiedler2::SOUNDTYPE_NONE) const override;
+    libsiedler2::ArchivItem* create(libsiedler2::BobType type, libsiedler2::SoundType subtype = libsiedler2::SOUNDTYPE_NONE) const override;
     libsiedler2::ArchivItem* clone(const libsiedler2::ArchivItem& item) const override;
 };
 

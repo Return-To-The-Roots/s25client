@@ -1022,9 +1022,9 @@ glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
     return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr));
 }
 
-libsiedler2::ArchivItem_Palette* Loader::GetTexPaletteN(unsigned nr)
+const libsiedler2::ArchivItem_Palette* Loader::GetTexPalette()
 {
-    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(tex_gfx->get(nr));
+    return dynamic_cast<const libsiedler2::ArchivItem_Palette*>(GetTexImageN(0)->getPalette());
 }
 
 libsiedler2::ArchivItem_Ini* Loader::GetSettingsIniN(const std::string& name)
@@ -1054,7 +1054,7 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
  */
 glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
-    libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
+    const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
     unsigned short width = rect.right - rect.left;
@@ -1071,8 +1071,7 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
     bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
-    bitmap->setPalette(palette);
-    bitmap->setFormat(libsiedler2::FORMAT_PALETTED);
+    bitmap->setPalette(*palette);
     return bitmap;
 }
 
@@ -1081,7 +1080,7 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
  */
 libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift)
 {
-    libsiedler2::ArchivItem_Palette* palette = GetTexPaletteN(1);
+    const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
     unsigned short width = rect.right - rect.left;
@@ -1094,7 +1093,6 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
     image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
 
     glArchivItem_Bitmap_Raw bitmap;
-    bitmap.setPalette(palette);
     bitmap.setFormat(libsiedler2::FORMAT_RGBA);
 
     libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
@@ -1109,7 +1107,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
             }
         }
 
-        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED);
+        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED,palette);
         if(colorShift)
         {
             bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
@@ -1215,7 +1213,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
         // Dateiname zerlegen
         std::vector<std::string> wf = ExplodeString(*itFile, '.');
 
-        libsiedler2::BOBTYPES bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
+        libsiedler2::BobType bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
         short nx = 0;
         short ny = 0;
         unsigned char dx = 0;

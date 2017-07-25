@@ -38,7 +38,7 @@
  *  @param[in] type    Der Typ des Items
  *  @param[in] subtype Der Subtyp des Items
  */
-libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsiedler2::SOUNDTYPES subtype) const
+libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BobType type, libsiedler2::SoundType subtype) const
 {
     switch(type)
     {
@@ -84,14 +84,14 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsied
  */
 libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item) const
 {
-    libsiedler2::BOBTYPES type = static_cast<libsiedler2::BOBTYPES>(item.getBobType());
+    libsiedler2::BobType type = static_cast<libsiedler2::BobType>(item.getBobType());
 
     switch(type)
     {
         case libsiedler2::BOBTYPE_SOUND:   // WAVs, MIDIs
         {
             const libsiedler2::baseArchivItem_Sound& soundItem = dynamic_cast<const libsiedler2::baseArchivItem_Sound&>(item);
-            libsiedler2::SOUNDTYPES subtype = static_cast<libsiedler2::SOUNDTYPES>(soundItem.getType());
+            libsiedler2::SoundType subtype = static_cast<libsiedler2::SoundType>(soundItem.getType());
 
             switch(subtype)
             {

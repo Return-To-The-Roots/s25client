@@ -124,7 +124,7 @@ class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
         glArchivItem_Bitmap* GetMapImageN(unsigned nr);
         glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
         glArchivItem_Bitmap* GetTexImageN(unsigned nr);
-        libsiedler2::ArchivItem_Palette* GetTexPaletteN(unsigned nr);
+        const libsiedler2::ArchivItem_Palette* GetTexPalette();
         libsiedler2::ArchivItem_Ini* GetSettingsIniN(const std::string& name);
         /// Returns the texture for the given terrain. For animated textures the given frame is returned
         glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
