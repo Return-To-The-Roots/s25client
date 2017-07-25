@@ -51,7 +51,7 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer
         {
             current->bmp = b;
 
-            b->drawTo(buffer, bufferSize, current->size);
+            b->drawTo(buffer, bufferSize, current->pos);
 
             b->texCoords[0].x = b->texCoords[1].x = (float)current->pos.x / (float)bufferSize.x;
             b->texCoords[2].x = b->texCoords[3].x = b->isPlayer() ? (float)(current->pos.x + current->size.x / 2) / (float)bufferSize.x : (float)(current->pos.x + current->size.x) / (float)bufferSize.x;
