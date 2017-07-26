@@ -289,7 +289,7 @@ void ctrlTable::Msg_ButtonClick(const unsigned int ctrl_id)
 Rect ctrlTable::GetContentDrawArea() const
 {
     DrawPoint orig = GetDrawPos();
-    orig.x += header_height;
+    orig.y += header_height;
     Extent size = GetSize() - Extent(20, header_height);
     return Rect(orig, size);
 }
@@ -331,7 +331,7 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
 
 int ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
 {
-    return (mc.y - header_height - GetPos().y) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    return (mc.y - GetContentDrawArea().top) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
 }
 
 bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)

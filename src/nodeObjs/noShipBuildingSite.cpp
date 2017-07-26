@@ -74,7 +74,7 @@ void noShipBuildingSite::Draw(DrawPoint drawPt)
         unsigned percentDone = progress * 100 / PROGRESS_PARTS[0];
         image->DrawPercent(drawPt, percentDone);
         image =  LOADER.GetImageN("boot_z", 25);
-        image->DrawPercent(drawPt, percentDone);
+        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0])
     {
@@ -82,7 +82,7 @@ void noShipBuildingSite::Draw(DrawPoint drawPt)
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 26);
         image->DrawPercent(drawPt, percentDone);
         image =  LOADER.GetImageN("boot_z", 27);
-        image->DrawPercent(drawPt, percentDone);
+        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
@@ -90,7 +90,7 @@ void noShipBuildingSite::Draw(DrawPoint drawPt)
         glArchivItem_Bitmap* image =  LOADER.GetImageN("boot_z", 28);
         image->DrawPercent(drawPt, percentDone);
         image =  LOADER.GetImageN("boot_z", 29);
-        image->DrawPercent(drawPt, percentDone);
+        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
 }
 

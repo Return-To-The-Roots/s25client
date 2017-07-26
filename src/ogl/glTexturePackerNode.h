@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -27,7 +27,9 @@ class glTexturePackerNode;
 
 class glTexturePackerNode
 {
-    Position pos;
+    /// Position on the packed texture (can't be negative)
+    Extent pos;
+    /// Size of all the subnodes combined (makes up area covered)
     Extent size;
 
     glSmartBitmap* bmp;
@@ -36,7 +38,8 @@ class glTexturePackerNode
 public:
     glTexturePackerNode(): pos(0, 0), size(0, 0), bmp(NULL) { child[0] = child[1] = NULL; }
     glTexturePackerNode(const Extent& size): pos(0, 0), size(size), bmp(NULL) { child[0] = child[1] = NULL; }
-
+    /// Find a position in the buffer to draw the bitmap starting at this node
+    /// todo list is cleared and used to avoid frequent allocations
     bool insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, const Extent& bufferSize, std::vector<glTexturePackerNode*>& todo);
     void destroy(unsigned reserve = 0);
 };
