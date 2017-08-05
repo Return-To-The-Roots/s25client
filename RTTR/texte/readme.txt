@@ -253,6 +253,13 @@ E. Summary: Updates and changelog
   - AI Improvements
   - Complete Seafaring
 
+  * 0.8.0
+  ------------------------------------------------------------------------------
+  - Greatly improved AI player
+  - A lot of bugs fixed
+  - Speed improvements
+  - Observation windows
+
  * 0.7.2 - 17.01.2011 *
   ------------------------------------------------------------------------------
   - Critical Bugfixes

@@ -260,6 +260,13 @@ E. Übersicht: Updates und Änderungen
   - Funktionierende KI
   - Vollständige Seefahrt
 
+  * 0.8.0
+  ------------------------------------------------------------------------------
+  - Starke Verbesserung der KI
+  - Viele Bugfixes
+  - Verbesserung der Geschwindigkeit
+  - Beobachtungsfenster
+
   * 0.7.2 - 17.01.2011 *
   --------------------------------------------------------------------------
   - Kritische Fehlerkorrekturen
