@@ -132,9 +132,9 @@ case "$SYSTEM_NAME" in
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s25update
-		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/sound-convert
-		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/RTTR/s-c_resample
+		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s25update
+		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/sound-convert
+		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s-c_resample
 	;;
 	Windows)
 		extract_debug_symbols s25client.exe
@@ -149,9 +149,9 @@ case "$SYSTEM_NAME" in
 		extract_debug_symbols bin/s25client
 		extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
 		extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
-		extract_debug_symbols share/s25rttr/RTTR/s25update
-		extract_debug_symbols share/s25rttr/RTTR/sound-convert
-		extract_debug_symbols share/s25rttr/RTTR/s-c_resample
+		extract_debug_symbols bin/RTTR/s25update
+		extract_debug_symbols bin/RTTR/sound-convert
+		extract_debug_symbols bin/RTTR/s-c_resample
 	;;
 	*)
 		echo "$SYSTEM_NAME not supported" >&2

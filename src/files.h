@@ -102,7 +102,7 @@ const char* const FILE_PATHS[] = {
   /* 54 */ RTTRDIR "",                         // unbenutzt
   /* 55 */ RTTR_SETTINGSDIR "/LSTS/SOUND.LST", // Die konvertierte sound.lst
   /* 56 */ RTTRDIR "/sound.scs",               // Das konvertier-script
-  /* 57 */ RTTR_LIBDIR "/RTTR/",               // Basispfad für den Soundconverter
+  /* 57 */ RTTR_BINDIR "/RTTR/",               // Basispfad für den Soundconverter
   /* 58 */ RTTR_GAMEDIR "/DATA/MIS0BOBS.LST",
   /* 59 */ RTTR_GAMEDIR "/DATA/MIS1BOBS.LST",
   /* 60 */ RTTR_GAMEDIR "/DATA/MIS2BOBS.LST",

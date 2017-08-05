@@ -18,7 +18,7 @@ fi
 
 export DYLD_LIBRARY_PATH="$scriptFolder:$DYLD_LIBRARY_PATH"
 
-chmod 0755 ../rttr.command ../share/s25rttr/RTTR/s25update ../bin/s25client ../share/s25rttr/RTTR/sound-convert >/dev/null 2>&1
+chmod 0755 ../rttr.command ../bin/RTTR/s25update ../bin/s25client ../bin/RTTR/sound-convert >/dev/null 2>&1
 
 RTTR_TEST_FILEA="share/s25rttr/S2/DATA/CREDITS.LST"
 RTTR_TEST_FILEB="share/s25rttr/S2/GFX/PALETTE/PAL5.BBM"
@@ -58,11 +58,11 @@ fi
 
 if [ ! "$2" = "noupdate" ] ; then
 	if [ -f ./share/s25rttr/RTTR/s25update ] ; then
-		(cd ../../../ && ./s25client.app/Contents/MacOS/share/s25rttr/RTTR/s25update -d "$PWD")
+		(cd ../../../ && ./s25client.app/Contents/MacOS/bin/RTTR/s25update -d "$PWD")
 	fi
 fi
 
-chmod 0755 ./rttr.command ./share/s25rttr/RTTR/s25update ./bin/s25client ./share/s25rttr/RTTR/sound-convert >/dev/null 2>&1
+chmod 0755 ./rttr.command ./bin/RTTR/s25update ./bin/s25client ./bin/RTTR/sound-convert >/dev/null 2>&1
 
 ./bin/s25client
 
