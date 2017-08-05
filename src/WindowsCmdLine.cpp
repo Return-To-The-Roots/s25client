@@ -21,9 +21,9 @@
 #include <string>
 
 #ifdef _WIN32
+#include <windows.h>
 #include <shellapi.h>
 #include <stdexcept>
-#include <windows.h>
 
 WindowsCmdLine::WindowsCmdLine()
 {

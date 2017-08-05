@@ -13,7 +13,7 @@
 /build/*.lib
 /build/*.def
 /build/*.exp
-/build/*.format
+/build/clangFormat
 /build/LICENSE.*
 /build/callgrind.out.*
 /build/bugle

@@ -27,8 +27,8 @@
 #include <iostream>
 #include <stdexcept>
 #ifdef _WIN32
-#include <shellapi.h>
 #include <windows.h>
+#include <shellapi.h>
 #endif // _WIN32
 
 bool InitLocale()

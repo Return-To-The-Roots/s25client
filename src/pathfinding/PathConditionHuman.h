@@ -22,6 +22,7 @@
 
 #include "world/World.h"
 #include "nodeObjs/noBase.h"
+#include "RoadSegment.h"
 #include "gameData/TerrainData.h"
 #include <boost/config.hpp>
 
