@@ -269,7 +269,7 @@ void CustomBorderBuilder::BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE* bit
     for(y = 0; y < bitmapRLE->getHeight(); y++)
         for(x = 0; x < bitmapRLE->getWidth(); x++)
         {
-            bdrBitmap->put(x, y, bitmapRLE->getPixelClrIdx(x, y));
+            bdrBitmap->put(x, y, bitmapRLE->getPixelClrIdx(x, y, palette));
         }
 }
 

@@ -62,7 +62,7 @@ void ctrlPercent::Draw_()
 
     // Fortschritt zeichnen
     Extent progSize = GetSize() - Extent(8, 8);
-    progSize.x *= percentage / 100;
+    progSize.x = (progSize.x * percentage) / 100;
     DrawRectangle(Rect(GetDrawPos() + DrawPoint(4, 4), progSize), color);
 
     // Text zeichnen

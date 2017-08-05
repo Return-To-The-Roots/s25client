@@ -174,9 +174,9 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
         DrawPoint newPosBounded = elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetScreenSize() - GetSize()));
         // Fix mouse position if moved too far
         if(newPosBounded != newPos)
-            VIDEODRIVER.SetMousePos(mc.GetPos() - newPos + newPosBounded);
+            VIDEODRIVER.SetMousePos(newPosBounded - GetPos() + lastMousePos);
 
-        SetPos(newPos);
+        SetPos(newPosBounded);
         lastMousePos = mc.GetPos();
     }
 

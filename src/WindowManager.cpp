@@ -80,11 +80,7 @@ void WindowManager::Draw()
         // If the window is not minimized, call paintAfter
         if(!wnd->IsMinimized())
             wnd->Msg_PaintBefore();
-    }
-    BOOST_FOREACH(IngameWindow* wnd, windows)
         wnd->Draw();
-    BOOST_FOREACH(IngameWindow* wnd, windows)
-    {
         // If the window is not minimized, call paintAfter
         if(!wnd->IsMinimized())
             wnd->Msg_PaintAfter();
