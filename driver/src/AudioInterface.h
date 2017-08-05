@@ -35,7 +35,7 @@ public:
     virtual void CleanUp() = 0;
 
     virtual Sound* LoadEffect(const std::string& filepath) = 0;
-    virtual Sound* LoadMusic (const std::string& filepath) = 0;
+    virtual Sound* LoadMusic(const std::string& filepath) = 0;
 
     /// Spielt Sound ab
     virtual unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;
@@ -54,20 +54,19 @@ public:
     virtual void SetMasterMusicVolume(unsigned char volume) = 0;
 
     virtual bool IsInitialized() = 0;
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 // Makros / Defines
 #undef DRIVERDLLAPI
 #ifdef _WIN32
-#   if defined _USRDLL || defined _LIB || defined BUILD_DLL
-#       define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#   else
-#       define DRIVERDLLAPI extern "C" __declspec(dllimport)
-#   endif // !_USRDLL
+#if defined _USRDLL || defined _LIB || defined BUILD_DLL
+#define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else
-#   define DRIVERDLLAPI extern "C"
+#define DRIVERDLLAPI extern "C" __declspec(dllimport)
+#endif // !_USRDLL
+#else
+#define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
 class AudioDriverLoaderInterface;
@@ -77,7 +76,7 @@ DRIVERDLLAPI IAudioDriver* CreateAudioInstance(AudioDriverLoaderInterface* CallB
 DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver);
 
 ///
-typedef IAudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void* );
+typedef IAudioDriver* (*PDRIVER_CREATEAUDIOINSTANCE)(AudioDriverLoaderInterface*, void*);
 typedef void (*PDRIVER_FREEAUDIOINSTANCE)(IAudioDriver*);
 
 #endif // !AUDIOINTERFACE_H_INCLUDED

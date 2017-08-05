@@ -22,25 +22,25 @@
 #include "Window.h"
 #include "controls/ctrlBaseVarText.h"
 #include <cstdarg>
-#include <vector>
 #include <string>
+#include <vector>
 
 class glArchivItem_Font;
 
-class ctrlVarText: public Window, public ctrlBaseVarText
+class ctrlVarText : public Window, public ctrlBaseVarText
 {
-    public:
-        /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
-        ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr,
-            unsigned color, unsigned format, glArchivItem_Font* font, unsigned count, va_list fmtArgs);
-        ~ctrlVarText() override;
+public:
+    /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!
+    ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
+                glArchivItem_Font* font, unsigned count, va_list fmtArgs);
+    ~ctrlVarText() override;
 
-        Rect GetBoundaryRect() const override;
+    Rect GetBoundaryRect() const override;
 
-    protected:
-        void Draw_() override;
+protected:
+    void Draw_() override;
 
-        unsigned format_;
+    unsigned format_;
 };
 
 #endif // !CTRL_VARTEXT_H_INCLUDED

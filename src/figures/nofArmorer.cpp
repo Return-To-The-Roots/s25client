@@ -17,18 +17,18 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofArmorer.h"
-#include "Loader.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobUsual.h"
-#include "SoundManager.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
-#include "EventManager.h"
+#include "SoundManager.h"
 #include "addons/const_addons.h"
-#include "gameData/ShieldConsts.h"
-#include "gameData/JobConsts.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
+#include "gameData/JobConsts.h"
+#include "gameData/ShieldConsts.h"
 
 nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)
@@ -42,14 +42,13 @@ void nofArmorer::Serialize_nofArmorer(SerializedGameData& sgd) const
     sgd.PushBool(sword_shield);
 }
 
-nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id),
-    sword_shield(sgd.PopBool())
+nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool())
 {
 }
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = { { -10, 15}, { -11, 9}, { -14, 16}, { -19, 1}, { -11, 9} };
+    const DrawPointInit offsets[NAT_COUNT] = {{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}};
 
     unsigned max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
@@ -58,8 +57,7 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
         unsigned char wpNation = workplace->GetNation();
         unsigned plColor = gwg->GetPlayer(player).color;
 
-        LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
-        ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         if((now_id % 8) == 5)
         {
@@ -78,59 +76,50 @@ unsigned short nofArmorer::GetCarryID() const
         // Je nach Nation einen bestimmtem Schild fertigen
         switch(gwg->GetPlayer(player).nation)
         {
-            case NAT_AFRICANS:
-                return 60;
-            case NAT_JAPANESE:
-                return 58;
-            case NAT_ROMANS:
-                return 57;
-            case NAT_VIKINGS:
-                return 59;
-			case NAT_BABYLONIANS:
-                return 58; //babylonians use japanese shield carry-animation
-            default:
-                RTTR_Assert(false);
-                return 0;
+            case NAT_AFRICANS: return 60;
+            case NAT_JAPANESE: return 58;
+            case NAT_ROMANS: return 57;
+            case NAT_VIKINGS: return 59;
+            case NAT_BABYLONIANS:
+                return 58; // babylonians use japanese shield carry-animation
+            default: RTTR_Assert(false); return 0;
         }
     }
 }
 
-void nofArmorer::HandleDerivedEvent(const unsigned  /*id*/)
-{	
+void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
+{
     switch(state)
     {
         case STATE_WAITING1:
         {
-			if(!gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
-			{
-				//LOG.write(("armorer handlewait1 - consume wares %i \n",player);
-				nofWorkman::HandleStateWaiting1();
-			}
-			else
-			{
-				// Nach 1. Warten wird gearbeitet
-				current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
-				state = STATE_WORK;
-				workplace->is_working = true;
-				//LOG.write(("armorer handlewait1 - no consume wares %i \n",player);
-			}
-        } break;
-        case STATE_WORK:
-        {
-            HandleStateWork();
-        } break;
-        case STATE_WAITING2:
-        {
-            HandleStateWaiting2();
-        } break;
-        default:
-            break;
-	}
+            if(!gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
+            {
+                // LOG.write(("armorer handlewait1 - consume wares %i \n",player);
+                nofWorkman::HandleStateWaiting1();
+            } else
+            {
+                // Nach 1. Warten wird gearbeitet
+                current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+                state = STATE_WORK;
+                workplace->is_working = true;
+                // LOG.write(("armorer handlewait1 - no consume wares %i \n",player);
+            }
+        }
+        break;
+        case STATE_WORK: { HandleStateWork();
+        }
+        break;
+        case STATE_WAITING2: { HandleStateWaiting2();
+        }
+        break;
+        default: break;
+    }
 }
 
 bool nofArmorer::AreWaresAvailable()
 {
-    return workplace->WaresAvailable() || (gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield );
+    return workplace->WaresAvailable() || (gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
 }
 
 GoodType nofArmorer::ProduceWare()
@@ -140,5 +129,5 @@ GoodType nofArmorer::ProduceWare()
     if(sword_shield)
         return GD_SWORD;
     else
-	    return SHIELD_TYPES[gwg->GetPlayer(player).nation];
+        return SHIELD_TYPES[gwg->GetPlayer(player).nation];
 }

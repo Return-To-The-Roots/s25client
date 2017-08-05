@@ -22,7 +22,7 @@
 #include "libsiedler2/src/PixelBufferARGB.h"
 #include <stdexcept>
 
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(): isUpdating_(false)
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct() : isUpdating_(false)
 {
 }
 
@@ -50,16 +50,18 @@ void glArchivItem_Bitmap_Direct::endUpdate()
 
     libsiedler2::PixelBufferARGB buffer(areaToUpdate_.getSize().x, areaToUpdate_.getSize().y);
     Position origin = areaToUpdate_.getOrigin();
-    RTTR_Assert(print(buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(), libsiedler2::FORMAT_BGRA, NULL, 0, 0, origin.x, origin.y) == 0);
+    RTTR_Assert(print(buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(), libsiedler2::FORMAT_BGRA, NULL, 0, 0, origin.x, origin.y)
+                == 0);
     VIDEODRIVER.BindTexture(GetTexNoCreate());
-    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE,
+                    buffer.getPixelPtr());
 }
 
 void glArchivItem_Bitmap_Direct::updatePixel(const DrawPoint& pos, const libsiedler2::ColorARGB& clr)
 {
     RTTR_Assert(isUpdating_);
     RTTR_Assert(pos.x >= 0 && pos.y >= 0);
-    RTTR_Assert(static_cast<unsigned>(pos.x) < GetSize().x &&static_cast<unsigned>(pos.y) < GetSize().y);
+    RTTR_Assert(static_cast<unsigned>(pos.x) < GetSize().x && static_cast<unsigned>(pos.y) < GetSize().y);
     setPixel(pos.x, pos.y, clr);
     // If the area is empty, create one
     if(areaToUpdate_.getSize().x == 0)

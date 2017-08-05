@@ -17,27 +17,18 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlTable.h"
-#include "ctrlScrollBar.h"
-#include "ctrlButton.h"
 #include "CollisionDetection.h"
-#include "ogl/glArchivItem_Font.h"
-#include "driver/src/MouseCoords.h"
+#include "ctrlButton.h"
+#include "ctrlScrollBar.h"
 #include "driver/src/KeyEvent.h"
-#include <sstream>
+#include "driver/src/MouseCoords.h"
+#include "ogl/glArchivItem_Font.h"
 #include <cstdarg>
+#include <sstream>
 
-ctrlTable::ctrlTable(Window* parent,
-                     unsigned id,
-                     const DrawPoint& pos,
-                     const Extent& size,
-                     TextureColor tc,
-                     glArchivItem_Font* font,
-                     unsigned short column_count,
-                     va_list liste)
-    : Window(parent, id, pos, elMax(size, Extent(20, 30))),
-      tc(tc), font(font),
-      selection_(-1),
-      sort_column(-1), sort_direction(true)
+ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                     unsigned short column_count, va_list liste)
+    : Window(parent, id, pos, elMax(size, Extent(20, 30))), tc(tc), font(font), selection_(-1), sort_column(-1), sort_direction(true)
 {
     header_height = font->getHeight() + 10;
     line_count = (GetSize().y - header_height - 2) / font->getHeight();
@@ -219,26 +210,27 @@ void ctrlTable::SortRows(int column, bool* direction)
         return;
 
     bool done;
-    do{
+    do
+    {
         done = true;
         for(unsigned r = 0; r < rows.size() - 1; ++r)
         {
             std::string a = rows[r].columns[sort_column];
-            std::string b = rows[r+1].columns[sort_column];
+            std::string b = rows[r + 1].columns[sort_column];
 
             // in kleinbuchstaben vergleichen
             std::transform(a.begin(), a.end(), a.begin(), tolower);
             std::transform(b.begin(), b.end(), b.begin(), tolower);
 
-            if((sort_direction && Compare(a, b, columns[column].sortType) > 0) ||
-                (!sort_direction && Compare(a, b, columns[column].sortType) < 0))
+            if((sort_direction && Compare(a, b, columns[column].sortType) > 0)
+               || (!sort_direction && Compare(a, b, columns[column].sortType) < 0))
             {
                 using std::swap;
-                swap(rows[r], rows[r+1]);
+                swap(rows[r], rows[r + 1]);
                 done = false;
             }
         }
-    }while(!done);
+    } while(!done);
 }
 
 /**
@@ -310,8 +302,7 @@ bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
             GetParent()->Msg_TableLeftButton(this->GetID(), selection_);
 
         return true;
-    }
-    else
+    } else
         return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
@@ -324,12 +315,11 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
             GetParent()->Msg_TableRightButton(this->GetID(), selection_);
 
         return true;
-    }
-    else
+    } else
         return RelayMouseMessage(&Window::Msg_RightDown, mc);
 }
 
-int ctrlTable::GetSelectionFromMouse(const MouseCoords &mc)
+int ctrlTable::GetSelectionFromMouse(const MouseCoords& mc)
 {
     return (mc.y - GetContentDrawArea().top) / font->getHeight() + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
 }
@@ -342,20 +332,18 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-1);
         return true;
-    }
-    else
+    } else
         return false;
 }
 
 bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.GetPos(),GetFullDrawArea()))
+    if(IsPointInRect(mc.GetPos(), GetFullDrawArea()))
     {
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+1);
         return true;
-    }
-    else
+    } else
         return false;
 }
 
@@ -363,7 +351,8 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.GetPos(), GetContentDrawArea()))
     {
-        if(mc.dbl_click && GetParent()){
+        if(mc.dbl_click && GetParent())
+        {
             int selection = GetSelectionFromMouse(mc);
             SetSelection(selection);
             if(selection_ >= 0 && selection == selection_)
@@ -371,8 +360,7 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
         }
 
         return true;
-    }
-    else
+    } else
         return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
@@ -382,7 +370,7 @@ bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-void ctrlTable::Msg_ScrollShow(const unsigned  /*ctrl_id*/, const bool visible)
+void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
 {
     if(visible)
     {
@@ -403,7 +391,6 @@ void ctrlTable::Msg_ScrollShow(const unsigned  /*ctrl_id*/, const bool visible)
                 rest += x_col_minus;
         }
 
-
         // Rest einfach von letzter passender Spalte abziehen
         for(unsigned i = 0; i < columns.size(); ++i)
         {
@@ -422,14 +409,12 @@ void ctrlTable::Msg_ScrollShow(const unsigned  /*ctrl_id*/, const bool visible)
             GetCtrl<ctrlButton>(i + 1)->SetPos(btPos);
             btPos.x += GetCtrl<ctrlButton>(i + 1)->GetSize().x;
         }
-    }
-    else
+    } else
     {
         // Scrollbar wird nicht mehr angezeigt --> Breite und Position wieder zurücksetzen
         ResetButtonWidths();
     }
 }
-
 
 /// Setzt die Breite und Position der Buttons ohne Scrolleiste
 void ctrlTable::ResetButtonWidths()
@@ -458,13 +443,13 @@ void ctrlTable::ResetButtonWidths()
 /// Verschiedene Sortiermöglichkeiten
 int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sortType)
 {
-    switch (sortType)
+    switch(sortType)
     {
         case SRT_DEFAULT:
         case SRT_STRING:
             return a.compare(b);
             break;
-            // Nach Mapgrößen-String sortieren: ZahlxZahl
+        // Nach Mapgrößen-String sortieren: ZahlxZahl
         case SRT_MAPSIZE:
         {
             std::stringstream ss_a(a);
@@ -473,7 +458,7 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             int x_a, y_a, x_b, y_b;
             ss_a >> x_a >> x >> y_a;
             ss_b >> x_b >> x >> y_b;
-            if (x_a* y_a == x_b * y_b)
+            if(x_a * y_a == x_b * y_b)
                 return 0;
             else
                 return (x_a * y_a < x_b * y_b) ? -1 : 1;
@@ -487,7 +472,7 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             int num_a, num_b;
             ss_a >> num_a;
             ss_b >> num_b;
-            if (num_a == num_b)
+            if(num_a == num_b)
                 return 0;
             else
                 return (num_a < num_b) ? -1 : 1;
@@ -505,13 +490,13 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             ss_a >> d_a >> c >> m_a >> c >> y_a;
             ss_b >> d_b >> c >> m_b >> c >> y_b;
 
-            if (y_a != y_b)
+            if(y_a != y_b)
                 return (y_a < y_b) ? -1 : 1;
 
-            if (m_a != m_b)
+            if(m_a != m_b)
                 return (m_a < m_b) ? -1 : 1;
 
-            if (d_a != d_b)
+            if(d_a != d_b)
                 return (d_a < d_b) ? -1 : 1;
 
             // " - "
@@ -524,9 +509,9 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             ss_a >> h_a >> c >> min_a;
             ss_b >> h_b >> c >> min_b;
 
-            if (h_a != h_b)
+            if(h_a != h_b)
                 return (h_a < h_b) ? -1 : 1;
-            if (min_a != min_b)
+            if(min_a != min_b)
                 return (min_a < min_b) ? -1 : 1;
 
             return 0;
@@ -545,8 +530,6 @@ bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
             if(selection_ > 0)
                 SetSelection(selection_ - 1);
             return true;
-        case KT_DOWN:
-            SetSelection(selection_ + 1);
-            return true;
+        case KT_DOWN: SetSelection(selection_ + 1); return true;
     }
 }

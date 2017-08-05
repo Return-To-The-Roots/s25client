@@ -16,32 +16,33 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "ProgramInitHelpers.h"
+#include "WindowsCmdLine.h"
 #include "libutil/src/System.h"
 #include "libutil/src/ucString.h"
-#include "WindowsCmdLine.h"
-#include "ProgramInitHelpers.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/test/unit_test.hpp>
 
-namespace std{
-    std::ostream& operator<<(std::ostream& out, const std::wstring& value)
-    {
-        return out << cvWideStringToUTF8(value);
-    }
+namespace std {
+std::ostream& operator<<(std::ostream& out, const std::wstring& value)
+{
+    return out << cvWideStringToUTF8(value);
 }
-
+} // namespace std
 
 BOOST_AUTO_TEST_SUITE(SystemTestSuite)
 
 BOOST_AUTO_TEST_CASE(GetSetRemoveEnvVar)
 {
 #ifdef _WIN32
-    std::string varName  = cvWideStringToUTF8(L"_RTTR_TEST_VAR_WITH_UMLAUTS_\u00E4\u00F6\u00FC_END_");
+    std::string varName = cvWideStringToUTF8(L"_RTTR_TEST_VAR_WITH_UMLAUTS_\u00E4\u00F6\u00FC_END_");
     std::string varValue = cvWideStringToUTF8(L"ValueWithSpecialChars_\u0139\u00D4_END");
 #else
     // Use UTF8 (wide string not portable, either 16 or 32 bit)
-    std::string varName = "_RTTR_TEST_VAR_WITH_UMLAUTS_\xC3\xA4\xC3\xB6\xC3\xBC""_END_";
-    std::string varValue = "ValueWithSpecialChars_\xC4\xB9\xC3\x94""_END";
+    std::string varName = "_RTTR_TEST_VAR_WITH_UMLAUTS_\xC3\xA4\xC3\xB6\xC3\xBC"
+                          "_END_";
+    std::string varValue = "ValueWithSpecialChars_\xC4\xB9\xC3\x94"
+                           "_END";
 #endif // _WIN32
     // Create wide string versions
     std::wstring varNameW = cvUTF8ToWideString(varName);
@@ -117,11 +118,13 @@ BOOST_AUTO_TEST_CASE(GetExePath)
     BOOST_REQUIRE(bfs::is_regular_file(exePath));
 }
 
-class ResetWorkDir{
+class ResetWorkDir
+{
     bfs::path oldWorkDir;
+
 public:
-    ResetWorkDir(): oldWorkDir(bfs::current_path()){}
-    ~ResetWorkDir(){ bfs::current_path(oldWorkDir); }
+    ResetWorkDir() : oldWorkDir(bfs::current_path()) {}
+    ~ResetWorkDir() { bfs::current_path(oldWorkDir); }
 };
 
 BOOST_AUTO_TEST_CASE(PrefixPath)

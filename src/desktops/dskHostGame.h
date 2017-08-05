@@ -18,12 +18,12 @@
 #ifndef WP_HOSTGAME_H_
 #define WP_HOSTGAME_H_
 
-#include "Desktop.h"
 #include "ClientInterface.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "Desktop.h"
 #include "GlobalGameSettings.h"
-#include "gameTypes/ServerType.h"
 #include "helpers/Deleter.h"
+#include "gameTypes/ServerType.h"
+#include "liblobby/src/LobbyInterface.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class ctrlChat;
@@ -32,80 +32,76 @@ class LobbyPlayerInfo;
 class LuaInterfaceSettings;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
-class dskHostGame :
-    public Desktop,
-    public ClientInterface,
-    public LobbyInterface
+class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
 {
-    public:
+public:
+    dskHostGame(const ServerType serverType);
 
-        dskHostGame(const ServerType serverType);
+    /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
+    void Resize(const Extent& newSize) override;
+    void SetActive(bool activate = true) override;
 
-        /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
-        void Resize(const Extent& newSize) override;
-        void SetActive(bool activate = true) override;
-    private:
+private:
+    void TogglePlayerReady(unsigned char player, bool ready);
+    // GGS von den Controls auslesen
+    void UpdateGGS();
+    /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
+    void UpdatePlayerRow(const unsigned row);
 
-        void TogglePlayerReady(unsigned char player, bool ready);
-        // GGS von den Controls auslesen
-        void UpdateGGS();
-        /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
-        void UpdatePlayerRow(const unsigned row);
+    /// Füllt die Felder einer Reihe aus
+    void ChangeTeam(const unsigned i, const unsigned char nr);
+    void ChangeReady(const unsigned i, const bool ready);
+    void ChangeNation(const unsigned i, const Nation nation);
+    void ChangePing(unsigned playerId);
+    void ChangeColor(const unsigned i, const unsigned color);
 
-        /// Füllt die Felder einer Reihe aus
-        void ChangeTeam(const unsigned i, const unsigned char nr);
-        void ChangeReady(const unsigned i, const bool ready);
-        void ChangeNation(const unsigned i, const Nation nation);
-        void ChangePing(unsigned playerId);
-        void ChangeColor(const unsigned i, const unsigned color);
+    void Msg_PaintBefore() override;
+    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+    void Msg_Group_CheckboxChange(const unsigned group_id, const unsigned ctrl_id, const bool checked) override;
+    void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
-        void Msg_PaintBefore() override;
-        void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
-        void Msg_Group_CheckboxChange(const unsigned group_id, const unsigned ctrl_id, const bool checked) override;
-        void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_EditEnter(const unsigned ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
-        void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
-        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void LC_RankingInfo(const LobbyPlayerInfo& player) override;
 
-        void LC_RankingInfo(const LobbyPlayerInfo& player) override;
+    void CI_Error(const ClientError ce) override;
 
-        void CI_Error(const ClientError ce) override;
+    void CI_NewPlayer(const unsigned playerId) override;
+    void CI_PlayerLeft(const unsigned playerId) override;
 
-        void CI_NewPlayer(const unsigned playerId) override;
-        void CI_PlayerLeft(const unsigned playerId) override;
+    void CI_GameStarted(GameWorldBase& world) override;
 
-        void CI_GameStarted(GameWorldBase& world) override;
+    void CI_PSChanged(const unsigned playerId, const PlayerState ps) override;
+    void CI_NationChanged(const unsigned playerId, const Nation nation) override;
+    void CI_TeamChanged(const unsigned playerId, const unsigned char team) override;
+    void CI_PingChanged(const unsigned playerId, const unsigned short ping) override;
+    void CI_ColorChanged(const unsigned playerId, const unsigned color) override;
+    void CI_ReadyChanged(const unsigned playerId, const bool ready) override;
+    void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
+    void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
-        void CI_PSChanged(const unsigned playerId, const PlayerState ps) override;
-        void CI_NationChanged(const unsigned playerId, const Nation nation) override;
-        void CI_TeamChanged(const unsigned playerId, const unsigned char team) override;
-        void CI_PingChanged(const unsigned playerId, const unsigned short ping) override;
-        void CI_ColorChanged(const unsigned playerId, const unsigned color) override;
-        void CI_ReadyChanged(const unsigned playerId, const bool ready) override;
-        void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
-        void CI_GGSChanged(const GlobalGameSettings& ggs) override;
+    void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Countdown(unsigned remainingTimeInSec) override;
+    void CI_CancelCountdown() override;
 
-        void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
-        void CI_Countdown(unsigned remainingTimeInSec) override;
-        void CI_CancelCountdown() override;
+    void LC_Status_Error(const std::string& error) override;
+    void LC_Chat(const std::string& player, const std::string& text) override;
 
-        void LC_Status_Error(const std::string& error) override;
-        void LC_Chat(const std::string& player, const std::string& text) override;
+    void GoBack();
+    bool IsSinglePlayer() { return serverType == ServerType::LOCAL; }
 
-        void GoBack();
-        bool IsSinglePlayer(){ return serverType == ServerType::LOCAL; }
-    private:
-        const ServerType serverType;
-        GameLobby& gameLobby;
-        bool hasCountdown_;
-        boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
-        bool wasActivated, allowAddonChange;
-        ctrlChat *gameChat, *lobbyChat;
-        unsigned lobbyChatTabAnimId, localChatTabAnimId;
+private:
+    const ServerType serverType;
+    GameLobby& gameLobby;
+    bool hasCountdown_;
+    boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
+    bool wasActivated, allowAddonChange;
+    ctrlChat *gameChat, *lobbyChat;
+    unsigned lobbyChatTabAnimId, localChatTabAnimId;
 };
-
 
 #endif

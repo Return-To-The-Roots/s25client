@@ -19,12 +19,12 @@
 #include "noStaticObject.h"
 #include "noExtension.h"
 
+#include "GameClient.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "GameClient.h"
+#include "world/GameWorldGame.h"
 #include <stdexcept>
 
 /**
@@ -59,13 +59,10 @@ void noStaticObject::Serialize_noStaticObject(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
 }
 
-noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    id(sgd.PopUnsignedShort()),
-    file(sgd.PopUnsignedShort()),
-    size(sgd.PopUnsignedChar())
+noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
 {
 }
-
 
 BlockingManner noStaticObject::GetBM() const
 {
@@ -80,29 +77,24 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    glArchivItem_Bitmap* bitmap = NULL, *shadow = NULL;
+    glArchivItem_Bitmap *bitmap = NULL, *shadow = NULL;
 
-    if ((file == 0xFFFF) && (id == 561))
+    if((file == 0xFFFF) && (id == 561))
     {
         LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1].draw(drawPt);
         return;
-    }
-    else  if (file == 0xFFFF)
+    } else if(file == 0xFFFF)
     {
         bitmap = LOADER.GetMapImageN(id);
         shadow = LOADER.GetMapImageN(id + 100);
-    }
-    else if(file < 7)
+    } else if(file < 7)
     {
-        static const std::string files[7] =
-        {
-            "mis0bobs", "mis1bobs", "mis2bobs", "mis3bobs", "mis4bobs", "mis5bobs", "charburner_bobs"
-        };
+        static const std::string files[7] = {"mis0bobs", "mis1bobs", "mis2bobs", "mis3bobs", "mis4bobs", "mis5bobs", "charburner_bobs"};
         bitmap = LOADER.GetImageN(files[file], id);
         // Use only shadows where available
         if(file < 6)
             shadow = LOADER.GetImageN(files[file], id + 1);
-    }else
+    } else
         throw std::runtime_error("Invalid file number for static object");
 
     RTTR_Assert(bitmap);

@@ -20,10 +20,10 @@
 
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/MapStyle.h"
-#include "gameTypes/MapTypes.h"
 #include "random/XorShift.h"
-#include <vector>
+#include "gameTypes/MapTypes.h"
 #include <stdint.h>
+#include <vector>
 
 /**
  * Random map configuration.
@@ -38,22 +38,22 @@ public:
      * Description of different areas to use for random map generation.
      */
     std::vector<AreaDesc> areas;
-    
+
     /**
      * Mapping of elevation (= height values) to terrain. The number of elements defines the
      * maximum height value used to generate the random map.
-     * For example, following statement will assign water textures to landscape with the 
+     * For example, following statement will assign water textures to landscape with the
      * height of "0": textures[0] = TT_WATER;
      */
     std::vector<TerrainType> textures;
-    
+
     /**
      * Generates a random number between 0 and max-1.
      * @param max maximum value
      * @return a new random number
      */
-     int Rand(const int max);
-    
+    int Rand(const int max);
+
     /**
      * Generates a random number between min and max-1.
      * @param min minimum value
@@ -61,7 +61,7 @@ public:
      * @return a new random number
      */
     int Rand(const int min, const int max);
-    
+
     /**
      * Generates a random number between min and max.
      * @param min minimum value
@@ -69,6 +69,7 @@ public:
      * @return a new random number
      */
     double DRand(const double min, const double max);
+
 private:
     void Init(MapStyle mapStyle, uint64_t seed);
     void CreateGreenland();
@@ -78,7 +79,7 @@ private:
     void CreateIslands();
     void CreateContinent();
     void CreateRandom();
-    
+
     typedef XorShift UsedRNG;
     UsedRNG rng_;
 };

@@ -17,16 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #ifdef _WIN32
-#   include <windows.h>
+#include <windows.h>
 #else
-#   include <cstdlib>
-#   include <csignal>
+#include <csignal>
+#include <cstdlib>
 #endif // _WIN32
 #include "SignalHandler.h"
 
 #include "GlobalVars.h"
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 
 /**
  *  Signal-Handler
@@ -42,7 +42,8 @@ BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
         {
             GLOBALVARS.notdone = false;
             return TRUE;
-        } break;
+        }
+        break;
     }
     return FALSE;
 }
@@ -50,7 +51,6 @@ BOOL WINAPI HandlerRoutine(DWORD dwCtrlType)
 bool killme = false;
 void HandlerRoutine(int sig)
 {
-
     int c;
     if(sig != SIGINT)
         return;
@@ -69,8 +69,7 @@ void HandlerRoutine(int sig)
 
             killme = true;
             GLOBALVARS.notdone = false;
-        }
-        else
+        } else
             return;
     }
 }

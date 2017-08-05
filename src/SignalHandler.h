@@ -21,7 +21,7 @@
 #pragma once
 
 #ifdef _WIN32
-#   include <windows.h>
+#include <windows.h>
 BOOL WINAPI HandlerRoutine(DWORD dwCtrlType);
 #else
 void HandlerRoutine(int sig);

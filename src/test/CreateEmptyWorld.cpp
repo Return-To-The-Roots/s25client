@@ -17,13 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "CreateEmptyWorld.h"
+#include "test/initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/initTestHelpers.h"
 
-CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers):
-    size_(size), playerNations_(numPlayers, NAT_AFRICANS)
-{}
+CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS)
+{
+}
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 {
@@ -54,7 +54,7 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
             numPlayersPerDim.x = min<unsigned>(numPlayersPerDim.x, numPlayers - hqPositions.size());
             playerDist.x = size_.x / numPlayersPerDim.x;
             curPt.x = playerDist.x / 2;
-            for (unsigned x = 0; x < numPlayersPerDim.x; x++)
+            for(unsigned x = 0; x < numPlayersPerDim.x; x++)
             {
                 hqPositions.push_back(curPt);
                 curPt.x += playerDist.x;

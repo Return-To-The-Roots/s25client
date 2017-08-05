@@ -28,19 +28,18 @@ class ObjectGenerator;
  */
 class MapUtility
 {
-    public:
-    
+public:
     /**
      * Smooths the textures of the map for better visual appearance by post-processing
      * the specified map. Single textures which are surrounded by other textures are replaced
-     * by their neighboring textures. 
+     * by their neighboring textures.
      * Also, the height values of snow- and mountain-textures are increased and mountain-
      * meadow textures without neighboring mountain-textures are replaced by simple meadow
      * textures.
      * @param map map to smooth textures for
      */
     static void Smooth(Map& map);
-    
+
     /**
      * Creates a hill at the specified center with the specified height.
      * @param map map to create the hill on
@@ -48,23 +47,23 @@ class MapUtility
      * @param z maximum height (elevation) of the hill
      */
     static void SetHill(Map& map, const Position& center, int z);
-    
+
     /**
-     * Sets up a harbor position at the specified center. The surrounding area is flattened 
+     * Sets up a harbor position at the specified center. The surrounding area is flattened
      * an textures are replaced to enable harbor building.
      * @param map map to modify the terrain for
      * @param center center point for the harbor position
      * @param waterLevel the height level of the surrounding water
      */
     static void SetHarbour(Map& map, const Position& center, int waterLevel);
-    
+
     /**
      * Places a tree to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the tree
      */
     static void SetTree(Map& map, ObjectGenerator& objGen, const Position& position);
-    
+
     /**
      * Sets stone on the map around the specified center within the specified radius.
      * The further away the stone is from the center the smaller it is.
@@ -80,17 +79,17 @@ class MapUtility
      * @param position position of the stone
      */
     static void SetStone(Map& map, ObjectGenerator& objGen, const Position& position);
-    
+
     /**
      * Computes the size of a terrain body starting from the specified position.
      * @param map map to evaluate
      * @param p position of the initial area
      * @param max the maximum number of tiles to check for (performance)
-     * @return the number of vertices in a connected terrain area around the 
+     * @return the number of vertices in a connected terrain area around the
      * initial position
      */
     static unsigned GetBodySize(Map& map, const Position& p, unsigned max);
-    
+
     /**
      * Computes a point on a circle. The circle has equally distributed points.
      * The specified index references one of those points.
@@ -100,10 +99,7 @@ class MapUtility
      * @param radius radius of the circle (must be a positive value)
      * @return the point on the circle with the specified index
      */
-    static Position ComputePointOnCircle(int index,
-                                    int points,
-                                    const Position& center,
-                                    double radius);
+    static Position ComputePointOnCircle(int index, int points, const Position& center, double radius);
 };
 
 #endif // MapUtility_h__

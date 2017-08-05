@@ -16,27 +16,27 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "buildings/nobBaseWarehouse.h"
+#include "EventManager.h"
 #include "GamePlayer.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noGrainfield.h"
+#include "RTTR_AssertError.h"
+#include "TerrainRenderer.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
-#include "EventManager.h"
-#include "TerrainRenderer.h"
 #include "ingameWindows/iwHelp.h"
-#include "gameTypes/Direction_Output.h"
-#include "gameData/ShieldConsts.h"
-#include "gameData/MapConsts.h"
-#include "RTTR_AssertError.h"
-#include "test/initTestHelpers.h"
+#include "test/CreateEmptyWorld.h"
 #include "test/PointOutput.h"
 #include "test/WorldFixture.h"
-#include "test/CreateEmptyWorld.h"
-#include <boost/test/unit_test.hpp>
+#include "test/initTestHelpers.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noGrainfield.h"
+#include "gameTypes/Direction_Output.h"
+#include "gameData/MapConsts.h"
+#include "gameData/ShieldConsts.h"
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 #include <algorithm>
 
 // This suite tests bugs that got fixed to avoid regressions
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_REQUIRE_EQUAL(wnd.GetSize(), oldSize);
 }
 
-struct AddGoodsFixture: public WorldFixture<CreateEmptyWorld, 1, 10, 10>
+struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1, 10, 10>
 {
     boost::array<unsigned, JOB_TYPES_COUNT> numPeople, numPeoplePlayer;
     boost::array<unsigned, WARE_TYPES_COUNT> numGoods, numGoodsPlayer;
@@ -224,7 +224,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 #endif
 }
 
-struct FarmerFixture: public WorldFixture<CreateEmptyWorld, 1, 20, 20>
+struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1, 20, 20>
 {
     MapPoint farmPt;
     nobUsual* farm;
@@ -473,7 +473,8 @@ BOOST_FIXTURE_TEST_CASE(BorderStones, WorldFixtureEmpty0P)
     }
 }
 
-BOOST_AUTO_TEST_CASE(TR_ConvertCoords){
+BOOST_AUTO_TEST_CASE(TR_ConvertCoords)
+{
     TerrainRenderer tr;
     const int w = 23;
     const int h = 32;
@@ -483,32 +484,32 @@ BOOST_AUTO_TEST_CASE(TR_ConvertCoords){
     // Test border cases
     BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(0, 0), &offset), MapPoint(0, 0));
     BOOST_REQUIRE_EQUAL(offset, PointI(0, 0));
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w-1, h-1), &offset), MapPoint(w-1, h-1));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w - 1, h - 1), &offset), MapPoint(w - 1, h - 1));
     BOOST_REQUIRE_EQUAL(offset, PointI(0, 0));
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w, h-1), &offset), MapPoint(0, h-1));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w, h - 1), &offset), MapPoint(0, h - 1));
     BOOST_REQUIRE_EQUAL(offset, PointI(w * TR_W, 0));
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w-1, h), &offset), MapPoint(w-1, 0));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w - 1, h), &offset), MapPoint(w - 1, 0));
     BOOST_REQUIRE_EQUAL(offset, PointI(0, h * TR_H));
     BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w, h), &offset), MapPoint(0, 0));
     BOOST_REQUIRE_EQUAL(offset, PointI(w * TR_W, h * TR_H));
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w+w/2, h+h/2), &offset), MapPoint(w/2, h/2));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(w + w / 2, h + h / 2), &offset), MapPoint(w / 2, h / 2));
     BOOST_REQUIRE_EQUAL(offset, PointI(w * TR_W, h * TR_H));
     // Big value
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(10*w+w/2, 11*h+h/2), &offset), MapPoint(w/2, h/2));
-    BOOST_REQUIRE_EQUAL(offset, PointI(10*w * TR_W, 11*h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(10 * w + w / 2, 11 * h + h / 2), &offset), MapPoint(w / 2, h / 2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(10 * w * TR_W, 11 * h * TR_H));
 
     // Negative cases
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-1, -1), &offset), MapPoint(w-1, h-1));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-1, -1), &offset), MapPoint(w - 1, h - 1));
     BOOST_REQUIRE_EQUAL(offset, PointI(-w * TR_W, -h * TR_H));
     BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w + 1, -h + 2), &offset), MapPoint(1, 2));
     BOOST_REQUIRE_EQUAL(offset, PointI(-w * TR_W, -h * TR_H));
     BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w, -h), &offset), MapPoint(0, 0));
     BOOST_REQUIRE_EQUAL(offset, PointI(-w * TR_W, -h * TR_H));
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w-1, -h-2), &offset), MapPoint(w-1, h-2));
-    BOOST_REQUIRE_EQUAL(offset, PointI(-2*w * TR_W, -2*h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-w - 1, -h - 2), &offset), MapPoint(w - 1, h - 2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-2 * w * TR_W, -2 * h * TR_H));
     // Big value
-    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-10*w+w/2, -11*h+h/2), &offset), MapPoint(w/2, h/2));
-    BOOST_REQUIRE_EQUAL(offset, PointI(-10*w * TR_W, -11*h * TR_H));
+    BOOST_REQUIRE_EQUAL(tr.ConvertCoords(PointI(-10 * w + w / 2, -11 * h + h / 2), &offset), MapPoint(w / 2, h / 2));
+    BOOST_REQUIRE_EQUAL(offset, PointI(-10 * w * TR_W, -11 * h * TR_H));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

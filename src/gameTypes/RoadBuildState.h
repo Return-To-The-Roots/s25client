@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -28,7 +28,7 @@ struct RoadBuildState
     RoadBuildMode mode;
 
     MapPoint point, start;
-    std::vector<Direction> route;  /// Directions of the built road
+    std::vector<Direction> route; /// Directions of the built road
 };
 
 #endif // RoadBuildState_h__

@@ -17,12 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ShipPostMsg.h"
-#include "nodeObjs/noShip.h"
 #include "Loader.h"
+#include "nodeObjs/noShip.h"
 
-ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship):
-    PostMsg(sendFrame, text, cat, ship.GetPos())
-{}
+ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship)
+    : PostMsg(sendFrame, text, cat, ship.GetPos())
+{
+}
 
 glArchivItem_Bitmap* ShipPostMsg::GetImage_() const
 {

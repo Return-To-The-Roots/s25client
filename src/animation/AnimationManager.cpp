@@ -17,14 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AnimationManager.h"
-#include "animation/Animation.h"
 #include "Window.h"
+#include "animation/Animation.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mapTraits.h"
 #include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
 
-AnimationManager::AnimationManager(Window* parent): parent_(parent)
+AnimationManager::AnimationManager(Window* parent) : parent_(parent)
 {
     // Use a start id based on the parent id to detect calls to wrong animation managers
     nextId_ = parent->GetID() << 16;

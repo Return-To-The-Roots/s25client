@@ -24,31 +24,28 @@ class nobUsual;
 
 class nofWoodcutter : public nofFarmhand
 {
-    private:
+private:
+    /// Malt den Arbeiter beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
 
-        /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
+    /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+    void WorkStarted() override;
+    /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+    void WorkFinished() override;
 
-        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-        void WorkStarted() override;
-        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-        void WorkFinished() override;
+    /// Returns the quality of this working point or determines if the worker can work here at all
+    PointQuality GetPointQuality(const MapPoint pt) const override;
 
+    /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
+    void WorkAborted() override;
 
-        /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) const override;
+public:
+    nofWoodcutter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-        void WorkAborted() override;
-
-    public:
-
-        nofWoodcutter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id);
-
-        GO_Type GetGOT() const override { return GOT_NOF_WOODCUTTER; }
+    GO_Type GetGOT() const override { return GOT_NOF_WOODCUTTER; }
 };
 
 #endif

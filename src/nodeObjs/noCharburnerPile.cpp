@@ -18,20 +18,20 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noCharburnerPile.h"
 
-#include "Loader.h"
-#include "GameClient.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
-#include "world/GameWorldGame.h"
+#include "GameClient.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "noEnvObject.h"
 #include "noFire.h"
 #include "ogl/glArchivItem_Bitmap.h"
-
+#include "world/GameWorldGame.h"
 
 /// Length of the smoldering
 const unsigned SMOLDERING_LENGTH = 3000;
 /// if nothing happens in this amount of GF the pile will catch fire and burn down (removes inactive piles)
-/// it takes about ~4000 gf to remove the cover & harvest the coal from a priority pile - so after this delay there are ~8k gf remaining for the charburner to start working on the started pile again
+/// it takes about ~4000 gf to remove the cover & harvest the coal from a priority pile - so after this delay there are ~8k gf remaining for
+/// the charburner to start working on the started pile again
 /// -> this should only run out if there is either a very long time without resources or the building was destroyed/stopped
 const unsigned SELFDESTRUCT_DELAY = 12000;
 
@@ -42,14 +42,13 @@ const unsigned short REMOVECOVER_WORK_STEPS = 1;
 /// Work steps for one graphical step during the "harvest"
 const unsigned short HARVEST_WORK_STEPS = 1;
 
-noCharburnerPile::noCharburnerPile(const MapPoint pos) : noCoordBase(NOP_CHARBURNERPILE, pos),
-    state(STATE_WOOD), step(0), sub_step(1), event(NULL)
+noCharburnerPile::noCharburnerPile(const MapPoint pos)
+    : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(NULL)
 {
 }
 
 noCharburnerPile::~noCharburnerPile()
 {
-
 }
 
 void noCharburnerPile::Destroy_noCharburnerPile()
@@ -72,11 +71,9 @@ void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
     sgd.PushObject(event, true);
 }
 
-noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    state(State(sgd.PopUnsignedChar())),
-    step(sgd.PopUnsignedShort()),
-    sub_step(sgd.PopUnsignedShort()),
-    event(sgd.PopEvent())
+noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), state(State(sgd.PopUnsignedChar())), step(sgd.PopUnsignedShort()), sub_step(sgd.PopUnsignedShort()),
+      event(sgd.PopEvent())
 {
 }
 
@@ -103,61 +100,60 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
             unsigned short progress = sub_step * 100 / CONSTRUCTION_WORKING_STEPS[step];
             if(progress != 0)
                 image->DrawPercent(drawPt, progress);
-        } return;
+        }
+            return;
         case STATE_SMOLDERING:
         {
-            LOADER.GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))->DrawFull(drawPt);
+            LOADER
+              .GetImageN("charburner_bobs", 27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))
+              ->DrawFull(drawPt);
 
             // Dann Qualm zeichnen
             unsigned globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
             LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
-            LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2,   06), 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25,  11), 0x99EEEEEE);
-            LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2,   35), 0x99EEEEEE);
-        } return;
-        case STATE_REMOVECOVER:
-        {
-            LOADER.GetImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
-        } return;
-        case STATE_HARVEST:
-        {
-            LOADER.GetImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
-
-        } return;
+            LOADER.GetMapImageN(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 06), 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25, 11), 0x99EEEEEE);
+            LOADER.GetMapImageN(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
+        }
+            return;
+        case STATE_REMOVECOVER: { LOADER.GetImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
+        }
+            return;
+        case STATE_HARVEST: { LOADER.GetImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
+        }
+            return;
         default: return;
     }
 }
 
-void noCharburnerPile::HandleEvent(const unsigned  /*id*/)
+void noCharburnerPile::HandleEvent(const unsigned /*id*/)
 {
     // Smoldering is over
     // Pile is ready for the remove of the cover
-	if(state==STATE_SMOLDERING)
-	{
-		state = STATE_REMOVECOVER;
-		//start a selfdestruct timer
-		event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY,0);
-	}
-	else
-	{
-		//selfdestruct!
-		event = NULL;
-		gwg->SetNO(pos, new noFire(pos, 0), true);
-		gwg->RecalcBQAroundPoint(pos);
-		GetEvMgr().AddToKillList(this);
-	}
+    if(state == STATE_SMOLDERING)
+    {
+        state = STATE_REMOVECOVER;
+        // start a selfdestruct timer
+        event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
+    } else
+    {
+        // selfdestruct!
+        event = NULL;
+        gwg->SetNO(pos, new noFire(pos, 0), true);
+        gwg->RecalcBQAroundPoint(pos);
+        GetEvMgr().AddToKillList(this);
+    }
 }
-
 
 /// Charburner has worked on it --> Goto next step
 void noCharburnerPile::NextStep()
 {
-	//reset selfdestruct timer
-	if(event)
-		GetEvMgr().RemoveEvent(event);
-	event = GetEvMgr().AddEvent(this,SELFDESTRUCT_DELAY,0);
+    // reset selfdestruct timer
+    if(event)
+        GetEvMgr().RemoveEvent(event);
+    event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
 
-	//execute step
+    // execute step
     switch(state)
     {
         default: return;
@@ -174,12 +170,12 @@ void noCharburnerPile::NextStep()
                 {
                     step = 0;
                     state = STATE_SMOLDERING;
-					GetEvMgr().RemoveEvent(event);
+                    GetEvMgr().RemoveEvent(event);
                     event = GetEvMgr().AddEvent(this, SMOLDERING_LENGTH, 0);
                 }
             }
-
-        } return;
+        }
+            return;
         case STATE_REMOVECOVER:
         {
             ++sub_step;
@@ -195,8 +191,8 @@ void noCharburnerPile::NextStep()
                     step = 0;
                 }
             }
-
-        } return;
+        }
+            return;
         case STATE_HARVEST:
         {
             ++sub_step;
@@ -216,10 +212,10 @@ void noCharburnerPile::NextStep()
                     gwg->RecalcBQAroundPoint(pos);
                 }
             }
-        } return;
+        }
+            return;
     }
 }
-
 
 noCharburnerPile::WareType noCharburnerPile::GetNeededWareType() const
 {

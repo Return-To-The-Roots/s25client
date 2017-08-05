@@ -20,8 +20,8 @@
 #ifndef ctrlBaseImage_h__
 #define ctrlBaseImage_h__
 
-#include "Rect.h"
 #include "DrawPoint.h"
+#include "Rect.h"
 class glArchivItem_Bitmap;
 
 /// Base class for controls with an image
@@ -33,7 +33,7 @@ public:
     void SetImage(glArchivItem_Bitmap* image) { img_ = image; }
     const glArchivItem_Bitmap* GetImage() const { return img_; }
     /// Ändert Farbfilter, mit dem dieses Bild gezeichnet werden soll
-    void SetModulationColor(unsigned modulationColor){ modulationColor_ = modulationColor; }
+    void SetModulationColor(unsigned modulationColor) { modulationColor_ = modulationColor; }
     unsigned GetModulationColor() const { return modulationColor_; }
 
     /// Swap the images of those controls

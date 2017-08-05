@@ -21,10 +21,10 @@
 #include "Point.h"
 
 namespace libsiedler2 {
-    class baseArchivItem_Bitmap;
-    class ArchivItem_Bitmap_Player;
-    class ArchivItem_BitmapBase;
-}
+class baseArchivItem_Bitmap;
+class ArchivItem_Bitmap_Player;
+class ArchivItem_BitmapBase;
+} // namespace libsiedler2
 
 enum glBitmapItemType
 {

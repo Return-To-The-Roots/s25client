@@ -29,38 +29,36 @@ class nobUsual;
 /// Warten -- Arbeiten -- Warten -- Ware raustragen -- wieder reinkommen -- ...
 class nofWorkman : public nofBuildingWorker
 {
-    private:
+private:
+    // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
+    void WalkedDerived() override; // man gelaufen ist
+    /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
+    virtual GoodType ProduceWare() = 0;
+    /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
+    virtual void WorkFinished();
 
-        // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
-        void WalkedDerived() override; // man gelaufen ist
-        /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
-        virtual GoodType ProduceWare() = 0;
-        /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
-        virtual void WorkFinished();
+protected:
+    /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
+    /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
+    void HandleStateWaiting1();
+    void HandleStateWaiting2();
+    void HandleStateWork();
 
-    protected:
+public:
+    /// Going to workplace
+    nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    /// Going to warehouse
+    nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
+    nofWorkman(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
-        /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
-        void HandleStateWaiting1();
-        void HandleStateWaiting2();
-        void HandleStateWork();
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofWorkman(SerializedGameData& sgd) const;
 
-    public:
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
 
-        /// Going to workplace
-        nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        /// Going to warehouse
-        nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-        nofWorkman(SerializedGameData& sgd, const unsigned obj_id);
-
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofWorkman(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofWorkman(sgd); }
-
-        void HandleDerivedEvent(const unsigned id) override;
-
-
+    void HandleDerivedEvent(const unsigned id) override;
 };
 
 #endif

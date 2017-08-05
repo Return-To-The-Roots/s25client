@@ -17,18 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlMultiline.h"
-#include "ctrlScrollBar.h"
-#include "ogl/glArchivItem_Font.h"
-#include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
+#include "ctrlScrollBar.h"
+#include "driver/src/MouseCoords.h"
+#include "ogl/glArchivItem_Font.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
 
-ctrlMultiline::ctrlMultiline(Window* parent, unsigned id,
-                             const DrawPoint& pos, const Extent& size,
-                             TextureColor tc, glArchivItem_Font* font, unsigned format):
-    Window(parent, id, pos, size),
-    tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
+ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                             glArchivItem_Font* font, unsigned format)
+    : Window(parent, id, pos, size), tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
 {
     RecalcVisibleLines();
     AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc, maxNumVisibleLines);
@@ -43,7 +41,7 @@ void ctrlMultiline::AddString(const std::string& str, unsigned color, bool scrol
     RecalcWrappedLines();
 
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
-    if (scroll && scrollbar->GetScrollPos() + 1 + maxNumVisibleLines == lines.size())
+    if(scroll && scrollbar->GetScrollPos() + 1 + maxNumVisibleLines == lines.size())
         scrollbar->SetScrollPos(scrollbar->GetScrollPos() + 1);
 }
 
@@ -96,7 +94,8 @@ void ctrlMultiline::RecalcWrappedLines()
     std::vector<glArchivItem_Font::WrapInfo> wrapInfos;
     wrapInfos.reserve(lines.size());
     bool needScrollBar = lines.size() > maxNumVisibleLines && scrollbarAllowed_;
-    do{
+    do
+    {
         wrapInfos.clear();
         unsigned curNumLines = 0;
         unsigned maxTextWidth = GetSize().x - 2 * PADDING;
@@ -157,11 +156,9 @@ bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
         return true;
-    }
-    else
+    } else
         return false;
 }
-
 
 bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
 {
@@ -171,8 +168,7 @@ bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);
         return true;
-    }
-    else
+    } else
         return false;
 }
 
@@ -204,7 +200,7 @@ void ctrlMultiline::Resize(const Extent& newSize)
 /// Textzeile ersetzen. Klappt bestimmt nicht mit Scrollbar-Kram
 void ctrlMultiline::SetLine(const unsigned index, const std::string& str, unsigned color)
 {
-    if (index < lines.size())
+    if(index < lines.size())
     {
         lines[index] = Line(str, color);
         RecalcWrappedLines();

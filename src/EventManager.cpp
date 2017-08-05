@@ -24,8 +24,9 @@
 #include "libutil/src/Log.h"
 #include <vector>
 
-EventManager::EventManager(unsigned startGF): currentGF(startGF), curActiveEvent(NULL)
-{}
+EventManager::EventManager(unsigned startGF) : currentGF(startGF), curActiveEvent(NULL)
+{
+}
 
 EventManager::~EventManager()
 {
@@ -106,7 +107,7 @@ void EventManager::ExecuteNextGF()
     }
 
     // Remove all objects
-    for (GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
+    for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
         GameObject* obj = *it;
         // Object is no longer in the kill list (some may check this upon destruction)
@@ -129,7 +130,7 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     {
         for(EventList::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
         {
-            if (!sgd.IsObjectSerialized((*e_it)->GetObjId()))
+            if(!sgd.IsObjectSerialized((*e_it)->GetObjId()))
                 save_events.push_back(*e_it);
         }
     }
@@ -151,7 +152,7 @@ bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id)
     {
         for(EventList::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
         {
-            if ((*e_it)->id == id && (*e_it)->obj == obj)
+            if((*e_it)->id == id && (*e_it)->obj == obj)
             {
                 return true;
             }
@@ -182,7 +183,7 @@ bool EventManager::ObjectIsInKillList(GameObject* obj)
 
 void EventManager::RemoveEvent(GameEvent*& ep)
 {
-    if (!ep)
+    if(!ep)
         return;
 
     if(ep == curActiveEvent)
@@ -212,7 +213,7 @@ void EventManager::RemoveEvent(GameEvent*& ep)
         //       because there is always the curActiveEvent left, which cannot be removed (check above)
         if(eventsAtTime.empty())
             events.erase(itEventsAtTime);
-    }else
+    } else
     {
         RTTR_Assert(false);
         LOG.write("Bug detected: GF of event to be removed did not exist");

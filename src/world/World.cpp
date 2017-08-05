@@ -18,20 +18,20 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/World.h"
 #include "world/MapGeometry.h"
+#include "nodeObjs/noFlag.h"
 #include "nodeObjs/noNothing.h"
 #include "nodeObjs/noTree.h"
-#include "nodeObjs/noFlag.h"
 #if RTTR_ENABLE_ASSERTS
-#   include "nodeObjs/noMovable.h"
+#include "nodeObjs/noMovable.h"
 #endif
 #include "FOWObjects.h"
-#include "gameData/TerrainData.h"
 #include "RoadSegment.h"
-#include "gameTypes/ShipDirection.h"
 #include "helpers/containerUtils.h"
+#include "gameTypes/ShipDirection.h"
+#include "gameData/TerrainData.h"
 #include <set>
 
-World::World(): size_(MapExtent::all(0)), lt(LT_GREENLAND), noNodeObj(NULL)
+World::World() : size_(MapExtent::all(0)), lt(LT_GREENLAND), noNodeObj(NULL)
 {
     noTree::ResetInstanceCounter();
     GameObject::ResetCounter();
@@ -44,8 +44,8 @@ World::~World()
 
 void World::Init(const MapExtent& mapSize, LandscapeType lt)
 {
-    RTTR_Assert(size_ == MapExtent::all(0)); // Already init
-    RTTR_Assert(mapSize.x > 0 && mapSize.y > 0);     // No empty map
+    RTTR_Assert(size_ == MapExtent::all(0));     // Already init
+    RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     size_ = mapSize;
     this->lt = lt;
     // Map-Knoten erzeugen
@@ -75,7 +75,7 @@ void World::Unload()
     }
 
     for(std::set<RoadSegment*>::iterator it = roadsegments.begin(); it != roadsegments.end(); ++it)
-        delete (*it);
+        delete(*it);
 
     // Objekte vernichten
     for(std::vector<MapNode>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -93,7 +93,7 @@ void World::Unload()
     {
         std::list<noBase*>& nodeFigures = itNode->figures;
         for(std::list<noBase*>::iterator it = nodeFigures.begin(); it != nodeFigures.end(); ++it)
-            delete (*it);
+            delete(*it);
 
         nodeFigures.clear();
     }
@@ -124,41 +124,41 @@ MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
     MapPoint res;
     switch(static_cast<Direction::Type>(dir))
     {
-    case Direction::WEST: // -1|0   -1|0
-        res.x = ((pt.x == 0) ? size_.x : pt.x) - 1;
-        res.y = pt.y;
-        break;
-    case Direction::NORTHWEST: // -1|-1   0|-1
-        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1);
-        res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
-        break;
-    case Direction::NORTHEAST: // 0|-1  -1|-1
-        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
-        res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
-        break;
-    case Direction::EAST: // 1|0    1|0
-        res.x = pt.x + 1;
-        if(res.x == size_.x)
-            res.x = 0;
-        res.y = pt.y;
-        break;
-    case Direction::SOUTHEAST: // 1|1    0|1
-        res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
-        res.y = pt.y + 1;
-        if(res.y == size_.y)
-            res.y = 0;
-        break;
-    default:
-        RTTR_Assert(dir == Direction::SOUTHWEST); // 0|1   -1|1
-        res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1); //-V537
-        res.y = pt.y + 1;
-        if(res.y == size_.y)
-            res.y = 0;
-        break;
+        case Direction::WEST: // -1|0   -1|0
+            res.x = ((pt.x == 0) ? size_.x : pt.x) - 1;
+            res.y = pt.y;
+            break;
+        case Direction::NORTHWEST: // -1|-1   0|-1
+            res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1);
+            res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
+            break;
+        case Direction::NORTHEAST: // 0|-1  -1|-1
+            res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
+            res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
+            break;
+        case Direction::EAST: // 1|0    1|0
+            res.x = pt.x + 1;
+            if(res.x == size_.x)
+                res.x = 0;
+            res.y = pt.y;
+            break;
+        case Direction::SOUTHEAST: // 1|1    0|1
+            res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
+            res.y = pt.y + 1;
+            if(res.y == size_.y)
+                res.y = 0;
+            break;
+        default:
+            RTTR_Assert(dir == Direction::SOUTHWEST);                         // 0|1   -1|1
+            res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1); //-V537
+            res.y = pt.y + 1;
+            if(res.y == size_.y)
+                res.y = 0;
+            break;
     }
 
     // This should be the same, but faster
-    //RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Point<int>(pt), dir)));
+    // RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Point<int>(pt), dir)));
     return res;
 }
 
@@ -187,7 +187,7 @@ unsigned World::CalcDistance(Point<int> p1, Point<int> p2) const
 
     dx -= dy / 2;
 
-    return((dy + (dx > 0 ? dx : 0)) / 2);
+    return ((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
 ShipDirection World::GetShipDir(MapPoint fromPt, MapPoint toPt) const
@@ -282,7 +282,7 @@ const noBase* World::GetNO(const MapPoint pt) const
         return noNodeObj.get();
 }
 
-void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/)
+void World::SetNO(const MapPoint pt, noBase* obj, const bool replace /* = false*/)
 {
     RTTR_Assert(replace || obj == NULL || GetNode(pt).obj == NULL);
 #if RTTR_ENABLE_ASSERTS
@@ -291,7 +291,7 @@ void World::SetNO(const MapPoint pt, noBase* obj, const bool replace/* = false*/
     GetNodeInt(pt).obj = obj;
 }
 
-void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
+void World::DestroyNO(const MapPoint pt, const bool checkExists /* = true*/)
 {
     noBase* obj = GetNodeInt(pt).obj;
     if(obj)
@@ -301,7 +301,7 @@ void World::DestroyNO(const MapPoint pt, const bool checkExists/* = true*/)
         GetNodeInt(pt).obj = NULL;
         obj->Destroy();
         deletePtr(obj);
-    }else
+    } else
         RTTR_Assert(!checkExists);
 }
 
@@ -370,7 +370,7 @@ bool World::IsPlayerTerritory(const MapPoint pt) const
 
 BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
 {
-    return AdjustBQ(pt, player,  GetNode(pt).bq);
+    return AdjustBQ(pt, player, GetNode(pt).bq);
 }
 
 BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
@@ -391,21 +391,21 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         return nodeBQ;
 }
 
-TerrainType World::GetRightTerrain(const MapPoint pt, Direction dir)  const
+TerrainType World::GetRightTerrain(const MapPoint pt, Direction dir) const
 {
     switch(Direction::Type(dir))
     {
-    case Direction::WEST:      return GetNeighbourNode(pt, Direction::NORTHWEST).t1;
-    case Direction::NORTHWEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t2;
-    case Direction::NORTHEAST: return GetNeighbourNode(pt, Direction::NORTHEAST).t1;
-    case Direction::EAST:      return GetNode(pt).t2;
-    case Direction::SOUTHEAST: return GetNode(pt).t1;
-    case Direction::SOUTHWEST: return GetNeighbourNode(pt, Direction::WEST).t2;
+        case Direction::WEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t1;
+        case Direction::NORTHWEST: return GetNeighbourNode(pt, Direction::NORTHWEST).t2;
+        case Direction::NORTHEAST: return GetNeighbourNode(pt, Direction::NORTHEAST).t1;
+        case Direction::EAST: return GetNode(pt).t2;
+        case Direction::SOUTHEAST: return GetNode(pt).t1;
+        case Direction::SOUTHWEST: return GetNeighbourNode(pt, Direction::WEST).t2;
     }
     throw std::logic_error("Invalid direction");
 }
 
-TerrainType World::GetLeftTerrain(const MapPoint pt, Direction dir)  const
+TerrainType World::GetLeftTerrain(const MapPoint pt, Direction dir) const
 {
     // We can find the left terrain by going a bit more left/counter-clockwise and take the right terrain
     return GetRightTerrain(pt, dir - 1u);

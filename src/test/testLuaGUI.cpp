@@ -16,18 +16,18 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "test/GameWorldWithLuaAccess.h"
+#include "CollisionDetection.h"
+#include "GameClient.h"
+#include "GameMessages.h"
+#include "Loader.h"
 #include "WindowManager.h"
-#include "controls/ctrlImage.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ogl/glArchivItem_Font.h"
-#include "GameMessages.h"
-#include "GameClient.h"
-#include "Loader.h"
-#include "CollisionDetection.h"
+#include "test/GameWorldWithLuaAccess.h"
 #include <boost/assign/std/vector.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(LuaGUITestSuite, LuaTestsFixture)
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     // Close wnd
     WINDOWMANAGER.Close(wnd2);
     BOOST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
-    
+
     // No image
     executeLua("rttr:MissionStatement(1, 'Title', 'Text', IM_NONE)");
     wnd = dynamic_cast<const iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
@@ -159,10 +159,11 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     std::vector<DrawPoint> imgPts;
     // Left, right, top, bottom
     imgPts += DrawPoint(30, 30), DrawPoint(300, 30), DrawPoint(150, 30), DrawPoint(150, 300);
-    for(unsigned i=0; i<imgPts.size(); i++)
+    for(unsigned i = 0; i < imgPts.size(); i++)
     {
         const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i]);
-        Rect imgRect(img->GetPos().x - img->GetImage()->getNx(), img->GetPos().y - img->GetImage()->getNy(), img->GetImage()->getWidth(), img->GetImage()->getHeight());
+        Rect imgRect(img->GetPos().x - img->GetImage()->getNx(), img->GetPos().y - img->GetImage()->getNy(), img->GetImage()->getWidth(),
+                     img->GetImage()->getHeight());
         // Image must be in wnd
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgRect.right);
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgRect.bottom);

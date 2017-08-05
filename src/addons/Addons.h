@@ -22,26 +22,26 @@
 
 // Include with all addons
 
-#include "addons/AddonLimitCatapults.h"
-#include "addons/AddonInexhaustibleMines.h"
-#include "addons/AddonRefundMaterials.h"
-#include "addons/AddonExhaustibleWells.h"
-#include "addons/AddonRefundOnEmergency.h"
-#include "addons/AddonManualRoadEnlargement.h"
 #include "addons/AddonCatapultGraphics.h"
+#include "addons/AddonExhaustibleWells.h"
+#include "addons/AddonInexhaustibleMines.h"
+#include "addons/AddonLimitCatapults.h"
+#include "addons/AddonManualRoadEnlargement.h"
 #include "addons/AddonMetalworksBehaviorOnZero.h"
+#include "addons/AddonRefundMaterials.h"
+#include "addons/AddonRefundOnEmergency.h"
 
-#include "addons/AddonDemolitionProhibition.h"
 #include "addons/AddonCharburner.h"
+#include "addons/AddonDemolitionProhibition.h"
 #include "addons/AddonTrade.h"
 
 #include "addons/AddonChangeGoldDeposits.h"
-#include "addons/AddonMaxWaterwayLength.h"
 #include "addons/AddonCustomBuildSequence.h"
+#include "addons/AddonMaxWaterwayLength.h"
 #include "addons/AddonStatisticsVisibility.h"
 
-#include "addons/AddonDefenderBehavior.h"
 #include "addons/AddonAIDebugWindow.h"
+#include "addons/AddonDefenderBehavior.h"
 
 #include "addons/AddonNoCoinsDefault.h"
 
@@ -49,19 +49,19 @@
 
 #include "addons/AddonToolOrdering.h"
 
-#include "addons/AddonMilitaryAid.h"
+#include "addons/AddonInexhaustibleFish.h"
 #include "addons/AddonInexhaustibleGraniteMines.h"
 #include "addons/AddonMaxRank.h"
+#include "addons/AddonMilitaryAid.h"
 #include "addons/AddonSeaAttack.h"
-#include "addons/AddonInexhaustibleFish.h"
 
-#include "addons/AddonShipSpeed.h"
-#include "addons/AddonMoreAnimals.h"
-#include "addons/AddonBurnDuration.h"
-#include "addons/AddonNoAlliedPush.h"
 #include "addons/AddonBattlefieldPromotion.h"
+#include "addons/AddonBurnDuration.h"
 #include "addons/AddonHalfCostMilEquip.h"
 #include "addons/AddonMilitaryControl.h"
+#include "addons/AddonMoreAnimals.h"
+#include "addons/AddonNoAlliedPush.h"
+#include "addons/AddonShipSpeed.h"
 
 #include "addons/AddonMilitaryHitpoints.h"
 

@@ -24,10 +24,10 @@
 class ctrlBaseTooltip
 {
 public:
-    ctrlBaseTooltip(const std::string& tooltip = ""): tooltip_(tooltip){}
+    ctrlBaseTooltip(const std::string& tooltip = "") : tooltip_(tooltip) {}
     virtual ~ctrlBaseTooltip();
 
-    void SetTooltip(const std::string& tooltip){ tooltip_ = tooltip; }
+    void SetTooltip(const std::string& tooltip) { tooltip_ = tooltip; }
     const std::string& GetTooltip() const { return tooltip_; }
     /// Swap the tooltips of those controls
     void SwapTooltip(ctrlBaseTooltip& other);
@@ -36,6 +36,7 @@ public:
     /// Show a temporary tooltip
     void ShowTooltip(const std::string& tooltip) const;
     void HideTooltip();
+
 protected:
     std::string tooltip_;
 };

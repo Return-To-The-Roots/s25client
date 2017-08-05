@@ -17,22 +17,22 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nobBaseMilitary.h"
-#include "world/GameWorldGame.h"
-#include "Random.h"
-#include "nobMilitary.h"
-#include "figures/nofAttacker.h"
-#include "figures/nofAggressiveDefender.h"
-#include "figures/nofDefender.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "Random.h"
+#include "SerializedGameData.h"
+#include "figures/nofAggressiveDefender.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofDefender.h"
+#include "nobMilitary.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 
-nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos,
-                                 const unsigned char player, const Nation nation)
+nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender_(0)
-{}
+{
+}
 
 nobBaseMilitary::~nobBaseMilitary()
 {
@@ -63,7 +63,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     aggressive_defenders.clear();
 
     // Verteidiger Bescheid sagen
-    if(defender_){
+    if(defender_)
+    {
         defender_->HomeDestroyed();
         defender_ = NULL;
     }
@@ -77,7 +78,8 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
         gwg->AddFigure((*it), pos);
 
         if((*it)->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(*it))
-            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt werden!
+            // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt
+            // werden!
             static_cast<nofActiveSoldier*>(*it)->HomeDestroyedAtBegin();
         else
         {
@@ -94,11 +96,9 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        if((*it)->GetPlayer() != player
-                && (*it)->GetBuildingType() >= BLD_BARRACKS  && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() != player && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
             static_cast<nobMilitary*>(*it)->LookForEnemyBuildings(this);
     }
-
 
     Destroy_noBuilding();
 }
@@ -181,10 +181,7 @@ struct GetMapPointWithRadius
 {
     typedef std::pair<MapPoint, unsigned> result_type;
 
-    result_type operator()(const MapPoint pt, unsigned r)
-    {
-        return std::make_pair(pt, r);
-    }
+    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
 };
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
@@ -265,8 +262,7 @@ bool nobBaseMilitary::CallDefender(nofAttacker* attacker)
         AddLeavingFigure(defender_);
 
         return true;
-    }
-    else
+    } else
     {
         // Gebäude ist leer, dann kann es erobert werden
         return false;
@@ -279,7 +275,6 @@ nofAttacker* nobBaseMilitary::FindAttackerNearBuilding()
     // Den Soldaten, der am nächsten dran steht, nehmen
     nofAttacker* best_attacker = 0;
     unsigned best_radius = 0xFFFFFFFF;
-
 
     for(std::list<nofAttacker*>::iterator it = aggressors.begin(); it != aggressors.end(); ++it)
     {
@@ -347,7 +342,6 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
-
 bool nobBaseMilitary::IsAttackable(int playerIdx) const
 {
     if(playerIdx < 0)
@@ -376,7 +370,7 @@ bool nobBaseMilitary::IsOnMission(nofActiveSoldier* soldier) const
 void nobBaseMilitary::CancelJobs()
 {
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
-    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); )
+    for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end();)
     {
         // Nur Soldaten nehmen (Job-Arbeiten) und keine (normalen) Verteidiger, da diese ja rauskommen
         // sollen zum Kampf
@@ -390,9 +384,9 @@ void nobBaseMilitary::CancelJobs()
             // Wieder in das Haus verfrachten
             this->AddActiveSoldier(soldier);
             it = leave_house.erase(it);
-        }else
+        } else
             ++it;
     }
 
-    //leave_house.clear();
+    // leave_house.clear();
 }

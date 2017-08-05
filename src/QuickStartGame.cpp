@@ -17,34 +17,25 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
-#include "GameServer.h"
+#include "ClientInterface.h"
 #include "GameClient.h"
+#include "GameServer.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
-#include "ClientInterface.h"
 #include <boost/array.hpp>
 #include <boost/filesystem/path.hpp>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
-class SwitchOnStart: public ClientInterface
+class SwitchOnStart : public ClientInterface
 {
 public:
-    SwitchOnStart()
-    {
-        GAMECLIENT.SetInterface(this);
-    }
-    ~SwitchOnStart()
-    {
-        GAMECLIENT.RemoveInterface(this);
-    }
+    SwitchOnStart() { GAMECLIENT.SetInterface(this); }
+    ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameStarted(GameWorldBase& world) override
-    {
-        WINDOWMANAGER.Switch(new dskGameLoader(world));
-    }
+    void CI_GameStarted(GameWorldBase& world) override { WINDOWMANAGER.Switch(new dskGameLoader(world)); }
 };
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)
@@ -63,11 +54,11 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
     if((extension == ".sav" && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
-        || ((extension == ".swd" || extension == ".wld") && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
+       || ((extension == ".swd" || extension == ".wld") && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
     {
         WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
         return true;
-    }else
+    } else
     {
         SwitchOnStart switchOnStart;
         return GAMECLIENT.StartReplay(filePath);

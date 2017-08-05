@@ -18,9 +18,9 @@
 #ifndef BuildingNote_h__
 #define BuildingNote_h__
 
+#include "notifications/notifications.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/MapCoordinates.h"
-#include "notifications/notifications.h"
 
 struct BuildingNote
 {
@@ -37,8 +37,7 @@ struct BuildingNote
         LostLand      /// Lost land to another player's military building
     };
 
-    BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld):
-        type(type), player(player), pos(pos), bld(bld){}
+    BuildingNote(Type type, unsigned player, const MapPoint& pos, BuildingType bld) : type(type), player(player), pos(pos), bld(bld) {}
 
     const Type type;
     const unsigned player;

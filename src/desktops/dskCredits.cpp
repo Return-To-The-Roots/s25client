@@ -19,17 +19,17 @@
 #include "dskCredits.h"
 
 #include "GameManager.h"
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 
-#include "dskMainMenu.h"
 #include "controls/ctrlButton.h"
+#include "dskMainMenu.h"
 
 #include "drivers/VideoDriverWrapper.h"
-#include "gameData/JobConsts.h"
+#include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Music.h"
-#include "ogl/glArchivItem_Bob.h"
+#include "gameData/JobConsts.h"
 #include <boost/array.hpp>
 #include <cstdlib>
 struct KeyEvent;
@@ -37,7 +37,6 @@ struct KeyEvent;
  *
  *  Klasse des Credits Desktops.
  */
-
 
 /// Duration for one credits page
 const unsigned PAGE_TIME = 12900;
@@ -47,7 +46,7 @@ const unsigned FADING_TIME = 2000;
 dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 {
     // Zurück
-    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22),   TC_RED1, _("Back"), NormalFont);
+    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
 
     // "Die Siedler II.5 RTTR"
     AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
@@ -153,7 +152,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Thank you!"));
     entries.push_back(entry);
 
-    bool nations[NAT_COUNT] = { true, true, true, true, false };
+    bool nations[NAT_COUNT] = {true, true, true, true, false};
 
     LOADER.LoadFilesAtGame(0, nations);
 
@@ -172,10 +171,10 @@ void dskCredits::Msg_PaintAfter()
 {
     unsigned time = VIDEODRIVER.GetTickCount() - startTime;
 
-    if (time > PAGE_TIME)
+    if(time > PAGE_TIME)
     {
         ++this->itCurEntry;
-        if (this->itCurEntry == entries.end())
+        if(this->itCurEntry == entries.end())
             this->itCurEntry = entries.begin();
         this->startTime = VIDEODRIVER.GetTickCount();
     }
@@ -195,7 +194,7 @@ void dskCredits::Msg_PaintAfter()
         bob_spawnprosec = 2;
 
     // add new bob
-    if ( bob_spawnprosec > 0 && bob_spawntime > (1000 / bob_spawnprosec) && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
+    if(bob_spawnprosec > 0 && bob_spawntime > (1000 / bob_spawnprosec) && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
     {
         bobSpawnTime = VIDEODRIVER.GetTickCount();
 
@@ -208,8 +207,7 @@ void dskCredits::Msg_PaintAfter()
         {
             b.pos.x = 0;
             b.direction = 3;
-        }
-        else
+        } else
         {
             b.pos.x = VIDEODRIVER.GetScreenWidth();
             b.direction = 6;
@@ -219,12 +217,11 @@ void dskCredits::Msg_PaintAfter()
         unsigned job = rand() % 29;
 
         // exclude "headless" bobs
-        if (job == 8 || job == 9 || job == 12 || job == 18)
+        if(job == 8 || job == 9 || job == 12 || job == 18)
         {
             job = rand() % (WARE_TYPES_COUNT - 1);
             b.hasWare = true;
-        }
-        else
+        } else
         {
             if(job == JOB_SCOUT)
                 job = 35 + NATION_RTTR_TO_S2[rand() % 4] * 6;
@@ -241,37 +238,36 @@ void dskCredits::Msg_PaintAfter()
     }
 
     // draw bobs
-    for (std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
+    for(std::vector<Bob>::iterator bob = bobs.begin(); bob != bobs.end(); ++bob)
     {
-        if (!bob->hasWare)
+        if(!bob->hasWare)
             LOADER.GetBobN("jobs")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
         else
             LOADER.GetBobN("carrier")->Draw(bob->id, bob->direction, bob->isFat, bob->animationStep, bob->pos, bob->color);
 
-        if( bob_time > (1000 / bob_prosec) )
+        if(bob_time > (1000 / bob_prosec))
         {
             bobTime = VIDEODRIVER.GetTickCount();
 
             bob->animationStep++;
-            if (bob->animationStep > 7)
+            if(bob->animationStep > 7)
                 bob->animationStep = 0;
-            if (bob->direction == 3)
+            if(bob->direction == 3)
             {
                 bob->pos.x += bob->speed;
-                if (bob->pos.x > VIDEODRIVER.GetScreenWidth())
+                if(bob->pos.x > VIDEODRIVER.GetScreenWidth())
                     bob->direction = 6;
-            }
-            else if (bob->direction == 6)
+            } else if(bob->direction == 6)
             {
                 bob->pos.x -= bob->speed;
-                if (bob->pos.x < 0)
+                if(bob->pos.x < 0)
                     bob->direction = 3;
             }
         }
     }
 
     // Frameratebegrenzer aktualisieren
-    if( bob_time > (1000 / bob_prosec) )
+    if(bob_time > (1000 / bob_prosec))
         bobTime = VIDEODRIVER.GetTickCount();
 
     // calculate text transparency
@@ -279,10 +275,10 @@ void dskCredits::Msg_PaintAfter()
 
     if(time < FADING_TIME)
         transparency = 0xFF * time / FADING_TIME;
-    if (time > PAGE_TIME - FADING_TIME)
+    if(time > PAGE_TIME - FADING_TIME)
         transparency = (0xFF - 0xFF * (time - (PAGE_TIME - FADING_TIME)) / FADING_TIME);
 
-    if (time > PAGE_TIME)
+    if(time > PAGE_TIME)
         transparency = 0;
 
     transparency = transparency << 24;
@@ -300,7 +296,7 @@ void dskCredits::Msg_PaintAfter()
 
     LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
 
-    if (itCurEntry->pic)
+    if(itCurEntry->pic)
         itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), SetAlpha(COLOR_WHITE, transparency));
 }
 
@@ -318,13 +314,12 @@ glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
     return result;
 }
 
-bool dskCredits::Msg_KeyDown(const KeyEvent&  /*ke*/)
+bool dskCredits::Msg_KeyDown(const KeyEvent& /*ke*/)
 {
     return Close();
 }
 
-
-void dskCredits::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
+void dskCredits::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     Close();
 }

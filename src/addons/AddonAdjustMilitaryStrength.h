@@ -39,18 +39,15 @@
  */
 class AddonAdjustMilitaryStrength : public AddonList
 {
-    public:
-        AddonAdjustMilitaryStrength() : AddonList(AddonId::ADJUST_MILITARY_STRENGTH,
-                    ADDONGROUP_MILITARY,
-                    _("Adjust military strength"),
-                    _("Modify the strength increase of military ranks"),
-                    1)
-        {
-            addOption(_("Maximum strength"));
-            addOption(_("Medium strength"));
-            addOption(_("Minimum strength"));
-        }
+public:
+    AddonAdjustMilitaryStrength()
+        : AddonList(AddonId::ADJUST_MILITARY_STRENGTH, ADDONGROUP_MILITARY, _("Adjust military strength"),
+                    _("Modify the strength increase of military ranks"), 1)
+    {
+        addOption(_("Maximum strength"));
+        addOption(_("Medium strength"));
+        addOption(_("Minimum strength"));
+    }
 };
 
 #endif // !ADDONADJUSTMILITARYSTRENGTH_H_INCLUDED
-

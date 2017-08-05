@@ -26,16 +26,13 @@
 /// Button mit Text
 class ctrlTextButton : public ctrlButton, public ctrlBaseText
 {
-    public:
+public:
+    ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const std::string& text,
+                   glArchivItem_Font* font, const std::string& tooltip);
 
-        ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos,
-                       const Extent& size, const TextureColor tc,
-                       const std::string& text,  glArchivItem_Font* font, const std::string& tooltip);
-
-    protected:
-
-        /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
-        void DrawContent() const override;
+protected:
+    /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+    void DrawContent() const override;
 };
 
 #endif // ctrlTextButton_h__

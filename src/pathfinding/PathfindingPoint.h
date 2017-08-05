@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -25,8 +25,10 @@ public:
     const unsigned id_, distance_;
     unsigned estimate_;
 
-    PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay): id_(id), distance_(distance), estimate_(curWay + distance_)
-    {}
+    PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay)
+        : id_(id), distance_(distance), estimate_(curWay + distance_)
+    {
+    }
 
     /// Operator für den Vergleich
     bool operator<(const PathfindingPoint& rhs) const

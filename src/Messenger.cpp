@@ -19,22 +19,16 @@
 #include "Messenger.h"
 
 #include "Loader.h"
-#include "libutil/src/Log.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Font.h"
 #include "mygettext/src/mygettext.h"
+#include "ogl/glArchivItem_Font.h"
+#include "libutil/src/Log.h"
 
 /// Chat-Destination-String, der entsprechend angezeigt wird
-const std::string CD_STRINGS[4] =
-{
-    "", "(All) ", "(Team) ", "(Enemies) "
-};
+const std::string CD_STRINGS[4] = {"", "(All) ", "(Team) ", "(Enemies) "};
 
 /// Farbe für die einzelnen CDs
-const unsigned CD_COLORS[4] =
-{
-    0, COLOR_WHITE, COLOR_GREEN, COLOR_RED
-};
+const unsigned CD_COLORS[4] = {0, COLOR_WHITE, COLOR_GREEN, COLOR_RED};
 
 Messenger::~Messenger()
 {
@@ -71,17 +65,18 @@ void Messenger::Draw()
     }
 }
 
-void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg, const unsigned color_msg)
+void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,
+                           const unsigned color_msg)
 {
     LOG.writeColored(author, color_author);
     LOG.writeColored(CD_STRINGS[cd], CD_COLORS[cd]);
     LOG.write(msg + "\n");
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
-    glArchivItem_Font::WrapInfo wi = LargeFont->GetWrapInfo(
-        msg,
-        VIDEODRIVER.GetScreenWidth() - 60 - LargeFont->getWidth(author) - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-        VIDEODRIVER.GetScreenWidth() - 60);
+    glArchivItem_Font::WrapInfo wi = LargeFont->GetWrapInfo(msg,
+                                                            VIDEODRIVER.GetScreenWidth() - 60 - LargeFont->getWidth(author)
+                                                              - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
+                                                            VIDEODRIVER.GetScreenWidth() - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(msg);
@@ -95,8 +90,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
         {
             tmp.author = author;
             tmp.cd = cd;
-        }
-        else
+        } else
             tmp.cd = CD_SYSTEM;
 
         tmp.msg = strings[i];

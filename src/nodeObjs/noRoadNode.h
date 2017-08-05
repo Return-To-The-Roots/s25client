@@ -18,8 +18,8 @@
 #ifndef NO_ROADNODE_H_
 #define NO_ROADNODE_H_
 
-#include "noCoordBase.h"
 #include "RoadSegment.h"
+#include "noCoordBase.h"
 #include "gameTypes/Direction.h"
 #include <boost/array.hpp>
 
@@ -29,58 +29,62 @@ class SerializedGameData;
 // Basisklasse für Gebäude und Flagge (alles, was als "Straßenknoten" dient
 class noRoadNode : public noCoordBase
 {
-    protected:
+protected:
+    unsigned char player;
+    boost::array<RoadSegment*, 6> routes;
 
-        unsigned char player;
-        boost::array<RoadSegment*, 6> routes;
+public:
+    // For Pathfinding
+    // cost from start
+    mutable unsigned cost; //-V730_NOINIT
+    // distance to target
+    mutable unsigned targetDistance; //-V730_NOINIT
+    // estimated total distance (cost + distance)
+    mutable unsigned estimate; //-V730_NOINIT
+    mutable unsigned last_visit;
+    mutable const noRoadNode* prev; //-V730_NOINIT
+    /// Direction to previous node, includes SHIP_DIR
+    mutable unsigned dir_; //-V730_NOINIT
+public:
+    noRoadNode(const NodalObjectType nop, const MapPoint pt, const unsigned char player);
+    noRoadNode(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    ~noRoadNode() override;
+    /// Aufräummethoden
+protected:
+    void Destroy_noRoadNode();
 
-// For Pathfinding
-        // cost from start
-        mutable unsigned cost; //-V730_NOINIT
-        // distance to target
-        mutable unsigned targetDistance; //-V730_NOINIT
-        // estimated total distance (cost + distance)
-        mutable unsigned estimate; //-V730_NOINIT
-        mutable unsigned last_visit;
-        mutable const noRoadNode* prev; //-V730_NOINIT
-        /// Direction to previous node, includes SHIP_DIR
-        mutable unsigned dir_; //-V730_NOINIT
-    public:
+public:
+    void Destroy() override { Destroy_noRoadNode(); }
 
-        noRoadNode(const NodalObjectType nop, const MapPoint pt, const unsigned char player);
-        noRoadNode(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noRoadNode(SerializedGameData& sgd) const;
 
-        ~noRoadNode() override;
-        /// Aufräummethoden
-    protected:  void Destroy_noRoadNode();
-    public:     void Destroy() override { Destroy_noRoadNode(); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noRoadNode(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noRoadNode(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noRoadNode(sgd); }
+    RoadSegment* GetRoute(const Direction dir) const { return routes[dir.toUInt()]; }
+    void SetRoute(const Direction dir, RoadSegment* route) { routes[dir.toUInt()] = route; }
+    noRoadNode* GetNeighbour(const Direction dir) const;
 
-        RoadSegment* GetRoute(const Direction dir) const { return routes[dir.toUInt()]; }
-        void SetRoute(const Direction dir, RoadSegment* route) { routes[dir.toUInt()] = route; }
-        noRoadNode* GetNeighbour(const Direction dir) const;
+    void DestroyRoad(const Direction dir);
+    void UpgradeRoad(const Direction dir);
+    /// Vernichtet Alle Straße um diesen Knoten
+    void DestroyAllRoads();
 
-        void DestroyRoad(const Direction dir);
-        void UpgradeRoad(const Direction dir);
-        /// Vernichtet Alle Straße um diesen Knoten
-        void DestroyAllRoads();
+    unsigned char GetPlayer() const { return player; }
 
-        unsigned char GetPlayer() const { return player; }
+    /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
+    virtual void AddWare(Ware*& ware) = 0;
 
-        /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-        virtual void AddWare(Ware*& ware) = 0;
-
-        /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen
-        virtual unsigned GetPunishmentPoints(const Direction dir) const { return 0; }
-
+    /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch
+    /// transportiert werden müssen
+    virtual unsigned GetPunishmentPoints(const Direction dir) const { return 0; }
 };
 
-inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const {
+inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const
+{
     const RoadSegment* route = routes[dir.toUInt()];
     if(!route)
         return NULL;

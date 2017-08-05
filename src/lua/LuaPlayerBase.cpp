@@ -23,16 +23,15 @@
 void LuaPlayerBase::Register(kaguya::State& state)
 {
     state["PlayerBase"].setClass(kaguya::UserdataMetatable<LuaPlayerBase>()
-        .addFunction("GetName", &LuaPlayerBase::GetName)
-        .addFunction("GetNation", &LuaPlayerBase::GetNation)
-        .addFunction("GetTeam", &LuaPlayerBase::GetTeam)
-        .addFunction("GetColor", &LuaPlayerBase::GetColor)
-        .addFunction("IsFree", &LuaPlayerBase::IsFree)
-        .addFunction("IsHuman", &LuaPlayerBase::IsHuman)
-        .addFunction("IsAI", &LuaPlayerBase::IsAI)
-        .addFunction("IsClosed", &LuaPlayerBase::IsClosed)
-        .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel)
-        );
+                                   .addFunction("GetName", &LuaPlayerBase::GetName)
+                                   .addFunction("GetNation", &LuaPlayerBase::GetNation)
+                                   .addFunction("GetTeam", &LuaPlayerBase::GetTeam)
+                                   .addFunction("GetColor", &LuaPlayerBase::GetColor)
+                                   .addFunction("IsFree", &LuaPlayerBase::IsFree)
+                                   .addFunction("IsHuman", &LuaPlayerBase::IsHuman)
+                                   .addFunction("IsAI", &LuaPlayerBase::IsAI)
+                                   .addFunction("IsClosed", &LuaPlayerBase::IsClosed)
+                                   .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel));
 
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) state[#name] = name
@@ -109,9 +108,9 @@ int LuaPlayerBase::GetAILevel() const
         return 0;
     switch(GetPlayer().aiInfo.level)
     {
-    case AI::EASY: return 1;
-    case AI::MEDIUM: return 2;
-    case AI::HARD: return 3;
+        case AI::EASY: return 1;
+        case AI::MEDIUM: return 2;
+        case AI::HARD: return 3;
     }
     RTTR_Assert(false);
     return -1;

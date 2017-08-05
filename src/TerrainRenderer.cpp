@@ -18,21 +18,21 @@
 #include "defines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 
-#include "drivers/VideoDriverWrapper.h"
-#include "gameData/MapConsts.h"
-#include "Settings.h"
-#include "GlobalVars.h"
-#include "GameClient.h"
-#include "world/MapGeometry.h"
-#include "world/GameWorldViewer.h"
-#include "world/GameWorldBase.h"
-#include "gameData/TerrainData.h"
 #include "ExtensionList.h"
+#include "GameClient.h"
+#include "GlobalVars.h"
 #include "Loader.h"
+#include "Settings.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "helpers/roundToNextPow2.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "libsiedler2/src/ArchivInfo.h"
 #include "ogl/oglIncludes.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldViewer.h"
+#include "world/MapGeometry.h"
+#include "gameData/MapConsts.h"
+#include "gameData/TerrainData.h"
+#include "libsiedler2/src/ArchivInfo.h"
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
 
@@ -44,20 +44,19 @@
  *
  * So each point in Vertex-Array stores:
  *      its coordinates, the 2 textures, the color (shade) and border information (TODO: What are they?)
- * 
+ *
  * For OGL we have one entry per triangle in:
  *  - gl_vertices: Vertex (position) (All 3 coordinates of a triangle)
  *  - gl_texCoords: Texture coordinates for the triangle
  *  - gl_colors: Color (shade) at each point of the triangle
- * 
+ *
  * Drawing then binds a texture and draws all adjacent vertices with the same texture in one call by
  * providing an index and a count into the above arrays.
  */
 
-TerrainRenderer::TerrainRenderer() :
-	size_(0, 0),
-    vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false)
-{}
+TerrainRenderer::TerrainRenderer() : size_(0, 0), vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false)
+{
+}
 
 TerrainRenderer::~TerrainRenderer()
 {
@@ -79,7 +78,8 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsi
     return GetNodePos(t) + PointF(offset);
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle, const unsigned char dir) const
+TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle,
+                                                               const unsigned char dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
     PointI ptNb = ::GetNeighbour(PointI(pt), Direction::fromInt(dir));
@@ -118,21 +118,21 @@ void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& 
 void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv)
 {
     float shadow = static_cast<float>(gwv.GetNode(pt).shadow);
-    float clr = -1.f/(256.f*256.f) * shadow*shadow + 1.f/90.f * shadow + 0.38f;
+    float clr = -1.f / (256.f * 256.f) * shadow * shadow + 1.f / 90.f * shadow + 0.38f;
     switch(gwv.GetVisibility(pt))
     {
-    case VIS_INVISIBLE:
-        // Unsichtbar -> schwarz
-        GetVertex(pt).color = 0.0f;
-        break;
-    case VIS_FOW:
-        // Fog of War -> abgedunkelt
-        GetVertex(pt).color = clr / 4.f;
-        break;
-    case VIS_VISIBLE:
-        // Normal sichtbar
-        GetVertex(pt).color = clr / 2.f;
-        break;
+        case VIS_INVISIBLE:
+            // Unsichtbar -> schwarz
+            GetVertex(pt).color = 0.0f;
+            break;
+        case VIS_FOW:
+            // Fog of War -> abgedunkelt
+            GetVertex(pt).color = clr / 4.f;
+            break;
+        case VIS_VISIBLE:
+            // Normal sichtbar
+            GetVertex(pt).color = clr / 2.f;
+            break;
     }
 }
 
@@ -146,11 +146,13 @@ void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldView
 void TerrainRenderer::UpdateBorderVertex(const MapPoint pt)
 {
     Vertex& vertex = GetVertex(pt);
-    vertex.borderPos[0] = ( GetNeighbourPos(pt, 5) + GetNodePos(pt) + GetNeighbourPos(pt, 4) ) / 3.0f;
-    vertex.borderColor[0] = ( GetColor(GetNeighbour(pt, Direction::SOUTHWEST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
+    vertex.borderPos[0] = (GetNeighbourPos(pt, 5) + GetNodePos(pt) + GetNeighbourPos(pt, 4)) / 3.0f;
+    vertex.borderColor[0] =
+      (GetColor(GetNeighbour(pt, Direction::SOUTHWEST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST))) / 3.0f;
 
-    vertex.borderPos[1] = ( GetNeighbourPos(pt, 3) + GetNodePos(pt) + GetNeighbourPos(pt, 4) ) / 3.0f;
-    vertex.borderColor[1] = ( GetColor(GetNeighbour(pt, Direction::EAST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST)) ) / 3.0f;
+    vertex.borderPos[1] = (GetNeighbourPos(pt, 3) + GetNodePos(pt) + GetNeighbourPos(pt, 4)) / 3.0f;
+    vertex.borderColor[1] =
+      (GetColor(GetNeighbour(pt, Direction::EAST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST))) / 3.0f;
 }
 
 void TerrainRenderer::Init(const MapExtent& size)
@@ -197,19 +199,19 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
             const TerrainType t3 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::EAST))][0]);
             const TerrainType t4 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::SOUTHWEST))][1]);
 
-            if( (borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)) )
+            if((borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)))
                 borders[pos].left_right_offset[0] = triangleCount++;
-            if( (borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)) )
+            if((borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)))
                 borders[pos].left_right_offset[1] = triangleCount++;
 
-            if( (borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t3, t2)) )
+            if((borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t3, t2)))
                 borders[pos].right_left_offset[0] = triangleCount++;
-            if( (borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t3)) )
+            if((borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t3)))
                 borders[pos].right_left_offset[1] = triangleCount++;
 
-            if( (borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t4, t1)) )
+            if((borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t4, t1)))
                 borders[pos].top_down_offset[0] = triangleCount++;
-            if( (borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t4)) )
+            if((borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t4)))
                 borders[pos].top_down_offset[1] = triangleCount++;
         }
     }
@@ -314,7 +316,6 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, bool updateVBO)
     clr4.r = clr4.g = clr4.b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
     clr5.r = clr5.g = clr5.b = GetColor(GetNeighbour(pt, Direction::EAST));
 
-
     if(updateVBO && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
@@ -339,7 +340,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
         texCoord[1].y = 0.f;
         texCoord[2].x = 0.f; //-V807
         texCoord[2].y = 0.45f;
-    }else
+    } else
     {
         // We use the full texture as it already consists of 2 triangles
         // But we need to make sure to only use the correct part of it (texture sizes are powers of 2)
@@ -359,11 +360,11 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
         // Bottom of the triangle is in the middle in y
         texCoord[2].x = 0.f;
         texCoord[2].y = (h + 1) / 2.f * texScaleH;
-        texCoord[0].x = (w - 1)       * texScaleW;
+        texCoord[0].x = (w - 1) * texScaleW;
         texCoord[0].y = texCoord[2].y;
     }
 
-    Triangle& texCoord2 = gl_texcoords[triangleIdx+1];
+    Triangle& texCoord2 = gl_texcoords[triangleIdx + 1];
     if(!TerrainData::IsAnimated(t2))
     {
         texCoord2[0].x = 0.0f;
@@ -372,7 +373,7 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
         texCoord2[1].y = 0.45f;
         texCoord2[2].x = 0.47f; //-V807
         texCoord2[2].y = 0.0f;
-    }else
+    } else
     {
         Rect texRect = TerrainData::GetPosInTexture(t2);
         int w = texRect.right - texRect.left;
@@ -384,9 +385,9 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
         float texScaleH = 1.f / texH;
         // Bottom tip of the triangle is in the middle in x
         texCoord2[1].x = (w + 1) / 2.f * texScaleW;
-        texCoord2[1].y = (h - 1)       * texScaleH;
+        texCoord2[1].y = (h - 1) * texScaleH;
         // Top of the triangle is in the middle in y
-        texCoord2[2].x = (w - 1)       * texScaleW;
+        texCoord2[2].x = (w - 1) * texScaleW;
         texCoord2[2].y = (h + 1) / 2.f * texScaleH;
         texCoord2[0].x = 0.f;
         texCoord2[0].y = texCoord2[2].y;
@@ -411,7 +412,6 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
     // Erstes Offset merken
     unsigned first_offset = 0;
 
-
     // Rand links - rechts
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -423,7 +423,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
             first_offset = offset;
 
         gl_vertices[offset][i ? 0 : 2] = GetNodePos(pt);
-        gl_vertices[offset][1        ] = GetNeighbourPos(pt, 4);
+        gl_vertices[offset][1] = GetNeighbourPos(pt, 4);
         gl_vertices[offset][i ? 2 : 0] = GetBorderPos(pt, i);
 
         ++count_borders;
@@ -440,7 +440,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
             first_offset = offset;
 
         gl_vertices[offset][i ? 2 : 0] = GetNeighbourPos(pt, 4);
-        gl_vertices[offset][1        ] = GetNeighbourPos(pt, 3);
+        gl_vertices[offset][1] = GetNeighbourPos(pt, 3);
 
         if(i == 0)
             gl_vertices[offset][2] = GetBorderPos(pt, 1);
@@ -461,7 +461,7 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
             first_offset = offset;
 
         gl_vertices[offset][i ? 2 : 0] = GetNeighbourPos(pt, 5);
-        gl_vertices[offset][1        ] = GetNeighbourPos(pt, 4);
+        gl_vertices[offset][1] = GetNeighbourPos(pt, 4);
 
         if(i == 0)
             gl_vertices[offset][2] = GetBorderPos(pt, i);
@@ -474,7 +474,8 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
     if(updateVBO && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_vertices[first_offset]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle),
+                           &gl_vertices[first_offset]);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
@@ -489,7 +490,6 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
     // Erstes Offset merken
     unsigned first_offset = 0;
 
-
     // Rand links - rechts
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -500,9 +500,9 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
         if(!first_offset)
             first_offset = offset;
 
-        gl_colors[offset][i ? 0 : 2].r = gl_colors[offset][i ? 0 : 2].g = gl_colors[offset][i ? 0 : 2].b = GetColor(pt); //-V807
-        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST)); //-V807
-        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetBorderColor(pt, i); //-V807
+        gl_colors[offset][i ? 0 : 2].r = gl_colors[offset][i ? 0 : 2].g = gl_colors[offset][i ? 0 : 2].b = GetColor(pt);             //-V807
+        gl_colors[offset][1].r = gl_colors[offset][1].g = gl_colors[offset][1].b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST)); //-V807
+        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetBorderColor(pt, i);    //-V807
 
         ++count_borders;
     }
@@ -517,8 +517,9 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
         if(!first_offset)
             first_offset = offset;
 
-        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
-        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(GetNeighbour(pt, Direction::EAST));
+        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b =
+          GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
+        gl_colors[offset][1].r = gl_colors[offset][1].g = gl_colors[offset][1].b = GetColor(GetNeighbour(pt, Direction::EAST));
         MapPoint pt2(pt.x + i, pt.y);
         if(pt2.x >= size_.x)
             pt2.x -= size_.x;
@@ -537,13 +538,15 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
         if(!first_offset)
             first_offset = offset;
 
-        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b = GetColor(GetNeighbour(pt, Direction::SOUTHWEST));
-        gl_colors[offset][1        ].r = gl_colors[offset][1        ].g = gl_colors[offset][1        ].b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
+        gl_colors[offset][i ? 2 : 0].r = gl_colors[offset][i ? 2 : 0].g = gl_colors[offset][i ? 2 : 0].b =
+          GetColor(GetNeighbour(pt, Direction::SOUTHWEST));
+        gl_colors[offset][1].r = gl_colors[offset][1].g = gl_colors[offset][1].b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
 
         if(i == 0)
             gl_colors[offset][2].r = gl_colors[offset][2].g = gl_colors[offset][2].b = GetBorderColor(pt, i); //-V807
         else
-            gl_colors[offset][0].r = gl_colors[offset][0].g = gl_colors[offset][0].b = GetBorderColor(GetNeighbour(pt, Direction::SOUTHWEST), i); //-V807
+            gl_colors[offset][0].r = gl_colors[offset][0].g = gl_colors[offset][0].b =
+              GetBorderColor(GetNeighbour(pt, Direction::SOUTHWEST), i); //-V807
 
         ++count_borders;
     }
@@ -551,7 +554,8 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
     if(updateVBO && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(ColorTriangle), count_borders * sizeof(ColorTriangle), &gl_colors[first_offset]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(ColorTriangle), count_borders * sizeof(ColorTriangle),
+                           &gl_colors[first_offset]);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
@@ -566,7 +570,6 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
     // Erstes Offset merken
     unsigned first_offset = 0;
 
-
     // Rand links - rechts
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -578,7 +581,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
                 first_offset = offset;
 
             gl_texcoords[offset][i ? 0 : 2] = PointF(0.0f, 0.0f);
-            gl_texcoords[offset][1        ] = PointF(1.0f, 0.0f);
+            gl_texcoords[offset][1] = PointF(1.0f, 0.0f);
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.5f, 1.0f);
 
             ++count_borders;
@@ -596,7 +599,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
                 first_offset = offset;
 
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.0f, 0.0f);
-            gl_texcoords[offset][1        ] = PointF(1.0f, 0.0f);
+            gl_texcoords[offset][1] = PointF(1.0f, 0.0f);
             gl_texcoords[offset][i ? 0 : 2] = PointF(0.5f, 1.0f);
 
             ++count_borders;
@@ -614,7 +617,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
                 first_offset = offset;
 
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.0f, 0.0f);
-            gl_texcoords[offset][1        ] = PointF(1.0f, 0.0f);
+            gl_texcoords[offset][1] = PointF(1.0f, 0.0f);
             gl_texcoords[offset][i ? 0 : 2] = PointF(0.5f, 1.0f);
 
             ++count_borders;
@@ -624,7 +627,8 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
     if(updateVBO && vboBuffersUsed)
     {
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_texcoords[first_offset]);
+        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle),
+                           &gl_texcoords[first_offset]);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
 }
@@ -638,17 +642,17 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     RTTR_Assert(!borders.empty());
 
     // nach Texture in Listen sortieren
-    boost::array< std::vector<MapTile>, TT_COUNT> sorted_textures;
-    boost::array< std::vector<BorderTile>, 5> sorted_borders;
+    boost::array<std::vector<MapTile>, TT_COUNT> sorted_textures;
+    boost::array<std::vector<BorderTile>, 5> sorted_borders;
     PreparedRoads sorted_roads;
 
     Point<int> lastOffset(0, 0);
- 
+
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
     for(int y = firstPt.y; y <= lastPt.y; ++y)
     {
         unsigned char lastTerrain = 255;
-        unsigned char lastBorder  = 255;
+        unsigned char lastBorder = 255;
 
         for(int x = firstPt.x; x <= lastPt.x; ++x)
         {
@@ -681,26 +685,13 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
             lastTerrain = t;
 
             const Borders& curBorders = borders[GetVertexIdx(tP)];
-            boost::array<unsigned char, 6> tiles =
-            {{
-                curBorders.left_right[0],
-                curBorders.left_right[1],
-                curBorders.right_left[0],
-                curBorders.right_left[1],
-                curBorders.top_down[0],
-                curBorders.top_down[1]
-            }};
+            boost::array<unsigned char, 6> tiles = {{curBorders.left_right[0], curBorders.left_right[1], curBorders.right_left[0],
+                                                     curBorders.right_left[1], curBorders.top_down[0], curBorders.top_down[1]}};
 
             // Offsets into gl_* arrays
-            boost::array<unsigned, 6> offsets = 
-            {{
-                curBorders.left_right_offset[0],
-                curBorders.left_right_offset[1],
-                curBorders.right_left_offset[0],
-                curBorders.right_left_offset[1],
-                curBorders.top_down_offset[0],
-                curBorders.top_down_offset[1]
-            }};
+            boost::array<unsigned, 6> offsets = {{curBorders.left_right_offset[0], curBorders.left_right_offset[1],
+                                                  curBorders.right_left_offset[0], curBorders.right_left_offset[1],
+                                                  curBorders.top_down_offset[0], curBorders.top_down_offset[1]}};
 
             for(unsigned char i = 0; i < 6; ++i)
             {
@@ -727,11 +718,12 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
         }
     }
 
-    if (water)
+    if(water)
     {
         unsigned water_count = 0;
 
-        for(unsigned char t = 0; t < TT_COUNT; ++t){
+        for(unsigned char t = 0; t < TT_COUNT; ++t)
+        {
             if(!TerrainData::IsWater(TerrainType(t)))
                 continue;
             for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
@@ -741,8 +733,8 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
         }
 
         PointI diff = lastPt - firstPt;
-        if( diff.x && diff.y )
-            *water = 50 * water_count / ( diff.x * diff.y );
+        if(diff.x && diff.y)
+            *water = 50 * water_count / (diff.x * diff.y);
         else
             *water = 0;
     }
@@ -762,8 +754,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
         glColorPointer(3, GL_FLOAT, 0, 0);
-    }
-    else
+    } else
     {
         glVertexPointer(2, GL_FLOAT, 0, &gl_vertices.front());
         glTexCoordPointer(2, GL_FLOAT, 0, &gl_texcoords.front());
@@ -798,7 +789,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
             if(it->posOffset != lastOffset)
             {
                 PointI trans = it->posOffset - lastOffset;
-                glTranslatef( float(trans.x), float(trans.y), 0.0f);
+                glTranslatef(float(trans.x), float(trans.y), 0.0f);
                 lastOffset = it->posOffset;
             }
 
@@ -823,7 +814,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
             if(it->posOffset != lastOffset)
             {
                 PointI trans = it->posOffset - lastOffset;
-                glTranslatef( float(trans.x), float(trans.y), 0.0f);
+                glTranslatef(float(trans.x), float(trans.y), 0.0f);
                 lastOffset = it->posOffset;
             }
             RTTR_Assert(it->tileOffset + it->count <= gl_vertices.size());
@@ -862,7 +853,7 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, PointI* offset) const
         offset->x *= (TR_W * size_.x);
         offset->y *= (TR_H * size_.y);
     }
-    MapPoint ptOut =  MakeMapPoint(pt, size_);
+    MapPoint ptOut = MakeMapPoint(pt, size_);
     RTTR_Assert(ptOut.x < size_.x);
     RTTR_Assert(ptOut.y < size_.y);
     RTTR_Assert(!offset || pt.x - ptOut.x == offset->x / TR_W);
@@ -870,20 +861,21 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, PointI* offset) const
     return ptOut;
 }
 
-void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt, const PointI& offset) const
+void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
+                                       const PointI& offset) const
 {
     PointI startPos = PointI(GetNodePos(pt)) + offset;
 
     Visibility visibility = gwViewer.GetVisibility(pt);
 
-	int totalWidth  = size_.x  * TR_W;
-	int totalHeight = size_.y * TR_H;
+    int totalWidth = size_.x * TR_W;
+    int totalHeight = size_.y * TR_H;
 
     // Wegtypen für die drei Richtungen
     for(unsigned dir = 0; dir < 3; ++dir)
     {
         unsigned char type = gwViewer.GetVisibleRoad(pt, dir, visibility);
-        if (!type)
+        if(!type)
             continue;
         Direction targetDir = Direction::fromInt(3 + dir);
         MapPoint ta = gwViewer.GetNeighbour(pt, targetDir);
@@ -926,14 +918,10 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
 
                 break;
             }
-            case RoadSegment::RT_BOAT:
-                type = 2;
-                break;
+            case RoadSegment::RT_BOAT: type = 2; break;
         }
 
-        sorted_roads[type].push_back(
-            PreparedRoad(type, startPos, endPos, GetColor(pt), GetColor(ta), dir)
-        );
+        sorted_roads[type].push_back(PreparedRoad(type, startPos, endPos, GetColor(pt), GetColor(ta), dir));
     }
 }
 
@@ -947,23 +935,11 @@ struct Tex2C3Ver2
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 {
     // 2D Array: [3][4]
-    static const boost::array<PointI, 12> begin_end_coords =
-    {{
-        PointI(-3, -3),
-        PointI(-3,  3),
-        PointI(-3,  3),
-        PointI(-3, -3),
+    static const boost::array<PointI, 12> begin_end_coords = {{PointI(-3, -3), PointI(-3, 3), PointI(-3, 3), PointI(-3, -3),
 
-        PointI( 3, -3),
-        PointI(-3,  3),
-        PointI(-3,  3),
-        PointI( 3, -3),
+                                                               PointI(3, -3), PointI(-3, 3), PointI(-3, 3), PointI(3, -3),
 
-        PointI( 3,  3),
-        PointI(-3, -3),
-        PointI(-3, -3),
-        PointI( 3,  3)
-    }};
+                                                               PointI(3, 3), PointI(-3, -3), PointI(-3, -3), PointI(3, 3)}};
 
     size_t maxSize = 0;
     for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad)
@@ -982,11 +958,11 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     glColorPointer(3, GL_FLOAT, sizeof(Tex2C3Ver2), &vertexData[0].r);
 
     int type = 0;
-    for (PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
+    for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
         Tex2C3Ver2* curVertexData = vertexData.get();
 
-        for (std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
+        for(std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
         {
             RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
             curVertexData->tx = 0.0f;
@@ -1057,12 +1033,10 @@ void TerrainRenderer::AltitudeChanged(const MapPoint pt, const GameWorldViewer& 
         UpdateTriangleColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), true);
     }
 
-
     // Auch im zweiten Kreis drumherum die Dreiecke neu berechnen, da die durch die Schattenänderung der umliegenden
     // Punkte auch geändert werden könnten
     for(unsigned i = 0; i < 12; ++i)
         UpdateTriangleColor(gwv.GetWorld().GetNeighbour2(pt, i), true);
-
 
     // und für die Ränder
     UpdateBorderTrianglePos(pt, true);
@@ -1103,7 +1077,6 @@ void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer
     for(unsigned i = 0; i < 6; ++i)
         UpdateBorderTriangleColor(gwv.GetNeighbour(pt, Direction::fromInt(i)), true);
 }
-
 
 void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 {

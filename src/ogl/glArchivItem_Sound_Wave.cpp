@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Wave.h"
 
-#include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
+#include "drivers/AudioDriverWrapper.h"
 
 /**
  *  Spielt den Sound ab.
@@ -29,7 +29,7 @@
  */
 unsigned glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
 {
-    if(!SETTINGS.sound.effekte/* || !VIDEODRIVER.audiodriver*/)
+    if(!SETTINGS.sound.effekte /* || !VIDEODRIVER.audiodriver*/)
         return 0xFFFFFFFF;
 
     if(!sound)

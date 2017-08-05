@@ -18,25 +18,25 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwAddons.h"
 
-#include "addons/Addon.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "addons/Addon.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlScrollBar.h"
-#include "gameData/const_gui_ids.h"
 #include "helpers/containerUtils.h"
+#include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy, const std::vector<AddonId>& addonIds)
-    : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"), LOADER.GetImageN("resource", 41),
-        true, false, parent),
-    ggs(ggs), policy(policy), addonIds(addonIds)
+    : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"), LOADER.GetImageN("resource", 41), true,
+                   false, parent),
+      ggs(ggs), policy(policy), addonIds(addonIds)
 {
     AddText(0, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, 0, NormalFont);
 
     Extent btSize(200, 22);
     if(policy != READONLY)
-        AddTextButton(1,  DrawPoint(20, GetSize().y - 40), btSize, TC_GREY, _("Apply Changes"), NormalFont);
+        AddTextButton(1, DrawPoint(20, GetSize().y - 40), btSize, TC_GREY, _("Apply Changes"), NormalFont);
 
     AddTextButton(2, DrawPoint(250, GetSize().y - 40), btSize, TC_RED1, _("Close Without Saving"), NormalFont);
 
@@ -57,7 +57,9 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy,
     // "Sonstiges"
     optiongroup->AddTextButton(ADDONGROUP_OTHER, DrawPoint(560, 50), btSize, TC_GREEN2, _("Other"), NormalFont);
 
-    ctrlScrollBar* scrollbar = AddScrollBar(6, DrawPoint(GetSize().x - SCROLLBAR_WIDTH - 20, 90), Extent(SCROLLBAR_WIDTH, GetSize().y - 140), SCROLLBAR_WIDTH, TC_GREEN2, (GetSize().y - 140) / 30 - 1);
+    ctrlScrollBar* scrollbar =
+      AddScrollBar(6, DrawPoint(GetSize().x - SCROLLBAR_WIDTH - 20, 90), Extent(SCROLLBAR_WIDTH, GetSize().y - 140), SCROLLBAR_WIDTH,
+                   TC_GREEN2, (GetSize().y - 140) / 30 - 1);
     scrollbar->SetRange(ggs.getNumAddons());
 
     optiongroup->SetSelection(ADDONGROUP_ALL, true);
@@ -71,8 +73,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        default:
-            break;
+        default: break;
 
         case 1: // Apply changes
         {
@@ -96,26 +97,27 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 
             switch(policy)
             {
-                default:
-                    break;
-                case SETDEFAULTS:
-                {
-                    ggs.SaveSettings();
-                } break;
+                default: break;
+                case SETDEFAULTS: { ggs.SaveSettings();
+                }
+                break;
                 case HOSTGAME:
                 case HOSTGAME_WHITELIST:
                 {
                     // send message via msgboxresult
                     GetParent()->Msg_MsgBoxResult(GetID(), MSR_YES);
-                } break;
+                }
+                break;
             }
             Close();
-        } break;
+        }
+        break;
 
         case 2: // Discard changes
         {
             Close();
-        } break;
+        }
+        break;
 
         case 3: // Load S2 Defaults
         {
@@ -132,7 +134,8 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 
                 addon->setGuiStatus(this, 10 + 20 * (ggs.getNumAddons() - i - 1), addon->getDefaultStatus());
             }
-        } break;
+        }
+        break;
     }
 }
 
@@ -152,11 +155,11 @@ void iwAddons::UpdateView(const unsigned short selection)
             continue;
         unsigned groups = addon->getGroups();
 
-        if( (groups & selection) == selection)
+        if((groups & selection) == selection)
             ++numAddonsInCurCategory;
-        //hide addon's gui if addon is beyond selected group or is beyond current page scope
-        if( ((groups & selection) != selection) || numAddonsInCurCategory < scrollbar->GetScrollPos() + 1
-                || numAddonsInCurCategory > (unsigned)(scrollbar->GetScrollPos() + scrollbar->GetPageSize()) + 1 )
+        // hide addon's gui if addon is beyond selected group or is beyond current page scope
+        if(((groups & selection) != selection) || numAddonsInCurCategory < scrollbar->GetScrollPos() + 1
+           || numAddonsInCurCategory > (unsigned)(scrollbar->GetScrollPos() + scrollbar->GetPageSize()) + 1)
         {
             addon->hideGui(this, id);
             continue;
@@ -181,28 +184,28 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection
             ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
             scrollbar->SetScrollPos(0);
             UpdateView(selection);
-
-        } break;
+        }
+        break;
     }
 }
 
 /**
  *  get scrollbar notification
  */
-void iwAddons::Msg_ScrollChange(const unsigned  /*ctrl_id*/, const unsigned short  /*position*/)
+void iwAddons::Msg_ScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     ctrlOptionGroup* optiongroup = GetCtrl<ctrlOptionGroup>(5);
     UpdateView(optiongroup->GetSelection());
 }
 
-bool iwAddons::Msg_WheelUp(const MouseCoords&  /*mc*/)
+bool iwAddons::Msg_WheelUp(const MouseCoords& /*mc*/)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
     scrollbar->Scroll(-2);
     return true;
 }
 
-bool iwAddons::Msg_WheelDown(const MouseCoords&  /*mc*/)
+bool iwAddons::Msg_WheelDown(const MouseCoords& /*mc*/)
 {
     ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(6);
     scrollbar->Scroll(+2);

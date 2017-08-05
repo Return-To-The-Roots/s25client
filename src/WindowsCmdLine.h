@@ -36,9 +36,10 @@ public:
 #endif // _WIN32
 
     char** getArgv();
+
 private:
     void init(int argc, wchar_t** argv);
-    std::vector< std::vector<char> > arguments_;
+    std::vector<std::vector<char> > arguments_;
     std::vector<char*> argv_;
 };
 

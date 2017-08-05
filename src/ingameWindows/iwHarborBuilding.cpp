@@ -18,15 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwHarborBuilding.h"
 
+#include "GameClient.h"
 #include "Loader.h"
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
-#include "GameClient.h"
 #include "controls/ctrlImageButton.h"
 #include "ogl/glArchivItem_Font.h"
 
-iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
-    : iwHQ(gwv, gcFactory, hb)
+iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb) : iwHQ(gwv, gcFactory, hb)
 {
     SetTitle(_("Harbor building"));
 
@@ -45,7 +44,8 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176), _("Start exporation expedition"));
+    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176),
+                               _("Start exporation expedition"));
     AdjustExplorationExpeditionButton(false);
 }
 
@@ -65,12 +65,11 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
-    if( (flip || exp) && !(flip && exp))
+    if((flip || exp) && !(flip && exp))
     {
         button->SetModulationColor(COLOR_WHITE);
         button->SetTooltip(_("Cancel expedition"));
-    }
-    else
+    } else
     {
         button->SetModulationColor(COLOR_RED);
         button->SetTooltip(_("Start expedition"));
@@ -93,12 +92,11 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
-    if( (flip || exp) && !(flip && exp))
+    if((flip || exp) && !(flip && exp))
     {
         button->SetModulationColor(COLOR_WHITE);
         button->SetTooltip(_("Cancel expedition"));
-    }
-    else
+    } else
     {
         button->SetModulationColor(COLOR_RED);
         button->SetTooltip(_("Start expedition"));
@@ -127,4 +125,3 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsi
     // an Basis weiterleiten
     iwHQ::Msg_Group_ButtonClick(group_id, ctrl_id);
 }
-

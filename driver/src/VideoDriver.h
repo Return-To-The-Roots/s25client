@@ -19,44 +19,44 @@
 
 #pragma once
 
-#include "VideoInterface.h"
 #include "MouseCoords.h"
+#include "VideoInterface.h"
 #include <boost/array.hpp>
 
 class VideoDriverLoaderInterface;
 
 /// Basisklasse für einen Videotreiber.
-class VideoDriver: public IVideoDriver
+class VideoDriver : public IVideoDriver
 {
-    public:
-        VideoDriver(VideoDriverLoaderInterface* CallBack);
+public:
+    VideoDriver(VideoDriverLoaderInterface* CallBack);
 
-        ~VideoDriver() override{}
+    ~VideoDriver() override {}
 
-        /// Funktion zum Auslesen der Mauskoordinaten.
-        void GetMousePos(int& x, int& y) const override;
+    /// Funktion zum Auslesen der Mauskoordinaten.
+    void GetMousePos(int& x, int& y) const override;
 
-        /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
-        bool GetMouseStateL() const override;
+    /// Funktion zum Auslesen ob die Linke Maustaste gedrückt ist.
+    bool GetMouseStateL() const override;
 
-        /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
-        bool GetMouseStateR() const override;
+    /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
+    bool GetMouseStateR() const override;
 
-        unsigned short GetScreenWidth()  const override { return screenWidth;  }
-        unsigned short GetScreenHeight() const override { return screenHeight; }
-        bool IsFullscreen() const override { return isFullscreen_; }
+    unsigned short GetScreenWidth() const override { return screenWidth; }
+    unsigned short GetScreenHeight() const override { return screenHeight; }
+    bool IsFullscreen() const override { return isFullscreen_; }
 
-        /// prüft auf Initialisierung.
-        bool IsInitialized() override { return initialized; }
-        bool IsOpenGL() override { return true; }
+    /// prüft auf Initialisierung.
+    bool IsInitialized() override { return initialized; }
+    bool IsOpenGL() override { return true; }
 
-    protected:
-        VideoDriverLoaderInterface* CallBack;  /// Das DriverCallback für Rückmeldungen.
-        bool initialized;            /// Initialisierungsstatus.
-        MouseCoords mouse_xy;        /// Status der Maus.
-        boost::array<bool, 512> keyboard; /// Status der Tastatur;
-        unsigned short screenWidth;  /// aktuelle Bildschirm-/Fensterbreite
-        unsigned short screenHeight; /// aktuelle Bildschirm-/Fensterhöhe
-        bool isFullscreen_;             /// Vollbild an/aus?
+protected:
+    VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
+    bool initialized;                     /// Initialisierungsstatus.
+    MouseCoords mouse_xy;                 /// Status der Maus.
+    boost::array<bool, 512> keyboard;     /// Status der Tastatur;
+    unsigned short screenWidth;           /// aktuelle Bildschirm-/Fensterbreite
+    unsigned short screenHeight;          /// aktuelle Bildschirm-/Fensterhöhe
+    bool isFullscreen_;                   /// Vollbild an/aus?
 };
 #endif // !VIDEODRIVER_H_INCLUDED

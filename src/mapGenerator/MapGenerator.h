@@ -26,8 +26,7 @@
  */
 class MapGenerator
 {
-    public:
-
+public:
     /**
      * Create and saves a new map.
      * @param filePath path for the output file

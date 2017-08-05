@@ -18,8 +18,8 @@
 #ifndef ExpeditionNote_h__
 #define ExpeditionNote_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
+#include "gameTypes/MapCoordinates.h"
 
 struct ExpeditionNote
 {
@@ -31,8 +31,7 @@ struct ExpeditionNote
         ColonyFounded
     };
 
-    ExpeditionNote(Type type, unsigned player, const MapPoint& pos):
-        type(type), player(player), pos(pos){}
+    ExpeditionNote(Type type, unsigned player, const MapPoint& pos) : type(type), player(player), pos(pos) {}
 
     const Type type;
     const unsigned player;

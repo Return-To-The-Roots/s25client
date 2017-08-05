@@ -17,8 +17,8 @@
 #ifndef TERRAIN_RENDERER_H_
 #define TERRAIN_RENDERER_H_
 
-#include "gameTypes/MapCoordinates.h"
 #include "Point.h"
+#include "gameTypes/MapCoordinates.h"
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp>
 #include <vector>
@@ -27,7 +27,7 @@ struct Direction;
 class GameWorldViewer;
 
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
-class TerrainRenderer: private boost::noncopyable
+class TerrainRenderer : private boost::noncopyable
 {
 public:
     typedef Point<float> PointF;
@@ -61,13 +61,12 @@ public:
     void UpdateAllColors(const GameWorldViewer& gwv);
 
 private:
-
     struct MapTile
     {
         unsigned tileOffset;
         unsigned count;
         PointI posOffset;
-        MapTile(unsigned tileOffset, PointI posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
+        MapTile(unsigned tileOffset, PointI posOffset) : tileOffset(tileOffset), count(1), posOffset(posOffset) {}
     };
 
     struct BorderTile
@@ -75,7 +74,7 @@ private:
         unsigned tileOffset;
         unsigned count;
         PointI posOffset;
-        BorderTile(unsigned tileOffset, PointI posOffset): tileOffset(tileOffset), count(1), posOffset(posOffset){}
+        BorderTile(unsigned tileOffset, PointI posOffset) : tileOffset(tileOffset), count(1), posOffset(posOffset) {}
     };
 
     struct PreparedRoad
@@ -85,9 +84,12 @@ private:
         float color1, color2;
         unsigned char dir;
 
-        PreparedRoad(unsigned char type, PointI pos, PointI pos2, float color1, float color2, unsigned char dir): type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir) {}
+        PreparedRoad(unsigned char type, PointI pos, PointI pos2, float color1, float color2, unsigned char dir)
+            : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir)
+        {
+        }
 
-        bool operator<(const PreparedRoad& b) const { return(type < b.type); }
+        bool operator<(const PreparedRoad& b) const { return (type < b.type); }
     };
 
     struct Vertex
@@ -95,7 +97,7 @@ private:
         PointF pos; // Position vom jeweiligen Punkt
         float color;
         boost::array<PointF, 2> borderPos; // Mittelpunkt für Ränder
-        boost::array<float, 2>  borderColor;
+        boost::array<float, 2> borderColor;
     };
 
     struct Color
@@ -110,12 +112,12 @@ private:
 
     struct Borders
     {
-        boost::array<unsigned char, 2 > left_right;
-        boost::array<unsigned char, 2 > right_left;
-        boost::array<unsigned char, 2 > top_down;
-        boost::array<unsigned, 2 > left_right_offset;
-        boost::array<unsigned, 2 > right_left_offset;
-        boost::array<unsigned, 2 > top_down_offset;
+        boost::array<unsigned char, 2> left_right;
+        boost::array<unsigned char, 2> right_left;
+        boost::array<unsigned char, 2> top_down;
+        boost::array<unsigned, 2> left_right_offset;
+        boost::array<unsigned, 2> right_left_offset;
+        boost::array<unsigned, 2> top_down_offset;
     };
 
     /// Size of the map
@@ -139,7 +141,10 @@ private:
     typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
 
     /// Returns the index of a vertex. Used to access vertices and borders
-    unsigned GetVertexIdx(const MapPoint pt) const { return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x); }
+    unsigned GetVertexIdx(const MapPoint pt) const
+    {
+        return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x);
+    }
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
     unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node

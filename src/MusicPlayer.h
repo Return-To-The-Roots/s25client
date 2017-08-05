@@ -17,8 +17,8 @@
 #ifndef MUSICPLAYER_H_INCLUDED
 #define MUSICPLAYER_H_INCLUDED
 
-#include "libutil/src/Singleton.h"
 #include "libsiedler2/src/ArchivInfo.h"
+#include "libutil/src/Singleton.h"
 #include <string>
 #include <vector>
 
@@ -29,67 +29,67 @@ class iwMusicPlayer;
 /// Speichert die Daten über eine Playlist und verwaltet diese
 class Playlist
 {
-    public:
-        Playlist();
+public:
+    Playlist();
 
-        /// bereitet die Playlist aufs abspielen vor.
-        void Prepare();
+    /// bereitet die Playlist aufs abspielen vor.
+    void Prepare();
 
-        /// liefert den Dateinamen des aktuellen Songs
-        const std::string getCurrentSong() const    {   return (!songs.empty() && !order.empty() ? songs[order[0]] : "");   }
+    /// liefert den Dateinamen des aktuellen Songs
+    const std::string getCurrentSong() const { return (!songs.empty() && !order.empty() ? songs[order[0]] : ""); }
 
-        /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
-        const std::string getNextSong();
+    /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
+    const std::string getNextSong();
 
-        /// Playlist in Datei speichern
-        bool SaveAs(const std::string& filename, const bool overwrite);
-        /// Playlist laden
-        bool Load(const std::string& filename);
+    /// Playlist in Datei speichern
+    bool SaveAs(const std::string& filename, const bool overwrite);
+    /// Playlist laden
+    bool Load(const std::string& filename);
 
-        /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
-        void FillMusicPlayer(iwMusicPlayer* window) const;
-        /// Liest die Werte aus dem iwMusicPlayer-Fenster
-        void ReadMusicPlayer(const iwMusicPlayer* const window);
+    /// Füllt das iwMusicPlayer-Fenster mit den entsprechenden Werten
+    void FillMusicPlayer(iwMusicPlayer* window) const;
+    /// Liest die Werte aus dem iwMusicPlayer-Fenster
+    void ReadMusicPlayer(const iwMusicPlayer* const window);
 
-        /// Wählt den Start-Song aus
-        void SetStartSong(const unsigned id);
+    /// Wählt den Start-Song aus
+    void SetStartSong(const unsigned id);
 
-    protected:
-        unsigned current;
-        unsigned repeats;               /// Anzahl der Wiederholungen
-        bool random;                        /// Zufallswiedergabe?
-        std::vector<std::string> songs;     /// Dateinamen der abzuspielenden Titel
-        std::vector<unsigned> order;    /// Reihenfolge der Titel
+protected:
+    unsigned current;
+    unsigned repeats;               /// Anzahl der Wiederholungen
+    bool random;                    /// Zufallswiedergabe?
+    std::vector<std::string> songs; /// Dateinamen der abzuspielenden Titel
+    std::vector<unsigned> order;    /// Reihenfolge der Titel
 };
 
 /// Globaler Musikplayer bzw. eine abspielbare Playlist
 class MusicPlayer : public Singleton<MusicPlayer, SingletonPolicies::WithLongevity>
 {
-    public:
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 31; // After AudioDriverWrapper
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 31; // After AudioDriverWrapper
 
-        MusicPlayer();
+    MusicPlayer();
 
-        /// Startet Abspielvorgang
-        void Play();
-        /// Stoppt Abspielvorgang
-        void Stop();
+    /// Startet Abspielvorgang
+    void Play();
+    /// Stoppt Abspielvorgang
+    void Stop();
 
-        /// Playlist laden
-        bool Load(const std::string& filename) { return list.Load(filename); }
-        /// Musik wurde fertiggespielt (Callback)
-        void MusicFinished()    {   PlayNext(); }
-        /// liefert die Playlist.
-        Playlist& GetPlaylist() { return list;}
+    /// Playlist laden
+    bool Load(const std::string& filename) { return list.Load(filename); }
+    /// Musik wurde fertiggespielt (Callback)
+    void MusicFinished() { PlayNext(); }
+    /// liefert die Playlist.
+    Playlist& GetPlaylist() { return list; }
 
-    protected:
-        /// Spielt nächstes Stück ab
-        void PlayNext();
+protected:
+    /// Spielt nächstes Stück ab
+    void PlayNext();
 
-    private:
-        bool playing;                   /// Läuft die Musik gerade?
-        Playlist list;                  /// Unsere aktuell aktive Playlist
-        libsiedler2::ArchivInfo sng;    /// externes benutzerdefiniertes Musikstück (z.B. andere mp3)
+private:
+    bool playing;                /// Läuft die Musik gerade?
+    Playlist list;               /// Unsere aktuell aktive Playlist
+    libsiedler2::ArchivInfo sng; /// externes benutzerdefiniertes Musikstück (z.B. andere mp3)
 };
 
 #define MUSICPLAYER MusicPlayer::inst()

@@ -20,8 +20,8 @@
 #pragma once
 
 #include "KeyEvent.h"
-#include <vector>
 #include <string>
+#include <vector>
 
 /// Window size or resolution
 struct VideoMode
@@ -29,10 +29,10 @@ struct VideoMode
     unsigned short width;
     unsigned short height;
 
-    VideoMode(): width(0), height(0){}
-    VideoMode(unsigned short width, unsigned short height): width(width), height(height){}
+    VideoMode() : width(0), height(0) {}
+    VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
     bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
-    bool operator!=(const VideoMode& o) const { return !(*this==o); }
+    bool operator!=(const VideoMode& o) const { return !(*this == o); }
 };
 
 class IVideoDriver
@@ -81,7 +81,7 @@ public:
     /// Return true when right mouse button is pressed
     virtual bool GetMouseStateR() const = 0;
 
-    virtual unsigned short GetScreenWidth()  const = 0;
+    virtual unsigned short GetScreenWidth() const = 0;
     virtual unsigned short GetScreenHeight() const = 0;
     virtual bool IsFullscreen() const = 0;
 
@@ -102,13 +102,13 @@ class VideoDriverLoaderInterface;
 // Makros / Defines
 #undef DRIVERDLLAPI
 #ifdef _WIN32
-#   if defined _USRDLL || defined _LIB || defined BUILD_DLL
-#       define DRIVERDLLAPI extern "C" __declspec(dllexport)
-#   else
-#       define DRIVERDLLAPI extern "C" __declspec(dllimport)
-#   endif // !_USRDLL
+#if defined _USRDLL || defined _LIB || defined BUILD_DLL
+#define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else
-#   define DRIVERDLLAPI extern "C"
+#define DRIVERDLLAPI extern "C" __declspec(dllimport)
+#endif // !_USRDLL
+#else
+#define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
 /// Instanzierungsfunktion der Treiber.
@@ -118,6 +118,5 @@ DRIVERDLLAPI void FreeVideoInstance(IVideoDriver* driver);
 ///
 typedef IVideoDriver* (*PDRIVER_CREATEVIDEOINSTANCE)(VideoDriverLoaderInterface*);
 typedef void (*PDRIVER_FREEVIDEOINSTANCE)(IVideoDriver*);
-
 
 #endif // !VIDEOINTERFACE_H_INCLUDED

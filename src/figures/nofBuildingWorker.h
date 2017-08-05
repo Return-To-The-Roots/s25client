@@ -28,127 +28,133 @@ class SerializedGameData;
 /// Repräsentiert einen Arbeiter in einem Gebäude
 class nofBuildingWorker : public noFigure
 {
-    public:
+public:
+    /// Was der gerade so schönes macht
+    enum State
+    {
+        STATE_FIGUREWORK = 0,                       /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
+        STATE_ENTERBUILDING,                        /// Betreten des Gebäudes
+        STATE_WAITING1,                             /// Warten, bis man anfängt zu produzieren
+        STATE_WAITING2,                             /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
+        STATE_CARRYOUTWARE,                         /// Raustragen der Ware
+        STATE_WORK,                                 /// Arbeiten
+        STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED, /// Warten auf Waren oder weil Produktion eingetellt wurde
+        STATE_WALKTOWORKPOINT,                      /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
+        STATE_WALKINGHOME,                          /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
+        STATE_WAITFORWARESPACE,                     /// auf einen freien Platz an der Flagge vor dem Gebäude warten
+        STATE_HUNTER_CHASING,                       /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
+        STATE_HUNTER_FINDINGSHOOTINGPOINT,          /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
+        STATE_HUNTER_SHOOTING,                      /// Jäger: Tier erschießen
+        STATE_HUNTER_WALKINGTOCADAVER,              /// Jäger: Zum Kadaver laufen
+        STATE_HUNTER_EVISCERATING,                  /// Jäger: Tier ausnehmen
+        STATE_CATAPULT_TARGETBUILDING,              /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
+        STATE_CATAPULT_BACKOFF                      /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
 
-        /// Was der gerade so schönes macht
-        enum State
-        {
-            STATE_FIGUREWORK = 0, /// Arbeiten der noFigure (Laufen zum Arbeitsplatz, Rumirren usw)
-            STATE_ENTERBUILDING, /// Betreten des Gebäudes
-            STATE_WAITING1, /// Warten, bis man anfängt zu produzieren
-            STATE_WAITING2, /// Warten nach dem Produzieren, bis man Ware rausträgt (nur Handwerker)
-            STATE_CARRYOUTWARE, /// Raustragen der Ware
-            STATE_WORK, /// Arbeiten
-            STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED, /// Warten auf Waren oder weil Produktion eingetellt wurde
-            STATE_WALKTOWORKPOINT, /// Zum "Arbeitspunkt" laufen (nur Landarbeiter)
-            STATE_WALKINGHOME, /// vom Arbeitspunkt zurück nach Hause laufen (nur Landarbeiter)
-            STATE_WAITFORWARESPACE, /// auf einen freien Platz an der Flagge vor dem Gebäude warten
-            STATE_HUNTER_CHASING, /// Jäger: verfolgt das Tier bis auf eine gewisse Distanz
-            STATE_HUNTER_FINDINGSHOOTINGPOINT, /// Jäger: sucht einen Punkt rund um das Tier, von dem er es abschießen kann
-            STATE_HUNTER_SHOOTING, /// Jäger: Tier erschießen
-            STATE_HUNTER_WALKINGTOCADAVER, /// Jäger: Zum Kadaver laufen
-            STATE_HUNTER_EVISCERATING, /// Jäger: Tier ausnehmen
-            STATE_CATAPULT_TARGETBUILDING, /// Katapult: Dreht den Katapult oben auf das Ziel zu und schießt
-            STATE_CATAPULT_BACKOFF /// Katapult: beendet schießen und dreht Katapult in die Ausgangsstellung zurück
+    };
 
-        };
+protected:
+    State state;
 
-    protected:
+    /// Arbeitsplatz (Haus, in dem er arbeitet)
+    nobUsual* workplace;
 
-        State state;
+    // Ware, die er evtl gerade trägt
+    GoodType ware;
 
-        /// Arbeitsplatz (Haus, in dem er arbeitet)
-        nobUsual* workplace;
+    /// Wieviel er von den letzen 100gf NICHT gearbeitet hat (fürs Ausrechnen der Produktivität)
+    unsigned short not_working;
+    /// Seit welchem Zeitpunkt (in gf) er ggf. NICHT mehr arbeitet (0xFFFFFFFF = er arbeitet gerade)
+    unsigned since_not_working;
 
-        // Ware, die er evtl gerade trägt
-        GoodType ware;
+    /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gebeben (zu Optimeriungszwecken)
+    bool was_sounding;
 
-        /// Wieviel er von den letzen 100gf NICHT gearbeitet hat (fürs Ausrechnen der Produktivität)
-        unsigned short not_working;
-        /// Seit welchem Zeitpunkt (in gf) er ggf. NICHT mehr arbeitet (0xFFFFFFFF = er arbeitet gerade)
-        unsigned since_not_working;
+protected:
+    /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch nicht)
+    /// also fertig mit Arbeiten sind
+    void WorkingReady();
+    /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
+    void StartNotWorking();
+    /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
+    void StopNotWorking();
+    /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    void AbrogateWorkplace() override;
+    /// Tries to start working.
+    /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
+    void TryToWork();
+    /// Returns true, when there are enough wares available for working.
+    /// Note: On false, we will wait for the next ware or production change till checking again
+    virtual bool AreWaresAvailable();
+    /// Gets called right before we start working (actually pre-Work-Waiting) and can do final checking and handling
+    /// If false returned, work is not started and NO extra event is set for trying again. So handling must include retries
+    virtual bool ReadyForWork();
 
-        /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gebeben (zu Optimeriungszwecken)
-        bool was_sounding;
+private:
+    /// von noFigure aufgerufen
+    void Walked() override;      // wenn man gelaufen ist
+    void GoalReached() override; // wenn das Ziel erreicht wurde
 
-    protected:
+    /// Malt den Arbeiter beim Arbeiten
+    virtual void DrawWorking(DrawPoint drawPt) = 0;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    virtual unsigned short GetCarryID() const = 0;
+    /// Laufen an abgeleitete Klassen weiterleiten
+    virtual void WalkedDerived() = 0;
+    /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
+    virtual void WorkAborted();
+    /// Arbeitsplatz wurde erreicht
+    virtual void WorkplaceReached();
 
-        /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch nicht)
-        /// also fertig mit Arbeiten sind
-        void WorkingReady();
-        /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
-        void StartNotWorking();
-        /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
-        void StopNotWorking();
-        /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-        void AbrogateWorkplace() override;
-        /// Tries to start working. 
-        /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
-        void TryToWork();
-        /// Returns true, when there are enough wares available for working.
-        /// Note: On false, we will wait for the next ware or production change till checking again
-        virtual bool AreWaresAvailable();
-        /// Gets called right before we start working (actually pre-Work-Waiting) and can do final checking and handling
-        /// If false returned, work is not started and NO extra event is set for trying again. So handling must include retries
-        virtual bool ReadyForWork();
-    private:
+    /// Draws the figure while returning home / entering the building (often carrying wares)
+    virtual void DrawReturnStates(DrawPoint drawPt);
+    /// Zeichnen der Figur in sonstigen Arbeitslagen
+    virtual void DrawOtherStates(DrawPoint drawPt);
 
-        /// von noFigure aufgerufen
-        void Walked() override; // wenn man gelaufen ist
-        void GoalReached() override; // wenn das Ziel erreicht wurde
+protected:
+    /// nur für Bergarbeiter!
+    /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut eins ab
+    bool GetResources(unsigned char type);
 
-        /// Malt den Arbeiter beim Arbeiten
-        virtual void DrawWorking(DrawPoint drawPt) = 0;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        virtual unsigned short GetCarryID() const = 0;
-        /// Laufen an abgeleitete Klassen weiterleiten
-        virtual void WalkedDerived() = 0;
-        /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-        virtual void WorkAborted();
-        /// Arbeitsplatz wurde erreicht
-        virtual void WorkplaceReached();
+public:
+    State GetState() { return state; }
 
-        /// Draws the figure while returning home / entering the building (often carrying wares)
-        virtual void DrawReturnStates(DrawPoint drawPt);
-        /// Zeichnen der Figur in sonstigen Arbeitslagen
-        virtual void DrawOtherStates(DrawPoint drawPt);
+    nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
+    nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id);
 
-    protected:
-        /// nur für Bergarbeiter!
-        /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut eins ab
-        bool GetResources(unsigned char type);
+    /// Aufräummethoden
+protected:
+    void Destroy_nofBuildingWorker()
+    {
+        RTTR_Assert(!workplace);
+        Destroy_noFigure();
+    }
 
-    public:
-        State GetState() { return state; }
+public:
+    void Destroy() override { Destroy_nofBuildingWorker(); }
 
-        nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofBuildingWorker(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-        nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofBuildingWorker(SerializedGameData& sgd) const;
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofBuildingWorker() { RTTR_Assert(!workplace); Destroy_noFigure(); }
-    public:     void Destroy() override { Destroy_nofBuildingWorker(); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuildingWorker(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofBuildingWorker(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofBuildingWorker(sgd); }
+    void Draw(DrawPoint drawPt) override;
 
+    /// Wenn eine neue Ware kommt oder die Produktion wieder erlaubt wurde, wird das aufgerufen
+    void GotWareOrProductionAllowed();
+    /// Wenn wieder Platz an der Flagge ist und eine Ware wieder rausgetragen werden kann
+    bool FreePlaceAtFlag();
+    /// Wenn das Haus des Arbeiters abbrennt
+    void LostWork();
+    /// Rechnet die Produktivität aus (und setzt den Zähler zurück, setzt vorraus, dass das in 100 gf - Abständen aufgerufen wird !!!)
+    unsigned short CalcProductivity();
+    /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
+    void ProductionStopped();
 
-        void Draw(DrawPoint drawPt) override;
-
-        /// Wenn eine neue Ware kommt oder die Produktion wieder erlaubt wurde, wird das aufgerufen
-        void GotWareOrProductionAllowed();
-        /// Wenn wieder Platz an der Flagge ist und eine Ware wieder rausgetragen werden kann
-        bool FreePlaceAtFlag();
-        /// Wenn das Haus des Arbeiters abbrennt
-        void LostWork();
-        /// Rechnet die Produktivität aus (und setzt den Zähler zurück, setzt vorraus, dass das in 100 gf - Abständen aufgerufen wird !!!)
-        unsigned short CalcProductivity();
-        /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
-        void ProductionStopped();
-
-    protected:
-        bool outOfRessourcesMsgSent;
+protected:
+    bool outOfRessourcesMsgSent;
 };
 
 #endif

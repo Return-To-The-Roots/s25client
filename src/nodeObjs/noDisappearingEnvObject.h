@@ -24,31 +24,30 @@ class GameEvent;
 
 class noDisappearingEnvObject : public noCoordBase
 {
-    public:
-        noDisappearingEnvObject(const MapPoint pt, const unsigned living_time,
-                                const unsigned add_var_living_time);
-        noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    noDisappearingEnvObject(const MapPoint pt, const unsigned living_time, const unsigned add_var_living_time);
+    noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:     void Destroy() override;
-    public:     void Serialize(SerializedGameData& sgd) const override;
+public:
+    void Destroy() override;
 
-        /// Benachrichtigen, wenn neuer GF erreicht wurde.
-        void HandleEvent(const unsigned id) override;
+public:
+    void Serialize(SerializedGameData& sgd) const override;
 
-    protected:
+    /// Benachrichtigen, wenn neuer GF erreicht wurde.
+    void HandleEvent(const unsigned id) override;
 
-        /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
-        unsigned GetDrawColor() const;
-        /// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
-        unsigned GetDrawShadowColor() const;
+protected:
+    /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
+    unsigned GetDrawColor() const;
+    /// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
+    unsigned GetDrawShadowColor() const;
 
-    private:
-
-        /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)
-        bool disappearing;
-        /// Event, das bestimmt wie lange es noch lebt
-        GameEvent* dead_event;
+private:
+    /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)
+    bool disappearing;
+    /// Event, das bestimmt wie lange es noch lebt
+    GameEvent* dead_event;
 };
-
 
 #endif

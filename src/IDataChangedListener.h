@@ -22,11 +22,11 @@
 class IDataChangedListener
 {
 protected:
-    ~IDataChangedListener(){}
+    ~IDataChangedListener() {}
+
 public:
     /// Handles a change, changeId is the type of the change (object dependent)
     virtual void OnChange(unsigned changeId) = 0;
 };
-
 
 #endif // IDataChangedListener_h__

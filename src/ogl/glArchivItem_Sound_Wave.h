@@ -19,18 +19,21 @@
 
 #pragma once
 
-#include "libsiedler2/src/ArchivItem_Sound_Wave.h"
 #include "glArchivItem_Sound.h"
+#include "libsiedler2/src/ArchivItem_Sound_Wave.h"
 
 class glArchivItem_Sound_Wave : public libsiedler2::baseArchivItem_Sound_Wave, public glArchivItem_Sound
 {
-    public:
-        glArchivItem_Sound_Wave() : baseArchivItem_Sound(), baseArchivItem_Sound_Wave(), glArchivItem_Sound() {}
+public:
+    glArchivItem_Sound_Wave() : baseArchivItem_Sound(), baseArchivItem_Sound_Wave(), glArchivItem_Sound() {}
 
-        glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item) {}
+    glArchivItem_Sound_Wave(const glArchivItem_Sound_Wave& item)
+        : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item)
+    {
+    }
 
-        /// Spielt den Sound ab.
-        unsigned Play(const unsigned char volume, const bool loop) override;
+    /// Spielt den Sound ab.
+    unsigned Play(const unsigned char volume, const bool loop) override;
 };
 
 #endif // !GLARCHIVITEM_SOUND_WAVE_H_INCLUDED

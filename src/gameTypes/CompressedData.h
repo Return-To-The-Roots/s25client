@@ -24,8 +24,12 @@
 /// Holds compressed data
 struct CompressedData
 {
-    CompressedData(): length(0){}
-    void Clear(){ length = 0; data.clear(); }
+    CompressedData() : length(0) {}
+    void Clear()
+    {
+        length = 0;
+        data.clear();
+    }
     bool DecompressToFile(const std::string& filePath, unsigned* checksum = NULL);
     bool CompressFromFile(const std::string& filePath, unsigned* checksum = NULL);
 

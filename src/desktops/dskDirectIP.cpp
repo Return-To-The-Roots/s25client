@@ -18,14 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskDirectIP.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
 #include "Settings.h"
+#include "WindowManager.h"
 
 #include "dskMultiPlayer.h"
-#include "ingameWindows/iwMsgbox.h"
-#include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwDirectIPConnect.h"
+#include "ingameWindows/iwDirectIPCreate.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "libutil/src/colors.h"
 
 dskDirectIP::dskDirectIP()
@@ -41,7 +41,6 @@ dskDirectIP::dskDirectIP()
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
-
 void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
@@ -50,17 +49,22 @@ void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
         {
             // Hosten geht nur ohne aktiven Proxy
             if(SETTINGS.proxy.typ != 0)
-                WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+                WINDOWMANAGER.Show(new iwMsgbox(
+                  _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
+                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
             else
                 WINDOWMANAGER.Show(new iwDirectIPCreate(ServerType::DIRECT));
-        } break;
+        }
+        break;
         case 4: // "Verbinden"
         {
             WINDOWMANAGER.Show(new iwDirectIPConnect(ServerType::DIRECT));
-        } break;
+        }
+        break;
         case 5: // "Zurück"
         {
             WINDOWMANAGER.Switch(new dskMultiPlayer);
-        } break;
+        }
+        break;
     }
 }

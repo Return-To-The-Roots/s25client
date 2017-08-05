@@ -20,19 +20,19 @@
 #pragma once
 
 #include "desktops/dskMenuBase.h"
-#include "libutil/src/LANDiscoveryClient.h"
 #include "gameTypes/LanGameInfo.h"
+#include "libutil/src/LANDiscoveryClient.h"
 #include <vector>
 
-class dskLAN: public dskMenuBase
+class dskLAN : public dskMenuBase
 {
 public:
-    struct GameInfo {
+    struct GameInfo
+    {
         std::string ip;
         LanGameInfo info;
     };
     dskLAN();
-
 
 protected:
     void Msg_Timer(const unsigned ctrl_id) override;
@@ -41,8 +41,8 @@ protected:
     void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
     /**
-        * Connects to the currently selected game and returns true on success
-        */
+     * Connects to the currently selected game and returns true on success
+     */
     bool ConnectToSelectedGame();
 
 private:

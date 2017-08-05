@@ -30,4 +30,3 @@ static LANDiscoveryBase::Config makeDiscoveryConfig()
 }
 
 const LANDiscoveryBase::Config LAN_DISCOVERY_CFG = makeDiscoveryConfig();
-

@@ -18,17 +18,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofPigbreeder.h"
 
-#include "Loader.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
-#include "EventManager.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Sound.h"
 #include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
 
 nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_PIGBREEDER, pos, player, workplace)
@@ -41,8 +41,8 @@ nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : n
 
 void nofPigbreeder::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = { {10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2} };
-    const DrawPointInit walkstart[NAT_COUNT] = { { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6}, { -6, -6} };
+    const DrawPointInit offsets[NAT_COUNT] = {{10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2}};
+    const DrawPointInit walkstart[NAT_COUNT] = {{-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}};
 
     unsigned max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);
@@ -52,16 +52,15 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 16)
     {
-        if (now_id < 8)
+        if(now_id < 8)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->DrawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos = drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
 
         LOADER.bob_jobs_cache[wpNation][JOB_PIGBREEDER][4][now_id % 8].draw(walkPos, COLOR_WHITE, plColor);
-    }else if(now_id < 40)
+    } else if(now_id < 40)
     {
-        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
-        ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         // Evtl Sound abspielen
         if((now_id - 16) == 10)
@@ -69,7 +68,7 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
             SOUNDMANAGER.PlayNOSound(65, this, 0);
             was_sounding = true;
         }
-    }else if(now_id < 56)
+    } else if(now_id < 56)
     {
         if(now_id > 46)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_PIGFARM + 4)->DrawFull(drawPt);

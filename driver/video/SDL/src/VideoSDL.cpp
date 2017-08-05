@@ -18,7 +18,7 @@
 #include "driverDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
 #ifndef RTTR_Assert
-#   define RTTR_Assert assert
+#define RTTR_Assert assert
 #endif
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
@@ -75,7 +75,8 @@ DRIVERDLLAPI const char* GetDriverName()
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
 VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
-{}
+{
+}
 
 VideoSDL::~VideoSDL()
 {
@@ -99,7 +100,7 @@ const char* VideoSDL::GetName() const
  */
 bool VideoSDL::Initialize()
 {
-    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) < 0 )
+    if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         initialized = false;
@@ -148,7 +149,6 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
 
     // TODO: Icon setzen
 
-
     // GL-Attribute setzen
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -164,7 +164,8 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
 #endif
 
     // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    if(!(screen = SDL_SetVideoMode(width, height, 32,
+                                   SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         return false;
@@ -178,7 +179,7 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
 
     std::fill(keyboard.begin(), keyboard.end(), false);
 
-    this->screenWidth  = width;
+    this->screenWidth = width;
     this->screenHeight = height;
 
     SDL_ShowCursor(SDL_DISABLE);
@@ -202,7 +203,7 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
     if(!initialized)
         return false;
 
-    this->screenWidth  = width;
+    this->screenWidth = width;
     this->screenHeight = height;
 
 #ifdef _WIN32
@@ -213,7 +214,8 @@ bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const b
 #endif
 
     // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    if(!(screen = SDL_SetVideoMode(width, height, 32,
+                                   SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         return false;
@@ -260,11 +262,9 @@ bool VideoSDL::MessageLoop()
     {
         switch(ev.type)
         {
-            default:
-                break;
+            default: break;
 
-            case SDL_QUIT:
-                return false;
+            case SDL_QUIT: return false;
 
             case SDL_ACTIVEEVENT:
                 if((ev.active.state & SDL_APPACTIVE) && ev.active.gain)
@@ -279,11 +279,12 @@ bool VideoSDL::MessageLoop()
             {
                 ResizeScreen(ev.resize.w, ev.resize.h, isFullscreen_);
                 CallBack->ScreenResized(screenWidth, screenHeight);
-            } break;
+            }
+            break;
 
             case SDL_KEYDOWN:
             {
-                KeyEvent ke = { KT_INVALID, 0, false, false, false };
+                KeyEvent ke = {KT_INVALID, 0, false, false, false};
 
                 switch(ev.key.keysym.sym)
                 {
@@ -292,28 +293,32 @@ bool VideoSDL::MessageLoop()
                         // Die 12 F-Tasten
                         if(ev.key.keysym.sym >= SDLK_F1 && ev.key.keysym.sym <= SDLK_F12)
                             ke.kt = static_cast<KeyType>(KT_F1 + ev.key.keysym.sym - SDLK_F1);
-                    } break;
-                    case SDLK_RETURN:    ke.kt = KT_RETURN; break;
-                    case SDLK_SPACE:     ke.kt = KT_SPACE; break;
-                    case SDLK_LEFT:      ke.kt = KT_LEFT; break;
-                    case SDLK_RIGHT:     ke.kt = KT_RIGHT; break;
-                    case SDLK_UP:        ke.kt = KT_UP; break;
-                    case SDLK_DOWN:      ke.kt = KT_DOWN; break;
+                    }
+                    break;
+                    case SDLK_RETURN: ke.kt = KT_RETURN; break;
+                    case SDLK_SPACE: ke.kt = KT_SPACE; break;
+                    case SDLK_LEFT: ke.kt = KT_LEFT; break;
+                    case SDLK_RIGHT: ke.kt = KT_RIGHT; break;
+                    case SDLK_UP: ke.kt = KT_UP; break;
+                    case SDLK_DOWN: ke.kt = KT_DOWN; break;
                     case SDLK_BACKSPACE: ke.kt = KT_BACKSPACE; break;
-                    case SDLK_DELETE:    ke.kt = KT_DELETE; break;
-                    case SDLK_LSHIFT:    ke.kt = KT_SHIFT; break;
-                    case SDLK_RSHIFT:    ke.kt = KT_SHIFT; break;
-                    case SDLK_TAB:       ke.kt = KT_TAB; break;
-                    case SDLK_HOME:      ke.kt = KT_HOME; break;
-                    case SDLK_END:       ke.kt = KT_END; break;
-                    case SDLK_ESCAPE:    ke.kt = KT_ESCAPE; break;
+                    case SDLK_DELETE: ke.kt = KT_DELETE; break;
+                    case SDLK_LSHIFT: ke.kt = KT_SHIFT; break;
+                    case SDLK_RSHIFT: ke.kt = KT_SHIFT; break;
+                    case SDLK_TAB: ke.kt = KT_TAB; break;
+                    case SDLK_HOME: ke.kt = KT_HOME; break;
+                    case SDLK_END: ke.kt = KT_END; break;
+                    case SDLK_ESCAPE: ke.kt = KT_ESCAPE; break;
                     case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
                 }
 
                 /// Strg, Alt, usw gedrückt?
-                if(ev.key.keysym.mod & KMOD_CTRL) ke.ctrl = true;
-                if(ev.key.keysym.mod & KMOD_SHIFT) ke.shift = true;
-                if(ev.key.keysym.mod & KMOD_ALT) ke.alt = true;
+                if(ev.key.keysym.mod & KMOD_CTRL)
+                    ke.ctrl = true;
+                if(ev.key.keysym.mod & KMOD_SHIFT)
+                    ke.shift = true;
+                if(ev.key.keysym.mod & KMOD_ALT)
+                    ke.alt = true;
 
                 if(ke.kt == KT_INVALID)
                 {
@@ -322,13 +327,14 @@ bool VideoSDL::MessageLoop()
                 }
 
                 CallBack->Msg_KeyDown(ke);
-            } break;
+            }
+            break;
             case SDL_MOUSEBUTTONDOWN:
             {
                 mouse_xy.x = ev.button.x;
                 mouse_xy.y = ev.button.y;
 
-                if(/*!mouse_xy.ldown && */ev.button.button == SDL_BUTTON_LEFT)
+                if(/*!mouse_xy.ldown && */ ev.button.button == SDL_BUTTON_LEFT)
                 {
                     mouse_xy.ldown = true;
                     CallBack->Msg_LeftDown(mouse_xy);
@@ -338,7 +344,8 @@ bool VideoSDL::MessageLoop()
                     mouse_xy.rdown = true;
                     CallBack->Msg_RightDown(mouse_xy);
                 }
-            } break;
+            }
+            break;
             case SDL_MOUSEBUTTONUP:
             {
                 mouse_xy.x = ev.button.x;
@@ -362,8 +369,8 @@ bool VideoSDL::MessageLoop()
                 {
                     CallBack->Msg_WheelDown(mouse_xy);
                 }
-
-            } break;
+            }
+            break;
             case SDL_MOUSEMOTION:
             {
                 if(!mouse_motion)
@@ -374,9 +381,8 @@ bool VideoSDL::MessageLoop()
                     mouse_motion = 1;
                     CallBack->Msg_MouseMove(mouse_xy);
                 }
-
-
-            } break;
+            }
+            break;
         }
     }
 
@@ -403,7 +409,7 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
 
-    for (unsigned i = 0; modes[i]; ++i)
+    for(unsigned i = 0; modes[i]; ++i)
     {
         VideoMode vm(modes[i]->w, modes[i]->h);
         if(!helpers::contains(video_modes, vm))
@@ -442,7 +448,7 @@ void VideoSDL::SetMousePos(int x, int y)
 KeyEvent VideoSDL::GetModKeyState() const
 {
     const SDLMod modifiers = SDL_GetModState();
-    const KeyEvent ke = { KT_INVALID, 0, ( (modifiers& KMOD_CTRL) != 0), ( (modifiers& KMOD_SHIFT) != 0), ( (modifiers& KMOD_ALT) != 0)};
+    const KeyEvent ke = {KT_INVALID, 0, ((modifiers & KMOD_CTRL) != 0), ((modifiers & KMOD_SHIFT) != 0), ((modifiers & KMOD_ALT) != 0)};
     return ke;
 }
 
@@ -453,7 +459,7 @@ void* VideoSDL::GetMapPointer() const
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
     SDL_GetWMInfo(&wmInfo);
-    //return (void*)wmInfo.info.win.window;
+    // return (void*)wmInfo.info.win.window;
     return (void*)wmInfo.window;
 #else
     return NULL;

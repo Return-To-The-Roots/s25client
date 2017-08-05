@@ -16,26 +16,26 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GameClient.h"
 #include "ClientInterface.h"
+#include "GameClient.h"
 #include "GameMessages.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noStaticObject.h"
-#include "nodeObjs/noAnimal.h"
+#include "helpers/Deleter.h"
+#include "helpers/converters.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsg.h"
-#include "gameTypes/Resource.h"
-#include "helpers/converters.h"
-#include "helpers/Deleter.h"
-#include "test/PointOutput.h"
 #include "test/GameWorldWithLuaAccess.h"
+#include "test/PointOutput.h"
+#include "nodeObjs/noAnimal.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noStaticObject.h"
+#include "gameTypes/Resource.h"
 #include "libutil/src/tmpFile.h"
-#include <boost/test/unit_test.hpp>
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
-#include <boost/format.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/format.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace boost::assign;
 #define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
@@ -110,40 +110,36 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     // TODO: Add test for message box
 }
 
-namespace{
-    struct StoreChat: public ClientInterface
+namespace {
+struct StoreChat : public ClientInterface
+{
+    unsigned lastPlayerId;
+    ChatDestination lastCD;
+    std::string lastMsg;
+
+    StoreChat()
     {
-        unsigned lastPlayerId;
-        ChatDestination lastCD;
-        std::string lastMsg;
+        Clear();
+        GAMECLIENT.SetInterface(this);
+    }
 
-        StoreChat()
-        {
-            Clear();
-            GAMECLIENT.SetInterface(this);
-        }
+    ~StoreChat() { GAMECLIENT.SetInterface(NULL); }
 
-        ~StoreChat()
-        {
-            GAMECLIENT.SetInterface(NULL);
-        }
+    void Clear()
+    {
+        lastPlayerId = 1337;
+        lastCD = CD_ALL;
+        lastMsg.clear();
+    }
 
-        void Clear()
-        {
-            lastPlayerId = 1337;
-            lastCD = CD_ALL;
-            lastMsg.clear();
-        }
-
-        void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override
-        {
-            lastPlayerId = playerId;
-            lastCD = cd;
-            lastMsg = msg;
-        }
-
-    };
-}
+    void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override
+    {
+        lastPlayerId = playerId;
+        lastCD = cd;
+        lastMsg = msg;
+    }
+};
+} // namespace
 
 BOOST_AUTO_TEST_CASE(GameFunctions)
 {
@@ -169,7 +165,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
         }
     }
 
-    for(unsigned i = 0; i<2; i++)
+    for(unsigned i = 0; i < 2; i++)
     {
         BOOST_CHECK(isLuaEqual("rttr:GetGF()", helpers::toString(world.em.GetCurrentGF())));
         world.em.ExecuteNextGF();
@@ -192,7 +188,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     BOOST_REQUIRE_EQUAL(storeChat.lastCD, CD_SYSTEM);
 
     // TODO: Test MissionStatement(player, title, message)
-    
+
     world.GetPostMgr().AddPostBox(1);
     const PostBox& postBox = *world.GetPostMgr().GetPostBox(1);
     // Send to other player or invalid
@@ -285,21 +281,17 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
     BOOST_CHECK(isLuaEqual("player:IsFree()", "false"));
 }
 
-namespace{
-    struct CatchConstructionNote
-    {
-        boost::interprocess::unique_ptr<BuildingNote, Deleter<BuildingNote> > note_;
-        Subscribtion sub;
+namespace {
+struct CatchConstructionNote
+{
+    boost::interprocess::unique_ptr<BuildingNote, Deleter<BuildingNote> > note_;
+    Subscribtion sub;
 
-        CatchConstructionNote(GameWorldGame& world): sub(world.GetNotifications().subscribe<BuildingNote>(boost::ref(*this)))
-        {}
+    CatchConstructionNote(GameWorldGame& world) : sub(world.GetNotifications().subscribe<BuildingNote>(boost::ref(*this))) {}
 
-        void operator()(const BuildingNote& note)
-        {
-            note_.reset(new BuildingNote(note));
-        }
-    };
-}
+    void operator()(const BuildingNote& note) { note_.reset(new BuildingNote(note)); }
+};
+} // namespace
 
 BOOST_AUTO_TEST_CASE(IngamePlayer)
 {
@@ -436,9 +428,9 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("player:Surrender(false)");
     BOOST_REQUIRE(player0.IsDefeated());
     BOOST_CHECK(isLuaEqual("player:IsDefeated()", "true"));
-	// HQ should still be there
+    // HQ should still be there
     BOOST_REQUIRE(player0.GetHQPos().isValid() && world.GetSpecObj<nobHQ>(hqPos));
-	// Destroy everything
+    // Destroy everything
     executeLua("player:Surrender(true)");
     BOOST_REQUIRE(!player0.GetHQPos().isValid() && !world.GetSpecObj<nobHQ>(hqPos));
 }
@@ -490,14 +482,13 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     // And non negative
     BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, -3,4)"), std::runtime_error);
     BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3,-4)"), std::runtime_error);
-
 }
 
 BOOST_AUTO_TEST_CASE(World)
 {
     initWorld();
     executeLua("world = rttr:GetWorld()");
-    
+
     const MapPoint envPt(15, 12);
     const MapPoint hqPos(world.GetPlayer(1).GetHQPos());
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 500)") % envPt.x % envPt.y);
@@ -582,11 +573,11 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventGameFrame(0);
     lua.EventResourceFound(1, pt3, RES_GOLD, 1);
     executeLua("function getResName(res)\n  if(res==RES_IRON) then return 'Iron' "
-        "elseif(res==RES_GOLD) then return 'Gold' "
-        "elseif(res==RES_COAL) then return 'Coal' "
-        "elseif(res==RES_GRANITE) then return 'Granite' "
-        "elseif(res==RES_WATER) then return 'Water' "
-        "else assert(false)\n  end\n  end");
+               "elseif(res==RES_GOLD) then return 'Gold' "
+               "elseif(res==RES_COAL) then return 'Coal' "
+               "elseif(res==RES_GRANITE) then return 'Granite' "
+               "elseif(res==RES_WATER) then return 'Water' "
+               "else assert(false)\n  end\n  end");
     executeLua("function onStart(isFirstStart)\n  rttr:Log('start: '..tostring(isFirstStart))\nend");
     clearLog();
     lua.EventStart(true);
@@ -595,28 +586,28 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     BOOST_REQUIRE_EQUAL(getLog(), "start: false\n");
 
     executeLua("function onSave(serializer)\n"
-        "serializer:PushInt(42)\n"
-        "serializer:PushBool(true)\n"
-        "serializer:PushBool(false)\n"
-        "serializer:PushString('Hello World!')\n"
-        "rttr:Log('saved')\n  return true\nend");
+               "serializer:PushInt(42)\n"
+               "serializer:PushBool(true)\n"
+               "serializer:PushBool(false)\n"
+               "serializer:PushString('Hello World!')\n"
+               "rttr:Log('saved')\n  return true\nend");
     Serializer serData2 = lua.Serialize();
     BOOST_REQUIRE_EQUAL(getLog(), "saved\n");
     BOOST_REQUIRE_GT(serData2.GetLength(), 0u);
 
     // Returning false should not save anything but should also print an error
     executeLua("function onSave(serializer)\n"
-        "serializer:PushInt(42)\n  return false\nend");
+               "serializer:PushInt(42)\n  return false\nend");
     Serializer serData3 = lua.Serialize();
     BOOST_REQUIRE_EQUAL(serData3.GetLength(), 0u);
     BOOST_REQUIRE_NE(getLog(), "");
 
     executeLua("function onLoad(serializer)\n"
-        "assert(serializer:PopInt() == 42)\n"
-        "assert(serializer:PopBool() == true)\n"
-        "assert(serializer:PopBool() == false)\n"
-        "assert(serializer:PopString() == 'Hello World!')\n"
-        "rttr:Log('loaded')\n  return true\nend");
+               "assert(serializer:PopInt() == 42)\n"
+               "assert(serializer:PopBool() == true)\n"
+               "assert(serializer:PopBool() == false)\n"
+               "assert(serializer:PopString() == 'Hello World!')\n"
+               "rttr:Log('loaded')\n  return true\nend");
     BOOST_REQUIRE(lua.Deserialize(serData2));
     BOOST_REQUIRE_EQUAL(getLog(), "loaded\n");
     BOOST_REQUIRE_EQUAL(serData2.GetBytesLeft(), 0u);
@@ -656,7 +647,8 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventOccupied(1, pt1);
     BOOST_REQUIRE_EQUAL(getLog(), (boost::format("occupied: %1%%2%\n") % 1 % pt1).str());
 
-    executeLua("function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', '..y..')'..tostring(owner))\nend");
+    executeLua(
+      "function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', '..y..')'..tostring(owner))\nend");
     // Owner == 0 -> No owner (nil in lua)
     lua.EventExplored(0, pt2, 0);
     BOOST_REQUIRE_EQUAL(getLog(), (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % "nil").str());
@@ -669,7 +661,8 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventGameFrame(42);
     BOOST_REQUIRE_EQUAL(getLog(), "gf: 0\ngf: 42\n");
 
-    executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', '..y..')'..getResName(type)..':'..quantity)\nend");
+    executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
+               "'..y..')'..getResName(type)..':'..quantity)\nend");
     boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
     lua.EventResourceFound(2, pt3, RES_IRON, 1);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Iron" % 1).str());

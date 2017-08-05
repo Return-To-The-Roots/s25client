@@ -24,7 +24,7 @@
 
 PostManager::PostManager()
 {
-    std::fill(postBoxes.begin(), postBoxes.end(), (PostBox*) NULL);
+    std::fill(postBoxes.begin(), postBoxes.end(), (PostBox*)NULL);
 }
 
 PostManager::~PostManager()
@@ -45,7 +45,7 @@ PostBox* PostManager::AddPostBox(unsigned player)
 
 PostBox* PostManager::GetPostBox(unsigned player) const
 {
-    return (player < postBoxes.size()) ?  postBoxes[player] : NULL;
+    return (player < postBoxes.size()) ? postBoxes[player] : NULL;
 }
 
 void PostManager::RemovePostBox(unsigned player)

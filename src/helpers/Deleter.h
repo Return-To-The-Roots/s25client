@@ -19,9 +19,10 @@
 #define Deleter_h__
 
 template<typename T>
-struct Deleter {
+struct Deleter
+{
     template<typename U>
-    void operator()(U *ptr)
+    void operator()(U* ptr)
     {
         T* const p = static_cast<T*>(ptr);
         delete p;
@@ -29,9 +30,10 @@ struct Deleter {
 };
 
 template<typename T>
-struct Deleter<T[]> {
+struct Deleter<T[]>
+{
     template<typename U>
-    void operator()(U *ptr)
+    void operator()(U* ptr)
     {
         T* const p = static_cast<T*>(ptr);
         delete[] p;

@@ -18,18 +18,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwAIDebug.h"
 
+#include "Loader.h"
 #include "ai/AIPlayerJH.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
-#include "world/GameWorldView.h"
-#include "Loader.h"
 #include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
-    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
-      gwv(gwv)
+    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {
     for(std::vector<AIBase*>::const_iterator it = ais.begin(); it != ais.end(); ++it)
     {
@@ -38,14 +37,14 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
             ais_.push_back(ai);
     }
     // Wenn keine KI-Spieler, schließen
-    if (ais_.empty())
+    if(ais_.empty())
     {
         Close();
         return;
     }
 
-	ctrlComboBox* players = AddComboBox(1, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
-    for (std::vector<AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
+    ctrlComboBox* players = AddComboBox(1, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
+    for(std::vector<AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
     {
         players->AddString((*it)->GetPlayerName());
     }
@@ -70,35 +69,34 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     overlay_ = 0;
     overlays->SetSelection(overlay_);
 
-	
+    // jobs = AddList(1, DrawPoint(15, 60), Extent(120, 220), TC_GREY, NormalFont);
 
-    //jobs = AddList(1, DrawPoint(15, 60), Extent(120, 220), TC_GREY, NormalFont);
+    text = AddText(2, DrawPoint(15, 120), "", COLOR_YELLOW, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP,
+                   LOADER.GetFontN("resource", 0));
 
-    text = AddText(2, DrawPoint(15, 120), "", COLOR_YELLOW,
-                   glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
-
-    //for(unsigned char i = 0; i < 31; ++i)
+    // for(unsigned char i = 0; i < 31; ++i)
     //  list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]));
-    //list->SetSelection(0);
+    // list->SetSelection(0);
 }
 
 void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
-        default:
-            break;
+        default: break;
 
         case 1:
         {
             player_ = selection;
             gwv.SetAIDebug(overlay_, ais_[player_]->GetPlayerId(), true);
-        } break;
+        }
+        break;
         case 0:
         {
             overlay_ = selection;
             gwv.SetAIDebug(overlay_, ais_[player_]->GetPlayerId(), true);
-        } break;
+        }
+        break;
     }
 }
 
@@ -108,7 +106,7 @@ void iwAIDebug::Msg_PaintBefore()
     std::stringstream ss;
 
     AIJH::Job* currentJob = ais_[player_]->GetCurrentJob();
-    if (!currentJob)
+    if(!currentJob)
     {
         text->SetText(_("No current job"));
         return;
@@ -119,13 +117,12 @@ void iwAIDebug::Msg_PaintBefore()
     AIJH::BuildJob* bj = dynamic_cast<AIJH::BuildJob*>(currentJob);
     AIJH::EventJob* ej = dynamic_cast<AIJH::EventJob*>(currentJob);
 
-    if (bj)
+    if(bj)
     {
         ss << "BuildJob:" << std::endl;
         ss << BUILDING_NAMES[bj->GetType()] << std::endl;
         ss << bj->GetTarget().x << " / " << bj->GetTarget().y << std::endl;
-    }
-    else if (ej)
+    } else if(ej)
     {
         ss << "EventJob:" << std::endl;
         switch(ej->GetEvent()->GetType())
@@ -142,7 +139,7 @@ void iwAIDebug::Msg_PaintBefore()
         }
 
         AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ej->GetEvent());
-        if (evb)
+        if(evb)
         {
             ss << evb->GetX() << " / " << evb->GetY() << std::endl;
             ss << BUILDING_NAMES[evb->GetBuildingType()] << std::endl;

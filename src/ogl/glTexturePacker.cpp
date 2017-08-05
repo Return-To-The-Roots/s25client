@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glTexturePacker.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "oglIncludes.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
@@ -80,7 +80,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
     do
     {
         // two possibilities: enough space OR maximum texture size reached
-        if((curSize.x* curSize.y >= total) || maxTex)
+        if((curSize.x * curSize.y >= total) || maxTex)
         {
             // texture packer
             glTexturePackerNode* root = new glTexturePackerNode(curSize);
@@ -126,13 +126,13 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             root->destroy(list.size());
             delete root;
 
-            if(left.empty())   // nothing left, just generate texture and return success
+            if(left.empty()) // nothing left, just generate texture and return success
             {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
                 return parTexWidth != 0;
-            } else if(maxTex)    // maximum texture size reached and something still left
+            } else if(maxTex) // maximum texture size reached and something still left
             {
                 // generate this texture and release the buffer
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());

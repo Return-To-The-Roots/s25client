@@ -23,87 +23,85 @@
 // Warentypen
 enum GoodType
 {
-	/*  0 */GD_BEER = 0,    // Bier
-	/*  1 */GD_TONGS,       // Zange
-	/*  2 */GD_HAMMER,      // Hammer
-	/*  3 */GD_AXE,         // Axt
-	/*  4 */GD_SAW,         // Säge
-	/*  5 */GD_PICKAXE,     // Spitzhacke
-	/*  6 */GD_SHOVEL,      // Schaufel
-	/*  7 */GD_CRUCIBLE,    // Schmelztiegel
-	/*  8 */GD_RODANDLINE,  // Angel
-	/*  9 */GD_SCYTHE,      // Sense
-	/* 10 */GD_WATEREMPTY,  // Wasser
-	/* 11 */GD_WATER,       // Wasser
-	/* 12 */GD_CLEAVER,     // Beil
-	/* 13 */GD_ROLLINGPIN,  // Nudelholz
-	/* 14 */GD_BOW,         // Bogen
-	/* 15 */GD_BOAT,        // Boot
-	/* 16 */GD_SWORD,       // Schwert
-	/* 17 */GD_IRON,        // Eisen
-	/* 18 */GD_FLOUR,       // Mehl
-	/* 19 */GD_FISH,        // Fisch
-	/* 20 */GD_BREAD,       // Brot
-	/* 21 */GD_SHIELDROMANS,    // Schild
-	/* 22 */GD_WOOD,        // Holz
-	/* 23 */GD_BOARDS,      // Bretter
-	/* 24 */GD_STONES,      // Steine
-	/* 25 */GD_SHIELDVIKINGS,   // Schild
-	/* 26 */GD_SHIELDAFRICANS,  // Schild
-	/* 27 */GD_GRAIN,       // Getreide
-	/* 28 */GD_COINS,       // Mnzen
-	/* 29 */GD_GOLD,        // Gold
-	/* 30 */GD_IRONORE,     // Eisenerz
-	/* 31 */GD_COAL,        // Kohle
-	/* 32 */GD_MEAT,        // Fleisch
-	/* 33 */GD_HAM,         // Schinken ( Schwein )
-	/* 34 */GD_SHIELDJAPANESE,  // Schild
-	/* 35 */GD_NOTHING,      // Nichts
-    /* 36 */GD_INVALID       // Placeholder to show an invalid good (does not count as a good)
+    /*  0 */ GD_BEER = 0,       // Bier
+    /*  1 */ GD_TONGS,          // Zange
+    /*  2 */ GD_HAMMER,         // Hammer
+    /*  3 */ GD_AXE,            // Axt
+    /*  4 */ GD_SAW,            // Säge
+    /*  5 */ GD_PICKAXE,        // Spitzhacke
+    /*  6 */ GD_SHOVEL,         // Schaufel
+    /*  7 */ GD_CRUCIBLE,       // Schmelztiegel
+    /*  8 */ GD_RODANDLINE,     // Angel
+    /*  9 */ GD_SCYTHE,         // Sense
+    /* 10 */ GD_WATEREMPTY,     // Wasser
+    /* 11 */ GD_WATER,          // Wasser
+    /* 12 */ GD_CLEAVER,        // Beil
+    /* 13 */ GD_ROLLINGPIN,     // Nudelholz
+    /* 14 */ GD_BOW,            // Bogen
+    /* 15 */ GD_BOAT,           // Boot
+    /* 16 */ GD_SWORD,          // Schwert
+    /* 17 */ GD_IRON,           // Eisen
+    /* 18 */ GD_FLOUR,          // Mehl
+    /* 19 */ GD_FISH,           // Fisch
+    /* 20 */ GD_BREAD,          // Brot
+    /* 21 */ GD_SHIELDROMANS,   // Schild
+    /* 22 */ GD_WOOD,           // Holz
+    /* 23 */ GD_BOARDS,         // Bretter
+    /* 24 */ GD_STONES,         // Steine
+    /* 25 */ GD_SHIELDVIKINGS,  // Schild
+    /* 26 */ GD_SHIELDAFRICANS, // Schild
+    /* 27 */ GD_GRAIN,          // Getreide
+    /* 28 */ GD_COINS,          // Mnzen
+    /* 29 */ GD_GOLD,           // Gold
+    /* 30 */ GD_IRONORE,        // Eisenerz
+    /* 31 */ GD_COAL,           // Kohle
+    /* 32 */ GD_MEAT,           // Fleisch
+    /* 33 */ GD_HAM,            // Schinken ( Schwein )
+    /* 34 */ GD_SHIELDJAPANESE, // Schild
+    /* 35 */ GD_NOTHING,        // Nichts
+    /* 36 */ GD_INVALID         // Placeholder to show an invalid good (does not count as a good)
 };
 // Anzahl an unterschiedlichen Warentypen
 const unsigned WARE_TYPES_COUNT = GD_NOTHING;
 // Number of tools
 const unsigned TOOL_COUNT = 12;
 
-const std::string WARE_NAMES[GD_INVALID] =
-{
-	/*  0 */gettext_noop("Beer"),       // Bier
-	/*  1 */gettext_noop("Tongs"),      // Zange
-	/*  2 */gettext_noop("Hammer"),     // Hammer
-	/*  3 */gettext_noop("Axe"),            // Axt
-	/*  4 */gettext_noop("Saw"),            // Säge
-	/*  5 */gettext_noop("Pick-axe"),       // Spitzhacke
-	/*  6 */gettext_noop("Shovel"),     // Schaufel
-	/*  7 */gettext_noop("Crucible"),   // Schmelztiegel
-	/*  8 */gettext_noop("Rod and line"),   // Angel
-	/*  9 */gettext_noop("Scythe"),     // Sense
-	/* 10 */gettext_noop("Water"),  // Wasser
-	/* 11 */gettext_noop("Water"),      // Wasser
-	/* 12 */gettext_noop("Cleaver"),        // Beil
-	/* 13 */gettext_noop("Rolling pin"),        // Nudelholz
-	/* 14 */gettext_noop("Bow"),            // Bogen
-	/* 15 */gettext_noop("Boat"),       // Boot
-	/* 16 */gettext_noop("Sword"),      // Schwert
-	/* 17 */gettext_noop("Iron"),       // Eisen
-	/* 18 */gettext_noop("Flour"),      // Mehl
-	/* 19 */gettext_noop("Fish"),       // Fisch
-	/* 20 */gettext_noop("Bread"),      // Brot
-	/* 21 */gettext_noop("Shield"),     // Schild
-	/* 22 */gettext_noop("Wood"),       // Holz
-	/* 23 */gettext_noop("Boards"),     // Bretter
-	/* 24 */gettext_noop("Stones"),     // Steine
-	/* 25 */"", // Schild
-	/* 26 */"", // Schild
-	/* 27 */gettext_noop("Grain"),      // Getreide
-	/* 28 */gettext_noop("Coins"),      // Mnzen
-	/* 29 */gettext_noop("Gold"),       // Gold
-	/* 30 */gettext_noop("Iron ore"),   // Eisenerz
-	/* 31 */gettext_noop("Coal"),       // Kohle
-	/* 32 */gettext_noop("Meat"),       // Fleisch
-	/* 33 */gettext_noop("Ham"),        // Schinken ( Schwein )
-	/* 34 */"",                         // Schild
-	/* 35 */""
-};
+const std::string WARE_NAMES[GD_INVALID] = {
+  /*  0 */ gettext_noop("Beer"),         // Bier
+  /*  1 */ gettext_noop("Tongs"),        // Zange
+  /*  2 */ gettext_noop("Hammer"),       // Hammer
+  /*  3 */ gettext_noop("Axe"),          // Axt
+  /*  4 */ gettext_noop("Saw"),          // Säge
+  /*  5 */ gettext_noop("Pick-axe"),     // Spitzhacke
+  /*  6 */ gettext_noop("Shovel"),       // Schaufel
+  /*  7 */ gettext_noop("Crucible"),     // Schmelztiegel
+  /*  8 */ gettext_noop("Rod and line"), // Angel
+  /*  9 */ gettext_noop("Scythe"),       // Sense
+  /* 10 */ gettext_noop("Water"),        // Wasser
+  /* 11 */ gettext_noop("Water"),        // Wasser
+  /* 12 */ gettext_noop("Cleaver"),      // Beil
+  /* 13 */ gettext_noop("Rolling pin"),  // Nudelholz
+  /* 14 */ gettext_noop("Bow"),          // Bogen
+  /* 15 */ gettext_noop("Boat"),         // Boot
+  /* 16 */ gettext_noop("Sword"),        // Schwert
+  /* 17 */ gettext_noop("Iron"),         // Eisen
+  /* 18 */ gettext_noop("Flour"),        // Mehl
+  /* 19 */ gettext_noop("Fish"),         // Fisch
+  /* 20 */ gettext_noop("Bread"),        // Brot
+  /* 21 */ gettext_noop("Shield"),       // Schild
+  /* 22 */ gettext_noop("Wood"),         // Holz
+  /* 23 */ gettext_noop("Boards"),       // Bretter
+  /* 24 */ gettext_noop("Stones"),       // Steine
+  /* 25 */ "",                           // Schild
+  /* 26 */ "",                           // Schild
+  /* 27 */ gettext_noop("Grain"),        // Getreide
+  /* 28 */ gettext_noop("Coins"),        // Mnzen
+  /* 29 */ gettext_noop("Gold"),         // Gold
+  /* 30 */ gettext_noop("Iron ore"),     // Eisenerz
+  /* 31 */ gettext_noop("Coal"),         // Kohle
+  /* 32 */ gettext_noop("Meat"),         // Fleisch
+  /* 33 */ gettext_noop("Ham"),          // Schinken ( Schwein )
+  /* 34 */ "",                           // Schild
+  /* 35 */ ""};
 
 #endif // GoodTypes_h__

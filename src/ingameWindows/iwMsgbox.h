@@ -24,31 +24,33 @@ class Window;
 
 class iwMsgbox : public IngameWindow
 {
-        /// Buttons, die auf der Box erscheinen sollen
-        MsgboxButton button;
-        /// ID für die Msgbox, um unterschiedliche
-        unsigned msgboxid;
+    /// Buttons, die auf der Box erscheinen sollen
+    MsgboxButton button;
+    /// ID für die Msgbox, um unterschiedliche
+    unsigned msgboxid;
 
-        /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
-        std::vector<std::string> strings;
+    /// Einzelne Stringzeilen, die durch die Umbrechung ggf. zu Stande kommen
+    std::vector<std::string> strings;
 
-        Window* msgHandler_;
+    Window* msgHandler_;
 
-    public:
-        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned msgboxid = 0);
-        iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile, unsigned iconIdx, unsigned msgboxid = 0);
+public:
+    iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon,
+             unsigned msgboxid = 0);
+    iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile,
+             unsigned iconIdx, unsigned msgboxid = 0);
 
-        ~iwMsgbox() override;
+    ~iwMsgbox() override;
 
-        /// Moves the icon to given position
-        void MoveIcon(const DrawPoint& pos);
+    /// Moves the icon to given position
+    void MoveIcon(const DrawPoint& pos);
 
-    private:
-        void Init(const std::string& text, const std::string& iconFile, unsigned iconIdx);
+private:
+    void Init(const std::string& text, const std::string& iconFile, unsigned iconIdx);
 
-        void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
+    void AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc);
 
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwMSGBOX_H_INCLUDED

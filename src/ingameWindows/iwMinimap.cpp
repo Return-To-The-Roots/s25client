@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwMinimap.h"
-#include "controls/ctrlIngameMinimap.h"
 #include "Loader.h"
 #include "controls/ctrlImageButton.h"
+#include "controls/ctrlIngameMinimap.h"
 #include "gameData/const_gui_ids.h"
 
 /// (maximum) size of the minimap
@@ -36,13 +36,12 @@ const unsigned short BUTTON_MAP_SPACE = 3;
 /// Abstand zwischen Buttons und unteren Fensterrand
 const unsigned short BUTTON_WINDOW_SPACE = 5;
 
-
-
 iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
-    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"),
-        LOADER.GetImageN("resource", 41)), extended(false)
+    : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"), LOADER.GetImageN("resource", 41)),
+      extended(false)
 {
-    AddCtrl(new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
+    AddCtrl(
+      new ctrlIngameMinimap(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE), Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);
@@ -71,7 +70,6 @@ void iwMinimap::Resize(const Extent& newSize)
 
     // Fensterbreite anpassen
     SetIwSize(im->GetSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_SIZE.y + BUTTON_WINDOW_SPACE));
-
 
     // Buttonpositionen anpassen, nach unten verschieben
     for(unsigned i = 1; i < 4; ++i)
@@ -102,7 +100,7 @@ void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
             this->extended = !extended;
 
             Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
-        } break;
+        }
+        break;
     }
 }
-

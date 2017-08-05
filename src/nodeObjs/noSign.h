@@ -23,27 +23,29 @@ class SerializedGameData;
 /// Stellt ein Ressourcen-Schild dar
 class noSign : public noDisappearingEnvObject
 {
-    public:
-        noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
-        noSign(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
+    noSign(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noSign(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noSign(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_SIGN; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noSign(sgd); }
 
-        /// An x,y zeichnen.
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_SIGN; }
 
-        unsigned char GetSignType() const { return type; }
+    /// An x,y zeichnen.
+    void Draw(DrawPoint drawPt) override;
 
-    private:
+    unsigned char GetSignType() const { return type; }
 
-        /// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
-        const unsigned char type;
-        /// Häufigkeit der Ressource
-        const unsigned char quantity;
+private:
+    /// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
+    const unsigned char type;
+    /// Häufigkeit der Ressource
+    const unsigned char quantity;
 };
 
 #endif // !NOSIGN_H_INCLUDED

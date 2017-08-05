@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwHelp.h"
-#include "controls/ctrlMultiline.h"
 #include "Loader.h"
+#include "controls/ctrlMultiline.h"
 #include "ogl/glArchivItem_Font.h"
 
 /// Breite des Fensters
@@ -40,4 +40,3 @@ iwHelp::iwHelp(const GUI_ID gui_id, const std::string& content)
     SetIwSize(text->GetSize());
     MoveNextToMouse();
 }
-

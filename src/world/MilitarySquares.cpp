@@ -18,15 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/MilitarySquares.h"
 #include "buildings/nobBaseMilitary.h"
-#include "gameData/MilitaryConsts.h"
 #include "helpers/containerUtils.h"
+#include "gameData/MilitaryConsts.h"
 
-MilitarySquares::MilitarySquares(): size_(MapExtent::all(0))
-{}
+MilitarySquares::MilitarySquares() : size_(MapExtent::all(0))
+{
+}
 
 void MilitarySquares::Init(const MapExtent& mapSize)
 {
-    RTTR_Assert(size_ == MapExtent::all(0)); // Already initialized
+    RTTR_Assert(size_ == MapExtent::all(0));     // Already initialized
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     // Calculate size (rounding up)
     size_ = (mapSize + MapExtent::all(MILITARY_SQUARE_SIZE - 1)) / MILITARY_SQUARE_SIZE;
@@ -65,7 +66,7 @@ sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsig
     const Point<int> milPos(pt / MILITARY_SQUARE_SIZE);
 
     const Point<int> firstPt = milPos - offsets;
-    const Point<int> lastPt  = milPos + offsets;
+    const Point<int> lastPt = milPos + offsets;
 
     // List with unique(!) military buildings
     sortedMilitaryBlds buildings;

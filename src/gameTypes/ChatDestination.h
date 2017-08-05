@@ -28,4 +28,3 @@ enum ChatDestination
 };
 
 #endif // ChatDestination_h__
-

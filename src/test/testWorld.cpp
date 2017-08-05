@@ -16,27 +16,27 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "world/MapLoader.h"
-#include "world/GameWorldGame.h"
-#include "GamePlayer.h"
-#include "GameObject.h"
-#include "nodeObjs/noBase.h"
 #include "EventManager.h"
+#include "FileChecksum.h"
+#include "GameObject.h"
+#include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
-#include "ogl/glArchivItem_Map.h"
-#include "FileChecksum.h"
 #include "files.h"
-#include "test/WorldFixture.h"
-#include "test/CreateEmptyWorld.h"
+#include "ogl/glArchivItem_Map.h"
 #include "test/BQOutput.h"
+#include "test/CreateEmptyWorld.h"
+#include "test/WorldFixture.h"
+#include "world/GameWorldGame.h"
+#include "world/MapLoader.h"
+#include "nodeObjs/noBase.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libutil/src/tmpFile.h"
-#include <boost/test/unit_test.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
 
@@ -56,44 +56,44 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
     BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
 }
 
-namespace{
-    struct UninitializedWorldCreator
-    {
-        UninitializedWorldCreator(const MapExtent& size, unsigned numPlayers){}
-        bool operator()(GameWorldBase& world){ return true; }
-    };
+namespace {
+struct UninitializedWorldCreator
+{
+    UninitializedWorldCreator(const MapExtent& size, unsigned numPlayers) {}
+    bool operator()(GameWorldBase& world) { return true; }
+};
 
-    struct LoadWorldFromFileCreator
-    {
-        glArchivItem_Map map;
-        std::vector<MapPoint> hqs;
-        const unsigned numPlayers_;
+struct LoadWorldFromFileCreator
+{
+    glArchivItem_Map map;
+    std::vector<MapPoint> hqs;
+    const unsigned numPlayers_;
 
-        LoadWorldFromFileCreator(const MapExtent& size, unsigned numPlayers): numPlayers_(numPlayers){}
-        bool operator()(GameWorldBase& world)
-        {
-            bfs::ifstream mapFile(testMapPath, std::ios::binary);
-            BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
-            std::vector<Nation> nations;
-            for(unsigned i = 0; i < numPlayers_; i++)
-                nations.push_back(world.GetPlayer(i).nation);
-            MapLoader loader(world, nations);
-            BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
-            for(unsigned i = 0; i < numPlayers_; i++)
-                hqs.push_back(loader.GetHQPos(i));
-            return true;
-        }
-    };
+    LoadWorldFromFileCreator(const MapExtent& size, unsigned numPlayers) : numPlayers_(numPlayers) {}
+    bool operator()(GameWorldBase& world)
+    {
+        bfs::ifstream mapFile(testMapPath, std::ios::binary);
+        BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+        std::vector<Nation> nations;
+        for(unsigned i = 0; i < numPlayers_; i++)
+            nations.push_back(world.GetPlayer(i).nation);
+        MapLoader loader(world, nations);
+        BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
+        for(unsigned i = 0; i < numPlayers_; i++)
+            hqs.push_back(loader.GetHQPos(i));
+        return true;
+    }
+};
 
-    struct WorldLoadedFixture: public WorldFixture<LoadWorldFromFileCreator>
-    {
-        using WorldFixture<LoadWorldFromFileCreator>::world;
-    };
-    struct WorldLoaded1PFixture: public WorldFixture<LoadWorldFromFileCreator, 1>
-    {
-        using WorldFixture<LoadWorldFromFileCreator, 1>::world;
-    };
-}
+struct WorldLoadedFixture : public WorldFixture<LoadWorldFromFileCreator>
+{
+    using WorldFixture<LoadWorldFromFileCreator>::world;
+};
+struct WorldLoaded1PFixture : public WorldFixture<LoadWorldFromFileCreator, 1>
+{
+    using WorldFixture<LoadWorldFromFileCreator, 1>::world;
+};
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 {
@@ -129,7 +129,7 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
         BuildingQuality s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;
         BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt.x << "," << pt.y
-            << " original:" << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
+                                                      << " original:" << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
     }
 }
 

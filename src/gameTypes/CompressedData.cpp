@@ -19,9 +19,9 @@
 #include "CompressedData.h"
 #include "FileChecksum.h"
 #include "libutil/src/Log.h"
-#include <bzlib.h>
-#include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/smart_ptr/scoped_array.hpp>
+#include <bzlib.h>
 #include <cerrno>
 #include <cmath>
 #include <cstring>

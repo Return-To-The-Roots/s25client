@@ -25,29 +25,29 @@ class Serializer;
 
 class GameMessage : public Message
 {
-    public:
-        /// Spieler-ID, von dem diese Nachricht stammt
-        unsigned char player;
+public:
+    /// Spieler-ID, von dem diese Nachricht stammt
+    unsigned char player;
 
-        GameMessage(const unsigned short id) : Message(id) {} //-V730
-        GameMessage(const unsigned short id, const unsigned char player): Message(id), player(player){}
+    GameMessage(const unsigned short id) : Message(id) {} //-V730
+    GameMessage(const unsigned short id, const unsigned char player) : Message(id), player(player) {}
 
-        void Serialize(Serializer& ser) const override;
+    void Serialize(Serializer& ser) const override;
 
-        void Deserialize(Serializer& ser) override;
+    void Deserialize(Serializer& ser) override;
 
-        /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
-        virtual void Run(MessageInterface* callback) = 0;
+    /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
+    virtual void Run(MessageInterface* callback) = 0;
 
-        void run(MessageInterface* callback, unsigned id) override
-        {
-            if(id != 0xFFFFFFFF)
-                player = static_cast<unsigned char>(id);
-            Run(callback);
-        }
+    void run(MessageInterface* callback, unsigned id) override
+    {
+        if(id != 0xFFFFFFFF)
+            player = static_cast<unsigned char>(id);
+        Run(callback);
+    }
 
-        static Message* create_game(unsigned short id);
-        Message* create(unsigned short id) const override { return create_game(id); }
+    static Message* create_game(unsigned short id);
+    Message* create(unsigned short id) const override { return create_game(id); }
 };
 
 #endif // GAMEMESSAGE_H_INCLUDED

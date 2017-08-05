@@ -32,7 +32,7 @@ void MapGenerator::Create(const std::string& filePath, const MapSettings& settin
     // generate the random map
     libsiedler2::ArchivInfo* archiv = randomMap->CreateArchiv();
     libsiedler2::Write(filePath, *archiv);
-    
+
     // cleanup map and archiv
     delete randomMap;
     delete archiv;

@@ -20,10 +20,11 @@
 
 /// Functor or static method to scale a window propertie from the real coordinates
 /// (relative to 800x600 resolution) to new coordinates given a size
-struct ScaleWindowPropUp{
+struct ScaleWindowPropUp
+{
     Extent size;
-    ScaleWindowPropUp(const Extent& size): size(size){}
-    
+    ScaleWindowPropUp(const Extent& size) : size(size) {}
+
     template<typename T_Pt>
     static T_Pt scale(const T_Pt& value, const Extent& size);
     template<typename T_Pt>
@@ -34,7 +35,7 @@ struct ScaleWindowPropUp{
 struct RescaleWindowProp
 {
     Extent oldSize, newSize;
-    RescaleWindowProp(Extent oldSize, Extent newSize): oldSize(oldSize), newSize(newSize){}
+    RescaleWindowProp(Extent oldSize, Extent newSize) : oldSize(oldSize), newSize(newSize) {}
     /// Scale the point or size from beeing relative to the oldSize to relative to the newSize
     template<typename T_Pt>
     T_Pt operator()(const T_Pt& oldValue) const;

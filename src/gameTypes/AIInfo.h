@@ -20,29 +20,28 @@
 
 class Serializer;
 
-namespace AI
+namespace AI {
+enum Level
 {
-    enum Level
-    {
-        EASY = 0,
-        MEDIUM,
-        HARD
-    };
+    EASY = 0,
+    MEDIUM,
+    HARD
+};
 
-    enum Type
-    {
-        DUMMY = 0,
-        DEFAULT
-    };
+enum Type
+{
+    DUMMY = 0,
+    DEFAULT
+};
 
-    struct Info
-    {
-        Type type;
-        Level level;
-        Info(Type t = DUMMY, Level l = EASY): type(t), level(l) { }
-        Info(Serializer& ser);
-        void serialize(Serializer& ser) const;
-    };
-}
+struct Info
+{
+    Type type;
+    Level level;
+    Info(Type t = DUMMY, Level l = EASY) : type(t), level(l) {}
+    Info(Serializer& ser);
+    void serialize(Serializer& ser) const;
+};
+} // namespace AI
 
 #endif // AIInfo_h__

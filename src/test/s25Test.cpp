@@ -17,24 +17,24 @@
 
 #include "defines.h" // IWYU pragma: keep
 
-#include "ogl/glAllocator.h"
 #include "ProgramInitHelpers.h"
 #include "files.h"
-// Test helpers. Header only 
+#include "ogl/glAllocator.h"
+// Test helpers. Header only
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
+#include "libsiedler2/src/libsiedler2.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
-#include "libsiedler2/src/libsiedler2.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
-#include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
-#include <vector>
-#include <string>
-#include <iostream>
+#include <boost/test/unit_test.hpp>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace bfs = boost::filesystem;
 
@@ -68,17 +68,14 @@ struct TestSetup
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
     }
-    ~TestSetup()
-    {
-        libsiedler2::setAllocator(NULL);
-    }
+    ~TestSetup() { libsiedler2::setAllocator(NULL); }
 };
 
 #if BOOST_VERSION >= 105900
-    BOOST_GLOBAL_FIXTURE(TestSetup);
+BOOST_GLOBAL_FIXTURE(TestSetup);
 #else
-	// Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
-	BOOST_GLOBAL_FIXTURE(TestSetup)
+// Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
+BOOST_GLOBAL_FIXTURE(TestSetup)
 #endif
 
 BOOST_AUTO_TEST_CASE(Basic)

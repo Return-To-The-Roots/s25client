@@ -20,10 +20,10 @@
 
 #include <string>
 
-namespace lua{
+namespace lua {
 
-    /// If the given value is not true, a runtime error with the given description is thrown
-    void assertTrue(bool testValue, const std::string& error);
+/// If the given value is not true, a runtime error with the given description is thrown
+void assertTrue(bool testValue, const std::string& error);
 
 } // namespace lua
 

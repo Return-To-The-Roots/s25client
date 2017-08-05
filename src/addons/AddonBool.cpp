@@ -38,7 +38,7 @@ void AddonBool::createGui(Window* window, unsigned id, unsigned short& y, bool r
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
     if(!check)
     {
-        check = window->AddCheckBox(id + 2, DrawPoint(0, 0), Extent(220, 20),  TC_GREY, _("Use"), NormalFont, readonly );
+        check = window->AddCheckBox(id + 2, DrawPoint(0, 0), Extent(220, 20), TC_GREY, _("Use"), NormalFont, readonly);
         setGuiStatus(window, id, status);
     }
 
@@ -53,7 +53,7 @@ void AddonBool::setGuiStatus(Window* window, unsigned id, unsigned status) const
     ctrlCheck* check = window->GetCtrl<ctrlCheck>(id + 2);
 
     if(check)
-        check->SetCheck( (status != 0) );
+        check->SetCheck((status != 0));
 }
 
 unsigned AddonBool::getGuiStatus(Window* window, unsigned id, bool& failed) const

@@ -45,7 +45,6 @@ public:
 protected:
     std::string GetSignature() const override;
     uint16_t GetVersion() const override;
-
 };
 
-#endif //!GAMESAVEGAME_H_INCLUDED
+#endif //! GAMESAVEGAME_H_INCLUDED

@@ -27,13 +27,15 @@
 
 class GamePlayer;
 
-class LuaPlayer: public LuaPlayerBase
+class LuaPlayer : public LuaPlayerBase
 {
     GamePlayer& player;
+
 protected:
     const BasePlayerInfo& GetPlayer() const override;
+
 public:
-    LuaPlayer(GamePlayer& player): player(player){}
+    LuaPlayer(GamePlayer& player) : player(player) {}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(BuildingType bld, bool notify);
@@ -50,7 +52,7 @@ public:
     unsigned GetPeopleCount(Job job);
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
     void ModifyHQ(bool isTent);
-	bool IsDefeated();
+    bool IsDefeated();
     void Surrender(bool destroyBlds);
     kaguya::standard::tuple<unsigned, unsigned> GetHQPos();
 };

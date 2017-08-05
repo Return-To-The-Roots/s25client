@@ -22,55 +22,51 @@
 #include "Desktop.h"
 #include "mapGenerator/MapSettings.h"
 
-#include "liblobby/src/LobbyInterface.h"
 #include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
+#include "liblobby/src/LobbyInterface.h"
 #include <string>
 #include <vector>
 
-class dskSelectMap :
-    public Desktop,
-    public ClientInterface,
-    public LobbyInterface
+class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface
 {
-    public:
-        dskSelectMap(const CreateServerInfo& csi);
-        ~dskSelectMap() override;
+public:
+    dskSelectMap(const CreateServerInfo& csi);
+    ~dskSelectMap() override;
 
-    private:
-        void FillTable(const std::vector<std::string>& files);
+private:
+    void FillTable(const std::vector<std::string>& files);
 
-        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_TableSelectItem(const unsigned ctrl_id, const int selection) override;
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_TableSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
-        void CI_NextConnectState(const ConnectState cs) override;
-        void CI_Error(const ClientError ce) override;
+    void CI_NextConnectState(const ConnectState cs) override;
+    void CI_Error(const ClientError ce) override;
 
-        void LC_Created() override;
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Created() override;
+    void LC_Status_Error(const std::string& error) override;
 
-        /**
-         * Starts a new game with the currently selected map.
-         */
-        void StartServer();
-    
-        /**
-         * Go back to the previous menu.
-         */
-        void GoBack();
-    
-        /**
-         * Generates a new random map and selects the new map in the table (UI).
-         */
-        void CreateRandomMap();
+    /**
+     * Starts a new game with the currently selected map.
+     */
+    void StartServer();
 
-    private:
-        CreateServerInfo csi;
-        MapSettings rndMapSettings;
+    /**
+     * Go back to the previous menu.
+     */
+    void GoBack();
+
+    /**
+     * Generates a new random map and selects the new map in the table (UI).
+     */
+    void CreateRandomMap();
+
+private:
+    CreateServerInfo csi;
+    MapSettings rndMapSettings;
 };
 
-#endif //!dskSELECTMAP_H_INCLUDED
-
+#endif //! dskSELECTMAP_H_INCLUDED

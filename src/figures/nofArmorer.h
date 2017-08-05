@@ -26,31 +26,32 @@ class nobUsual;
 /// Klasse für den Schmied
 class nofArmorer : public nofWorkman
 {
-    private:
+private:
+    /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
+    bool sword_shield;
 
-        /// Bestimmt, was der Schmied als nächstes schmieden soll (immer Schwert-Schild im Wechsel)
-        bool sword_shield;
+protected:
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
+    void HandleDerivedEvent(const unsigned id) override;
 
-    protected:
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
-		void HandleDerivedEvent(const unsigned id) override;
+    bool AreWaresAvailable() override;
 
-        bool AreWaresAvailable() override;
+public:
+    nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofArmorer(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofArmorer(SerializedGameData& sgd) const;
 
-        nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofArmorer(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofArmorer(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofArmorer(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofArmorer(sgd); }
-
-        GO_Type GetGOT() const override { return GOT_NOF_ARMORER; }
+    GO_Type GetGOT() const override { return GOT_NOF_ARMORER; }
 };
 
 #endif

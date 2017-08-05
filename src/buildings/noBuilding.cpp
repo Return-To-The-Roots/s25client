@@ -17,21 +17,17 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "noBuilding.h"
-#include "world/GameWorldGame.h"
-#include "nodeObjs/noFire.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFire.h"
 #include "libutil/src/Log.h"
 class noFigure;
 
-noBuilding::noBuilding(const BuildingType type,
-                       const MapPoint pos,
-                       const unsigned char player,
-                       const Nation  /*nation*/)
-    : noBaseBuilding(NOP_BUILDING, type, pos, player),
-      opendoor(0)
+noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation /*nation*/)
+    : noBaseBuilding(NOP_BUILDING, type, pos, player), opendoor(0)
 {
 }
 
@@ -51,10 +47,10 @@ void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const
     sgd.PushSignedChar(opendoor);
 }
 
-noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id),
-    opendoor(sgd.PopSignedChar())
+noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseBuilding(sgd, obj_id), opendoor(sgd.PopSignedChar())
 {
-    if(opendoor < 0){
+    if(opendoor < 0)
+    {
         LOG.write("Bug detected: Door was closed to many times. Please report replay before this savegame/replay!");
         opendoor = 0;
     }
@@ -75,7 +71,7 @@ void noBuilding::DrawDoor(DrawPoint drawPt)
         doorImg->DrawFull(drawPt);
 }
 
-void noBuilding::GotWorker(Job  /*job*/, noFigure*  /*worker*/)
+void noBuilding::GotWorker(Job /*job*/, noFigure* /*worker*/)
 {
 }
 

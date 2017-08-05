@@ -30,4 +30,4 @@ enum TextureColor
     TC_INVISIBLE
 };
 
-#endif //TEXTURE_COLOR_H_INCLUDED
+#endif // TEXTURE_COLOR_H_INCLUDED

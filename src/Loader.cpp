@@ -30,32 +30,32 @@
 #include "ListDir.h"
 #include "libutil/src/fileFuncs.h"
 
-#include "ogl/glSmartBitmap.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "ogl/glArchivItem_Bitmap_Raw.h"
-#include "ogl/glArchivItem_Bitmap_RLE.h"
-#include "ogl/glArchivItem_Bob.h"
-#include "ogl/glArchivItem_Sound.h"
-#include "ogl/glAllocator.h"
-#include "ogl/glTexturePacker.h"
-#include "ogl/glArchivItem_Font.h"
 #include "addons/const_addons.h"
+#include "ogl/glAllocator.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glArchivItem_Bitmap_RLE.h"
+#include "ogl/glArchivItem_Bitmap_Raw.h"
+#include "ogl/glArchivItem_Bob.h"
+#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Sound.h"
+#include "ogl/glSmartBitmap.h"
+#include "ogl/glTexturePacker.h"
 #include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
 
-#include "libsiedler2/src/ErrorCodes.h"
-#include "libsiedler2/src/libsiedler2.h"
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Palette.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
-#include <boost/filesystem.hpp>
+#include "libsiedler2/src/ErrorCodes.h"
+#include "libsiedler2/src/libsiedler2.h"
 #include <boost/assign/std/vector.hpp>
+#include <boost/filesystem.hpp>
+#include <algorithm>
+#include <cstdio>
 #include <iomanip>
 #include <sstream>
-#include <algorithm>
 #include <stdexcept>
-#include <cstdio>
 
 Loader::Loader() : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
 {
@@ -79,10 +79,10 @@ bool Loader::LoadFilesAtStart()
     std::vector<unsigned> files;
 
     files += 5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
-            FILE_SPLASH_ID,        // Splashscreen: splash.bmp
-            11, 12,                // Menüdateien:  resource.dat, io.dat
-            102, 103,              // Hintergründe: setup013.lbm, setup015.lbm
-            64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
+      FILE_SPLASH_ID,               // Splashscreen: splash.bmp
+      11, 12,                       // Menüdateien:  resource.dat, io.dat
+      102, 103,                     // Hintergründe: setup013.lbm, setup015.lbm
+      64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
 
     if(!LoadFilesFromArray(files.size(), &files.front(), true))
         return false;
@@ -99,7 +99,8 @@ bool Loader::LoadFilesAtStart()
 /**
  *  @brief
  *
- *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
+ *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are
+ * removed/overwritten first
  */
 bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal)
 {
@@ -131,15 +132,14 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
         libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
         for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-            if(!LoadFile( *i, pal5, isOriginal ) )
+            if(!LoadFile(*i, pal5, isOriginal))
                 return false;
         }
         LOG.write(_("finished in %ums\n")) % (VIDEODRIVER.GetTickCount() - ladezeit);
-    }
-    else
+    } else
     {
         // no, only single file specified
-        if(!LoadFile(file, GetPaletteN("pal5"), isOriginal ) )
+        if(!LoadFile(file, GetPaletteN("pal5"), isOriginal))
             return false;
 
         // ggf Splash anzeigen
@@ -157,7 +157,8 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
 /**
  *  Lädt Dateien aus FILE_PATHS bzw aus dem Verzeichnis.
  *
- *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
+ *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are
+ * removed/overwritten first
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
@@ -169,7 +170,7 @@ bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* file
         if(files[i] == 0xFFFFFFFF)
             continue;
 
-        std::string filePath = GetFilePath(FILE_PATHS[ files[i] ]);
+        std::string filePath = GetFilePath(FILE_PATHS[files[i]]);
         if(!LoadFileOrDir(filePath, files[i], isOriginal))
         {
             LOG.write(_("Failed to load %s\n")) % filePath;
@@ -221,7 +222,7 @@ bool Loader::LoadSounds()
         std::stringstream cmdss;
         cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
 
-        // name anhängen
+// name anhängen
 #ifdef _WIN32
         cmdss << "\\sound-convert.exe";
 #else
@@ -240,7 +241,7 @@ bool Loader::LoadSounds()
         std::string cmd = cmdss.str();
 #ifdef _WIN32
         std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
-#endif // _WIN32
+#endif                                                   // _WIN32
 
         LOG.write(_("Starting Sound-Converter ..."));
         if(system(cmd.c_str()) == -1)
@@ -293,17 +294,16 @@ bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
     std::stringstream bb;
     bb << bfs::path(rhs).filename().string();
 
-    if( !(aa >> a) || !(bb >> b) )
+    if(!(aa >> a) || !(bb >> b))
     {
-        for( std::string::const_iterator lit = lhs.begin(), rit = rhs.begin(); lit != lhs.end() && rit != rhs.end(); ++lit, ++rit )
-            if( tolower( *lit ) < tolower( *rit ) )
+        for(std::string::const_iterator lit = lhs.begin(), rit = rhs.begin(); lit != lhs.end() && rit != rhs.end(); ++lit, ++rit)
+            if(tolower(*lit) < tolower(*rit))
                 return true;
-            else if( tolower( *lit ) > tolower( *rit ) )
+            else if(tolower(*lit) > tolower(*rit))
                 return false;
-        if( lhs.size() < rhs.size() )
+        if(lhs.size() < rhs.size())
             return true;
-    }
-    else
+    } else
     {
         if(a < b)
             return true;
@@ -334,7 +334,6 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
 
     return result;
 }
-
 
 /**
  *  Lädt die Settings.
@@ -368,7 +367,6 @@ bool Loader::SaveSettings()
 
     return true;
 }
-
 
 void Loader::LoadDummyGUIFiles()
 {
@@ -405,8 +403,8 @@ void Loader::LoadDummyGUIFiles()
     // Fonts
     libsiedler2::ArchivInfo& fonts = files_["outline_fonts"].archiv;
     fonts.alloc(3);
-    std::vector<uint32_t> buffer(15*16, SetAlpha(0, 255));
-    for(unsigned i=0; i<3; i++)
+    std::vector<uint32_t> buffer(15 * 16, SetAlpha(0, 255));
+    for(unsigned i = 0; i < 3; i++)
     {
         glArchivItem_Font* font = new glArchivItem_Font();
         const unsigned dx = 9 + i * 3;
@@ -438,11 +436,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned> files;
 
-    files += 26, 44, 45, 86, 92,                             // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
-            58, 59, 60, 61, 62, 63,                          // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
-            35, 36, 37, 38,                                  // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
-            23u + gfxset,                                    // map_?_z.lst
-            20u + gfxset;                                    // tex?.lbm
+    files += 26, 44, 45, 86, 92, // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
+      58, 59, 60, 61, 62, 63,    // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
+      35, 36, 37, 38,            // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
+      23u + gfxset,              // map_?_z.lst
+      20u + gfxset;              // tex?.lbm
 
     for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
     {
@@ -454,10 +452,10 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     lastgfx = 0xFF;
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
-    if (!LoadFilesFromArray(files.size(), &files.front(), true))
+    if(!LoadFilesFromArray(files.size(), &files.front(), true))
         return false;
 
-    if ((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
+    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
         return false;
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
@@ -465,7 +463,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     lastgfx = gfxset;
 
-    for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NAT_COUNT; ++nation)
         nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
 
     map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
@@ -479,18 +477,19 @@ void Loader::fillCaches()
     delete stp;
     stp = new glTexturePacker();
 
-// Animals
-    for (unsigned species = 0; species < SPEC_COUNT; ++species)
+    // Animals
+    for(unsigned species = 0; species < SPEC_COUNT; ++species)
     {
-        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            for (unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
+            for(unsigned ani_step = 0; ani_step < ANIMALCONSTS[species].animation_steps; ++ani_step)
             {
                 glSmartBitmap& bmp = animal_cache[species][dir][ani_step];
 
                 bmp.reset();
 
-                bmp.add(GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ( (dir + 3) % 6) + ani_step));
+                bmp.add(
+                  GetMapImageN(ANIMALCONSTS[species].walking_id + ANIMALCONSTS[species].animation_steps * ((dir + 3) % 6) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
@@ -510,11 +509,11 @@ void Loader::fillCaches()
 
         bmp.reset();
 
-        if (ANIMALCONSTS[species].dead_id)
+        if(ANIMALCONSTS[species].dead_id)
         {
             bmp.add(GetMapImageN(ANIMALCONSTS[species].dead_id));
 
-            if (ANIMALCONSTS[species].shadow_dead_id)
+            if(ANIMALCONSTS[species].shadow_dead_id)
             {
                 bmp.addShadow(GetMapImageN(ANIMALCONSTS[species].shadow_dead_id));
             }
@@ -525,10 +524,10 @@ void Loader::fillCaches()
 
     glArchivItem_Bob* bob_jobs = GetBobN("jobs");
 
-    for (unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NAT_COUNT; ++nation)
     {
-// BUILDINGS
-        for (unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
+        // BUILDINGS
+        for(unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
         {
             glSmartBitmap& bmp = building_cache[nation][type][0];
             glSmartBitmap& skel = building_cache[nation][type][1];
@@ -536,7 +535,7 @@ void Loader::fillCaches()
             bmp.reset();
             skel.reset();
 
-            if (type == BLD_CHARBURNER)
+            if(type == BLD_CHARBURNER)
             {
                 unsigned id = nation * 8;
 
@@ -545,8 +544,7 @@ void Loader::fillCaches()
 
                 skel.add(GetImageN("charburner", id + 3));
                 skel.addShadow(GetImageN("charburner", id + 4));
-            }
-            else
+            } else
             {
                 bmp.add(GetNationImage(nation, 250 + 5 * type));
                 bmp.addShadow(GetNationImage(nation, 250 + 5 * type + 1));
@@ -566,10 +564,10 @@ void Loader::fillCaches()
             stp->add(skel);
         }
 
-// FLAGS
-        for (unsigned type = 0; type < 3; ++type)
+        // FLAGS
+        for(unsigned type = 0; type < 3; ++type)
         {
-            for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
                 // Flaggentyp berücksichtigen
                 int nr = ani_step + 100 + 20 * type;
@@ -585,12 +583,12 @@ void Loader::fillCaches()
             }
         }
 
-// Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
-        for (unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
+        // Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
+        for(unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
         {
-            for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+                for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
                 {
                     bool fat;
                     unsigned id;
@@ -600,23 +598,21 @@ void Loader::fillCaches()
 
                     bmp.reset();
 
-                    if (job == JOB_TYPES_COUNT) // used for fat carrier, so that we do not need an additional sub-array
+                    if(job == JOB_TYPES_COUNT) // used for fat carrier, so that we do not need an additional sub-array
                     {
                         fat = true;
                         id = 0;
-                    }
-                    else
+                    } else
                     {
                         id = JOB_CONSTS[job].jobs_bob_id;
                         fat = JOB_CONSTS[job].fat;
 
-                        if ((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
+                        if((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
                         {
-                            if (nation < NATIVE_NAT_COUNT)
+                            if(nation < NATIVE_NAT_COUNT)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
-                            }
-                            else if (nation == NAT_BABYLONIANS)
+                            } else if(nation == NAT_BABYLONIANS)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                                 /* TODO: change this once we have own job pictures for babylonians
@@ -626,15 +622,15 @@ void Loader::fillCaches()
                                                                 //8 Frames * 6 Directions * 6 Types
                                                                 overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
                                 */
-                            }else
+                            } else
                                 throw std::runtime_error("Wrong nation");
                         }
                     }
 
-                    unsigned good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
-                    unsigned body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
+                    unsigned good = id * 96 + ani_step * 12 + ((dir + 3) % 6) + fat * 6;
+                    unsigned body = fat * 48 + ((dir + 3) % 6) * 8 + ani_step;
 
-                    if (bob_jobs->getLink(good) == 92)
+                    if(bob_jobs->getLink(good) == 92)
                     {
                         good -= fat * 6;
                         body -= fat * 48;
@@ -642,7 +638,7 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->get(overlayOffset + bob_jobs->getLink(good))));
-                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + ((dir + 3) % 6) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -659,7 +655,7 @@ void Loader::fillCaches()
         stp->add(bmp);
     }
 
-// BUILDING FLAG ANIMATION (for military buildings)
+    // BUILDING FLAG ANIMATION (for military buildings)
     /*
         for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
@@ -677,10 +673,10 @@ void Loader::fillCaches()
             stp->add(bmp);
         }
     */
-// Trees
-    for (unsigned type = 0; type < 9; ++type)
+    // Trees
+    for(unsigned type = 0; type < 9; ++type)
     {
-        for (unsigned ani_step = 0; ani_step < 15; ++ani_step)
+        for(unsigned ani_step = 0; ani_step < 15; ++ani_step)
         {
             glSmartBitmap& bmp = tree_cache[type][ani_step];
 
@@ -693,10 +689,10 @@ void Loader::fillCaches()
         }
     }
 
-// Granite
-    for (unsigned type = 0; type < 2; ++type)
+    // Granite
+    for(unsigned type = 0; type < 2; ++type)
     {
-        for (unsigned size = 0; size < 6; ++size)
+        for(unsigned size = 0; size < 6; ++size)
         {
             glSmartBitmap& bmp = granite_cache[type][size];
 
@@ -709,10 +705,10 @@ void Loader::fillCaches()
         }
     }
 
-// Grainfields
-    for (unsigned type = 0; type < 2; ++type)
+    // Grainfields
+    for(unsigned type = 0; type < 2; ++type)
     {
-        for (unsigned size = 0; size < 4; ++size)
+        for(unsigned size = 0; size < 4; ++size)
         {
             glSmartBitmap& bmp = grainfield_cache[type][size];
 
@@ -725,10 +721,10 @@ void Loader::fillCaches()
         }
     }
 
-// Donkeys
-    for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    // Donkeys
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
             glSmartBitmap& bmp = donkey_cache[dir][ani_step];
 
@@ -741,10 +737,10 @@ void Loader::fillCaches()
         }
     }
 
-// Boats
-    for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    // Boats
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+        for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
         {
             glSmartBitmap& bmp = boat_cache[dir][ani_step];
 
@@ -757,27 +753,27 @@ void Loader::fillCaches()
         }
     }
 
-// carrier_cache[ware][direction][animation_step][fat]
+    // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBobN("carrier");
 
-    for (unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
+    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
     {
-        for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            for (unsigned ani_step = 0; ani_step < 8; ++ani_step)
+            for(unsigned ani_step = 0; ani_step < 8; ++ani_step)
             {
-                for (unsigned fat = 0; fat < 2; ++fat)
+                for(unsigned fat = 0; fat < 2; ++fat)
                 {
                     glSmartBitmap& bmp = carrier_cache[ware][dir][ani_step][fat];
                     bmp.reset();
 
                     unsigned id;
                     // Japanese shield is missing
-                    if (ware == GD_SHIELDJAPANESE)
+                    if(ware == GD_SHIELDJAPANESE)
                         id = GD_SHIELDROMANS;
                     else
                         id = ware;
-                    
+
                     unsigned imgDir = (dir + 3) % 6;
 
                     unsigned good = id * 96 + ani_step * 12 + fat * 6 + imgDir;
@@ -793,7 +789,7 @@ void Loader::fillCaches()
         }
     }
 
-// gateway animation :)
+    // gateway animation :)
     {
         const unsigned char start_index = 248;
         const unsigned char color_count = 4;
@@ -802,7 +798,7 @@ void Loader::fillCaches()
         glArchivItem_Bitmap* image = GetMapImageN(561);
         glArchivItem_Bitmap* shadow = GetMapImageN(661);
 
-        if ((image) && (shadow) && (palette))
+        if((image) && (shadow) && (palette))
         {
             unsigned short width = image->getWidth();
             unsigned short height = image->getHeight();
@@ -839,8 +835,7 @@ void Loader::fillCaches()
 
                 stp->add(bmp);
             }
-        }
-        else
+        } else
         {
             for(unsigned char i = 0; i < color_count; ++i)
             {
@@ -851,7 +846,7 @@ void Loader::fillCaches()
         }
     }
 
-    if (SETTINGS.video.shared_textures)
+    if(SETTINGS.video.shared_textures)
     {
         // generate mega texture
         stp->pack();
@@ -898,34 +893,27 @@ bool Loader::CreateTerrainTextures()
     ClearTerrainTextures();
 
     // Ränder
-    Rect rec_raender[5] =
-    {
-        Rect(192, 176, 64, 16), // Schnee
-        Rect(192, 192, 64, 16), // Berg
-        Rect(192, 208, 64, 16), // Wste
-        Rect(192, 224, 64, 16), // Wiese
-        Rect(192, 240, 64, 16) // Wasser
+    Rect rec_raender[5] = {
+      Rect(192, 176, 64, 16), // Schnee
+      Rect(192, 192, 64, 16), // Berg
+      Rect(192, 208, 64, 16), // Wste
+      Rect(192, 224, 64, 16), // Wiese
+      Rect(192, 240, 64, 16)  // Wasser
     };
 
     // Wege
-    Rect rec_roads[8] =
-    {
-        Rect(192, 0, 50, 16),
-        Rect(192, 16, 50, 16),
-        Rect(192, 32, 50, 16),
-        Rect(192, 160, 50, 16),
+    Rect rec_roads[8] = {
+      Rect(192, 0, 50, 16), Rect(192, 16, 50, 16), Rect(192, 32, 50, 16), Rect(192, 160, 50, 16),
 
-        Rect(242, 0, 50, 16),
-        Rect(242, 16, 50, 16),
-        Rect(242, 32, 50, 16),
-        Rect(242, 160, 50, 16),
+      Rect(242, 0, 50, 16), Rect(242, 16, 50, 16), Rect(242, 32, 50, 16), Rect(242, 160, 50, 16),
     };
 
-    for(unsigned char i=0; i<TT_COUNT; ++i)
+    for(unsigned char i = 0; i < TT_COUNT; ++i)
     {
         TerrainType t = TerrainType(i);
         if(TerrainData::IsAnimated(t))
-            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t), TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
+            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t),
+                                                            TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
         else
             terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
     }
@@ -976,7 +964,8 @@ glArchivItem_Sound* Loader::GetSoundN(const std::string& file, unsigned nr)
 
 std::string Loader::GetTextN(const std::string& file, unsigned nr)
 {
-    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv.get(nr)); return archiv ? archiv->getText() : "text missing";
+    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv.get(nr));
+    return archiv ? archiv->getText() : "text missing";
 }
 
 libsiedler2::ArchivInfo* Loader::GetInfoN(const std::string& file)
@@ -1033,7 +1022,7 @@ libsiedler2::ArchivItem_Ini* Loader::GetSettingsIniN(const std::string& name)
     return static_cast<libsiedler2::ArchivItem_Ini*>(GetInfoN(CONFIG_NAME)->find(name));
 }
 
-glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame/* = 0*/)
+glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame /* = 0*/)
 {
     if(TerrainData::IsAnimated(t))
     {
@@ -1041,7 +1030,7 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
         if(!archive)
             throw std::runtime_error("Invalid terrain texture requested");
         return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
-    }else
+    } else
     {
         glArchivItem_Bitmap* bmp = terrainTextures[t];
         if(!bmp)
@@ -1078,7 +1067,8 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index, uint32_t colorShift)
+libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
+                                                        uint32_t colorShift)
 {
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
@@ -1106,7 +1096,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
             }
         }
 
-        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED,palette);
+        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
         if(colorShift)
         {
             bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
@@ -1206,7 +1196,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
         std::stringstream nrs;
         int nr = -1;
         nrs << filename;
-        if(! (nrs >> nr) )
+        if(!(nrs >> nr))
             nr = -1;
 
         // Dateiname zerlegen
@@ -1239,15 +1229,15 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 dy = atoi(it->substr(2).c_str());
         }
 
-        if( wf.back() == "empty" ) // Placeholder
+        if(wf.back() == "empty") // Placeholder
         {
             LOG.write(_("Skipping %s\n")) % *itFile;
             to.alloc_inc(1);
             continue;
-        }else if( wf.back() == "bmp" ) // Bitmap
+        } else if(wf.back() == "bmp") // Bitmap
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *itFile, palette, temp ) )
+            if(!LoadArchiv(*itFile, palette, temp))
                 return false;
 
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
@@ -1274,24 +1264,27 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 case libsiedler2::BOBTYPE_BITMAP_SHADOW:
                 case libsiedler2::BOBTYPE_BITMAP_RAW:
                 {
-                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_BGRA, palette);
-                } break;
+                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000,
+                                                                    libsiedler2::FORMAT_BGRA, palette);
+                }
+                break;
                 case libsiedler2::BOBTYPE_BITMAP_PLAYER:
                 {
-                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_BGRA, palette, 128);
-                } break;
-                default:
-                    throw std::logic_error("Invalid Bitmap type");
+                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000,
+                                                                           libsiedler2::FORMAT_BGRA, palette, 128);
+                }
+                break;
+                default: throw std::logic_error("Invalid Bitmap type");
             }
 
             item = out;
-        }else if( (wf.back() == "bbm") || (wf.back() == "act") ) // Palettes
+        } else if((wf.back() == "bbm") || (wf.back() == "act")) // Palettes
         {
             libsiedler2::ArchivInfo temp;
-            if(!LoadArchiv( *itFile, palette, temp ) )
+            if(!LoadArchiv(*itFile, palette, temp))
                 return false;
             item = GlAllocator().clone(*temp.get(0));
-        }else if( wf.back() == "fon" ) // Font
+        } else if(wf.back() == "fon") // Font
         {
             glArchivItem_Font* font = new glArchivItem_Font();
             font->setName(filename);
@@ -1314,8 +1307,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 if(nr >= (int)to.size())
                     to.alloc_inc(nr - to.size() + 1);
                 to.set(nr, item);
-            }
-            else
+            } else
                 to.push(item);
         }
     }
@@ -1328,12 +1320,13 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
  *
  *  @param pfad Path to file or directory
  *  @param palette Palette to use for possible graphic files
- *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are removed/overwritten first
+ *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are
+ * removed/overwritten first
  */
 bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal)
 {
     std::string lowerPath = pfad;
-    std::transform( lowerPath.begin(), lowerPath.end(), lowerPath.begin(), tolower );
+    std::transform(lowerPath.begin(), lowerPath.end(), lowerPath.begin(), tolower);
 
     boost::filesystem::path filePath(lowerPath);
     boost::filesystem::path fileName = filePath.filename();
@@ -1351,7 +1344,8 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     if(isLoaded && isOriginal)
         return true;
 
-    if(!isLoaded){
+    if(!isLoaded)
+    {
         entry.hasOverrides = !isOriginal;
         return LoadFile(pfad, palette, entry.archiv);
     }

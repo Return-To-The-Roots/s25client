@@ -17,23 +17,23 @@
 
 #include "defines.h" // IWYU-pragma: keep
 #include "iwMapDebug.h"
-#include "controls/ctrlComboBox.h"
-#include "controls/ctrlCheck.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
-#include "world/GameWorldView.h"
-#include "world/GameWorldBase.h"
-#include "world/TerritoryRegion.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "controls/ctrlCheck.h"
+#include "controls/ctrlComboBox.h"
+#include "helpers/converters.h"
+#include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
+#include "world/TerritoryRegion.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/const_gui_ids.h"
-#include "helpers/converters.h"
 #include <boost/format.hpp>
 
-class iwMapDebug::DebugPrinter: public IDebugNodePrinter
+class iwMapDebug::DebugPrinter : public IDebugNodePrinter
 {
 public:
-    DebugPrinter(const GameWorldBase& gwb): showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont){}
+    DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont) {}
 
     void print(const MapPoint& pt, const DrawPoint& displayPt) override
     {
@@ -43,38 +43,32 @@ public:
         const MapNode& node = gw.GetNode(pt);
         switch(showDataIdx)
         {
-        case 1:
-            if(node.reserved)
-                data = "R";
-            break;
-        case 2:
-            data = helpers::toString(static_cast<unsigned>(node.altitude));
-            break;
-        case 3:
-            data = helpers::toString(static_cast<unsigned>(node.resources));
-            break;
-        case 4:
-            if(node.seaId)
-                data = helpers::toString(node.seaId);
-            else if(gw.GetSeaFromCoastalPoint(pt))
-                data = "C";
-            break;
-        case 5:
-            data = helpers::toString(static_cast<unsigned>(node.owner));
-            break;
-        case 6:
-        {
-            bool isAllowed = TerritoryRegion::IsPointValid(gw, gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
-            coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
-            if(!showCoords)
-                data = isAllowed ? 'y' : 'n';
-            break;
+            case 1:
+                if(node.reserved)
+                    data = "R";
+                break;
+            case 2: data = helpers::toString(static_cast<unsigned>(node.altitude)); break;
+            case 3: data = helpers::toString(static_cast<unsigned>(node.resources)); break;
+            case 4:
+                if(node.seaId)
+                    data = helpers::toString(node.seaId);
+                else if(gw.GetSeaFromCoastalPoint(pt))
+                    data = "C";
+                break;
+            case 5: data = helpers::toString(static_cast<unsigned>(node.owner)); break;
+            case 6:
+            {
+                bool isAllowed = TerritoryRegion::IsPointValid(gw, gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
+                coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
+                if(!showCoords)
+                    data = isAllowed ? 'y' : 'n';
+                break;
+            }
+            default: return;
         }
-        default:
-            return;
-        }        
 
-        if(showCoords){
+        if(showCoords)
+        {
             std::string coord = helpers::toString(pt.x) + ":" + helpers::toString(pt.y);
             font->Draw(displayPt, coord, 0, coordsColor);
         }
@@ -89,9 +83,9 @@ public:
     glArchivItem_Font* font;
 };
 
-iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating):
-    IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
+iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
+    : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
 {
     gwv.SetDebugNodePrinter(printer);
 

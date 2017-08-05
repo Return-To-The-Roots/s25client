@@ -23,8 +23,8 @@
 
 class iwTextfile : public IngameWindow
 {
-    public:
-        iwTextfile(const std::string& filename, const std::string& title);
+public:
+    iwTextfile(const std::string& filename, const std::string& title);
 };
 
 #endif // !iwTextfile_H_INCLUDED

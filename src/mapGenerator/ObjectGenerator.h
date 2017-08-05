@@ -19,8 +19,8 @@
 #define ObjectGenerator_h__
 
 #include "mapGenerator/Map.h"
-#include "gameData/TerrainData.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/TerrainData.h"
 
 class RandomConfig;
 
@@ -30,20 +30,20 @@ class RandomConfig;
 class ObjectGenerator
 {
     RandomConfig& config;
-    public:
 
-        ObjectGenerator(RandomConfig& config): config(config){}
-    
+public:
+    ObjectGenerator(RandomConfig& config) : config(config) {}
+
     /**
      * Creates a new texture for the specified terrain type.
      * @param map map to place the texture on
      * @param index vertex index to place the texture on
      * @param harbor whether or not enable harbor placement on the texture. To enable the player to
-     *      place a harbor at the position of the texture, it need to be close to water. Also keep 
+     *      place a harbor at the position of the texture, it need to be close to water. Also keep
      *      in mind, only terrain types which allow buildings also support harbor placement.
      */
     static void CreateTexture(Map& map, int index, TerrainType terrain, bool harbor = false);
-    
+
     /**
      * Checks whether or not the specified texture is representing the specified terrain.
      * @param map map of the vertex to check
@@ -52,7 +52,7 @@ class ObjectGenerator
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
     static bool IsTexture(const Map& map, int index, TerrainType terrain);
-    
+
     /**
      * Checks whether or not it is allowed to build a harbor on the specified terrain.
      * @param terrain terrain to check
@@ -102,7 +102,7 @@ class ObjectGenerator
      * @return a new forest animal
      */
     uint8_t CreateRandomForestAnimal(int likelihood);
-    
+
     /**
      * Creates a new random mountain resources (gold, coal, granite, iron).
      * @param ratioGold ratio of gold placed as mountain resource on the map
@@ -111,10 +111,7 @@ class ObjectGenerator
      * @param ratioGranite ratio of granite placed as mountain resource on the map
      * @return random piles of gold, coal, granite or iron
      */
-    uint8_t CreateRandomResource(unsigned ratioGold,
-                                        unsigned ratioIron,
-                                        unsigned ratioCoal,
-                                        unsigned ratioGranite);
+    uint8_t CreateRandomResource(unsigned ratioGold, unsigned ratioIron, unsigned ratioCoal, unsigned ratioGranite);
 
     /**
      * Creates a new, random ground animal.
@@ -122,7 +119,7 @@ class ObjectGenerator
      * @return a new ground animal
      */
     uint8_t CreateRandomAnimal(int likelihood);
-    
+
     /**
      * Checks whether or not the specified object is a tree.
      * @param map map of the vertex to check
@@ -144,14 +141,14 @@ class ObjectGenerator
      * @param index index of the vertex to create a new tree on
      */
     void CreateRandomPalm(Map& map, int index);
-    
+
     /**
      * Creates a new, random tree (including palm trees).
      * @param map map of the vertex to create a new tree on
      * @param index index of the vertex to create a new tree on
      */
     void CreateRandomMixedTree(Map& map, int index);
-    
+
     /**
      * Creates a random amount of stone.
      * @param map map of the vertex to create a new stone pile on

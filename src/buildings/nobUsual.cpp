@@ -18,25 +18,21 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nobUsual.h"
 
-#include "figures/nofBuildingWorker.h"
-#include "figures/nofPigbreeder.h"
-#include "Ware.h"
-#include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "SerializedGameData.h"
-#include "EventManager.h"
 #include "Loader.h"
+#include "SerializedGameData.h"
+#include "Ware.h"
+#include "figures/nofBuildingWorker.h"
+#include "figures/nofPigbreeder.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 #include <numeric>
 
-nobUsual::nobUsual(BuildingType type,
-                   MapPoint pos,
-                   unsigned char player,
-                   Nation nation)
-    : noBuilding(type, pos, player, nation),
-      worker(NULL), disable_production(false), disable_production_virtual(false),
+nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
+    : noBuilding(type, pos, player, nation), worker(NULL), disable_production(false), disable_production_virtual(false),
       last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), is_working(false)
 {
     std::fill(wares.begin(), wares.end(), 0);
@@ -73,16 +69,10 @@ nobUsual::nobUsual(BuildingType type,
     owner.AddUsualBuilding(this);
 }
 
-nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id):
-    noBuilding(sgd, obj_id),
-    worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)),
-    productivity(sgd.PopUnsignedShort()),
-    disable_production(sgd.PopBool()),
-    disable_production_virtual(disable_production),
-    last_ordered_ware(sgd.PopUnsignedChar()),
-    orderware_ev(sgd.PopEvent()),
-    productivity_ev(sgd.PopEvent()),
-    is_working(sgd.PopBool())
+nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
+    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)), productivity(sgd.PopUnsignedShort()),
+      disable_production(sgd.PopBool()), disable_production_virtual(disable_production), last_ordered_ware(sgd.PopUnsignedChar()),
+      orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()), is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)
         wares[i] = sgd.PopUnsignedChar();
@@ -119,7 +109,8 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
 }
 
 nobUsual::~nobUsual()
-{}
+{
+}
 
 void nobUsual::Destroy_nobUsual()
 {
@@ -128,7 +119,7 @@ void nobUsual::Destroy_nobUsual()
     {
         worker->LostWork();
         worker = NULL;
-    }else
+    } else
         gwg->GetPlayer(player).JobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
@@ -171,8 +162,10 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         DrawPoint smokeOffset(BUILDING_SMOKE_CONSTS[nation][type_ - 10].x, BUILDING_SMOKE_CONSTS[nation][type_ - 10].y);
         // Dann Qualm zeichnen (damit Qualm nicht synchron ist, x- und y- Koordinate als Unterscheidung
-        LOADER.GetMapImageN(692 + BUILDING_SMOKE_CONSTS[nation][type_ - 10].type * 8 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
-        ->DrawFull(drawPt + smokeOffset, 0x99EEEEEE);
+        LOADER
+          .GetMapImageN(692 + BUILDING_SMOKE_CONSTS[nation][type_ - 10].type * 8
+                        + GAMECLIENT.GetGlobalAnimation(8, 5, 2, (GetX() + GetY()) * 100))
+          ->DrawFull(drawPt + smokeOffset, 0x99EEEEEE);
     }
 
     // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
@@ -190,16 +183,14 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const DrawPointInit DONKEY_OFFSETS[NAT_COUNT][3] = {
-            {{13, -9}, {26, -9},  {39, -9}},
-            {{3, -17}, {16, -17}, {30, -17}},
-            {{2, -21}, {15, -21}, {29, -21}},
-            {{7, -17}, {18, -17}, {30, -17}},
-            {{3, -22}, {16, -22}, {30, -22}}
-        };
+        const DrawPointInit DONKEY_OFFSETS[NAT_COUNT][3] = {{{13, -9}, {26, -9}, {39, -9}},
+                                                            {{3, -17}, {16, -17}, {30, -17}},
+                                                            {{2, -21}, {15, -21}, {29, -21}},
+                                                            {{7, -17}, {18, -17}, {30, -17}},
+                                                            {{3, -22}, {16, -22}, {30, -22}}};
         // Animations-IDS des Esels
-        const boost::array<unsigned char, 25> DONKEY_ANIMATION =
-        {{ 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0 }};
+        const boost::array<unsigned char, 25> DONKEY_ANIMATION = {
+          {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
 
         // Die drei Esel zeichnen mithilfe von Globalanimation
         // Anzahl hängt von Produktivität der Eselzucht ab:
@@ -208,11 +199,17 @@ void nobUsual::Draw(DrawPoint drawPt)
         // 60-90 - 2 Esel
         // 90-100 - 3 Esel
         if(productivity >= 30)
-            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2))])->DrawFull(drawPt + DONKEY_OFFSETS[nation][0]);
+            LOADER
+              .GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() * (player + 2))])
+              ->DrawFull(drawPt + DONKEY_OFFSETS[nation][0]);
         if(productivity >= 60)
-            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetY())])->DrawFull(drawPt + DONKEY_OFFSETS[nation][1]);
+            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetY())])
+              ->DrawFull(drawPt + DONKEY_OFFSETS[nation][1]);
         if(productivity >= 90)
-            LOADER.GetMapImageN(2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() + GetY() * (nation + 1))])->DrawFull(drawPt + DONKEY_OFFSETS[nation][2]);
+            LOADER
+              .GetMapImageN(
+                2180 + DONKEY_ANIMATION[GAMECLIENT.GetGlobalAnimation(DONKEY_ANIMATION.size(), 5, 2, GetX() + GetY() * (nation + 1))])
+              ->DrawFull(drawPt + DONKEY_OFFSETS[nation][2]);
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
     else if(type_ == BLD_CATAPULT && !is_working)
@@ -224,34 +221,30 @@ void nobUsual::Draw(DrawPoint drawPt)
     else if(type_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const DrawPointInit PIG_POSITIONS[NAT_COUNT][5] =
-        {
-            //  gr. S. 1.klS 2. klS usw
-            { {  3, -8}, { 17,   3}, {-12,  4}, { -2, 10}, {-22, 11} }, // Afrikaner
-            { {-16,  0}, {-37,   0}, {-32,  8}, {-16, 10}, {-22, 18} }, // Japaner
-            { {-15,  0}, { -4,   9}, {-22, 10}, {  2, 19}, {-15, 20} }, // Römer
-            { {  5, -5}, { 25, -12}, { -7,  7}, {-23, 11}, {-10, 14} }, // Wikinger
-            { {-16,  5}, {-37,   5}, {-32, -1}, {-16, 15}, {-27, 18} } // Babylonier
+        const DrawPointInit PIG_POSITIONS[NAT_COUNT][5] = {
+          //  gr. S. 1.klS 2. klS usw
+          {{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}},    // Afrikaner
+          {{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}, // Japaner
+          {{-15, 0}, {-4, 9}, {-22, 10}, {2, 19}, {-15, 20}},   // Römer
+          {{5, -5}, {25, -12}, {-7, 7}, {-23, 11}, {-10, 14}},  // Wikinger
+          {{-16, 5}, {-37, 5}, {-32, -1}, {-16, 15}, {-27, 18}} // Babylonier
         };
-
 
         /// Großes Schwein zeichnen
         LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
-        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))->DrawFull(drawPt + PIG_POSITIONS[nation][0]);
+        LOADER.GetMapImageN(2100 + GAMECLIENT.GetGlobalAnimation(12, 3, 1, GetX() + GetY() + GetObjId()))
+          ->DrawFull(drawPt + PIG_POSITIONS[nation][0]);
 
         // Die 4 kleinen Schweinchen, je nach Produktivität
         for(unsigned i = 1; i < min<unsigned>(unsigned(productivity) / 20 + 1, 5); ++i)
         {
-            //A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three times as much as the others ones
-            //To get random-looking, non synchronous, sweet little pigs
-            const unsigned char smallpig_animations[63] =
-            {
-                0, 0, 3, 2, 0, 0, 1, 3, 0, 3, 1, 3, 2, 0, 0, 1,
-                0, 0, 1, 3, 2, 0, 1, 1, 0, 0, 2, 1, 0, 1, 0, 2,
-                2, 0, 0, 2, 2, 0, 1, 0, 3, 1, 2, 0, 1, 2, 2, 0,
-                0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0
-            };
-            const unsigned short animpos = GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
+            // A random (really, dice-rolled by hand:) ) order of the four possible pig animations, with eating three times as much as the
+            // others ones  To get random-looking, non synchronous, sweet little pigs
+            const unsigned char smallpig_animations[63] = {0, 0, 3, 2, 0, 0, 1, 3, 0, 3, 1, 3, 2, 0, 0, 1, 0, 0, 1, 3, 2,
+                                                           0, 1, 1, 0, 0, 2, 1, 0, 1, 0, 2, 2, 0, 0, 2, 2, 0, 1, 0, 3, 1,
+                                                           2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
+            const unsigned short animpos =
+              GAMECLIENT.GetGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + GetX() * GetObjId() + GetY() * i);
             LOADER.GetMapImageN(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);
             LOADER.GetMapImageN(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)->DrawFull(drawPt + PIG_POSITIONS[nation][i]);
         }
@@ -261,8 +254,8 @@ void nobUsual::Draw(DrawPoint drawPt)
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(IsMine() && worker && nation == NAT_AFRICANS)
-        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))->
-        DrawFull(drawPt + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE]);
+        LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
+          ->DrawFull(drawPt + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE]);
 }
 
 void nobUsual::HandleEvent(const unsigned id)
@@ -282,8 +275,7 @@ void nobUsual::HandleEvent(const unsigned id)
 
         // Event für nächste Abrechnung
         productivity_ev = GetEvMgr().AddEvent(this, 400, 1);
-    }
-    else
+    } else
     {
         // Ware bestellen (falls noch Platz ist) und nicht an Betriebe, die stillgelegt wurden!
         if(!disable_production)
@@ -311,7 +303,6 @@ void nobUsual::HandleEvent(const unsigned id)
         // Nach ner bestimmten Zeit dann nächste Ware holen
         orderware_ev = GetEvMgr().AddEvent(this, 210);
     }
-
 }
 
 void nobUsual::AddWare(Ware*& ware)
@@ -370,7 +361,7 @@ void nobUsual::WareLost(Ware* ware)
     }
 }
 
-void nobUsual::GotWorker(Job  /*job*/, noFigure* worker)
+void nobUsual::GotWorker(Job /*job*/, noFigure* worker)
 {
     this->worker = static_cast<nofBuildingWorker*>(worker);
 
@@ -418,7 +409,8 @@ void nobUsual::ConsumeWares()
 
     if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed_count == 3)
     {
-        // Bei Bergwerken wird immer nur eine Lebensmittelart "konsumiert" und es wird natürlich immer die genommen, die am meisten vorhanden ist
+        // Bei Bergwerken wird immer nur eine Lebensmittelart "konsumiert" und es wird natürlich immer die genommen, die am meisten
+        // vorhanden ist
         unsigned char best = 0;
 
         for(unsigned char i = 0; i < 3; ++i)
@@ -429,8 +421,7 @@ void nobUsual::ConsumeWares()
                 best = wares[i];
             }
         }
-    }
-    else
+    } else
     {
         if(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[0] != GD_NOTHING)
             ware_type = 0;
@@ -465,8 +456,7 @@ void nobUsual::ConsumeWares()
                     RTTR_Assert(helpers::contains(ordered_wares[1], w));
             }
 
-        }
-        else
+        } else
         {
             // Bestand verringern
             --wares[ware_type];
@@ -474,7 +464,7 @@ void nobUsual::ConsumeWares()
             gwg->GetPlayer(player).DecreaseInventoryWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], 1);
 
             // try to get ware from warehouses
-            if (wares[ware_type] < 2)
+            if(wares[ware_type] < 2)
             {
                 Ware* w = gwg->GetPlayer(player).OrderWare(USUAL_BUILDING_CONSTS[type_ - 10].wares_needed[ware_type], this);
                 if(w)
@@ -482,10 +472,9 @@ void nobUsual::ConsumeWares()
             }
         }
     }
-
 }
 
-unsigned nobUsual::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType type)
+unsigned nobUsual::CalcDistributionPoints(noRoadNode* /*start*/, const GoodType type)
 {
     // Warentyp ermitteln
     unsigned id;
@@ -518,9 +507,9 @@ unsigned nobUsual::CalcDistributionPoints(noRoadNode*  /*start*/, const GoodType
     // Wenn hier schon Waren drin sind oder welche bestellt sind, wirkt sich das natürlich negativ auf die "Wichtigkeit" aus
     points -= (wares[id] + ordered_wares[id].size()) * 30;
 
-    if (points > 10000) // "underflow" ;)
+    if(points > 10000) // "underflow" ;)
     {
-        return(0);
+        return (0);
     }
 
     return points;
@@ -562,8 +551,7 @@ void nobUsual::SetProductionEnabled(const bool enabled)
         // auf die Arbeit warteet
         if(worker)
             worker->ProductionStopped();
-    }
-    else
+    } else
     {
         // Wenn sie wieder aktiviert wurde, evtl wieder mit arbeiten anfangen, falls es einen Arbeiter gibt
         if(worker)
@@ -573,7 +561,8 @@ void nobUsual::SetProductionEnabled(const bool enabled)
 
 bool nobUsual::HasWorker() const
 {
-    return worker && worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK;;
+    return worker && worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK;
+    ;
 }
 
 void nobUsual::SetProductivityToZero()

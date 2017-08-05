@@ -24,36 +24,33 @@ class SerializedGameData;
 /// Extraklasse für ein Schiffsbauer-Gebäude, da hier extra Optionen eingestellt werden müssen
 class nobShipYard : public nobUsual
 {
-    public:
+public:
+    /// Modi für den Schiffsbauer
+    enum Mode
+    {
+        BOATS = 0, // baut kleine Boote
+        SHIPS      // baut große Schiffe
+    };
 
-        /// Modi für den Schiffsbauer
-        enum Mode
-        {
-            BOATS = 0, // baut kleine Boote
-            SHIPS // baut große Schiffe
-        };
+private:
+    /// Aktueller Modus vom Schiffsbauer
+    Mode mode;
 
-    private:
+    friend class SerializedGameData;
+    friend class BuildingFactory;
+    nobShipYard(const MapPoint pt, const unsigned char player, const Nation nation);
+    nobShipYard(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aktueller Modus vom Schiffsbauer
-        Mode mode;
+public:
+    /// Serialisierungsfunktionen
+    void Serialize(SerializedGameData& sgd) const override;
 
-        friend class SerializedGameData;
-        friend class BuildingFactory;
-        nobShipYard(const MapPoint pt, const unsigned char player, const Nation nation);
-        nobShipYard(SerializedGameData& sgd, const unsigned obj_id);
+    GO_Type GetGOT() const override { return GOT_NOB_SHIPYARD; }
 
-    public:
-        /// Serialisierungsfunktionen
-        void Serialize(SerializedGameData& sgd) const override;
-
-        GO_Type GetGOT() const override { return GOT_NOB_SHIPYARD; }
-
-        /// Gibt aktuellen Modus zurück
-        Mode GetMode() const { return mode; }
-        /// Schaltet Modus entsprechend um
-        void ToggleMode();
+    /// Gibt aktuellen Modus zurück
+    Mode GetMode() const { return mode; }
+    /// Schaltet Modus entsprechend um
+    void ToggleMode();
 };
 
 #endif
-

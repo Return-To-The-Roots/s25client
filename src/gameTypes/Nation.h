@@ -23,16 +23,16 @@
 /// Nations (byte sized)
 enum Nation
 {
-	NAT_AFRICANS = 0,
-	NAT_JAPANESE,
-	NAT_ROMANS,
-	NAT_VIKINGS,
-	NAT_BABYLONIANS,
-	NAT_COUNT,
-	NAT_INVALID = 0xFF
+    NAT_AFRICANS = 0,
+    NAT_JAPANESE,
+    NAT_ROMANS,
+    NAT_VIKINGS,
+    NAT_BABYLONIANS,
+    NAT_COUNT,
+    NAT_INVALID = 0xFF
 };
 
-/// Number of native notions 
+/// Number of native notions
 #define NATIVE_NAT_COUNT 4
 
 #endif // Nation_h__

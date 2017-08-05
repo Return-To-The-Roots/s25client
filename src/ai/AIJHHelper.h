@@ -21,153 +21,158 @@
 
 //#define DEBUG_AI
 
-#include "gameTypes/Direction.h"
-#include "gameTypes/MapCoordinates.h"
-#include "gameTypes/BuildingTypes.h"
 #include "AIEvents.h"
 #include "ai/AIResource.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 
 #include <vector>
 
 class AIPlayerJH;
 struct PositionSearch;
 
-namespace AIJH
+namespace AIJH {
+const unsigned RES_TYPE_COUNT = 9;
+const unsigned RES_RADIUS[RES_TYPE_COUNT] = {
+  8, // Wood
+  8, // Stones
+  2, // Gold
+  2, // Ironore
+  2, // Coal
+  2, // Granite
+  3, // Plantspace
+  5, // Borderland
+  5  // Fish
+};
+
+struct Node
 {
-    const unsigned RES_TYPE_COUNT = 9;
-    const unsigned RES_RADIUS[RES_TYPE_COUNT] =
+    BuildingQuality bq;
+    Resource res;
+    bool owned;
+    bool reachable;
+    char failed_penalty; // when a node was marked reachable, but building failed, this field is >0
+    bool border;
+    bool farmed;
+};
+
+enum JobStatus
+{
+    JOB_WAITING,
+    JOB_EXECUTING_START,
+    JOB_EXECUTING_ROAD1,
+    JOB_EXECUTING_ROAD2,
+    JOB_EXECUTING_ROAD2_2,
+    JOB_FINISHED,
+    JOB_FAILED
+};
+
+enum SearchMode
+{
+    SEARCHMODE_NONE,
+    SEARCHMODE_RADIUS,
+    SEARCHMODE_GLOBAL
+};
+
+class Job
+{
+    friend class iwAIDebug;
+
+public:
+    Job(AIPlayerJH& aijh);
+    virtual ~Job() {}
+    virtual void ExecuteJob() { return; }
+    JobStatus GetStatus() { return status; }
+    void SetStatus(JobStatus s) { status = s; }
+
+protected:
+    AIPlayerJH& aijh;
+    JobStatus status;
+};
+
+class JobWithTarget
+{
+public:
+    JobWithTarget() : target(0xFFFF, 0xFFFF) {}
+    inline MapPoint GetTarget() const { return target; }
+    void SetTargetX(MapCoord x) { target.x = x; }
+    void SetTargetY(MapCoord y) { target.y = y; }
+    void SetTarget(MapPoint newTarget) { target = newTarget; }
+
+protected:
+    MapPoint target;
+};
+
+class BuildJob : public Job, public JobWithTarget
+{
+    friend class iwAIDebug;
+
+public:
+    BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
+        : Job(aijh), type(type), around(around), searchMode(searchMode)
     {
-        8, // Wood
-        8, // Stones
-        2, // Gold
-        2, // Ironore
-        2, // Coal
-        2, // Granite
-        3, // Plantspace
-        5, // Borderland
-        5 // Fish
-    };
+        RTTR_Assert(type != BLD_NOTHING);
+    }
 
-    struct Node
-    {
-        BuildingQuality bq;
-        Resource res;
-        bool owned;
-        bool reachable;
-        char failed_penalty;  // when a node was marked reachable, but building failed, this field is >0
-        bool border;
-        bool farmed;
-    };
+    ~BuildJob() override {}
+    void ExecuteJob() override;
+    inline BuildingType GetType() const { return type; }
+    inline MapPoint GetAround() const { return around; }
 
-    enum JobStatus
-    {
-        JOB_WAITING,
-        JOB_EXECUTING_START,
-        JOB_EXECUTING_ROAD1,
-        JOB_EXECUTING_ROAD2,
-        JOB_EXECUTING_ROAD2_2,
-        JOB_FINISHED,
-        JOB_FAILED
-    };
+private:
+    BuildingType type;
+    MapPoint around;
+    SearchMode searchMode;
+    std::vector<Direction> route;
 
-    enum SearchMode
-    {
-        SEARCHMODE_NONE,
-        SEARCHMODE_RADIUS,
-        SEARCHMODE_GLOBAL
-    };
+    void TryToBuild();
+    void BuildMainRoad();
+    void TryToBuildSecondaryRoad();
+};
 
-    class Job
-    {
-            friend class iwAIDebug;
-        public:
-            Job(AIPlayerJH& aijh);
-            virtual ~Job() { }
-            virtual void ExecuteJob() { return; }
-            JobStatus GetStatus() { return status; }
-			void SetStatus(JobStatus s) {status=s;}
-        protected:
-            AIPlayerJH& aijh;
-            JobStatus status;
-    };
+class ConnectJob : public Job, public JobWithTarget
+{
+    friend class iwAIDebug;
 
-    class JobWithTarget{
-    public:
-        JobWithTarget(): target(0xFFFF, 0xFFFF){}
-        inline MapPoint GetTarget() const { return target; }	
-        void SetTargetX(MapCoord x) {target.x=x;}
-        void SetTargetY(MapCoord y) {target.y=y;}
-        void SetTarget(MapPoint newTarget) {target = newTarget;}
-    protected:
-        MapPoint target;
-    };
+public:
+    ConnectJob(AIPlayerJH& aijh, MapPoint flagPos) : Job(aijh), flagPos(flagPos) {}
+    ~ConnectJob() override {}
+    void ExecuteJob() override;
+    MapPoint getFlag() const { return flagPos; }
 
-    class BuildJob : public Job, public JobWithTarget
-    {
-            friend class iwAIDebug;
-        public:
-            BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
-                : Job(aijh), type(type), around(around), searchMode(searchMode)
-            {
-                RTTR_Assert(type != BLD_NOTHING);
-            }
+private:
+    MapPoint flagPos;
+    std::vector<Direction> route;
+};
 
-            ~BuildJob() override { }
-            void ExecuteJob() override;
-            inline BuildingType GetType() const { return type; }            
-            inline MapPoint GetAround() const { return around; }
+class EventJob : public Job
+{
+    friend class iwAIDebug;
 
-        private:
-            BuildingType type;
-            MapPoint around;
-            SearchMode searchMode;
-            std::vector<Direction> route;
+public:
+    EventJob(AIPlayerJH& aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) {}
+    ~EventJob() override { delete ev; }
+    void ExecuteJob() override;
+    inline AIEvent::Base* GetEvent() const { return ev; }
 
-            void TryToBuild();
-            void BuildMainRoad();
-            void TryToBuildSecondaryRoad();
-    };
+private:
+    AIEvent::Base* ev;
+};
 
-    class ConnectJob : public Job, public JobWithTarget
-    {
-            friend class iwAIDebug;
-        public:
-            ConnectJob(AIPlayerJH& aijh, MapPoint flagPos)
-                : Job(aijh), flagPos(flagPos) { }
-            ~ConnectJob() override { }
-            void ExecuteJob() override;
-			MapPoint getFlag() const {return flagPos;}
-        private:
-            MapPoint flagPos;
-            std::vector<Direction> route;
-    };
+class SearchJob : public Job
+{
+    friend class iwAIDebug;
 
-    class EventJob : public Job
-    {
-            friend class iwAIDebug;
-        public:
-            EventJob(AIPlayerJH& aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) { }
-            ~EventJob() override { delete ev; }
-            void ExecuteJob() override;
-            inline AIEvent::Base* GetEvent() const { return ev; }
-        private:
-            AIEvent::Base* ev;
-    };
+public:
+    SearchJob(AIPlayerJH& aijh, PositionSearch* search) : Job(aijh), search(search) {}
+    ~SearchJob() override;
+    void ExecuteJob() override;
 
+private:
+    PositionSearch* search;
+};
 
-    class SearchJob : public Job
-    {
-            friend class iwAIDebug;
-        public:
-            SearchJob(AIPlayerJH& aijh, PositionSearch* search) : Job(aijh), search(search) { }
-            ~SearchJob() override;
-            void ExecuteJob() override;
+} // namespace AIJH
 
-        private:
-            PositionSearch* search;
-    };
-
-}
-
-
-#endif //!AIJHHELPER_H_INCLUDED
+#endif //! AIJHHELPER_H_INCLUDED

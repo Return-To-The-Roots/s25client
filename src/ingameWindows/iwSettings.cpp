@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwSettings.h"
 
-#include "Settings.h"
 #include "Loader.h"
+#include "Settings.h"
 #include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlOptionGroup.h"
@@ -31,8 +31,8 @@
 iwSettings::iwSettings()
     : IngameWindow(CGI_SETTINGS, IngameWindow::posLastOrCenter, Extent(370, 172), _("Settings"), LOADER.GetImageN("resource", 41))
 {
-    AddText(46, DrawPoint( 15,  40), _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
-    AddText(47, DrawPoint( 15,  85), _("Mode:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(46, DrawPoint(15, 40), _("Fullscreen resolution:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(47, DrawPoint(15, 85), _("Mode:"), COLOR_YELLOW, 0, NormalFont);
     AddCheckBox(4, DrawPoint(200, 124), Extent(150, 26), TC_GREY, _("Statistics Scale"), NormalFont, false);
     GetCtrl<ctrlCheck>(4)->SetCheck(SETTINGS.ingame.scale_statistics);
 
@@ -43,7 +43,7 @@ iwSettings::iwSettings()
 
     // "Vollbild" setzen
     optiongroup = GetCtrl<ctrlOptionGroup>(3);
-    optiongroup->SetSelection( (SETTINGS.video.fullscreen ? 1 : 2) ); //-V807
+    optiongroup->SetSelection((SETTINGS.video.fullscreen ? 1 : 2)); //-V807
     VIDEODRIVER.ListVideoModes(video_modes);
 
     // "Auflösung"
@@ -61,11 +61,9 @@ iwSettings::iwSettings()
             GetCtrl<ctrlComboBox>(0)->AddString(str);
 
             // Ist das die aktuelle Auflösung? Dann selektieren
-            if(video_modes[i].width == SETTINGS.video.fullscreen_width &&
-                    video_modes[i].height == SETTINGS.video.fullscreen_height)
+            if(video_modes[i].width == SETTINGS.video.fullscreen_width && video_modes[i].height == SETTINGS.video.fullscreen_height)
                 GetCtrl<ctrlComboBox>(0)->SetSelection(i);
-        }
-        else
+        } else
         {
             video_modes.erase(video_modes.begin() + i);
             --i;
@@ -79,32 +77,29 @@ iwSettings::~iwSettings()
     SETTINGS.video.fullscreen_width = video_modes[SizeCombo->GetSelection()].width; //-V807
     SETTINGS.video.fullscreen_height = video_modes[SizeCombo->GetSelection()].height;
 
-    // Auflösung/Vollbildmodus geändert?
+// Auflösung/Vollbildmodus geändert?
 #ifdef _WIN32
-    if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
-            ||
-            SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight()
-            || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen()))
+    if((SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth() || SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight()
+        || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen()))
     {
-        if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width,
-                SETTINGS.video.fullscreen_height,
-                SETTINGS.video.fullscreen))
+        if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height, SETTINGS.video.fullscreen))
         {
-            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+            // MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         }
     }
 #else
-    if((SETTINGS.video.fullscreen &&
-            (SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
-             ||
-             SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight())
-       ) || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
+    if((SETTINGS.video.fullscreen
+        && (SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
+            || SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight()))
+       || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
     {
         if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
-                SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
-                SETTINGS.video.fullscreen))
+                                     SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
+                                     SETTINGS.video.fullscreen))
         {
-            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            // WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
+            // MSB_OK, MSB_EXCLAMATIONGREEN, 1));
         }
     }
 #endif
@@ -117,12 +112,8 @@ void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
         case 3:
             switch(selection)
             {
-                case 1:
-                    SETTINGS.video.fullscreen = true;
-                    break;
-                case 2:
-                    SETTINGS.video.fullscreen = false;
-                    break;
+                case 1: SETTINGS.video.fullscreen = true; break;
+                case 2: SETTINGS.video.fullscreen = false; break;
             }
             break;
     }
@@ -137,9 +128,7 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
             SETTINGS.ingame.scale_statistics = checked;
             break;
         }
-        case 5:
-        {
-            break;
+        case 5: { break;
         }
     }
 }

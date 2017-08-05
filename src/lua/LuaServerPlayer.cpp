@@ -17,11 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaServerPlayer.h"
+#include "GameMessages.h"
 #include "GameServerInterface.h"
 #include "JoinPlayerInfo.h"
-#include "GameMessages.h"
-#include "lua/LuaHelpers.h"
 #include "helpers/converters.h"
+#include "lua/LuaHelpers.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/colors.h"
 #include <stdexcept>
@@ -31,20 +31,20 @@ const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
     return player;
 }
 
-LuaServerPlayer::LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId):
-    gameServer_(gameServer), playerId(playerId), player(gameServer_.GetJoinPlayer(playerId))
-{}
+LuaServerPlayer::LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId)
+    : gameServer_(gameServer), playerId(playerId), player(gameServer_.GetJoinPlayer(playerId))
+{
+}
 
 void LuaServerPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaServerPlayer, LuaPlayerBase>()
-        .addFunction("SetNation", &LuaServerPlayer::SetNation)
-        .addFunction("SetTeam", &LuaServerPlayer::SetTeam)
-        .addFunction("SetColor", &LuaServerPlayer::SetColor)
-        .addFunction("Close", &LuaServerPlayer::Close)
-        .addFunction("SetAI", &LuaServerPlayer::SetAI)
-        );
+                               .addFunction("SetNation", &LuaServerPlayer::SetNation)
+                               .addFunction("SetTeam", &LuaServerPlayer::SetTeam)
+                               .addFunction("SetColor", &LuaServerPlayer::SetColor)
+                               .addFunction("Close", &LuaServerPlayer::Close)
+                               .addFunction("SetAI", &LuaServerPlayer::SetAI));
 }
 
 void LuaServerPlayer::SetNation(Nation nat)
@@ -90,11 +90,11 @@ void LuaServerPlayer::SetAI(unsigned level)
     AI::Info info(AI::DEFAULT);
     switch(level)
     {
-    case 0: info.type = AI::DUMMY; break;
-    case 1: info.level = AI::EASY; break;
-    case 2: info.level = AI::MEDIUM; break;
-    case 3: info.level = AI::HARD; break;
-    default: lua::assertTrue(false, "Invalid AI level");
+        case 0: info.type = AI::DUMMY; break;
+        case 1: info.level = AI::EASY; break;
+        case 2: info.level = AI::MEDIUM; break;
+        case 3: info.level = AI::HARD; break;
+        default: lua::assertTrue(false, "Invalid AI level");
     }
     if(player.ps == PS_OCCUPIED)
         gameServer_.KickPlayer(playerId);

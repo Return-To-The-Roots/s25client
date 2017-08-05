@@ -20,10 +20,10 @@
 
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
-#include "world/GameWorldGame.h"
 #include "PlayerInfo.h"
-#include "gameTypes/Nation.h"
+#include "world/GameWorldGame.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/Nation.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -40,13 +40,15 @@ struct WorldFixture
     GlobalGameSettings ggs;
     GameWorldGame world;
     T_WorldCreator worldCreator;
-    WorldFixture(): em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em), worldCreator(MapExtent(T_width, T_height), T_numPlayers)
+    WorldFixture()
+        : em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em),
+          worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {
         GameObject::SetPointers(&world);
         try
         {
             BOOST_REQUIRE(worldCreator(world));
-        }catch(std::exception& e)
+        } catch(std::exception& e)
         {
             GameObject::SetPointers(NULL);
             throw e;

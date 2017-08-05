@@ -17,14 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nobHQ.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "gameData/MilitaryConsts.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "Loader.h"
 #include "SerializedGameData.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
+#include "gameData/MilitaryConsts.h"
 #include <numeric>
 
 nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation, const bool isTent)
@@ -33,7 +33,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     // StartWaren setzen
     switch(gwg->GetGGS().startWares)
     {
-            //sehr wenig
+        // sehr wenig
         case 0:
             inventory.visual.goods[GD_BEER] = 0;
             inventory.visual.goods[GD_TONGS] = 1;
@@ -43,8 +43,8 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.goods[GD_PICKAXE] = 0;
             inventory.visual.goods[GD_SHOVEL] = 1;
             inventory.visual.goods[GD_CRUCIBLE] = 1;
-            inventory.visual.goods[GD_RODANDLINE] = 1;//??
-            inventory.visual.goods[GD_SCYTHE] = 2;//??
+            inventory.visual.goods[GD_RODANDLINE] = 1; //??
+            inventory.visual.goods[GD_SCYTHE] = 2;     //??
             inventory.visual.goods[GD_WATEREMPTY] = 0;
             inventory.visual.goods[GD_WATER] = 0;
             inventory.visual.goods[GD_CLEAVER] = 0;
@@ -103,7 +103,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.people[JOB_PACKDONKEY] = 2;
             break;
 
-            // Wenig
+        // Wenig
         case 1:
 
             inventory.visual.goods[GD_BEER] = 0;
@@ -174,7 +174,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.people[JOB_PACKDONKEY] = 4;
             break;
 
-            // Mittel
+        // Mittel
         case 2:
 
             inventory.visual.goods[GD_BEER] = 6;
@@ -245,7 +245,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
             inventory.visual.people[JOB_PACKDONKEY] = 8;
             break;
 
-            // Viel
+        // Viel
         case 3:
             inventory.visual.goods[GD_BEER] = 12;
             inventory.visual.goods[GD_TONGS] = 0;
@@ -372,17 +372,18 @@ void nobHQ::Draw(DrawPoint drawPt)
         DrawBaseBuilding(drawPt);
 
         // Draw at most 4 flags
-        const unsigned numSoldiers = std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetSoldiersCount());
+        const unsigned numSoldiers =
+          std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetSoldiersCount());
         DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
         for(unsigned i = min<unsigned>(numSoldiers, 4); i; --i)
         {
-            glArchivItem_Bitmap_Player* bitmap = LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
+            glArchivItem_Bitmap_Player* bitmap =
+              LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
             if(bitmap)
                 bitmap->DrawFull(flagsPos + DrawPoint(0, (i - 1) * 3), COLOR_WHITE, gwg->GetPlayer(player).color);
         }
     }
 }
-
 
 void nobHQ::HandleEvent(const unsigned id)
 {

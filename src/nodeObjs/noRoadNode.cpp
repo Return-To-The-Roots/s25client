@@ -18,15 +18,12 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noRoadNode.h"
 
-#include "RoadSegment.h"
 #include "GamePlayer.h"
+#include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 
-
-noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
-    : noCoordBase(nop, pos),
-      player(player)
+noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player) : noCoordBase(nop, pos), player(player)
 {
     for(unsigned i = 0; i < 6; ++i)
         routes[i] = 0;
@@ -51,29 +48,27 @@ void noRoadNode::Serialize_noRoadNode(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
 
     // the trick only seems to work for flags
-    if (this->GetGOT() == GOT_FLAG)
+    if(this->GetGOT() == GOT_FLAG)
     {
         // this is a trick:
         // -> initialize routes for flag with NULL
         // -> RoadSegment will set these later
-        for (unsigned i = 0; i < 6; ++i)
+        for(unsigned i = 0; i < 6; ++i)
         {
             sgd.PushObject(static_cast<GameObject*>(NULL), true);
         }
-    }
-    else
+    } else
     {
-        for (unsigned i = 0; i < 6; ++i)
+        for(unsigned i = 0; i < 6; ++i)
         {
             sgd.PushObject(routes[i], true);
         }
     }
 }
 
-noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    player(sgd.PopUnsignedChar())
+noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar())
 {
-    for (unsigned dir = 0; dir < Direction::COUNT; ++dir)
+    for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
         routes[dir] = sgd.PopObject<RoadSegment>(GOT_ROADSEGMENT);
     }
@@ -113,7 +108,7 @@ void noRoadNode::DestroyRoad(const Direction dir)
         {
             oflag->routes[z] = NULL;
             break;
-        }else
+        } else
             RTTR_Assert(z < 5); // Need to find it before last iteration
     }
 

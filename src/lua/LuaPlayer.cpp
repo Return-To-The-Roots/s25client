@@ -19,14 +19,14 @@
 #include "LuaPlayer.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
-#include "gameTypes/BuildingCount.h"
-#include "postSystem/PostMsgWithBuilding.h"
-#include "notifications/BuildingNote.h"
-#include "lua/LuaHelpers.h"
 #include "helpers/converters.h"
+#include "lua/LuaHelpers.h"
+#include "notifications/BuildingNote.h"
+#include "postSystem/PostMsgWithBuilding.h"
+#include "world/GameWorldGame.h"
+#include "gameTypes/BuildingCount.h"
 #include "libutil/src/Log.h"
 #include <stdexcept>
 
@@ -39,24 +39,23 @@ void LuaPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaPlayer, LuaPlayerBase>()
-        .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
-        .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
-        .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
-        .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
-        .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
-        .addFunction("ClearResources", &LuaPlayer::ClearResources)
-        .addFunction("AddWares", &LuaPlayer::AddWares)
-        .addFunction("AddPeople", &LuaPlayer::AddPeople)
-        .addFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
-        .addFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
-        .addFunction("GetWareCount", &LuaPlayer::GetWareCount)
-        .addFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
-        .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
-        .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
-        .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
-        .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
-        .addFunction("Surrender", &LuaPlayer::Surrender)
-    );
+                               .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
+                               .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
+                               .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
+                               .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
+                               .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
+                               .addFunction("ClearResources", &LuaPlayer::ClearResources)
+                               .addFunction("AddWares", &LuaPlayer::AddWares)
+                               .addFunction("AddPeople", &LuaPlayer::AddPeople)
+                               .addFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
+                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
+                               .addFunction("GetWareCount", &LuaPlayer::GetWareCount)
+                               .addFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
+                               .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
+                               .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
+                               .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
+                               .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
+                               .addFunction("Surrender", &LuaPlayer::Surrender));
 }
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
@@ -65,12 +64,9 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
     player.EnableBuilding(bld);
     if(notify)
     {
-        player.SendPostMessage(new PostMsgWithBuilding(
-            player.GetGameWorld().GetEvMgr().GetCurrentGF(),
-            std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
-            PostCategory::General,
-            bld,
-            player.nation));
+        player.SendPostMessage(new PostMsgWithBuilding(player.GetGameWorld().GetEvMgr().GetCurrentGF(),
+                                                       std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
+                                                       PostCategory::General, bld, player.nation));
     }
 }
 
@@ -118,11 +114,12 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             else if(curPolyStart < 0) // We don't have a current polygon? Can only happen for multiple nils (old style)
                 LOG.write("Duplicate nils found in SetRestrictedArea");
             else if(pts.size() - static_cast<unsigned>(curPolyStart) < 3)
-                throw std::runtime_error(std::string("Invalid polygon (less than 3 points) found at index ") + helpers::toString(std::distance(inPoints.cbegin(), it)));
+                throw std::runtime_error(std::string("Invalid polygon (less than 3 points) found at index ")
+                                         + helpers::toString(std::distance(inPoints.cbegin(), it)));
             else if(pts[curPolyStart] != pts.back()) // Close polygon if not already done
                 pts.push_back(pts[curPolyStart]);
             curPolyStart = -1;
-        }else
+        } else
         {
             // Do we start a new polygon?
             if(curPolyStart < 0)
@@ -144,7 +141,8 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             MapPoint pt(x, y);
             if(pt == MapPoint(0, 0))
             {
-                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and first pt after 0,0 matches last pt
+                // This might be the (old) separator if: We have a previous 0,0-pair, a valid polygon (>= 3 points) and first pt after 0,0
+                // matches last pt
                 if(lastNullPt >= 0 && pts.size() - lastNullPt >= 3 && pts[lastNullPt + 1] == pts.back())
                     isMultiPoly = true;
                 lastNullPt = pts.size();

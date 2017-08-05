@@ -21,52 +21,49 @@
 
 #include "desktops/dskMenuBase.h"
 
-#include "liblobby/src/LobbyInterface.h"
 #include "ClientInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 
 class iwLobbyServerInfo;
 class iwDirectIPCreate;
 class LobbyServerList;
 class LobbyPlayerList;
 
-class dskLobby:
-    public dskMenuBase,
-    public ClientInterface,
-    public LobbyInterface
+class dskLobby : public dskMenuBase, public ClientInterface, public LobbyInterface
 {
-    private:
-        const LobbyServerList* serverlist;
-        const LobbyPlayerList* playerlist;
-        iwLobbyServerInfo* serverInfoWnd;
-        iwDirectIPCreate* createServerWnd;
+private:
+    const LobbyServerList* serverlist;
+    const LobbyPlayerList* playerlist;
+    iwLobbyServerInfo* serverInfoWnd;
+    iwDirectIPCreate* createServerWnd;
 
-    public:
-        dskLobby();
+public:
+    dskLobby();
 
-        void UpdatePlayerList(bool first = false);
-        void UpdateServerList(bool first = false);
+    void UpdatePlayerList(bool first = false);
+    void UpdateServerList(bool first = false);
 
-        void LC_Connected() override;
+    void LC_Connected() override;
 
-        void LC_Status_ConnectionLost() override;
-        void LC_Status_IncompleteMessage() override;
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Status_ConnectionLost() override;
+    void LC_Status_IncompleteMessage() override;
+    void LC_Status_Error(const std::string& error) override;
 
-        void LC_Chat(const std::string& player, const std::string& text) override;
+    void LC_Chat(const std::string& player, const std::string& text) override;
 
-    protected:
-        void Msg_Timer(const unsigned ctrl_id) override;
-        void Msg_PaintBefore() override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_EditEnter(const unsigned ctrl_id) override;
-        void Msg_TableRightButton(const unsigned ctrl_id, const int selection) override;
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+protected:
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_TableRightButton(const unsigned ctrl_id, const int selection) override;
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
-        /**
-         * Connectes to the currently selected game and returns true on success
-         */
-        bool ConnectToSelectedGame();
+    /**
+     * Connectes to the currently selected game and returns true on success
+     */
+    bool ConnectToSelectedGame();
 };
 
 #endif // dskLOBBY_H_INCLUDED

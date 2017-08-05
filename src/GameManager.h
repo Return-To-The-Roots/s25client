@@ -26,73 +26,63 @@ enum CursorType
 {
     CURSOR_NONE,
     CURSOR_HAND,
-    CURSOR_SCROLL     = 32,
-    CURSOR_MOON       = 33,
-    CURSOR_RM         = 34,
+    CURSOR_SCROLL = 32,
+    CURSOR_MOON = 33,
+    CURSOR_RM = 34,
     CURSOR_RM_PRESSED = 35
 };
 
 /// "Die" GameManager-Klasse
 class GameManager : public Singleton<GameManager, SingletonPolicies::WithLongevity>
 {
-    public:
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 15;
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 15;
 
-        GameManager();
+    GameManager();
 
-        bool Start();
-        void Stop();
-        bool Run();
+    bool Start();
+    void Stop();
+    bool Run();
 
-        bool StartMenu();
-        bool ShowMenu();
+    bool StartMenu();
+    bool ShowMenu();
 
-        /// Average FPS Zähler zurücksetzen.
-        inline void ResetAverageFPS()
-        {
-            run_time = 0;
-            frame_count = 0;
-        }
+    /// Average FPS Zähler zurücksetzen.
+    inline void ResetAverageFPS()
+    {
+        run_time = 0;
+        frame_count = 0;
+    }
 
-        inline unsigned GetRuntime()
-        {
-            return run_time;
-        }
+    inline unsigned GetRuntime() { return run_time; }
 
-        inline unsigned GetFrameCount()
-        {
-            return frame_count;
-        }
+    inline unsigned GetFrameCount() { return frame_count; }
 
-        inline unsigned GetAverageFPS()
-        {
-            if(run_time == 0)
-                return 0;
-            return (frame_count / run_time);
-        }
+    inline unsigned GetAverageFPS()
+    {
+        if(run_time == 0)
+            return 0;
+        return (frame_count / run_time);
+    }
 
-        inline unsigned GetFPS()
-        {
-            return framerate;
-        }
+    inline unsigned GetFPS() { return framerate; }
 
-        void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
+    void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
 
-    private:
+private:
+    void DrawCursor();
 
-        void DrawCursor();
-
-    private:
-        unsigned frames;
-        unsigned frame_count;
-        unsigned framerate;
-        unsigned frame_time;
-        unsigned run_time;
-        unsigned last_time;
-		unsigned skipgf_last_time;
-		unsigned skipgf_last_report_gf;
-        CursorType cursor_;
-        CursorType cursor_next;
+private:
+    unsigned frames;
+    unsigned frame_count;
+    unsigned framerate;
+    unsigned frame_time;
+    unsigned run_time;
+    unsigned last_time;
+    unsigned skipgf_last_time;
+    unsigned skipgf_last_report_gf;
+    CursorType cursor_;
+    CursorType cursor_next;
 };
 
 #define GAMEMANAGER GameManager::inst()

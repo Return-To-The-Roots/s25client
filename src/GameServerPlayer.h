@@ -20,51 +20,49 @@
 #pragma once
 
 #include "JoinPlayerInfo.h"
-#include "libutil/src/Socket.h"
 #include "libutil/src/MessageQueue.h"
 #include "libutil/src/MyTime.h"
+#include "libutil/src/Socket.h"
 #include <vector>
 
 class GameMessage_GameCommand;
 class Serializer;
 
 // GamePlayerInfo für die PlayerSlots des Servers
-class GameServerPlayer: public JoinPlayerInfo
+class GameServerPlayer : public JoinPlayerInfo
 {
-    public:
-        GameServerPlayer();
-        ~GameServerPlayer();
+public:
+    GameServerPlayer();
+    ~GameServerPlayer();
 
-        /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
-        unsigned GetTimeOut() const;
+    /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
+    unsigned GetTimeOut() const;
 
-        void doPing();
-        void checkConnectTimeout();
-        void reserve(const Socket& sock);
-        void CloseConnections();
+    void doPing();
+    void checkConnectTimeout();
+    void reserve(const Socket& sock);
+    void CloseConnections();
 
-        /// Spieler laggt
-        void Lagging();
-        /// Spieler laggt nicht (mehr)
-        void NotLagging();
+    /// Spieler laggt
+    void Lagging();
+    /// Spieler laggt nicht (mehr)
+    void NotLagging();
 
-    private:
+private:
+    unsigned connecttime;
+    /// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
+    unser_time_t last_command_timeout;
 
-        unsigned connecttime;
-        /// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
-        unser_time_t last_command_timeout;
+public:
+    Socket so;
+    bool pinging;
 
-    public:
-        Socket so;
-        bool pinging;
+    MessageQueue send_queue;
+    MessageQueue recv_queue;
 
-        MessageQueue send_queue;
-        MessageQueue recv_queue;
+    std::vector<GameMessage_GameCommand> gc_queue;
 
-        std::vector<GameMessage_GameCommand> gc_queue;
-
-        unsigned lastping;
+    unsigned lastping;
 };
-
 
 #endif // GAMESERVERPLAYER_H_INCLUDED

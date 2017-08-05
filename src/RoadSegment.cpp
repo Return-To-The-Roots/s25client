@@ -17,33 +17,27 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "RoadSegment.h"
-#include "GamePlayer.h"
-#include "figures/nofCarrier.h"
-#include "nodeObjs/noRoadNode.h"
-#include "nodeObjs/noFlag.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "SerializedGameData.h"
-#include "Random.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
+#include "Random.h"
+#include "SerializedGameData.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "figures/nofCarrier.h"
 #include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noRoadNode.h"
 #include "libutil/src/Log.h"
 #include <stdexcept>
 
-RoadSegment::RoadSegment(const RoadType rt,
-                         noRoadNode* const f1,
-                         noRoadNode* const f2,
-                         const std::vector<Direction>& route)
+RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route)
     : rt(rt), f1(f1), f2(f2), route(route)
 {
     carriers_[0] = carriers_[1] = NULL;
 }
 
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id),
-      rt(static_cast<RoadType>(sgd.PopUnsignedChar())),
-      f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
-      f2(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
-      route(sgd.PopUnsignedShort())
+    : GameObject(sgd, obj_id), rt(static_cast<RoadType>(sgd.PopUnsignedChar())), f1(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)),
+      f2(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), route(sgd.PopUnsignedShort())
 {
     carriers_[0] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
     carriers_[1] = sgd.PopObject<nofCarrier>(GOT_NOF_CARRIER);
@@ -154,7 +148,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     // 1. Teilstück von F1 bis zu dieser F erstellen ( 1. Teilstück ist dieser Weg dann! )
 
     route.resize(length1);
-    //f1 = f1;
+    // f1 = f1;
     f2 = splitflag;
 
     f1->SetRoute(route.front(), this);
@@ -231,7 +225,8 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
                 // Läuft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
                 if(carriers_[ct]->GetRoadDir() == !flag)
                     return false;
-            } break;
+            }
+            break;
             case CARRS_CARRYWARETOBUILDING:
             case CARRS_LEAVEBUILDING:
             {
@@ -239,8 +234,8 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
                 if((carriers_[ct]->GetCurrentRoad()->f1 == f1 && !flag) || (carriers_[ct]->GetCurrentRoad()->f1 == f2 && flag))
                     return false;
-            } break;
-
+            }
+            break;
         }
     }
 
@@ -258,15 +253,16 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     {
         if(f2->GetType() == NOP_BUILDING)
         {
-            if(static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HEADQUARTERS ||
-                    static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_STOREHOUSE ||
-                    static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
+            if(static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HEADQUARTERS
+               || static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_STOREHOUSE
+               || static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
-                LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n") % f2->GetPos().x % f2->GetPos().y % GetEvMgr().GetCurrentGF();
-        }
-        else
-			LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n") % f2->GetPos().x % f2->GetPos().y % GetEvMgr().GetCurrentGF();
+                LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n") % f2->GetPos().x
+                  % f2->GetPos().y % GetEvMgr().GetCurrentGF();
+        } else
+            LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n") % f2->GetPos().x
+              % f2->GetPos().y % GetEvMgr().GetCurrentGF();
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat
@@ -341,14 +337,12 @@ void RoadSegment::TryGetDonkey()
 void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 {
     // Gucken, ob Träger und Esel gekündigt hat
-    if(carrier->GetCarrierType() == nofCarrier::CT_NORMAL ||
-            carrier->GetCarrierType() == nofCarrier::CT_BOAT)
+    if(carrier->GetCarrierType() == nofCarrier::CT_NORMAL || carrier->GetCarrierType() == nofCarrier::CT_BOAT)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
         this->carriers_[0] = NULL;
         gwg->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(this);
-    }
-    else
+    } else
     {
         // Kein Esel mehr da, versuchen, neuen zu bestellen
         this->carriers_[1] = gwg->GetPlayer(f1->GetPlayer()).OrderDonkey(this);
@@ -359,13 +353,13 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
  */
 noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
 {
-    //is it a valid flag?
+    // is it a valid flag?
     RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
     if(flag->GetPos() == f1->GetPos())
         return gwg->GetSpecObj<noFlag>(f2->GetPos());
     if(flag->GetPos() == f2->GetPos())
         return gwg->GetSpecObj<noFlag>(f1->GetPos());
-    //shouldnt get here or at least catch the assertion fail
+    // shouldnt get here or at least catch the assertion fail
     return NULL;
 }
 /**
@@ -373,7 +367,7 @@ noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
  */
 Direction RoadSegment::GetOtherFlagDir(const noFlag* flag)
 {
-    //is it a valid flag?
+    // is it a valid flag?
     RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
     if(flag->GetPos() == f1->GetPos())
         return route[route.size() - 1];

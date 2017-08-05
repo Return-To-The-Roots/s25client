@@ -25,51 +25,51 @@
 /// Fenster fürs Speichern UND(!) Laden von Spielständen
 class iwSaveLoad : public IngameWindow
 {
-    public:
-        iwSaveLoad(const unsigned short add_height, const std::string& window_title);
+public:
+    iwSaveLoad(const unsigned short add_height, const std::string& window_title);
 
-    protected:
-        /// Aktualisiert die Tabelle
-        void RefreshTable();
+protected:
+    /// Aktualisiert die Tabelle
+    void RefreshTable();
 
-    private:
-        /// Speichert bzw. läd die angegebene Datei
-        virtual void SaveLoad() = 0;
+private:
+    /// Speichert bzw. läd die angegebene Datei
+    virtual void SaveLoad() = 0;
 
-        void Msg_EditEnter(const unsigned ctrl_id) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_TableSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_TableSelectItem(const unsigned ctrl_id, const int selection) override;
 
-        /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
-        static void FillSaveTable(const std::string& filePath, void* param);
+    /// Callbackfunktion zum Eintragen eines Spielstandes in die Tabelle
+    static void FillSaveTable(const std::string& filePath, void* param);
 };
 
-class iwSave: public iwSaveLoad
+class iwSave : public iwSaveLoad
 {
-    public:
-        iwSave();
+public:
+    iwSave();
 
-    private:
-        // Speichert Datei
-        void SaveLoad() override;
+private:
+    // Speichert Datei
+    void SaveLoad() override;
 
-        void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
 };
 
-
-class iwLoad: public iwSaveLoad
+class iwLoad : public iwSaveLoad
 {
-        /// Informationen zum Erstellen des Servers
-        const CreateServerInfo csi;
-    public:
-        iwLoad(const CreateServerInfo& csi);
+    /// Informationen zum Erstellen des Servers
+    const CreateServerInfo csi;
 
-    private:
-        /// Handle double click on the table
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+public:
+    iwLoad(const CreateServerInfo& csi);
 
-        // Läd Datei
-        void SaveLoad() override;
+private:
+    /// Handle double click on the table
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+
+    // Läd Datei
+    void SaveLoad() override;
 };
 
 #endif // !iwSAVE_H_INCLUDED

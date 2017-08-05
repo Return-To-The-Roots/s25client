@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include "gameData/NationConsts.h"
 #include "GlobalGameSettings.h"
+#include "gameData/NationConsts.h"
 #include "libutil/src/MyTime.h"
-#include <string>
 #include <stdint.h>
+#include <string>
 
 struct BasePlayerInfo;
 class BinaryFile;
@@ -57,7 +57,6 @@ protected:
     void ReadGGS(BinaryFile& file);
 
 public:
-
     /// Zeitpunkt der Aufnahme
     unser_time_t save_time;
     /// Mapname

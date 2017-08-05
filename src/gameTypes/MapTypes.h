@@ -62,8 +62,8 @@ enum EdgeType
 enum Visibility
 {
     VIS_INVISIBLE = 0, /// Darkness
-    VIS_FOW, /// Fog of war
-    VIS_VISIBLE /// Visible
+    VIS_FOW,           /// Fog of war
+    VIS_VISIBLE        /// Visible
 };
 
 /// Granittyp

@@ -25,4 +25,4 @@ Point<int> GetNeighbour(const Point<int>& pt, const Direction dir);
 Point<int> GetNeighbour2(Point<int> pt, unsigned dir);
 MapPoint MakeMapPoint(Point<int> pt, const MapExtent& size);
 
-#endif //!MAP_GEOMETRY_H_
+#endif //! MAP_GEOMETRY_H_

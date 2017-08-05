@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Player.h"
+#include "Loader.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "Loader.h"
 #include "oglIncludes.h"
 #include <vector>
 
@@ -115,7 +115,7 @@ void glArchivItem_Bitmap_Player::FillTexture()
     // damit man per OpenGL einfärben kann!
     const libsiedler2::ArchivItem_Palette* palette = LOADER.GetPaletteN("colors");
 
-    int iformat = GetInternalFormat(), dformat = GL_BGRA; //GL_BGRA_EXT;
+    int iformat = GetInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
 
     Extent texSize = GetTexSize();
     std::vector<unsigned char> buffer(prodOfComponents(texSize) * 4);

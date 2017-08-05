@@ -20,16 +20,9 @@
 #include "ogl/glArchivItem_Font.h"
 #include <cstdio>
 
-ctrlPercent::ctrlPercent(Window* parent,
-                         unsigned id,
-                         const DrawPoint& pos,
-                         const Extent& size,
-                         TextureColor tc,
-                         unsigned text_color,
-                         glArchivItem_Font* font,
-                         const unsigned short* percentage)
-    : Window(parent, id, pos, size),
-      tc(tc), text_color(text_color), font(font), percentage_(percentage)
+ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
+                         glArchivItem_Font* font, const unsigned short* percentage)
+    : Window(parent, id, pos, size), tc(tc), text_color(text_color), font(font), percentage_(percentage)
 {
 }
 
@@ -41,7 +34,7 @@ ctrlPercent::ctrlPercent(Window* parent,
 void ctrlPercent::Draw_()
 {
     // Wenn der Prozentsatzpointer = 0, dann wird 0 angezeigt und es soll nich abstürzen!
-    unsigned short percentage = (this->percentage_ ?  *this->percentage_ : 0);
+    unsigned short percentage = (this->percentage_ ? *this->percentage_ : 0);
 
     if(percentage > 100)
         percentage = 100;

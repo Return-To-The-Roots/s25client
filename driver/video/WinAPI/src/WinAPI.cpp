@@ -82,9 +82,9 @@ DRIVERDLLAPI const char* GetDriverName()
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack):
-    VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0),
-    screen(NULL), screen_dc(NULL), screen_rc(NULL), isWindowResizable(false), isMinimized(true)
+VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
+    : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(NULL), screen_dc(NULL), screen_rc(NULL),
+      isWindowResizable(false), isMinimized(true)
 {
     memset(&dm_prev, 0, sizeof(DEVMODE));
     dm_prev.dmSize = sizeof(DEVMODE);
@@ -174,33 +174,32 @@ bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, u
     std::wstring wTitle = Utf8ToWidestring(title.c_str());
     windowClassName = wTitle.substr(0, wTitle.find(' '));
 
-    WNDCLASSW  wc;
-    wc.style            = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc      = WindowProc;
-    wc.cbClsExtra       = 0;
-    wc.cbWndExtra       = 0;
-    wc.hInstance        = GetModuleHandle(NULL);
-    wc.hIcon            = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
-    wc.hCursor          = NULL;
-    wc.hbrBackground    = NULL;
-    wc.lpszMenuName     = NULL;
-    wc.lpszClassName    = windowClassName.c_str();
+    WNDCLASSW wc;
+    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc = WindowProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
+    wc.hCursor = NULL;
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = windowClassName.c_str();
 
     // Fensterklasse registrieren
-    if (!RegisterClassW(&wc))
+    if(!RegisterClassW(&wc))
         return false;
 
     DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-    DWORD dwStyle   = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX;
+    DWORD dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX;
 
     if(fullscreen)
     {
-        dwExStyle   = WS_EX_APPWINDOW;
-        dwStyle     = WS_POPUP;
+        dwExStyle = WS_EX_APPWINDOW;
+        dwStyle = WS_POPUP;
 
         EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &dm_prev);
-    }
-    else
+    } else
     {
         // Bei Fensteranwendung die Breiten und Hoehen der Fensterrahmen, Titelleiste draufaddieren
         width += 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
@@ -208,7 +207,8 @@ bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, u
     }
 
     // Fenster erstellen
-    screen = CreateWindowExW(dwExStyle, wTitle.c_str(), wTitle.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, GetModuleHandle(NULL), NULL);
+    screen = CreateWindowExW(dwExStyle, wTitle.c_str(), wTitle.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL,
+                             GetModuleHandle(NULL), NULL);
 
     if(screen == NULL)
         return false;
@@ -220,35 +220,32 @@ bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, u
 
     // Pixelformat zuweisen
     GLuint PixelFormat;
-    static PIXELFORMATDESCRIPTOR pfd =
-    {
-        sizeof(PIXELFORMATDESCRIPTOR),
-        1,
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-        PFD_TYPE_RGBA,
-        8, // 8 Bit
-        8, // red
-        0,
-        8, // green
-        0,
-        8, // blue
-        0,
-        8, // alpha
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        32, // 32 Bit
-        0,
-        0,
-        PFD_MAIN_PLANE,
-        0,
-        0,
-        0,
-        0
-    };
+    static PIXELFORMATDESCRIPTOR pfd = {sizeof(PIXELFORMATDESCRIPTOR),
+                                        1,
+                                        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+                                        PFD_TYPE_RGBA,
+                                        8, // 8 Bit
+                                        8, // red
+                                        0,
+                                        8, // green
+                                        0,
+                                        8, // blue
+                                        0,
+                                        8, // alpha
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        32, // 32 Bit
+                                        0,
+                                        0,
+                                        PFD_MAIN_PLANE,
+                                        0,
+                                        0,
+                                        0,
+                                        0};
 
     screen_dc = GetDC(screen);
     if(screen_dc == NULL)
@@ -293,7 +290,7 @@ bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, u
         ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
     }
 
-    this->screenWidth  = width;
+    this->screenWidth = width;
     this->screenHeight = height;
     this->isFullscreen_ = fullscreen;
 
@@ -329,29 +326,31 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     ShowWindow(screen, SW_HIDE);
 
     // Fensterstyle ggf. ändern
-    DWORD wStyle   = fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
+    DWORD wStyle =
+      fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
     DWORD wExStyle = fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
     SetWindowLongPtr(screen, GWL_STYLE, wStyle);
     SetWindowLongPtr(screen, GWL_EXSTYLE, wExStyle);
-    //SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    // SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 
     RECT wRect;
     if(fullscreen)
     {
         wRect.left = 0;
-        wRect.top  = 0;
-    }else{
+        wRect.top = 0;
+    } else
+    {
         RECT workArea;
         SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
-        unsigned short waWidth  = static_cast<unsigned short>(workArea.right - workArea.left);
+        unsigned short waWidth = static_cast<unsigned short>(workArea.right - workArea.left);
         unsigned short waHeight = static_cast<unsigned short>(workArea.bottom - workArea.top);
         width = std::min(width, waWidth);
         height = std::min(height, waHeight);
-        wRect.left = (waWidth - width)  / 2;
-        wRect.top  = (waHeight - height) / 2;
+        wRect.left = (waWidth - width) / 2;
+        wRect.top = (waHeight - height) / 2;
     }
-    wRect.right  = wRect.left + width;
-    wRect.bottom = wRect.top  + height;
+    wRect.right = wRect.left + width;
+    wRect.bottom = wRect.top + height;
     // Calculate real right/bottom based on the window style
     AdjustWindowRectEx(&wRect, wStyle, false, wExStyle);
 
@@ -482,7 +481,7 @@ void* VideoWinAPI::GetFunction(const char* function) const
     {
         PROC procAddress;
         void* func;
-    };// Avoid warning about pointer conversion
+    }; // Avoid warning about pointer conversion
     procAddress = wglGetProcAddress(function);
     return func;
 }
@@ -541,14 +540,10 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
     if(c == ' ')
         return;
 
-    KeyEvent ke = {KT_CHAR, c,
-                   (GetKeyState(VK_CONTROL) & 0x8000) != 0,
-                   (GetKeyState(VK_SHIFT)   & 0x8000) != 0,
-                   (lParam& KF_ALTDOWN) != 0
-                  };
+    KeyEvent ke = {KT_CHAR, c, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0, (lParam & KF_ALTDOWN) != 0};
 
     if(c == 'V' || c == 'v' || c == 0x16)
-        if( !disablepaste && ke.ctrl != 0)
+        if(!disablepaste && ke.ctrl != 0)
         {
             OnWMPaste();
             return;
@@ -564,11 +559,8 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
  */
 void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
 {
-    KeyEvent ke = {KT_INVALID, 0,
-                   (GetKeyState(VK_CONTROL) & 0x8000) != 0,
-                   (GetKeyState(VK_SHIFT)   & 0x8000) != 0,
-                   (lParam& KF_ALTDOWN) != 0
-                  };
+    KeyEvent ke = {KT_INVALID, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
+                   (lParam & KF_ALTDOWN) != 0};
 
     switch(c)
     {
@@ -577,26 +569,28 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
             // Don't report Alt+Return events, as WinAPI seems to fire them in a lot of cases
             ke.kt = KT_RETURN;
             ke.alt = false;
-        } break;
-        case VK_SPACE:  ke.kt = KT_SPACE; break;
-        case VK_LEFT:   ke.kt = KT_LEFT; break;
-        case VK_RIGHT:  ke.kt = KT_RIGHT; break;
-        case VK_UP:     ke.kt = KT_UP; break;
-        case VK_DOWN:   ke.kt = KT_DOWN; break;
-        case VK_BACK:   ke.kt = KT_BACKSPACE; break;
+        }
+        break;
+        case VK_SPACE: ke.kt = KT_SPACE; break;
+        case VK_LEFT: ke.kt = KT_LEFT; break;
+        case VK_RIGHT: ke.kt = KT_RIGHT; break;
+        case VK_UP: ke.kt = KT_UP; break;
+        case VK_DOWN: ke.kt = KT_DOWN; break;
+        case VK_BACK: ke.kt = KT_BACKSPACE; break;
         case VK_DELETE: ke.kt = KT_DELETE; break;
         case VK_LSHIFT: ke.kt = KT_SHIFT; break;
         case VK_RSHIFT: ke.kt = KT_SHIFT; break;
-        case VK_TAB:    ke.kt = KT_TAB; break;
-        case VK_END:    ke.kt = KT_END; break;
-        case VK_HOME:   ke.kt = KT_HOME; break;
+        case VK_TAB: ke.kt = KT_TAB; break;
+        case VK_END: ke.kt = KT_END; break;
+        case VK_HOME: ke.kt = KT_HOME; break;
         case VK_ESCAPE: ke.kt = KT_ESCAPE; break;
         default:
         {
             // Die 12 F-Tasten
             if(c >= VK_F1 && c <= VK_F12)
                 ke.kt = static_cast<KeyType>(KT_F1 + int(c) - VK_F1);
-        } break;
+        }
+        break;
     }
 
     if(ke.kt != KT_INVALID)
@@ -608,7 +602,7 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
  */
 void VideoWinAPI::OnWMPaste()
 {
-    if (!IsClipboardFormatAvailable(CF_TEXT))
+    if(!IsClipboardFormatAvailable(CF_TEXT))
         return;
 
     OpenClipboard(NULL);
@@ -616,11 +610,11 @@ void VideoWinAPI::OnWMPaste()
     HANDLE hData = GetClipboardData(CF_TEXT);
     const char* pData = (const char*)GlobalLock(hData);
 
-    while( pData && *pData )
+    while(pData && *pData)
     {
         char c = *(pData++);
-        OnWMKeyDown( c );
-        OnWMChar( c, true );
+        OnWMKeyDown(c);
+        OnWMChar(c, true);
     }
 
     GlobalUnlock(hData);
@@ -639,15 +633,15 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
 {
     switch(msg)
     {
-        case WM_PASTE:
-        {
-            pVideoWinAPI->OnWMPaste();
-        } break;
+        case WM_PASTE: { pVideoWinAPI->OnWMPaste();
+        }
+        break;
         case WM_CLOSE:
         {
             PostQuitMessage(0);
             return 0;
-        } break;
+        }
+        break;
         case WM_SIZE:
             if(wParam == SIZE_MINIMIZED)
                 pVideoWinAPI->isMinimized = true;
@@ -669,89 +663,96 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             switch(wParam)
             {
                 default:
-                case WA_ACTIVE:
-                {
-                    ShowCursor(0);
-                } break;
-                case WA_INACTIVE:
-                {
-                    ShowCursor(1);
-                } break;
+                case WA_ACTIVE: { ShowCursor(0);
+                }
+                break;
+                case WA_INACTIVE: { ShowCursor(1);
+                }
+                break;
             }
-        } break;
+        }
+        break;
         case WM_SYSCOMMAND:
         {
-            switch (wParam)
+            switch(wParam)
             {
                 case SC_SCREENSAVE:
-                case SC_MONITORPOWER:
-                    return 0;
+                case SC_MONITORPOWER: return 0;
                 case SC_KEYMENU: // F10-Fehler beheben -> will sonst Fenster verschieben, was das Zeichnen unterbindet
                     pVideoWinAPI->OnWMKeyDown(VK_F10, 0); // pretend we got a F10 stroke
                     return 0;
             }
-        } break;
+        }
+        break;
         case WM_MOUSEMOVE:
         {
             pVideoWinAPI->mouse_xy.x = LOWORD(lParam);
             pVideoWinAPI->mouse_xy.y = HIWORD(lParam);
             pVideoWinAPI->CallBack->Msg_MouseMove(pVideoWinAPI->mouse_xy);
-        } break;
+        }
+        break;
         case WM_LBUTTONDOWN:
         {
             pVideoWinAPI->mouse_l = true;
             pVideoWinAPI->mouse_xy.ldown = true;
             pVideoWinAPI->CallBack->Msg_LeftDown(pVideoWinAPI->mouse_xy);
-        } break;
+        }
+        break;
         case WM_LBUTTONUP:
         {
             pVideoWinAPI->mouse_l = false;
             pVideoWinAPI->mouse_xy.ldown = false;
             pVideoWinAPI->CallBack->Msg_LeftUp(pVideoWinAPI->mouse_xy);
-        } break;
+        }
+        break;
         case WM_RBUTTONDOWN:
         {
             pVideoWinAPI->mouse_r = true;
             pVideoWinAPI->mouse_xy.rdown = true;
             pVideoWinAPI->CallBack->Msg_RightDown(pVideoWinAPI->mouse_xy);
-        } break;
+        }
+        break;
         case WM_RBUTTONUP:
         {
             pVideoWinAPI->mouse_r = false;
             pVideoWinAPI->mouse_xy.rdown = false;
             pVideoWinAPI->CallBack->Msg_RightUp(pVideoWinAPI->mouse_xy);
-        } break;
+        }
+        break;
         case WM_MOUSEWHEEL:
         {
-            // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat the wheel like two buttons.
-            // One wheel "step" usually produces a mouse_z  of +/- WHEEL_DELTA. But there may exist wheels without "steps" that result in lower values we have to cumulate.
+            // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat the wheel like two
+            // buttons. One wheel "step" usually produces a mouse_z  of +/- WHEEL_DELTA. But there may exist wheels without "steps" that
+            // result in lower values we have to cumulate.
             pVideoWinAPI->mouse_z += GET_WHEEL_DELTA_WPARAM(wParam);
 
             // We don't want to crash if there were even wheels that produce higher values...
-            while (std::abs(pVideoWinAPI->mouse_z) >= WHEEL_DELTA)
+            while(std::abs(pVideoWinAPI->mouse_z) >= WHEEL_DELTA)
             {
-                if (pVideoWinAPI->mouse_z > 0) // Scrolled to top
+                if(pVideoWinAPI->mouse_z > 0) // Scrolled to top
                 {
                     pVideoWinAPI->mouse_z -= WHEEL_DELTA;
                     pVideoWinAPI->CallBack->Msg_WheelUp(pVideoWinAPI->mouse_xy);
-                }
-                else // Scrolled to bottom
+                } else // Scrolled to bottom
                 {
                     pVideoWinAPI->mouse_z += WHEEL_DELTA;
                     pVideoWinAPI->CallBack->Msg_WheelDown(pVideoWinAPI->mouse_xy);
                 }
             }
-        } break;
+        }
+        break;
         case WM_KEYDOWN:
-//  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
-        {
-            pVideoWinAPI->OnWMKeyDown((unsigned)wParam, lParam);
-        } return 0;
+            //  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
+            {
+                pVideoWinAPI->OnWMKeyDown((unsigned)wParam, lParam);
+            }
+            return 0;
         case WM_CHAR:
         case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
         {
             pVideoWinAPI->OnWMChar((unsigned)wParam, false, lParam);
-        } return 0;
+        }
+            return 0;
     }
     return DefWindowProcW(window, msg, wParam, lParam);
 }
@@ -761,11 +762,8 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
  */
 KeyEvent VideoWinAPI::GetModKeyState() const
 {
-    const KeyEvent ke = { KT_INVALID, 0,
-                          (GetKeyState(VK_CONTROL) & 0x8000) != 0,
-                          (GetKeyState(VK_SHIFT)   & 0x8000) != 0,
-                          (GetKeyState(VK_MENU)    & 0x8000) != 0
-                        };
+    const KeyEvent ke = {KT_INVALID, 0, (GetKeyState(VK_CONTROL) & 0x8000) != 0, (GetKeyState(VK_SHIFT) & 0x8000) != 0,
+                         (GetKeyState(VK_MENU) & 0x8000) != 0};
     return ke;
 }
 

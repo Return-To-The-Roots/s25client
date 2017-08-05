@@ -25,60 +25,62 @@ class GameEvent;
 
 class noGrainfield : public noCoordBase
 {
-    private:
+private:
+    /// Typ des Getreidefelds (2 verschiedene Typen)
+    unsigned char type;
 
-        /// Typ des Getreidefelds (2 verschiedene Typen)
-        unsigned char type;
+    /// Status
+    enum State
+    {
+        STATE_GROWING_WAITING, /// Wachsphase, wartet auf den nächsten Wachstumsschub
+        STATE_GROWING,         /// wächst
+        STATE_NORMAL,          /// ist ausgewachsen und verdorrt nach einer Weile
+        STATE_WITHERING        /// verdorrt (verschwindet)
+    } state;
 
-        /// Status
-        enum State
-        {
-            STATE_GROWING_WAITING, /// Wachsphase, wartet auf den nächsten Wachstumsschub
-            STATE_GROWING, /// wächst
-            STATE_NORMAL, /// ist ausgewachsen und verdorrt nach einer Weile
-            STATE_WITHERING /// verdorrt (verschwindet)
-        } state;
+    /// Größe des Feldes (0-3), 3 ist ausgewachsen
+    unsigned char size;
 
-        /// Größe des Feldes (0-3), 3 ist ausgewachsen
-        unsigned char size;
+    /// Wachs-Event
+    GameEvent* event;
 
-        /// Wachs-Event
-        GameEvent* event;
+public:
+    noGrainfield(const MapPoint pt);
+    noGrainfield(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    ~noGrainfield() override;
 
-        noGrainfield(const MapPoint pt);
-        noGrainfield(SerializedGameData& sgd, const unsigned obj_id);
+    /// Aufräummethoden
+protected:
+    void Destroy_noGrainfield();
 
-        ~noGrainfield() override;
+public:
+    void Destroy() override { Destroy_noGrainfield(); }
 
-        /// Aufräummethoden
-    protected:  void Destroy_noGrainfield();
-    public:     void Destroy() override { Destroy_noGrainfield(); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noGrainfield(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noGrainfield(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noGrainfield(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noGrainfield(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_GRAINFIELD; }
+    GO_Type GetGOT() const override { return GOT_GRAINFIELD; }
 
-        void Draw(DrawPoint drawPt) override;
-        void HandleEvent(const unsigned id) override;
+    void Draw(DrawPoint drawPt) override;
+    void HandleEvent(const unsigned id) override;
 
-        BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
 
-        /// Kann man es abernten?
-        bool IsHarvestable() const { return size == 3 && state == STATE_NORMAL;}
+    /// Kann man es abernten?
+    bool IsHarvestable() const { return size == 3 && state == STATE_NORMAL; }
 
-        /// Gibt die ID des abgeernteten Getreidefelds in der map_last zurück
-        unsigned GetHarvestMapLstID() const { return 532 + type * 5 + 4; }
+    /// Gibt die ID des abgeernteten Getreidefelds in der map_last zurück
+    unsigned GetHarvestMapLstID() const { return 532 + type * 5 + 4; }
 
-        /// Bauer beginnt dieses Feld abzuernten
-        void BeginHarvesting();
-        /// Bauer wird beim Abernten unterbrochen
-        void EndHarvesting();
-
+    /// Bauer beginnt dieses Feld abzuernten
+    void BeginHarvesting();
+    /// Bauer wird beim Abernten unterbrochen
+    void EndHarvesting();
 };
-
 
 #endif

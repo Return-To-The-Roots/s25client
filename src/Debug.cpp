@@ -21,21 +21,21 @@
 #include "Debug.h"
 #include "RTTR_Version.h"
 
-#include "Settings.h"
 #include "GameClient.h"
+#include "Settings.h"
 #include "helpers/Deleter.h"
 
 #ifdef _WIN32
-#   include <windows.h>
+#include <windows.h>
 
 // Disable warning for faulty nameless enum typdef (check sfImage.../hdBase...)
-#   pragma warning(push)
-#   pragma warning(disable: 4091)
-#   include <dbghelp.h>
+#pragma warning(push)
+#pragma warning(disable : 4091)
+#include <dbghelp.h>
 
-#   pragma warning(pop)
+#pragma warning(pop)
 #else
-#   include <execinfo.h>
+#include <execinfo.h>
 #endif
 
 #include "libutil/src/Log.h"
@@ -44,17 +44,20 @@
 
 #ifdef _WIN32
 
-    typedef USHORT (WINAPI* CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
+typedef USHORT(WINAPI* CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
 
-#   ifndef _MSC_VER
-        typedef WINBOOL (WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
-        typedef WINBOOL (WINAPI* SymCleanupType)(HANDLE hProcess);
-        typedef VOID (WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
-        typedef WINBOOL (WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord, PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine, PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine, PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
-#   else
-#       undef CaptureStackBackTrace
-#       pragma comment(lib, "dbgHelp.lib")
-#   endif
+#ifndef _MSC_VER
+typedef WINBOOL(WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
+typedef WINBOOL(WINAPI* SymCleanupType)(HANDLE hProcess);
+typedef VOID(WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
+typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDLE hThread, LPSTACKFRAME64 StackFrame, PVOID ContextRecord,
+                                       PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
+                                       PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
+                                       PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
+#else
+#undef CaptureStackBackTrace
+#pragma comment(lib, "dbgHelp.lib")
+#endif
 #endif
 
 DebugInfo::DebugInfo()
@@ -66,10 +69,10 @@ DebugInfo::DebugInfo()
     // Protocol Version
     SendUnsigned(0x00000001);
 
-    // OS
+// OS
 #ifdef _WIN32
     SendString("WIN");
-    // TODO: These should be based on uname(3) output.
+// TODO: These should be based on uname(3) output.
 #elif defined __APPLE__
     SendString("MAC");
 #elif defined __FreeBSD__
@@ -95,47 +98,45 @@ DebugInfo::~DebugInfo()
 
 bool DebugInfo::Send(const void* buffer, int length)
 {
-    char* ptr = (char*) buffer;
+    char* ptr = (char*)buffer;
 
-    while (length > 0)
+    while(length > 0)
     {
         int res = sock.Send(ptr, length);
 
-        if (res >= 0)
+        if(res >= 0)
         {
             ptr += res;
             length -= res;
-        }
-        else
+        } else
         {
             fprintf(stderr, "failed to send: %i left\n", length);
-            return(false);
+            return (false);
         }
     }
 
-    return(true);
+    return (true);
 }
-
 
 bool DebugInfo::SendUnsigned(unsigned i)
 {
-    return(Send(&i, 4));
+    return (Send(&i, 4));
 }
 
 bool DebugInfo::SendSigned(signed i)
 {
-    return(Send(&i, 4));
+    return (Send(&i, 4));
 }
 
 bool DebugInfo::SendString(const char* str, unsigned len)
 {
-    if (len == 0)
-        len  = strlen(str) + 1;
+    if(len == 0)
+        len = strlen(str) + 1;
 
-    if (!SendUnsigned(len))
-        return(false);
+    if(!SendUnsigned(len))
+        return (false);
 
-    return(Send(str, len));
+    return (Send(str, len));
 }
 
 bool DebugInfo::SendString(const std::string& str)
@@ -168,9 +169,9 @@ bool DebugInfo::SendStackTrace()
     HMODULE kernel32 = LoadLibraryA("kernel32.dll");
     HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
 
-    if ((!kernel32) || (!dbghelp))
+    if((!kernel32) || (!dbghelp))
     {
-        return(false);
+        return (false);
     }
 
     RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
@@ -179,22 +180,23 @@ bool DebugInfo::SendStackTrace()
     SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
 
     StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
-    PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 = (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
+    PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 =
+      (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
     PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
 
-    if ((!SymInitialize) || (!StackWalk64) || (!SymFunctionTableAccess64) || (!SymGetModuleBase64) || (!RtlCaptureContext))
+    if((!SymInitialize) || (!StackWalk64) || (!SymFunctionTableAccess64) || (!SymGetModuleBase64) || (!RtlCaptureContext))
     {
-        return(false);
+        return (false);
     }
 #endif
 
-    if (!SymInitialize(GetCurrentProcess(), NULL, true))
+    if(!SymInitialize(GetCurrentProcess(), NULL, true))
     {
-        return(false);
+        return (false);
     }
 
 #ifndef _MSC_VER
-    if (!ctx)
+    if(!ctx)
     {
         context.ContextFlags = CONTEXT_FULL;
         RtlCaptureContext(&context);
@@ -223,43 +225,44 @@ bool DebugInfo::SendStackTrace()
     HANDLE thread = GetCurrentThread();
 
     unsigned num_frames = 0;
-    while (StackWalk64(
+    while(StackWalk64(
 #ifdef _WIN64
-                IMAGE_FILE_MACHINE_AMD64,
+            IMAGE_FILE_MACHINE_AMD64,
 #else
-                IMAGE_FILE_MACHINE_I386,
+            IMAGE_FILE_MACHINE_I386,
 #endif
-                process, thread, &frame,
-                ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL) && (num_frames < maxTrace))
+            process, thread, &frame, ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL)
+          && (num_frames < maxTrace))
     {
         LOG.write("Reading stack frame %d\n") % num_frames;
-        stacktrace[num_frames++] = (void*) frame.AddrPC.Offset;
+        stacktrace[num_frames++] = (void*)frame.AddrPC.Offset;
     }
 
     SymCleanup(GetCurrentProcess());
 
-    /*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"), "RtlCaptureStackBackTrace"));
+/*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"),
+"RtlCaptureStackBackTrace"));
 
-    if (!CaptureStackBackTrace)
-    {
-        return(false);
-    }
+if (!CaptureStackBackTrace)
+{
+    return(false);
+}
 
-    unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
-    LOG.write("Read Frames %d\n") % num_frames;
-    */
+unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
+LOG.write("Read Frames %d\n") % num_frames;
+*/
 #else
     unsigned num_frames = backtrace(stacktrace, maxTrace);
 #endif
 
     LOG.write("Will now send %d stack frames\n") % num_frames;
 
-    if (!SendString("StackTrace"))
-        return(false);
+    if(!SendString("StackTrace"))
+        return (false);
 
     num_frames *= sizeof(void*);
 
-    return(SendString((char*) &stacktrace, num_frames));
+    return (SendString((char*)&stacktrace, num_frames));
 }
 
 bool DebugInfo::SendReplay()
@@ -267,7 +270,7 @@ bool DebugInfo::SendReplay()
     LOG.write("Sending replay...\n");
 
     // Replay mode is on, no recording of replays active
-    if (!GAMECLIENT.IsReplayModeOn())
+    if(!GAMECLIENT.IsReplayModeOn())
     {
         Replay& rpl = GAMECLIENT.GetReplay();
 
@@ -295,33 +298,31 @@ bool DebugInfo::SendReplay()
         boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
 
         // send size of replay via socket
-        if (!SendString("Replay"))
+        if(!SendString("Replay"))
         {
             return false;
         }
 
         LOG.write("- Compressing...\n");
-        if (BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*) &compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
+        if(BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*)&compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
         {
             LOG.write("- Sending...\n");
 
-            if (SendString(compressed.get(), compressed_len))
+            if(SendString(compressed.get(), compressed_len))
             {
                 LOG.write("-> success\n");
                 return true;
             }
 
             LOG.write("-> Sending replay failed :(\n");
-        }
-        else
+        } else
         {
             LOG.write("-> BZ2 compression failed.\n");
         }
 
         SendUnsigned(0);
         return false;
-    }
-    else
+    } else
     {
         LOG.write("-> Already in replay mode, do not send replay\n");
     }
@@ -330,78 +331,104 @@ bool DebugInfo::SendReplay()
 }
 
 bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
-                             const std::vector<RandomEntry> &a, const std::vector<RandomEntry> &b, unsigned identical)
+                             const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical)
 {
-    if (!SendString("AsyncLog"))
+    if(!SendString("AsyncLog"))
     {
-        return(false);
+        return (false);
     }
 
     // calculate size
-    unsigned len =  4;
+    unsigned len = 4;
     unsigned cnt = 0;
 
     std::vector<RandomEntry>::const_iterator it_a = first_a;
     std::vector<RandomEntry>::const_iterator it_b = first_b;
 
     // if there were any identical lines, include only the last one
-    if (identical)
+    if(identical)
     {
         // sizes of: counter, max, rngState
         //           string = length Bytes + 1 NULL terminator + 4B length
         //           srcLine, objId
         len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
 
-        ++cnt; ++it_a; ++it_b;
+        ++cnt;
+        ++it_a;
+        ++it_b;
     }
 
-    while ((it_a != a.end()) && (it_b != b.end()))
+    while((it_a != a.end()) && (it_b != b.end()))
     {
         len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
         len += 4 + 4 + 4 + it_b->src_name.length() + 1 + 4 + 4 + 4;
 
         cnt += 2;
-        ++it_a; ++it_b;
+        ++it_a;
+        ++it_b;
     }
 
-    if (!SendUnsigned(len))         return(false);
-    if (!SendUnsigned(identical))   return(false);
-    if (!SendUnsigned(cnt))         return(false);
+    if(!SendUnsigned(len))
+        return (false);
+    if(!SendUnsigned(identical))
+        return (false);
+    if(!SendUnsigned(cnt))
+        return (false);
 
     it_a = first_a;
     it_b = first_b;
 
     // if there were any identical lines, send only one each
-    for(unsigned i = 0; i< identical; i++)
+    for(unsigned i = 0; i < identical; i++)
     {
-        if (!SendUnsigned(it_a->counter))   return(false);
-        if (!SendSigned(it_a->max))         return(false);
-        if (!SendSigned(RANDOM.CalcChecksum(it_a->rngState)))    return(false);
-        if (!SendString(it_a->src_name))    return(false);
-        if (!SendUnsigned(it_a->src_line))  return(false);
-        if (!SendUnsigned(it_a->obj_id))    return(false);
+        if(!SendUnsigned(it_a->counter))
+            return (false);
+        if(!SendSigned(it_a->max))
+            return (false);
+        if(!SendSigned(RANDOM.CalcChecksum(it_a->rngState)))
+            return (false);
+        if(!SendString(it_a->src_name))
+            return (false);
+        if(!SendUnsigned(it_a->src_line))
+            return (false);
+        if(!SendUnsigned(it_a->obj_id))
+            return (false);
 
-        ++it_a; ++it_b;
+        ++it_a;
+        ++it_b;
     }
 
-    while ((it_a != a.end()) && (it_b != b.end()))
+    while((it_a != a.end()) && (it_b != b.end()))
     {
-        if (!SendUnsigned(it_a->counter))   return(false);
-        if (!SendSigned(it_a->max))         return(false);
-        if (!SendSigned(RANDOM.CalcChecksum(it_a->rngState)))    return(false);
-        if (!SendString(it_a->src_name))    return(false);
-        if (!SendUnsigned(it_a->src_line))  return(false);
-        if (!SendUnsigned(it_a->obj_id))    return(false);
+        if(!SendUnsigned(it_a->counter))
+            return (false);
+        if(!SendSigned(it_a->max))
+            return (false);
+        if(!SendSigned(RANDOM.CalcChecksum(it_a->rngState)))
+            return (false);
+        if(!SendString(it_a->src_name))
+            return (false);
+        if(!SendUnsigned(it_a->src_line))
+            return (false);
+        if(!SendUnsigned(it_a->obj_id))
+            return (false);
 
-        if (!SendUnsigned(it_b->counter))   return(false);
-        if (!SendSigned(it_b->max))         return(false);
-        if (!SendSigned(RANDOM.CalcChecksum(it_b->rngState)))    return(false);
-        if (!SendString(it_b->src_name))    return(false);
-        if (!SendUnsigned(it_b->src_line))  return(false);
-        if (!SendUnsigned(it_b->obj_id))    return(false);
+        if(!SendUnsigned(it_b->counter))
+            return (false);
+        if(!SendSigned(it_b->max))
+            return (false);
+        if(!SendSigned(RANDOM.CalcChecksum(it_b->rngState)))
+            return (false);
+        if(!SendString(it_b->src_name))
+            return (false);
+        if(!SendUnsigned(it_b->src_line))
+            return (false);
+        if(!SendUnsigned(it_b->obj_id))
+            return (false);
 
-        ++it_a; ++it_b;
+        ++it_a;
+        ++it_b;
     }
 
-    return(true);
+    return (true);
 }

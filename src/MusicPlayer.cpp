@@ -17,17 +17,17 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MusicPlayer.h"
-#include "ingameWindows/iwMusicPlayer.h"
 #include "drivers/AudioDriverWrapper.h"
+#include "ingameWindows/iwMusicPlayer.h"
 
 #include "Loader.h"
 #include "libutil/src/Log.h"
 
-#include "libsiedler2/src/prototypen.h"
 #include "ogl/glArchivItem_Music.h"
-#include <sstream>
+#include "libsiedler2/src/prototypen.h"
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 Playlist::Playlist() : repeats(1), random(false)
 {
@@ -52,7 +52,6 @@ void Playlist::Prepare()
         // Bei Zufall nochmal mischen
         if(random)
             std::random_shuffle(order.begin(), order.end());
-
     }
 }
 
@@ -158,7 +157,7 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
     window->SetRepeats(repeats);
     window->SetRandomPlayback(random);
 
-    if (current != 0xFFFF)
+    if(current != 0xFFFF)
     {
         window->SetCurrentSong(current);
     }
@@ -231,7 +230,7 @@ void MusicPlayer::PlayNext()
     if(song.length() == 3)
     {
         unsigned nr = atoi(song.substr(1).c_str());
-        if( nr <= 14)
+        if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)
             if(GetMusic(sng_lst, nr - 1))
@@ -247,7 +246,7 @@ void MusicPlayer::PlayNext()
     LOG.write("lade \"%s\": ") % song;
 
     // Neues Stück laden
-    if(libsiedler2::loader::LoadSND(song, sng) != 0 )
+    if(libsiedler2::loader::LoadSND(song, sng) != 0)
     {
         Stop();
         return;
@@ -256,7 +255,6 @@ void MusicPlayer::PlayNext()
     // Und abspielen
     dynamic_cast<glArchivItem_Music*>(sng.get(0))->Play(1);
 }
-
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
 const std::string Playlist::getNextSong()

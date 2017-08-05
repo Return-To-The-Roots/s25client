@@ -28,14 +28,12 @@ class glArchivItem_Bitmap;
 /// Button mit einem Bild
 class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
-    public:
+public:
+    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
+                    glArchivItem_Bitmap* const image, const std::string& tooltip);
 
-        ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos,
-                        const Extent& size, const TextureColor tc,
-                        glArchivItem_Bitmap* const image, const std::string& tooltip);
-    protected:
-
-        void DrawContent() const override;
+protected:
+    void DrawContent() const override;
 };
 
 #endif // ctrlImageButton_h__

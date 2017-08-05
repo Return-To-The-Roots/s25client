@@ -19,7 +19,8 @@
 #include "glTexturePackerNode.h"
 #include "ogl/glSmartBitmap.h"
 
-bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, const Extent& bufferSize, std::vector<glTexturePackerNode*>& todo)
+bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, const Extent& bufferSize,
+                                 std::vector<glTexturePackerNode*>& todo)
 {
     todo.clear();
 
@@ -54,10 +55,12 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, std::vector<uint32_t>& buffer
             b->drawTo(buffer, bufferSize, current->pos);
 
             b->texCoords[0].x = b->texCoords[1].x = (float)current->pos.x / (float)bufferSize.x;
-            b->texCoords[2].x = b->texCoords[3].x = b->isPlayer() ? (float)(current->pos.x + current->size.x / 2) / (float)bufferSize.x : (float)(current->pos.x + current->size.x) / (float)bufferSize.x;
+            b->texCoords[2].x = b->texCoords[3].x = b->isPlayer() ? (float)(current->pos.x + current->size.x / 2) / (float)bufferSize.x :
+                                                                    (float)(current->pos.x + current->size.x) / (float)bufferSize.x;
 
             b->texCoords[0].y = b->texCoords[3].y = b->texCoords[4].y = b->texCoords[7].y = (float)current->pos.y / (float)bufferSize.y;
-            b->texCoords[1].y = b->texCoords[2].y = b->texCoords[5].y = b->texCoords[6].y = (float)(current->pos.y + current->size.y) / (float)bufferSize.y;
+            b->texCoords[1].y = b->texCoords[2].y = b->texCoords[5].y = b->texCoords[6].y =
+              (float)(current->pos.y + current->size.y) / (float)bufferSize.y;
 
             b->texCoords[4].x = b->texCoords[5].x = (float)(current->pos.x + current->size.x / 2) / (float)bufferSize.x;
             b->texCoords[6].x = b->texCoords[7].x = (float)(current->pos.x + current->size.x) / (float)bufferSize.x;

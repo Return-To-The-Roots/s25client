@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "noCoordBase.h"
-#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 
 void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
 {
@@ -27,8 +27,7 @@ void noCoordBase::Serialize_noCoordBase(SerializedGameData& sgd) const
     sgd.PushMapPoint(pos);
 }
 
-noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    pos(sgd.PopMapPoint())
+noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.PopMapPoint())
 {
 }
 

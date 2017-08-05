@@ -21,8 +21,11 @@
 #include <cstddef>
 class AudioDriverLoaderInterface;
 
-// Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
-IAudioDriver::~IAudioDriver(){}
+// Do not inline! That would break DLL compatibility:
+// http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
+IAudioDriver::~IAudioDriver()
+{
+}
 
 /** @class AudioDriver
  *
@@ -34,8 +37,7 @@ IAudioDriver::~IAudioDriver(){}
  *  Initialisierungsstatus.
  */
 
-AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli)
-    : play_id_counter(1),  adli(adli), initialized(false)
+AudioDriver::AudioDriver(AudioDriverLoaderInterface* adli) : play_id_counter(1), adli(adli), initialized(false)
 {
 }
 
@@ -44,7 +46,7 @@ AudioDriver::~AudioDriver()
     for(std::vector<Sound*>::iterator it = sounds.begin(); it != sounds.end(); ++it)
     {
         // Sounddeskriptoren aufräumen
-        delete (*it);
+        delete(*it);
     }
     sounds.clear();
 }

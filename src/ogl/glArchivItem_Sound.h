@@ -24,18 +24,18 @@ class Sound;
 
 class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
 {
-    public:
-        glArchivItem_Sound();
-        glArchivItem_Sound(const glArchivItem_Sound& obj);
+public:
+    glArchivItem_Sound();
+    glArchivItem_Sound(const glArchivItem_Sound& obj);
 
-        ~glArchivItem_Sound() override;
+    ~glArchivItem_Sound() override;
 
-        /// Spielt die Musik ab.
-        virtual unsigned Play(const unsigned char volume, const bool loop) = 0;
+    /// Spielt die Musik ab.
+    virtual unsigned Play(const unsigned char volume, const bool loop) = 0;
 
-    protected:
-        /// Handle to the sound, managed by driver, hence safe to copy
-        Sound* sound;
+protected:
+    /// Handle to the sound, managed by driver, hence safe to copy
+    Sound* sound;
 };
 
 #endif // !GLARCHIVITEM_SOUND_INCLUDED

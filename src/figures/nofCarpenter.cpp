@@ -17,13 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofCarpenter.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
-#include "world/GameWorldGame.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 
 nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_CARPENTER, pos, player, workplace)
@@ -36,12 +36,12 @@ nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nof
 
 void nofCarpenter::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = { {30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3} };
+    static const DrawPointInit offsets[NAT_COUNT] = {{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}};
 
     unsigned now_id;
 
     LOADER.GetPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
-    ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)

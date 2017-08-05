@@ -22,57 +22,57 @@
 // IWYU pragma: begin_exports
 
 #ifndef _CRTDBG_MAP_ALLOC
-#   define _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC
 #endif
 #ifndef NOMINMAX
-#   define NOMINMAX
+#define NOMINMAX
 #endif
 
 #ifdef _WIN32
-#   define WIN32_LEAN_AND_MEAN
-#   ifdef _MSC_VER
-#       include <stdlib.h> // Required for crtdbg.h
-#       include <crtdbg.h>
-#       if !defined(snprintf) && _MSC_VER < 1900
-#           define snprintf _snprintf
-#       endif
-        extern void __cdecl __debugbreak();
-#       define RTTR_BREAKPOINT __debugbreak()
-#       ifndef assert
-#           define assert _ASSERT
-#       endif
-#   else
-#       include <assert.h>
-#       define RTTR_BREAKPOINT
-#   endif
-
-#   undef PlaySound
-    typedef int socklen_t;
+#define WIN32_LEAN_AND_MEAN
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#include <stdlib.h> // Required for crtdbg.h
+#if !defined(snprintf) && _MSC_VER < 1900
+#define snprintf _snprintf
+#endif
+extern void __cdecl __debugbreak();
+#define RTTR_BREAKPOINT __debugbreak()
+#ifndef assert
+#define assert _ASSERT
+#endif
 #else
-#   if (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
-#       define RTTR_BREAKPOINT __asm__ __volatile__ ( "int $3\n\t" )
-#   else
-#       include <csignal>
-#       define RTTR_BREAKPOINT raise(SIGTRAP)
-#   endif
-#   define SOCKET int
-#   define INVALID_SOCKET -1
-#   define SOCKET_ERROR -1
-#   define HINSTANCE void*
+#include <assert.h>
+#define RTTR_BREAKPOINT
+#endif
 
-#   define closesocket close
-#   define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
-#   define LoadLibraryW LoadLibrary
-#   define LoadLibraryA LoadLibrary
-#   define GetProcAddress(lib, name) dlsym(lib, name)
-#   define GetProcAddressW GetProcAddress
-#   define GetProcAddressA GetProcAddress
-#   define FreeLibrary(lib) dlclose(lib)
-#   include <cassert>
+#undef PlaySound
+typedef int socklen_t;
+#else
+#if(defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
+#define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
+#else
+#include <csignal>
+#define RTTR_BREAKPOINT raise(SIGTRAP)
+#endif
+#define SOCKET int
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#define HINSTANCE void*
+
+#define closesocket close
+#define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
+#define LoadLibraryW LoadLibrary
+#define LoadLibraryA LoadLibrary
+#define GetProcAddress(lib, name) dlsym(lib, name)
+#define GetProcAddressW GetProcAddress
+#define GetProcAddressA GetProcAddress
+#define FreeLibrary(lib) dlclose(lib)
+#include <cassert>
 #endif // !_WIN32
 
-#include "macros.h"
 #include "RTTR_Assert.h"
+#include "macros.h"
 
 // Include to use e.g. boost macros like BOOST_CONSTEXPR
 #include <boost/config.hpp>
@@ -84,7 +84,7 @@
  *  Union. GCC meckert da sonst wegen "type punned pointer" bzw
  *  "iso c++ forbids conversion".
  */
-template <typename F>
+template<typename F>
 inline F pto2ptf(void* o)
 {
     union
@@ -98,19 +98,28 @@ inline F pto2ptf(void* o)
 }
 
 #undef min
-template <typename T>
-inline T min(T a, T b) { return (a < b) ? a : b; }
+template<typename T>
+inline T min(T a, T b)
+{
+    return (a < b) ? a : b;
+}
 
 #undef max
-template <typename T>
-inline T max(T a, T b) { return (a < b) ? b : a; }
+template<typename T>
+inline T max(T a, T b)
+{
+    return (a < b) ? b : a;
+}
 
 /// Berechnet Differenz von 2 (unsigned!) Werten
-template <typename T>
-inline T SafeDiff(T a, T b) { return (a > b) ? a - b : b - a; }
+template<typename T>
+inline T SafeDiff(T a, T b)
+{
+    return (a > b) ? a - b : b - a;
+}
 
 /// Deletes the ptr and sets it to NULL
-template <typename T>
+template<typename T>
 inline void deletePtr(T*& ptr)
 {
     delete ptr;
@@ -118,10 +127,12 @@ inline void deletePtr(T*& ptr)
 }
 
 // Fwd decl
-namespace boost{namespace filesystem{}}
+namespace boost {
+namespace filesystem {
+}
+} // namespace boost
 
 /// Shortcut for boost::filesystem
 namespace bfs = boost::filesystem;
 
 #endif // defines_h__
-

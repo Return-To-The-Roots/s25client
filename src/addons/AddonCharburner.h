@@ -17,7 +17,6 @@
 #ifndef ADDONCHARBURNER_H_INCLUDED
 #define ADDONCHARBURNER_H_INCLUDED
 
-
 #include "AddonBool.h"
 #include "mygettext/src/mygettext.h"
 
@@ -26,15 +25,10 @@
  */
 class AddonCharburner : public AddonBool
 {
-    public:
-        AddonCharburner() : AddonBool(AddonId::CHARBURNER,
-                                          ADDONGROUP_ECONOMY,
-                                          _("Enable charburner"),
-                                          _("Allows to build the charburner."),
-                                          0
-                                         )
-        {
-        }
+public:
+    AddonCharburner() : AddonBool(AddonId::CHARBURNER, ADDONGROUP_ECONOMY, _("Enable charburner"), _("Allows to build the charburner."), 0)
+    {
+    }
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

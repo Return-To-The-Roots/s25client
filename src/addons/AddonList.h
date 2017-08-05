@@ -29,22 +29,26 @@
  */
 class AddonList : public Addon
 {
-    public:
-        AddonList(const AddonId id, const unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
-            : Addon(id, groups, name, description, default_status) { }
+public:
+    AddonList(const AddonId id, const unsigned groups, const std::string& name, const std::string& description,
+              const unsigned default_status)
+        : Addon(id, groups, name, description, default_status)
+    {
+    }
 
-        void hideGui(Window* window, unsigned id) const override;
-        void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const override;
-        void setGuiStatus(Window* window, unsigned id, unsigned status) const override;
-        unsigned getGuiStatus(Window* window, unsigned id, bool& failed) const override;
+    void hideGui(Window* window, unsigned id) const override;
+    void createGui(Window* window, unsigned id, unsigned short& y, bool readonly, unsigned status) const override;
+    void setGuiStatus(Window* window, unsigned id, unsigned status) const override;
+    unsigned getGuiStatus(Window* window, unsigned id, bool& failed) const override;
 
-        unsigned getNumOptions() const override;
-    protected:
-        void removeOptions();
-        void addOption(const std::string& name);
+    unsigned getNumOptions() const override;
 
-    private:
-        std::vector<std::string> options;
+protected:
+    void removeOptions();
+    void addOption(const std::string& name);
+
+private:
+    std::vector<std::string> options;
 };
 
 #endif // AddonList_h__

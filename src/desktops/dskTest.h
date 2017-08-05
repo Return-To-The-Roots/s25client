@@ -25,12 +25,11 @@
 ///  Klasse des Intro Desktops.
 class dskTest : public dskMenuBase
 {
-    public:
-        dskTest();
+public:
+    dskTest();
 
-    private:
-
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // dskTest_h__

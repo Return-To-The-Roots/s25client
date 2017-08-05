@@ -17,11 +17,12 @@
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
 
-Map::Map() : size(0, 0){}
+Map::Map() : size(0, 0)
+{
+}
 
-Map::Map(const MapExtent& size,
-         const std::string& name,
-         const std::string& author) : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
+Map::Map(const MapExtent& size, const std::string& name, const std::string& author)
+    : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
 {
     const unsigned numNodes = size.x * size.y;
 
@@ -41,14 +42,13 @@ Map::Map(const MapExtent& size,
     unknown5.resize(numNodes, 0x00);
 }
 
-
 libsiedler2::ArchivInfo* Map::CreateArchiv()
 {
     libsiedler2::ArchivInfo* info = new libsiedler2::ArchivInfo();
     libsiedler2::ArchivItem_Map* map = new libsiedler2::ArchivItem_Map();
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header();
     std::vector<unsigned char> data;
-    
+
     // create header information for the archiv
     header->setName(name);
     header->setAuthor(author);
@@ -56,12 +56,12 @@ libsiedler2::ArchivInfo* Map::CreateArchiv()
     header->setHeight(size.y);
     header->setPlayer(players);
     header->setGfxSet(type);
-    
-    for (unsigned i = 0; i < positions.size(); i++)
+
+    for(unsigned i = 0; i < positions.size(); i++)
     {
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
-    
+
     map->push(header);
     map->push(new libsiedler2::ArchivItem_Raw(z));
     map->push(new libsiedler2::ArchivItem_Raw(textureRsu));

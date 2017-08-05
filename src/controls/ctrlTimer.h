@@ -23,20 +23,20 @@
 
 class ctrlTimer : public Window
 {
-    public:
-        ctrlTimer(Window* parent, unsigned id, unsigned timeout);
+public:
+    ctrlTimer(Window* parent, unsigned id, unsigned timeout);
 
-        void Start(unsigned timeout);
-        void Stop();
+    void Start(unsigned timeout);
+    void Stop();
 
-        void Msg_PaintBefore() override;
+    void Msg_PaintBefore() override;
 
-    protected:
-        void Draw_() override {};
+protected:
+    void Draw_() override{};
 
-    private:
-        unsigned timeout;
-        unsigned timer;
+private:
+    unsigned timeout;
+    unsigned timer;
 };
 
 #endif // !CTRLTIMER_H_INCLUDED

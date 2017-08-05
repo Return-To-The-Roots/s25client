@@ -17,36 +17,34 @@
 #ifndef SOUND_H_INCLUDED
 #define SOUND_H_INCLUDED
 
-
 /// Basisklasse für einen Sound.
 class Sound
 {
-    public:
-        Sound();
+public:
+    Sound();
 
-        virtual ~Sound();
+    virtual ~Sound();
 
-        void SetNr(int nr) { this->nr = nr; }
-        int GetNr() { return nr; }
+    void SetNr(int nr) { this->nr = nr; }
+    int GetNr() { return nr; }
 
-        void SetType(unsigned type) { this->type = (SoundType)type; }
-        unsigned GetType() { return type; }
+    void SetType(unsigned type) { this->type = (SoundType)type; }
+    unsigned GetType() { return type; }
 
-        bool IsMusic() { return (type == SD_MUSIC); }
-        bool IsEffect() { return (type == SD_EFFECT); }
+    bool IsMusic() { return (type == SD_MUSIC); }
+    bool IsEffect() { return (type == SD_EFFECT); }
 
-    public:
-        enum SoundType
-        {
-            SD_UNKNOWN = 0,
-            SD_MUSIC,
-            SD_EFFECT
-        };
+public:
+    enum SoundType
+    {
+        SD_UNKNOWN = 0,
+        SD_MUSIC,
+        SD_EFFECT
+    };
 
-    protected:
-
-        int nr;
-        SoundType type;
+protected:
+    int nr;
+    SoundType type;
 };
 
 #endif // !SOUND_H_INCLUDED

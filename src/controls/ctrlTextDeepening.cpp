@@ -19,16 +19,16 @@
 #include "ctrlTextDeepening.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size,
-    TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color):
-    ctrlDeepening(parent, id, pos, size, tc),
-    ctrlBaseText(text, color, font)
-{}
+ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc,
+                                     const std::string& text, glArchivItem_Font* font, unsigned color)
+    : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseText(text, color, font)
+{
+}
 
 Rect ctrlTextDeepening::GetBoundaryRect() const
 {
-    const Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(GetSize()) / 2, text,
-        glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+    const Rect txtRect =
+      font->getBounds(GetDrawPos() + DrawPoint(GetSize()) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
     const Rect parentRect = ctrlDeepening::GetBoundaryRect();
     Rect result;
     result.left = std::min(txtRect.left, parentRect.left);

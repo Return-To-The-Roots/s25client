@@ -19,10 +19,10 @@
 
 #pragma once
 
-#include "libsiedler2/src/ArchivItem_Bitmap.h"
 #include "DrawPoint.h"
+#include "libsiedler2/src/ArchivItem_Bitmap.h"
 
-class glArchivItem_BitmapBase: public virtual libsiedler2::ArchivItem_BitmapBase
+class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase
 {
 public:
     glArchivItem_BitmapBase();
@@ -40,14 +40,14 @@ public:
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
     Extent GetSize() const { return Extent(getWidth(), getHeight()); }
     Extent GetTexSize() const;
-    
+
 private:
     /// Erzeugt die Textur.
     void GenerateTexture();
 
-    unsigned texture; /// Das GL-Textur-Handle
+    unsigned texture;    /// Das GL-Textur-Handle
     Extent textureSize_; /// The size of the texture. Only valid when texture exists
-    unsigned filter;  /// Der aktuell gewählte Texturfilter
+    unsigned filter;     /// Der aktuell gewählte Texturfilter
 
 protected:
     /// Returns the internal texure format

@@ -18,25 +18,24 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofCharburner.h"
 
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "SoundManager.h"
-#include "nodeObjs/noCharburnerPile.h"
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
+#include "nodeObjs/noCharburnerPile.h"
 #include "gameData/TerrainData.h"
-#include "SerializedGameData.h"
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
 {
 }
 
-nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    harvest(sgd.PopBool()),
-    wt(WareType(sgd.PopUnsignedChar()))
+nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
+    : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(WareType(sgd.PopUnsignedChar()))
 {
 }
 
@@ -60,12 +59,10 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
         else
             draw_id = 9 + 12 + (now_id - 36);
 
-
         LOADER.GetPlayerImage("charburner_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
-    }
-    else
-        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
-
+    } else
+        LOADER.GetPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)
+          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -94,7 +91,6 @@ void nofCharburner::WorkFinished()
         // One step further
         static_cast<noCharburnerPile*>(no)->NextStep();
         return;
-
     }
 
     // Point still good?
@@ -161,10 +157,6 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     if(gwg->GetNode(pt).boundary_stones[0])
         return PQ_NOTPOSSIBLE;
 
-
-
-
-
     for(unsigned char i = 0; i < 6; ++i)
     {
         // Don't set it next to buildings and other charburner piles and grain fields
@@ -195,7 +187,6 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     return PQ_CLASS3;
 }
 
-
 void nofCharburner::Serialize(SerializedGameData& sgd) const
 {
     Serialize_nofFarmhand(sgd);
@@ -223,7 +214,6 @@ void nofCharburner::WalkingStarted()
         else
             wt = WareType(static_cast<noCharburnerPile*>(nob)->GetNeededWareType());
     }
-
 }
 
 /// Draws the figure while returning home / entering the building (often carrying wares)
@@ -236,7 +226,6 @@ void nofCharburner::DrawReturnStates(DrawPoint drawPt)
         // Draw normal walking otherwise
         DrawWalking(drawPt);
 }
-
 
 /// Draws the charburner while walking
 /// (overriding standard method of nofFarmhand)
@@ -253,16 +242,17 @@ void nofCharburner::DrawOtherStates(DrawPoint drawPt)
                     DrawWalking(drawPt, "charburner_bobs", 102);
                 else
                     DrawWalking(drawPt, "charburner_bobs", 151);
-            }
-            else
+            } else
                 // Draw normal walking
                 DrawWalking(drawPt);
-        } break;
+        }
+        break;
         default: return;
     }
 }
 
-bool nofCharburner::AreWaresAvailable(){
+bool nofCharburner::AreWaresAvailable()
+{
     // Charburner doesn't need wares for harvesting!
     // -> Wares are considered when calling GetPointQuality!
     return true;

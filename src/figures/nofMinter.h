@@ -26,23 +26,25 @@ class nobUsual;
 /// Klasse für den Schreiner
 class nofMinter : public nofWorkman
 {
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 64; }
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 64; }
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
 
-    public:
+public:
+    nofMinter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofMinter(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofMinter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMinter(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofMinter(SerializedGameData& sgd) const;
 
-/// Serialisierungsfunktionen
-    protected:  void Serialize_nofMinter(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofMinter(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofMinter(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_NOF_MINTER; }
+    GO_Type GetGOT() const override { return GOT_NOF_MINTER; }
 };
 
 #endif

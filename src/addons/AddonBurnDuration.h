@@ -26,22 +26,19 @@
  */
 class AddonBurnDuration : public AddonList
 {
-    public:
-        AddonBurnDuration() : AddonList(AddonId::BURN_DURATION,
-                                                 ADDONGROUP_GAMEPLAY,
-                                                 _("Set duration fires burn"),
-                                                 _("Adjusts how long a building will burn for when it is destroyed"),
-                                                 0
-                                                )
-        {
-            addOption(_("Default"));
-            addOption(_("-25%"));
-            addOption(_("-50%"));
-            addOption(_("-75%"));
-            addOption(_("-90%"));
-			addOption(_("+50%"));
-			addOption(_("+100%"));
-        }
+public:
+    AddonBurnDuration()
+        : AddonList(AddonId::BURN_DURATION, ADDONGROUP_GAMEPLAY, _("Set duration fires burn"),
+                    _("Adjusts how long a building will burn for when it is destroyed"), 0)
+    {
+        addOption(_("Default"));
+        addOption(_("-25%"));
+        addOption(_("-50%"));
+        addOption(_("-75%"));
+        addOption(_("-90%"));
+        addOption(_("+50%"));
+        addOption(_("+100%"));
+    }
 };
 
-#endif 
+#endif

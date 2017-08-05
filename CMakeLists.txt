@@ -10,7 +10,7 @@ IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libsiedler2/cmake/Modules")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib")
 
 INCLUDE(CMakeMacroSetCCache)
@@ -147,6 +147,8 @@ ELSE()
 	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
 ENDIF()
 UNSET(TMP_BOOST_VERSION)
+
+find_package(ClangFormat 5.0.0)
 
 ################################################################################
 # Set paths
@@ -402,6 +404,12 @@ ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
 ADD_SUBDIRECTORY(s25update)
 ADD_SUBDIRECTORY(src)
+
+if(ClangFormat_FOUND)
+    add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
+    add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
+    add_ClangFormat_target("file")
+endif()
 
 ################################################################################
 # Install

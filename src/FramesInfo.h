@@ -44,7 +44,7 @@ public:
 };
 
 /// Same as FramesInfo but with additional data that is only meaningfull for the client
-struct FramesInfoClient: public FramesInfo
+struct FramesInfoClient : public FramesInfo
 {
 public:
     FramesInfoClient();

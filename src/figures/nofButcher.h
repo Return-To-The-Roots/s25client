@@ -26,19 +26,18 @@ class nobUsual;
 /// Klasse für den Schreiner
 class nofButcher : public nofWorkman
 {
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 74; }
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 74; }
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
 
-    public:
+public:
+    nofButcher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofButcher(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofButcher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofButcher(SerializedGameData& sgd, const unsigned obj_id);
-
-        GO_Type GetGOT() const override { return GOT_NOF_BUTCHER; }
+    GO_Type GetGOT() const override { return GOT_NOF_BUTCHER; }
 };
 
 #endif

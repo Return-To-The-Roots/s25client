@@ -18,11 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/TerritoryRegion.h"
 
+#include "GamePlayer.h"
 #include "buildings/nobBaseMilitary.h"
 #include "buildings/nobMilitary.h"
-#include "GamePlayer.h"
-#include "gameData/MilitaryConsts.h"
 #include "world/GameWorldBase.h"
+#include "gameData/MilitaryConsts.h"
 
 TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb)
     : startPt(startPt), endPt(endPt), size(endPt - startPt), world(gwb)
@@ -36,19 +36,20 @@ TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, con
 }
 
 TerritoryRegion::~TerritoryRegion()
-{}
-
-bool TerritoryRegion::IsPointInPolygon(const std::vector< Point<int> >& polygon, const Point<int> pt)
 {
-// Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-// The site contains a lot of details and information.
+}
+
+bool TerritoryRegion::IsPointInPolygon(const std::vector<Point<int> >& polygon, const Point<int> pt)
+{
+    // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+    // The site contains a lot of details and information.
 
     bool inside = false;
 
-    std::vector< Point<int> >::const_iterator it = polygon.begin();
-    std::vector< Point<int> >::const_iterator prev = polygon.end() - 1;
+    std::vector<Point<int> >::const_iterator it = polygon.begin();
+    std::vector<Point<int> >::const_iterator prev = polygon.end() - 1;
     // Check each edge if a ray from the point to the right crosses the edge
-    for (; it != polygon.end(); prev = it, ++it)
+    for(; it != polygon.end(); prev = it, ++it)
     {
         // Check if the edge crosses the horizontal line at height pt.y
         // Includes edge point at lower coord and excludes the one at higher coord
@@ -61,12 +62,12 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector< Point<int> >& polygon,
         const int dy = prev->y - it->y;
         const int lhs = (pt.x - it->x) * dy;
         const int rhs = (prev->x - it->x) * (pt.y - it->y);
-        
+
         if((dy < 0 && lhs > rhs) || (dy > 0 && lhs < rhs))
             inside = !inside;
     }
 
-    return(inside);
+    return (inside);
 }
 
 bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt)
@@ -74,15 +75,10 @@ bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<M
     typedef Point<int> PointI;
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
-    PointI pt2(pt.x + gwb.GetWidth(), pt.y),
-           pt3(pt.x, pt.y + gwb.GetHeight()),
-           pt4(pt.x + gwb.GetWidth(), pt.y + gwb.GetHeight());
+    PointI pt2(pt.x + gwb.GetWidth(), pt.y), pt3(pt.x, pt.y + gwb.GetHeight()), pt4(pt.x + gwb.GetWidth(), pt.y + gwb.GetHeight());
     const std::vector<PointI> polygonInt(polygon.begin(), polygon.end());
-    return(polygon.empty() ||
-           IsPointInPolygon(polygonInt, PointI(pt)) ||
-           IsPointInPolygon(polygonInt, pt2) ||
-           IsPointInPolygon(polygonInt, pt3) ||
-           IsPointInPolygon(polygonInt, pt4));
+    return (polygon.empty() || IsPointInPolygon(polygonInt, PointI(pt)) || IsPointInPolygon(polygonInt, pt2)
+            || IsPointInPolygon(polygonInt, pt3) || IsPointInPolygon(polygonInt, pt4));
 }
 
 void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
@@ -109,7 +105,7 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
         return;
 
     // check whether this node is within the area we may have territory in
-    if (check_barriers && !IsPointValid(world, world.GetPlayer(player).GetRestrictedArea(), pt))
+    if(check_barriers && !IsPointValid(world, world.GetPlayer(player).GetRestrictedArea(), pt))
         return;
 
     /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
@@ -123,17 +119,14 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
     }
 }
 
-namespace{
-    struct GetMapPointWithRadius
-    {
-        typedef std::pair<MapPoint, unsigned> result_type;
+namespace {
+struct GetMapPointWithRadius
+{
+    typedef std::pair<MapPoint, unsigned> result_type;
 
-        result_type operator()(const MapPoint pt, unsigned r)
-        {
-            return std::make_pair(pt, r);
-        }
-    };
-}
+    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(pt, r); }
+};
+} // namespace
 
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {
@@ -145,7 +138,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     else
         radius = static_cast<const nobBaseMilitary&>(building).GetMilitaryRadius();
 
-    if (building.GetGOT() == GOT_NOB_MILITARY)
+    if(building.GetGOT() == GOT_NOB_MILITARY)
     {
         // we don't check barriers for captured buildings
         check_barriers = !static_cast<const nobMilitary&>(building).WasCapturedOnce();
@@ -153,7 +146,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 
     // Punkt, auf dem das Militärgebäude steht
     MapPoint pt = building.GetPos();
-    AdjustNode(pt, building.GetPlayer(), 0, false);    // no need to check barriers here. this point is on our territory.
+    AdjustNode(pt, building.GetPlayer(), 0, false); // no need to check barriers here. this point is on our territory.
 
     std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(pt, radius, GetMapPointWithRadius());
     for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)

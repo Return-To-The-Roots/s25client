@@ -18,10 +18,10 @@
 #ifndef OldLCG_h__
 #define OldLCG_h__
 
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <iosfwd>
 #include <boost/cstdint.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/utility/enable_if.hpp>
+#include <iosfwd>
 
 class Serializer;
 
@@ -37,7 +37,10 @@ public:
     OldLCG() { seed(); }
     explicit OldLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit OldLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0) { seed(seedSeq); }
+    explicit OldLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0)
+    {
+        seed(seedSeq);
+    }
 
     void seed() { seed(0x1337); }
     void seed(unsigned newSeed) { state_ = newSeed; }
@@ -53,11 +56,12 @@ public:
 
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);
+
 private:
     friend std::ostream& operator<<(std::ostream& os, const OldLCG& obj);
     friend std::istream& operator>>(std::istream& is, OldLCG& obj);
-    friend bool operator==(const OldLCG& lhs, const OldLCG& rhs){ return lhs.state_ == rhs.state_; }
-    friend bool operator!=(const OldLCG& lhs, const OldLCG& rhs){ return !(lhs == rhs); }
+    friend bool operator==(const OldLCG& lhs, const OldLCG& rhs) { return lhs.state_ == rhs.state_; }
+    friend bool operator!=(const OldLCG& lhs, const OldLCG& rhs) { return !(lhs == rhs); }
 
     unsigned state_;
 };

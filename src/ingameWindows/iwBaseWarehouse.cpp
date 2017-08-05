@@ -22,44 +22,46 @@
 
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "iwDemolishBuilding.h"
 #include "WindowManager.h"
-#include "iwHelp.h"
-#include "iwHQ.h"
-#include "iwStorehouse.h"
-#include "iwHarborBuilding.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobStorehouse.h"
-#include "world/GameWorldBase.h"
-#include "world/GameWorldView.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlOptionGroup.h"
+#include "iwDemolishBuilding.h"
+#include "iwHQ.h"
+#include "iwHarborBuilding.h"
+#include "iwHelp.h"
+#include "iwStorehouse.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
 
 #include <stdexcept>
 
-namespace{
-    enum{
-        // From iwWares
-        ID_PAGINATE = 0,
-        ID_HELP = 12,
-        // New
-        ID_STORE_SETTINGS_GROUP,
-        ID_COLLECT,
-        ID_TAKEOUT,
-        ID_STOP,
-        ID_SELECT_ALL,
-        ID_GOTO,
-        ID_GOTO_NEXT,
-        ID_DEMOLISH
-    };
+namespace {
+enum
+{
+    // From iwWares
+    ID_PAGINATE = 0,
+    ID_HELP = 12,
+    // New
+    ID_STORE_SETTINGS_GROUP,
+    ID_COLLECT,
+    ID_TAKEOUT,
+    ID_STOP,
+    ID_SELECT_ALL,
+    ID_GOTO,
+    ID_GOTO_NEXT,
+    ID_DEMOLISH
+};
 }
 
-iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh):
-    iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _("Storehouse"), true, NormalFont, wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
-    gwv(gwv), gcFactory(gcFactory), wh(wh)
+iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
+    : iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _("Storehouse"), true, NormalFont, wh->GetInventory(),
+              gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+      gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
 
@@ -81,8 +83,8 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
 
     // "Gehe Zu Ort"
     AddImageButton(ID_GOTO, DrawPoint(122, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 10), _("Go to place"));
-	// Go to next warehouse
-	AddImageButton(ID_GOTO_NEXT, DrawPoint(139, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
+    // Go to next warehouse
+    AddImageButton(ID_GOTO_NEXT, DrawPoint(139, 369), Extent(15, 32), TC_GREY, LOADER.GetImageN("io_new", 13), _("Go to next warehouse"));
 
     UpdateOverlays();
 
@@ -94,7 +96,7 @@ iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFacto
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetWidth(32);
         GetCtrl<ctrlButton>(ID_PAGINATE)->SetPos(DrawPoint(86, 369));
 
-        AddImageButton(ID_DEMOLISH, DrawPoint(52, 369), Extent(32, 32), TC_GREY, LOADER.GetImageN("io",  23), _("Demolish house"));
+        AddImageButton(ID_DEMOLISH, DrawPoint(52, 369), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
     }
 }
 
@@ -118,13 +120,13 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
         EInventorySetting setting;
         switch(optiongroup->GetSelection())
         {
-        case ID_COLLECT: setting = EInventorySetting::COLLECT; break;
-        case ID_TAKEOUT: setting = EInventorySetting::SEND; break;
-        case ID_STOP: setting = EInventorySetting::STOP; break;
-        default:
-            throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
+            case ID_COLLECT: setting = EInventorySetting::COLLECT; break;
+            case ID_TAKEOUT: setting = EInventorySetting::SEND; break;
+            case ID_STOP: setting = EInventorySetting::STOP; break;
+            default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
         }
-        InventorySetting state = GetCurPage() == pageWares ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) : wh->GetInventorySettingVisual(Job(ctrl_id - 100));
+        InventorySetting state = GetCurPage() == pageWares ? wh->GetInventorySettingVisual(GoodType(ctrl_id - 100)) :
+                                                             wh->GetInventorySettingVisual(Job(ctrl_id - 100));
         state.Toggle(setting);
         if(gcFactory.SetInventorySetting(wh->GetPos(), GetCurPage() == pagePeople, ctrl_id - 100, state))
         {
@@ -144,7 +146,8 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             // Abreißen?
             Close();
             WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, wh));
-        } break;
+        }
+        break;
         case ID_SELECT_ALL: // "Alle auswählen"
         {
             if(GAMECLIENT.IsReplayModeOn())
@@ -155,11 +158,10 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
             EInventorySetting data;
             switch(optiongroup->GetSelection())
             {
-            case ID_COLLECT: data = EInventorySetting::COLLECT; break;
-            case ID_TAKEOUT: data = EInventorySetting::SEND; break;
-            case ID_STOP: data = EInventorySetting::STOP; break;
-            default:
-                throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
+                case ID_COLLECT: data = EInventorySetting::COLLECT; break;
+                case ID_TAKEOUT: data = EInventorySetting::SEND; break;
+                case ID_STOP: data = EInventorySetting::STOP; break;
+                default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
             const unsigned count = (GetCurPage() == pageWares) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
             std::vector<InventorySetting> states;
@@ -200,56 +202,59 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 }
                 UpdateOverlays();
             }
-        } break;
+        }
+        break;
         case ID_HELP: // "Hilfe"
         {
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[wh->GetBuildingType()])));
-        } break;
+        }
+        break;
         case ID_GOTO: // "Gehe Zu Ort"
         {
             gwv.MoveToMapPt(wh->GetPos());
-        } break;
-		case ID_GOTO_NEXT: //go to next of same type
-		{
-			//is there at least 1 other building of the same type?
+        }
+        break;
+        case ID_GOTO_NEXT: // go to next of same type
+        {
+            // is there at least 1 other building of the same type?
             const std::list<nobBaseWarehouse*>& storehouses = gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetStorehouses();
-			//go through list once we get to current building -> open window for the next one and go to next location
-			for(std::list<nobBaseWarehouse*>::const_iterator it=storehouses.begin(); it != storehouses.end(); ++it)
-			{
-				if((*it)->GetPos()==wh->GetPos()) //got to current building in the list?
-				{
-					//close old window, open new window (todo: only open if it isnt already open), move to location of next building
-					Close();
-					++it;
-					if(it == storehouses.end()) //was last entry in list -> goto first												{
-						it=storehouses.begin();
-					gwv.MoveToMapPt((*it)->GetPos());
-					if((*it)->GetBuildingType()==BLD_HEADQUARTERS)
-					{
-						iwHQ* nextscrn=new iwHQ(gwv, gcFactory, *it);
-						nextscrn->SetPos(GetPos());
-						WINDOWMANAGER.Show(nextscrn);
-					}
-					else if((*it)->GetBuildingType()==BLD_HARBORBUILDING)
-					{
-						iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-						nextscrn->SetPos(GetPos());
-						WINDOWMANAGER.Show(nextscrn);
-					}
-					else if((*it)->GetBuildingType()==BLD_STOREHOUSE) 
-					{
-						iwStorehouse* nextscrn=new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-						nextscrn->SetPos(GetPos());
-						WINDOWMANAGER.Show(nextscrn);
-					}
-					break;
-				}
-			}
-		} break;
+            // go through list once we get to current building -> open window for the next one and go to next location
+            for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
+            {
+                if((*it)->GetPos() == wh->GetPos()) // got to current building in the list?
+                {
+                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                    Close();
+                    ++it;
+                    if(it == storehouses.end()) // was last entry in list -> goto first												{
+                        it = storehouses.begin();
+                    gwv.MoveToMapPt((*it)->GetPos());
+                    if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
+                    {
+                        iwHQ* nextscrn = new iwHQ(gwv, gcFactory, *it);
+                        nextscrn->SetPos(GetPos());
+                        WINDOWMANAGER.Show(nextscrn);
+                    } else if((*it)->GetBuildingType() == BLD_HARBORBUILDING)
+                    {
+                        iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
+                        nextscrn->SetPos(GetPos());
+                        WINDOWMANAGER.Show(nextscrn);
+                    } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
+                    {
+                        iwStorehouse* nextscrn = new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
+                        nextscrn->SetPos(GetPos());
+                        WINDOWMANAGER.Show(nextscrn);
+                    }
+                    break;
+                }
+            }
+        }
+        break;
         default: // an Basis weiterleiten
         {
             iwWares::Msg_ButtonClick(ctrl_id);
-        } break;
+        }
+        break;
     }
 }
 
@@ -274,18 +279,20 @@ void iwBaseWarehouse::UpdateOverlay(unsigned i, bool isWare)
     // Einlagern verbieten-Bild (de)aktivieren
     ctrlImage* image = group->GetCtrl<ctrlImage>(400 + i);
     if(image)
-        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::STOP) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::STOP));
+        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::STOP) :
+                                   wh->IsInventorySettingVisual(Job(i), EInventorySetting::STOP));
 
     // Auslagern-Bild (de)aktivieren
     image = group->GetCtrl<ctrlImage>(500 + i);
     if(image)
-        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::SEND) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::SEND));
+        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::SEND) :
+                                   wh->IsInventorySettingVisual(Job(i), EInventorySetting::SEND));
 
     // Einlagern-Bild (de)aktivieren
     image = group->GetCtrl<ctrlImage>(700 + i);
     if(image)
-        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::COLLECT) : wh->IsInventorySettingVisual(Job(i), EInventorySetting::COLLECT));
-
+        image->SetVisible(isWare ? wh->IsInventorySettingVisual(GoodType(i), EInventorySetting::COLLECT) :
+                                   wh->IsInventorySettingVisual(Job(i), EInventorySetting::COLLECT));
 }
 
 void iwBaseWarehouse::UpdateOverlays()
@@ -307,6 +314,6 @@ void iwBaseWarehouse::OnChange(unsigned changeId)
     {
         wh = NULL;
         Close();
-    }else if(changeId == 1)
+    } else if(changeId == 1)
         UpdateOverlays();
 }

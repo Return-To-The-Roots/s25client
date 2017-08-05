@@ -16,27 +16,27 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "SeaWorldWithGCExecution.h"
 #include "GamePlayer.h"
-#include "pathfinding/FindPathForRoad.h"
-#include "factories/BuildingFactory.h"
+#include "PointOutput.h"
+#include "SeaWorldWithGCExecution.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobShipYard.h"
+#include "factories/BuildingFactory.h"
+#include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/ShipPostMsg.h"
-#include "nodeObjs/noShip.h"
-#include "PointOutput.h"
 #include "test/initTestHelpers.h"
+#include "nodeObjs/noShip.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
-namespace{
-    std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
-    {
-        return FindPathForRoad(world, fromPt, toPt, false);
-    }
+namespace {
+std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
+{
+    return FindPathForRoad(world, fromPt, toPt, false);
 }
+} // namespace
 
 BOOST_AUTO_TEST_SUITE(SeafaringTestSuite)
 
@@ -48,8 +48,9 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     const unsigned hbId = 1;
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     BOOST_REQUIRE_LT(world.CalcDistance(hqPos, hbPos), HQ_RADIUS);
-    
-    nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+
+    nobHarborBuilding* harbor =
+      dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
     BOOST_REQUIRE_EQUAL(player.GetHarbors().size(), 1u);
     BOOST_REQUIRE_EQUAL(player.GetHarbors().front(), harbor);
@@ -63,7 +64,8 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(harbors.size(), 1u);
     BOOST_REQUIRE_EQUAL(harbors.front(), harbor);
 
-    const std::vector<Direction> road = FindRoadPath(world.GetNeighbour(hqPos, Direction::SOUTHEAST), world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
+    const std::vector<Direction> road =
+      FindRoadPath(world.GetNeighbour(hqPos, Direction::SOUTHEAST), world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
 }
 
@@ -78,19 +80,21 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     const MapPoint hbPos = world.GetHarborPoint(hbId);
     const MapPoint shipyardPos(hqPos.x + 3, hqPos.y - 5);
 
-    nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+    nobHarborBuilding* harbor =
+      dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
     std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     MapPoint curPt = hqFlagPos;
-    for(unsigned i=0; i<road.size(); i++)
+    for(unsigned i = 0; i < road.size(); i++)
     {
         curPt = world.GetNeighbour(curPt, road[i]);
         this->SetFlag(curPt);
     }
     BOOST_REQUIRE_EQUAL(world.GetBQ(shipyardPos, curPlayer), BQ_CASTLE);
-    nobShipYard* shipYard = dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
+    nobShipYard* shipYard =
+      dynamic_cast<nobShipYard*>(BuildingFactory::CreateBuilding(world, BLD_SHIPYARD, shipyardPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(shipYard);
     road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
@@ -121,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
 }
 
 template<unsigned T_hbId = 1, unsigned T_width = SeaWorldDefault::width, unsigned T_height = SeaWorldDefault::height>
-struct ShipReadyFixture: public SeaWorldWithGCExecution<T_width, T_height>
+struct ShipReadyFixture : public SeaWorldWithGCExecution<T_width, T_height>
 {
     typedef SeaWorldWithGCExecution<T_width, T_height> Parent;
     using Parent::world;
@@ -137,7 +141,8 @@ struct ShipReadyFixture: public SeaWorldWithGCExecution<T_width, T_height>
         world.GetPostMgr().AddPostBox(curPlayer);
         postBox = world.GetPostMgr().GetPostBox(curPlayer);
 
-        nobHarborBuilding* harbor = dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+        nobHarborBuilding* harbor =
+          dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
         BOOST_REQUIRE(harbor);
         world.RecalcBQAroundPointBig(hbPos);
         std::vector<Direction> road = FindRoadPath(hqFlagPos, world.GetNeighbour(hbPos, Direction::SOUTHEAST), world);
@@ -298,7 +303,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE;
     this->StartExplorationExpedition(hbPos);
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
-    for(unsigned gf = 0; gf < 2*200 + 5; gf++)
+    for(unsigned gf = 0; gf < 2 * 200 + 5; gf++)
     {
         this->em.ExecuteNextGF();
         if(ship->IsIdling())
@@ -479,7 +484,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     newScouts.people[JOB_SCOUT] = 20;
     harbor.AddGoods(newScouts, true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
-    for(unsigned i=1; i<=8; i++)
+    for(unsigned i = 1; i <= 8; i++)
         world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = VIS_VISIBLE;
     world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[curPlayer].visibility = VIS_INVISIBLE;
     // Start an exploration expedition
@@ -493,7 +498,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
             break;
     }
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
-    // Wait till ship has loaded scouts 
+    // Wait till ship has loaded scouts
     for(unsigned gf = 0; gf < 200; gf++)
     {
         this->em.ExecuteNextGF();

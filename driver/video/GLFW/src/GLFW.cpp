@@ -19,8 +19,8 @@
 // Header
 #include "driverDefines.h" // IWYU pragma: keep
 #include "GLFW.h"
-#include "VideoInterface.h"
 #include "RTTR_Version.h"
+#include "VideoInterface.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -72,7 +72,8 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  @author FloSoft
  */
 VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), libGL(NULL)
-{}
+{
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -81,7 +82,8 @@ VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBac
  *  @author FloSoft
  */
 VideoGLFW::~VideoGLFW(void)
-{}
+{
+}
 
 const char* VideoGLFW::GetName(void) const
 {
@@ -172,7 +174,7 @@ bool VideoGLFW::CreateScreen(unsigned short width, unsigned short height, bool f
     glfwSetKeyCallback(OnKeyAction);
 
     memset(keyboard, false, sizeof(bool) * 512);
-    this->screenWidth  = width;
+    this->screenWidth = width;
     this->screenHeight = height;
     this->isFullscreen_ = fullscreen;
 
@@ -221,8 +223,7 @@ bool VideoGLFW::ResizeScreen(unsigned short* width, unsigned short* height, bool
     *width = w;
     *height = h;
 
-
-    this->screenWidth  = *width;
+    this->screenWidth = *width;
     this->screenHeight = *height;
     this->isFullscreen_ = fullscreen;
 
@@ -275,7 +276,6 @@ bool VideoGLFW::MessageLoop(void)
     // Wenn das Fenster geschlossen wurde, beenden
     return (glfwGetWindowParam(GLFW_OPENED) == GL_TRUE);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -363,16 +363,19 @@ void GLFWCALL VideoGLFW::OnMouseButton(int button, int action)
 
     switch(button)
     {
-        case GLFW_MOUSE_BUTTON_LEFT:    {   pVideoGLFW->mouse_l = (action == GLFW_PRESS);   } break;
-        case GLFW_MOUSE_BUTTON_RIGHT:   {   pVideoGLFW->mouse_r = (action == GLFW_PRESS);   } break;
+        case GLFW_MOUSE_BUTTON_LEFT: { pVideoGLFW->mouse_l = (action == GLFW_PRESS);
+        }
+        break;
+        case GLFW_MOUSE_BUTTON_RIGHT: { pVideoGLFW->mouse_r = (action == GLFW_PRESS);
+        }
+        break;
     }
 
     if(pVideoGLFW->mouse_l && !pVideoGLFW->mouse_xy.ldown)
     {
         pVideoGLFW->mouse_xy.ldown = pVideoGLFW->mouse_l;
         pVideoGLFW->CallBack->Msg_LeftDown(pVideoGLFW->mouse_xy);
-    }
-    else if(!pVideoGLFW->mouse_l && pVideoGLFW->mouse_xy.ldown)
+    } else if(!pVideoGLFW->mouse_l && pVideoGLFW->mouse_xy.ldown)
     {
         pVideoGLFW->mouse_xy.ldown = pVideoGLFW->mouse_l;
         pVideoGLFW->CallBack->Msg_LeftUp(pVideoGLFW->mouse_xy);
@@ -382,8 +385,7 @@ void GLFWCALL VideoGLFW::OnMouseButton(int button, int action)
     {
         pVideoGLFW->mouse_xy.rdown = pVideoGLFW->mouse_r;
         pVideoGLFW->CallBack->Msg_RightDown(pVideoGLFW->mouse_xy);
-    }
-    else if(!pVideoGLFW->mouse_r && pVideoGLFW->mouse_xy.rdown)
+    } else if(!pVideoGLFW->mouse_r && pVideoGLFW->mouse_xy.rdown)
     {
         pVideoGLFW->mouse_xy.rdown = pVideoGLFW->mouse_r;
         pVideoGLFW->CallBack->Msg_RightUp(pVideoGLFW->mouse_xy);
@@ -405,12 +407,14 @@ unsigned char VideoGLFW::TranslateKey(unsigned char key)
     if(keyboard[GLFW_KEY_LSHIFT] == true || keyboard[GLFW_KEY_RSHIFT] == true)
     {
         key = toupper(key);
-        //printf("u %d, %c\n", key, key);
+        // printf("u %d, %c\n", key, key);
         switch(key)
         {
             case '1': key = '!'; break;
             case '2': key = '\"'; break;
-            case '3': key = 21; break; // paragraph
+            case '3':
+                key = 21;
+                break; // paragraph
             case '4': key = '$'; break;
             case '5': key = '%'; break;
             case '6': key = '&'; break;
@@ -418,16 +422,21 @@ unsigned char VideoGLFW::TranslateKey(unsigned char key)
             case '8': key = '('; break;
             case '9': key = ')'; break;
             case '0': key = '='; break;
-            case  44: key = ';'; break; // komma
-            case  46: key = ':'; break; // punkt
-            case 223: key = '?'; break; // scharfes s
+            case 44:
+                key = ';';
+                break; // komma
+            case 46:
+                key = ':';
+                break; // punkt
+            case 223:
+                key = '?';
+                break; // scharfes s
         }
         /// @todo: fehlende Zeichen einsetzen
-    }
-    else
+    } else
     {
         key = tolower(key);
-        //printf("l %d, %c\n", key, key);
+        // printf("l %d, %c\n", key, key);
         switch(key)
         {
             case 196: key = 'ä'; break;
@@ -462,7 +471,7 @@ void GLFWCALL VideoGLFW::OnKeyAction(int key, int action)
 
     pVideoGLFW->keyboard[key] = (action == GLFW_PRESS);
 
-    KeyEvent ke = {KT_INVALID, 0, false, false, false };
+    KeyEvent ke = {KT_INVALID, 0, false, false, false};
 
     if(action == GLFW_PRESS)
     {
@@ -473,19 +482,20 @@ void GLFWCALL VideoGLFW::OnKeyAction(int key, int action)
                 // Die 12 F-Tasten
                 if(key >= GLFW_KEY_F1 && key <= GLFW_KEY_F12)
                     ke.kt = static_cast<KeyType>(KT_F1 + key - GLFW_KEY_F1);
-            } break;
-            case GLFW_KEY_LSHIFT:    ke.kt = KT_SHIFT;     break;
-            case GLFW_KEY_RSHIFT:    ke.kt = KT_SHIFT;     break;
-            case GLFW_KEY_SPACE:     ke.kt = KT_SPACE;     break;
-            case GLFW_KEY_ENTER:     ke.kt = KT_RETURN;    break;
-            case GLFW_KEY_LEFT:      ke.kt = KT_LEFT;      break;
-            case GLFW_KEY_UP:        ke.kt = KT_UP;        break;
-            case GLFW_KEY_RIGHT:     ke.kt = KT_RIGHT;     break;
-            case GLFW_KEY_DOWN:      ke.kt = KT_DOWN;      break;
+            }
+            break;
+            case GLFW_KEY_LSHIFT: ke.kt = KT_SHIFT; break;
+            case GLFW_KEY_RSHIFT: ke.kt = KT_SHIFT; break;
+            case GLFW_KEY_SPACE: ke.kt = KT_SPACE; break;
+            case GLFW_KEY_ENTER: ke.kt = KT_RETURN; break;
+            case GLFW_KEY_LEFT: ke.kt = KT_LEFT; break;
+            case GLFW_KEY_UP: ke.kt = KT_UP; break;
+            case GLFW_KEY_RIGHT: ke.kt = KT_RIGHT; break;
+            case GLFW_KEY_DOWN: ke.kt = KT_DOWN; break;
             case GLFW_KEY_BACKSPACE: ke.kt = KT_BACKSPACE; break;
-            case GLFW_KEY_DEL:       ke.kt = KT_DELETE;    break;
-            case GLFW_KEY_TAB:       ke.kt = KT_TAB;       break;
-            case GLFW_KEY_END:       ke.kt = KT_END;       break;
+            case GLFW_KEY_DEL: ke.kt = KT_DELETE; break;
+            case GLFW_KEY_TAB: ke.kt = KT_TAB; break;
+            case GLFW_KEY_END: ke.kt = KT_END; break;
         }
 
         if(ke.kt == KT_INVALID || ke.kt == KT_SPACE)
@@ -494,9 +504,12 @@ void GLFWCALL VideoGLFW::OnKeyAction(int key, int action)
             ke.c = pVideoGLFW->TranslateKey(key);
         }
 
-        if(glfwGetKey(GLFW_KEY_LCTRL)  | glfwGetKey(GLFW_KEY_RCTRL))  ke.ctrl  = true;
-        if(glfwGetKey(GLFW_KEY_LSHIFT) | glfwGetKey(GLFW_KEY_RSHIFT)) ke.shift = true;
-        if(glfwGetKey(GLFW_KEY_LALT)   | glfwGetKey(GLFW_KEY_RALT))   ke.alt   = true;
+        if(glfwGetKey(GLFW_KEY_LCTRL) | glfwGetKey(GLFW_KEY_RCTRL))
+            ke.ctrl = true;
+        if(glfwGetKey(GLFW_KEY_LSHIFT) | glfwGetKey(GLFW_KEY_RSHIFT))
+            ke.shift = true;
+        if(glfwGetKey(GLFW_KEY_LALT) | glfwGetKey(GLFW_KEY_RALT))
+            ke.alt = true;
 
         pVideoGLFW->CallBack->Msg_KeyDown(ke);
     }
@@ -510,12 +523,13 @@ void GLFWCALL VideoGLFW::OnKeyAction(int key, int action)
  */
 KeyEvent VideoGLFW::GetModKeyState(void) const
 {
-    const KeyEvent ke = { KT_INVALID, 0,
-                          (glfwGetKey(GLFW_KEY_LCTRL)  | glfwGetKey(GLFW_KEY_RCTRL)  ) ? true : false,
-                          (glfwGetKey(GLFW_KEY_LSHIFT) | glfwGetKey(GLFW_KEY_RSHIFT) ) ? true : false,
-                          (glfwGetKey(GLFW_KEY_LALT)   | glfwGetKey(GLFW_KEY_RALT)   ) ? true : false
-                        };
+    const KeyEvent ke = {KT_INVALID, 0, (glfwGetKey(GLFW_KEY_LCTRL) | glfwGetKey(GLFW_KEY_RCTRL)) ? true : false,
+                         (glfwGetKey(GLFW_KEY_LSHIFT) | glfwGetKey(GLFW_KEY_RSHIFT)) ? true : false,
+                         (glfwGetKey(GLFW_KEY_LALT) | glfwGetKey(GLFW_KEY_RALT)) ? true : false};
     return ke;
 }
 
-void* VideoGLFW::GetMapPointer() const { return NULL; }
+void* VideoGLFW::GetMapPointer() const
+{
+    return NULL;
+}

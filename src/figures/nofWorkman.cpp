@@ -18,20 +18,22 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofWorkman.h"
 
+#include "EventManager.h"
+#include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "gameData/JobConsts.h"
-#include "SoundManager.h"
-#include "EventManager.h"
 class SerializedGameData;
 class nobBaseWarehouse;
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)
-{}
+{
+}
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
     : nofBuildingWorker(job, pos, player, goalWh)
-{}
+{
+}
 
 void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
 {
@@ -39,27 +41,23 @@ void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
 }
 
 nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
-{}
+{
+}
 
-
-void nofWorkman::HandleDerivedEvent(const unsigned  /*id*/)
+void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        case STATE_WAITING1:
-        {
-            HandleStateWaiting1();
-        } break;
-        case STATE_WORK:
-        {
-            HandleStateWork();
-        } break;
-        case STATE_WAITING2:
-        {
-            HandleStateWaiting2();
-        } break;
-        default:
-            break;
+        case STATE_WAITING1: { HandleStateWaiting1();
+        }
+        break;
+        case STATE_WORK: { HandleStateWork();
+        }
+        break;
+        case STATE_WAITING2: { HandleStateWaiting2();
+        }
+        break;
+        default: break;
     }
 }
 
@@ -83,8 +81,7 @@ void nofWorkman::HandleStateWaiting2()
     {
         // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
         TryToWork();
-    }
-    else
+    } else
     {
         // und diese raustragen
         StartWalking(Direction::SOUTHEAST);
@@ -115,7 +112,6 @@ void nofWorkman::HandleStateWork()
 void nofWorkman::WalkedDerived()
 {
 }
-
 
 void nofWorkman::WorkFinished()
 {

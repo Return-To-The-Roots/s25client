@@ -17,19 +17,19 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwObservate.h"
+#include "CollisionDetection.h"
 #include "Loader.h"
-#include "driver/src/MouseCoords.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "world/GameWorldView.h"
-#include "world/GameWorldViewer.h"
-#include "world/GameWorldBase.h"
 #include "Settings.h"
 #include "controls/ctrlImageButton.h"
+#include "driver/src/MouseCoords.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Bitmap.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GuiConsts.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/src/Log.h"
-#include "CollisionDetection.h"
 #include <boost/foreach.hpp>
 #include <cmath>
 
@@ -37,12 +37,11 @@ const Extent SmallWndSize(260, 190);
 const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
 
-iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
-    IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, Extent(260, 190), _("Observation window"), NULL),
-    parentView(gwv),
-    view(new GameWorldView(gwv.GetViewer(), Point<int>(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
-    selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
-    followMovableId(GameObject::INVALID_ID)
+iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
+    : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, Extent(260, 190), _("Observation window"), NULL),
+      parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Point<int>(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
+      selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
+      followMovableId(GameObject::INVALID_ID)
 {
     view->MoveToMapPt(selectedPt);
     view->SetZoomFactor(1.9f, false);
@@ -66,7 +65,7 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt):
 
 void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    switch (ctrl_id)
+    switch(ctrl_id)
     {
         case 1:
             if(++zoomLvl > 4)
@@ -84,7 +83,7 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
             break;
         case 2:
         {
-            if (followMovableId != GameObject::INVALID_ID)
+            if(followMovableId != GameObject::INVALID_ID)
                 followMovableId = GameObject::INVALID_ID;
             else
             {
@@ -107,19 +106,19 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
                         BOOST_FOREACH(const noBase* obj, figures)
                         {
-                            const noMovable *movable = dynamic_cast<const noMovable*>(obj);
+                            const noMovable* movable = dynamic_cast<const noMovable*>(obj);
                             if(!movable)
                                 continue;
 
                             DrawPoint objDrawPt = curDrawPt;
 
-                            if (movable->IsMoving())
+                            if(movable->IsMoving())
                                 objDrawPt += movable->CalcWalkingRelative();
 
                             DrawPoint diffToCenter = objDrawPt - centerDrawPt;
                             double distance = sqrt(pow(diffToCenter.x, 2) + pow(diffToCenter.y, 2));
 
-                            if (distance < minDistance)
+                            if(distance < minDistance)
                             {
                                 followMovableId = movable->GetObjId();
                                 minDistance = distance;
@@ -131,24 +130,20 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
             break;
         }
-        case 3:
-            parentView.MoveToMapPt( MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2) );
-            break;
+        case 3: parentView.MoveToMapPt(MapPoint(view->GetLastPt() - (view->GetLastPt() - view->GetFirstPt()) / 2)); break;
         case 4:
             int diff = GetSize().x;
 
-            if (GetSize().x == 260)
+            if(GetSize().x == 260)
             {
                 SetWidth(300);
                 SetHeight(250);
-            }
-            else if (GetSize().x == 300)
+            } else if(GetSize().x == 300)
             {
                 SetWidth(340);
                 SetHeight(310);
                 GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 108));
-            }
-            else
+            } else
             {
                 SetWidth(260);
                 SetHeight(190);
@@ -160,7 +155,7 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
             view->Resize(GetSize() - Extent::all(20));
 
-            for (unsigned i = 1; i <= 4; ++i)
+            for(unsigned i = 1; i <= 4; ++i)
                 GetCtrl<ctrlImageButton>(i)->SetPos(DrawPoint(GetCtrl<ctrlImageButton>(i)->GetPos().x - diff, GetSize().y - 50));
 
             DrawPoint maxPos(VIDEODRIVER.GetScreenSize() - GetSize() - Extent::all(1));
@@ -172,26 +167,26 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwObservate::Draw_()
 {
-    if (GetPos() != lastWindowPos)
+    if(GetPos() != lastWindowPos)
     {
         view->SetPos(GetPos() + DrawPoint(10, 15));
         lastWindowPos = GetPos();
     }
 
-    if (followMovableId != GameObject::INVALID_ID)
+    if(followMovableId != GameObject::INVALID_ID)
     {
         if(!MoveToFollowedObj())
             followMovableId = GameObject::INVALID_ID;
     }
 
-    if (!IsMinimized())
+    if(!IsMinimized())
     {
         RoadBuildState road;
         road.mode = RM_DISABLED;
 
         view->Draw(road, true, parentView.GetSelectedPt());
         // Draw indicator for center point
-        if (followMovableId == GameObject::INVALID_ID)
+        if(followMovableId == GameObject::INVALID_ID)
             LOADER.GetMapImageN(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
     }
 
@@ -234,7 +229,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
             const noMovable* followMovable = static_cast<const noMovable*>(obj);
             DrawPoint drawPt = view->GetWorld().GetNodePos(ptToCheck);
 
-            if (followMovable->IsMoving())
+            if(followMovable->IsMoving())
                 drawPt += followMovable->CalcWalkingRelative();
 
             view->MoveTo(drawPt - view->GetSize() / 2u, true);
@@ -246,7 +241,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
 
 bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
 {
-    if (isScrolling)
+    if(isScrolling)
     {
         int acceleration = SETTINGS.global.smartCursor ? 2 : 3;
 
@@ -257,16 +252,16 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
         VIDEODRIVER.SetMousePos(scrollOrigin);
     }
 
-    return(false);
+    return (false);
 }
 
 bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 {
-    if (IsPointInRect(mc.GetPos(), Rect(view->GetPos(), view->GetSize())) &&
-        !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(1)->GetDrawRect()) &&
-        !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(2)->GetDrawRect()) &&
-        !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(3)->GetDrawRect()) &&
-        !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(4)->GetDrawRect()))
+    if(IsPointInRect(mc.GetPos(), Rect(view->GetPos(), view->GetSize()))
+       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(1)->GetDrawRect())
+       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(2)->GetDrawRect())
+       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(3)->GetDrawRect())
+       && !IsPointInRect(mc.GetPos(), GetCtrl<ctrlImageButton>(4)->GetDrawRect()))
     {
         scrollOrigin = mc.GetPos();
 
@@ -277,12 +272,12 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
         Close();
     }
 
-    return(false);
+    return (false);
 }
 
-bool iwObservate::Msg_RightUp(const MouseCoords&  /*mc*/)
+bool iwObservate::Msg_RightUp(const MouseCoords& /*mc*/)
 {
     isScrolling = false;
 
-    return(false);
+    return (false);
 }

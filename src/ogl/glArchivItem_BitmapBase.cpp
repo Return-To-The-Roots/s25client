@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_BitmapBase.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "oglIncludes.h"
 
 /** @class glArchivItem_BitmapBase
@@ -31,8 +31,7 @@
  *  OpenGL-Textur des Bildes.
  */
 
-glArchivItem_BitmapBase::glArchivItem_BitmapBase()
-    : texture(0), textureSize_(0, 0), filter(GL_NEAREST)
+glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), filter(GL_NEAREST)
 {
 }
 
@@ -62,7 +61,7 @@ unsigned glArchivItem_BitmapBase::GetTexture()
 void glArchivItem_BitmapBase::DeleteTexture()
 {
     VIDEODRIVER.DeleteTexture(texture);
-    //glDeleteTextures(1, (const GLuint*)&texture);
+    // glDeleteTextures(1, (const GLuint*)&texture);
     texture = 0;
 }
 

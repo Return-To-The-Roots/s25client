@@ -17,10 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AudioDriverWrapper.h"
+#include "MusicPlayer.h"
+#include "Settings.h"
 #include "VideoDriverWrapper.h"
 #include "driver/src/AudioInterface.h"
-#include "Settings.h"
-#include "MusicPlayer.h"
 #include "libsiedler2/src/ArchivItem_Sound.h"
 #include "libutil/src/tmpFile.h"
 #include <ostream>
@@ -93,7 +93,8 @@ bool AudioDriverWrapper::LoadDriver()
     if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
         return false;
 
-    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
+    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance =
+      pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
 
     // Instanz erzeugen
     audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer());
@@ -109,7 +110,6 @@ bool AudioDriverWrapper::LoadDriver()
 
     return true;
 }
-
 
 /**
  *  Lädt einen Sound.
@@ -146,7 +146,6 @@ Sound* AudioDriverWrapper::LoadEffect(const std::string& filepath)
     return audiodriver->LoadEffect(filepath);
 }
 
-
 Sound* AudioDriverWrapper::LoadEffect(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension)
 {
     std::ofstream fs;
@@ -182,4 +181,3 @@ void AudioDriverWrapper::Msg_MusicFinished()
     // MusicManager Bescheid sagen
     MUSICPLAYER.MusicFinished();
 }
-

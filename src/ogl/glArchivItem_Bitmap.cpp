@@ -91,9 +91,9 @@ void glArchivItem_Bitmap::DrawFull(const DrawPoint& dstPos, unsigned color)
 }
 
 void glArchivItem_Bitmap::DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
- {
-     Draw(destArea, Rect(offset, destArea.getSize()), color);
- }
+{
+    Draw(destArea, Rect(offset, destArea.getSize()), color);
+}
 
 void glArchivItem_Bitmap::DrawPart(const Rect& destArea, unsigned color /*= COLOR_WHITE*/)
 {
@@ -125,4 +125,3 @@ Extent glArchivItem_Bitmap::CalcTextureSize() const
 {
     return VIDEODRIVER.calcPreferredTextureSize(GetSize());
 }
-

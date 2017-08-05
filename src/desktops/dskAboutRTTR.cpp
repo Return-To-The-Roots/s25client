@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskAboutRTTR.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 
 #include "dskMainMenu.h"
 
@@ -36,7 +36,6 @@ dskAboutRTTR::dskAboutRTTR() : Desktop(LOADER.GetImageN("menu", 0))
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
-
 void dskAboutRTTR::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
@@ -44,7 +43,7 @@ void dskAboutRTTR::Msg_ButtonClick(const unsigned ctrl_id)
         case 0: // "Zurück"
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
-        } break;
+        }
+        break;
     }
 }
-

@@ -18,12 +18,12 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskMultiPlayer.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 
-#include "desktops/dskMainMenu.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskLAN.h"
+#include "desktops/dskMainMenu.h"
 #include "ingameWindows/iwLobbyConnect.h"
 
 /** @class dskMultiPlayer
@@ -46,8 +46,6 @@ dskMultiPlayer::dskMultiPlayer()
 
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
-
-
 
 void dskMultiPlayer::Msg_ButtonClick(const unsigned ctrl_id)
 {

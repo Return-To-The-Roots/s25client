@@ -25,7 +25,7 @@
 struct Rect
 {
     int left, top, right, bottom;
-    Rect(): left(0), top(0), right(0), bottom(0){}
+    Rect() : left(0), top(0), right(0), bottom(0) {}
     Rect(int left, int top, unsigned width, unsigned height);
     Rect(const Position& lt, unsigned width, unsigned height);
     Rect(const Position& lt, const Extent& size);
@@ -37,15 +37,15 @@ struct Rect
     static Rect move(Rect rect, const Position& offset);
 };
 
-inline Rect::Rect(int left, int top, unsigned width, unsigned height): left(left), top(top)
+inline Rect::Rect(int left, int top, unsigned width, unsigned height) : left(left), top(top)
 {
     setSize(Extent(width, height));
 }
-inline Rect::Rect(const Position& lt, unsigned width, unsigned height): left(lt.x), top(lt.y)
+inline Rect::Rect(const Position& lt, unsigned width, unsigned height) : left(lt.x), top(lt.y)
 {
     setSize(Extent(width, height));
 }
-inline Rect::Rect(const Position& lt, const Extent& size): left(lt.x), top(lt.y)
+inline Rect::Rect(const Position& lt, const Extent& size) : left(lt.x), top(lt.y)
 {
     setSize(Extent(size));
 }

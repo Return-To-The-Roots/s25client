@@ -16,73 +16,74 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "SeaWorldWithGCExecution.h"
 #include "RTTR_AssertError.h"
+#include "SeaWorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
 
-std::ostream& operator<<(std::ostream &out, const ShipDirection& dir)
+std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
 {
     return out << dir.toUInt();
 }
 
 BOOST_AUTO_TEST_SUITE(SeaWorldCreationSuite)
 
-namespace{
-    /// Create a world, that has just default initialized nodes
-    struct CreateDummyWorld
+namespace {
+/// Create a world, that has just default initialized nodes
+struct CreateDummyWorld
+{
+    CreateDummyWorld(const MapExtent& size, unsigned numPlayers) : size_(size) {}
+    bool operator()(GameWorldGame& world) const
     {
-        CreateDummyWorld(const MapExtent& size, unsigned numPlayers):size_(size) {}
-        bool operator()(GameWorldGame& world) const
-        {
-            world.Init(size_, LT_GREENLAND);
-            return true;
-        }
-    private:
-        MapExtent size_;
-    };
-    typedef WorldFixture<CreateDummyWorld, 0, 512, 512> DummyWorldFixture;
-
-    /// Return the ship dir from a point to an other point given by their difference
-    ShipDirection getShipDir(const World& world, MapPoint fromPt, const Point<int>& diff)
-    {
-        MapPoint toPt = world.MakeMapPoint(Point<int>(fromPt) + diff);
-        return world.GetShipDir(fromPt, toPt);
+        world.Init(size_, LT_GREENLAND);
+        return true;
     }
 
-    /// Test getting the ship dir for the various cases coming from a single point
-    void testShipDir(const World& world, const MapPoint fromPt)
-    {
-        typedef Point<int> DiffPt;
-        // General cases
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(0, -10)), ShipDirection::NORTH);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, -1)), ShipDirection::NORTHEAST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, 1)), ShipDirection::SOUTHEAST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(0, 10)), ShipDirection::SOUTH);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-10, 1)), ShipDirection::SOUTHWEST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-10, -1)), ShipDirection::NORTHWEST);
+private:
+    MapExtent size_;
+};
+typedef WorldFixture<CreateDummyWorld, 0, 512, 512> DummyWorldFixture;
 
-        // y diff is zero -> Go south (convention)
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-10, 0)), ShipDirection::SOUTHWEST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, 0)), ShipDirection::SOUTHEAST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(1, 0)), ShipDirection::SOUTHEAST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-1, 0)), ShipDirection::SOUTHWEST);
-
-        // 6 directions -> 60deg covered per direction, mainDir +- 30deg
-        // Switch pt between north and south is simple: Above or below zero diff (already tested above)
-        // But S to SE or SW (same for N) is harder. Dividing line as an angle of +- 60deg compared to x-axis
-        // hence: |dy/dx| > tan(60deg) -> SOUTH, tan(60deg) ~= 1.732. Test here with |dy| = |dx| * 1.732 as the divider
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, 173)), ShipDirection::SOUTHEAST);
-        // Switch point
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, 174)), ShipDirection::SOUTH);
-        // Same for other 3 switch points
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, 173)), ShipDirection::SOUTHWEST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, 174)), ShipDirection::SOUTH);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, -173)), ShipDirection::NORTHWEST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, -174)), ShipDirection::NORTH);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, -173)), ShipDirection::NORTHEAST);
-        BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, -174)), ShipDirection::NORTH);
-    }
+/// Return the ship dir from a point to an other point given by their difference
+ShipDirection getShipDir(const World& world, MapPoint fromPt, const Point<int>& diff)
+{
+    MapPoint toPt = world.MakeMapPoint(Point<int>(fromPt) + diff);
+    return world.GetShipDir(fromPt, toPt);
 }
+
+/// Test getting the ship dir for the various cases coming from a single point
+void testShipDir(const World& world, const MapPoint fromPt)
+{
+    typedef Point<int> DiffPt;
+    // General cases
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(0, -10)), ShipDirection::NORTH);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, -1)), ShipDirection::NORTHEAST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, 1)), ShipDirection::SOUTHEAST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(0, 10)), ShipDirection::SOUTH);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-10, 1)), ShipDirection::SOUTHWEST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-10, -1)), ShipDirection::NORTHWEST);
+
+    // y diff is zero -> Go south (convention)
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-10, 0)), ShipDirection::SOUTHWEST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, 0)), ShipDirection::SOUTHEAST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(1, 0)), ShipDirection::SOUTHEAST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-1, 0)), ShipDirection::SOUTHWEST);
+
+    // 6 directions -> 60deg covered per direction, mainDir +- 30deg
+    // Switch pt between north and south is simple: Above or below zero diff (already tested above)
+    // But S to SE or SW (same for N) is harder. Dividing line as an angle of +- 60deg compared to x-axis
+    // hence: |dy/dx| > tan(60deg) -> SOUTH, tan(60deg) ~= 1.732. Test here with |dy| = |dx| * 1.732 as the divider
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, 173)), ShipDirection::SOUTHEAST);
+    // Switch point
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, 174)), ShipDirection::SOUTH);
+    // Same for other 3 switch points
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, 173)), ShipDirection::SOUTHWEST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, 174)), ShipDirection::SOUTH);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, -173)), ShipDirection::NORTHWEST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(-100, -174)), ShipDirection::NORTH);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, -173)), ShipDirection::NORTHEAST);
+    BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(100, -174)), ShipDirection::NORTH);
+}
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(GetShipDir, DummyWorldFixture)
 {
@@ -108,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(world.GetHarborPointCount(), 8u);
     // 2 seas: 1 outside, 1 inside
     BOOST_REQUIRE_EQUAL(world.GetNumSeas(), 2u);
-    // Harbor ID 0 is means invalid harbor
+// Harbor ID 0 is means invalid harbor
 #if RTTR_ENABLE_ASSERTS
     RTTR_AssertEnableBreak = false;
     BOOST_REQUIRE_THROW(world.GetHarborPoint(0), RTTR_AssertError);

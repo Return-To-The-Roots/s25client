@@ -28,7 +28,8 @@ private:
     std::vector<unsigned> textures;
     std::vector<glSmartBitmap*> items;
 
-    bool packHelper(std::vector<glSmartBitmap*> &list);
+    bool packHelper(std::vector<glSmartBitmap*>& list);
+
 public:
     ~glTexturePacker();
 

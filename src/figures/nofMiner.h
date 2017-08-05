@@ -27,21 +27,20 @@ class nobUsual;
 class nofMiner : public nofWorkman
 {
 protected:
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
 
-        bool AreWaresAvailable() override;
+    bool AreWaresAvailable() override;
 
-    public:
+public:
+    nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofMiner(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMiner(SerializedGameData& sgd, const unsigned obj_id);
-
-        GO_Type GetGOT() const override { return GOT_NOF_MINER; }
+    GO_Type GetGOT() const override { return GOT_NOF_MINER; }
 };
 
 #endif

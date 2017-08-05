@@ -17,14 +17,15 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwSkipGFs.h"
-#include "controls/ctrlEdit.h"
 #include "GameClient.h"
 #include "Loader.h"
+#include "controls/ctrlEdit.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
-    : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 110), _("Skip GameFrames"), LOADER.GetImageN("resource", 41)), gwv(gwv)
+    : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 110), _("Skip GameFrames"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv)
 {
     // Text vor Editfeld
     AddText(0, DrawPoint(50, 36), _("to GameFrame:"), COLOR_YELLOW, 0, NormalFont);
@@ -43,12 +44,12 @@ void iwSkipGFs::SkipGFs()
     GAMECLIENT.SkipGF(gf, gwv);
 }
 
-void iwSkipGFs::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
+void iwSkipGFs::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     SkipGFs();
 }
 
-void iwSkipGFs::Msg_EditEnter(const unsigned  /*ctrl_id*/)
+void iwSkipGFs::Msg_EditEnter(const unsigned /*ctrl_id*/)
 {
     SkipGFs();
 }

@@ -20,7 +20,7 @@
 
 #include "GameObject.h"
 
-class GameEvent: public GameObject
+class GameEvent : public GameObject
 {
 public:
     /// Object that will handle this event
@@ -36,13 +36,13 @@ public:
         : obj(obj), startGF(startGF), length(length), id(id)
     {
         RTTR_Assert(length > 0); // Events cannot be executed in the same GF as they are added
-        RTTR_Assert(obj); // Events without an object are pointless
+        RTTR_Assert(obj);        // Events without an object are pointless
     }
 
     GameEvent(SerializedGameData& sgd, const unsigned obj_id);
     void Serialize(SerializedGameData& sgd) const override;
 
-    void Destroy() override{}
+    void Destroy() override {}
 
     GO_Type GetGOT() const override { return GOT_EVENT; }
     /// Return GF at which this event will be executed

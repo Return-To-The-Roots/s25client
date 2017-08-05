@@ -18,25 +18,23 @@
 #ifndef AIResource_h__
 #define AIResource_h__
 
-namespace AIJH
+namespace AIJH {
+enum Resource
 {
-    enum Resource
-    {
-        WOOD,
-        STONES,
-        GOLD,
-        IRONORE,
-        COAL,
-        GRANITE,
-        PLANTSPACE,
-        BORDERLAND,
-        FISH,
-        MULTIPLE,
-        // special:
-        BLOCKED = 254,
-        NOTHING = 255
-    };
-
+    WOOD,
+    STONES,
+    GOLD,
+    IRONORE,
+    COAL,
+    GRANITE,
+    PLANTSPACE,
+    BORDERLAND,
+    FISH,
+    MULTIPLE,
+    // special:
+    BLOCKED = 254,
+    NOTHING = 255
+};
 }
 
 #endif // AIResource_h__

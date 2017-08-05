@@ -18,15 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glAllocator.h"
 
-#include "glArchivItem_Sound_Wave.h"
 #include "glArchivItem_Sound_Midi.h"
-#include "glArchivItem_Sound_XMidi.h"
 #include "glArchivItem_Sound_Other.h"
+#include "glArchivItem_Sound_Wave.h"
+#include "glArchivItem_Sound_XMidi.h"
 
-#include "glArchivItem_Bitmap_RLE.h"
 #include "glArchivItem_Bitmap_Player.h"
-#include "glArchivItem_Bitmap_Shadow.h"
+#include "glArchivItem_Bitmap_RLE.h"
 #include "glArchivItem_Bitmap_Raw.h"
+#include "glArchivItem_Bitmap_Shadow.h"
 
 #include "glArchivItem_Bob.h"
 #include "glArchivItem_Font.h"
@@ -45,8 +45,7 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BobType type, libsiedl
         case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
             switch(subtype)
             {
-                case libsiedler2::SOUNDTYPE_NONE:
-                    break;
+                case libsiedler2::SOUNDTYPE_NONE: break;
                 case libsiedler2::SOUNDTYPE_MIDI: // MIDI
                     return new glArchivItem_Sound_Midi();
                 case libsiedler2::SOUNDTYPE_WAVE: // WAV
@@ -71,8 +70,7 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BobType type, libsiedl
             return new glArchivItem_Map();
         case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
             return new glArchivItem_Bitmap_Raw();
-        default:
-            break;
+        default: break;
     }
     return libsiedler2::StandardAllocator::create(type, subtype);
 }
@@ -88,15 +86,14 @@ libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item)
 
     switch(type)
     {
-        case libsiedler2::BOBTYPE_SOUND:   // WAVs, MIDIs
+        case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
         {
             const libsiedler2::baseArchivItem_Sound& soundItem = dynamic_cast<const libsiedler2::baseArchivItem_Sound&>(item);
             libsiedler2::SoundType subtype = static_cast<libsiedler2::SoundType>(soundItem.getType());
 
             switch(subtype)
             {
-                case libsiedler2::SOUNDTYPE_NONE:
-                    break;
+                case libsiedler2::SOUNDTYPE_NONE: break;
                 case libsiedler2::SOUNDTYPE_MIDI: // MIDI
                     return new glArchivItem_Sound_Midi(dynamic_cast<const glArchivItem_Sound_Midi&>(item));
                 case libsiedler2::SOUNDTYPE_WAVE: // WAV
@@ -122,8 +119,7 @@ libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item)
             return new glArchivItem_Map(dynamic_cast<const glArchivItem_Map&>(item));
         case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
             return new glArchivItem_Bitmap_Raw(dynamic_cast<const glArchivItem_Bitmap_Raw&>(item));
-        default:
-            break;
+        default: break;
     }
     return libsiedler2::StandardAllocator::clone(item);
 }

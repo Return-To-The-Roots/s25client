@@ -18,9 +18,9 @@
 #ifndef RoadNote_h__
 #define RoadNote_h__
 
-#include "gameTypes/MapCoordinates.h"
-#include "gameTypes/Direction.h"
 #include "notifications/notifications.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 struct RoadNote
@@ -33,8 +33,10 @@ struct RoadNote
         ConstructionFailed
     };
 
-    RoadNote(Type type, unsigned player, const MapPoint& pos, const std::vector<Direction>& route):
-        type(type), player(player), pos(pos), route(route){}
+    RoadNote(Type type, unsigned player, const MapPoint& pos, const std::vector<Direction>& route)
+        : type(type), player(player), pos(pos), route(route)
+    {
+    }
 
     const Type type;
     const unsigned player;

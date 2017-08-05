@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskIntro.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 
 #include "dskMainMenu.h"
 
@@ -43,7 +43,7 @@ void dskIntro::Msg_ButtonClick(const unsigned ctrl_id)
         case 0: // "Zurück"
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
-        } break;
+        }
+        break;
     }
 }
-

@@ -21,72 +21,72 @@
 #include "GameObject.h"
 #include "GamePlayer.h"
 
-#include "buildings/nobHQ.h"
-#include "buildings/nobMilitary.h"
-#include "buildings/nobStorehouse.h"
-#include "buildings/nobShipYard.h"
-#include "buildings/noBuildingSite.h"
-#include "buildings/nobHarborBuilding.h"
+#include "CatapultStone.h"
+#include "EventManager.h"
+#include "FOWObjects.h"
+#include "GameEvent.h"
+#include "RoadSegment.h"
+#include "Ware.h"
 #include "buildings/BurnedWarehouse.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobHQ.h"
+#include "buildings/nobHarborBuilding.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobShipYard.h"
+#include "buildings/nobStorehouse.h"
 #include "figures/nofAggressiveDefender.h"
+#include "figures/nofArmorer.h"
 #include "figures/nofAttacker.h"
-#include "figures/nofDefender.h"
-#include "figures/nofPassiveSoldier.h"
-#include "figures/nofWellguy.h"
+#include "figures/nofBaker.h"
+#include "figures/nofBrewer.h"
+#include "figures/nofBuilder.h"
+#include "figures/nofButcher.h"
+#include "figures/nofCarpenter.h"
 #include "figures/nofCarrier.h"
-#include "figures/nofWoodcutter.h"
+#include "figures/nofCatapultMan.h"
+#include "figures/nofCharburner.h"
+#include "figures/nofDefender.h"
+#include "figures/nofDonkeybreeder.h"
+#include "figures/nofFarmer.h"
 #include "figures/nofFisher.h"
 #include "figures/nofForester.h"
-#include "figures/nofCarpenter.h"
-#include "figures/nofStonemason.h"
-#include "figures/nofHunter.h"
-#include "figures/nofFarmer.h"
-#include "figures/nofMiller.h"
-#include "figures/nofBaker.h"
-#include "figures/nofButcher.h"
-#include "figures/nofMiner.h"
-#include "figures/nofBrewer.h"
-#include "figures/nofPigbreeder.h"
-#include "figures/nofDonkeybreeder.h"
-#include "figures/nofIronfounder.h"
-#include "figures/nofMinter.h"
-#include "figures/nofMetalworker.h"
-#include "figures/nofArmorer.h"
-#include "figures/nofBuilder.h"
-#include "figures/nofPlaner.h"
 #include "figures/nofGeologist.h"
-#include "figures/nofShipWright.h"
+#include "figures/nofHunter.h"
+#include "figures/nofIronfounder.h"
+#include "figures/nofMetalworker.h"
+#include "figures/nofMiller.h"
+#include "figures/nofMiner.h"
+#include "figures/nofMinter.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofPassiveWorker.h"
+#include "figures/nofPigbreeder.h"
+#include "figures/nofPlaner.h"
 #include "figures/nofScout_Free.h"
 #include "figures/nofScout_LookoutTower.h"
-#include "figures/nofWarehouseWorker.h"
-#include "figures/nofPassiveWorker.h"
-#include "figures/nofCharburner.h"
-#include "figures/nofCatapultMan.h"
+#include "figures/nofShipWright.h"
+#include "figures/nofStonemason.h"
 #include "figures/nofTradeDonkey.h"
 #include "figures/nofTradeLeader.h"
-#include "nodeObjs/noExtension.h"
+#include "figures/nofWarehouseWorker.h"
+#include "figures/nofWellguy.h"
+#include "figures/nofWoodcutter.h"
+#include "world/GameWorld.h"
+#include "nodeObjs/noAnimal.h"
+#include "nodeObjs/noCharburnerPile.h"
+#include "nodeObjs/noDisappearingMapEnvObject.h"
 #include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noExtension.h"
+#include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFire.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGrainfield.h"
 #include "nodeObjs/noGranite.h"
+#include "nodeObjs/noShip.h"
+#include "nodeObjs/noShipBuildingSite.h"
 #include "nodeObjs/noSign.h"
 #include "nodeObjs/noSkeleton.h"
 #include "nodeObjs/noStaticObject.h"
 #include "nodeObjs/noTree.h"
-#include "nodeObjs/noAnimal.h"
-#include "nodeObjs/noFighting.h"
-#include "nodeObjs/noDisappearingMapEnvObject.h"
-#include "nodeObjs/noShip.h"
-#include "nodeObjs/noShipBuildingSite.h"
-#include "nodeObjs/noCharburnerPile.h"
-#include "EventManager.h"
-#include "GameEvent.h"
-#include "RoadSegment.h"
-#include "Ware.h"
-#include "CatapultStone.h"
-#include "FOWObjects.h"
-#include "world/GameWorld.h"
 
 #include "helpers/containerUtils.h"
 #include "helpers/converters.h"
@@ -162,9 +162,7 @@ GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsig
         case GOT_SHIPBUILDINGSITE: return new noShipBuildingSite(*this, obj_id);
         case GOT_CHARBURNERPILE: return new noCharburnerPile(*this, obj_id);
         case GOT_NOTHING:
-        case GOT_UNKNOWN:
-            RTTR_Assert(false);
-            break;
+        case GOT_UNKNOWN: RTTR_Assert(false); break;
     }
     throw Error("Invalid GameObjectType " + helpers::toString(got) + " for objId=" + helpers::toString(obj_id) + " found!");
 }
@@ -183,7 +181,8 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
 }
 
 SerializedGameData::SerializedGameData() : debugMode(false), objectsCount(0), expectedObjectsCount(0), em(NULL), isReading(false)
-{}
+{
+}
 
 void SerializedGameData::Prepare(bool reading)
 {
@@ -230,7 +229,7 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
 
     gw.Deserialize(*this);
     em->Deserialize(*this);
-    for (unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 
     // If this check fails, we did not serialize all objects or there was an async
@@ -255,7 +254,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     RTTR_Assert(!isReading);
 
     // Gibts das Objekt gar nich?
-    if (!go)
+    if(!go)
     {
         // Null draufschreiben
         PushUnsignedInt(0);
@@ -277,12 +276,12 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     // If the object was already serialized skip the data
     if(IsObjectSerialized(objId))
     {
-        if (debugMode)
+        if(debugMode)
             LOG.writeToFile("Saved known objId %u\n") % objId;
         return;
     }
 
-    if (debugMode)
+    if(debugMode)
         LOG.writeToFile("Saving objId %u, obj#=%u\n") % objId % objectsCount;
 
     // Objekt merken
@@ -296,7 +295,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
         PushUnsignedShort(go->GetGOT());
 
     // Objekt serialisieren
-    if (debugMode)
+    if(debugMode)
         LOG.writeToFile("Start serializing %u\n") % objId;
     go->Serialize(*this);
 

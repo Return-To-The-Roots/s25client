@@ -22,56 +22,50 @@
 /// Fenster zum Einstellen des Musik-Players
 class iwMusicPlayer : public IngameWindow
 {
-        /// Kleines Fenster zur Eingabe von Text
-        class InputWindow  : public IngameWindow
-        {
-                const unsigned win_id;
-                iwMusicPlayer& playerWnd_;
-            public:
-
-                InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title);
-
-                void Msg_ButtonClick(const unsigned ctrl_id) override;
-                void Msg_EditEnter(const unsigned ctrl_id) override;
-        };
-
-        /// Merken, ob Veränderungen an den Musikeinstellungen durchgeführt wurden und ob deswegen
-        /// beim Schließen des Fensters das ganze neu gestartet werden muss
-        bool changed;
+    /// Kleines Fenster zur Eingabe von Text
+    class InputWindow : public IngameWindow
+    {
+        const unsigned win_id;
+        iwMusicPlayer& playerWnd_;
 
     public:
+        InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title);
 
-        iwMusicPlayer();
-        ~iwMusicPlayer() override;
-
-        /// Setzt Werte
-        void SetSegments(const std::vector<std::string>& segments);
-        void SetRepeats(const unsigned repeats);
-        void SetRandomPlayback(const bool random_playback);
-        void SetCurrentSong(const unsigned selection);
-
-        /// Gibt Werte zurück
-        std::vector<std::string> GetSegments() const;
-        unsigned GetRepeats() const;
-        bool GetRandomPlayback() const;
-
-        /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
-        void UpdatePlaylistCombo(const std::string& highlight_entry);
-
-        /// Hilfsfunktion, die vollständigen Pfad zu einem Combobox-Eintrag liefert
-        static std::string GetFullPlaylistPath(const std::string& combo_str);
-
-    private:
-
-        void Msg_ListChooseItem(const unsigned ctrl_id, const unsigned selection) override;
-        void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
         void Msg_ButtonClick(const unsigned ctrl_id) override;
+        void Msg_EditEnter(const unsigned ctrl_id) override;
+    };
 
-        void Msg_Input(const unsigned win_id, const std::string& msg);
+    /// Merken, ob Veränderungen an den Musikeinstellungen durchgeführt wurden und ob deswegen
+    /// beim Schließen des Fensters das ganze neu gestartet werden muss
+    bool changed;
 
+public:
+    iwMusicPlayer();
+    ~iwMusicPlayer() override;
 
+    /// Setzt Werte
+    void SetSegments(const std::vector<std::string>& segments);
+    void SetRepeats(const unsigned repeats);
+    void SetRandomPlayback(const bool random_playback);
+    void SetCurrentSong(const unsigned selection);
+
+    /// Gibt Werte zurück
+    std::vector<std::string> GetSegments() const;
+    unsigned GetRepeats() const;
+    bool GetRandomPlayback() const;
+
+    /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
+    void UpdatePlaylistCombo(const std::string& highlight_entry);
+
+    /// Hilfsfunktion, die vollständigen Pfad zu einem Combobox-Eintrag liefert
+    static std::string GetFullPlaylistPath(const std::string& combo_str);
+
+private:
+    void Msg_ListChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+
+    void Msg_Input(const unsigned win_id, const std::string& msg);
 };
-
-
 
 #endif

@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "JobTypes.h"
 #include "GoodTypes.h"
+#include "JobTypes.h"
 #include <boost/array.hpp>
 
 #ifndef Inventory_h__
@@ -31,10 +31,18 @@ struct Inventory
     Inventory() { clear(); }
     /// Sets everything to 0
     void clear();
-    void Add(const GoodType good, const unsigned amount = 1){ goods[good] += amount; }
-    void Add(const Job job, const unsigned amount = 1){ people[job] += amount; }
-    void Remove(const GoodType good, const unsigned amount = 1){ RTTR_Assert(goods[good] >= amount); goods[good] -= amount; }
-    void Remove(const Job job, const unsigned amount = 1){ RTTR_Assert(people[job] >= amount); people[job] -= amount; }
+    void Add(const GoodType good, const unsigned amount = 1) { goods[good] += amount; }
+    void Add(const Job job, const unsigned amount = 1) { people[job] += amount; }
+    void Remove(const GoodType good, const unsigned amount = 1)
+    {
+        RTTR_Assert(goods[good] >= amount);
+        goods[good] -= amount;
+    }
+    void Remove(const Job job, const unsigned amount = 1)
+    {
+        RTTR_Assert(people[job] >= amount);
+        people[job] -= amount;
+    }
 };
 
 #endif // Inventory_h__

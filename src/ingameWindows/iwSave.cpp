@@ -18,52 +18,50 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwSave.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 
-#include "ListDir.h"
 #include "GameClient.h"
-#include "files.h"
-#include "libutil/src/fileFuncs.h"
 #include "GameServer.h"
-#include "liblobby/src/LobbyClient.h"
-#include "desktops/dskLobby.h"
+#include "ListDir.h"
 #include "Savegame.h"
+#include "Settings.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
+#include "desktops/dskLobby.h"
+#include "files.h"
+#include "helpers/converters.h"
 #include "iwPleaseWait.h"
 #include "gameData/const_gui_ids.h"
-#include "Settings.h"
-#include "helpers/converters.h"
+#include "liblobby/src/LobbyClient.h"
 #include "libutil/src/Log.h"
+#include "libutil/src/fileFuncs.h"
 #include <boost/filesystem.hpp>
-
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;
 
-const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] =
-{
-    500, 1000, 5000, 10000, 50000, 100000, 1
-};
+const unsigned AUTO_SAVE_INTERVALS[AUTO_SAVE_INTERVALS_COUNT] = {500, 1000, 5000, 10000, 50000, 100000, 1};
 
 iwSaveLoad::iwSaveLoad(const unsigned short add_height, const std::string& window_title)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + add_height), window_title, LOADER.GetImageN("resource", 41))
 {
-    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250, ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER,  "", 0, ctrlTable::SRT_STRING);
+    AddTable(0, DrawPoint(20, 30), Extent(560, 300), TC_GREEN2, NormalFont, 5, _("Filename"), 270, ctrlTable::SRT_STRING, _("Map"), 250,
+             ctrlTable::SRT_STRING, _("Time"), 250, ctrlTable::SRT_DATE, _("Start GF"), 320, ctrlTable::SRT_NUMBER, "", 0,
+             ctrlTable::SRT_STRING);
 }
 
-void iwSaveLoad::Msg_EditEnter(const unsigned  /*ctrl_id*/)
+void iwSaveLoad::Msg_EditEnter(const unsigned /*ctrl_id*/)
 {
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_ButtonClick(const unsigned  /*ctrl_id*/)
+void iwSaveLoad::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_TableSelectItem(const unsigned  /*ctrl_id*/, const int selection)
+void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const int selection)
 {
     // Dateiname ins Edit schreiben, wenn wir entsprechende Einträge auswählen
     GetCtrl<ctrlEdit>(1)->SetText(GetCtrl<ctrlTable>(0)->GetItemText(selection, 0));
@@ -86,9 +84,8 @@ void iwSaveLoad::RefreshTable()
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
-                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n"))
-                    % *it
-                    % (save.GetLastErrorMsg().empty() ? _("Unknown") : save.GetLastErrorMsg());
+                LOG.write(_("Invalid Savegame %1%! Reason: %2%\n")) % *it
+                  % (save.GetLastErrorMsg().empty() ? _("Unknown") : save.GetLastErrorMsg());
             }
             continue;
         }
@@ -120,7 +117,6 @@ void iwSaveLoad::RefreshTable()
 
 void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
 {
-    
 }
 
 void iwSave::SaveLoad()
@@ -151,7 +147,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     /// Combobox füllen
     combo->AddString(_("Disabled")); // deaktiviert
-    
+
     // Last entry is only for debugging
     const unsigned numIntervalls = SETTINGS.global.debugMode ? AUTO_SAVE_INTERVALS_COUNT : AUTO_SAVE_INTERVALS_COUNT - 1;
 
@@ -183,9 +179,8 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
     RefreshTable();
 }
 
-void iwSave::Msg_ComboSelectItem(const unsigned  /*ctrl_id*/, const int selection)
+void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const int selection)
 {
-
     // Erster Eintrag --> deaktiviert
     if(selection == 0)
         SETTINGS.interface.autosave_interval = 0;
@@ -194,7 +189,7 @@ void iwSave::Msg_ComboSelectItem(const unsigned  /*ctrl_id*/, const int selectio
         SETTINGS.interface.autosave_interval = AUTO_SAVE_INTERVALS[selection - 1];
 }
 
-iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")),  csi(csi)
+iwLoad::iwLoad(const CreateServerInfo& csi) : iwSaveLoad(0, _("Load game!")), csi(csi)
 {
     AddEdit(1, DrawPoint(20, 350), Extent(510, 22), TC_GREEN2, NormalFont);
     AddImageButton(2, DrawPoint(540, 346), Extent(40, 40), TC_GREEN2, LOADER.GetImageN("io", 48));
@@ -219,15 +214,12 @@ void iwLoad::SaveLoad()
         else
             // Ansonsten schließen
             Close();
-    }
-    else
+    } else
     {
         // Verbindungsfenster anzeigen
         WINDOWMANAGER.Show(new iwPleaseWait);
     }
-
 }
-
 
 /// Handle double click on the table
 void iwLoad::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection)

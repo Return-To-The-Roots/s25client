@@ -17,15 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwDemolishBuilding.h"
+#include "GameClient.h"
+#include "Loader.h"
+#include "buildings/noBaseBuilding.h"
+#include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
-#include "buildings/noBaseBuilding.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
-#include "GameClient.h"
 
 iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"), LOADER.GetImageN("resource", 41)), gwv(gwv), building(building), flag(flag)
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(200, 200), _("Demolish?"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), building(building), flag(flag)
 {
     // Ja
     AddImageButton(0, DrawPoint(14, 140), Extent(66, 40), TC_RED1, LOADER.GetImageN("io", 32), _("Yes")); //-V525
@@ -45,29 +46,30 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 0:
         {
-            if (flag)
+            if(flag)
             {
                 // Flagge (mitsamt Gebäude) wegreißen
                 GAMECLIENT.DestroyFlag(gwv.GetViewer().GetNeighbour(building->GetPos(), Direction::SOUTHEAST));
-            }
-            else
+            } else
             {
                 GAMECLIENT.DestroyBuilding(building->GetPos());
             }
 
             Close();
-
-        } break;
+        }
+        break;
         case 1:
         {
             // Einfach schließen
             Close();
-        } break;
+        }
+        break;
         case 2:
         {
             // Zum Ort gehen
             gwv.MoveToMapPt(building->GetPos());
-        } break;
+        }
+        break;
     }
 }
 
@@ -80,4 +82,3 @@ void iwDemolishBuilding::Msg_PaintBefore()
     if(bitmap)
         bitmap->DrawFull(GetDrawPos() + DrawPoint(104, 109), COLOR_SHADOW);
 }
-

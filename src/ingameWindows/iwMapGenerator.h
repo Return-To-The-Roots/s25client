@@ -19,9 +19,9 @@
 
 #pragma once
 
+#include "IngameWindow.h"
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapStyle.h"
-#include "IngameWindow.h"
 
 /**
  * The iwMapGenerator is an ingame window for the user to configure parameters used
@@ -29,37 +29,35 @@
  */
 class iwMapGenerator : public IngameWindow
 {
-    public:
-    
-        /**
-         * Creates a new ingame window to configure the random map generator.
-         * @param settings reference to the settings to be manipulated
-         */
-        iwMapGenerator(MapSettings& settings);
-    
-        ~iwMapGenerator() override;
+public:
+    /**
+     * Creates a new ingame window to configure the random map generator.
+     * @param settings reference to the settings to be manipulated
+     */
+    iwMapGenerator(MapSettings& settings);
 
-    protected:
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-    
-    private:
-    
-        /**
-         * Actual settings used for map generation. After pressing the "apply" button in the
-         * UI mapSettings are updated with the values configured in the UI.
-         */
-        MapSettings& mapSettings;
-    
-        /**
-         * Resets the map generation settings to the original value.
-         * Also updates the UI accordingly.
-         */
-        void Reset();
-    
-        /**
-         * Updates the mapSettings with the values currently configured in the UI.
-         */
-        void Apply();
+    ~iwMapGenerator() override;
+
+protected:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+
+private:
+    /**
+     * Actual settings used for map generation. After pressing the "apply" button in the
+     * UI mapSettings are updated with the values configured in the UI.
+     */
+    MapSettings& mapSettings;
+
+    /**
+     * Resets the map generation settings to the original value.
+     * Also updates the UI accordingly.
+     */
+    void Reset();
+
+    /**
+     * Updates the mapSettings with the values currently configured in the UI.
+     */
+    void Apply();
 };
 
 #endif // !iwMAPGENERATOR_H_INCLUDED

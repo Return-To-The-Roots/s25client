@@ -17,22 +17,22 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlButton.h"
-#include "Loader.h"
 #include "CollisionDetection.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "driver/src/MouseCoords.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "ExtensionList.h"
+#include "Loader.h"
+#include "driver/src/MouseCoords.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Bitmap.h"
 
-ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos,
-                       const Extent& size, TextureColor tc, const std::string& tooltip)
-    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true),
-      isChecked(false), isIlluminated(false), isEnabled(true)
-{}
-
+ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& tooltip)
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true), isChecked(false),
+      isIlluminated(false), isEnabled(true)
+{
+}
 
 ctrlButton::~ctrlButton()
-{}
+{
+}
 
 void ctrlButton::SetEnabled(bool enable /*= true*/)
 {
@@ -49,10 +49,9 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
 
         ShowTooltip();
         return true;
-    }
-    else
+    } else
     {
-        state =  BUTTON_UP;
+        state = BUTTON_UP;
         HideTooltip();
         return false;
     }
@@ -78,7 +77,7 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 {
     if(state == BUTTON_PRESSED)
     {
-        state =  BUTTON_UP;
+        state = BUTTON_UP;
 
         if(isEnabled && IsMouseOver(mc.GetPos()))
         {

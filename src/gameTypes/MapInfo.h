@@ -18,9 +18,9 @@
 #ifndef MapInfo_h__
 #define MapInfo_h__
 
+#include "helpers/Deleter.h"
 #include "gameTypes/CompressedData.h"
 #include "gameTypes/MapType.h"
-#include "helpers/Deleter.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <string>
 

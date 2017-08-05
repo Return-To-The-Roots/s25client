@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "TradePathCache.h"
 #include "EventManager.h"
-#include "world/GameWorldGame.h"
 #include "GamePlayer.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
 bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start, const MapPoint& goal, const unsigned char player)
@@ -36,19 +36,19 @@ bool TradePathCache::PathExists(const GameWorldGame& gwg, const MapPoint& start,
             RTTR_Assert(checkedGoal == start || checkedGoal == goal);
             pathes[entryIdx].lastUse = gwg.GetEvMgr().GetCurrentGF();
             return true;
-        }else
+        } else
         {
             // TradePath is now invalid -> remove it
             curSize--;
             if(entryIdx != curSize)
                 pathes[entryIdx] = pathes[curSize];
         }
-    }        
+    }
 
     TradePath path;
     if(gwg.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &path.route) == INVALID_DIR)
         return false;
-    
+
     path.start = start;
     path.goal = goal;
 

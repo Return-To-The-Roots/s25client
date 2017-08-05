@@ -24,55 +24,54 @@
 #include "GameManager.h"
 
 #include "Settings.h"
+#include "files.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/error.h"
-#include "files.h"
 
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
 
-#include "QuickStartGame.h"
 #include "GlobalVars.h"
-#include "libutil/src/fileFuncs.h"
+#include "QuickStartGame.h"
 #include "libutil/src/System.h"
+#include "libutil/src/fileFuncs.h"
 
+#include "mygettext/src/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
-#include "mygettext/src/mygettext.h"
 
 #ifdef _WIN32
-#   include "WindowsCmdLine.h"
-#   include "../win32/resource.h"
-#   include "drivers/VideoDriverWrapper.h"
+#include "../win32/resource.h"
+#include "WindowsCmdLine.h"
+#include "drivers/VideoDriverWrapper.h"
 #endif
 
-#include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
 #include <boost/array.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
+#include <boost/program_options.hpp>
 
 #ifdef __APPLE__
-#   include <SDL_main.h>
+#include <SDL_main.h>
 #endif // __APPLE__
 
 #ifdef _WIN32
-#   include <windows.h>
-#   if defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
-#       include <eh.h>
-#   endif
+#include <windows.h>
+#if defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
+#include <eh.h>
+#endif
 #endif
 
 #ifndef _MSC_VER
-#   include <csignal>
+#include <csignal>
 #endif
 
+//#include <vld.h>
 
-//#include <vld.h> 
-
+#include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <limits>
-#include <cstdlib>
 
 namespace po = boost::program_options;
 
@@ -90,7 +89,6 @@ void WaitForEnter()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
 #if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
 /**
  *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls
@@ -100,7 +98,7 @@ void WaitForEnter()
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
  *  @param[in] exception_pointer Genaue Beschreibung der Exception (siehe GetExceptionInformation)
  */
-void ExceptionHandler (unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
+void ExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
     fatal_error("C-Exception caught\n");
 }
@@ -114,7 +112,7 @@ void
 #endif
 WinExceptionHandler(
 #ifdef _MSC_VER
-    LPEXCEPTION_POINTERS info
+  LPEXCEPTION_POINTERS info
 #else
     int sig
 #endif
@@ -126,14 +124,16 @@ WinExceptionHandler(
         _exit(1);
 
 #ifdef _MSC_VER
-        return(EXCEPTION_EXECUTE_HANDLER);
+        return (EXCEPTION_EXECUTE_HANDLER);
 #endif
     }
 
-    if ((SETTINGS.global.submit_debug_data == 1) ||
-            MessageBoxA(NULL,
-                        _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"),
-                        _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
+    if((SETTINGS.global.submit_debug_data == 1)
+       || MessageBoxA(NULL,
+                      _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? "
+                        "Thank you very much!"),
+                      _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+            == IDYES)
     {
         VIDEODRIVER.DestroyScreen();
 
@@ -142,22 +142,23 @@ WinExceptionHandler(
         di.SendReplay();
         di.SendStackTrace(
 #ifdef _MSC_VER
-            info->ContextRecord
+          info->ContextRecord
 #endif
         );
     }
 
     if(SETTINGS.global.submit_debug_data == 0)
-        MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
+        MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"),
+                    MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 
     _exit(1);
 
 #ifdef _MSC_VER
-    return(EXCEPTION_EXECUTE_HANDLER);
+    return (EXCEPTION_EXECUTE_HANDLER);
 #endif
 }
 #else
-void LinExceptionHandler(int  /*sig*/)
+void LinExceptionHandler(int /*sig*/)
 {
     if(GLOBALVARS.isTest)
     {
@@ -165,7 +166,7 @@ void LinExceptionHandler(int  /*sig*/)
         abort();
     }
 
-    if (SETTINGS.global.submit_debug_data == 1)
+    if(SETTINGS.global.submit_debug_data == 1)
     {
         DebugInfo di;
 
@@ -182,15 +183,15 @@ void InstallSignalHandlers()
 #ifdef _WIN32
     SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 
-#   ifndef _MSC_VER
+#ifndef _MSC_VER
     signal(SIGSEGV, WinExceptionHandler);
-#   else
+#else
     SetUnhandledExceptionFilter(WinExceptionHandler);
-#   endif
+#endif
 #else
     struct sigaction sa;
     sa.sa_handler = HandlerRoutine;
-    sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
+    sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
     sigaction(SIGINT, &sa, NULL);
@@ -206,15 +207,15 @@ void UninstallSignalHandlers()
 #ifdef _WIN32
     SetConsoleCtrlHandler(HandlerRoutine, FALSE);
 
-#   ifndef _MSC_VER
+#ifndef _MSC_VER
     signal(SIGSEGV, SIG_DFL);
-#   else
+#else
     SetUnhandledExceptionFilter(NULL);
-#   endif
+#endif
 #else
     struct sigaction sa;
     sa.sa_handler = SIG_DFL;
-    sa.sa_flags = 0; //SA_RESTART would not allow to interrupt connect call;
+    sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
     sigaction(SIGINT, &sa, NULL);
@@ -238,20 +239,18 @@ void ExitHandler()
 #endif
 }
 
-
-
 void SetAppSymbol()
 {
 #ifdef _WIN32
-#   if defined _DEBUG && defined _MSC_VER
-#       ifndef NOHWETRANS
-            _set_se_translator(ExceptionHandler);
-#       endif // !NOHWETRANS
-#       ifndef NOCRTDBG
-            // Enable Memory-Leak-Detection
-            _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
-#       endif //  !NOCRTDBG
-#   endif // _DEBUG && _MSC_VER
+#if defined _DEBUG && defined _MSC_VER
+#ifndef NOHWETRANS
+    _set_se_translator(ExceptionHandler);
+#endif // !NOHWETRANS
+#ifndef NOCRTDBG
+    // Enable Memory-Leak-Detection
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
+#endif //  !NOCRTDBG
+#endif // _DEBUG && _MSC_VER
 
     // set console window icon
     SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
@@ -265,7 +264,7 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    boost::array<unsigned, 7> dirs = {{ 94, 47, 48, 51, 85, 98, 99 }}; // settingsdir muss zuerst angelegt werden (94)
+    boost::array<unsigned, 7> dirs = {{94, 47, 48, 51, 85, 98, 99}}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
     const std::string newSettingsDir = GetFilePath(FILE_PATHS[94]);
@@ -279,17 +278,17 @@ bool InitDirectories()
     {
         if(bfs::exists(newSettingsDir))
         {
-            s25Util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")+ oldSettingsDir
-                + "\nNew: " + newSettingsDir);
+            s25Util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")
+                           + oldSettingsDir + "\nNew: " + newSettingsDir);
             return false;
         }
         boost::system::error_code ec;
         bfs::rename(oldSettingsDir, newSettingsDir, ec);
         if(ec != boost::system::errc::success)
         {
-            s25Util::error(std::string("Old settings directory found at ") + oldSettingsDir + "\n Renaming to new name failed: " + newSettingsDir
-                + "\nError: " + ec.message()
-                + "\nRename it yourself and/or make sure the directory is writable!");
+            s25Util::error(std::string("Old settings directory found at ") + oldSettingsDir
+                           + "\n Renaming to new name failed: " + newSettingsDir + "\nError: " + ec.message()
+                           + "\nRename it yourself and/or make sure the directory is writable!");
             return false;
         }
     }
@@ -303,10 +302,11 @@ bool InitDirectories()
         {
             // This writes to the log. If the log folder or file could not be created, an exception is thrown
             // Make sure we catch that
-            try{
+            try
+            {
                 s25Util::error(std::string("Directory ") + dir + " could not be created.");
                 s25Util::error("Failed to start the game");
-            }catch(const std::runtime_error& error)
+            } catch(const std::runtime_error& error)
             {
                 LOG.write("Additional error: %1%\n", LogTarget::Stderr) % error.what();
             }
@@ -352,13 +352,15 @@ int RunProgram(const std::string& argv0, po::variables_map& options)
     if(!InitDirectories())
         return 1;
 
-    // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser Generator verwendet)
+    // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser
+    // Generator verwendet)
     srand(static_cast<unsigned>(std::time(NULL)));
 
     // Exit-Handler initialisieren
     atexit(&ExitHandler);
 
-    try{
+    try
+    {
         if(!InitGame())
             return 2;
 
@@ -380,9 +382,12 @@ int RunProgram(const std::string& argv0, po::variables_map& options)
     } catch(RTTR_AssertError& error)
     {
         // Write to log file, but don't throw any errors if this fails too
-        try{
+        try
+        {
             LOG.writeToFile(error.what());
-        } catch(...){} //-V565
+        } catch(...)
+        {
+        } //-V565
         return 42;
     }
     return 0;
@@ -404,21 +409,17 @@ int main(int argc, char** argv)
     argv = winCmdLine.getArgv();
 #endif // _WIN32
     po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help,h", "Show help")
-        ("map,m", po::value<std::string>(), "Map to load")
-        ("test", "Run in test mode (shows errors during run)")
-        ;
+    desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),
+                                              "Map to load")("test", "Run in test mode (shows errors during run)");
     po::positional_options_description positionalOptions;
     positionalOptions.add("map", 1);
 
     po::variables_map options;
-    po::store(po::command_line_parser(argc, argv).options(desc)
-        .positional(positionalOptions).run(),
-        options);
+    po::store(po::command_line_parser(argc, argv).options(desc).positional(positionalOptions).run(), options);
     po::notify(options);
 
-    if(options.count("help")) {
+    if(options.count("help"))
+    {
         std::cout << desc << "\n";
         return 1;
     }

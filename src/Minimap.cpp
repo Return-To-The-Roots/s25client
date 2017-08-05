@@ -20,8 +20,9 @@
 #include "Loader.h"
 #include "ogl/oglIncludes.h"
 
-Minimap::Minimap(const MapExtent& mapSize): mapSize(mapSize)
-{}
+Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize)
+{
+}
 
 void Minimap::CreateMapTexture()
 {
@@ -47,8 +48,7 @@ void Minimap::CreateMapTexture()
     }
 
     map.setFilter(GL_LINEAR);
-    map.create(mapSize.x * 2, mapSize.y, &buffer[0], mapSize.x * 2, mapSize.y,
-               libsiedler2::FORMAT_BGRA, LOADER.GetPaletteN("pal5"));
+    map.create(mapSize.x * 2, mapSize.y, &buffer[0], mapSize.x * 2, mapSize.y, libsiedler2::FORMAT_BGRA, LOADER.GetPaletteN("pal5"));
 }
 
 void Minimap::Draw(const Rect& rect)
@@ -69,14 +69,20 @@ unsigned Minimap::VaryBrightness(const unsigned color, const int range) const
     int add = 100 - rand() % (2 * range);
 
     int red = GetRed(color) * add / 100;
-    if(red < 0) red = 0;
-    else if(red > 0xFF) red = 0xFF;
+    if(red < 0)
+        red = 0;
+    else if(red > 0xFF)
+        red = 0xFF;
     int green = GetGreen(color) * add / 100;
-    if(green < 0) green = 0;
-    else if(green > 0xFF) green = 0xFF;
+    if(green < 0)
+        green = 0;
+    else if(green > 0xFF)
+        green = 0xFF;
     int blue = GetBlue(color) * add / 100;
-    if(blue < 0) blue = 0;
-    else if(blue > 0xFF) blue = 0xFF;
+    if(blue < 0)
+        blue = 0;
+    else if(blue > 0xFF)
+        blue = 0xFF;
 
     return MakeColor(GetAlpha(color), red, green, blue);
 }

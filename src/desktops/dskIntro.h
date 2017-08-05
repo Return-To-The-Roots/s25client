@@ -24,12 +24,11 @@
 ///  Klasse des Intro Desktops.
 class dskIntro : public Desktop
 {
-    public:
-        dskIntro();
+public:
+    dskIntro();
 
-    private:
-
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !dskINTRO_H_INCLUDED

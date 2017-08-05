@@ -28,38 +28,40 @@ class MouseCoords;
 
 class iwAddons : public IngameWindow
 {
-        /// Breite der Scrollbar
-        static const unsigned short SCROLLBAR_WIDTH = 20;
-    public:
-        enum ChangePolicy
-        {
-            HOSTGAME,
-            /// Allow only whitelisted addons to change
-            HOSTGAME_WHITELIST,
-            READONLY,
-            SETDEFAULTS
-        };
+    /// Breite der Scrollbar
+    static const unsigned short SCROLLBAR_WIDTH = 20;
 
-    public:
-        iwAddons(GlobalGameSettings& ggs, Window* parent = NULL, ChangePolicy policy = SETDEFAULTS, const std::vector<AddonId>& addonIds = std::vector<AddonId>());
-        ~iwAddons() override;
+public:
+    enum ChangePolicy
+    {
+        HOSTGAME,
+        /// Allow only whitelisted addons to change
+        HOSTGAME_WHITELIST,
+        READONLY,
+        SETDEFAULTS
+    };
 
-    protected:
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-        void Msg_ScrollChange(const unsigned ctrl_id, const unsigned short position) override;
-        bool Msg_WheelUp(const MouseCoords& mc) override;
-        bool Msg_WheelDown(const MouseCoords& mc) override;
+public:
+    iwAddons(GlobalGameSettings& ggs, Window* parent = NULL, ChangePolicy policy = SETDEFAULTS,
+             const std::vector<AddonId>& addonIds = std::vector<AddonId>());
+    ~iwAddons() override;
 
-        /// Aktualisiert die Addons, die angezeigt werden sollen
-        void UpdateView(const unsigned short selection);
+protected:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_ScrollChange(const unsigned ctrl_id, const unsigned short position) override;
+    bool Msg_WheelUp(const MouseCoords& mc) override;
+    bool Msg_WheelDown(const MouseCoords& mc) override;
 
-    private:
-        /// settings we edit in this window
-        GlobalGameSettings& ggs;
-        ChangePolicy policy;
-        std::vector<AddonId> addonIds;
-        unsigned short numAddonsInCurCategory_;
+    /// Aktualisiert die Addons, die angezeigt werden sollen
+    void UpdateView(const unsigned short selection);
+
+private:
+    /// settings we edit in this window
+    GlobalGameSettings& ggs;
+    ChangePolicy policy;
+    std::vector<AddonId> addonIds;
+    unsigned short numAddonsInCurCategory_;
 };
 
 #endif // !iwENHANCEMENTS_H_INCLUDED

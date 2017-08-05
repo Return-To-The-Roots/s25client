@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
+#include "GameMessage_GameCommand.h"
 #include "GamePlayer.h"
 #include "Random.h"
-#include "GameMessage_GameCommand.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/Serializer.h"
 
@@ -58,7 +58,7 @@ void GameClient::ExecuteNWF()
 
     // Send GC message for this NWF
     send_queue.push(new GameMessage_GameCommand(playerId_, checksum, gameCommands_));
-    //LOG.writeToFile("CLIENT >>> GC %u\n") % playerId_;
+    // LOG.writeToFile("CLIENT >>> GC %u\n") % playerId_;
 
     // alles gesendet --> Liste löschen
     gameCommands_.clear();

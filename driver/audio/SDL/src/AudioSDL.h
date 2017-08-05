@@ -24,52 +24,50 @@ class Sound;
 /// Klasse für den SDL Audiotreiber.
 class AudioSDL : public AudioDriver
 {
-    private:
+private:
+    /// Welche Sounds werden in den Channels gerade gespielt?
+    unsigned channels[CHANNEL_COUNT];
+    /// Lautstärke der Effekte.
+    unsigned char master_effects_volume;
+    /// Lautstärke der Musik.
+    unsigned char master_music_volume;
 
-        /// Welche Sounds werden in den Channels gerade gespielt?
-        unsigned channels[CHANNEL_COUNT];
-        /// Lautstärke der Effekte.
-        unsigned char master_effects_volume;
-        /// Lautstärke der Musik.
-        unsigned char master_music_volume;
+public:
+    AudioSDL(AudioDriverLoaderInterface* adli);
 
-    public:
-        AudioSDL(AudioDriverLoaderInterface* adli);
+    ~AudioSDL() override;
 
-        ~AudioSDL() override;
+    /// Funktion zum Auslesen des Treibernamens.
+    const char* GetName() const override;
 
-        /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName() const override;
+    /// Treiberinitialisierungsfunktion.
+    bool Initialize() override;
 
-        /// Treiberinitialisierungsfunktion.
-        bool Initialize() override;
+    /// Treiberaufräumfunktion.
+    void CleanUp() override;
 
-        /// Treiberaufräumfunktion.
-        void CleanUp() override;
+    Sound* LoadEffect(const std::string& filepath) override;
+    Sound* LoadMusic(const std::string& filepath) override;
 
-        Sound* LoadEffect(const std::string& filepath) override;
-        Sound* LoadMusic(const std::string& filepath) override;
+    /// Spielt Sound ab
+    unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;
+    /// Spielt Midi ab
+    void PlayMusic(Sound* sound, const unsigned repeats) override;
+    /// Stoppt die Musik.
+    void StopMusic() override;
+    /// Wird der Sound (noch) abgespielt?
+    bool IsEffectPlaying(const unsigned play_id) override;
+    /// Stoppt einen Sound
+    void StopEffect(const unsigned play_id) override;
+    /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
+    void ChangeVolume(const unsigned play_id, const unsigned char volume) override;
 
-        /// Spielt Sound ab
-        unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;
-        /// Spielt Midi ab
-        void PlayMusic(Sound* sound, const unsigned repeats) override;
-        /// Stoppt die Musik.
-        void StopMusic() override;
-        /// Wird der Sound (noch) abgespielt?
-        bool IsEffectPlaying(const unsigned play_id) override;
-        /// Stoppt einen Sound
-        void StopEffect(const unsigned play_id) override;
-        /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-        void ChangeVolume(const unsigned play_id, const unsigned char volume) override;
+    void SetMasterEffectVolume(unsigned char volume) override;
+    void SetMasterMusicVolume(unsigned char volume) override;
 
-        void SetMasterEffectVolume(unsigned char volume) override;
-        void SetMasterMusicVolume(unsigned char volume) override;
-
-    private:
-
-        /// Callback für Audiotreiber
-        static void MusicFinished();
+private:
+    /// Callback für Audiotreiber
+    static void MusicFinished();
 };
 
 #endif // !SDL_H_INCLUDED

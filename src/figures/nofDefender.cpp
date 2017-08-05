@@ -18,19 +18,18 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofDefender.h"
 
-#include "nofAttacker.h"
-#include "buildings/nobMilitary.h"
 #include "GameClient.h"
 #include "Random.h"
-#include "nodeObjs/noFighting.h"
-#include "nofPassiveSoldier.h"
-#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
+#include "buildings/nobMilitary.h"
+#include "nofAttacker.h"
+#include "nofPassiveSoldier.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFighting.h"
 
-
-nofDefender::nofDefender(const MapPoint pos, const unsigned char player,
-                         nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)
+nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
+                         nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
 {
 }
@@ -68,8 +67,8 @@ void nofDefender::Walked()
             gwg->AddFigure(new noFighting(attacker, this), pos);
             state = STATE_FIGHTING;
             attacker->FightVsDefenderStarted();
-
-        } break;
+        }
+        break;
         case STATE_DEFENDING_WALKINGFROM:
         {
             // Ist evtl. unser Heimatgebäude zerstört?
@@ -90,8 +89,7 @@ void nofDefender::Walked()
                 // dann umdrehen und wieder rausgehen
                 state = STATE_DEFENDING_WALKINGTO;
                 StartWalking(Direction::SOUTHEAST);
-            }
-            else
+            } else
             {
                 // mich von der Landkarte tilgen
                 gwg->RemoveFigure(this, pos);
@@ -101,10 +99,9 @@ void nofDefender::Walked()
                 bld->AddActiveSoldier(this);
                 RTTR_Assert(!bld->GetDefender()); // No defender anymore
             }
-
-        } break;
-        default:
-            break;
+        }
+        break;
+        default: break;
     }
 }
 
@@ -123,7 +120,8 @@ void nofDefender::HomeDestroyed()
             state = STATE_FIGUREWORK;
             StartWandering();
             Wander();
-        } break;
+        }
+        break;
         case STATE_DEFENDING_WALKINGTO:
         case STATE_DEFENDING_WALKINGFROM:
         {
@@ -131,14 +129,15 @@ void nofDefender::HomeDestroyed()
             // Rumirren
             StartWandering();
             state = STATE_FIGUREWORK;
-        } break;
+        }
+        break;
         case STATE_FIGHTING:
         {
             // Die normale Tätigkeit wird erstmal fortgesetzt (Laufen, Kämpfen, wenn er schon an der Fahne ist
             // wird er auch nicht mehr zurückgehen)
-        } break;
-        default:
-            break;
+        }
+        break;
+        default: break;
     }
 }
 
@@ -153,14 +152,12 @@ void nofDefender::HomeDestroyedAtBegin()
     StartWalking(Direction(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
 }
 
-
 /// Wenn ein Kampf gewonnen wurde
 void nofDefender::WonFighting()
 {
-	
-	//addon BattlefieldPromotion active? -> increase rank!
-	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
-		IncreaseRank();
+    // addon BattlefieldPromotion active? -> increase rank!
+    if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+        IncreaseRank();
     // Angreifer tot
     attacker = NULL;
 
@@ -181,8 +178,7 @@ void nofDefender::WonFighting()
     {
         // Ein Angreifer gefunden, dann warten wir auf ihn, bis er kommt
         state = STATE_DEFENDING_WAITING;
-    }
-    else
+    } else
     {
         // Kein Angreifer gefunden, dann gehen wir wieder in unser Gebäude
         state = STATE_DEFENDING_WALKINGFROM;
@@ -210,7 +206,6 @@ void nofDefender::LostFighting()
         building = NULL;
     }
 }
-
 
 void nofDefender::AttackerArrested()
 {

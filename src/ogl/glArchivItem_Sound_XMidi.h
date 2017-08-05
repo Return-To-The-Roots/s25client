@@ -19,18 +19,21 @@
 
 #pragma once
 
-#include "libsiedler2/src/ArchivItem_Sound_XMidi.h"
 #include "glArchivItem_Music.h"
+#include "libsiedler2/src/ArchivItem_Sound_XMidi.h"
 
 class glArchivItem_Sound_XMidi : public libsiedler2::baseArchivItem_Sound_XMidi, public glArchivItem_Music
 {
-    public:
-        glArchivItem_Sound_XMidi() : baseArchivItem_Sound(), baseArchivItem_Sound_XMidi(), glArchivItem_Music() {}
+public:
+    glArchivItem_Sound_XMidi() : baseArchivItem_Sound(), baseArchivItem_Sound_XMidi(), glArchivItem_Music() {}
 
-        glArchivItem_Sound_XMidi(const glArchivItem_Sound_XMidi& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_XMidi(item), glArchivItem_Music(item) {}
+    glArchivItem_Sound_XMidi(const glArchivItem_Sound_XMidi& item)
+        : baseArchivItem_Sound(item), baseArchivItem_Sound_XMidi(item), glArchivItem_Music(item)
+    {
+    }
 
-        /// Spielt die Musik ab.
-        void Play(const unsigned repeats) override;
+    /// Spielt die Musik ab.
+    void Play(const unsigned repeats) override;
 };
 
 #endif // !GLARCHIVITEM_SOUND_XMIDI_H_INCLUDED

@@ -18,13 +18,13 @@
 #ifndef mathFuncs_h__
 #define mathFuncs_h__
 
-namespace helpers{
+namespace helpers {
 
-    /// Returns the greatest common divisor of a and b
-    /// That is the greatest number x with a % x == b % x == 0
-    int gcd(int a, int b);
-    /// Returns the result of "divident / divisor" rounded to the nearest integer value
-    unsigned roundedDiv(unsigned dividend, unsigned divisor);
-}
+/// Returns the greatest common divisor of a and b
+/// That is the greatest number x with a % x == b % x == 0
+int gcd(int a, int b);
+/// Returns the result of "divident / divisor" rounded to the nearest integer value
+unsigned roundedDiv(unsigned dividend, unsigned divisor);
+} // namespace helpers
 
 #endif // mathFuncs_h__

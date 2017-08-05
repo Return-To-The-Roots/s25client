@@ -31,86 +31,85 @@ class noFigure;
 
 class noBaseBuilding : public noRoadNode
 {
-    protected:
+protected:
+    /// Typ des Gebäudes
+    BuildingType type_;
 
-        /// Typ des Gebäudes
-        BuildingType type_;
+    /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
+    const Nation nation;
+    /// Doorpoints - Punkte, wo die Tür ist, bis wohin die Träger gehen dürfen
+    int door_point_x;
+    int door_point_y;
 
-        /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
-        const Nation nation;
-        /// Doorpoints - Punkte, wo die Tür ist, bis wohin die Träger gehen dürfen
-        int door_point_x;
-        int door_point_y;
+protected:
+    /// Ware Bescheid sagen, dass sie nicht mehr hierher kommen brauch
+    void WareNotNeeded(Ware* ware);
+    /// Zerstört Anbauten, falls es sich um ein großes Gebäude handelt (wo es diese auch gibt)
+    void DestroyBuildingExtensions();
 
-    protected:
+public:
+    noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pt, const unsigned char player);
+    noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Ware Bescheid sagen, dass sie nicht mehr hierher kommen brauch
-        void WareNotNeeded(Ware* ware);
-        /// Zerstört Anbauten, falls es sich um ein großes Gebäude handelt (wo es diese auch gibt)
-        void DestroyBuildingExtensions();
+    ~noBaseBuilding() override;
 
-    public:
+    /// Aufräummethoden
+protected:
+    void Destroy_noBaseBuilding();
 
-        noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pt, const unsigned char player);
-        noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Destroy() override { Destroy_noBaseBuilding(); }
 
-        ~noBaseBuilding() override;
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noBaseBuilding(SerializedGameData& sgd) const;
 
-        /// Aufräummethoden
-    protected:  void Destroy_noBaseBuilding();
-    public:     void Destroy() override { Destroy_noBaseBuilding(); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noBaseBuilding(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noBaseBuilding(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noBaseBuilding(sgd); }
+    /// Eine bestellte Ware konnte doch nicht kommen
+    virtual void WareLost(Ware* ware) = 0;
 
-        /// Eine bestellte Ware konnte doch nicht kommen
-        virtual void WareLost(Ware* ware) = 0;
+    /// Gibt diverse Sachen zurück
+    BuildingQuality GetSize() const { return BUILDING_SIZE[type_]; }
+    BuildingType GetBuildingType() const { return type_; }
+    Nation GetNation() const { return nation; }
+    BlockingManner GetBM() const override;
 
-        /// Gibt diverse Sachen zurück
-        BuildingQuality GetSize() const { return BUILDING_SIZE[type_]; }
-        BuildingType GetBuildingType () const { return type_; }
-        Nation GetNation() const { return nation; }
-        BlockingManner GetBM() const override;
+    /// Harbor, storehouse or headquarters?
+    bool IsWarehouse() const
+    {
+        return (GetBuildingType() == BLD_HEADQUARTERS || GetBuildingType() == BLD_STOREHOUSE || GetBuildingType() == BLD_HARBORBUILDING);
+    }
 
-        /// Harbor, storehouse or headquarters?
-        bool IsWarehouse() const
-        {
-            return (GetBuildingType() == BLD_HEADQUARTERS ||
-                    GetBuildingType() == BLD_STOREHOUSE || GetBuildingType() == BLD_HARBORBUILDING);
-        }
+    /// Ermittelt die Flagge, die vor dem Gebäude steht
+    noFlag* GetFlag() const;
 
-        /// Ermittelt die Flagge, die vor dem Gebäude steht
-        noFlag* GetFlag() const;
+    /// Return the offset of the door, which is also where people disappear into the building, the builder is building and the wares are
+    /// lying
+    Point<int> GetDoorPoint() { return Point<int>(GetDoorPointX(), GetDoorPointY()); }
+    int GetDoorPointX();
+    int GetDoorPointY() const { return door_point_y; }
 
-        /// Return the offset of the door, which is also where people disappear into the building, the builder is building and the wares are lying
-        Point<int> GetDoorPoint(){ return Point<int>(GetDoorPointX(), GetDoorPointY()); }
-        int GetDoorPointX();
-        int GetDoorPointY() const { return door_point_y; }
+    /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
+    virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
+    /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
+    virtual void TakeWare(Ware* ware) = 0;
+    /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
+    virtual void GotWorker(Job /*job*/, noFigure* /*worker*/){};
 
-        /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
-        virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
-        /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-        virtual void TakeWare(Ware* ware) = 0;
-        /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
-        virtual void GotWorker(Job  /*job*/, noFigure*  /*worker*/) {};
-
-
-        /// Gibt ein Bild zurück für das normale Gebäude
-        glArchivItem_Bitmap* GetBuildingImage() const;
-        static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation);
-        static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt);
-        /// Gibt ein Bild zurück für das Gebäudegerüst
-        glArchivItem_Bitmap* GetBuildingSkeletonImage() const;
-        /// Gibt ein Bild zurück für das normale Gebäude
-        glArchivItem_Bitmap* GetBuildingImageShadow() const;
-        /// Gibt ein Bild zurück für das Gebäudegerüst
-        glArchivItem_Bitmap* GetBuildingSkeletonImageShadow() const;
-        /// Gibt ein Bild zurück für die Tür des Gebäudes
-        glArchivItem_Bitmap* GetDoorImage() const;
-
+    /// Gibt ein Bild zurück für das normale Gebäude
+    glArchivItem_Bitmap* GetBuildingImage() const;
+    static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation);
+    static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt);
+    /// Gibt ein Bild zurück für das Gebäudegerüst
+    glArchivItem_Bitmap* GetBuildingSkeletonImage() const;
+    /// Gibt ein Bild zurück für das normale Gebäude
+    glArchivItem_Bitmap* GetBuildingImageShadow() const;
+    /// Gibt ein Bild zurück für das Gebäudegerüst
+    glArchivItem_Bitmap* GetBuildingSkeletonImageShadow() const;
+    /// Gibt ein Bild zurück für die Tür des Gebäudes
+    glArchivItem_Bitmap* GetDoorImage() const;
 };
 
-
 #endif
-

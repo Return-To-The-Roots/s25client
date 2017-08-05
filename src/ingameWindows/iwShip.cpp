@@ -17,46 +17,42 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwShip.h"
-#include "Loader.h"
+#include "DrawPointInit.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "WindowManager.h"
-#include "iwHelp.h"
-#include "nodeObjs/noShip.h"
-#include "figures/noFigure.h"
+#include "Loader.h"
 #include "Ware.h"
-#include "DrawPointInit.h"
+#include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "figures/noFigure.h"
+#include "iwHelp.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
-#include "world/GameWorldBase.h"
+#include "nodeObjs/noShip.h"
 #include "gameData/JobConsts.h"
-#include "gameData/const_gui_ids.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/const_gui_ids.h"
 
-iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship):
-    IngameWindow(CGI_SHIP, IngameWindow::posAtMouse, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), gcFactory(gcFactory),
-    player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
-    ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
+iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship)
+    : IngameWindow(CGI_SHIP, IngameWindow::posAtMouse, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv),
+      gcFactory(gcFactory), player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
+      ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(ship) : 0)
 {
     AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
-    AddImageButton( 2, DrawPoint(18, 192), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
-    AddImageButton( 3, DrawPoint(51, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
-    AddImageButton( 4, DrawPoint(81, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
-    AddImageButton( 5, DrawPoint(111, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton( 6, DrawPoint(141, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
-    AddImageButton( 7, DrawPoint(181, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place")); // "Gehe Zu Ort"
+    AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225));  // Viewer: 226 - Hilfe
+    AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102));  // Viewer: 103 - Schnell zurück
+    AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
+    AddImageButton(5, DrawPoint(111, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+    AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place")); // "Gehe Zu Ort"
 
     // Die Expeditionsweiterfahrbuttons
     AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 187), _("Found colony"))->SetVisible(false);
 
-    const DrawPointInit BUTTON_POS[6] =
-    {
-        {60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}
-    };
+    const DrawPointInit BUTTON_POS[6] = {{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}};
 
     // Expedition abbrechen
     AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TC_RED1, LOADER.GetImageN("io", 40), _("Return to harbor"))->SetVisible(false);
@@ -64,7 +60,6 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const 
     // Die 6 Richtungen
     for(unsigned i = 0; i < 6; ++i)
         AddImageButton(12 + i, BUTTON_POS[i], Extent(18, 18), TC_GREY, LOADER.GetImageN("io", 181 + (i + 4) % 6))->SetVisible(false);
-
 }
 
 void iwShip::Msg_PaintAfter()
@@ -83,18 +78,19 @@ void iwShip::Msg_PaintAfter()
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
-            NormalFont->Draw(GetDrawPos() + DrawPoint(GetSize().x / 2, 60), _("No ships available"), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+            NormalFont->Draw(GetDrawPos() + DrawPoint(GetSize().x / 2, 60), _("No ships available"),
+                             glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
-
 
     // Schiffsname
     NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
     sprintf(str, "%u/%u", ship_id + 1, owner.GetShipCount());
-    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE,
+                     COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
 
@@ -105,9 +101,10 @@ void iwShip::Msg_PaintAfter()
         GetCtrl<Window>(11)->SetVisible(true);
 
         for(unsigned char i = 0; i < 6; ++i)
-            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), ShipDirection::fromInt(i), ship->GetPlayerId()) > 0);
-    }
-    else
+            GetCtrl<Window>(12 + i)->SetVisible(gwv.GetWorld().GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(),
+                                                                                      ShipDirection::fromInt(i), ship->GetPlayerId())
+                                                > 0);
+    } else
     {
         // Alle Buttons inklusive Anker in der Mitte ausblenden
         for(unsigned i = 0; i < 8; ++i)
@@ -117,15 +114,13 @@ void iwShip::Msg_PaintAfter()
     DrawCargo();
 }
 
-
 void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    if (ctrl_id == 2) // Hilfe
+    if(ctrl_id == 2) // Hilfe
     {
-        WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
-            _("The ship register contains all the ships in your fleet. Here you can monitor "
-              "the loading and destinations of individual ships. Ships on an expedition are "
-              "controlled from here as well.")));
+        WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The ship register contains all the ships in your fleet. Here you can monitor "
+                                                          "the loading and destinations of individual ships. Ships on an expedition are "
+                                                          "controlled from here as well.")));
         return;
     }
 
@@ -148,12 +143,12 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
 
     switch(ctrl_id)
     {
-        default: break;
-            // Erstes Schiff
-        case 3:
-        {
-            ship_id = 0;
-        } break;
+        default:
+            break;
+        // Erstes Schiff
+        case 3: { ship_id = 0;
+        }
+        break;
         // Eins zurück
         case 4:
         {
@@ -161,24 +156,25 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
                 ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
             else
                 --ship_id;
-        } break;
+        }
+        break;
         // Eins vor
         case 5:
         {
             ++ship_id;
             if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount())
                 ship_id = 0;
-
-        } break;
+        }
+        break;
         // Letztes Schiff
-        case 6:
-        {
-            ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
-        } break;
+        case 6: { ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
+        }
+        break;
         case 7: // "Gehe Zu Ort"
         {
             gwv.MoveToMapPt(ship->GetPos());
-        } break;
+        }
+        break;
     }
 }
 
@@ -205,13 +201,12 @@ void iwShip::DrawCargo()
     }
 
     // Spezialfall Expedition:
-    if (ship->IsOnExpedition())
+    if(ship->IsOnExpedition())
     {
         orderedFigures[JOB_BUILDER] = 1;
         orderedWares[GD_BOARDS] = 4;
         orderedWares[GD_STONES] = 6;
-    }
-    else if(ship->IsOnExplorationExpedition())
+    } else if(ship->IsOnExplorationExpedition())
     {
         orderedFigures[JOB_SCOUT] = gwv.GetWorld().GetGGS().GetNumScoutsExedition();
     }
@@ -232,11 +227,11 @@ void iwShip::DrawCargo()
     unsigned lineCounter = 0;
 
     // Leute zeichnen
-    for (unsigned i = 0; i < orderedFigures.size(); ++i)
+    for(unsigned i = 0; i < orderedFigures.size(); ++i)
     {
-        while (orderedFigures[i] > 0)
+        while(orderedFigures[i] > 0)
         {
-            if (lineCounter > elementsPerLine)
+            if(lineCounter > elementsPerLine)
             {
                 drawPt.x = startPt.x;
                 drawPt.y += yStep;
@@ -248,7 +243,7 @@ void iwShip::DrawCargo()
             if((i >= JOB_PRIVATE && i <= JOB_GENERAL) || (i == JOB_SCOUT))
                 job_bobs_id += NATION_RTTR_TO_S2[gwv.GetWorld().GetPlayer(player).nation] * 6;
 
-            if (i == JOB_PACKDONKEY)
+            if(i == JOB_PACKDONKEY)
                 LOADER.GetMapImageN(2016)->DrawFull(drawPt);
             else if(i == JOB_BOATCARRIER)
                 LOADER.GetBobN("carrier")->Draw(GD_BOAT, 5, false, 0, drawPt, owner.color);
@@ -261,11 +256,11 @@ void iwShip::DrawCargo()
     }
 
     // Waren zeichnen
-    for (unsigned i = 0; i < orderedWares.size(); ++i)
+    for(unsigned i = 0; i < orderedWares.size(); ++i)
     {
-        while (orderedWares[i] > 0)
+        while(orderedWares[i] > 0)
         {
-            if (lineCounter > elementsPerLine)
+            if(lineCounter > elementsPerLine)
             {
                 drawPt.x = startPt.x;
                 drawPt.y += yStep;

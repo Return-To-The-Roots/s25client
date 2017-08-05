@@ -19,15 +19,14 @@
 #include "AIInfo.h"
 #include "libutil/src/Serializer.h"
 
-namespace AI{
-    Info::Info(Serializer& ser):
-                    type(static_cast<Type>(ser.PopUnsignedChar())),
-                    level(static_cast<Level>(ser.PopUnsignedChar()))
-    {}
-
-    void Info::serialize(Serializer& ser) const
-    {
-        ser.PushUnsignedChar(static_cast<unsigned char>(type));
-        ser.PushUnsignedChar(static_cast<unsigned char>(level));
-    }
+namespace AI {
+Info::Info(Serializer& ser) : type(static_cast<Type>(ser.PopUnsignedChar())), level(static_cast<Level>(ser.PopUnsignedChar()))
+{
 }
+
+void Info::serialize(Serializer& ser) const
+{
+    ser.PushUnsignedChar(static_cast<unsigned char>(type));
+    ser.PushUnsignedChar(static_cast<unsigned char>(level));
+}
+} // namespace AI

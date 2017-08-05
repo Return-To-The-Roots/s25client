@@ -22,7 +22,7 @@
 #include <iostream>
 #include <sstream>
 #ifdef _WIN32
-#   include <windows.h>
+#include <windows.h>
 #endif
 
 bool RTTR_AssertEnableBreak = true;
@@ -30,11 +30,14 @@ bool RTTR_AssertEnableBreak = true;
 bool RTTR_IsBreakOnAssertFailureEnabled()
 {
     bool assertBreakDisabled = false;
-    try{
+    try
+    {
         std::string envVarVal = System::getEnvVar("RTTR_DISABLE_ASSERT_BREAKPOINT");
         if(envVarVal == "1" || envVarVal == "yes")
             assertBreakDisabled = true;
-    }catch(...){}
+    } catch(...)
+    {
+    }
     return !assertBreakDisabled && RTTR_AssertEnableBreak;
 }
 

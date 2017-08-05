@@ -22,27 +22,30 @@
 
 #include "addons/Addons.h"
 
-#include "gameData/MilitaryConsts.h"
 #include "helpers/containerUtils.h"
-#include "libutil/src/Serializer.h"
+#include "gameData/MilitaryConsts.h"
 #include "libutil/src/Log.h"
+#include "libutil/src/Serializer.h"
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
-#include <algorithm>
 
-GlobalGameSettings::GlobalGameSettings(): speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL),
-    lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true), randomStartPosition(false)
+GlobalGameSettings::GlobalGameSettings()
+    : speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL), lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true),
+      randomStartPosition(false)
 {
     // register addons
     clearAddons();
 }
 
-GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs): speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares),
-    lockedTeams(ggs.lockedTeams), exploration(ggs.exploration), teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
+GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
+    : speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares), lockedTeams(ggs.lockedTeams), exploration(ggs.exploration),
+      teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
 {
     // register addons
     clearAddons();
-    for(unsigned i=0; i<ggs.getNumAddons(); i++){
+    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
+    {
         unsigned status = 0;
         AddonId id = ggs.getAddon(i, status)->getId();
         setSelection(id, status);
@@ -57,10 +60,11 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     objective = ggs.objective;
     startWares = ggs.startWares;
     lockedTeams = ggs.lockedTeams;
-    exploration = ggs.exploration; 
-    teamView = ggs.teamView; 
+    exploration = ggs.exploration;
+    teamView = ggs.teamView;
     randomStartPosition = ggs.randomStartPosition;
-    for(unsigned i = 0; i < ggs.getNumAddons(); i++){
+    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
+    {
         unsigned status = 0;
         AddonId id = ggs.getAddon(i, status)->getId();
         setSelection(id, status);
@@ -124,12 +128,12 @@ void GlobalGameSettings::clearAddons(bool recreate)
         registerAddon(new AddonInexhaustibleFish);
 
         registerAddon(new AddonShipSpeed);
-		registerAddon(new AddonMoreAnimals);
-		registerAddon(new AddonBurnDuration);
-		registerAddon(new AddonNoAlliedPush);
-		registerAddon(new AddonBattlefieldPromotion);
-		registerAddon(new AddonHalfCostMilEquip);
-		registerAddon(new AddonMilitaryControl);
+        registerAddon(new AddonMoreAnimals);
+        registerAddon(new AddonBurnDuration);
+        registerAddon(new AddonNoAlliedPush);
+        registerAddon(new AddonBattlefieldPromotion);
+        registerAddon(new AddonHalfCostMilEquip);
+        registerAddon(new AddonMilitaryControl);
 
         registerAddon(new AddonMilitaryHitpoints);
 
@@ -163,7 +167,7 @@ bool GlobalGameSettings::isEnabled(AddonId id) const
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const
 {
-   AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
+    AddonContainer::const_iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
         return 0;
     return it->status;
@@ -188,7 +192,7 @@ void GlobalGameSettings::LoadSettings()
 {
     clearAddons();
 
-    for( std::map<unsigned, unsigned>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
+    for(std::map<unsigned, unsigned>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
         setSelection((AddonId::type_)it->first, it->second);
 }
 
@@ -256,10 +260,9 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
     }
 }
 
-
 void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
-   AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
+    AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
         std::cout << "Addon 0x" << std::hex << id << std::dec << " not found!" << std::endl;
     else
@@ -278,8 +281,9 @@ unsigned GlobalGameSettings::GetNumScoutsExedition() const
     return selection + 1;
 }
 
-GlobalGameSettings::AddonWithState::AddonWithState(Addon* addon): addon(addon), status(addon->getDefaultStatus())
-{}
+GlobalGameSettings::AddonWithState::AddonWithState(Addon* addon) : addon(addon), status(addon->getDefaultStatus())
+{
+}
 
 bool GlobalGameSettings::AddonWithState::operator<(const AddonWithState& rhs) const
 {

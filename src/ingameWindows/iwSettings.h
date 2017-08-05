@@ -24,14 +24,14 @@
 
 class iwSettings : public IngameWindow
 {
-    public:
-        iwSettings();
-        ~iwSettings() override;
+public:
+    iwSettings();
+    ~iwSettings() override;
 
-    private:
-        std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
-        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-        void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
+private:
+    std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_CheckboxChange(const unsigned ctrl_id, const bool checked) override;
 };
 
 #endif // !iwSETTINGS_H_INCLUDED

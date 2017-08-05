@@ -39,9 +39,6 @@ const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max()
 const unsigned OBJECTIVES_COUNT = 3;
 /// tournament modes
 const unsigned TOURNAMENT_MODES_COUNT = 5;
-const boost::array<unsigned, TOURNAMENT_MODES_COUNT> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION =
-{{
-    30, 60, 90, 120, 240
-}};
+const boost::array<unsigned, TOURNAMENT_MODES_COUNT> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {{30, 60, 90, 120, 240}};
 
 #endif

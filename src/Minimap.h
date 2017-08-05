@@ -17,10 +17,10 @@
 #ifndef MINIMAP_H_
 #define MINIMAP_H_
 
-#include "ogl/glArchivItem_Bitmap_Direct.h"
-#include "gameTypes/MapCoordinates.h"
 #include "DrawPoint.h"
 #include "Rect.h"
+#include "ogl/glArchivItem_Bitmap_Direct.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class Minimap
@@ -33,7 +33,7 @@ protected:
     glArchivItem_Bitmap_Direct map;
 
 public:
-    Minimap(): mapSize(0, 0){}
+    Minimap() : mapSize(0, 0) {}
     Minimap(const MapExtent& mapSize);
     virtual ~Minimap() {}
 
@@ -55,4 +55,3 @@ protected:
 };
 
 #endif
-

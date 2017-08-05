@@ -17,19 +17,19 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofWarehouseWorker.h"
-#include "world/GameWorldGame.h"
-#include "Ware.h"
+#include "EventManager.h"
 #include "GamePlayer.h"
-#include "nodeObjs/noRoadNode.h"
-#include "nodeObjs/noFlag.h"
-#include "buildings/nobBaseWarehouse.h"
 #include "Random.h"
 #include "SerializedGameData.h"
-#include "EventManager.h"
+#include "Ware.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noRoadNode.h"
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
-    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))),
-      carried_ware(ware), shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
+    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))), carried_ware(ware),
+      shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
@@ -39,7 +39,6 @@ nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char p
     cur_rs = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))->GetRoute(Direction::NORTHWEST);
     rs_dir = true;
 }
-
 
 nofWarehouseWorker::~nofWarehouseWorker()
 {
@@ -54,7 +53,6 @@ void nofWarehouseWorker::Destroy_nofWarehouseWorker()
     LooseWare();
 }
 
-
 void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) const
 {
     Serialize_noFigure(sgd);
@@ -64,13 +62,10 @@ void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) c
     sgd.PushBool(fat);
 }
 
-nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    carried_ware(sgd.PopObject<Ware>(GOT_WARE)),
-    shouldBringWareIn(sgd.PopBool()),
-    fat(sgd.PopBool())
+nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), shouldBringWareIn(sgd.PopBool()), fat(sgd.PopBool())
 {
 }
-
 
 void nofWarehouseWorker::Draw(DrawPoint drawPt)
 {
@@ -89,7 +84,8 @@ void nofWarehouseWorker::GoalReached()
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
         // ( dann ist goal = location )
-        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation() && carried_ware->GetGoal() != wh)
+        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation()
+           && carried_ware->GetGoal() != wh)
         {
             carried_ware->WaitAtFlag(gwg->GetSpecObj<noFlag>(pos));
 
@@ -101,17 +97,15 @@ void nofWarehouseWorker::GoalReached()
 
             // Ich trage keine Ware mehr
             carried_ware = NULL;
-        }
-        else
+        } else
             // ansonsten Ware wieder mit reinnehmen
             carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 1)));
-    }
-    else
+    } else
     {
         // Ware aufnehmen
         carried_ware = gwg->GetSpecObj<noFlag>(pos)->SelectWare(Direction::NORTHWEST, false, this);
 
-        if (carried_ware)
+        if(carried_ware)
             carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
     }
 
@@ -125,8 +119,8 @@ void nofWarehouseWorker::Walked()
     // Wieder im Schloss angekommen
     if(!shouldBringWareIn)
     {
-        // If I still cary a ware than either the flag was full or I should not bring it there (goal=warehouse or goal destroyed -> goal=location)
-        // So re-add it to waiting wares or to inventory
+        // If I still cary a ware than either the flag was full or I should not bring it there (goal=warehouse or goal destroyed ->
+        // goal=location) So re-add it to waiting wares or to inventory
         if(carried_ware)
         {
             // Ware ins Lagerhaus einlagern (falls es noch existiert und nicht abgebrannt wurde)
@@ -137,8 +131,7 @@ void nofWarehouseWorker::Walked()
                     wh->AddWare(carried_ware);
                 else
                     wh->AddWaitingWare(carried_ware);
-            }
-            else
+            } else
             {
                 // Lagerhaus abgebrannt --> Ware vernichten
                 LooseWare();
@@ -146,8 +139,7 @@ void nofWarehouseWorker::Walked()
             // Ich trage keine Ware mehr
             RTTR_Assert(carried_ware == NULL);
         }
-    }
-    else
+    } else
     {
         if(carried_ware)
         {
@@ -189,10 +181,10 @@ void nofWarehouseWorker::LooseWare()
     }
 }
 
-void nofWarehouseWorker::HandleDerivedEvent(const unsigned  /*id*/)
+void nofWarehouseWorker::HandleDerivedEvent(const unsigned /*id*/)
 {
 }
 
-void nofWarehouseWorker::CarryWare(Ware*  /*ware*/)
+void nofWarehouseWorker::CarryWare(Ware* /*ware*/)
 {
 }

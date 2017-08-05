@@ -28,53 +28,51 @@ class noBase;
 /// verwaltet auch "globale" Sounds wie Vogelgezwitscher und Meeresrauschen
 class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLongevity>
 {
-        /// Objekt-spezifischer Sound (NO-Sound)
-        struct NOSound
-        {
-            /// Objekt, das den Sound "wiedergibt"
-            noBase* obj;
-            /// Zusätzliche ID, falls das Objekt im Zuge seiner Arbeit mehrere Sounds von sich gibt
-            unsigned id;
-            /// Abspiel ID - identifiziert ein abgespieltes Stück, mit dem man abgespielte Stücke stoppen kann
-            unsigned play_id;
-        };
+    /// Objekt-spezifischer Sound (NO-Sound)
+    struct NOSound
+    {
+        /// Objekt, das den Sound "wiedergibt"
+        noBase* obj;
+        /// Zusätzliche ID, falls das Objekt im Zuge seiner Arbeit mehrere Sounds von sich gibt
+        unsigned id;
+        /// Abspiel ID - identifiziert ein abgespieltes Stück, mit dem man abgespielte Stücke stoppen kann
+        unsigned play_id;
+    };
 
-        /// Liste von NO-Sounds
-        std::list<NOSound> no_sounds;
+    /// Liste von NO-Sounds
+    std::list<NOSound> no_sounds;
 
-        //////////////////////////////////
+    //////////////////////////////////
 
-        /// Wann wurde der letzte Vogelzwitschersound abgespielt?
-        unsigned last_bird;
-        /// Intervall zwischen den Vogelzwitschern
-        unsigned bird_interval;
-        /// Play-ID fürs Meeresrauschen
-        unsigned ocean_play_id;
+    /// Wann wurde der letzte Vogelzwitschersound abgespielt?
+    unsigned last_bird;
+    /// Intervall zwischen den Vogelzwitschern
+    unsigned bird_interval;
+    /// Play-ID fürs Meeresrauschen
+    unsigned ocean_play_id;
 
-    public:
-        BOOST_STATIC_CONSTEXPR unsigned Longevity = 29;
+public:
+    BOOST_STATIC_CONSTEXPR unsigned Longevity = 29;
 
-        SoundManager();
-        ~SoundManager() override;
+    SoundManager();
+    ~SoundManager() override;
 
-        /// Versucht ggf. Objekt-Sound abzuspielen
-        void PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume = 255);
-        /// Wenn die Arbeit (wo er Sounds von sich gegeben hat) von einem Objekt fertig ist bzw. abgebrochen wurde,
-        /// wird diese Funktion aufgerufen, die alle Sounds von diesem Objekt entfernt
-        void WorkingFinished(noBase* const obj);
+    /// Versucht ggf. Objekt-Sound abzuspielen
+    void PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume = 255);
+    /// Wenn die Arbeit (wo er Sounds von sich gegeben hat) von einem Objekt fertig ist bzw. abgebrochen wurde,
+    /// wird diese Funktion aufgerufen, die alle Sounds von diesem Objekt entfernt
+    void WorkingFinished(noBase* const obj);
 
-        /////////////////////////////////
+    /////////////////////////////////
 
-        /// Wird immer aufgerufen, wenn der GameWorld alles gezeichnet hat und die Vögel abgespielt werden
-        void PlayBirdSounds(const unsigned short tree_count);
-        /// Spielt Meeresrauschen ab (wird der Anteil von Wasser an der aktuell gezeichneten Fläche in % angegeben)
-        void PlayOceanBrawling(const unsigned water_percent);
+    /// Wird immer aufgerufen, wenn der GameWorld alles gezeichnet hat und die Vögel abgespielt werden
+    void PlayBirdSounds(const unsigned short tree_count);
+    /// Spielt Meeresrauschen ab (wird der Anteil von Wasser an der aktuell gezeichneten Fläche in % angegeben)
+    void PlayOceanBrawling(const unsigned water_percent);
 
-        void StopAll();
+    void StopAll();
 };
 
 #define SOUNDMANAGER SoundManager::inst()
 
-
 #endif
-

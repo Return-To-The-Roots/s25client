@@ -16,10 +16,10 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GameClient.h"
 #include "ClientInterface.h"
-#include "GamePlayer.h"
+#include "GameClient.h"
 #include "GameMessages.h"
+#include "GamePlayer.h"
 
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
@@ -69,7 +69,7 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
 {
     RTTR_Assert(state == CS_GAME); // Must be ingame
 
-	LOG.write("GameClient::ChangePlayer %i - %i \n") % player1 % player2;
+    LOG.write("GameClient::ChangePlayer %i - %i \n") % player1 % player2;
     // Gleiche ID - wäre unsinnig zu wechseln
     if(player1 == player2)
         return;
@@ -117,4 +117,3 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
     if(ci)
         ci->CI_PlayersSwapped(player1, player2);
 }
-

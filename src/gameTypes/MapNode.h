@@ -18,9 +18,9 @@
 #ifndef MapNode_h__
 #define MapNode_h__
 
-#include "gameTypes/MapTypes.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"
+#include "gameTypes/MapTypes.h"
 #include "gameData/MaxPlayers.h"
 #include <boost/array.hpp>
 #include <list>
@@ -37,7 +37,8 @@ struct MapNode
     unsigned char altitude;
     /// Schattierung
     unsigned char shadow;
-    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side of the pt)
+    /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side
+    /// of the pt)
     TerrainType t1, t2;
     /// Ressourcen
     unsigned char resources;
@@ -66,4 +67,3 @@ struct MapNode
 };
 
 #endif // MapNode_h__
-

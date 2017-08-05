@@ -25,18 +25,17 @@ class GameWorldView;
 
 class iwSkipGFs : public IngameWindow
 {
-    public:
-        iwSkipGFs(GameWorldView& gwv);
+public:
+    iwSkipGFs(GameWorldView& gwv);
 
-    private:
-        GameWorldView& gwv;
+private:
+    GameWorldView& gwv;
 
-        /// Teilt dem GameClient den Wert mit
-        void SkipGFs();
+    /// Teilt dem GameClient den Wert mit
+    void SkipGFs();
 
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_EditEnter(const unsigned ctrl_id) override;
-
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
 };
 
 #endif // !iwSKIPGFS_H_INCLUDED

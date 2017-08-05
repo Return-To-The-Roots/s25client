@@ -30,10 +30,7 @@
  *  Die Zeit nach der der Timer zünden soll.
  */
 
-ctrlTimer::ctrlTimer(Window* parent,
-                     unsigned id,
-                     unsigned timeout)
-    : Window(parent, id, DrawPoint(0, 0))
+ctrlTimer::ctrlTimer(Window* parent, unsigned id, unsigned timeout) : Window(parent, id, DrawPoint(0, 0))
 {
     Start(timeout);
 }
@@ -69,7 +66,7 @@ void ctrlTimer::Msg_PaintBefore()
     {
         GetParent()->Msg_Timer(GetID());
 
-        if (timer != 0)
+        if(timer != 0)
         {
             timer = VIDEODRIVER.GetTickCount();
         }

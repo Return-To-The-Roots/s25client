@@ -29,7 +29,7 @@ class Window;
 /// Class to handle the animations for all controls of a window
 /// The parent must be alive during the lifetime of this instance
 /// The time can have any reference but is expected to increase monotonically in steps of 1ms
-class AnimationManager: private boost::noncopyable
+class AnimationManager : private boost::noncopyable
 {
 public:
     AnimationManager(Window* parent);
@@ -49,18 +49,19 @@ public:
     void removeElementAnimations(unsigned elementId);
     /// Finish the elements animations
     /// If finishImmediately is true, then execute their last frame (skipping all frames in between)
-    /// else just play them to the end (setting repeat to oscillateOnce for oscillate or none for repeat) 
+    /// else just play them to the end (setting repeat to oscillateOnce for oscillate or none for repeat)
     void finishElementAnimations(unsigned elementId, bool finishImmediately);
     /// Remove the animation with the given id
     void removeAnimation(unsigned animId);
     /// Finish the animation
     /// If finishImmediately is true, then execute the last frame (skipping all frames in between)
-    /// else just play it to the end (setting repeat to oscillateOnce for oscillate or none for repeat) 
+    /// else just play it to the end (setting repeat to oscillateOnce for oscillate or none for repeat)
     void finishAnimation(unsigned animId, bool finishImmediately);
     /// Return the number of active animations
     unsigned getNumActiveAnimations() const;
     /// React when the parents elements have been rescaled
     void onRescale(const ScreenResizeEvent& rs);
+
 private:
     typedef std::map<unsigned, Animation*> AnimationMap;
     Window* parent_;

@@ -18,33 +18,38 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwMsgbox.h"
 
-#include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
 #include "controls/ctrlImage.h"
-#include "gameData/const_gui_ids.h"
 #include "controls/ctrlMultiline.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Font.h"
+#include "gameData/const_gui_ids.h"
 
-namespace{
-    enum IDS{
-        ID_ICON = 0,
-        ID_TEXT,
-        ID_BT_0
-    };
-    const Extent btSize(90, 20);
-    const unsigned short paddingX = 15; /// Padding in X/to image
-    const unsigned short minTextWidth = 150;
-    const unsigned short maxTextHeight = 200;
-}
+namespace {
+enum IDS
+{
+    ID_ICON = 0,
+    ID_TEXT,
+    ID_BT_0
+};
+const Extent btSize(90, 20);
+const unsigned short paddingX = 15; /// Padding in X/to image
+const unsigned short minTextWidth = 150;
+const unsigned short maxTextHeight = 200;
+} // namespace
 
-iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon, unsigned msgboxid)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, MsgboxIcon icon,
+                   unsigned msgboxid)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false),
+      button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, "io", icon);
 }
 
-iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false), button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button, const std::string& iconFile,
+                   unsigned iconIdx, unsigned msgboxid /* = 0 */)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41), true, false),
+      button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
     Init(text, iconFile, iconIdx);
 }
@@ -66,34 +71,33 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     // Increase window size if required
     SetIwSize(elMax(GetIwSize(), newIwSize));
 
-
     unsigned defaultBt = 0;
     // Buttons erstellen
     switch(button)
     {
-    case MSB_OK:
-        AddButton(0, GetSize().x / 2 - 45, _("OK"), TC_GREEN2);
-        defaultBt = 0;
-        break;
+        case MSB_OK:
+            AddButton(0, GetSize().x / 2 - 45, _("OK"), TC_GREEN2);
+            defaultBt = 0;
+            break;
 
-    case MSB_OKCANCEL:
-        AddButton(0, GetSize().x / 2 - 3 - 90, _("OK"), TC_GREEN2);
-        AddButton(1, GetSize().x / 2 + 3, _("Cancel"), TC_RED1);
-        defaultBt = 1;
-        break;
+        case MSB_OKCANCEL:
+            AddButton(0, GetSize().x / 2 - 3 - 90, _("OK"), TC_GREEN2);
+            AddButton(1, GetSize().x / 2 + 3, _("Cancel"), TC_RED1);
+            defaultBt = 1;
+            break;
 
-    case MSB_YESNO:
-        AddButton(0, GetSize().x / 2 - 3 - 90, _("Yes"), TC_GREEN2);
-        AddButton(1, GetSize().x / 2 + 3, _("No"), TC_RED1);
-        defaultBt = 1;
-        break;
+        case MSB_YESNO:
+            AddButton(0, GetSize().x / 2 - 3 - 90, _("Yes"), TC_GREEN2);
+            AddButton(1, GetSize().x / 2 + 3, _("No"), TC_RED1);
+            defaultBt = 1;
+            break;
 
-    case MSB_YESNOCANCEL:
-        AddButton(0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
-        AddButton(1, GetSize().x / 2 - 45, _("No"), TC_RED1);
-        AddButton(2, GetSize().x / 2 + 45 + 6, _("Cancel"), TC_GREY);
-        defaultBt = 2;
-        break;
+        case MSB_YESNOCANCEL:
+            AddButton(0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TC_GREEN2);
+            AddButton(1, GetSize().x / 2 - 45, _("No"), TC_RED1);
+            AddButton(2, GetSize().x / 2 + 45 + 6, _("Cancel"), TC_GREY);
+            defaultBt = 2;
+            break;
     }
     const Window* defBt = GetCtrl<Window>(defaultBt + ID_BT_0);
     if(defBt)
@@ -101,36 +105,42 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
 }
 
 iwMsgbox::~iwMsgbox()
-{}
-
+{
+}
 
 void iwMsgbox::MoveIcon(const DrawPoint& pos)
 {
     ctrlImage* icon = GetCtrl<ctrlImage>(ID_ICON);
-    if(icon){
+    if(icon)
+    {
         icon->SetPos(elMax(pos, DrawPoint(0, 0)));
         DrawPoint iconPos(icon->GetPos() - icon->GetImage()->GetOrigin());
         DrawPoint textPos = contentOffset + DrawPoint(paddingX, 5);
         Extent textMaxSize;
-        if(iconPos.x < 100){
+        if(iconPos.x < 100)
+        {
             // icon left
             textPos.x = iconPos.x + icon->GetImage()->getWidth() + paddingX;
             textMaxSize.x = std::max<int>(minTextWidth, 400 - textPos.x - paddingX);
             textMaxSize.y = maxTextHeight;
-        }else if(iconPos.x > 300){
+        } else if(iconPos.x > 300)
+        {
             // icon right
             textMaxSize.x = iconPos.x - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
-        }else if(iconPos.y + icon->GetImage()->getHeight() < 50){
+        } else if(iconPos.y + icon->GetImage()->getHeight() < 50)
+        {
             // icon top
             textPos.y = iconPos.y + icon->GetImage()->getHeight() + paddingX;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
-        }else if(iconPos.y > 150){
+        } else if(iconPos.y > 150)
+        {
             // icon bottom
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = iconPos.y - paddingX - textPos.y;
-        }else{
+        } else
+        {
             // Icon middle -> Overlay text
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
@@ -145,7 +155,8 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
         newSize += DrawPoint(0, 10 + btSize.y * 2) + DrawPoint(contentOffsetEnd);
         DrawPoint btMoveDelta(newSize - GetSize());
         btMoveDelta.x /= 2;
-        for(unsigned i = 0; i < 3; i++){
+        for(unsigned i = 0; i < 3; i++)
+        {
             Window* bt = GetCtrl<Window>(i + ID_BT_0);
             if(bt)
                 bt->SetPos(bt->GetPos() + btMoveDelta);
@@ -154,13 +165,8 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     }
 }
 
-const MsgboxResult RET_IDS[MSB_YESNOCANCEL + 1][3] =
-{
-    {MSR_OK,  MSR_NOTHING, MSR_NOTHING},
-    {MSR_OK,  MSR_CANCEL,  MSR_NOTHING},
-    {MSR_YES, MSR_NO,      MSR_NOTHING},
-    {MSR_YES, MSR_NO,      MSR_CANCEL}
-};
+const MsgboxResult RET_IDS[MSB_YESNOCANCEL + 1][3] = {
+  {MSR_OK, MSR_NOTHING, MSR_NOTHING}, {MSR_OK, MSR_CANCEL, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_NOTHING}, {MSR_YES, MSR_NO, MSR_CANCEL}};
 
 void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
 {

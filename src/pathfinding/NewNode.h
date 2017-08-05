@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,8 +18,8 @@
 #ifndef NewNode_h__
 #define NewNode_h__
 
-#include "pathfinding/PathfindingPoint.h"
 #include "pathfinding/OpenListBinaryHeap.h"
+#include "pathfinding/PathfindingPoint.h"
 #include <set>
 
 /// Konstante für einen ungültigen Vorgängerknoten
@@ -43,7 +43,7 @@ struct NewNode
     std::set<PathfindingPoint>::iterator it_p; //-V730_NOINIT
     /// Wurde Knoten schon besucht (für A*-Algorithmus), wenn lastVisited == currentVisit
     unsigned lastVisited;
-    unsigned lastVisitedEven; //used for road pathfinding (for ai only for now)
+    unsigned lastVisitedEven; // used for road pathfinding (for ai only for now)
     MapPoint mapPt;
 };
 

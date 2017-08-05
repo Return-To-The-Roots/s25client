@@ -29,7 +29,7 @@ struct HarborPos
     struct CoastalPoint
     {
         unsigned short seaId;
-        CoastalPoint(): seaId(0){}
+        CoastalPoint() : seaId(0) {}
     };
     boost::array<CoastalPoint, 6> cps;
 
@@ -39,17 +39,15 @@ struct HarborPos
         unsigned distance;
 
         Neighbor() {} //-V730
-        Neighbor(const unsigned id, const unsigned distance)
-            : id(id), distance(distance) {}
+        Neighbor(const unsigned id, const unsigned distance) : id(id), distance(distance) {}
 
-        bool operator<(const Neighbor& two) const
-        { return (distance < two.distance) || (distance == two.distance && id < two.id); }
+        bool operator<(const Neighbor& two) const { return (distance < two.distance) || (distance == two.distance && id < two.id); }
     };
 
     boost::array<std::vector<Neighbor>, 6> neighbors;
 
-    HarborPos(){} //-V730
-    HarborPos(const MapPoint pt): pos(pt){}
+    HarborPos() {} //-V730
+    HarborPos(const MapPoint pt) : pos(pt) {}
 };
 
 #endif // HarborPos_h__

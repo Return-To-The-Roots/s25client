@@ -18,14 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofStonemason.h"
 
-#include "nodeObjs/noGranite.h"
-#include "Loader.h"
 #include "GameClient.h"
-#include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "SoundManager.h"
 #include "GameInterface.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noGranite.h"
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_STONEMASON, pos, player, workplace)
@@ -43,14 +43,13 @@ void nofStonemason::DrawWorking(DrawPoint drawPt)
 
     // Stein hauen
     LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-    ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+      ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     if(now_id % 8 == 5)
     {
         SOUNDMANAGER.PlayNOSound(56, this, now_id);
         was_sounding = true;
     }
-
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -79,8 +78,7 @@ void nofStonemason::WorkFinished()
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
         gwg->RecalcBQAroundPoint(pos);
-    }
-    else
+    } else
         // ansonsten wird er um 1 kleiner
         gwg->GetSpecObj<noGranite>(pos)->Hew();
 
@@ -94,4 +92,3 @@ nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt) cons
     // An dieser Position muss es nur Stein geben
     return ((gwg->GetNO(pt)->GetType() == NOP_GRANITE) ? PQ_CLASS1 : PQ_NOTPOSSIBLE);
 }
-

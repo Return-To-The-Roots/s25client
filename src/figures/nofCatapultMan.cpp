@@ -17,25 +17,26 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofCatapultMan.h"
-#include "Random.h"
+#include "CatapultStone.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "Random.h"
+#include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
-#include "CatapultStone.h"
-#include "world/GameWorldGame.h"
-#include "gameData/MapConsts.h"
-#include "gameData/JobConsts.h"
-#include "SerializedGameData.h"
-#include "EventManager.h"
-#include "Loader.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
+#include "gameData/JobConsts.h"
+#include "gameData/MapConsts.h"
 #include "libutil/src/colors.h"
 
 const DrawPointInit STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
-{}
+{
+}
 
 void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData& sgd) const
 {
@@ -43,22 +44,15 @@ void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData
     sgd.PushUnsignedInt(distance);
 }
 
-nofCatapultMan::nofCatapultMan(const MapPoint pos,
-                               const unsigned char player,
-                               nobUsual* workplace)
-    : nofBuildingWorker(JOB_HELPER, pos, player, workplace),
-      wheel_steps(0)
+nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, nobUsual* workplace)
+    : nofBuildingWorker(JOB_HELPER, pos, player, workplace), wheel_steps(0)
 {
 }
 
-nofCatapultMan::nofCatapultMan(SerializedGameData& sgd,
-                               const unsigned obj_id)
-    : nofBuildingWorker(sgd, obj_id),
-      wheel_steps( sgd.PopSignedInt() ), target( sgd )
+nofCatapultMan::nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id)
+    : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.PopSignedInt()), target(sgd)
 {
-
 }
-
 
 void nofCatapultMan::Serialize_nofCatapultMan(SerializedGameData& sgd) const
 {
@@ -68,11 +62,9 @@ void nofCatapultMan::Serialize_nofCatapultMan(SerializedGameData& sgd) const
     target.Serialize_PossibleTarget(sgd);
 }
 
-
 void nofCatapultMan::WalkedDerived()
 {
 }
-
 
 void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 {
@@ -87,18 +79,17 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 
             if(step <= std::abs(wheel_steps))
             {
-
                 if(wheel_steps < 0)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
                 LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->DrawFull(drawPt);
             }
-            //else
+            // else
             //  // Katapult schießend zeichnen
             //  LOADER.GetPlayerImage("rom_bobs", 1787+(7+wheel_steps)%6)->Draw(x-7,y-19);
-
-        } break;
+        }
+        break;
         case STATE_CATAPULT_BACKOFF:
         {
             int step = GAMECLIENT.Interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
@@ -116,18 +107,16 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
                 LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->DrawFull(drawPt);
             }
-
-        } break;
-
+        }
+        break;
     }
 }
 
-void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
+void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
@@ -143,7 +132,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
                     if(gwg->GetNode((*it)->GetPos()).fow[player].visibility == VIS_VISIBLE
-                            && !static_cast<nobMilitary*>((*it))->IsNewBuilt())
+                       && !static_cast<nobMilitary*>((*it))->IsNewBuilt())
                     {
                         // Entfernung ausrechnen
                         unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
@@ -180,7 +169,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
             {
                 distX = target.pos.x - pos.x;
                 targetIsRight = true;
-            }else
+            } else
             {
                 distX = pos.x - target.pos.x;
                 targetIsRight = false;
@@ -199,7 +188,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
             {
                 distY = target.pos.y - pos.y;
                 targetIsDown = true;
-            }else
+            } else
             {
                 distY = pos.y - target.pos.y;
                 targetIsDown = false;
@@ -237,8 +226,8 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
 
             // wir arbeiten
             workplace->is_working = true;
-
-        } break;
+        }
+        break;
         case STATE_CATAPULT_TARGETBUILDING:
         {
             // Stein in Bewegung setzen
@@ -256,8 +245,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
             {
                 // Soll getroffen werden --> Aufschlagskoordinaten gleich dem eigentlichem Ziel
                 destMap = target.pos;
-            }
-            else
+            } else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
                 unsigned d = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
@@ -303,7 +291,8 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
             current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = STATE_CATAPULT_BACKOFF;
-        } break;
+        }
+        break;
         case STATE_CATAPULT_BACKOFF:
         {
             current_ev = 0;
@@ -311,12 +300,11 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned  /*id*/)
             workplace->is_working = false;
             // Wieder versuchen, zu arbeiten
             TryToWork();
-
-        } break;
+        }
+        break;
     }
 }
 
 void nofCatapultMan::WorkAborted()
 {
 }
-

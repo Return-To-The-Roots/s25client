@@ -19,39 +19,37 @@
 
 #include "FindPathForRoad.h"
 #include "pathfinding/FreePathFinderImpl.h"
+#include "pathfinding/PathConditionRoad.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
-#include "pathfinding/PathConditionRoad.h"
 
-namespace
+namespace {
+/// Trait to get the world out of a GameWorldBase or GameWorldViewer class
+template<class T_WorldOrViewer>
+struct GetWorld
 {
-    /// Trait to get the world out of a GameWorldBase or GameWorldViewer class
-    template<class T_WorldOrViewer>
-    struct GetWorld
-    {
-        static const GameWorldBase& get(const T_WorldOrViewer& world){ return world; }
-    };
-    template<>
-    struct GetWorld<GameWorldViewer>
-    {
-        static const GameWorldBase& get(const GameWorldViewer& gwv){ return gwv.GetWorld(); }
-    };
+    static const GameWorldBase& get(const T_WorldOrViewer& world) { return world; }
+};
+template<>
+struct GetWorld<GameWorldViewer>
+{
+    static const GameWorldBase& get(const GameWorldViewer& gwv) { return gwv.GetWorld(); }
+};
+} // namespace
+
+namespace detail {
+
+template<class T_WorldOrViewer>
+std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt, bool isBoatRoad,
+                                       unsigned maxLen)
+{
+    RTTR_Assert(startPt != endPt);
+    std::vector<Direction> road;
+    GetWorld<T_WorldOrViewer>::get(world).GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, &road, NULL, NULL,
+                                                                       PathConditionRoad<T_WorldOrViewer>(world, isBoatRoad));
+    return road;
 }
 
-namespace detail{
-
-    template<class T_WorldOrViewer>
-    std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt, bool isBoatRoad, unsigned maxLen)
-    {
-        RTTR_Assert(startPt != endPt);
-        std::vector<Direction> road;
-        GetWorld<T_WorldOrViewer>::get(world).GetFreePathFinder().
-            FindPath(startPt, endPt, false, maxLen, &road, NULL, NULL, PathConditionRoad<T_WorldOrViewer>(world, isBoatRoad));
-        return road;
-    }
-
-    template
-        std::vector<Direction> FindPathForRoad(const GameWorldBase&, const MapPoint, const MapPoint, bool, unsigned);
-    template
-        std::vector<Direction> FindPathForRoad(const GameWorldViewer&, const MapPoint, const MapPoint, bool, unsigned);
-}
+template std::vector<Direction> FindPathForRoad(const GameWorldBase&, const MapPoint, const MapPoint, bool, unsigned);
+template std::vector<Direction> FindPathForRoad(const GameWorldViewer&, const MapPoint, const MapPoint, bool, unsigned);
+} // namespace detail

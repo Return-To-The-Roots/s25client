@@ -19,39 +19,26 @@
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/VertexUtility.h"
 
-AreaDesc::AreaDesc(){}
-
-AreaDesc::AreaDesc(Point<double> center,
-                   double minDist,
-                   double maxDist,
-                   double pHill,
-                   unsigned pTree,
-                   unsigned pStone,
-                   unsigned minZ,
-                   unsigned maxZ,
-                   int minPlayerDist,
-                   int maxPlayerDist)
-    : center(center),
-      minDistance(minDist), maxDistance(maxDist),
-      likelyhoodHill(pHill), likelyhoodTree(pTree), likelyhoodStone(pStone),
-      minElevation(minZ), maxElevation(maxZ),
-      minPlayerDistance(minPlayerDist), maxPlayerDistance(maxPlayerDist)
+AreaDesc::AreaDesc()
 {
-    
+}
+
+AreaDesc::AreaDesc(Point<double> center, double minDist, double maxDist, double pHill, unsigned pTree, unsigned pStone, unsigned minZ,
+                   unsigned maxZ, int minPlayerDist, int maxPlayerDist)
+    : center(center), minDistance(minDist), maxDistance(maxDist), likelyhoodHill(pHill), likelyhoodTree(pTree), likelyhoodStone(pStone),
+      minElevation(minZ), maxElevation(maxZ), minPlayerDistance(minPlayerDist), maxPlayerDistance(maxPlayerDist)
+{
 }
 
 bool AreaDesc::IsInArea(const Position& point, double playerDistance, const MapExtent& size)
 {
     Position tile(size * center);
     double distance = VertexUtility::Distance(point, tile, size) / min(size.x / 2, size.y / 2);
-    
-    if (maxPlayerDistance <= 0)
+
+    if(maxPlayerDistance <= 0)
     {
         return playerDistance >= minPlayerDistance && distance >= minDistance && distance < maxDistance;
     }
-        
-    return playerDistance >= minPlayerDistance
-        && playerDistance < maxPlayerDistance
-        && distance >= minDistance
-        && distance < maxDistance;
+
+    return playerDistance >= minPlayerDistance && playerDistance < maxPlayerDistance && distance >= minDistance && distance < maxDistance;
 }

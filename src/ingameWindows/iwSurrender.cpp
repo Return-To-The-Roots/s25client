@@ -17,21 +17,20 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwSurrender.h"
-#include "Loader.h"
 #include "GameClient.h"
+#include "Loader.h"
 #include "gameData/const_gui_ids.h"
 
 iwSurrender::iwSurrender()
     : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, Extent(240, 100), _("Surrender game?"), LOADER.GetImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0, DrawPoint( 85, 24), Extent(68, 57), TC_GREEN2, LOADER.GetImageN("io", 32), _("Surrender"));
+    AddImageButton(0, DrawPoint(85, 24), Extent(68, 57), TC_GREEN2, LOADER.GetImageN("io", 32), _("Surrender"));
     // Ok + Abbrennen
-    AddImageButton(2, DrawPoint( 16, 24), Extent(68, 57), TC_GREEN2, LOADER.GetImageN("io", 23), _("Destroy all buildings and surrender"));
+    AddImageButton(2, DrawPoint(16, 24), Extent(68, 57), TC_GREEN2, LOADER.GetImageN("io", 23), _("Destroy all buildings and surrender"));
     // Abbrechen
-    AddImageButton(1, DrawPoint( 158, 24), Extent(68, 57), TC_RED1, LOADER.GetImageN("io", 40), _("Don't surrender"));
+    AddImageButton(1, DrawPoint(158, 24), Extent(68, 57), TC_RED1, LOADER.GetImageN("io", 40), _("Don't surrender"));
 }
-
 
 void iwSurrender::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -41,15 +40,18 @@ void iwSurrender::Msg_ButtonClick(const unsigned ctrl_id)
         {
             GAMECLIENT.Surrender();
             Close();
-        } break;
+        }
+        break;
         case 1: // Abbrechen
         {
             Close();
-        } break;
+        }
+        break;
         case 2: // OK + Alles abbrennen
         {
             GAMECLIENT.DestroyAll();
             Close();
-        } break;
+        }
+        break;
     }
 }

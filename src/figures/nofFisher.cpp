@@ -18,16 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofFisher.h"
 
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "Random.h"
-#include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
-#include "pathfinding/PathConditionHuman.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "SoundManager.h"
 #include "addons/const_addons.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "pathfinding/PathConditionHuman.h"
+#include "world/GameWorldGame.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)
@@ -42,9 +42,8 @@ void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
     sgd.PushBool(successful);
 }
 
-nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    fishing_dir(sgd.PopUnsignedChar()),
-    successful(sgd.PopBool())
+nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
+    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.PopUnsignedChar()), successful(sgd.PopBool())
 {
 }
 
@@ -67,13 +66,11 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
             SOUNDMANAGER.PlayNOSound(62, this, 0);
             was_sounding = true;
         }
-    }
-    else if(id < 216)
+    } else if(id < 216)
     {
         // Angel im Wasser hängen lassen und warten
         draw_id = 1590 + 8 * ((fishing_dir + 3) % 6) + (id % 8);
-    }
-    else
+    } else
     {
         // Angel wieder rausholn
         if(successful)
@@ -124,8 +121,6 @@ void nofFisher::WorkStarted()
     successful = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 100) < probability);
 }
 
-
-
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofFisher::WorkFinished()
 {
@@ -135,8 +130,7 @@ void nofFisher::WorkFinished()
         if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
             gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
         ware = GD_FISH;
-    }
-    else
+    } else
         ware = GD_NOTHING;
 }
 
@@ -150,11 +144,9 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
     // irgendwo drumherum muss es Fisch geben
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, i)).resources > 0x80 &&
-                gwg->GetNode(gwg->GetNeighbour(pt, i)).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pt, i)).resources > 0x80 && gwg->GetNode(gwg->GetNeighbour(pt, i)).resources < 0x90)
             return PQ_CLASS1;
     }
 
     return PQ_NOTPOSSIBLE;
 }
-

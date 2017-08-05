@@ -18,22 +18,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlBuildingIcon.h"
 #include "Loader.h"
+#include "files.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
-#include "ogl/glArchivItem_Bitmap.h"
-#include "files.h"
 #include <string>
 
-ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent,
-                                   const unsigned id,
-                                   const DrawPoint& pos,
-                                   const BuildingType type,
-                                   const Nation nation,
-                                   const unsigned short size,
-                                   const std::string& tooltip)
-    : ctrlButton(parent, id, pos, Extent(size, size), TC_GREY, tooltip),
-      type(type), nation(nation)
-{}
+ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, const DrawPoint& pos, const BuildingType type,
+                                   const Nation nation, const unsigned short size, const std::string& tooltip)
+    : ctrlButton(parent, id, pos, Extent(size, size), TC_GREY, tooltip), type(type), nation(nation)
+{
+}
 
 /**
  *  zeichnet das Fenster.
@@ -45,15 +40,14 @@ void ctrlBuildingIcon::Draw_()
 
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
         LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
-	glArchivItem_Bitmap* image;
-	if(type!=BLD_CHARBURNER)
-		image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
-	else
-		image = LOADER.GetImageN("charburner", nation*8+8);
+    glArchivItem_Bitmap* image;
+    if(type != BLD_CHARBURNER)
+        image = LOADER.GetImageN(NATION_ICON_IDS[nation], type);
+    else
+        image = LOADER.GetImageN("charburner", nation * 8 + 8);
     if(image)
         image->DrawFull(GetDrawPos() + GetSize() / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
 }
-
 
 void ctrlBuildingIcon::DrawContent() const
 {

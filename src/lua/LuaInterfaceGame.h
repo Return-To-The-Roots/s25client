@@ -27,9 +27,9 @@ class LuaPlayer;
 class LuaWorld;
 class Serializer;
 
-class LuaInterfaceGame: public LuaInterfaceBase{
+class LuaInterfaceGame : public LuaInterfaceBase
+{
 public:
-
     LuaInterfaceGame(GameWorldGame& gw);
     virtual ~LuaInterfaceGame();
 

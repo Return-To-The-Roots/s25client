@@ -25,18 +25,17 @@
 
 class SerializedGameData;
 
-class GameWorld: public GameWorldGame
+class GameWorld : public GameWorldGame
 {
-    public:
+public:
+    GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
 
-        GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em);
+    /// Lädt eine Karte
+    bool LoadMap(const std::string& mapFilePath, const std::string& luaFilePath);
 
-        /// Lädt eine Karte
-        bool LoadMap(const std::string& mapFilePath, const std::string& luaFilePath);
-
-        /// Serialisiert den gesamten GameWorld
-        void Serialize(SerializedGameData& sgd) const;
-        void Deserialize(SerializedGameData& sgd);
+    /// Serialisiert den gesamten GameWorld
+    void Serialize(SerializedGameData& sgd) const;
+    void Deserialize(SerializedGameData& sgd);
 };
 
 #endif // GameWorld_h__

@@ -20,11 +20,6 @@
 
 #include <boost/core/scoped_enum.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect)
-{
-    Fanfare,
-    Pidgeon
-}
-BOOST_SCOPED_ENUM_DECLARE_END(SoundEffect)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(SoundEffect){Fanfare, Pidgeon} BOOST_SCOPED_ENUM_DECLARE_END(SoundEffect)
 
 #endif // SoundEffect_h__

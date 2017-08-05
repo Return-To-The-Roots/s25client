@@ -27,30 +27,30 @@ class nobUsual;
 class nofMetalworker : public nofWorkman
 {
     GoodType nextProducedTool;
-    protected:
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
-        /// Returns the next tool to be produced according to the orders
-        GoodType GetOrderedTool();
-        /// Returns a random tool according to the priorities
-        GoodType GetRandomTool();
-        
-        unsigned ToolsOrderedTotal() const;
 
-        bool ReadyForWork() override;
+protected:
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
+    /// Returns the next tool to be produced according to the orders
+    GoodType GetOrderedTool();
+    /// Returns a random tool according to the priorities
+    GoodType GetRandomTool();
 
-    public:
+    unsigned ToolsOrderedTotal() const;
 
-        nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
-        void Serialize(SerializedGameData& sgd) const override;
+    bool ReadyForWork() override;
 
-        GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
-        void HandleDerivedEvent(const unsigned id) override;
+public:
+    nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofMetalworker(SerializedGameData& sgd, const unsigned obj_id);
+    void Serialize(SerializedGameData& sgd) const override;
+
+    GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
+    void HandleDerivedEvent(const unsigned id) override;
 };
 
 #endif

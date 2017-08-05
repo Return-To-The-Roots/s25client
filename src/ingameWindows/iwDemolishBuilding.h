@@ -27,18 +27,16 @@ class noBaseBuilding;
 /// Fenster, welches eine Sicherheitsabfrage vor dem Abreißen eines Gebäudes durchführt
 class iwDemolishBuilding : public IngameWindow
 {
-        GameWorldView& gwv;
-        const noBaseBuilding* building;
-        const bool flag;
+    GameWorldView& gwv;
+    const noBaseBuilding* building;
+    const bool flag;
 
-    public:
+public:
+    iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag = false);
 
-        iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding* building, const bool flag = false);
-
-    private:
-
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_PaintBefore() override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
 };
 
 #endif // !iwDEMOLISHBUILDING_H_INCLUDED

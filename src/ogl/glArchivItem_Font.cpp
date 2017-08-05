@@ -17,16 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Font.h"
-#include "Settings.h"
 #include "ExtensionList.h"
+#include "Loader.h"
+#include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
-#include "Loader.h"
 #include "libutil/src/Log.h"
 
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
-#include "libsiedler2/src/libsiedler2.h"
 #include "libsiedler2/src/IAllocator.h"
+#include "libsiedler2/src/libsiedler2.h"
 #include "libutil/utf8/utf8.h"
 #include <boost/algorithm/string.hpp>
 #include <cmath>
@@ -35,7 +35,6 @@
 //#define RTTR_PRINT_FONTS
 
 typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
-
 
 template<typename T>
 struct GetNextCharAndIncIt;
@@ -63,10 +62,7 @@ struct GetNextCharAndIncIt<char>
 template<class T_Iterator>
 struct Distance
 {
-    size_t operator()(const T_Iterator& first, const T_Iterator& last) const
-    {
-        return std::distance(first, last);
-    }
+    size_t operator()(const T_Iterator& first, const T_Iterator& last) const { return std::distance(first, last); }
 };
 
 template<class T_Iterator>
@@ -87,7 +83,7 @@ T_Iterator nextIt(T_Iterator it, typename std::iterator_traits<T_Iterator>::diff
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
+glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj) : ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
 {
     if(obj.fontNoOutline)
         fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
@@ -107,8 +103,8 @@ inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigne
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices,
-    DrawPoint& curPos, const Point<float>& texSize) const
+inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices, DrawPoint& curPos,
+                                        const Point<float>& texSize) const
 {
     CharInfo ci = GetCharInfo(curChar);
 
@@ -152,13 +148,8 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F
 /**
  *  @brief
  */
-void glArchivItem_Font::Draw(DrawPoint pos,
-                             const ucString& wtext,
-                             unsigned format,
-                             unsigned color,
-                             unsigned short length,
-                             unsigned short max,
-                             const ucString& wend)
+void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color, unsigned short length,
+                             unsigned short max, const ucString& wend)
 {
     // etwas dämlich, aber einfach ;)
     // da wir hier erstmal in utf8 konvertieren, und dann im anderen Draw wieder zurück ...
@@ -185,13 +176,8 @@ void glArchivItem_Font::Draw(DrawPoint pos,
  *  @param[in] max    maximale Länge
  *  @param     end    Suffix for displaying a truncation of the text (...)
  */
-void glArchivItem_Font::Draw(DrawPoint pos,
-                             const std::string& textIn,
-                             unsigned format,
-                             unsigned color,
-                             unsigned short length,
-                             unsigned short max,
-                             const std::string& end)
+void glArchivItem_Font::Draw(DrawPoint pos, const std::string& textIn, unsigned format, unsigned color, unsigned short length,
+                             unsigned short max, const std::string& end)
 {
     if(!fontNoOutline)
         initFont();
@@ -236,15 +222,15 @@ void glArchivItem_Font::Draw(DrawPoint pos,
     std::string::iterator itEnd = text.begin();
     std::advance(itEnd, maxNumChars);
 
-    if( (format & 3) == DF_RIGHT)
+    if((format & 3) == DF_RIGHT)
         pos.x -= textWidth;
-    if( (format & 12) == DF_BOTTOM)
+    if((format & 12) == DF_BOTTOM)
         pos.y -= dy;
-    else if( (format & 12) == DF_VCENTER)
+    else if((format & 12) == DF_VCENTER)
         pos.y -= dy / 2;
 
     DrawPoint curPos(pos);
-    if( (format & 3) == DF_CENTER)
+    if((format & 3) == DF_CENTER)
     {
         unsigned short line_width;
         std::string::iterator itNl = std::find(text.begin(), itEnd, '\n');
@@ -261,25 +247,23 @@ void glArchivItem_Font::Draw(DrawPoint pos,
     glArchivItem_Bitmap& usedFont = ((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
     unsigned texture = usedFont.GetTexture();
     const Point<float> texSize(usedFont.GetTexSize());
-    
+
     for(std::string::iterator it = text.begin(); it != itEnd;)
     {
         const uint32_t curChar = utf8::next(it, text.end());
         if(curChar == '\n')
         {
-            if( (format & 3) == DF_CENTER)
+            if((format & 3) == DF_CENTER)
             {
                 unsigned short line_width;
                 std::string::iterator itNext = nextIt(it);
                 std::string::iterator itNl = std::find(itNext, itEnd, '\n');
                 line_width = getWidthInternal(itNext, itNl);
                 curPos.x = pos.x - line_width / 2;
-            }
-            else
+            } else
                 curPos.x = pos.x;
             curPos.y += dy;
-        }
-        else
+        } else
             DrawChar(curChar, texList, curPos, texSize);
     }
 
@@ -375,7 +359,7 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsign
     unsigned width = getWidth(text);
     unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
     Rect result(Point<int>(pos), width, numLines * getHeight());
-    Point<int> offset(0,0);
+    Point<int> offset(0, 0);
     if((format & 3) == DF_RIGHT)
         offset.x = width;
     else if((format & 3) == DF_CENTER)
@@ -421,13 +405,14 @@ std::vector<std::string> glArchivItem_Font::WrapInfo::CreateSingleStrings(const 
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
  */
-glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width)
+glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& text, const unsigned short primary_width,
+                                                           const unsigned short secondary_width)
 {
     if(!fontNoOutline)
         initFont();
 
     RTTR_Assert(isValidUTF8(text)); // Can only handle UTF-8 strings!
-    
+
     // Current line width
     unsigned line_width = 0;
     // Width of current word
@@ -453,7 +438,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
             // Is the current word to long for the current line
             if(word_width + line_width > ((wi.positions.size() == 1) ? primary_width : secondary_width))
             {
-                // Word does not fit -> Start new line 
+                // Word does not fit -> Start new line
 
                 // Can we fit the word in one line?
                 if(word_width <= secondary_width)
@@ -493,7 +478,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                 line_width += word_width + spaceWidth;
                 word_width = 0;
                 itWordStart = nextIt(it);
-            }else if(curChar == '\n')
+            } else if(curChar == '\n')
             {
                 // If line break add new line (after all the word-breaking above)
                 itWordStart = nextIt(it);
@@ -503,8 +488,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
                 line_width = 0;
                 wi.positions.push_back(static_cast<unsigned>(itWordStart.base() - text.begin()));
             }
-        }
-        else
+        } else
         {
             // Some char -> Add its width
             word_width += CharWidth(curChar);
@@ -544,7 +528,7 @@ void glArchivItem_Font::initFont()
     BOOST_CONSTEXPR_OR_CONST Extent spacing(1, 1);
     Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
     std::vector<unsigned char> bufferWithOutline(texSize.x * texSize.y * 4); // RGBA Puffer für alle Buchstaben
-    std::vector<unsigned char> bufferNoOutline(texSize.x * texSize.y * 4); // RGBA Puffer für alle Buchstaben
+    std::vector<unsigned char> bufferNoOutline(texSize.x * texSize.y * 4);   // RGBA Puffer für alle Buchstaben
 
     libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
     Position curPos(spacing);
@@ -562,7 +546,8 @@ void glArchivItem_Font::initFont()
         }
 
         // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
-        c->print(&bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
+        c->print(&bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0,
+                 true);
         c->print(&bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y);
 
         CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));

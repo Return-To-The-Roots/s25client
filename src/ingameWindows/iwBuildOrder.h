@@ -25,24 +25,23 @@ class GameWorldViewer;
 
 class iwBuildOrder : public IngameWindow
 {
-        const GameWorldViewer& gwv;
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
-    public:
+    const GameWorldViewer& gwv;
+    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+    bool settings_changed;
 
-        iwBuildOrder(const GameWorldViewer& gwv);
-        ~iwBuildOrder() override;
+public:
+    iwBuildOrder(const GameWorldViewer& gwv);
+    ~iwBuildOrder() override;
 
-    private:
+private:
+    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    void UpdateSettings();
+    /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+    void TransmitSettings();
 
-        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-        void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-        void TransmitSettings();
-
-        void Msg_Timer(const unsigned ctrl_id) override;
-        void Msg_ListSelectItem(const unsigned ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ListSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

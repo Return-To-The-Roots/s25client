@@ -18,36 +18,42 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskTest.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "animation/BlinkButtonAnim.h"
 #include "animation/MoveAnimation.h"
-#include "desktops/dskMainMenu.h"
 #include "controls/ctrlButton.h"
+#include "desktops/dskMainMenu.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/src/colors.h"
 #include <boost/foreach.hpp>
 
-namespace{
-    enum{
-        ID_txtTitle = dskMenuBase::ID_FIRST_FREE,
-        ID_grpBtStart,
-        ID_grpBtEnd = ID_grpBtStart + 5 * 4,
-        ID_btDisable,
-        ID_btAniBg, ID_btAni,
-        ID_btAnimate, ID_btAnimateRepeat, ID_btAnimateOscillate,
-        ID_btBack
-    };
+namespace {
+enum
+{
+    ID_txtTitle = dskMenuBase::ID_FIRST_FREE,
+    ID_grpBtStart,
+    ID_grpBtEnd = ID_grpBtStart + 5 * 4,
+    ID_btDisable,
+    ID_btAniBg,
+    ID_btAni,
+    ID_btAnimate,
+    ID_btAnimateRepeat,
+    ID_btAnimateOscillate,
+    ID_btBack
+};
 }
 
 dskTest::dskTest()
 {
-    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, glArchivItem_Font::DF_CENTER, LargeFont);
-    boost::array<TextureColor, 4> textures = { { TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY } };
-    boost::array<std::string, 4> labels = { { "Green1", "Green2", "Red1", "Grey" } };
+    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, glArchivItem_Font::DF_CENTER,
+            LargeFont);
+    boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
+    boost::array<std::string, 4> labels = {{"Green1", "Green2", "Red1", "Grey"}};
     unsigned yPos = 50;
     unsigned curId = ID_grpBtStart;
-    for(unsigned i = 0; i < textures.size(); i++){
+    for(unsigned i = 0; i < textures.size(); i++)
+    {
         AddText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
         ctrlButton* bt;
         bt = AddTextButton(curId + 1, DrawPoint(120, yPos), Extent(95, 22), textures[i], "Nothing", NormalFont);
@@ -87,9 +93,7 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack:
-            WINDOWMANAGER.Switch(new dskMainMenu);
-            break;
+        case ID_btBack: WINDOWMANAGER.Switch(new dskMainMenu); break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
@@ -124,4 +128,3 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
         }
     }
 }
-

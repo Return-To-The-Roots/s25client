@@ -23,7 +23,7 @@
 class ctrlButton;
 
 /// Animation which makes a button blink (toggle illuminated)
-class BlinkButtonAnim: public ToggleAnimation<ctrlButton>
+class BlinkButtonAnim : public ToggleAnimation<ctrlButton>
 {
 public:
     BlinkButtonAnim(ctrlButton* element, bool startValue = true, unsigned frameRate = 500, RepeatType repeat = Animation::RPT_Repeat);

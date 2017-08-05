@@ -18,19 +18,19 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofHunter.h"
 
-#include "nodeObjs/noAnimal.h"
-#include "Random.h"
-#include "buildings/nobUsual.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
 #include "Loader.h"
+#include "Random.h"
+#include "SerializedGameData.h"
+#include "SoundManager.h"
+#include "buildings/nobUsual.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "SoundManager.h"
-#include "SerializedGameData.h"
-#include "EventManager.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noAnimal.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include <stdexcept>
@@ -62,7 +62,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
         animal = sgd.PopObject<noAnimal>(GOT_ANIMAL);
         shootingPos = sgd.PopMapPoint();
         shooting_dir = Direction::fromInt(sgd.PopUnsignedChar());
-    }else
+    } else
     {
         animal = NULL;
         shootingPos = MapPoint::Invalid();
@@ -73,8 +73,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
 {
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case STATE_HUNTER_SHOOTING:
         {
             if(shooting_dir == Direction::EAST)
@@ -88,11 +87,11 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
                     SOUNDMANAGER.PlayNOSound(74, this, 0);
                     was_sounding = true;
                 }
-            }
-            else
+            } else
             {
                 unsigned short id = GAMECLIENT.Interpolate(8, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 1686 + (shooting_dir + 2u).toUInt() * 8 + id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+                LOADER.GetPlayerImage("rom_bobs", 1686 + (shooting_dir + 2u).toUInt() * 8 + id)
+                  ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
                 if(id == 7)
                 {
@@ -102,19 +101,23 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             }
 
             DrawShadow(drawPt, 0, shooting_dir);
-
-        } break;
+        }
+        break;
         case STATE_HUNTER_EVISCERATING:
         {
             unsigned short id = GAMECLIENT.Interpolate(45, current_ev);
             unsigned short draw_id;
 
-            if(id < 4) draw_id = 232 + id;
-            else if(id < 36) draw_id = 236 + (id - 4) % 8;
-            else draw_id = 244 + id - 36;
+            if(id < 4)
+                draw_id = 232 + id;
+            else if(id < 36)
+                draw_id = 236 + (id - 4) % 8;
+            else
+                draw_id = 244 + id - 36;
 
             LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
-        } break;
+        }
+        break;
     }
 }
 
@@ -122,21 +125,20 @@ void nofHunter::HandleDerivedEvent(const unsigned id)
 {
     switch(state)
     {
-        default:
-            break;
+        default: break;
         case STATE_WAITING1:
         {
             // Fertig mit warten --> anfangen zu arbeiten
             TryStartHunting();
-        } break;
+        }
+        break;
         case STATE_HUNTER_FINDINGSHOOTINGPOINT:
             if(id == 2)
                 HandleStateFindingShootingPoint();
             break;
-        case STATE_HUNTER_SHOOTING:
-        {
-            HandleStateShooting();
-        } break;
+        case STATE_HUNTER_SHOOTING: { HandleStateShooting();
+        }
+        break;
         case STATE_HUNTER_EVISCERATING:
         {
             HandleStateEviscerating();
@@ -147,7 +149,8 @@ void nofHunter::HandleDerivedEvent(const unsigned id)
                 SOUNDMANAGER.WorkingFinished(this);
                 was_sounding = false;
             }
-        } break;
+        }
+        break;
     }
 }
 
@@ -187,8 +190,6 @@ void nofHunter::TryStartHunting()
         }
     }
 
-
-
     // Gibt es überhaupt ein Tier, das ich jagen kann?
     if(!available_animals.empty())
     {
@@ -208,12 +209,12 @@ void nofHunter::TryStartHunting()
         StartWalking(Direction::SOUTHEAST);
 
         StopNotWorking();
-    }
-    else
+    } else
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-        gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
+        gwg->GetNotifications().publish(
+          BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
         StartNotWorking();
     }
 
@@ -224,24 +225,19 @@ void nofHunter::WalkedDerived()
 {
     switch(state)
     {
-        default:
-            break;
-        case STATE_HUNTER_CHASING:
-        {
-            HandleStateChasing();
-        } break;
-        case STATE_HUNTER_FINDINGSHOOTINGPOINT:
-        {
-            HandleStateFindingShootingPoint();
-        } break;
-        case STATE_HUNTER_WALKINGTOCADAVER:
-        {
-            HandleStateWalkingToCadaver();
-        } break;
-        case STATE_WALKINGHOME:
-        {
-            WalkHome();
-        } break;
+        default: break;
+        case STATE_HUNTER_CHASING: { HandleStateChasing();
+        }
+        break;
+        case STATE_HUNTER_FINDINGSHOOTINGPOINT: { HandleStateFindingShootingPoint();
+        }
+        break;
+        case STATE_HUNTER_WALKINGTOCADAVER: { HandleStateWalkingToCadaver();
+        }
+        break;
+        case STATE_WALKINGHOME: { WalkHome();
+        }
+        break;
     }
 }
 
@@ -293,8 +289,7 @@ void nofHunter::HandleStateChasing()
                     delta.x = -2;
                     delta.y = 4;
                     break;
-                default:
-                    throw std::logic_error("Wrong value?");
+                default: throw std::logic_error("Wrong value?");
             }
 
             MapPoint curShootingPos = gwg->MakeMapPoint(animalPos + delta);
@@ -305,7 +300,6 @@ void nofHunter::HandleStateChasing()
             }
         }
 
-
         // Wurde ein Punkt gefunden?
         if(shootingPos.isValid())
         {
@@ -314,16 +308,14 @@ void nofHunter::HandleStateChasing()
             // dorthingehen
             state = STATE_HUNTER_FINDINGSHOOTINGPOINT;
             HandleStateFindingShootingPoint();
-        }
-        else
+        } else
         {
             // kein Punkt gefunden --> nach Hause gehen
             StartWalkingHome();
             WalkHome();
         }
 
-    }
-    else
+    } else
     {
         // Weg dorthin suchen
         unsigned char dir = gwg->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE);
@@ -331,8 +323,7 @@ void nofHunter::HandleStateChasing()
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(Direction::fromInt(dir));
-        }
-        else
+        } else
         {
             // kein Weg gefunden --> nach Hause laufen
             StartWalkingHome();
@@ -352,7 +343,7 @@ void nofHunter::HandleStateFindingShootingPoint()
             // fire!
             state = STATE_HUNTER_SHOOTING;
             current_ev = GetEvMgr().AddEvent(this, 16, 1);
-        }else if(animal->IsGettingReadyForShooting())
+        } else if(animal->IsGettingReadyForShooting())
             current_ev = GetEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
         else
         {
@@ -360,8 +351,7 @@ void nofHunter::HandleStateFindingShootingPoint()
             StartWalkingHome();
             WalkHome();
         }
-    }
-    else
+    } else
     {
         // Weg dorthin suchen
         unsigned char dir = gwg->FindHumanPath(pos, shootingPos, 6);
@@ -369,8 +359,7 @@ void nofHunter::HandleStateFindingShootingPoint()
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(Direction::fromInt(dir));
-        }
-        else
+        } else
         {
             // kein Weg gefunden --> nach Hause laufen
             StartWalkingHome();
@@ -396,8 +385,7 @@ void nofHunter::HandleStateWalkingToCadaver()
         // dann ausnehmen
         state = STATE_HUNTER_EVISCERATING;
         current_ev = GetEvMgr().AddEvent(this, 80, 1);
-    }
-    else
+    } else
     {
         // Weg dorthin suchen
         unsigned char dir = gwg->FindHumanPath(pos, animal->GetPos(), 6);
@@ -405,8 +393,7 @@ void nofHunter::HandleStateWalkingToCadaver()
         {
             // Weg gefunden, dann hinlaufen
             StartWalking(Direction::fromInt(dir));
-        }
-        else
+        } else
         {
             // kein Weg gefunden --> nach Hause laufen
             StartWalkingHome();
@@ -429,7 +416,6 @@ void nofHunter::HandleStateEviscerating()
     StartWalkingHome();
     WalkHome();
 }
-
 
 void nofHunter::StartWalkingHome()
 {
@@ -463,8 +449,7 @@ void nofHunter::WalkHome()
         AbrogateWorkplace();
         StartWandering();
         Wander();
-    }
-    else
+    } else
     {
         // Alles ok, wir können hinlaufen
         StartWalking(Direction::fromInt(dir));
@@ -477,15 +462,15 @@ void nofHunter::AnimalLost()
 
     switch(state)
     {
-        default:
-            return;
+        default: return;
         case STATE_HUNTER_CHASING:
         case STATE_HUNTER_FINDINGSHOOTINGPOINT:
         case STATE_HUNTER_WALKINGTOCADAVER:
         {
             // nach Haue laufen
             StartWalkingHome();
-        } break;
+        }
+        break;
         case STATE_HUNTER_SHOOTING:
         case STATE_HUNTER_EVISCERATING:
         {
@@ -494,7 +479,8 @@ void nofHunter::AnimalLost()
             // Nach Hause laufen
             StartWalkingHome();
             WalkHome();
-        } break;
+        }
+        break;
     }
 }
 
@@ -510,6 +496,3 @@ void nofHunter::WorkAborted()
         }
     }
 }
-
-
-

@@ -32,6 +32,6 @@ enum Team
 };
 
 /// Anzahl der Team-Optionen
-const unsigned TEAM_COUNT = 6; //teamrandom2,3,4 dont count
+const unsigned TEAM_COUNT = 6; // teamrandom2,3,4 dont count
 
 #endif // TeamTypes_h__

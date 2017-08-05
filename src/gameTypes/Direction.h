@@ -33,13 +33,13 @@ struct Direction
     static BOOST_CONSTEXPR_OR_CONST unsigned COUNT = SOUTHWEST + 1;
 
     Type t_;
-    Direction(): t_(WEST){}
-    Direction(Type t): t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    Direction() : t_(WEST) {}
+    Direction(Type t) : t_(t) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
     /// Convert an UInt safely to a Direction
-    explicit Direction(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
+    explicit Direction(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(t_ >= WEST && static_cast<unsigned>(t_) < COUNT); }
     /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
-    static Direction fromInt(unsigned t){ return Type(t); }
-    static Direction fromInt(int t){ return Type(t); }
+    static Direction fromInt(unsigned t) { return Type(t); }
+    static Direction fromInt(int t) { return Type(t); }
     operator Type() const { return t_; }
     /// Return the Direction as an UInt
     unsigned toUInt() const { return t_; }
@@ -51,14 +51,14 @@ struct Direction
     Direction operator--(int);
     // TODO: Add iterator to iterate over all values from a given value
 private:
-    //prevent automatic conversion for any other built-in types such as bool, int, etc
+    // prevent automatic conversion for any other built-in types such as bool, int, etc
     template<typename T>
     operator T() const;
     // Disallow int operators
     Direction& operator+=(int i);
     Direction& operator-=(int i);
 };
-//-V:Direction:801 
+//-V:Direction:801
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation

@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "SavedFile.h"
+#include "BasePlayerInfo.h"
 #include "RTTR_Version.h"
 #include "libutil/src/BinaryFile.h"
-#include "BasePlayerInfo.h"
 #include "libutil/src/Serializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
@@ -32,7 +32,8 @@ SavedFile::SavedFile() : save_time(0)
 }
 
 SavedFile::~SavedFile()
-{}
+{
+}
 
 void SavedFile::WriteFileHeader(BinaryFile& file)
 {
@@ -70,9 +71,9 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
     uint16_t read_version = file.ReadUnsignedShort();
     if(read_version != GetVersion())
     {
-        boost::format fmt = boost::format((read_version < GetVersion()) ?
-            _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
-            _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
+        boost::format fmt = boost::format(
+          (read_version < GetVersion()) ? _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
+                                          _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
         lastErrorMsg = (fmt % read_version % GetVersion()).str();
         return false;
     }

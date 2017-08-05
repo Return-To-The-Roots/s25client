@@ -22,7 +22,7 @@
 #include "gameTypes/MapCoordinates.h"
 
 /**
- * Descriptor class for specific areas on a random map. Each area describes a particular 
+ * Descriptor class for specific areas on a random map. Each area describes a particular
  * landscape style used for map generation in a particular location.
  */
 struct AreaDesc
@@ -31,7 +31,7 @@ struct AreaDesc
      * Creates a new area description.
      */
     AreaDesc();
-    
+
     /**
      * Creates a new area description.
      * @param center center of the area (unit: 0.0 and 1.0 is the edge of the map)
@@ -45,17 +45,9 @@ struct AreaDesc
      * @param minPlayerDist minimum distance to each player in tiles
      * @param maxPlayerDist maximum distance to each player in tiles (default: -1 means unlimited)
      */
-    AreaDesc(Point<double> center,
-             double minDist,
-             double maxDist,
-             double pHill,
-             unsigned pTree,
-             unsigned pStone,
-             unsigned minZ,
-             unsigned maxZ,
-             int minPlayerDist,
-             int maxPlayerDist = -1);
-    
+    AreaDesc(Point<double> center, double minDist, double maxDist, double pHill, unsigned pTree, unsigned pStone, unsigned minZ,
+             unsigned maxZ, int minPlayerDist, int maxPlayerDist = -1);
+
     /**
      * Center point of the area relative to map width and height.
      */
@@ -72,12 +64,12 @@ struct AreaDesc
      * One unit equals the half of the map length (= min(width, height)).
      */
     double maxDistance;
-    
+
     /**
      * Likelyhood (0.0 - 100.0) to generate a hill on a tile within this area.
      */
     double likelyhoodHill;
-    
+
     /**
      * Likelyhood (0-100) to generate a tree within this area.
      */
@@ -87,17 +79,17 @@ struct AreaDesc
      * Likelyhood (0-100) to generate a pile of stone within this area.
      */
     unsigned likelyhoodStone;
-    
+
     /**
      * Minimum elevation of the area.
      */
     unsigned minElevation;
-    
+
     /**
      * Maximum elevation of the area.
      */
     unsigned maxElevation;
-    
+
     /**
      * Minimum distance of the area to any of the players' headquarters in tiles.
      */
@@ -108,7 +100,7 @@ struct AreaDesc
      * The default is "-1" to ignore maximum distance.
      */
     int maxPlayerDistance;
-    
+
     /**
      * Checks whether ot not the specified point is within this area.
      * @param point the point to check

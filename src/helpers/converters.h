@@ -18,18 +18,19 @@
 #ifndef converters_h__
 #define converters_h__
 
-#include <string>
 #include <sstream>
+#include <string>
 
-namespace helpers{
+namespace helpers {
 
-    template<typename T>
-    inline std::string toString(const T& val){
-        std::stringstream ss;
-        ss << val;
-        return ss.str();
-    }
-
+template<typename T>
+inline std::string toString(const T& val)
+{
+    std::stringstream ss;
+    ss << val;
+    return ss.str();
 }
+
+} // namespace helpers
 
 #endif // converters_h__

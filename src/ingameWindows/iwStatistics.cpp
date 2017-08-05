@@ -18,33 +18,32 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwStatistics.h"
 
-#include "Loader.h"
-#include "Settings.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "Settings.h"
 #include "WindowManager.h"
-#include "iwHelp.h"
+#include "addons/const_addons.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
+#include "iwHelp.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
-#include "addons/const_addons.h"
 #include "gameData/const_gui_ids.h"
 
-iwStatistics::iwStatistics(const GameWorldViewer& gwv):
-    IngameWindow(CGI_STATISTICS, IngameWindow::posAtMouse, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv)
+iwStatistics::iwStatistics(const GameWorldViewer& gwv)
+    : IngameWindow(CGI_STATISTICS, IngameWindow::posAtMouse, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)), gwv(gwv)
 {
     activePlayers = std::vector<bool>(MAX_PLAYERS);
 
     // Spieler zählen
     numPlayingPlayers = 0;
     const GameWorldBase& world = gwv.GetWorld();
-    for (unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
-        if (world.GetPlayer(i).isUsed())
+        if(world.GetPlayer(i).isUsed())
             numPlayingPlayers++;
     }
 
@@ -52,32 +51,46 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
     unsigned short startX = 126 - (numPlayingPlayers - 1) * 17;
     unsigned pos = 0;
 
-    for (unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
         // nicht belegte Spielplätze rauswerfen
         const GamePlayer& curPlayer = world.GetPlayer(i);
-        if (!curPlayer.isUsed())
+        if(!curPlayer.isUsed())
             continue;
 
         switch(curPlayer.nation)
         {
-            case NAT_AFRICANS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 257), curPlayer.name)->SetBorder(false);
+            case NAT_AFRICANS:
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 257),
+                               curPlayer.name)
+                  ->SetBorder(false);
                 break;
-            case NAT_JAPANESE: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 253), curPlayer.name)->SetBorder(false);
+            case NAT_JAPANESE:
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 253),
+                               curPlayer.name)
+                  ->SetBorder(false);
                 break;
-            case NAT_ROMANS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 252), curPlayer.name)->SetBorder(false);
+            case NAT_ROMANS:
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 252),
+                               curPlayer.name)
+                  ->SetBorder(false);
                 break;
-            case NAT_VIKINGS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 256), curPlayer.name)->SetBorder(false);
+            case NAT_VIKINGS:
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io", 256),
+                               curPlayer.name)
+                  ->SetBorder(false);
                 break;
-            case NAT_BABYLONIANS: AddImageButton(1+i, DrawPoint(startX + pos * 34 - 17, 45-23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io_new", 7), curPlayer.name)->SetBorder(false);
+            case NAT_BABYLONIANS:
+                AddImageButton(1 + i, DrawPoint(startX + pos * 34 - 17, 45 - 23), Extent(34, 47), TC_GREEN1, LOADER.GetImageN("io_new", 7),
+                               curPlayer.name)
+                  ->SetBorder(false);
                 break;
             case NAT_COUNT:
-            case NAT_INVALID:
-                break;
+            case NAT_INVALID: break;
         }
 
         // Statistik-Sichtbarkeit abhängig von Auswahl
-        switch (GAMECLIENT.IsReplayModeOn() ? 0 : world.GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
+        switch(GAMECLIENT.IsReplayModeOn() ? 0 : world.GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
         {
             default: // Passiert eh nicht, nur zur Sicherheit
                 activePlayers[i] = false;
@@ -85,19 +98,22 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
             case 0: // Alle sehen alles
             {
                 activePlayers[i] = true;
-            } break;
+            }
+            break;
             case 1: // Nur Verbündete teilen Sicht
             {
                 const bool visible = gwv.GetPlayer().IsAlly(i);
                 activePlayers[i] = visible;
                 GetCtrl<ctrlButton>(1 + i)->SetEnabled(visible);
-            } break;
+            }
+            break;
             case 2: // Nur man selber
             {
                 const bool visible = (gwv.GetPlayerId() == i);
                 activePlayers[i] = visible;
                 GetCtrl<ctrlButton>(1 + i)->SetEnabled(visible);
-            } break;
+            }
+            break;
         }
 
         pos++;
@@ -129,7 +145,8 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
 
     // Aktuelle Überschrift über der Statistik
     headline = AddText(30, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),
-                       glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE, NormalFont); // qx: fix for bug #1106952
+                       glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE,
+                       NormalFont); // qx: fix for bug #1106952
 
     // Aktueller Maximalwert an der y-Achse
     maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
@@ -141,7 +158,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
 
     // Zeit-Werte an der x-Achse
     timeAnnotations = std::vector<ctrlText*>(7); // TODO nach oben
-    for (unsigned i = 0; i < 7; ++i)
+    for(unsigned i = 0; i < 7; ++i)
     {
         timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
                                      glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
@@ -153,30 +170,35 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv):
     timeChanger->SetSelection(21);
     currentTime = STAT_15M;
 
-    if (!SETTINGS.ingame.scale_statistics)
+    if(!SETTINGS.ingame.scale_statistics)
         minValue->SetVisible(false);
 }
 
 iwStatistics::~iwStatistics()
 {
-
 }
 
 void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    switch (ctrl_id)
+    switch(ctrl_id)
     {
-        case 1: case 2: case 3: case 4: case 5: case 6: case 7: // Spielerportraits
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7: // Spielerportraits
             activePlayers[ctrl_id - 1] = !activePlayers[ctrl_id - 1];
             break;
         case 25: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
-                "This window allows a direct comparison with the enemies. "
-                "Factors such as the wealth, territorial area, inhabitants, "
-                "etc. of all parties can be compared. This data can be shown "
-                "over four different time periods.")));
-        } break;
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("This window allows a direct comparison with the enemies. "
+                                                              "Factors such as the wealth, territorial area, inhabitants, "
+                                                              "etc. of all parties can be compared. This data can be shown "
+                                                              "over four different time periods.")));
+        }
+        break;
     }
 }
 
@@ -224,18 +246,10 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selec
         case 20: // Zeitbereich wählen
             switch(selection)
             {
-                case 21:
-                    currentTime = STAT_15M;
-                    break;
-                case 22:
-                    currentTime = STAT_1H;
-                    break;
-                case 23:
-                    currentTime = STAT_4H;
-                    break;
-                case 24:
-                    currentTime = STAT_16H;
-                    break;
+                case 21: currentTime = STAT_15M; break;
+                case 22: currentTime = STAT_1H; break;
+                case 23: currentTime = STAT_4H; break;
+                case 24: currentTime = STAT_16H; break;
             }
             break;
     }
@@ -246,13 +260,13 @@ void iwStatistics::Msg_PaintAfter()
     // Die farbigen Boxen unter den Spielerportraits malen
     unsigned short startX = 126 - numPlayingPlayers * 17;
     DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);
-    for (unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
-        if (!player.isUsed())
+        if(!player.isUsed())
             continue;
 
-        if (activePlayers[i])
+        if(activePlayers[i])
             DrawRectangle(Rect(drawPt, Extent(34, 12)), player.color);
         drawPt.x += 34;
     }
@@ -289,7 +303,8 @@ void iwStatistics::DrawStatistic(StatisticType type)
             {
                 max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }
-            if(SETTINGS.ingame.scale_statistics && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) //-V807
+            if(SETTINGS.ingame.scale_statistics
+               && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) //-V807
             {
                 min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }
@@ -316,14 +331,14 @@ void iwStatistics::DrawStatistic(StatisticType type)
     const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
     DrawPoint previousPos(0, 0);
 
-    for (unsigned p = 0; p < world.GetPlayerCount(); ++p)
+    for(unsigned p = 0; p < world.GetPlayerCount(); ++p)
     {
-        if (!activePlayers[p])
+        if(!activePlayers[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
-        for (unsigned i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned i = 0; i < STAT_STEP_COUNT; ++i)
         {
             DrawPoint curPos = topLeft + DrawPoint((STAT_STEP_COUNT - i) * stepX, size.y);
             unsigned curStatVal = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
@@ -331,7 +346,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
                 curPos.y -= ((curStatVal - min) * size.y) / (max - min);
             else
                 curPos.y -= (curStatVal * size.y) / max;
-            if (i != 0)
+            if(i != 0)
                 DrawLine(curPos, previousPos, 2, world.GetPlayer(p).color);
             previousPos = curPos;
         }
@@ -351,8 +366,7 @@ void iwStatistics::DrawAxis()
              topLeft + DrawPoint(sizeX, sizeY + 1), 1, MakeColor(255, 88, 44, 16));
 
     // Y-Achse, vertikal
-    DrawLine(topLeft + DrawPoint(sizeX, 0),
-             topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
+    DrawLine(topLeft + DrawPoint(sizeX, 0), topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
 
     // Striche an der Y-Achse
     DrawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
@@ -368,36 +382,31 @@ void iwStatistics::DrawAxis()
     {
         case STAT_15M:
             // -15
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
-                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-15");
             timeAnnotations[0]->SetVisible(true);
 
             // -12
-            DrawLine(topLeft + DrawPoint(40, sizeY + 2),
-                     topLeft + DrawPoint(40, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(40, sizeY + 2), topLeft + DrawPoint(40, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(40, sizeY + 6));
             timeAnnotations[1]->SetText("-12");
             timeAnnotations[1]->SetVisible(true);
 
             // -9
-            DrawLine(topLeft + DrawPoint(75, sizeY + 2),
-                     topLeft + DrawPoint(75, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(75, sizeY + 2), topLeft + DrawPoint(75, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(75, sizeY + 6));
             timeAnnotations[2]->SetText("-9");
             timeAnnotations[2]->SetVisible(true);
 
             // -6
-            DrawLine(topLeft + DrawPoint(110, sizeY + 2),
-                     topLeft + DrawPoint(110, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(110, sizeY + 2), topLeft + DrawPoint(110, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(110, sizeY + 6));
             timeAnnotations[3]->SetText("-6");
             timeAnnotations[3]->SetVisible(true);
 
             // -3
-            DrawLine(topLeft + DrawPoint(145, sizeY + 2),
-                     topLeft + DrawPoint(145, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(145, sizeY + 2), topLeft + DrawPoint(145, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(145, sizeY + 6));
             timeAnnotations[4]->SetText("-3");
             timeAnnotations[4]->SetVisible(true);
@@ -406,72 +415,62 @@ void iwStatistics::DrawAxis()
             break;
         case STAT_1H:
             // -60
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
-                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-60");
             timeAnnotations[0]->SetVisible(true);
 
             // -50
-            DrawLine(topLeft + DrawPoint(35, sizeY + 2),
-                     topLeft + DrawPoint(35, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(35, sizeY + 2), topLeft + DrawPoint(35, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(35, sizeY + 6));
             timeAnnotations[1]->SetText("-50");
             timeAnnotations[1]->SetVisible(true);
 
             // -40
-            DrawLine(topLeft + DrawPoint(64, sizeY + 2),
-                     topLeft + DrawPoint(64, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(64, sizeY + 2), topLeft + DrawPoint(64, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(64, sizeY + 6));
             timeAnnotations[2]->SetText("-40");
             timeAnnotations[2]->SetVisible(true);
 
             // -30
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
-                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[3]->SetText("-30");
             timeAnnotations[3]->SetVisible(true);
 
             // -20
-            DrawLine(topLeft + DrawPoint(122, sizeY + 2),
-                     topLeft + DrawPoint(122, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(122, sizeY + 2), topLeft + DrawPoint(122, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[4]->SetPos(topLeftRel + DrawPoint(122, sizeY + 6));
             timeAnnotations[4]->SetText("-20");
             timeAnnotations[4]->SetVisible(true);
 
             // -10
-            DrawLine(topLeft + DrawPoint(151, sizeY + 2),
-                     topLeft + DrawPoint(151, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(151, sizeY + 2), topLeft + DrawPoint(151, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[5]->SetPos(topLeftRel + DrawPoint(151, sizeY + 6));
             timeAnnotations[5]->SetText("-10");
             timeAnnotations[5]->SetVisible(true);
             break;
         case STAT_4H:
             // -240
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
-                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-240");
             timeAnnotations[0]->SetVisible(true);
 
             // -180
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2),
-                     topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-180");
             timeAnnotations[1]->SetVisible(true);
 
             // -120
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
-                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-120");
             timeAnnotations[2]->SetVisible(true);
 
             // -60
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2),
-                     topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-60");
             timeAnnotations[3]->SetVisible(true);
@@ -481,29 +480,25 @@ void iwStatistics::DrawAxis()
             break;
         case STAT_16H:
             // -960
-            DrawLine(topLeft + DrawPoint(6, sizeY + 2),
-                     topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[0]->SetPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->SetText("-960");
             timeAnnotations[0]->SetVisible(true);
 
             // -720
-            DrawLine(topLeft + DrawPoint(49, sizeY + 2),
-                     topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[1]->SetPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->SetText("-720");
             timeAnnotations[1]->SetVisible(true);
 
             // -480
-            DrawLine(topLeft + DrawPoint(93, sizeY + 2),
-                     topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[2]->SetPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->SetText("-480");
             timeAnnotations[2]->SetVisible(true);
 
             // -240
-            DrawLine(topLeft + DrawPoint(136, sizeY + 2),
-                     topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
+            DrawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1, MakeColor(255, 88, 44, 16));
             timeAnnotations[3]->SetPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->SetText("-240");
             timeAnnotations[3]->SetVisible(true);

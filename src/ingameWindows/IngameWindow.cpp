@@ -18,10 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "IngameWindow.h"
 
-#include "drivers/VideoDriverWrapper.h"
-#include "Loader.h"
 #include "CollisionDetection.h"
+#include "Loader.h"
 #include "driver/src/MouseCoords.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
@@ -29,14 +29,15 @@
 #include <algorithm>
 
 std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
-const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(), std::numeric_limits<DrawPoint::ElementType>::max());
-const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max()-1, std::numeric_limits<DrawPoint::ElementType>::max()-1);
+const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
+                                              std::numeric_limits<DrawPoint::ElementType>::max());
+const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
+                                         std::numeric_limits<DrawPoint::ElementType>::max() - 1);
 
-IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size,
-                           const std::string& title, glArchivItem_Bitmap* background, bool modal, bool closeOnRightClick, Window* parent)
-    : Window(parent, id, pos, size),
-      title_(title), background(background), lastMousePos(0, 0),
-      last_down(false), last_down2(false), isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeOnRightClick_(closeOnRightClick)
+IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, glArchivItem_Bitmap* background,
+                           bool modal, bool closeOnRightClick, Window* parent)
+    : Window(parent, id, pos, size), title_(title), background(background), lastMousePos(0, 0), last_down(false), last_down2(false),
+      isModal_(modal), closeme(false), isMinimized_(false), isMoving(false), closeOnRightClick_(closeOnRightClick)
 {
     std::fill(button_state.begin(), button_state.end(), BUTTON_UP);
     contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
@@ -52,7 +53,6 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     // Load last position or center the window
     if(pos == posLastOrCenter)
     {
-
         if(id < last_pos.size() && last_pos[id].isValid())
             SetPos(last_pos[id]);
         else
@@ -107,12 +107,10 @@ void IngameWindow::SetMinimized(bool minimized)
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
 {
     // Maus muss sich auf der Titelleiste befinden
-    Rect title_rect(
-        LOADER.GetImageN("resource", 36)->getWidth(),
-        0,
-        static_cast<unsigned short>(GetSize().x - LOADER.GetImageN("resource", 36)->getWidth() - LOADER.GetImageN("resource", 37)->getWidth()),
-        LOADER.GetImageN("resource", 43)->getHeight()
-        );
+    Rect title_rect(LOADER.GetImageN("resource", 36)->getWidth(), 0,
+                    static_cast<unsigned short>(GetSize().x - LOADER.GetImageN("resource", 36)->getWidth()
+                                                - LOADER.GetImageN("resource", 37)->getWidth()),
+                    LOADER.GetImageN("resource", 43)->getHeight());
     title_rect.move(GetDrawPos());
 
     if(IsPointInRect(mc.GetPos(), title_rect))
@@ -123,11 +121,7 @@ void IngameWindow::MouseLeftDown(const MouseCoords& mc)
     }
 
     // beiden Buttons oben links und rechts prfen
-    const Rect rec[2] =
-    {
-        GetLeftButtonRect(),
-        GetRightButtonRect()
-    };
+    const Rect rec[2] = {GetLeftButtonRect(), GetRightButtonRect()};
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -142,11 +136,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
     isMoving = false;
 
     // beiden Buttons oben links und rechts prfen
-    const Rect rec[2] =
-    {
-        GetLeftButtonRect(),
-        GetRightButtonRect()
-    };
+    const Rect rec[2] = {GetLeftButtonRect(), GetRightButtonRect()};
 
     for(unsigned i = 0; i < 2; ++i)
     {
@@ -155,7 +145,7 @@ void IngameWindow::MouseLeftUp(const MouseCoords& mc)
         {
             if(i == 0 && (!IsModal() || closeOnRightClick_))
                 Close();
-            else if(i==1 && !IsModal())
+            else if(i == 1 && !IsModal())
             {
                 SetMinimized(!IsMinimized());
                 LOADER.GetSoundN("sound", 113)->Play(255, false);
@@ -181,11 +171,7 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
     }
 
     // beiden Buttons oben links und rechts prfen
-    const Rect rec[2] =
-    {
-        GetLeftButtonRect(),
-        GetRightButtonRect()
-    };
+    const Rect rec[2] = {GetLeftButtonRect(), GetRightButtonRect()};
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -195,9 +181,8 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
                 button_state[i] = BUTTON_PRESSED;
             else
                 button_state[i] = BUTTON_HOVER;
-        }
-        else
-            button_state[i] =  BUTTON_UP;
+        } else
+            button_state[i] = BUTTON_UP;
     }
 }
 
@@ -217,18 +202,13 @@ void IngameWindow::Draw_()
     rightUpperImg->DrawFull(GetPos() + DrawPoint(GetSize().x - rightUpperImg->getWidth(), 0));
 
     // Die beiden Buttons oben
-    static const unsigned short ids[2][3] =
-    {
-        {47, 55, 50},
-        {48, 56, 52}
-    };
+    static const unsigned short ids[2][3] = {{47, 55, 50}, {48, 56, 52}};
 
     // Titelleiste
     if(closeOnRightClick_ || !IsModal())
         LOADER.GetImageN("resource", ids[0][button_state[0]])->DrawFull(GetPos());
     if(!IsModal())
         LOADER.GetImageN("resource", ids[1][button_state[1]])->DrawFull(GetPos() + DrawPoint(GetSize().x - 16, 0));
-
 
     // Breite berechnen
     unsigned title_width = GetSize().x - leftUpperImg->getWidth() - rightUpperImg->getWidth();
@@ -256,7 +236,8 @@ void IngameWindow::Draw_()
         titleImg.DrawPart(Rect(titleImgPos, rest, titleImg.getHeight()));
 
     // Text auf die Leiste
-    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
+    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_,
+                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
 
     if(!isMinimized_)
     {
@@ -276,7 +257,7 @@ void IngameWindow::Draw_()
         {
             leftSideImg->DrawFull(leftImgPos);
             rightSideImg->DrawFull(rightImgPos);
-            rightImgPos.y = leftImgPos.y += leftSideImg->getHeight();    
+            rightImgPos.y = leftImgPos.y += leftSideImg->getHeight();
         }
 
         // Rest zeichnen
@@ -320,9 +301,9 @@ void IngameWindow::Draw_()
 
         // Links und rechts unten die 2 kleinen Knäufe
         bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), GetSize().y - bottomBorderSideImg->getHeight()));
-    }
-    else
+        bottomBorderSideImg->DrawFull(
+          GetPos() + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), GetSize().y - bottomBorderSideImg->getHeight()));
+    } else
     {
         glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
         glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
@@ -342,7 +323,8 @@ void IngameWindow::Draw_()
             bottomBarImg->DrawPart(Rect(bottomImgPos, rest, bottomBarImg->getHeight()));
 
         bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
+        bottomBorderSideImg->DrawFull(GetPos()
+                                      + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
     }
 }
 
@@ -355,7 +337,7 @@ void IngameWindow::MoveToCenter()
 /// Verschiebt Fenster neben die Maus
 void IngameWindow::MoveNextToMouse()
 {
-    //Center vertically and move slightly right
+    // Center vertically and move slightly right
     DrawPoint newPos = VIDEODRIVER.GetMousePos() + DrawPoint(20, GetSize().y / 2);
     // To far right?
     if(newPos.x + GetSize().x > VIDEODRIVER.GetScreenWidth())

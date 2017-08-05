@@ -22,19 +22,11 @@
 /// die Warensysteme usw
 inline GoodType ConvertShields(const GoodType& good)
 {
-    return (good == GD_SHIELDVIKINGS ||
-        good == GD_SHIELDAFRICANS ||
-        good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
+    return (good == GD_SHIELDVIKINGS || good == GD_SHIELDAFRICANS || good == GD_SHIELDJAPANESE) ? GD_SHIELDROMANS : good;
 }
 
 /// Umgekehrte Konvertierung: Gibt den Schildtyp für jede Nation an
-const boost::array<GoodType, NAT_COUNT> SUPPRESS_UNUSED SHIELD_TYPES =
-{{
-    GD_SHIELDAFRICANS,
-        GD_SHIELDJAPANESE,
-        GD_SHIELDROMANS,
-        GD_SHIELDVIKINGS,
-        GD_SHIELDJAPANESE
-}};
+const boost::array<GoodType, NAT_COUNT> SUPPRESS_UNUSED SHIELD_TYPES = {
+  {GD_SHIELDAFRICANS, GD_SHIELDJAPANESE, GD_SHIELDROMANS, GD_SHIELDVIKINGS, GD_SHIELDJAPANESE}};
 
 #endif // ShieldConsts_h__

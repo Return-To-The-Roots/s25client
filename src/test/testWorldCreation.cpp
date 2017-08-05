@@ -16,15 +16,15 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "WorldFixture.h"
 #include "CreateEmptyWorld.h"
 #include "GamePlayer.h"
-#include "nodeObjs/noBase.h"
+#include "WorldFixture.h"
 #include "test/PointOutput.h"
-#include <boost/test/unit_test.hpp>
-#include <boost/foreach.hpp>
-#include <boost/assign/std/vector.hpp>
 #include "world/MapGeometry.h"
+#include "nodeObjs/noBase.h"
+#include <boost/assign/std/vector.hpp>
+#include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
@@ -41,34 +41,37 @@ BOOST_FIXTURE_TEST_CASE(NeighbourPts, WorldFixtureEmpty0P)
     std::vector<PointI> evenPtMod(6);
     std::vector<PointI> oddPtMod(6);
     // In x dir there is no difference
-    evenPtMod[Direction::WEST]      = PointI(-1,  0);
-    oddPtMod [Direction::WEST]      = PointI(-1,  0);
-    evenPtMod[Direction::EAST]      = PointI( 1,  0);
-    oddPtMod [Direction::EAST]      = PointI( 1,  0);
+    evenPtMod[Direction::WEST] = PointI(-1, 0);
+    oddPtMod[Direction::WEST] = PointI(-1, 0);
+    evenPtMod[Direction::EAST] = PointI(1, 0);
+    oddPtMod[Direction::EAST] = PointI(1, 0);
     // To north we decrease y and may change x. x changed in NW <=> not changed in NE
     evenPtMod[Direction::NORTHWEST] = PointI(-1, -1);
-    oddPtMod [Direction::NORTHWEST] = PointI( 0, -1);
-    evenPtMod[Direction::NORTHEAST] = PointI( 0, -1);
-    oddPtMod [Direction::NORTHEAST] = PointI( 1, -1);
+    oddPtMod[Direction::NORTHWEST] = PointI(0, -1);
+    evenPtMod[Direction::NORTHEAST] = PointI(0, -1);
+    oddPtMod[Direction::NORTHEAST] = PointI(1, -1);
     // And similar for south. X offsets stay the same!
-    evenPtMod[Direction::SOUTHWEST] = PointI(-1,  1);
-    oddPtMod [Direction::SOUTHWEST] = PointI( 0,  1);
-    evenPtMod[Direction::SOUTHEAST] = PointI( 0,  1);
-    oddPtMod [Direction::SOUTHEAST] = PointI( 1,  1);
+    evenPtMod[Direction::SOUTHWEST] = PointI(-1, 1);
+    oddPtMod[Direction::SOUTHWEST] = PointI(0, 1);
+    evenPtMod[Direction::SOUTHEAST] = PointI(0, 1);
+    oddPtMod[Direction::SOUTHEAST] = PointI(1, 1);
     std::vector<PointI> testPoints;
     // Test a simple even and odd point
     testPoints += PointI(10, 10), PointI(10, 9);
     // Test border points
-    testPoints += PointI(0, 0), PointI(0, world.GetHeight() - 1), PointI(world.GetWidth() - 1, 0), PointI(world.GetWidth() - 1, world.GetHeight() - 1);
+    testPoints += PointI(0, 0), PointI(0, world.GetHeight() - 1), PointI(world.GetWidth() - 1, 0),
+      PointI(world.GetWidth() - 1, world.GetHeight() - 1);
     // Test border points with 1 offset in Y
-    testPoints += PointI(0, 1), PointI(0, world.GetHeight() - 2), PointI(world.GetWidth() - 1, 1), PointI(world.GetWidth() - 1, world.GetHeight() - 2);
+    testPoints += PointI(0, 1), PointI(0, world.GetHeight() - 2), PointI(world.GetWidth() - 1, 1),
+      PointI(world.GetWidth() - 1, world.GetHeight() - 2);
     BOOST_FOREACH(const PointI& pt, testPoints)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
             const bool isEvenRow = pt.y % 2 == 0;
             const PointI targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];
-            const MapPoint targetPoint((targetPointRaw.x + world.GetWidth()) % world.GetWidth(), (targetPointRaw.y + world.GetHeight()) % world.GetHeight());
+            const MapPoint targetPoint((targetPointRaw.x + world.GetWidth()) % world.GetWidth(),
+                                       (targetPointRaw.y + world.GetHeight()) % world.GetHeight());
             BOOST_REQUIRE_EQUAL(world.CalcDistance(MapPoint(pt), targetPoint), 1u);
 
             BOOST_REQUIRE_EQUAL(world.GetNeighbour(MapPoint(pt), Direction::fromInt(dir)), targetPoint);

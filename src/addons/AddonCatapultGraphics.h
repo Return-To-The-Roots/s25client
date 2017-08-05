@@ -29,15 +29,12 @@
  */
 class AddonCatapultGraphics : public AddonBool
 {
-    public:
-        AddonCatapultGraphics() : AddonBool(AddonId::CATAPULT_GRAPHICS,
-                                                ADDONGROUP_GAMEPLAY,
-                                                _("Race specific catapult graphics"),
-                                                _("Adds new race-specific graphics for catapults to the game."),
-                                                0
-                                               )
-        {
-        }
+public:
+    AddonCatapultGraphics()
+        : AddonBool(AddonId::CATAPULT_GRAPHICS, ADDONGROUP_GAMEPLAY, _("Race specific catapult graphics"),
+                    _("Adds new race-specific graphics for catapults to the game."), 0)
+    {
+    }
 };
 
 #endif // !ADDONCATAPULTGRAPHICS_H_INCLUDED

@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <string>
 #include <stdint.h>
+#include <string>
 
 uint32_t CalcChecksumOfFile(const std::string& path);
 uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size);

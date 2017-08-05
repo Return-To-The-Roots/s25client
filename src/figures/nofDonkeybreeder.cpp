@@ -20,13 +20,13 @@
 
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "buildings/nobUsual.h"
 #include "nofCarrier.h"
-#include "Loader.h"
-#include "world/GameWorldGame.h"
-#include "ogl/glSmartBitmap.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
 
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
@@ -34,8 +34,7 @@ nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nob
 {
 }
 
-nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id)
-    : nofWorkman(sgd, obj_id)
+nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
 }
 
@@ -45,8 +44,8 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id)
 void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 {
     const Nation nation = workplace->GetNation();
-    const DrawPointInit walk_start[NAT_COUNT] = { {2, 2}, { -6, -6}, { -7, -7}, { -7, -7}, { -6, -6} };
-    const signed char walk_length[NAT_COUNT] = { 22, 19, 19, 23, 19 };
+    const DrawPointInit walk_start[NAT_COUNT] = {{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}};
+    const signed char walk_length[NAT_COUNT] = {22, 19, 19, 23, 19};
     const unsigned color = gwg->GetPlayer(player).color;
 
     unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
@@ -55,18 +54,22 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
     if(now_id < 400)
     {
         LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][4][(now_id / 70) % 8].draw(walkBasePos + DrawPoint(now_id / 100, now_id / 100), COLOR_WHITE, color);
-    }
-    else if(now_id < 1200)
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][3][((now_id - 400) / 70) % 8].draw(walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][4][(now_id / 70) % 8].draw(
+          walkBasePos + DrawPoint(now_id / 100, now_id / 100), COLOR_WHITE, color);
+    } else if(now_id < 1200)
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][3][((now_id - 400) / 70) % 8].draw(
+          walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 2000)
-        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)->DrawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
+        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)
+          ->DrawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
     else if(now_id < 2800)
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][0][((now_id - 2000) / 70) % 8].draw(walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - now_id) / 800, 4), COLOR_WHITE, color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][0][((now_id - 2000) / 70) % 8].draw(
+          walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - now_id) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 3200)
     {
         LOADER.GetNationImage(workplace->GetNation(), 250 + 5 * BLD_DONKEYBREEDER + 4)->DrawFull(drawPt);
-        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][1][((now_id - 2800) / 70) % 8].draw(walkBasePos + DrawPoint((3200 - now_id) / 100, (3200 - now_id) / 100), COLOR_WHITE, color);
+        LOADER.bob_jobs_cache[workplace->GetNation()][JOB_DONKEYBREEDER][1][((now_id - 2800) / 70) % 8].draw(
+          walkBasePos + DrawPoint((3200 - now_id) / 100, (3200 - now_id) / 100), COLOR_WHITE, color);
     }
 }
 

@@ -37,7 +37,7 @@ SoundSDL_Effect::~SoundSDL_Effect()
  *
  *  @return @p Play-ID bei Erfolg, @p 0xFFFFFFFF bei Fehler
  */
-//int SoundSDL_Effect::Play(unsigned char volume, const unsigned char volume, const bool loop)
+// int SoundSDL_Effect::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
 //  int channel = Mix_PlayChannel(-1, sound, (loop ? -1 : 0));
 //
@@ -57,7 +57,7 @@ SoundSDL_Effect::~SoundSDL_Effect()
  *
  *  @param[in] channel Channel der gestoppt werden soll (-1 für alle)
  */
-//void SoundSDL_Effect::Stop(int channel)
+// void SoundSDL_Effect::Stop(int channel)
 //{
 //  Mix_HaltChannel(channel);
 //}

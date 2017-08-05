@@ -20,11 +20,11 @@
 
 #include "Loader.h"
 
-#include "files.h"
 #include "Settings.h"
+#include "files.h"
+#include "mygettext/src/mygettext.h"
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
-#include "mygettext/src/mygettext.h"
 
 #include <algorithm>
 
@@ -40,7 +40,8 @@ bool operator<(const Language& o1, const Language& o2)
 
 void Languages::loadLanguages()
 {
-    const libsiedler2::ArchivInfo& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
+    const libsiedler2::ArchivInfo& langInfo =
+      dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
     unsigned count = langInfo.size();
 
     for(unsigned i = 0; i < count; i++)

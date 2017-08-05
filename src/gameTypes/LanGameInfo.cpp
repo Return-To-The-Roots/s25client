@@ -20,11 +20,11 @@
 
 bool LanGameInfo::Serialize(Serializer& serializer)
 {
-    if (name.size() > 64)
+    if(name.size() > 64)
         name.resize(64);
-    if (map.size() > 64)
+    if(map.size() > 64)
         map.resize(64);
-    if (version.size() > 16)
+    if(version.size() > 16)
         version.resize(16);
     serializer.PushString(name);
     serializer.PushBool(hasPwd);

@@ -24,10 +24,7 @@ struct Identity
 {
     typedef T result_type;
 
-    result_type operator()(const result_type& arg)
-    {
-        return arg;
-    }
+    result_type operator()(const result_type& arg) { return arg; }
 
     template<typename T_Unused>
     result_type operator()(const result_type& arg, const T_Unused&)
@@ -35,6 +32,5 @@ struct Identity
         return arg;
     }
 };
-
 
 #endif // Identity_h__

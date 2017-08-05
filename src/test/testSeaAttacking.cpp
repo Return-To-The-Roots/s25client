@@ -16,32 +16,32 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "test/SeaWorldWithGCExecution.h"
-#include "factories/BuildingFactory.h"
-#include "pathfinding/FindPathForRoad.h"
-#include "figures/nofPassiveSoldier.h"
-#include "figures/nofAttacker.h"
+#include "GamePlayer.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "factories/BuildingFactory.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofPassiveSoldier.h"
+#include "pathfinding/FindPathForRoad.h"
+#include "test/PointOutput.h"
+#include "test/SeaWorldWithGCExecution.h"
+#include "test/initTestHelpers.h"
+#include "world/GameWorldViewer.h"
+#include "world/MapLoader.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
-#include "GamePlayer.h"
-#include "world/GameWorldViewer.h"
-#include "world/MapLoader.h"
-#include "addons/const_addons.h"
 #include "gameData/SettingTypeConv.h"
-#include "test/PointOutput.h"
-#include "test/initTestHelpers.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 #include <iostream>
 
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 
 // Size is chosen based on current maximum attacking distances!
-struct AttackFixture: public SeaWorldWithGCExecution<62, 64>
+struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
 {
     typedef SeaWorldWithGCExecution<62, 64> Parent;
     using Parent::world;
@@ -57,7 +57,7 @@ struct AttackFixture: public SeaWorldWithGCExecution<62, 64>
     const nobMilitary *milBld1Near, *milBld1Far, *milBld2;
     GameWorldViewer gwv;
 
-    AttackFixture(): gwv(curPlayer, world)
+    AttackFixture() : gwv(curPlayer, world)
     {
         // Make sure attacking is not limited by visibility
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -160,12 +160,9 @@ struct AttackFixture: public SeaWorldWithGCExecution<62, 64>
         const World& world;
         unsigned player;
         BuildingQuality bq;
-        HasBQ(const World& world, unsigned player, BuildingQuality bq):world(world), player(player), bq(bq){}
+        HasBQ(const World& world, unsigned player, BuildingQuality bq) : world(world), player(player), bq(bq) {}
 
-        bool operator()(const MapPoint& pt) const
-        {
-            return world.GetBQ(pt, player) >= bq;
-        }
+        bool operator()(const MapPoint& pt) const { return world.GetBQ(pt, player) >= bq; }
     };
 
     MapPoint FindBldPos(const MapPoint& preferedPos, BuildingQuality reqBQ, unsigned player)
@@ -408,7 +405,7 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
     TestFailingSeaAttack(hqPos[0]);
     // Visible for ally
     world.SetVisibility(hqPos[0], 1, VIS_VISIBLE, em.GetCurrentGF());
-    
+
     // Attackable
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
     this->SeaAttack(hqPos[0], 1, true);
@@ -621,9 +618,9 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
     }
     BOOST_REQUIRE_EQUAL(numTroopsFound, attackerIds.size());
     // Make sure we don't have duplicate IDs (soldiers get converted active<->passive)
-    for (unsigned i=0; i<soldiers.size(); i++)
+    for(unsigned i = 0; i < soldiers.size(); i++)
     {
-        for (unsigned j=i+1; j<soldiers.size(); j++)
+        for(unsigned j = i + 1; j < soldiers.size(); j++)
             BOOST_REQUIRE_NE(soldiers[i]->GetObjId(), soldiers[j]->GetObjId());
     }
 
@@ -635,9 +632,8 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
 BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, AttackFixture)
 {
     // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
-    // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the walking path would go over the harbor or a blocked point
-    // if we can't walk around it
-    // Harbors is attackable by default
+    // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the walking path would go over
+    // the harbor or a blocked point if we can't walk around it Harbors is attackable by default
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(harborPos[1]), 5u);
     // build such a situation for player 1 (left)
     // Make everything west of harbor water
@@ -691,7 +687,7 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, AttackFixture)
     // And ship go to harbor (+200 GFs for loading)
     const noShip& ship = *world.GetPlayer(2).GetShipByID(0);
     distance = world.CalcDistance(ship.GetPos(), harborPos[1]);
-    for(unsigned gf=0; gf<distance*2*20 + 200; gf++)
+    for(unsigned gf = 0; gf < distance * 2 * 20 + 200; gf++)
     {
         em.ExecuteNextGF();
         if(!ship.IsMoving() && world.CalcDistance(ship.GetPos(), harborPos[1]) <= 2)

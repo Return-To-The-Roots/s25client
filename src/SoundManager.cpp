@@ -18,23 +18,24 @@
 #include "defines.h" // IWYU pragma: keep
 #include "SoundManager.h"
 
-#include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "drivers/AudioDriverWrapper.h"
-#include "ogl/glArchivItem_Sound.h"
-#include "Settings.h"
 #include "GameClient.h"
+#include "Loader.h"
+#include "Settings.h"
+#include "drivers/AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "ogl/glArchivItem_Sound.h"
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(0)
 {
 }
 
 SoundManager::~SoundManager()
-{}
+{
+}
 
 void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, const unsigned id, unsigned char volume)
 {
-    if (GAMECLIENT.IsPaused())
+    if(GAMECLIENT.IsPaused())
         return;
 
     if(!SETTINGS.sound.effekte)
@@ -63,15 +64,14 @@ void SoundManager::PlayNOSound(const unsigned sound_lst_id, noBase* const obj, c
     if(play_id != 0)
     {
         // Dann hinzufügen zur abgespielt-Liste
-        NOSound nos = { obj, id, play_id };
+        NOSound nos = {obj, id, play_id};
         no_sounds.push_back(nos);
     }
-
 }
 
 void SoundManager::WorkingFinished(noBase* const obj)
 {
-    if (GAMECLIENT.IsPaused())
+    if(GAMECLIENT.IsPaused())
         return;
 
     if(!SETTINGS.sound.effekte)
@@ -83,15 +83,14 @@ void SoundManager::WorkingFinished(noBase* const obj)
         {
             AUDIODRIVER.StopEffect(it->play_id);
             it = no_sounds.erase(it);
-        }else
+        } else
             ++it;
     }
 }
 
-
 void SoundManager::PlayBirdSounds(const unsigned short tree_count)
 {
-    if (GAMECLIENT.IsPaused())
+    if(GAMECLIENT.IsPaused())
         return;
 
     if(!SETTINGS.sound.effekte)
@@ -107,7 +106,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
     interval += bird_interval;
 
     // Nach einiger Zeit neuen Sound abspielen
-    if(VIDEODRIVER.GetTickCount() - last_bird  > interval)
+    if(VIDEODRIVER.GetTickCount() - last_bird > interval)
     {
         // ohne baum - kein vogel
         if(tree_count > 0)
@@ -119,7 +118,7 @@ void SoundManager::PlayBirdSounds(const unsigned short tree_count)
 
 void SoundManager::PlayOceanBrawling(const unsigned water_percent)
 {
-    if (GAMECLIENT.IsPaused())
+    if(GAMECLIENT.IsPaused())
         return;
 
     if(!SETTINGS.sound.effekte)
@@ -143,8 +142,7 @@ void SoundManager::PlayOceanBrawling(const unsigned water_percent)
 
         // Lautstärke setzen
         AUDIODRIVER.ChangeVolume(ocean_play_id, water_percent * 2 + 55);
-    }
-    else
+    } else
     {
         // Rauschen ggf. stoppen
         if(ocean_play_id)
@@ -160,4 +158,3 @@ void SoundManager::StopAll()
     last_bird = VIDEODRIVER.GetTickCount();
     bird_interval = 0;
 }
-

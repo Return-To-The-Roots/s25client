@@ -17,7 +17,6 @@
 #ifndef ADDONASYNCDEBUG_H_INCLUDED
 #define ADDONASYNCDEBUG_H_INCLUDED
 
-
 #include "AddonBool.h"
 
 /**
@@ -25,15 +24,12 @@
  */
 class AddonAsyncDebug : public AddonBool
 {
-    public:
-        AddonAsyncDebug() : AddonBool(AddonId::ASYNC_DEBUG,
-                                          ADDONGROUP_OTHER,
-                                          _("Async debugging (REALLY SLOW!)"),
-                                          _("Enables extra stuff to debug asyncs. Do not enable unless you know what you are doing!"),
-                                          0
-                                         )
-        {
-        }
+public:
+    AddonAsyncDebug()
+        : AddonBool(AddonId::ASYNC_DEBUG, ADDONGROUP_OTHER, _("Async debugging (REALLY SLOW!)"),
+                    _("Enables extra stuff to debug asyncs. Do not enable unless you know what you are doing!"), 0)
+    {
+    }
 };
 
 #endif // !ADDONASYNCDEBUG_H_INCLUDED

@@ -39,16 +39,15 @@ struct AnimalConst
 
 // 0 bedeutet --> kein Bild!
 
-const AnimalConst ANIMALCONSTS[SPEC_COUNT] =
-{
-    {1600, 0, 1648, 1649, 8, 20}, // Polarbär
-    {1700, 0, 1736, 1737, 6, 20}, // Hase hell
-    {1740, 0, 1776, 1777, 6, 20}, // Hase dunkel
-    {1800, 1840, 1836, 0, 6, 20}, // Fuchs
-    {1850, 1900, 1898, 0, 8, 20}, // Hirsch
-    {1910, 1960, 1958, 0, 8, 20}, // Reh
-    {1970, 1976, 0, 0, 1, 50}, // Ente
-    {2060, 0, 2072, 2073, 2, 40} // Schaf
+const AnimalConst ANIMALCONSTS[SPEC_COUNT] = {
+  {1600, 0, 1648, 1649, 8, 20}, // Polarbär
+  {1700, 0, 1736, 1737, 6, 20}, // Hase hell
+  {1740, 0, 1776, 1777, 6, 20}, // Hase dunkel
+  {1800, 1840, 1836, 0, 6, 20}, // Fuchs
+  {1850, 1900, 1898, 0, 8, 20}, // Hirsch
+  {1910, 1960, 1958, 0, 8, 20}, // Reh
+  {1970, 1976, 0, 0, 1, 50},    // Ente
+  {2060, 0, 2072, 2073, 2, 40}  // Schaf
 };
 
 const unsigned ANIMAL_MAX_ANIMATION_STEPS = 8;

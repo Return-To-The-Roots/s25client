@@ -32,5 +32,3 @@ struct ReturnConst
 };
 
 #endif // ReturnConst_h__
-
-

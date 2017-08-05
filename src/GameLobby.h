@@ -38,6 +38,7 @@ public:
 
     GlobalGameSettings& GetSettings() { return ggs; }
     const GlobalGameSettings& GetSettings() const { return ggs; }
+
 private:
     std::vector<JoinPlayerInfo> players;
     GlobalGameSettings ggs;

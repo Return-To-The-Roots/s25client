@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/VertexUtility.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 Position VertexUtility::GetPosition(int index, const MapExtent& size)
 {
@@ -30,41 +30,36 @@ int VertexUtility::GetIndexOf(const Position& p, const MapExtent& size)
     return (p.x & (size.x - 1)) + (p.y & (size.y - 1)) * size.x;
 }
 
-std::vector<int> VertexUtility::GetNeighbors(const Position& p, const MapExtent& size,
-                                             int radius)
+std::vector<int> VertexUtility::GetNeighbors(const Position& p, const MapExtent& size, int radius)
 {
     std::vector<int> neighbors;
 
-    for (int nx = p.x - radius; nx <= p.x + radius; nx++)
+    for(int nx = p.x - radius; nx <= p.x + radius; nx++)
     {
-        for (int ny = p.y - radius; ny <= p.y + radius; ny++)
+        for(int ny = p.y - radius; ny <= p.y + radius; ny++)
         {
-            const Position neighbor(nx,ny);
-            if (VertexUtility::Distance(p, neighbor, size) <= radius)
+            const Position neighbor(nx, ny);
+            if(VertexUtility::Distance(p, neighbor, size) <= radius)
             {
                 neighbors.push_back(VertexUtility::GetIndexOf(neighbor, size));
             }
         }
     }
-    
+
     return neighbors;
 }
 
-double VertexUtility::Distance(const Position& p1,
-                               const Position& p2,
-                               const MapExtent& size)
+double VertexUtility::Distance(const Position& p1, const Position& p2, const MapExtent& size)
 {
     Position minPos = elMin(p1, p2);
     Position maxPos = elMax(p1, p2);
     Position delta = maxPos - minPos;
-    
-    if (delta.x > size.x / 2) delta.x = size.x - delta.x;
-    if (delta.y > size.y / 2) delta.y = size.y - delta.y;
-    
+
+    if(delta.x > size.x / 2)
+        delta.x = size.x - delta.x;
+    if(delta.y > size.y / 2)
+        delta.y = size.y - delta.y;
+
     Position deltaSq = delta * delta;
     return std::sqrt(deltaSq.x + deltaSq.y);
 }
-
-
-
-

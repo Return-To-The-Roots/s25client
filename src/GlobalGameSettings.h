@@ -27,65 +27,65 @@ struct AddonId;
 
 class GlobalGameSettings
 {
-    public:
-        GlobalGameSettings();
-        GlobalGameSettings(const GlobalGameSettings& ggs);
-        ~GlobalGameSettings();
+public:
+    GlobalGameSettings();
+    GlobalGameSettings(const GlobalGameSettings& ggs);
+    ~GlobalGameSettings();
 
-        GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
+    GlobalGameSettings& operator=(const GlobalGameSettings& ggs);
 
-        /// Serialisierung und Deserialisierung
-        void Serialize(Serializer& ser) const;
-        void Deserialize(Serializer& ser);
+    /// Serialisierung und Deserialisierung
+    void Serialize(Serializer& ser) const;
+    void Deserialize(Serializer& ser);
 
-    public:
-        GameSpeed speed;
-        GameObjective objective;
-        StartWares startWares;
-        bool lockedTeams;
-        Exploration exploration;
-        bool teamView;
-        bool randomStartPosition;
+public:
+    GameSpeed speed;
+    GameObjective objective;
+    StartWares startWares;
+    bool lockedTeams;
+    Exploration exploration;
+    bool teamView;
+    bool randomStartPosition;
 
-        unsigned getNumAddons() const { return addons.size(); }
-        const Addon* getAddon(unsigned nr, unsigned& status) const;
-        const Addon* getAddon(unsigned nr) const;
-        /// clears the addon memory.
-        void clearAddons(bool recreate = true);
+    unsigned getNumAddons() const { return addons.size(); }
+    const Addon* getAddon(unsigned nr, unsigned& status) const;
+    const Addon* getAddon(unsigned nr) const;
+    /// clears the addon memory.
+    void clearAddons(bool recreate = true);
 
-        bool isEnabled(AddonId id) const;
-        unsigned getSelection(AddonId id) const;
-        void setSelection(AddonId id, unsigned selection);
+    bool isEnabled(AddonId id) const;
+    unsigned getSelection(AddonId id) const;
+    void setSelection(AddonId id, unsigned selection);
 
-        /// loads the saved addon configuration from the SETTINGS.
-        void LoadSettings();
-        /// saves the current addon configuration to the SETTINGS.
-        void SaveSettings() const;
+    /// loads the saved addon configuration from the SETTINGS.
+    void LoadSettings();
+    /// saves the current addon configuration to the SETTINGS.
+    void SaveSettings() const;
 
-        /// Get current maximum rank for soldiers
-        /// 0 = Private, 1 = Private First Class, ...
-        unsigned GetMaxMilitaryRank() const;
-        /// Returns number of scouts required for exploration expeditions
-        unsigned GetNumScoutsExedition() const;
+    /// Get current maximum rank for soldiers
+    /// 0 = Private, 1 = Private First Class, ...
+    unsigned GetMaxMilitaryRank() const;
+    /// Returns number of scouts required for exploration expeditions
+    unsigned GetNumScoutsExedition() const;
 
-    private:
-        void registerAddon(Addon* addon);
+private:
+    void registerAddon(Addon* addon);
 
-        struct AddonWithState
-        {
-            AddonWithState() : addon(NULL), status(0) {}
-            explicit AddonWithState(Addon* addon);
+    struct AddonWithState
+    {
+        AddonWithState() : addon(NULL), status(0) {}
+        explicit AddonWithState(Addon* addon);
 
-            Addon* addon;
-            unsigned status;
+        Addon* addon;
+        unsigned status;
 
-            inline bool operator==(const AddonId& rhs) const;
-            inline bool operator<(const AddonWithState& rhs) const;
-        };
+        inline bool operator==(const AddonId& rhs) const;
+        inline bool operator<(const AddonWithState& rhs) const;
+    };
 
-        typedef std::vector<AddonWithState> AddonContainer;
+    typedef std::vector<AddonWithState> AddonContainer;
 
-        AddonContainer addons;
+    AddonContainer addons;
 };
 
 #endif // !GlobalGameSettings_H_INCLUDED

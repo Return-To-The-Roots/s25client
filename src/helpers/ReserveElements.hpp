@@ -20,25 +20,21 @@
 
 #include "helpers/traits.h"
 
-namespace helpers{
+namespace helpers {
 
-	/// Reserves space in a collection if possible
-	template<class T, bool T_hasReserve = has_member_function_reserve<void (T::*)(size_t)>::value>
-	struct ReserveElements
-	{
-	    static void reserve(T& collection, unsigned size)
-	    {
-	        collection.reserve(size);
-	    }
-	};
+/// Reserves space in a collection if possible
+template<class T, bool T_hasReserve = has_member_function_reserve<void (T::*)(size_t)>::value>
+struct ReserveElements
+{
+    static void reserve(T& collection, unsigned size) { collection.reserve(size); }
+};
 
-	template<class T>
-	struct ReserveElements<T, false>
-	{
-	    static void reserve(T&  /*collection*/, unsigned  /*size*/)
-	    {}
-	};
+template<class T>
+struct ReserveElements<T, false>
+{
+    static void reserve(T& /*collection*/, unsigned /*size*/) {}
+};
 
-}
+} // namespace helpers
 
 #endif // ReserveElements_h__

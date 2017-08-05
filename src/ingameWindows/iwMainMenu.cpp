@@ -21,27 +21,26 @@
 #include "Loader.h"
 #include "WindowManager.h"
 
-
-#include "iwDistribution.h"
-#include "iwTransport.h"
-#include "iwTools.h"
-#include "iwMilitary.h"
-#include "iwBuildOrder.h"
-#include "iwOptionsWindow.h"
-#include "iwInventory.h"
-#include "iwBuildings.h"
-#include "iwBuildingProductivities.h"
-#include "iwStatistics.h"
-#include "iwDiplomacy.h"
-#include "iwShip.h"
+#include "GamePlayer.h"
+#include "GameServer.h"
+#include "addons/const_addons.h"
 #include "iwAIDebug.h"
+#include "iwBuildOrder.h"
+#include "iwBuildingProductivities.h"
+#include "iwBuildings.h"
+#include "iwDiplomacy.h"
+#include "iwDistribution.h"
+#include "iwInventory.h"
 #include "iwMerchandiseStatistics.h"
+#include "iwMilitary.h"
+#include "iwOptionsWindow.h"
+#include "iwShip.h"
+#include "iwStatistics.h"
+#include "iwTools.h"
+#include "iwTransport.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
-#include "GameServer.h"
-#include "GamePlayer.h"
-#include "addons/const_addons.h"
 #include "gameData/const_gui_ids.h"
 
 iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
@@ -49,40 +48,40 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
       gwv(gwv), gcFactory(gcFactory)
 {
     // Verteilung
-    AddImageButton( 0, DrawPoint( 12,  22), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
+    AddImageButton(0, DrawPoint(12, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 134), _("Distribution of goods"));
     // Transport
-    AddImageButton( 1, DrawPoint( 68,  22), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
+    AddImageButton(1, DrawPoint(68, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 198), _("Transport"));
     // Werkzeugproduktion
-    AddImageButton( 2, DrawPoint(124,  22), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
+    AddImageButton(2, DrawPoint(124, 22), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 137), _("Tools"));
 
     // Statistiken
-    AddImageButton( 3, DrawPoint( 12,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
-    AddImageButton( 4, DrawPoint( 54,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
-    AddImageButton( 5, DrawPoint( 96,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
+    AddImageButton(3, DrawPoint(12, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 166), _("General statistics"));
+    AddImageButton(4, DrawPoint(54, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 135), _("Merchandise statistics"));
+    AddImageButton(5, DrawPoint(96, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 132), _("Buildings"));
 
     // Inventur
-    AddImageButton( 6, DrawPoint(138,  70), Extent( 39, 44), TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
+    AddImageButton(6, DrawPoint(138, 70), Extent(39, 44), TC_GREY, LOADER.GetImageN("io", 214), _("Stock"));
 
     // Gebäude
-    AddImageButton( 7, DrawPoint( 12, 118), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
+    AddImageButton(7, DrawPoint(12, 118), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 136), _("Productivity"));
     // Militär
-    AddImageButton( 8, DrawPoint( 68, 118), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
+    AddImageButton(8, DrawPoint(68, 118), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 133), _("Military"));
     // Schiffe
-    AddImageButton( 9, DrawPoint(124, 118), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
+    AddImageButton(9, DrawPoint(124, 118), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 175), _("Ship register"));
 
     // Baureihenfolge
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
-        AddImageButton( 10, DrawPoint( 12, 166), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
+        AddImageButton(10, DrawPoint(12, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 24), _("Building sequence"));
 
     // Diplomatie (todo: besseres Bild suchen)
-    AddImageButton( 11, DrawPoint( 68, 166), Extent( 53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
+    AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
     // AI-Debug
     if(gwv.GetViewer().GetPlayer().isHost && gwv.GetWorld().GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW))
-        AddImageButton( 13, DrawPoint( 80, 210), Extent( 20, 20), TC_GREY, NULL, _("AI Debug Window"));
+        AddImageButton(13, DrawPoint(80, 210), Extent(20, 20), TC_GREY, NULL, _("AI Debug Window"));
 
     // Optionen
-    AddImageButton(30, DrawPoint( 12, 231), Extent(165, 32), TC_GREY, LOADER.GetImageN("io",  37), _("Options"));
+    AddImageButton(30, DrawPoint(12, 231), Extent(165, 32), TC_GREY, LOADER.GetImageN("io", 37), _("Options"));
 }
 
 /**
@@ -95,55 +94,67 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         case 0: // Verteilung
         {
             WINDOWMANAGER.Show(new iwDistribution(gwv.GetViewer(), gcFactory));
-        } break;
+        }
+        break;
         case 1: // Transport
         {
             WINDOWMANAGER.Show(new iwTransport(gwv.GetViewer(), gcFactory));
-        } break;
+        }
+        break;
         case 2: // Werkzeugproduktion
         {
             WINDOWMANAGER.Show(new iwTools(gwv.GetViewer(), gcFactory));
-        } break;
+        }
+        break;
         case 3: // Statistik
         {
             WINDOWMANAGER.Show(new iwStatistics(gwv.GetViewer()));
-        } break;
+        }
+        break;
         case 4: // Warenstatistik
         {
             WINDOWMANAGER.Show(new iwMerchandiseStatistics(gwv.GetViewer().GetPlayer()));
-        } break;
+        }
+        break;
         case 5: // Gebäudestatistik
         {
             WINDOWMANAGER.Show(new iwBuildings(gwv, gcFactory));
-        } break;
+        }
+        break;
         case 6: // Inventur
         {
             WINDOWMANAGER.Show(new iwInventory(gwv.GetViewer().GetPlayer()));
-        } break;
+        }
+        break;
         case 7: // Produktivitäten
         {
             WINDOWMANAGER.Show(new iwBuildingProductivities(gwv.GetViewer().GetPlayer()));
-        } break;
+        }
+        break;
         case 8: // Militär
         {
             WINDOWMANAGER.Show(new iwMilitary(gwv.GetViewer(), gcFactory));
-        } break;
+        }
+        break;
         case 9: // Schiffe
         {
             WINDOWMANAGER.Show(new iwShip(gwv, gcFactory, gwv.GetViewer().GetPlayer().GetShipByID(0)));
-        } break;
+        }
+        break;
         case 10: // Baureihenfolge
         {
             WINDOWMANAGER.Show(new iwBuildOrder(gwv.GetViewer()));
-        } break;
+        }
+        break;
         case 11: // Diplomatie
         {
             WINDOWMANAGER.Show(new iwDiplomacy(gwv.GetViewer(), gcFactory));
-        } break;
+        }
+        break;
         case 13: // AI Debug
         {
             if(gwv.GetViewer().GetPlayer().isHost)
-            {             
+            {
                 std::vector<AIBase*> ais;
                 for(unsigned i = 0; i < gwv.GetViewer().GetPlayerCount(); ++i)
                 {
@@ -153,10 +164,12 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
                 }
                 WINDOWMANAGER.Show(new iwAIDebug(gwv, ais));
             }
-        } break;
+        }
+        break;
         case 30: // Optionen
         {
             WINDOWMANAGER.Show(new iwOptionsWindow());
-        } break;
+        }
+        break;
     }
 }

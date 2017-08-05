@@ -21,14 +21,14 @@
 #define ctrlBaseVarText_h__
 
 #include "controls/ctrlBaseText.h"
-#include <string>
 #include <cstdarg>
+#include <string>
 #include <vector>
 
 class glArchivItem_Font;
 
 /// Base class for controls containing a text
-class ctrlBaseVarText: public ctrlBaseText
+class ctrlBaseVarText : public ctrlBaseText
 {
 public:
     /// fmtArgs contains pointers to int, unsigned or const char and must be valid for the lifetime of the var text!

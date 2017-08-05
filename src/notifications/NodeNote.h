@@ -18,8 +18,8 @@
 #ifndef NodeNote_h__
 #define NodeNote_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
+#include "gameTypes/MapCoordinates.h"
 
 struct NodeNote
 {
@@ -27,12 +27,11 @@ struct NodeNote
 
     enum Type
     {
-        Altitude,  // Nodes altitude was changed
-        BQ         // Building quality
+        Altitude, // Nodes altitude was changed
+        BQ        // Building quality
     };
 
-    NodeNote(Type type, const MapPoint& pt):
-        type(type), pt(pt){}
+    NodeNote(Type type, const MapPoint& pt) : type(type), pt(pt) {}
 
     const Type type;
     const MapPoint pt;

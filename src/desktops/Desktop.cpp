@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Desktop.h"
 
-#include "drivers/VideoDriverWrapper.h"
 #include "drivers/ScreenResizeEvent.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 
 /**
@@ -27,8 +27,7 @@
  *
  *  @param[in] background Hintergrund des Desktops
  */
-Desktop::Desktop(glArchivItem_Bitmap* background)
-    : Window(NULL, 0, DrawPoint::all(0), VIDEODRIVER.GetScreenSize()), background(background)
+Desktop::Desktop(glArchivItem_Bitmap* background) : Window(NULL, 0, DrawPoint::all(0), VIDEODRIVER.GetScreenSize()), background(background)
 {
     SetScale(true);
 }
@@ -56,4 +55,3 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
     // Resize to new screen size
     Resize(sr.newSize);
 }
-

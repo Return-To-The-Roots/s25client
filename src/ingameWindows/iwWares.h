@@ -27,30 +27,29 @@ class GamePlayer;
 
 class iwWares : public IngameWindow
 {
-    protected:
-        const Inventory& inventory;     /// Warenbestand
-        const GamePlayer& player;
-        unsigned pageWares, pagePeople;
+protected:
+    const Inventory& inventory; /// Warenbestand
+    const GamePlayer& player;
+    unsigned pageWares, pagePeople;
 
-    public:
-        iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title,
-                bool allow_outhousing, glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player);
+public:
+    iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing, glArchivItem_Font* font,
+            const Inventory& inventory, const GamePlayer& player);
 
-    protected:
-        /// bestimmte Inventurseite zeigen.
-        virtual void SetPage(unsigned page);
-        /// Add a new page and return it. ID will be in range 100+
-        ctrlGroup& AddPage();
+protected:
+    /// bestimmte Inventurseite zeigen.
+    virtual void SetPage(unsigned page);
+    /// Add a new page and return it. ID will be in range 100+
+    ctrlGroup& AddPage();
 
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_PaintBefore() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
 
-        unsigned GetCurPage() const { return curPage_; }
+    unsigned GetCurPage() const { return curPage_; }
 
-    private:
-        unsigned curPage_;       /// aktuelle Seite des Inventurfensters.
-        unsigned pageCount; /// maximale Seite des Inventurfensters.
-
+private:
+    unsigned curPage_;  /// aktuelle Seite des Inventurfensters.
+    unsigned pageCount; /// maximale Seite des Inventurfensters.
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

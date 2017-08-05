@@ -19,18 +19,24 @@
 
 #pragma once
 
-#include "libsiedler2/src/ArchivItem_Sound_Other.h"
 #include "glArchivItem_Music.h"
+#include "libsiedler2/src/ArchivItem_Sound_Other.h"
 
 class glArchivItem_Sound_Other : public libsiedler2::baseArchivItem_Sound_Other, public glArchivItem_Music
 {
-    public:
-        glArchivItem_Sound_Other(libsiedler2::SoundType soundType) : baseArchivItem_Sound(), baseArchivItem_Sound_Other(soundType), glArchivItem_Music() {}
+public:
+    glArchivItem_Sound_Other(libsiedler2::SoundType soundType)
+        : baseArchivItem_Sound(), baseArchivItem_Sound_Other(soundType), glArchivItem_Music()
+    {
+    }
 
-        glArchivItem_Sound_Other(const glArchivItem_Sound_Other& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Other(item), glArchivItem_Music(item) {}
+    glArchivItem_Sound_Other(const glArchivItem_Sound_Other& item)
+        : baseArchivItem_Sound(item), baseArchivItem_Sound_Other(item), glArchivItem_Music(item)
+    {
+    }
 
-        /// Spielt die Musik ab.
-        void Play(const unsigned repeats) override;
+    /// Spielt die Musik ab.
+    void Play(const unsigned repeats) override;
 };
 
 #endif // !GLARCHIVITEM_SOUND_OTHER_H_INCLUDED

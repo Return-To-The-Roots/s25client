@@ -27,38 +27,38 @@ class GameWorldViewer;
 
 class iwDistribution : public IngameWindow
 {
-        struct DistributionGroup
-        {
-            DistributionGroup(){}
-            DistributionGroup(std::string name, glArchivItem_Bitmap* img):name(name), img(img){}
-            std::string name;
-            glArchivItem_Bitmap* img;
-            std::vector<std::string> entries;
-        };
-    public:
+    struct DistributionGroup
+    {
+        DistributionGroup() {}
+        DistributionGroup(std::string name, glArchivItem_Bitmap* img) : name(name), img(img) {}
+        std::string name;
+        glArchivItem_Bitmap* img;
+        std::vector<std::string> entries;
+    };
 
-        iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-        ~iwDistribution() override;
+public:
+    iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
+    ~iwDistribution() override;
 
-    private:
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed;
+private:
+    const GameWorldViewer& gwv;
+    GameCommandFactory& gcFactory;
+    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+    bool settings_changed;
 
-        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-        void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-        void TransmitSettings();
+    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    void UpdateSettings();
+    /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+    void TransmitSettings();
 
-        void Msg_Group_ProgressChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short position) override;
-        void Msg_Timer(const unsigned ctrl_id) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_Group_ProgressChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short position) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        /// Groups for the settings
-        static std::vector<DistributionGroup> groups;
-        /// Initialize the groups structure
-        static void CreateGroups();
+    /// Groups for the settings
+    static std::vector<DistributionGroup> groups;
+    /// Initialize the groups structure
+    static void CreateGroups();
 };
 
 #endif // !iwDISTRIBUTION_H_INCLUDED

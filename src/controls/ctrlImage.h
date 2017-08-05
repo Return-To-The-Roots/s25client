@@ -28,14 +28,14 @@ class glArchivItem_Bitmap;
 
 class ctrlImage : public Window, public ctrlBaseTooltip, public ctrlBaseImage
 {
-    public:
-        ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip);
-        ~ctrlImage() override;
+public:
+    ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip);
+    ~ctrlImage() override;
 
-        bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
 
-    protected:
-        void Draw_() override;
+protected:
+    void Draw_() override;
 };
 
 #endif // !CTRLIMAGE_H_INCLUDED

@@ -21,57 +21,60 @@
 #pragma once
 
 #include "DrawPoint.h"
-#include <vector>
 #include <stdint.h>
+#include <vector>
 
-namespace libsiedler2
-{
-    class baseArchivItem_Bitmap;
-    class ArchivItem_Bitmap_Player;
-}
+namespace libsiedler2 {
+class baseArchivItem_Bitmap;
+class ArchivItem_Bitmap_Player;
+} // namespace libsiedler2
 
 class glBitmapItem;
 
 class glSmartBitmap
 {
-    private:
-        DrawPoint origin_;
-        Extent size_;
+private:
+    DrawPoint origin_;
+    Extent size_;
 
-        bool sharedTexture;
-        unsigned texture;
+    bool sharedTexture;
+    unsigned texture;
 
-        bool hasPlayer;
+    bool hasPlayer;
 
-        std::vector<glBitmapItem> items;
+    std::vector<glBitmapItem> items;
 
-    public:
-        Point<float> texCoords[8];
+public:
+    Point<float> texCoords[8];
 
-        glSmartBitmap();
-        ~glSmartBitmap();
-        void reset();
+    glSmartBitmap();
+    ~glSmartBitmap();
+    void reset();
 
-        Extent getWidth() const { return size_; }
-        Extent getTexSize() const;
+    Extent getWidth() const { return size_; }
+    Extent getTexSize() const;
 
-        bool isGenerated() const {return texture != 0;}
-        bool isPlayer() const {return hasPlayer;}
-        bool empty() const { return items.empty(); }
+    bool isGenerated() const { return texture != 0; }
+    bool isPlayer() const { return hasPlayer; }
+    bool empty() const { return items.empty(); }
 
-        void setSharedTexture(unsigned tex) { texture = tex; sharedTexture = (tex != 0); }
+    void setSharedTexture(unsigned tex)
+    {
+        texture = tex;
+        sharedTexture = (tex != 0);
+    }
 
-        void calcDimensions();
+    void calcDimensions();
 
-        void generateTexture();
-        void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
-        void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
-        /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)
-        void drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSize, const Extent& bufOffset = Extent(0, 0)) const;
+    void generateTexture();
+    void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
+    void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
+    /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)
+    void drawTo(std::vector<uint32_t>& buffer, const Extent& bufferSize, const Extent& bufOffset = Extent(0, 0)) const;
 
-        void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
-        void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
-        void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
+    void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
+    void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
+    void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
 };
 
 #endif

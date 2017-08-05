@@ -25,34 +25,35 @@ class nobUsual;
 /// Späher, der in einem Spähturm "arbeitet"
 class nofScout_LookoutTower : public nofBuildingWorker
 {
-    protected:
-        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-        void WalkedDerived() override;
-        /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 0; }
-        /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-        void WorkAborted() override;
-        /// Arbeitsplatz wurde erreicht
-        void WorkplaceReached() override;
+protected:
+    /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
+    void WalkedDerived() override;
+    /// Malt den Arbeiter beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 0; }
+    /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
+    void WorkAborted() override;
+    /// Arbeitsplatz wurde erreicht
+    void WorkplaceReached() override;
 
-        bool AreWaresAvailable() override;
+    bool AreWaresAvailable() override;
 
-    public:
+public:
+    nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
+    nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-        nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id);
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_LookoutTower(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_LookoutTower(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
+    GO_Type GetGOT() const override { return GOT_NOF_SCOUT_LOOKOUTTOWER; }
 
-        void HandleDerivedEvent(const unsigned id) override;
+    void HandleDerivedEvent(const unsigned id) override;
 };
 
-
-#endif //!NOF_SCOUT_LOOKOUTTOWER
+#endif //! NOF_SCOUT_LOOKOUTTOWER

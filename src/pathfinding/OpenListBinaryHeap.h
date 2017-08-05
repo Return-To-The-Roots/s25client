@@ -18,8 +18,8 @@
 #ifndef OpenListBinaryHeap_h__
 #define OpenListBinaryHeap_h__
 
-#include <vector>
 #include <limits>
+#include <vector>
 
 template<typename T>
 class OpenListBinaryHeapBase
@@ -28,45 +28,44 @@ public:
     typedef unsigned size_type;
     typedef T value_type;
     typedef unsigned key_type;
-    struct Element {
+    struct Element
+    {
         key_type key;
         value_type* el;
         Element() {} //-V730
-        Element(key_type key, value_type* el) :key(key), el(el) {}
+        Element(key_type key, value_type* el) : key(key), el(el) {}
     };
 
-
     /// Class used to store the position in the heap
-    struct PosMarker{
+    struct PosMarker
+    {
     private:
         size_type pos;
 
         friend class OpenListBinaryHeapBase;
     };
 
-    OpenListBinaryHeapBase(){ elements.reserve(128); }
-    size_type size() const{ return elements.size(); }
-    bool empty() const{ return elements.empty(); }
+    OpenListBinaryHeapBase() { elements.reserve(128); }
+    size_type size() const { return elements.size(); }
+    bool empty() const { return elements.empty(); }
 
 protected:
     std::vector<Element> elements;
-    static size_type& GetPos(PosMarker& posMarker){ return posMarker.pos; }
-}; 
+    static size_type& GetPos(PosMarker& posMarker) { return posMarker.pos; }
+};
 
 template<class T_Heap>
 struct DefaultGetPosMarker
 {
-    typename T_Heap::PosMarker& operator()(typename T_Heap::value_type* el)
-    {
-        return el->posMarker;
-    }
+    typename T_Heap::PosMarker& operator()(typename T_Heap::value_type* el) { return el->posMarker; }
 };
 
 template<typename T, class T_GetKey, class GetPosMarker = DefaultGetPosMarker<OpenListBinaryHeapBase<T> > >
-class OpenListBinaryHeap: public OpenListBinaryHeapBase<T>
+class OpenListBinaryHeap : public OpenListBinaryHeapBase<T>
 {
     typedef OpenListBinaryHeapBase<T> Parent;
     typedef typename Parent::Element Element;
+
 public:
     typedef typename Parent::size_type size_type;
     typedef typename Parent::key_type key_type;
@@ -75,19 +74,18 @@ public:
     void push(T* newEl);
     T* pop();
     void decreasedKey(T* el);
-    void rearrange(T* el){ decreasedKey(el); }
+    void rearrange(T* el) { decreasedKey(el); }
 
 private:
-
-    static size_type NoPos(){ return std::numeric_limits<size_type>::max(); }
-    static size_type ParentPos(size_type pos){ return (pos - 1) / 2; }
-    static size_type LeftChildPos(size_type pos){ return (2 * pos) + 1; }
-    static size_type RightChildPos(size_type pos){ return (2 * pos) + 2; }
+    static size_type NoPos() { return std::numeric_limits<size_type>::max(); }
+    static size_type ParentPos(size_type pos) { return (pos - 1) / 2; }
+    static size_type LeftChildPos(size_type pos) { return (2 * pos) + 1; }
+    static size_type RightChildPos(size_type pos) { return (2 * pos) + 2; }
 
     bool isHeap(size_type pos = 0) const;
     bool arePositionsValid() const;
-    static size_type& GetPos(T* el){ return Parent::GetPos(GetPosMarker()(el)); }
-    static key_type GetKey(T* el){ return T_GetKey()(*el); }
+    static size_type& GetPos(T* el) { return Parent::GetPos(GetPosMarker()(el)); }
+    static key_type GetKey(T* el) { return T_GetKey()(*el); }
     key_type GetKey(size_type idx) const { return GetKey(this->elements[idx].el); }
 };
 
@@ -103,7 +101,7 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap(size_type pos) const
         return true;
     if(pos == 0)
     {
-        for(size_type i=0; i<size; i++)
+        for(size_type i = 0; i < size; i++)
         {
             const size_type left = LeftChildPos(i);
             const size_type right = RightChildPos(i);
@@ -114,7 +112,7 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap(size_type pos) const
                 return false;
         }
         return true;
-    }else
+    } else
     {
         const size_type left = LeftChildPos(pos);
         const size_type right = RightChildPos(pos);
@@ -130,7 +128,7 @@ bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::isHeap(size_type pos) const
 template<typename T, class T_GetKey, class GetPosMarker>
 bool OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::arePositionsValid() const
 {
-    for(size_type i=0; i<this->size(); i++)
+    for(size_type i = 0; i < this->size(); i++)
     {
         if(i != GetPos(this->elements[i].el))
             return false;
@@ -202,7 +200,8 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
 
     // We do not move it till we know its final destination, but just assume it was at the front (i=0)
     size_type i = 0;
-    do{
+    do
+    {
         // Now check if the heap condition is violated for the current position
         const size_type left = LeftChildPos(i);
         RTTR_Assert(isHeap(left));
@@ -220,7 +219,6 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
                 i = left;
                 continue;
             }
-
         }
         // left >= i || (left < i && left >= right)
         if(right < size && this->elements[right].key < el.key) // right < i
@@ -228,9 +226,9 @@ inline T* OpenListBinaryHeap<T, T_GetKey, GetPosMarker>::pop()
             this->elements[i] = this->elements[right];
             GetPos(this->elements[i].el) = i;
             i = right;
-        }else
+        } else
             break;
-    }while(true);
+    } while(true);
 
     this->elements[i] = el;
     GetPos(el.el) = i;

@@ -22,7 +22,7 @@
 #endif
 
 #ifdef _WIN32
-    #include <windows.h>
+#include <windows.h>
 #endif
 
 #include <string>
@@ -32,43 +32,43 @@
 // DriverWrapper
 class DriverWrapper
 {
+public:
+    enum DriverType
+    {
+        DT_VIDEO = 0,
+        DT_AUDIO
+    };
+
+    class DriverItem
+    {
     public:
-        enum DriverType
-        {
-            DT_VIDEO = 0,
-            DT_AUDIO
-        };
-
-        class DriverItem
-        {
-            public:
-                DriverItem(const std::string& file, const std::string& name) : file(file), name(name) {}
-                const std::string& GetFile() { return file; }
-                const std::string& GetName() { return name; }
-
-            private:
-                std::string file, name;
-        };
-
-    public:
-        DriverWrapper();
-        ~DriverWrapper();
-
-        /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
-        bool Load(const DriverType dt, std::string& preference);
-        /// Gibt eine Treiber-Handle wieder frei
-        void Unload();
-        /// Gibt Adresse auf eine bestimmte Funktion zurück
-        void* GetDLLFunction(const std::string& name);
-
-        /// Läd eine Liste von verfügbaren Treibern
-        static std::vector<DriverItem> LoadDriverList(const DriverType dt);
+        DriverItem(const std::string& file, const std::string& name) : file(file), name(name) {}
+        const std::string& GetFile() { return file; }
+        const std::string& GetName() { return name; }
 
     private:
-        /// Handle auf die DLL
-        HINSTANCE dll;
-        /// Checks if the library is valid. Puts either the name or the error message into nameOrError
-        static bool CheckLibrary(const std::string& path, DriverType dt, std::string& nameOrError);
+        std::string file, name;
+    };
+
+public:
+    DriverWrapper();
+    ~DriverWrapper();
+
+    /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
+    bool Load(const DriverType dt, std::string& preference);
+    /// Gibt eine Treiber-Handle wieder frei
+    void Unload();
+    /// Gibt Adresse auf eine bestimmte Funktion zurück
+    void* GetDLLFunction(const std::string& name);
+
+    /// Läd eine Liste von verfügbaren Treibern
+    static std::vector<DriverItem> LoadDriverList(const DriverType dt);
+
+private:
+    /// Handle auf die DLL
+    HINSTANCE dll;
+    /// Checks if the library is valid. Puts either the name or the error message into nameOrError
+    static bool CheckLibrary(const std::string& path, DriverType dt, std::string& nameOrError);
 };
 
 #endif // DRIVERWRAPPER_H_INCLUDED

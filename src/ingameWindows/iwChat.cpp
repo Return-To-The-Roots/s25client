@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwChat.h"
-#include "Loader.h"
 #include "GameClient.h"
+#include "Loader.h"
 #include "Random.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
@@ -34,9 +34,9 @@ iwChat::iwChat()
 
     ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
     // "Alle"
-    group->AddTextButton(0, DrawPoint( 20,  80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
+    group->AddTextButton(0, DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
     // "Verbündete"
-    group->AddTextButton(1, DrawPoint( 20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
+    group->AddTextButton(1, DrawPoint(20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
     // "Feinde"
     group->AddTextButton(2, DrawPoint(155, 112), Extent(125, 22), TC_RED1, _("Enemies"), NormalFont);
 
@@ -50,13 +50,13 @@ void iwChat::Msg_PaintBefore()
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_OptionGroupChange(const unsigned  /*ctrl_id*/, const int selection)
+void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
 {
     chat_dest = static_cast<unsigned char>(selection);
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_EditEnter(const unsigned  /*ctrl_id*/)
+void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
 {
     Close();
 
@@ -65,22 +65,19 @@ void iwChat::Msg_EditEnter(const unsigned  /*ctrl_id*/)
     if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
         chat_dest = 0;
 
-    if (edit->GetText() == "apocalypsis")
+    if(edit->GetText() == "apocalypsis")
     {
         GAMECLIENT.CheatArmageddon();
         return;
-    }
-    else if (edit->GetText() == "surrender")
+    } else if(edit->GetText() == "surrender")
     {
         GAMECLIENT.Surrender();
         return;
-    }
-    else if (edit->GetText() == "async!")
+    } else if(edit->GetText() == "async!")
     {
-        (void) RANDOM.Rand(__FILE__, __LINE__, 0, 255);
+        (void)RANDOM.Rand(__FILE__, __LINE__, 0, 255);
         return;
-    }
-    else if (edit->GetText() == "segfault!")
+    } else if(edit->GetText() == "segfault!")
     {
         char* x = NULL;
 
@@ -93,4 +90,3 @@ void iwChat::Msg_EditEnter(const unsigned  /*ctrl_id*/)
 
     edit->SetText("");
 }
-

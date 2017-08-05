@@ -24,9 +24,9 @@
 /// Bitte-Warten Fenster, welches aufgerufen wird, nachdem der Server gestartet wurde bis zum Weitergehen
 class iwPleaseWait : public IngameWindow
 {
-    public:
-        iwPleaseWait();
-        ~iwPleaseWait() override;
+public:
+    iwPleaseWait();
+    ~iwPleaseWait() override;
 };
 
 #endif // !iwPLEASEWAIT_H_INCLUDED

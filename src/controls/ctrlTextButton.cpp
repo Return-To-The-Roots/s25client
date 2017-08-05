@@ -17,15 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlTextButton.h"
-#include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
 
-ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos,
-                               const Extent& size, const TextureColor tc,
-                               const std::string& text,  glArchivItem_Font* font, const std::string& tooltip)
+ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
+                               const std::string& text, glArchivItem_Font* font, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
-{}
-
+{
+}
 
 /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 void ctrlTextButton::DrawContent() const
@@ -50,10 +49,6 @@ void ctrlTextButton::DrawContent() const
     }
 
     const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset),
-               text,
-               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
-               color,
-               0,
-               maxTextWidth);
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text,
+               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color, 0, maxTextWidth);
 }

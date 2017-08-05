@@ -21,7 +21,7 @@
 /// ScreenResize-Event
 struct ScreenResizeEvent
 {
-    ScreenResizeEvent(const Extent& oldSize, const Extent& newSize): oldSize(oldSize), newSize(newSize){}
+    ScreenResizeEvent(const Extent& oldSize, const Extent& newSize) : oldSize(oldSize), newSize(newSize) {}
     Extent oldSize, newSize;
 };
 

@@ -19,22 +19,22 @@
 #include "iwDirectIPCreate.h"
 
 #include "Loader.h"
-#include "WindowManager.h"
 #include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlEdit.h"
-#include "controls/ctrlText.h"
 #include "controls/ctrlOptionGroup.h"
+#include "controls/ctrlText.h"
 #include "desktops/dskSelectMap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
 iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
-    : IngameWindow(CGI_DIRECTIPCREATE, IngameWindow::posLastOrCenter, Extent(300, 285), _("Create Game"),
-        LOADER.GetImageN("resource", 41), true, true),
+    : IngameWindow(CGI_DIRECTIPCREATE, IngameWindow::posLastOrCenter, Extent(300, 285), _("Create Game"), LOADER.GetImageN("resource", 41),
+                   true, true),
       server_type(server_type)
 {
-    ctrlEdit* name, *port;
+    ctrlEdit *name, *port;
 
     // "Name des Spiels"
     AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, 0, NormalFont);
@@ -42,11 +42,11 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 
     // "Server-Port"
     AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, 0, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false,  true);
+    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // "Passwort"
     AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, 0, NormalFont);
-    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false,  true);
+    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
     AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
@@ -54,7 +54,7 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TC_GREEN2, _("IPv6"), NormalFont);
-    ipv6->SetSelection( (SETTINGS.server.ipv6 ? 1 : 0) );
+    ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
     AddText(6, DrawPoint(150, 215), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
@@ -73,7 +73,7 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 /**
  *  Statustext resetten
  */
-void iwDirectIPCreate::Msg_EditChange(const unsigned  /*ctrl_id*/)
+void iwDirectIPCreate::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
     SetText("", COLOR_RED, true);
@@ -95,18 +95,21 @@ void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
             name->SetFocus(false);
             port->SetFocus(true);
             pass->SetFocus(false);
-        } break;
+        }
+        break;
         case 3:
         {
             name->SetFocus(false);
             port->SetFocus(false);
             pass->SetFocus(false);
-        } break;
+        }
+        break;
         case 5:
         {
             // Starten klicken
             Msg_ButtonClick(7);
-        } break;
+        }
+        break;
     }
 }
 
@@ -117,7 +120,8 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const int s
         case 12: // IPv6 Ja/Nein
         {
             SETTINGS.server.ipv6 = (selection == 1);
-        } break;
+        }
+        break;
     }
 }
 
@@ -162,11 +166,11 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
 
             // Map auswählen
             WINDOWMANAGER.Switch(new dskSelectMap(csi));
-        } break;
-        case 8:
-        {
-            Close();
-        } break;
+        }
+        break;
+        case 8: { Close();
+        }
+        break;
     }
 }
 

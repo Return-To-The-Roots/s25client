@@ -24,11 +24,12 @@
 #include "traits.h"
 #include <set>
 
-namespace helpers{
-    template<class T, class Pr, class Alloc>
-    struct EraseIterValidyImpl<std::set<T, Pr, Alloc> >{
-        BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid; 
-    };
+namespace helpers {
+template<class T, class Pr, class Alloc>
+struct EraseIterValidyImpl<std::set<T, Pr, Alloc> >
+{
+    BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid;
+};
 } // namespace helpers
 
 #endif // setTraits_h__

@@ -20,33 +20,33 @@
 #pragma once
 
 #include "Desktop.h"
-#include "driver/src/VideoInterface.h"
 #include "GlobalGameSettings.h"
+#include "driver/src/VideoInterface.h"
 
 /// Klasse des Optionen Desktops.
-class dskOptions: public Desktop
+class dskOptions : public Desktop
 {
-    public:
-        dskOptions();
-        ~dskOptions() override;
+public:
+    dskOptions();
+    ~dskOptions() override;
 
-    private:
-        void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+private:
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
 
-        void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
-        void Msg_Group_ProgressChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short position) override;
-        void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
-        void Msg_Group_OptionGroupChange(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
+    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
+    void Msg_Group_ProgressChange(const unsigned group_id, const unsigned ctrl_id, const unsigned short position) override;
+    void Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
+    void Msg_Group_OptionGroupChange(const unsigned group_id, const unsigned ctrl_id, const int selection) override;
 
-    private:
-        GlobalGameSettings ggs;
-        std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
+private:
+    GlobalGameSettings ggs;
+    std::vector<VideoMode> video_modes; /// Vector für die Auflösungen
 
-        void loadVideoModes();
-        static bool cmpVideoModes(const VideoMode& left, const VideoMode& right);
-        static VideoMode getAspectRatio(const VideoMode& vm);
+    void loadVideoModes();
+    static bool cmpVideoModes(const VideoMode& left, const VideoMode& right);
+    static VideoMode getAspectRatio(const VideoMode& vm);
 };
 
 #endif // !dskOPTIONS_H_INCLUDED

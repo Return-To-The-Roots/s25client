@@ -27,19 +27,17 @@
  */
 class AddonStatisticsVisibility : public AddonList
 {
-    public:
-        AddonStatisticsVisibility() : AddonList(AddonId::STATISTICS_VISIBILITY,
-                                                    ADDONGROUP_OTHER,
-                                                    _("Change the visibility of your ingame statistics"),
-                                                    _("Decides to whom your statistics are visible.\n\n"
-                                                            "\"Allies\" applies to team members as well as to allies by treaty."),
-                                                    0
-                                                   )
-        {
-            addOption(_("Everyone"));
-            addOption(_("Allies"));
-            addOption(_("Nobody else but you"));
-        }
+public:
+    AddonStatisticsVisibility()
+        : AddonList(AddonId::STATISTICS_VISIBILITY, ADDONGROUP_OTHER, _("Change the visibility of your ingame statistics"),
+                    _("Decides to whom your statistics are visible.\n\n"
+                      "\"Allies\" applies to team members as well as to allies by treaty."),
+                    0)
+    {
+        addOption(_("Everyone"));
+        addOption(_("Allies"));
+        addOption(_("Nobody else but you"));
+    }
 };
 
 #endif // !ADDONSTATISTICSVISIBILITY_H_INCLUDED

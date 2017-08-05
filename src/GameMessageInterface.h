@@ -25,7 +25,8 @@
 #define __GENERATE_FWD_DECL_SINGLE(s, data, expression) class expression;
 #define __GENERATE_FWD_DECL(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_FWD_DECL_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
-#define __GENERATE_CALLBACK_SINGLE(s, data, expression) virtual void OnGameMessage(const expression& /*msg*/){}
+#define __GENERATE_CALLBACK_SINGLE(s, data, expression) \
+    virtual void OnGameMessage(const expression& /*msg*/) {}
 #define __GENERATE_CALLBACKS(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_CALLBACK_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 /// Generates the class "GameMessageInterface" with one virtual method "OnGameMessage" for each parameter
@@ -37,58 +38,33 @@
 ///         virtual void OnGameMessage(const GM_Bar& /*msg*/){}
 ///     };
 ///
-#define GENERATE_GAME_MESSAGE_INTERFACE(...)                \
-    __GENERATE_FWD_DECL(__VA_ARGS__)                        \
-    class GameMessageInterface : public MessageInterface    \
-    {                                                       \
-    protected:                                              \
-        ~GameMessageInterface() override {}                 \
-                                                            \
-    public:                                                 \
-        __GENERATE_CALLBACKS(__VA_ARGS__)                   \
+#define GENERATE_GAME_MESSAGE_INTERFACE(...)             \
+    __GENERATE_FWD_DECL(__VA_ARGS__)                     \
+    class GameMessageInterface : public MessageInterface \
+    {                                                    \
+    protected:                                           \
+        ~GameMessageInterface() override {}              \
+                                                         \
+    public:                                              \
+        __GENERATE_CALLBACKS(__VA_ARGS__)                \
     };
 
-GENERATE_GAME_MESSAGE_INTERFACE(
-    GameMessage_Ping,
-    GameMessage_Pong,
+GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
 
-    GameMessage_Server_Type,
-    GameMessage_Server_TypeOK,
-    GameMessage_Server_Password,
-    GameMessage_Server_Name,
-    GameMessage_Server_Start,
-    GameMessage_Server_Chat,
-    GameMessage_System_Chat,
-    GameMessage_Server_Async,
-    GameMessage_Server_Countdown,
-    GameMessage_Server_CancelCountdown,
+                                GameMessage_Server_Type, GameMessage_Server_TypeOK, GameMessage_Server_Password, GameMessage_Server_Name,
+                                GameMessage_Server_Start, GameMessage_Server_Chat, GameMessage_System_Chat, GameMessage_Server_Async,
+                                GameMessage_Server_Countdown, GameMessage_Server_CancelCountdown,
 
-    GameMessage_Player_Id,
-    GameMessage_Player_Name,
-    GameMessage_Player_List,
-    GameMessage_Player_Set_State,
-    GameMessage_Player_Set_Nation,
-    GameMessage_Player_Set_Team,
-    GameMessage_Player_Set_Color,
-    GameMessage_Player_Kicked,
-    GameMessage_Player_Ping,
-    GameMessage_Player_New,
-    GameMessage_Player_Ready,
-    GameMessage_Player_Swap,
+                                GameMessage_Player_Id, GameMessage_Player_Name, GameMessage_Player_List, GameMessage_Player_Set_State,
+                                GameMessage_Player_Set_Nation, GameMessage_Player_Set_Team, GameMessage_Player_Set_Color,
+                                GameMessage_Player_Kicked, GameMessage_Player_Ping, GameMessage_Player_New, GameMessage_Player_Ready,
+                                GameMessage_Player_Swap,
 
-    GameMessage_Map_Info,
-    GameMessage_Map_Data,
-    GameMessage_Map_Checksum,
-    GameMessage_Map_ChecksumOK,
-    GameMessage_GGSChange,
-    GameMessage_RemoveLua,
-    GameMessage_Pause,
-    GameMessage_Server_NWFDone,
-    GameMessage_GameCommand,
-    GameMessage_Server_Speed,
+                                GameMessage_Map_Info, GameMessage_Map_Data, GameMessage_Map_Checksum, GameMessage_Map_ChecksumOK,
+                                GameMessage_GGSChange, GameMessage_RemoveLua, GameMessage_Pause, GameMessage_Server_NWFDone,
+                                GameMessage_GameCommand, GameMessage_Server_Speed,
 
-    GameMessage_GetAsyncLog,
-    GameMessage_SendAsyncLog)
+                                GameMessage_GetAsyncLog, GameMessage_SendAsyncLog)
 
 /// Casts the general MessageInterface to GameMessageInterface
 inline GameMessageInterface* GetInterface(MessageInterface* callback)
@@ -96,4 +72,4 @@ inline GameMessageInterface* GetInterface(MessageInterface* callback)
     return dynamic_cast<GameMessageInterface*>(callback);
 }
 
-#endif //!GAMEMESSAGEINTERFACE_H_INCLUDED
+#endif //! GAMEMESSAGEINTERFACE_H_INCLUDED

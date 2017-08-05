@@ -22,15 +22,8 @@
 
 class AddonTrade : public AddonBool
 {
-    public:
-        AddonTrade() : AddonBool(AddonId::TRADE,
-                                     ADDONGROUP_ECONOMY,
-                                     _("Trade"),
-                                     _("Allows to send wares/figures to allied warehouses"),
-                                     0
-                                    )
-        {
-        }
+public:
+    AddonTrade() : AddonBool(AddonId::TRADE, ADDONGROUP_ECONOMY, _("Trade"), _("Allows to send wares/figures to allied warehouses"), 0) {}
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

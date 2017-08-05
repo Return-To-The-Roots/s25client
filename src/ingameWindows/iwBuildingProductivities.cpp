@@ -17,46 +17,21 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildingProductivities.h"
-#include "Loader.h"
 #include "GamePlayer.h"
-#include "gameData/const_gui_ids.h"
-#include "gameData/BuildingConsts.h"
+#include "Loader.h"
 #include "files.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
 /// Anzahl der angezeigten Gebäude
 const unsigned BUILDINGS_COUNT = 24;
 
 /// Reihenfolge der Gebäude
-const BuildingType bts[BUILDINGS_COUNT] =
-{
-    BLD_GRANITEMINE,
-    BLD_COALMINE,
-    BLD_IRONMINE,
-    BLD_GOLDMINE,
-    BLD_WOODCUTTER,
-    BLD_FISHERY,
-    BLD_QUARRY,
-    BLD_FORESTER,
-    BLD_SLAUGHTERHOUSE,
-    BLD_HUNTER,
-    BLD_BREWERY,
-    BLD_ARMORY,
-    BLD_METALWORKS,
-    BLD_IRONSMELTER,
-    BLD_PIGFARM,
-    BLD_MILL,
-    BLD_BAKERY,
-    BLD_SAWMILL,
-    BLD_MINT,
-    BLD_WELL,
-    BLD_SHIPYARD,
-    BLD_FARM,
-    BLD_DONKEYBREEDER,
-    BLD_CHARBURNER
-};
-
-
+const BuildingType bts[BUILDINGS_COUNT] = {
+  BLD_GRANITEMINE,    BLD_COALMINE, BLD_IRONMINE, BLD_GOLDMINE, BLD_WOODCUTTER, BLD_FISHERY,     BLD_QUARRY,        BLD_FORESTER,
+  BLD_SLAUGHTERHOUSE, BLD_HUNTER,   BLD_BREWERY,  BLD_ARMORY,   BLD_METALWORKS, BLD_IRONSMELTER, BLD_PIGFARM,       BLD_MILL,
+  BLD_BAKERY,         BLD_SAWMILL,  BLD_MINT,     BLD_WELL,     BLD_SHIPYARD,   BLD_FARM,        BLD_DONKEYBREEDER, BLD_CHARBURNER};
 
 /// Abstand vom linken, oberen Fensterrand
 const Extent bldProdContentOffset(50, 30);
@@ -72,16 +47,12 @@ const unsigned short distance_y = 35;
 /// Größe der Prozentbalken
 const Extent percentSize(100, 18);
 
-
-
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
-    : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posAtMouse, 
-                   Extent(
-                       2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x,
-                       (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1)
-                   ) + bldProdContentOffset
-        , _("Productivity"), LOADER.GetImageN("resource", 41)),
-    player(player), percents(BLD_COUNT, 0)
+    : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posAtMouse,
+                   Extent(2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x, (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1))
+                     + bldProdContentOffset,
+                   _("Productivity"), LOADER.GetImageN("resource", 41)),
+      player(player), percents(BLD_COUNT, 0)
 {
     const Nation playerNation = player.nation;
     for(unsigned y = 0; y < BUILDINGS_COUNT / 2 + BUILDINGS_COUNT % 2; ++y)
@@ -93,16 +64,17 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
                 unsigned imgId = (y * 2 + x) * 2;
                 DrawPoint imgPos(x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y + percentSize.y / 2);
                 imgPos = imgPos + bldProdContentOffset;
-                if (player.IsBuildingEnabled(bts[y * 2 + x]))
+                if(player.IsBuildingEnabled(bts[y * 2 + x]))
                 {
                     glArchivItem_Bitmap* img;
-                    if(bts[y*2+x]!=BLD_CHARBURNER)
+                    if(bts[y * 2 + x] != BLD_CHARBURNER)
                         img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 2 + x]);
                     else
                         img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
                     AddImage(imgId, imgPos, img, _(BUILDING_NAMES[bts[y * 2 + x]]));
                     DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y);
-                    AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont, &percents[bts[y * 2 + x]]);
+                    AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont,
+                               &percents[bts[y * 2 + x]]);
                 } else
                 {
                     AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
@@ -115,7 +87,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 
     // Hilfe-Button
     // Original S2 does not have a Help button in this window. Add it if you have something to say.
-    //AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
+    // AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
 }
 
 /// Aktualisieren der Prozente
@@ -129,4 +101,3 @@ void iwBuildingProductivities::Msg_PaintAfter()
 {
     UpdatePercents();
 }
-

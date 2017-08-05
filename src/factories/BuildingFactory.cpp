@@ -17,36 +17,28 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "BuildingFactory.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobStorehouse.h"
+#include "GamePlayer.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
+#include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
-#include "GamePlayer.h"
+#include "world/GameWorldGame.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation){
+noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
+                                            const Nation nation)
+{
     noBuilding* bld;
-    switch (type)
+    switch(type)
     {
-    case BLD_STOREHOUSE:
-        bld =  new nobStorehouse(pt, player, nation);
-        break;
-    case BLD_HARBORBUILDING:
-        bld = new nobHarborBuilding(pt, player, nation);
-        break;
-    case BLD_BARRACKS:
-    case BLD_GUARDHOUSE:
-    case BLD_WATCHTOWER:
-    case BLD_FORTRESS:
-        bld = new nobMilitary(type, pt, player, nation);
-        break;
-    case BLD_SHIPYARD:
-        bld = new nobShipYard(pt, player, nation);
-        break;
-    default:
-        bld = new nobUsual(type, pt, player, nation);
-        break;
+        case BLD_STOREHOUSE: bld = new nobStorehouse(pt, player, nation); break;
+        case BLD_HARBORBUILDING: bld = new nobHarborBuilding(pt, player, nation); break;
+        case BLD_BARRACKS:
+        case BLD_GUARDHOUSE:
+        case BLD_WATCHTOWER:
+        case BLD_FORTRESS: bld = new nobMilitary(type, pt, player, nation); break;
+        case BLD_SHIPYARD: bld = new nobShipYard(pt, player, nation); break;
+        default: bld = new nobUsual(type, pt, player, nation); break;
     }
     gwg.SetNO(pt, bld);
     if(type == BLD_HARBORBUILDING)

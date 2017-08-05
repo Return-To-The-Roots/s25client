@@ -16,19 +16,19 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "test/WorldWithGCExecution.h"
-#include "factories/BuildingFactory.h"
-#include "pathfinding/FindPathForRoad.h"
-#include "figures/nofPassiveSoldier.h"
-#include "figures/nofAttacker.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
-#include "nodeObjs/noFlag.h"
-#include "world/GameWorldViewer.h"
-#include "gameData/SettingTypeConv.h"
+#include "factories/BuildingFactory.h"
+#include "figures/nofAttacker.h"
+#include "figures/nofPassiveSoldier.h"
+#include "pathfinding/FindPathForRoad.h"
+#include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
-#include <boost/test/unit_test.hpp>
+#include "world/GameWorldViewer.h"
+#include "nodeObjs/noFlag.h"
+#include "gameData/SettingTypeConv.h"
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 #include <iostream>
 
 BOOST_AUTO_TEST_SUITE(AttackSuite)
@@ -40,7 +40,7 @@ struct AttackDefaults
 };
 
 // Size is choosen based on current maximum attacking distances!
-struct AttackFixture: public WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height>
+struct AttackFixture : public WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height>
 {
     typedef WorldWithGCExecution<3, AttackDefaults::width, AttackDefaults::height> Parent;
     using Parent::world;
@@ -54,7 +54,7 @@ struct AttackFixture: public WorldWithGCExecution<3, AttackDefaults::width, Atta
     const nobMilitary *milBld1Near, *milBld1Far, *milBld2;
     GameWorldViewer gwv;
 
-    AttackFixture(): gwv(curPlayer, world)
+    AttackFixture() : gwv(curPlayer, world)
     {
         // Make sure attacking is not limited by visibility
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -285,7 +285,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     BOOST_REQUIRE_EQUAL(soldiers.size(), 1u);
     BOOST_REQUIRE_EQUAL(soldiers[0]->GetRank(), 4u);
 
-    //None left
+    // None left
     TestFailingAttack(milBld1NearPos, attackSrc, 1u);
 }
 
@@ -310,7 +310,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     // 1 stays inside till an attacker is at door
     // 20 GFs/node + 30 GFs for leaving
     const unsigned distance = world.CalcDistance(milBld2Pos, milBld1NearPos);
-    for (unsigned gf=0; gf<distance*20+30; gf++)
+    for(unsigned gf = 0; gf < distance * 20 + 30; gf++)
     {
         em.ExecuteNextGF();
         if(milBld1Near->GetTroopsCount() == 1)

@@ -22,13 +22,12 @@
 #include "DrawPoint.h"
 #include "libsiedler2/src/ArchivItem_Bob.h"
 
-
 /// Klasse für GL-Bobfiles.
 class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 {
-    public:
-        /// Zeichnet einen Animationsstep.
-        void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
+public:
+    /// Zeichnet einen Animationsstep.
+    void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED

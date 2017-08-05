@@ -16,17 +16,17 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "test/WorldWithGCExecution.h"
-#include "buildings/nobBaseWarehouse.h"
 #include "RTTR_AssertError.h"
 #include "addons/const_addons.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
 
-struct TradeFixture: public WorldWithGCExecution3P
+struct TradeFixture : public WorldWithGCExecution3P
 {
     boost::array<const GamePlayer*, 3> players;
     unsigned numHelpers, numWoodcutters, numDonkeys, numBoards, numSaws, numSwords;
@@ -127,7 +127,7 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     // Trade ally -> Ok
     this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
     // Each donkey carries a ware and we need a leader
-    numBoards  -= 2;
+    numBoards -= 2;
     numDonkeys -= 2;
     numHelpers -= 1;
     testExpectedWares();
@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     curWh = world.GetSpecObj<nobBaseWarehouse>(players[0]->GetHQPos());
     BOOST_REQUIRE(curWh);
     // Expected amount is our amount + 2 times the stuff send (1 because we did not send anything, and 2 as we received them)
-    numBoards  += 2 * 2;
+    numBoards += 2 * 2;
     numDonkeys += 2 * 2;
     numHelpers += 2 * 1;
     // helpers can be produced in the meantime
@@ -196,7 +196,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
 }
 
 BOOST_FIXTURE_TEST_CASE(TradeToMuch, TradeFixture)
-{    
+{
     initGameRNG();
 
     // Trade more wares than available (not limited by donkeys)

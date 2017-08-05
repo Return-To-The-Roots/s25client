@@ -28,22 +28,20 @@
  */
 class AddonChangeGoldDeposits : public AddonList
 {
-    public:
-        AddonChangeGoldDeposits() : AddonList(AddonId::CHANGE_GOLD_DEPOSITS,
-                                                  ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY,
-                                                  _("Change gold deposits"),
-                                                  _("You can remove gold resources completely or convert them into iron ore, coal or granite.\n\n"
-                                                          "You'll probably want to convert gold to iron ore, as this (on most maps)\n"
-                                                          "allows you to utilize the additional coal not needed for minting anymore."),
-                                                  0
-                                                 )
-        {
-            addOption(_("No change"));
-            addOption(_("Remove gold completely"));
-            addOption(_("Convert to iron ore"));
-            addOption(_("Convert to coal"));
-            addOption(_("Convert to granite"));
-        }
+public:
+    AddonChangeGoldDeposits()
+        : AddonList(AddonId::CHANGE_GOLD_DEPOSITS, ADDONGROUP_MILITARY | ADDONGROUP_ECONOMY, _("Change gold deposits"),
+                    _("You can remove gold resources completely or convert them into iron ore, coal or granite.\n\n"
+                      "You'll probably want to convert gold to iron ore, as this (on most maps)\n"
+                      "allows you to utilize the additional coal not needed for minting anymore."),
+                    0)
+    {
+        addOption(_("No change"));
+        addOption(_("Remove gold completely"));
+        addOption(_("Convert to iron ore"));
+        addOption(_("Convert to coal"));
+        addOption(_("Convert to granite"));
+    }
 };
 
 #endif // !ADDONCHANGEGOLDDEPOSITS_H_INCLUDED

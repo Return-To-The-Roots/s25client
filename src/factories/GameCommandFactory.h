@@ -29,7 +29,9 @@
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 
-namespace gc { class GameCommand; }
+namespace gc {
+class GameCommand;
+}
 struct InventorySetting;
 
 /// Factory class for creating game commands. Handling of them (storing, sending...) must be done in the derived class
@@ -100,7 +102,7 @@ public:
     bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:
-    virtual ~GameCommandFactory(){}
+    virtual ~GameCommandFactory() {}
     /// Called for each created GC. Ownership over gc is passed!
     virtual bool AddGC(gc::GameCommand* gc) = 0;
 };

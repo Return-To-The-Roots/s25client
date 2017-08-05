@@ -20,18 +20,18 @@
 
 #ifdef _WIN32
 
-#include <winsock2.h>
-#include <ctime>
 #include <cstdio>
+#include <ctime>
+#include <winsock2.h>
 
 /**
  *  Sleep at least some number of microseconds
  */
-int usleep (useconds_t microseconds)
+int usleep(useconds_t microseconds)
 {
     int err = 0;
 
-    if ( microseconds )
+    if(microseconds)
     {
         static const useconds_t one_second = 1000000;
         static SOCKET sock = INVALID_SOCKET;
@@ -62,11 +62,9 @@ int nanosleep(const struct timespec* requested_delay, struct timespec* remaining
     const useconds_t nano_per_micro = 1000;
     useconds_t micro_delay;
 
-    micro_delay = useconds_t(requested_delay->tv_sec) * one_second
-                  + ( requested_delay->tv_nsec + nano_per_micro - 1 )
-                  / nano_per_micro;
+    micro_delay = useconds_t(requested_delay->tv_sec) * one_second + (requested_delay->tv_nsec + nano_per_micro - 1) / nano_per_micro;
 
-    return usleep (micro_delay);
+    return usleep(micro_delay);
 }
 
 #endif // !_WIN32

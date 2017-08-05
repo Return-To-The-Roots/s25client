@@ -23,7 +23,7 @@
 class ctrlText;
 class GameWorldView;
 
-class iwMapDebug: public IngameWindow
+class iwMapDebug : public IngameWindow
 {
 public:
     iwMapDebug(GameWorldView& gwv, bool allowCheating);

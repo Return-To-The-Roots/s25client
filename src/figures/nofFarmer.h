@@ -24,38 +24,38 @@ class nobUsual;
 
 class nofFarmer : public nofFarmhand
 {
-    private:
+private:
+    /// Was soll gemacht werden: Ernten oder Sähen?
+    bool harvest;
 
-        /// Was soll gemacht werden: Ernten oder Sähen?
-        bool harvest;
-    private:
+private:
+    /// Malt den Arbeiter beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
 
-        /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
+    /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+    void WorkStarted() override;
+    /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+    void WorkFinished() override;
+    /// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
+    void WorkAborted() override;
 
-        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-        void WorkStarted() override;
-        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-        void WorkFinished() override;
-        /// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
-        void WorkAborted() override;
+    /// Returns the quality of this working point or determines if the worker can work here at all
+    PointQuality GetPointQuality(const MapPoint pt) const override;
 
-        /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) const override;
+public:
+    nofFarmer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofFarmer(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofFarmer(SerializedGameData& sgd) const;
 
-        nofFarmer(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofFarmer(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmer(sgd); }
 
-
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFarmer(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFarmer(sgd); }
-
-        GO_Type GetGOT() const override { return GOT_NOF_FARMER; }
+    GO_Type GetGOT() const override { return GOT_NOF_FARMER; }
 };
 
 #endif

@@ -26,30 +26,31 @@ class nobUsual;
 /// Klasse für den Schreiner
 class nofMiller : public nofWorkman
 {
-        /// Letzter Mühlensound-Zeitpunkt
-        unsigned last_sound;
-        /// Intervall zum nächsten Mühlensound
-        unsigned next_interval;
+    /// Letzter Mühlensound-Zeitpunkt
+    unsigned last_sound;
+    /// Intervall zum nächsten Mühlensound
+    unsigned next_interval;
 
-    private:
+private:
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 75; }
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
 
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 75; }
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
+public:
+    nofMiller(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofMiller(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofMiller(SerializedGameData& sgd) const;
 
-        nofMiller(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofMiller(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofMiller(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofMiller(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofMiller(sgd); }
-
-        GO_Type GetGOT() const override { return GOT_NOF_MILLER; }
+    GO_Type GetGOT() const override { return GOT_NOF_MILLER; }
 };
 
 #endif

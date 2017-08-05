@@ -24,13 +24,15 @@ struct ScreenResizeEvent;
 class Animation
 {
 public:
-    enum RepeatType{
+    enum RepeatType
+    {
         RPT_None,
         RPT_Repeat,
         RPT_Oscillate,
         RPT_OscillateOnce
     };
-    enum SkipType{
+    enum SkipType
+    {
         /// Skip on time, play every frame
         SKIP_TIME,
         /// Ensure timing, skip frames (last frame is always played before anim is finished)
@@ -45,7 +47,7 @@ public:
     unsigned getNumFrames() const { return numFrames_; }
     void setNumFrames(unsigned numFrames);
     RepeatType getRepeat() const { return repeat_; }
-    void setRepeat(RepeatType repeat){ repeat_ = repeat; };
+    void setRepeat(RepeatType repeat) { repeat_ = repeat; };
     unsigned getCurFrame() const { return curFrame_; }
     bool isLastFrame() const;
     SkipType getSkipType() const { return skipType_; }
@@ -54,13 +56,14 @@ public:
     void update(unsigned time, Window* parent);
     /// Finish the animations
     /// If finishImmediatelly is true, then execute the last frame (skipping all frames in between)
-    /// else just let them play them to the end (setting repeat to oscillateOnce for oscillate or none for repeat) 
+    /// else just let them play them to the end (setting repeat to oscillateOnce for oscillate or none for repeat)
     void finish(Window* parent, bool finishImmediately);
 
     /// Return true when the animation is done
     virtual bool isFinished() const;
     /// React when the parents elements have been rescaled
-    virtual void onRescale(const ScreenResizeEvent& rs){}
+    virtual void onRescale(const ScreenResizeEvent& rs) {}
+
 protected:
     /// Function for subclasses to override to do the actual animation
     /// Gets the element and the time into the next frame as a fraction of the frameRate [0..1)
@@ -68,6 +71,7 @@ protected:
     virtual void doUpdate(Window* element, double nextFramepartTime) = 0;
     /// Return the current factor [0, 1] for linearly interpolating over the duration if the animation
     double getCurLinearInterpolationFactor(double nextFramepartTime) const;
+
 private:
     /// Executes the current frame
     void execFrame(Window* parent, unsigned remainingTime);
@@ -92,7 +96,7 @@ private:
     bool countUp_;
     /// What to do when the passed time exceeds more than one frame
     SkipType skipType_;
-    /// Whether the animation has started (frame 0 called, time set) 
+    /// Whether the animation has started (frame 0 called, time set)
     bool hasStarted_;
 };
 

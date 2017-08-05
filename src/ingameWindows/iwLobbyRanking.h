@@ -23,14 +23,14 @@
 
 class iwLobbyRanking : public IngameWindow
 {
-    public:
-        iwLobbyRanking();
+public:
+    iwLobbyRanking();
 
-    protected:
-        void UpdateRankings(bool first = false);
+protected:
+    void UpdateRankings(bool first = false);
 
-        void Msg_Timer(const unsigned ctrl_id) override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // iwLOBBYRANKING_H_INCLUDED
