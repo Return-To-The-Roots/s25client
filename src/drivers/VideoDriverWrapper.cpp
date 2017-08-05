@@ -328,6 +328,26 @@ bool VideoDriverWrapper::Run()
     return videodriver->MessageLoop();
 }
 
+unsigned VideoDriverWrapper::nextPowerOfTwo(unsigned k)
+{
+    if(k == 0)
+        return 1;
+
+    k--;
+
+    for(unsigned i = 1; i < sizeof(unsigned)*CHAR_BIT; i *= 2)
+    {
+        k = k | k >> i;
+    }
+
+    return k + 1;
+}
+
+Extent VideoDriverWrapper::calcPreferredTextureSize(const Extent& minSize) const
+{
+    return Extent(nextPowerOfTwo(minSize.x), nextPowerOfTwo(minSize.y));
+}
+
 bool VideoDriverWrapper::Initialize()
 {
     if(!isOglEnabled_)

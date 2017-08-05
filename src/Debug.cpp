@@ -38,7 +38,7 @@
 #   include <execinfo.h>
 #endif
 
-#include "../libutil/src/Log.h"
+#include "libutil/src/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 

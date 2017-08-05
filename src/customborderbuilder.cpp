@@ -44,7 +44,7 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 #include "defines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"
 #include "ogl/glArchivItem_Bitmap_RLE.h"
-#include "../libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/ArchivInfo.h"
 
 CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette* const palette) : palette(palette)
 {
@@ -251,7 +251,7 @@ int CustomBorderBuilder::buildBorder(const unsigned width, const unsigned height
     for(unsigned i = 0; i < 4; i++)
     {
         glArchivItem_Bitmap_RLE* customEdgeRLE = new glArchivItem_Bitmap_RLE;
-        customEdgeRLE->setWidth(customEdge[i]->w); customEdgeRLE->setHeight(customEdge[i]->h); customEdgeRLE->tex_alloc();
+        customEdgeRLE->init(customEdge[i]->w, customEdge[i]->h, libsiedler2::FORMAT_PALETTED, palette);
         BdrBitmap2BitmapRLE2(customEdge[i], customEdgeRLE);
         borderInfo[i] = customEdgeRLE;
     }
@@ -269,7 +269,7 @@ void CustomBorderBuilder::BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE* bit
     for(y = 0; y < bitmapRLE->getHeight(); y++)
         for(x = 0; x < bitmapRLE->getWidth(); x++)
         {
-            bdrBitmap->put(x, y, bitmapRLE->tex_getPixel(x, y, palette));
+            bdrBitmap->put(x, y, bitmapRLE->getPixelClrIdx(x, y));
         }
 }
 
@@ -279,7 +279,7 @@ void CustomBorderBuilder::BdrBitmap2BitmapRLE2(BdrBitmap* bdrBitmap, glArchivIte
     for(unsigned y = 0; y < bdrBitmap->h; y++)
         for(unsigned x = 0; x < bdrBitmap->w; x++)
         {
-            bitmapRLE->tex_setPixel(x, y, bdrBitmap->get(x, y), palette);
+            bitmapRLE->setPixel(x, y, bdrBitmap->get(x, y));
         }
 }
 

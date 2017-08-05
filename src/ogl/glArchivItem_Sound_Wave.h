@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Sound_Wave.h"
+#include "libsiedler2/src/ArchivItem_Sound_Wave.h"
 #include "glArchivItem_Sound.h"
 
 class glArchivItem_Sound_Wave : public libsiedler2::baseArchivItem_Sound_Wave, public glArchivItem_Sound

@@ -28,15 +28,6 @@ glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music& item)
 {
 }
 
-glArchivItem_Music& glArchivItem_Music::operator=(const glArchivItem_Music& item)
-{
-    if(this == &item)
-        return *this;
-    libsiedler2::baseArchivItem_Sound::operator=(item);
-    sound = item.sound;
-    return *this;
-}
-
 glArchivItem_Music::~glArchivItem_Music()
 {
 }

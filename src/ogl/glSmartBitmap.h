@@ -72,8 +72,6 @@ class glSmartBitmap
         void add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
         void add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership = false);
         void addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership = false);
-
-        static unsigned nextPowerOfTwo(unsigned k);
 };
 
 #endif

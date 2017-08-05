@@ -32,6 +32,8 @@
 #include <cmath>
 #include <vector>
 
+//#define RTTR_PRINT_FONTS
+
 typedef utf8::iterator<std::string::const_iterator> utf8Iterator;
 
 
@@ -91,24 +93,6 @@ glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj): ArchivItem_F
         fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
     if(obj.fontWithOutline)
         fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
-}
-
-glArchivItem_Font& glArchivItem_Font::operator=(const glArchivItem_Font& obj)
-{
-    if(this == &obj)
-        return *this;
-
-    libsiedler2::ArchivItem_Font::operator=(obj);
-    utf8_mapping = obj.utf8_mapping;
-    if(obj.fontNoOutline)
-        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
-    else
-        fontNoOutline.reset();
-    if(obj.fontWithOutline)
-        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
-    else
-        fontWithOutline.reset();
-    return *this;
 }
 
 inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned c) const
@@ -273,7 +257,10 @@ void glArchivItem_Font::Draw(DrawPoint pos,
 
     std::vector<GL_T2F_V3F_Struct> texList;
     texList.reserve((maxNumChars + end.length()) * 4);
-    const Point<float> texSize(fontNoOutline->GetTexSize());
+    // Get texture first as it might need to be created
+    glArchivItem_Bitmap& usedFont = ((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
+    unsigned texture = usedFont.GetTexture();
+    const Point<float> texSize(usedFont.GetTexSize());
     
     for(std::string::iterator it = text.begin(); it != itEnd;)
     {
@@ -315,7 +302,7 @@ void glArchivItem_Font::Draw(DrawPoint pos,
 
     glVertexPointer(3, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].x);
     glTexCoordPointer(2, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].tx);
-    VIDEODRIVER.BindTexture(((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? fontNoOutline->GetTexture() : fontWithOutline->GetTexture());
+    VIDEODRIVER.BindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.size());
 }
@@ -575,8 +562,8 @@ void glArchivItem_Font::initFont()
         }
 
         // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
-        c->print(&bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
-        c->print(&bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette, 128, curPos.x, curPos.y);
+        c->print(&bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
+        c->print(&bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y);
 
         CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));
 
@@ -585,8 +572,8 @@ void glArchivItem_Font::initFont()
         ++numChars;
     }
 
-    fontNoOutline->create(texSize.x, texSize.y, &bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette);
-    fontWithOutline->create(texSize.x, texSize.y, &bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_RGBA, palette);
+    fontNoOutline->create(texSize.x, texSize.y, &bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
+    fontWithOutline->create(texSize.x, texSize.y, &bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
 
     // Set the placeholder for non-existant glyphs. Use '?' if possible (should always be)
     if(helpers::contains(utf8_mapping, '?'))
@@ -598,7 +585,11 @@ void glArchivItem_Font::initFont()
         placeHolder = utf8_mapping.begin()->second;
     }
 
-    /*ArchivInfo items;
-    items.pushC(_font);
-    libsiedler2::loader::WriteBMP((std::string("font") + std::string(getName()) + std::string(".bmp")).c_str(), LOADER.GetPaletteN("colors"), &items);*/
+#ifdef RTTR_PRINT_FONTS
+    ArchivInfo items;
+    items.pushC(*fontNoOutline);
+    libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
+    items.setC(0, *fontWithOutline);
+    libsiedler2::Write("font" + getName() + "_Outline.bmp", items);
+#endif
 }

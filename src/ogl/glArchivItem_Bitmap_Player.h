@@ -32,8 +32,6 @@ class glArchivItem_Bitmap_Player : public libsiedler2::ArchivItem_Bitmap_Player,
         glArchivItem_Bitmap_Player() {}
         glArchivItem_Bitmap_Player(const glArchivItem_Bitmap_Player& item) : ArchivItem_BitmapBase(item), ArchivItem_Bitmap_Player(item), glArchivItem_BitmapBase(item) {}
 
-        Extent GetTexSize() const;
-
         /// Draw the texture in the given rect, stretching if required
         /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)
         void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
@@ -44,6 +42,7 @@ class glArchivItem_Bitmap_Player : public libsiedler2::ArchivItem_Bitmap_Player,
     protected:
         void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
         void FillTexture() override;
+        Extent CalcTextureSize() const override;
 };
 
 #endif // !GLARCHIVITEM_BITMAP_PLAYER_H_INCLUDED

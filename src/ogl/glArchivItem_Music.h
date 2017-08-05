@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Sound.h"
+#include "libsiedler2/src/ArchivItem_Sound.h"
 class Sound;
 
 class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
@@ -27,7 +27,6 @@ class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
     public:
         glArchivItem_Music();
         glArchivItem_Music(const glArchivItem_Music& item);
-        glArchivItem_Music& operator=(const glArchivItem_Music& item);
 
         ~glArchivItem_Music() override;
 

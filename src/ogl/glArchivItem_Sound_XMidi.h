@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Sound_XMidi.h"
+#include "libsiedler2/src/ArchivItem_Sound_XMidi.h"
 #include "glArchivItem_Music.h"
 
 class glArchivItem_Sound_XMidi : public libsiedler2::baseArchivItem_Sound_XMidi, public glArchivItem_Music

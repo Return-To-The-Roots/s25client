@@ -47,8 +47,8 @@ class AudioSDL : public AudioDriver
         /// Treiberaufräumfunktion.
         void CleanUp() override;
 
-        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) override;
-        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size) override;
+        Sound* LoadEffect(const std::string& filepath) override;
+        Sound* LoadMusic(const std::string& filepath) override;
 
         /// Spielt Sound ab
         unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) override;

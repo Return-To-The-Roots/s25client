@@ -26,12 +26,18 @@
  */
 void glArchivItem_Bob::Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color)
 {
-    unsigned good = item * 96 + animationstep * 12 + ( (direction + 3) % 6 ) + fat * 6;
-    unsigned body = fat * 48 + ( (direction + 3) % 6 ) * 8 + animationstep;
-    if(links[good] == 92)
+    // Correct dir to image dir
+    direction = (direction + 3) % 6;
+    // 8 Anim steps, 2 types (fat, not fat), 6 directions -->
+    // Array [item][animStep][fat][direction]: [35][8][2][6]
+    unsigned good = ((item * 8 + animationstep) * 2 + fat) * 6 + direction;
+    // Array: [fat][direction][animStep]: [2][6][8] = 96 entries
+    unsigned body = (fat * 6 + direction) * 8 + animationstep;
+    if(links[good] == 92 && fat)
     {
-        good -= fat * 6;
-        body -= fat * 48;
+        // No fat version(?)
+        good -= 6;
+        body -= 6 * 8; // 48
     }
 
     glArchivItem_Bitmap_Player* koerper = dynamic_cast<glArchivItem_Bitmap_Player*>(get(body));

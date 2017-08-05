@@ -39,8 +39,6 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
         glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
         glArchivItem_Font(const glArchivItem_Font& item);
 
-        glArchivItem_Font& operator=(const glArchivItem_Font& obj);
-
         /// Zeichnet einen Text.
         void Draw(DrawPoint pos, const ucString& wtext,   unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
         void Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0, unsigned short max = 0xFFFF, const std::string& end = "...");

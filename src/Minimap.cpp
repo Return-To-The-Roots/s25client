@@ -48,7 +48,7 @@ void Minimap::CreateMapTexture()
 
     map.setFilter(GL_LINEAR);
     map.create(mapSize.x * 2, mapSize.y, &buffer[0], mapSize.x * 2, mapSize.y,
-               libsiedler2::FORMAT_RGBA, LOADER.GetPaletteN("pal5"));
+               libsiedler2::FORMAT_BGRA, LOADER.GetPaletteN("pal5"));
 }
 
 void Minimap::Draw(const Rect& rect)

@@ -33,7 +33,7 @@ unsigned glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
         return 0xFFFFFFFF;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadEffect(AudioType::AD_WAVE, &data.front(), data.size());
+        sound = AUDIODRIVER.LoadEffect(*this, ".wav");
 
     return AUDIODRIVER.PlayEffect(sound, volume, loop);
 }

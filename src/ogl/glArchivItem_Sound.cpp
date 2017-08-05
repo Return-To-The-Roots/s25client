@@ -28,14 +28,5 @@ glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item)
 {
 }
 
-glArchivItem_Sound& glArchivItem_Sound::operator=(const glArchivItem_Sound& item)
-{
-    if(this == &item)
-        return *this;
-    baseArchivItem_Sound::operator=(item);
-    sound = item.sound;
-    return *this;
-}
-
 glArchivItem_Sound::~glArchivItem_Sound()
 {}

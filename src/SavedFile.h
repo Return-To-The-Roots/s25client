@@ -21,7 +21,7 @@
 
 #include "gameData/NationConsts.h"
 #include "GlobalGameSettings.h"
-#include "../libutil/src/MyTime.h"
+#include "libutil/src/MyTime.h"
 #include <string>
 #include <stdint.h>
 

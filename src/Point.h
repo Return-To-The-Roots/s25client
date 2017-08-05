@@ -108,6 +108,13 @@ inline Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
     return Point<T>(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
+/// Compute pt.x * pt.y
+template<typename T>
+inline T prodOfComponents(const Point<T>& pt)
+{
+    return pt.x * pt.y;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Math ops: add/subtract/negate of Point(s). multiply/divide of points and or scalars
 

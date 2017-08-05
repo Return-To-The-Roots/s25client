@@ -321,7 +321,7 @@ bool InitDirectories()
 
 bool InitGame()
 {
-    libsiedler2::setTextureFormat(libsiedler2::FORMAT_RGBA);
+    libsiedler2::setGlobalTextureFormat(libsiedler2::FORMAT_BGRA);
     libsiedler2::setAllocator(new GlAllocator());
 
     // Socketzeug initialisieren

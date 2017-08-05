@@ -23,7 +23,7 @@
 #include "Loader.h"
 #include "libutil/src/Log.h"
 
-#include "../libsiedler2/src/prototypen.h"
+#include "libsiedler2/src/prototypen.h"
 #include "ogl/glArchivItem_Music.h"
 #include <sstream>
 #include <algorithm>

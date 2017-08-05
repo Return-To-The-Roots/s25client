@@ -26,7 +26,7 @@
 class IAudioDriver;
 class Sound;
 
-#define MAX_DRIVER_COUNT 20
+namespace libsiedler2{ class baseArchivItem_Sound; }
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -43,8 +43,10 @@ class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicie
         bool LoadDriver();
 
         /// Lädt einen Sound.
-        Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned size);
-        Sound* LoadMusic(AudioType data_type, const unsigned char* data, unsigned size);
+        Sound* LoadEffect(const std::string& filepath);
+        Sound* LoadEffect(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension);
+        Sound* LoadMusic(const std::string& filepath);
+        Sound* LoadMusic(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension);
 
         /// Spielt einen Sound
         unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop);

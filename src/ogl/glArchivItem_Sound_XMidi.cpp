@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_XMidi.h"
-
+#include "libsiedler2/src/ArchivItem_Sound_Midi.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
 
@@ -34,10 +34,12 @@ void glArchivItem_Sound_XMidi::Play(const unsigned repeats)
 
     if(!sound)
     {
-        if(tracklist[0].getMid() == NULL)
-            tracklist[0].XMid2Mid();
-
-        sound = AUDIODRIVER.LoadMusic(AudioType::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
+        const libsiedler2::MIDI_Track* midiTrack = getMidiTrack(0);
+        if(!midiTrack)
+            return;
+        libsiedler2::ArchivItem_Sound_Midi soundArchiv;
+        soundArchiv.addTrack(*midiTrack);
+        sound = AUDIODRIVER.LoadMusic(soundArchiv, ".midi");
     }
 
     if(sound)

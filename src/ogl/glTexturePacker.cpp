@@ -62,8 +62,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
     }
 
     // most cards work much better with texture sizes of powers of two.
-    maxBmpSize.x = glSmartBitmap::nextPowerOfTwo(maxBmpSize.x);
-    maxBmpSize.y = glSmartBitmap::nextPowerOfTwo(maxBmpSize.y);
+    maxBmpSize = VIDEODRIVER.calcPreferredTextureSize(maxBmpSize);
 
     int parTexWidth = 0;
     glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, maxBmpSize.x, maxBmpSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, NULL);

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Bitmap_Shadow.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Shadow.h"
 #include "glArchivItem_Bitmap.h"
 
 /// Klasse für GL-Shadow-Bitmaps.

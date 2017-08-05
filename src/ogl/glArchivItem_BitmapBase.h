@@ -29,8 +29,6 @@ public:
     glArchivItem_BitmapBase(const glArchivItem_BitmapBase& other);
     ~glArchivItem_BitmapBase() override;
 
-    glArchivItem_BitmapBase& operator=(const glArchivItem_BitmapBase& item);
-
     /// liefert das GL-Textur-Handle.
     unsigned GetTexture();
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
@@ -41,12 +39,14 @@ public:
     /// Return the "Null point"
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
     Extent GetSize() const { return Extent(getWidth(), getHeight()); }
-
+    Extent GetTexSize() const;
+    
 private:
     /// Erzeugt die Textur.
     void GenerateTexture();
 
     unsigned texture; /// Das GL-Textur-Handle
+    Extent textureSize_; /// The size of the texture. Only valid when texture exists
     unsigned filter;  /// Der aktuell gewählte Texturfilter
 
 protected:
@@ -54,6 +54,8 @@ protected:
     int GetInternalFormat() const;
     /// Fill a just generated texture (glTexImage2D calls)
     virtual void FillTexture() = 0;
+    /// Calculate the actual texture size
+    virtual Extent CalcTextureSize() const = 0;
     /// Returns the currently set texture or 0 if none created
     unsigned GetTexNoCreate() { return texture; }
 };

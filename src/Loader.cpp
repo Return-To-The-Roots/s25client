@@ -44,6 +44,7 @@
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
 
+#include "libsiedler2/src/ErrorCodes.h"
 #include "libsiedler2/src/libsiedler2.h"
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Palette.h"
@@ -206,6 +207,12 @@ bool Loader::LoadLsts(unsigned dir)
 bool Loader::LoadSounds()
 {
     std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
+    if(bfs::exists(soundLSTPath))
+    {
+        // Archive might be faulty: Remove if it is and recreate
+        if(!LoadFile(soundLSTPath, NULL, true))
+            bfs::remove(soundLSTPath);
+    }
     // ist die konvertierte sound.lst vorhanden?
     if(!bfs::exists(soundLSTPath))
     {
@@ -227,7 +234,7 @@ bool Loader::LoadSounds()
         cmdss << "\" -f \"";
         cmdss << GetFilePath(FILE_PATHS[49]); // quelle
         cmdss << "\" -t \"";
-        cmdss << GetFilePath(FILE_PATHS[55]); // ziel
+        cmdss << soundLSTPath; // ziel
         cmdss << "\"";
 
         std::string cmd = cmdss.str();
@@ -260,9 +267,9 @@ bool Loader::LoadSounds()
 
         LOG.write(_("Loading \"%s\": ")) % *it;
         unsigned startTime = VIDEODRIVER.GetTickCount();
-        if(libsiedler2::Load(*it, sng) != 0 )
+        if(int ec = libsiedler2::Load(*it, sng))
         {
-            LOG.write(_("failed\n"));
+            LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
             return false;
         }
         LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
@@ -368,6 +375,8 @@ void Loader::LoadDummyGUIFiles()
     // Palettes
     libsiedler2::ArchivItem_Palette* palette = new libsiedler2::ArchivItem_Palette;
     files_["colors"].archiv.push(palette);
+    palette = new libsiedler2::ArchivItem_Palette;
+    files_["pal5"].archiv.push(palette);
     // GUI elements
     libsiedler2::ArchivInfo& resource = files_["resource"].archiv;
     resource.alloc(57);
@@ -375,14 +384,14 @@ void Loader::LoadDummyGUIFiles()
     {
         glArchivItem_Bitmap_RLE* bmp = new glArchivItem_Bitmap_RLE();
         const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
         resource.set(id, bmp);
     }
     for(unsigned id = 36; id < 57; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
         const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
         resource.set(id, bmp);
     }
     libsiedler2::ArchivInfo& io = files_["io"].archiv;
@@ -390,7 +399,7 @@ void Loader::LoadDummyGUIFiles()
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
         const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_RGBA, palette);
+        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
         io.push(bmp);
     }
     // Fonts
@@ -408,7 +417,7 @@ void Loader::LoadDummyGUIFiles()
         for(unsigned id = 0x21; id < 255; id++)
         {
             glArchivItem_Bitmap_Player* bmp = new glArchivItem_Bitmap_Player();
-            bmp->create(dx, dy, reinterpret_cast<const unsigned char*>(&buffer[0]), dx, dy, libsiedler2::FORMAT_RGBA, palette, 0);
+            bmp->create(dx, dy, reinterpret_cast<const unsigned char*>(&buffer[0]), dx, dy, libsiedler2::FORMAT_BGRA, palette, 0);
             font->set(id, bmp);
         }
         fonts.set(i, font);
@@ -759,32 +768,24 @@ void Loader::fillCaches()
             {
                 for (unsigned fat = 0; fat < 2; ++fat)
                 {
-                    unsigned id;
                     glSmartBitmap& bmp = carrier_cache[ware][dir][ani_step][fat];
-
                     bmp.reset();
 
+                    unsigned id;
+                    // Japanese shield is missing
                     if (ware == GD_SHIELDJAPANESE)
-                    {
                         id = GD_SHIELDROMANS;
-                    }
                     else
-                    {
                         id = ware;
-                    }
+                    
+                    unsigned imgDir = (dir + 3) % 6;
 
-                    unsigned good = id * 96 + ani_step * 12 + ( (dir + 3) % 6 ) + fat * 6;
-                    unsigned body = fat * 48 + ( (dir + 3) % 6 ) * 8 + ani_step;
-
-                    /*if(bob_jobs->getLink(good) == 92)
-                    {
-                        good -= fat*6;
-                        body -= fat*48;
-                    }*/
+                    unsigned good = id * 96 + ani_step * 12 + fat * 6 + imgDir;
+                    unsigned body = fat * 48 + imgDir * 8 + ani_step;
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(body)));
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->get(96 + bob_carrier->getLink(good))));
-                    bmp.addShadow(GetMapImageN(900 + ( (dir + 3) % 6 ) * 8 + ani_step));
+                    bmp.addShadow(GetMapImageN(900 + imgDir * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -1071,7 +1072,6 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
     bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
-    bitmap->setPalette(*palette);
     return bitmap;
 }
 
@@ -1093,7 +1093,6 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
     image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
 
     glArchivItem_Bitmap_Raw bitmap;
-    bitmap.setFormat(libsiedler2::FORMAT_RGBA);
 
     libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
     for(unsigned char i = 0; i < color_count; ++i)
@@ -1110,7 +1109,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
         bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED,palette);
         if(colorShift)
         {
-            bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
+            bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
             for(std::vector<uint32_t>::iterator it = shiftBuffer.begin(); it != shiftBuffer.end(); ++it)
             {
                 unsigned a = GetAlpha(*it) + GetAlpha(colorShift);
@@ -1127,7 +1126,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
                     b -= 0xFF;
                 *it = MakeColor(a, r, g, b);
             }
-            bitmap.create(width, height, reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_RGBA);
+            bitmap.create(width, height, reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
         }
 
         destination->pushC(bitmap);
@@ -1153,9 +1152,9 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
     LOG.write(_("Loading \"%s\": ")) % file;
     fflush(stdout);
 
-    if(libsiedler2::Load(file, archiv, palette) != 0)
+    if(int ec = libsiedler2::Load(file, archiv, palette))
     {
-        LOG.write(_("failed\n"));
+        LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
         return false;
     }
 
@@ -1267,7 +1266,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             out->setNy(ny);
 
             std::fill(buffer.begin(), buffer.end(), 0);
-            in->print(&buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+            in->print(&buffer.front(), 1000, 1000, libsiedler2::FORMAT_BGRA, palette);
 
             switch(bobtype)
             {
@@ -1275,11 +1274,11 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
                 case libsiedler2::BOBTYPE_BITMAP_SHADOW:
                 case libsiedler2::BOBTYPE_BITMAP_RAW:
                 {
-                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette);
+                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_BGRA, palette);
                 } break;
                 case libsiedler2::BOBTYPE_BITMAP_PLAYER:
                 {
-                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_RGBA, palette, 128);
+                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000, libsiedler2::FORMAT_BGRA, palette, 128);
                 } break;
                 default:
                     throw std::logic_error("Invalid Bitmap type");

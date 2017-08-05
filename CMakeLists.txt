@@ -373,6 +373,7 @@ file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 # add build directory to compiler search path for configured includes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 enable_testing()
 

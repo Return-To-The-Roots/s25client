@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Map.h"
 
-#include "../libsiedler2/src/ArchivItem_Raw.h"
+#include "libsiedler2/src/ArchivItem_Raw.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "glAllocator.h"
 

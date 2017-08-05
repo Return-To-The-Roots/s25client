@@ -45,16 +45,16 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BobType type, libsiedl
         case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
             switch(subtype)
             {
+                case libsiedler2::SOUNDTYPE_NONE:
+                    break;
                 case libsiedler2::SOUNDTYPE_MIDI: // MIDI
                     return new glArchivItem_Sound_Midi();
                 case libsiedler2::SOUNDTYPE_WAVE: // WAV
                     return new glArchivItem_Sound_Wave();
                 case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
                     return new glArchivItem_Sound_XMidi();
-                case libsiedler2::SOUNDTYPE_OTHER: // Andere
-                    return new glArchivItem_Sound_Other();
-                default:
-                    break;
+                default: // Andere
+                    return new glArchivItem_Sound_Other(subtype);
             }
             break;
         case libsiedler2::BOBTYPE_BOB: // Bob-File
@@ -95,16 +95,16 @@ libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item)
 
             switch(subtype)
             {
+                case libsiedler2::SOUNDTYPE_NONE:
+                    break;
                 case libsiedler2::SOUNDTYPE_MIDI: // MIDI
                     return new glArchivItem_Sound_Midi(dynamic_cast<const glArchivItem_Sound_Midi&>(item));
                 case libsiedler2::SOUNDTYPE_WAVE: // WAV
                     return new glArchivItem_Sound_Wave(dynamic_cast<const glArchivItem_Sound_Wave&>(item));
                 case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
                     return new glArchivItem_Sound_XMidi(dynamic_cast<const glArchivItem_Sound_XMidi&>(item));
-                case libsiedler2::SOUNDTYPE_OTHER: // Andere
+                default: // Andere
                     return new glArchivItem_Sound_Other(dynamic_cast<const glArchivItem_Sound_Other&>(item));
-                default:
-                    break;
             }
             break;
         }

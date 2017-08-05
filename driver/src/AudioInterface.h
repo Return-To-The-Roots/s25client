@@ -17,7 +17,7 @@
 #ifndef AUDIOINTERFACE_H_INCLUDED
 #define AUDIOINTERFACE_H_INCLUDED
 
-#include "AudioType.h"
+#include <string>
 
 class Sound;
 
@@ -34,8 +34,8 @@ public:
 
     virtual void CleanUp() = 0;
 
-    virtual Sound* LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size) = 0;
-    virtual Sound* LoadMusic (AudioType data_type, const unsigned char* data, unsigned long size) = 0;
+    virtual Sound* LoadEffect(const std::string& filepath) = 0;
+    virtual Sound* LoadMusic (const std::string& filepath) = 0;
 
     /// Spielt Sound ab
     virtual unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop) = 0;

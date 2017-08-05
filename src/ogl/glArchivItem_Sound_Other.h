@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Sound_Other.h"
+#include "libsiedler2/src/ArchivItem_Sound_Other.h"
 #include "glArchivItem_Music.h"
 
 class glArchivItem_Sound_Other : public libsiedler2::baseArchivItem_Sound_Other, public glArchivItem_Music
 {
     public:
-        glArchivItem_Sound_Other() : baseArchivItem_Sound(), baseArchivItem_Sound_Other(), glArchivItem_Music() {}
+        glArchivItem_Sound_Other(libsiedler2::SoundType soundType) : baseArchivItem_Sound(), baseArchivItem_Sound_Other(soundType), glArchivItem_Music() {}
 
         glArchivItem_Sound_Other(const glArchivItem_Sound_Other& item) : baseArchivItem_Sound(item), baseArchivItem_Sound_Other(item), glArchivItem_Music(item) {}
 

@@ -23,6 +23,7 @@
 #include "FOWObjects.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"
+#include "libsiedler2/src/ColorARGB.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv):
     Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),
@@ -212,21 +213,22 @@ void IngameMinimap::BeforeDrawing()
         {
             // Ja, alles neu erzeugen
             UpdateAll();
-            RTTR_FOREACH_PT(MapPoint, GetMapSize())
-                nodes_updated[GetMMIdx(pt)] = false;
+            std::fill(nodes_updated.begin(), nodes_updated.end(), false);
         } else
         {
+            map.beginUpdate();
             // Entsprechende Pixel updaten
             for(std::vector<MapPoint>::iterator it = nodesToUpdate.begin(); it != nodesToUpdate.end(); ++it)
             {
                 for(unsigned t = 0; t < 2; ++t)
                 {
                     unsigned color = CalcPixelColor(*it, t);
-                    map.tex_setPixel((it->x * 2 + t + (it->y & 1)) % (GetMapSize().x * 2), it->y, GetRed(color), GetGreen(color),
-                        GetBlue(color), GetAlpha(color));
+                    DrawPoint texPos((it->x * 2 + t + (it->y & 1)) % (GetMapSize().x * 2), it->y);
+                    map.updatePixel(texPos, libsiedler2::ColorARGB(color));
                 }
                 nodes_updated[GetMMIdx(*it)] = false;
             }
+            map.endUpdate();
         }
 
         this->nodesToUpdate.clear();
@@ -247,6 +249,7 @@ void IngameMinimap::UpdateAll()
  */
 void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 {
+    map.beginUpdate();
     // Gesamte Karte neu berechnen
     RTTR_FOREACH_PT(MapPoint, GetMapSize())
     {
@@ -258,11 +261,12 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
                     (dos[GetMMIdx(pt)] == DO_ROAD && !roads))))
             {
                 unsigned color = CalcPixelColor(pt, t);
-                map.tex_setPixel((pt.x * 2 + t + (pt.y & 1)) % (GetMapSize().x * 2), pt.y, GetRed(color), GetGreen(color),
-                    GetBlue(color), GetAlpha(color));
+                DrawPoint texPos((pt.x * 2 + t + (pt.y & 1)) % (GetMapSize().x * 2), pt.y);
+                map.updatePixel(texPos, libsiedler2::ColorARGB(color));
             }
         }
     }
+    map.endUpdate();
 }
 
 void IngameMinimap::ToggleTerritory()

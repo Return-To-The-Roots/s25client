@@ -33,7 +33,15 @@ void glArchivItem_Sound_Other::Play(const unsigned repeats)
         return;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadMusic(AudioType::AD_OTHER, &data.front(), data.size());
+    {
+        std::string extension = ".tmp";
+        if(getType() == libsiedler2::SOUNDTYPE_OGG)
+            extension = ".ogg";
+        else if(getType() == libsiedler2::SOUNDTYPE_MP3)
+            extension = ".mp3";
+
+        sound = AUDIODRIVER.LoadMusic(*this, extension);
+    }
 
     if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);

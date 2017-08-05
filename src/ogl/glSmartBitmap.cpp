@@ -72,21 +72,6 @@ void glSmartBitmap::addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool tran
     if(bmp) items.push_back(glBitmapItem(bmp, true, transferOwnership));
 }
 
-unsigned glSmartBitmap::nextPowerOfTwo(unsigned k)
-{
-    if (k == 0)
-        return 1;
-
-    k--;
-
-    for (unsigned i = 1; i < sizeof(unsigned)*CHAR_BIT; i *= 2)
-    {
-        k = k | k >> i;
-    }
-
-    return k + 1;
-}
-
 void glSmartBitmap::calcDimensions()
 {
     if (items.empty())
@@ -131,7 +116,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             std::vector<uint32_t> tmp(size_.x * size_.y);
 
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-                ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_RGBA, p_5,
+                ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_BGRA, p_5,
                     offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
 
             unsigned tmpIdx = 0;
@@ -151,7 +136,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             // No player bitmap -> Just (over)write the data
             RTTR_Assert(bmpItem.type == TYPE_ARCHIVITEM_BITMAP);
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-                ->print(reinterpret_cast<unsigned char*>(&buffer.front()), bufSize.x, bufSize.y, libsiedler2::FORMAT_RGBA, p_5,
+                ->print(reinterpret_cast<unsigned char*>(&buffer.front()), bufSize.x, bufSize.y, libsiedler2::FORMAT_BGRA, p_5,
                     offset.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
         } else
         {
@@ -160,12 +145,12 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             if (bmpItem.type == TYPE_ARCHIVITEM_BITMAP)
             {
                 dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-                    ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_RGBA, p_5,
+                    ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_BGRA, p_5,
                         offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
             } else
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(bmpItem.bmp)
-                    ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_RGBA, p_colors, 128,
+                    ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_BGRA, p_colors, 128,
                         offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y, false);
             }
             // Now copy temp buffer to real buffer, but we need to reset all player colors that would be overwritten
@@ -194,7 +179,7 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             if(bmpItem.type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(bmpItem.bmp)
-                    ->print(reinterpret_cast<unsigned char*>(&buffer.front()), bufSize.x, bufSize.y, libsiedler2::FORMAT_RGBA, p_colors, 128,
+                    ->print(reinterpret_cast<unsigned char*>(&buffer.front()), bufSize.x, bufSize.y, libsiedler2::FORMAT_BGRA, p_colors, 128,
                         offset.x + size_.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y, true);
             }
         }
@@ -216,8 +201,7 @@ void glSmartBitmap::generateTexture()
 
     calcDimensions();
 
-    size_.x = nextPowerOfTwo(size_.x);
-    size_.y = nextPowerOfTwo(size_.y);
+    size_ = VIDEODRIVER.calcPreferredTextureSize(size_);
 
     Extent bufSize = getTexSize();
 

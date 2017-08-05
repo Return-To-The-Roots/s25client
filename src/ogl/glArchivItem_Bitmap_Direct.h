@@ -20,7 +20,9 @@
 #pragma once
 
 #include "glArchivItem_Bitmap.h"
-namespace libsiedler2 { class ArchivItem_Palette; }
+#include "Rect.h"
+
+namespace libsiedler2{ struct ColorARGB; }
 
 /// Klasse für GL-Direct-Bitmaps.
 class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
@@ -29,18 +31,20 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
         glArchivItem_Bitmap_Direct();
         glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item);
 
-        /// setzt einen Pixel auf einen bestimmten Wert.
-        void tex_setPixel(unsigned short x, unsigned short y, unsigned char color, const libsiedler2::ArchivItem_Palette* palette) override;
-        /// setzt einen Pixel auf einen bestimmten Wert.
-        void tex_setPixel(unsigned short x, unsigned short y, unsigned char r, unsigned char g, unsigned char b, unsigned char a) override;
-
-        /// liefert die Farbwerte eines Pixels als uc-Array: {r,g,b,a}
-        unsigned char* tex_getPixel(const unsigned short x, const unsigned short y);
+        /// Call before updating texture
+        void beginUpdate();
+        /// Call after updating texture
+        void endUpdate();
+        /// Updates a pixels color
+        void updatePixel(const DrawPoint& pos, const libsiedler2::ColorARGB& clr);
 
         /// lädt die Bilddaten aus einer Datei.
         int load(std::istream&  /*file*/, const libsiedler2::ArchivItem_Palette*  /*palette*/) override { return 254; }
         /// schreibt die Bilddaten in eine Datei.
         int write(std::ostream&  /*file*/, const libsiedler2::ArchivItem_Palette*  /*palette*/) const override { return 254; }
+    private:
+        bool isUpdating_;
+        Rect areaToUpdate_;
 };
 
 #endif // !GLARCHIVITEM_BITMAP_DIRECT_H_INCLUDED
