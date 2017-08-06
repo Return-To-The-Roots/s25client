@@ -19,8 +19,12 @@
 #include "GameLobby.h"
 #include "JoinPlayerInfo.h"
 
-GameLobby::GameLobby(unsigned numPlayers): players(numPlayers){}
-GameLobby::~GameLobby(){}
+GameLobby::GameLobby(unsigned numPlayers) : players(numPlayers)
+{
+}
+GameLobby::~GameLobby()
+{
+}
 
 JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId)
 {

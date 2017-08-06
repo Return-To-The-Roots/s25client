@@ -19,20 +19,20 @@
 
 #pragma once
 
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 
 /// Klasse für alle "globalen" Variablen/Objekte
 class GlobalVars : public Singleton<GlobalVars>
 {
-    public:
-        GlobalVars();
+public:
+    GlobalVars();
 
-    public:
-        bool notdone;
-        bool ext_vbo;
-        bool ext_swapcontrol;
-        bool isTest; // Whether we are in test mode
-        bool errorOccured; // Whether an error has occured (for test validation)
+public:
+    bool notdone;
+    bool ext_vbo;
+    bool ext_swapcontrol;
+    bool isTest;       // Whether we are in test mode
+    bool errorOccured; // Whether an error has occured (for test validation)
 };
 
 ///////////////////////////////////////////////////////////////////////////////

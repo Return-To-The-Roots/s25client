@@ -19,7 +19,6 @@
 #include "iwStorehouse.h"
 #include "buildings/nobStorehouse.h"
 
-iwStorehouse::iwStorehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobStorehouse* sh)
-    : iwBaseWarehouse(gwv, gcFactory, sh)
+iwStorehouse::iwStorehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobStorehouse* sh) : iwBaseWarehouse(gwv, gcFactory, sh)
 {
 }

@@ -26,39 +26,44 @@ class GameEvent;
 // Klasse für ein brennendes Gebäude
 class noFire : public noCoordBase
 {
-        /// Größe des Feuers: klein (0) oder groß (1)
-        unsigned char size;
-        /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
-        GameEvent* dead_event;
-        /// Wurden Feuersounds abgespielt
-        bool was_sounding;
-        /// Letzter Feuersound-Zeitpunkt
-        unsigned last_sound;
-        /// Intervall zum nächsten Feuersound
-        unsigned next_interval;
+    /// Größe des Feuers: klein (0) oder groß (1)
+    unsigned char size;
+    /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
+    GameEvent* dead_event;
+    /// Wurden Feuersounds abgespielt
+    bool was_sounding;
+    /// Letzter Feuersound-Zeitpunkt
+    unsigned last_sound;
+    /// Intervall zum nächsten Feuersound
+    unsigned next_interval;
 
-    public:
+public:
+    noFire(const MapPoint pt, const unsigned char size);
+    noFire(SerializedGameData& sgd, const unsigned obj_id);
 
-        noFire(const MapPoint pt, const unsigned char size);
-        noFire(SerializedGameData& sgd, const unsigned obj_id);
+    ~noFire() override;
+    /// Aufräummethoden
+protected:
+    void Destroy_noFire();
 
-        ~noFire() override;
-        /// Aufräummethoden
-    protected:  void Destroy_noFire();
-    public:     void Destroy() override { Destroy_noFire(); }
+public:
+    void Destroy() override { Destroy_noFire(); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noFire(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noFire(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noFire(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_FIRE; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noFire(sgd); }
 
-        BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    GO_Type GetGOT() const override { return GOT_FIRE; }
 
-        /// Zeichnen
-        void Draw(DrawPoint drawPt) override;
-        /// Benachrichtigen, wenn neuer gf erreicht wurde
-        void HandleEvent(const unsigned int id) override;
+    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+
+    /// Zeichnen
+    void Draw(DrawPoint drawPt) override;
+    /// Benachrichtigen, wenn neuer gf erreicht wurde
+    void HandleEvent(const unsigned id) override;
 };
 
 #endif

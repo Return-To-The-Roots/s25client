@@ -23,32 +23,32 @@
 
 #include "SoundManager.h"
 #include "WindowManager.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "drivers/AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 
-#include "LobbyClient.h"
-#include "GameServer.h"
 #include "GameClient.h"
+#include "GameServer.h"
+#include "liblobby/src/LobbyClient.h"
 
-#include "desktops/dskSplash.h"
-#include "desktops/dskMainMenu.h"
-#include "desktops/dskLobby.h"
-#include "ingameWindows/iwMusicPlayer.h"
-#include "ogl/glArchivItem_Font.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
-#include "gameData/GameConsts.h"
-#include "helpers/win32_nanosleep.h" // IWYU pragma: keep
+#include "desktops/dskLobby.h"
+#include "desktops/dskMainMenu.h"
+#include "desktops/dskSplash.h"
 #include "helpers/converters.h"
-#include "Log.h"
-#include "libutil/src/error.h"
+#include "helpers/win32_nanosleep.h" // IWYU pragma: keep
+#include "ingameWindows/iwMusicPlayer.h"
+#include "ogl/glArchivItem_Font.h"
+#include "gameData/GameConsts.h"
+#include "libutil/src/Log.h"
 #include "libutil/src/colors.h"
+#include "libutil/src/error.h"
 
 #include <ctime>
 
-GameManager::GameManager() : frames(0), frame_count(0), framerate(0), frame_time(0),
-    run_time(0), last_time(0), skipgf_last_time(0), skipgf_last_report_gf(0),
-    cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
+GameManager::GameManager()
+    : frames(0), frame_count(0), framerate(0), frame_time(0), run_time(0), last_time(0), skipgf_last_time(0), skipgf_last_report_gf(0),
+      cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
 {
 }
 
@@ -77,8 +77,8 @@ bool GameManager::Start()
         bool found = false;
         for(size_t i = 0; i < available_video_modes.size(); ++i)
         {
-            if(available_video_modes[i].width == SETTINGS.video.fullscreen_width &&
-                    available_video_modes[i].height == SETTINGS.video.fullscreen_height)
+            if(available_video_modes[i].width == SETTINGS.video.fullscreen_width
+               && available_video_modes[i].height == SETTINGS.video.fullscreen_height)
                 found = true;
         }
 
@@ -92,15 +92,15 @@ bool GameManager::Start()
 
     // Fenster erstellen
     if(!VIDEODRIVER.CreateScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
-            SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
-            SETTINGS.video.fullscreen))
+                                 SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
+                                 SETTINGS.video.fullscreen))
         return false;
 
     /// Audiodriver laden
     if(!AUDIODRIVER.LoadDriver())
     {
         LOG.write("Audio driver couldn't be loaded!\n");
-        //return false;
+        // return false;
     }
 
     /// Lautstärken gleich mit setzen
@@ -154,18 +154,19 @@ bool GameManager::Run()
 
     const bool skipping = GAMECLIENT.skiptogf && GAMECLIENT.skiptogf > GAMECLIENT.GetGFNumber();
 
-    //only draw if we dont skip ahead right now
+    // only draw if we dont skip ahead right now
     if(!skipping)
     {
-        const unsigned long vsync_wanted = ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 60 : SETTINGS.video.vsync;
+        const unsigned long vsync_wanted =
+          ((GAMECLIENT.GetState() != GameClient::CS_GAME) || GAMECLIENT.IsPaused()) ? 60 : SETTINGS.video.vsync;
 
         // SW-VSync (mit 4% Toleranz)
         if(vsync_wanted > 1)
         {
-    	    static unsigned long vsync = vsync_wanted;
-    	
+            static unsigned long vsync = vsync_wanted;
+
             // immer 10% dazu/weg bis man über der Framerate liegt
-            if(vsync < 200 && 1000 * framerate < (unsigned int)(960 * vsync) )
+            if(vsync < 200 && 1000 * framerate < (unsigned)(960 * vsync))
                 vsync = (1100 * vsync) / 1000;
             else if(vsync > vsync_wanted)
                 vsync = (900 * vsync) / 1000;
@@ -173,16 +174,16 @@ bool GameManager::Run()
                 vsync = vsync_wanted;
 
             unsigned long goal_ticks = 960 * 1000 * 1000 / vsync;
-    #ifdef _WIN32
+#ifdef _WIN32
             if(goal_ticks < 13 * 1000 * 1000) // timer resolutions < 13ms do not work for windows correctly
                 goal_ticks = 0;
-    #endif // !_WIN32
+#endif // !_WIN32
 
             if(goal_ticks > 0 && (current_time - last_time) * 1000 * 1000 < goal_ticks && (current_time >= last_time))
             {
                 struct timespec req;
-                req.tv_sec  = 0;
-                req.tv_nsec = goal_ticks - (current_time - last_time) * 1000 * 1000 ;
+                req.tv_sec = 0;
+                req.tv_nsec = goal_ticks - (current_time - last_time) * 1000 * 1000;
 
                 while(nanosleep(&req, &req) == -1)
                     continue;
@@ -191,43 +192,40 @@ bool GameManager::Run()
             }
         }
 
-		WINDOWMANAGER.Draw();
+        WINDOWMANAGER.Draw();
 
-		DrawCursor();
+        DrawCursor();
     } else if(GAMECLIENT.GetGFNumber() % 5000 == 0)
-	{
-        //if we skip drawing write a comment every 5k gf
+    {
+        // if we skip drawing write a comment every 5k gf
         if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
-		{
-			if(skipgf_last_time)
-				LOG.write("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")
-				% GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber()
-				% (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000)
-				% (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/5000);
-			else
-				LOG.write("jumping to gf %i, now at gf %i \n") % GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber();
-			skipgf_last_time=VIDEODRIVER.GetTickCount();
-			skipgf_last_report_gf=GAMECLIENT.GetGFNumber();
-		}
-	}
-	//jump complete!
-	if(GAMECLIENT.skiptogf && GAMECLIENT.skiptogf == GAMECLIENT.GetGFNumber())
-	{
-		if(skipgf_last_time)
-		{
-			if((GAMECLIENT.skiptogf-1)%5000>0)
-				LOG.write("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")
-				% GAMECLIENT.skiptogf % ((GAMECLIENT.skiptogf-1)%5000+1)
-                % (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/1000)
-				% (static_cast<double>(VIDEODRIVER.GetTickCount()-skipgf_last_time)/((GAMECLIENT.skiptogf-1)%5000));
-			else
-				LOG.write("jump to gf %i complete \n") % GAMECLIENT.skiptogf;
-		}
-		skipgf_last_time=0;
-		skipgf_last_report_gf=0;
-	}
+        {
+            if(skipgf_last_time)
+                LOG.write("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n") % GAMECLIENT.skiptogf
+                  % GAMECLIENT.GetGFNumber() % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 1000)
+                  % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 5000);
+            else
+                LOG.write("jumping to gf %i, now at gf %i \n") % GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber();
+            skipgf_last_time = VIDEODRIVER.GetTickCount();
+            skipgf_last_report_gf = GAMECLIENT.GetGFNumber();
+        }
+    }
+    // jump complete!
+    if(GAMECLIENT.skiptogf && GAMECLIENT.skiptogf == GAMECLIENT.GetGFNumber())
+    {
+        if(skipgf_last_time)
+        {
+            if((GAMECLIENT.skiptogf - 1) % 5000 > 0)
+                LOG.write("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n") % GAMECLIENT.skiptogf
+                  % ((GAMECLIENT.skiptogf - 1) % 5000 + 1) % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 1000)
+                  % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / ((GAMECLIENT.skiptogf - 1) % 5000));
+            else
+                LOG.write("jump to gf %i complete \n") % GAMECLIENT.skiptogf;
+        }
+        skipgf_last_time = 0;
+        skipgf_last_report_gf = 0;
+    }
     last_time = current_time;
-    
 
     // Framerate berechnen
     if(current_time - frame_time >= 1000)
@@ -246,17 +244,17 @@ bool GameManager::Run()
     }
 
     // und zeichnen
-	//only draw if we dont skip ahead right now
-	if(!skipping)
-	{
-		char frame_str[64];
-		sprintf(frame_str, "%u fps", framerate);
+    // only draw if we dont skip ahead right now
+    if(!skipping)
+    {
+        char frame_str[64];
+        sprintf(frame_str, "%u fps", framerate);
 
-		SmallFont->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth(), 0), frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
+        SmallFont->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth(), 0), frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
 
-		// Zeichenpuffer wechseln
-		VIDEODRIVER.SwapBuffers();
-	}
+        // Zeichenpuffer wechseln
+        VIDEODRIVER.SwapBuffers();
+    }
     ++frames;
 
     // Fenstermanager aufräumen
@@ -275,12 +273,12 @@ bool GameManager::StartMenu()
     if(!LOADER.LoadFilesAtStart())
     {
         s25Util::error("Einige Dateien konnten nicht geladen werden.\n"
-              "Stellen Sie sicher, dass die Siedler 2 Gold-Edition im gleichen \n"
-              "Verzeichnis wie Return to the Roots installiert ist.");
+                       "Stellen Sie sicher, dass die Siedler 2 Gold-Edition im gleichen \n"
+                       "Verzeichnis wie Return to the Roots installiert ist.");
 
         s25Util::error("Some files failed to load.\n"
-              "Please ensure that the Settlers 2 Gold-Edition is installed \n"
-              "in the same directory as Return to the Roots.");
+                       "Please ensure that the Settlers 2 Gold-Edition is installed \n"
+                       "in the same directory as Return to the Roots.");
 
         return false;
     }
@@ -318,7 +316,8 @@ bool GameManager::ShowMenu()
 void GameManager::SetCursor(CursorType cursor, bool once)
 {
     cursor_next = cursor;
-    if(!once) this->cursor_ = cursor;
+    if(!once)
+        this->cursor_ = cursor;
     return;
 }
 
@@ -336,17 +335,17 @@ void GameManager::DrawCursor()
                 LOADER.GetImageN("resource", 31)->DrawFull(VIDEODRIVER.GetMousePos());
             else
                 LOADER.GetImageN("resource", 30)->DrawFull(VIDEODRIVER.GetMousePos());
-        } break;
+        }
+        break;
         case CURSOR_SCROLL:
         case CURSOR_MOON:
         case CURSOR_RM:
-        case CURSOR_RM_PRESSED:
-        {
-            LOADER.GetImageN("resource", cursor_next)->DrawFull(VIDEODRIVER.GetMousePos());
-        } break;
+        case CURSOR_RM_PRESSED: { LOADER.GetImageN("resource", cursor_next)->DrawFull(VIDEODRIVER.GetMousePos());
+        }
+        break;
         case CURSOR_NONE:
-        default:
-        {}
+        default: {
+        }
     }
 
     cursor_next = cursor_;

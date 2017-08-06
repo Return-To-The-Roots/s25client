@@ -27,10 +27,11 @@ struct BasePlayerInfo;
 class LuaPlayerBase
 {
 protected:
-    LuaPlayerBase(){}
-    virtual ~LuaPlayerBase(){}
+    LuaPlayerBase() {}
+    virtual ~LuaPlayerBase() {}
 
     virtual const BasePlayerInfo& GetPlayer() const = 0;
+
 public:
     static void Register(kaguya::State& state);
 

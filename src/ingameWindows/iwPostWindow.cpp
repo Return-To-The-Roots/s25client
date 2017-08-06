@@ -17,79 +17,83 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwPostWindow.h"
-#include "world/GameWorldView.h"
-#include "controls/ctrlText.h"
+#include "GameClient.h"
+#include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
-#include "postSystem/PostMsg.h"
-#include "postSystem/DiplomacyPostQuestion.h"
-#include "ingameWindows/iwMissionStatement.h"
+#include "controls/ctrlText.h"
 #include "driver/src/KeyEvent.h"
-#include "Loader.h"
+#include "ingameWindows/iwMissionStatement.h"
+#include "iwHelp.h"
+#include "macros.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
+#include "postSystem/DiplomacyPostQuestion.h"
+#include "postSystem/PostMsg.h"
+#include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
-#include "macros.h"
-#include "GameClient.h"
-#include "WindowManager.h"
-#include "iwHelp.h"
 #include <iostream>
 
 // Only internally visible
-namespace{
-    // Enum is auto-numbering once we set a start value
-    enum ButtonIds{
-        ID_FIRST_FREE = 1,
-        ID_SHOW_ALL,
-        ID_SHOW_GOAL,
-        ID_SHOW_MIL,
-        ID_SHOW_GEO,
-        ID_SHOW_ECO,
-        ID_SHOW_GEN,
-        ID_HELP,
-        ID_GO_START,
-        ID_GO_BACK,
-        ID_GO_FWD,
-        ID_GO_END,
-        ID_GOTO,
-        ID_DELETE,
-        ID_IMG,
-        ID_TEXT,
-        ID_ACCEPT,
-        ID_DENY,
-        ID_INFO
-    };
-}
-
-iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
-    IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, Extent(254, 295), _("Post office"), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL), lastHasMissionGoal(true)
+namespace {
+// Enum is auto-numbering once we set a start value
+enum ButtonIds
 {
-    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 190)); // Viewer: 191 - Papier
-    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 30));  // Viewer:  31 - Soldat
-    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 20));  // Viewer:  21 - Geologe
+    ID_FIRST_FREE = 1,
+    ID_SHOW_ALL,
+    ID_SHOW_GOAL,
+    ID_SHOW_MIL,
+    ID_SHOW_GEO,
+    ID_SHOW_ECO,
+    ID_SHOW_GEN,
+    ID_HELP,
+    ID_GO_START,
+    ID_GO_BACK,
+    ID_GO_FWD,
+    ID_GO_END,
+    ID_GOTO,
+    ID_DELETE,
+    ID_IMG,
+    ID_TEXT,
+    ID_ACCEPT,
+    ID_DENY,
+    ID_INFO
+};
+} // namespace
+
+iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
+    : IngameWindow(CGI_POSTOFFICE, IngameWindow::posLastOrCenter, Extent(254, 295), _("Post office"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(NULL), lastHasMissionGoal(true)
+{
+    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 190));  // Viewer: 191 - Papier
+    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 30));   // Viewer:  31 - Soldat
+    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 20));   // Viewer:  21 - Geologe
     AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 28));  // Viewer:  29 - Wage
     AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 189)); // Viewer: 190 - Neue Nachricht
-    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 79));  // Viewer:  80 - Notiz
+    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TC_GREY, LOADER.GetImageN("io", 79)); // Viewer:  80 - Notiz
     AddImage(0, DrawPoint(126, 151), LOADER.GetImageN("io", 228));
-    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TC_GREY, LOADER.GetImageN("io", 225));     // Viewer: 226 - Hilfe
     AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 103));  // Viewer: 104 - Zurück
+    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 104));  // Viewer: 105 - Vor
+    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 105));  // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
     AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 107))->SetVisible(false);
     // Mülleimer, nur sichtbar, wenn Nachricht da
     AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 106))->SetVisible(false);
 
-    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont)->SetVisible(false);
+    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM,
+            SmallFont)
+      ->SetVisible(false);
 
     AddImage(ID_IMG, DrawPoint(127, 155), LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TC_INVISIBLE, NormalFont, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+    ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TC_INVISIBLE, NormalFont,
+                                       glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
     text->SetNumVisibleLines(4);
     text->ShowBackground(false);
 
@@ -102,15 +106,15 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox):
     DisplayPostMessage();
 }
 
-void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case ID_HELP:
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
-                "All important messages are collected in this window and "
-                "sorted into groups. If this window is not open, the dove "
-                "symbol at the bottom of the screen indicates the arrival of a new message.")));
+            WINDOWMANAGER.Show(
+              new iwHelp(GUI_ID(CGI_HELP), _("All important messages are collected in this window and "
+                                             "sorted into groups. If this window is not open, the dove "
+                                             "symbol at the bottom of the screen indicates the arrival of a new message.")));
             break;
         case ID_SHOW_ALL:
             showAll = true;
@@ -120,20 +124,13 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             break;
         case ID_SHOW_GOAL:
             if(!postBox.GetCurrentMissionGoal().empty())
-                WINDOWMANAGER.Show(new iwMissionStatement(_("Diary"), postBox.GetCurrentMissionGoal(), false, iwMissionStatement::IM_AVATAR9));
+                WINDOWMANAGER.Show(
+                  new iwMissionStatement(_("Diary"), postBox.GetCurrentMissionGoal(), false, iwMissionStatement::IM_AVATAR9));
             break;
-        case ID_SHOW_MIL:
-            SwitchCategory(PostCategory::Military);
-            break;
-        case ID_SHOW_GEO:
-            SwitchCategory(PostCategory::Geologist);
-            break;
-        case ID_SHOW_ECO:
-            SwitchCategory(PostCategory::Economy);
-            break;
-        case ID_SHOW_GEN:
-            SwitchCategory(PostCategory::General);
-            break;
+        case ID_SHOW_MIL: SwitchCategory(PostCategory::Military); break;
+        case ID_SHOW_GEO: SwitchCategory(PostCategory::Geologist); break;
+        case ID_SHOW_ECO: SwitchCategory(PostCategory::Economy); break;
+        case ID_SHOW_GEN: SwitchCategory(PostCategory::General); break;
         case ID_GO_START:
             // To oldest
             curMsgId = 0;
@@ -160,14 +157,13 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             if(!ValidateMessages())
                 return;
             const PostMsg* curMsg = GetMsg(curMsgId);
-            if (curMsg && curMsg->GetPos().isValid())
+            if(curMsg && curMsg->GetPos().isValid())
                 gwv.MoveToMapPt(curMsg->GetPos());
         }
         break;
 
-        
         case ID_DELETE: // Delete
-        case ID_DENY: // Cross (Deny)
+        case ID_DENY:   // Cross (Deny)
         {
             if(!ValidateMessages())
                 return;
@@ -177,7 +173,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // If it is a question about a new contract, tell the other player we denied it
                 if(dcurMsg->IsAccept())
-                  GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
+                    GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
             }
             postBox.DeleteMsg(curMsg);
         }
@@ -189,7 +185,7 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
             if(!ValidateMessages())
                 return;
             const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(GetMsg(curMsgId));
-            if (dcurMsg)
+            if(dcurMsg)
             {
                 // New contract?
                 if(dcurMsg->IsAccept())
@@ -198,7 +194,8 @@ void iwPostWindow::Msg_ButtonClick(const unsigned int ctrl_id)
                     GAMECLIENT.CancelPact(dcurMsg->GetPactType(), dcurMsg->GetPlayerId());
                 postBox.DeleteMsg(dcurMsg);
             }
-        } break;
+        }
+        break;
     }
 }
 
@@ -220,8 +217,7 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
-        default:
-            break;
+        default: break;
         case KT_DELETE: // Delete current message
             Msg_ButtonClick(ID_DELETE);
             return true;
@@ -262,7 +258,7 @@ void iwPostWindow::DisplayPostMessage()
     unsigned size = curMsgIdxs.size();
 
     // Keine Nachrichten, alles ausblenden, bis auf zentrierten Text
-    if (size == 0)
+    if(size == 0)
     {
         SetMessageText(_("No letters!"));
         GetCtrl<Window>(ID_TEXT)->SetPos(textCenter);
@@ -271,7 +267,7 @@ void iwPostWindow::DisplayPostMessage()
     }
 
     // Falls currentMessage außerhalb der aktuellen Nachrichtenmenge liegt: korrigieren
-    if (curMsgId >= size)
+    if(curMsgId >= size)
         curMsgId = size - 1;
 
     curMsg = GetMsg(curMsgId);
@@ -320,7 +316,7 @@ void iwPostWindow::FilterMessages()
 {
     curMsgIdxs.clear();
     lastMsgCt = postBox.GetNumMsgs();
-    for(unsigned i=0; i<lastMsgCt; i++)
+    for(unsigned i = 0; i < lastMsgCt; i++)
     {
         if(showAll)
             curMsgIdxs.push_back(i);
@@ -346,7 +342,7 @@ bool iwPostWindow::ValidateMessages()
         curMsgId = 0;
         DisplayPostMessage();
         return false;
-    }else
+    } else
     {
         // Message was either deleted or others were added and message was shifted
         // So first search it, if not found we will display the next (newer) message

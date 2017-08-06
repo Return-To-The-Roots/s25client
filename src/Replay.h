@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include "BinaryFile.h"
 #include "SavedFile.h"
 #include "gameTypes/MapCoordinates.h"
+#include "libutil/src/BinaryFile.h"
 #include <string>
 #include <vector>
 
@@ -87,15 +87,14 @@ public:
     unsigned gf_file_pos;
 
 private:
-
     /// Dateihandle
     BinaryFile file;
     /// File path +  name
     std::string fileName_;
+
 protected:
     virtual std::string GetSignature() const override;
     virtual uint16_t GetVersion() const override;
-
 };
 
-#endif //!GAMEREPLAY_H_INCLUDED
+#endif //! GAMEREPLAY_H_INCLUDED

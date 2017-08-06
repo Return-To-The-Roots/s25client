@@ -19,24 +19,23 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Sound.h"
+#include "libsiedler2/src/ArchivItem_Sound.h"
 class Sound;
 
 class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
 {
-    public:
-        glArchivItem_Music();
-        glArchivItem_Music(const glArchivItem_Music& item);
-        glArchivItem_Music& operator=(const glArchivItem_Music& item);
+public:
+    glArchivItem_Music();
+    glArchivItem_Music(const glArchivItem_Music& item);
 
-        ~glArchivItem_Music() override;
+    ~glArchivItem_Music() override;
 
-        /// Spielt die Musik ab.
-        virtual void Play(const unsigned repeats) = 0;
+    /// Spielt die Musik ab.
+    virtual void Play(const unsigned repeats) = 0;
 
-    protected:
-        /// Handle to the sound, managed by driver, hence safe to copy
-        Sound* sound;
+protected:
+    /// Handle to the sound, managed by driver, hence safe to copy
+    Sound* sound;
 };
 
 #endif // !GLARCHIVITEM_MUSIC_INCLUDED

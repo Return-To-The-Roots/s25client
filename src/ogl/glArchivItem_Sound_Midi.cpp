@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Midi.h"
 
-#include "drivers/AudioDriverWrapper.h"
 #include "Settings.h"
+#include "drivers/AudioDriverWrapper.h"
 
 /**
  *  Spielt die Musik ab.
@@ -33,7 +33,7 @@ void glArchivItem_Sound_Midi::Play(const unsigned repeats)
         return;
 
     if(!sound)
-        sound = AUDIODRIVER.LoadMusic(AudioType::AD_MIDI, tracklist[0].getMid(true), tracklist[0].getMidLength(true));
+        sound = AUDIODRIVER.LoadMusic(*this, ".midi");
 
     if(sound)
         AUDIODRIVER.PlayMusic(sound, repeats);

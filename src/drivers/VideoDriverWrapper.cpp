@@ -18,22 +18,24 @@
 #include "defines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
 
-#include "Settings.h"
-#include "GlobalVars.h"
 #include "ExtensionList.h"
-#include "../driver/src/VideoInterface.h"
+#include "GlobalVars.h"
+#include "Settings.h"
+#include "driver/src/VideoInterface.h"
 
+#include "RTTR_Version.h"
 #include "WindowManager.h"
-#include "error.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/error.h"
 
-#include <ctime>
 #include <algorithm>
+#include <ctime>
+#include <sstream>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
-#   include <valgrind/memcheck.h>
+#include <valgrind/memcheck.h>
 #endif
 
-VideoDriverWrapper::VideoDriverWrapper() :  videodriver(NULL), isOglEnabled_(false), texture_pos(0), texture_current(0)
+VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), isOglEnabled_(false), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
@@ -67,7 +69,8 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
         if(!driver_wrapper.Load(DriverWrapper::DT_VIDEO, SETTINGS.driver.video))
             return false;
 
-        PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance = pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
+        PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance =
+          pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("CreateVideoInstance"));
 
         // Instanz erzeugen
         videodriver = CreateVideoInstance(&WINDOWMANAGER);
@@ -100,13 +103,16 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
         return false;
     }
 
-    // Fenster erstellen
-    // On Windows it is necessary to open a windowed mode window at first and then resize it
+    std::stringstream title;
+    title << RTTR_Version::GetTitle() << " - v" << RTTR_Version::GetVersion() << "-" << RTTR_Version::GetShortRevision();
+
+// Fenster erstellen
+// On Windows it is necessary to open a windowed mode window at first and then resize it
 #ifdef _WIN32
     // We need this doubled up here
-    // - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI implementation)
-    // - With SDL in the fullscreen case
-    if(!videodriver->CreateScreen(screen_width, screen_height, false))
+    // - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI
+    // implementation) - With SDL in the fullscreen case
+    if(!videodriver->CreateScreen(title.str(), screen_width, screen_height, false))
     {
         s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;
@@ -119,7 +125,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     // Set this, as there is no message sent for the resize by the driver
     SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
 #else
-    if(!videodriver->CreateScreen(screen_width, screen_height, fullscreen))
+    if(!videodriver->CreateScreen(title.str(), screen_width, screen_height, fullscreen))
     {
         s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;
@@ -193,7 +199,7 @@ bool VideoDriverWrapper::DestroyScreen()
 
     // Texturen aufräumen
     LOG.write("Saeubere Texturespeicher: ");
-    unsigned int ladezeit = GetTickCount();
+    unsigned ladezeit = GetTickCount();
     CleanUp();
     LOG.write("fertig (nach %dms)\n") % (GetTickCount() - ladezeit);
 
@@ -217,11 +223,12 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
         return false;
 
     // ermittle Extensions String
-    const std::string extensions = reinterpret_cast<const char*>(glGetString( GL_EXTENSIONS ));
+    const std::string extensions = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
 
     // such nach einer exakten Kopie des Extensions Strings
     size_t curOffset = 0;
-    do{
+    do
+    {
         size_t curPos = extensions.find(extension, curOffset);
         if(curPos == std::string::npos)
             break;
@@ -233,7 +240,7 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
                 return true;
         }
         curOffset = endPos;
-    }while(curOffset < extensions.length());
+    } while(curOffset < extensions.length());
 
     return false;
 }
@@ -250,7 +257,7 @@ void VideoDriverWrapper::CleanUp()
     texture_pos = 0;
 }
 
-unsigned int VideoDriverWrapper::GenerateTexture()
+unsigned VideoDriverWrapper::GenerateTexture()
 {
     if(texture_pos >= texture_list.size())
     {
@@ -269,9 +276,9 @@ unsigned int VideoDriverWrapper::GenerateTexture()
     return texture_list[texture_pos++];
 }
 
-void VideoDriverWrapper::BindTexture(unsigned int t)
+void VideoDriverWrapper::BindTexture(unsigned t)
 {
-    if (t != texture_current)
+    if(t != texture_current)
     {
         texture_current = t;
         if(isOglEnabled_)
@@ -279,9 +286,9 @@ void VideoDriverWrapper::BindTexture(unsigned int t)
     }
 }
 
-void VideoDriverWrapper::DeleteTexture(unsigned int t)
+void VideoDriverWrapper::DeleteTexture(unsigned t)
 {
-    if (t == texture_current)
+    if(t == texture_current)
         texture_current = 0;
     if(isOglEnabled_)
         glDeleteTextures(1, &t);
@@ -321,6 +328,26 @@ bool VideoDriverWrapper::Run()
     }
 
     return videodriver->MessageLoop();
+}
+
+unsigned VideoDriverWrapper::nextPowerOfTwo(unsigned k)
+{
+    if(k == 0)
+        return 1;
+
+    k--;
+
+    for(unsigned i = 1; i < sizeof(unsigned) * CHAR_BIT; i *= 2)
+    {
+        k = k | k >> i;
+    }
+
+    return k + 1;
+}
+
+Extent VideoDriverWrapper::calcPreferredTextureSize(const Extent& minSize) const
+{
+    return Extent(nextPowerOfTwo(minSize.x), nextPowerOfTwo(minSize.y));
 }
 
 bool VideoDriverWrapper::Initialize()
@@ -377,12 +404,12 @@ bool VideoDriverWrapper::Initialize()
 /**
  *  Viewport (neu) setzen
  */
-void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
+void VideoDriverWrapper::RenewViewport(bool /*onlyRenew*/)
 {
     if(!videodriver->IsOpenGL())
         return;
 
-    const unsigned short width  = videodriver->GetScreenWidth();
+    const unsigned short width = videodriver->GetScreenWidth();
     const unsigned short height = videodriver->GetScreenHeight();
 
     // Viewport mit widthxheight setzen
@@ -409,11 +436,11 @@ void VideoDriverWrapper::RenewViewport(bool  /*onlyRenew*/)
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
-    // auf VSync-Extension testen
+// auf VSync-Extension testen
 #ifdef _WIN32
     if((GLOBALVARS.ext_swapcontrol = hasExtension("WGL_EXT_swap_control")))
     {
-        if( (wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"))) == NULL)
+        if((wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"))) == NULL)
             GLOBALVARS.ext_swapcontrol = false;
     }
 #else
@@ -421,24 +448,24 @@ bool VideoDriverWrapper::LoadAllExtensions()
     {*/
     // fix for buggy video driver...
     GLOBALVARS.ext_swapcontrol = true;
-    if( (wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"))) == NULL)
+    if((wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"))) == NULL)
         GLOBALVARS.ext_swapcontrol = false;
-    //}
+//}
 #endif
 
     // auf VertexBufferObject-Extension testen
     if((GLOBALVARS.ext_vbo = hasExtension("GL_ARB_vertex_buffer_object")))
     {
 #ifndef __APPLE__
-        if ( (glBindBufferARB = pto2ptf<PFNGLBINDBUFFERARBPROC>(loadExtension("glBindBufferARB"))) == NULL)
+        if((glBindBufferARB = pto2ptf<PFNGLBINDBUFFERARBPROC>(loadExtension("glBindBufferARB"))) == NULL)
             GLOBALVARS.ext_vbo = false;
-        else if ( (glDeleteBuffersARB = pto2ptf<PFNGLDELETEBUFFERSARBPROC>(loadExtension("glDeleteBuffersARB"))) == NULL)
+        else if((glDeleteBuffersARB = pto2ptf<PFNGLDELETEBUFFERSARBPROC>(loadExtension("glDeleteBuffersARB"))) == NULL)
             GLOBALVARS.ext_vbo = false;
-        else if ( (glGenBuffersARB = pto2ptf<PFNGLGENBUFFERSARBPROC>(loadExtension("glGenBuffersARB"))) == NULL)
+        else if((glGenBuffersARB = pto2ptf<PFNGLGENBUFFERSARBPROC>(loadExtension("glGenBuffersARB"))) == NULL)
             GLOBALVARS.ext_vbo = false;
-        else if ( (glBufferDataARB = pto2ptf<PFNGLBUFFERDATAARBPROC>(loadExtension("glBufferDataARB"))) == NULL)
+        else if((glBufferDataARB = pto2ptf<PFNGLBUFFERDATAARBPROC>(loadExtension("glBufferDataARB"))) == NULL)
             GLOBALVARS.ext_vbo = false;
-        else if ( (glBufferSubDataARB = pto2ptf<PFNGLBUFFERSUBDATAARBPROC>(loadExtension("glBufferSubDataARB"))) == NULL)
+        else if((glBufferSubDataARB = pto2ptf<PFNGLBUFFERSUBDATAARBPROC>(loadExtension("glBufferSubDataARB"))) == NULL)
             GLOBALVARS.ext_vbo = false;
 #endif // ! __APPLE__
     }
@@ -446,12 +473,12 @@ bool VideoDriverWrapper::LoadAllExtensions()
     return true;
 }
 
-unsigned int VideoDriverWrapper::GetTickCount()
+unsigned VideoDriverWrapper::GetTickCount()
 {
     if(!videodriver)
-        return (unsigned int)time(NULL);
+        return (unsigned)time(NULL);
 
-    return (unsigned int)videodriver->GetTickCount();
+    return (unsigned)videodriver->GetTickCount();
 }
 
 /**
@@ -463,10 +490,10 @@ unsigned int VideoDriverWrapper::GetTickCount()
  */
 void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
-    if (!videodriver)
+    if(!videodriver)
     {
         s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
-        return(NULL);
+        return (NULL);
     }
 
     return videodriver->GetFunction(extension.c_str());

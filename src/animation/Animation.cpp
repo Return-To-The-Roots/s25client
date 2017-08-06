@@ -19,16 +19,18 @@
 #include "Animation.h"
 #include "Window.h"
 
-Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat):
-    elementId_(element->GetID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat),
-    lastTime_(0), curFrame_(0), countUp_(true), skipType_(SKIP_FRAMES), hasStarted_(false)
+Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
+    : elementId_(element->GetID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat), lastTime_(0), curFrame_(0),
+      countUp_(true), skipType_(SKIP_FRAMES), hasStarted_(false)
 {
     // We need at least 2 frames: current state and next state
     RTTR_Assert(numFrames_ > 1);
     RTTR_Assert(frameRate_ > 0);
 }
 
-Animation::~Animation(){}
+Animation::~Animation()
+{
+}
 
 void Animation::setFrameRate(unsigned frameRate)
 {
@@ -142,7 +144,7 @@ void Animation::advanceFrames(unsigned passedTime)
         lastTime_ += frameRate_;
     }
 
-    for(unsigned i=0; i<numFramesPassed; i++)
+    for(unsigned i = 0; i < numFramesPassed; i++)
         advanceFrame();
 }
 

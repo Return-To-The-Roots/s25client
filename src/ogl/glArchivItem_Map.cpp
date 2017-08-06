@@ -18,19 +18,17 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Map.h"
 
-#include "../libsiedler2/src/ArchivItem_Raw.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "glAllocator.h"
+#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libsiedler2/src/ArchivItem_Raw.h"
 
-glArchivItem_Map::glArchivItem_Map()
-    : ArchivItem_Map(), header(NULL)
+glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(NULL)
 {
 }
 
 glArchivItem_Map::~glArchivItem_Map()
 {
 }
-
 
 /**
  *  lädt die Mapdaten aus einer Datei.
@@ -88,7 +86,7 @@ bool glArchivItem_Map::HasLayer(MapLayer type) const
  *  @param[in] type Typ des Layers.
  *  @param[in] pos  Position in den Daten.
  */
-unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) const
+unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned pos) const
 {
     return GetLayer(type)[pos];
 }
@@ -100,7 +98,7 @@ unsigned char glArchivItem_Map::GetMapDataAt(MapLayer type, unsigned int pos) co
  *  @param[in] pos   Position in den Daten.
  *  @param[in] value zu setzender Wert an der Position.
  */
-void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned int pos, unsigned char value)
+void glArchivItem_Map::SetMapDataAt(MapLayer type, unsigned pos, unsigned char value)
 {
     GetLayer(type)[pos] = value;
 }

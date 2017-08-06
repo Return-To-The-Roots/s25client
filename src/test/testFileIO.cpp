@@ -20,10 +20,10 @@
 #include "libutil/src/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(FileIOSuite)
 
@@ -41,8 +41,10 @@ struct FileOpenFixture
 #else
         // Use UTF8 (widestring not portable, either 16 or 32 bit)
         fileNormal = bfs::path("1Normal.txt");
-        fileUmlaut = bfs::path("2Um\xC3\xA4\xC3\xB6\xC3\xBC""Laut.txt");
-        fileSpecial = bfs::path("3Spe\xC4\xB9\xC3\x94""cial.txt");
+        fileUmlaut = bfs::path("2Um\xC3\xA4\xC3\xB6\xC3\xBC"
+                               "Laut.txt");
+        fileSpecial = bfs::path("3Spe\xC4\xB9\xC3\x94"
+                                "cial.txt");
 #endif
         BOOST_TEST_CHECKPOINT("Creating tmp path" << tmpPath);
         bfs::create_directories(tmpPath);
@@ -55,10 +57,7 @@ struct FileOpenFixture
         fUmlaut << "OK";
         fSpecial << "OK";
     }
-    virtual ~FileOpenFixture()
-    {
-        bfs::remove_all(tmpPath);
-    }
+    virtual ~FileOpenFixture() { bfs::remove_all(tmpPath); }
     bfs::path tmpPath, fileNormal, fileUmlaut, fileSpecial;
 };
 
@@ -103,14 +102,13 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
             try
             {
                 mmapFile.open(bfs::path(file));
-            } catch (std::exception& e)
+            } catch(std::exception& e)
             {
                 BOOST_FAIL(e.what());
             }
             typedef boost::iostreams::stream<boost::iostreams::mapped_file_source> MMStream;
             MMStream map(mmapFile);
         }
-
     }
 }
 

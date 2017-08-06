@@ -28,57 +28,60 @@ class glArchivItem_Bitmap;
 /// Klasse des Credits Desktops.
 class dskCredits : public Desktop
 {
-    public:
-        dskCredits();
-        ~dskCredits() override;
+public:
+    dskCredits();
+    ~dskCredits() override;
 
-    private:
-        bool Msg_KeyDown(const KeyEvent& ke) override;
-        void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+private:
+    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void Msg_PaintAfter() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        bool Close();
+    bool Close();
 
-        static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
+    static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
 
-        struct CreditsEntry
+    struct CreditsEntry
+    {
+        struct Line
         {
-            struct Line
-            {
-                Line(const char* const text): line(text), column(0) { }
-                Line(const std::string& text): line(text), column(0) { }
-                Line(const std::string& text, unsigned int c): line(text), column(0) { }
-                std::string line;
-                unsigned int column;
-            };
-            std::string title;
-            std::string lastLine;
-            glArchivItem_Bitmap* pic;
-            std::vector<Line> lines;
-            CreditsEntry(const std::string& title, const std::string& lastLine = ""): title(title), lastLine(lastLine), pic(NULL){}
-            CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = ""): title(title), lastLine(lastLine), pic(pic){}
+            Line(const char* const text) : line(text), column(0) {}
+            Line(const std::string& text) : line(text), column(0) {}
+            Line(const std::string& text, unsigned c) : line(text), column(0) {}
+            std::string line;
+            unsigned column;
         };
-
-        std::vector<CreditsEntry> entries;
-        std::vector<dskCredits::CreditsEntry>::iterator itCurEntry;
-
-        struct Bob
+        std::string title;
+        std::string lastLine;
+        glArchivItem_Bitmap* pic;
+        std::vector<Line> lines;
+        CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(NULL) {}
+        CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = "")
+            : title(title), lastLine(lastLine), pic(pic)
         {
-            unsigned id;
-            unsigned direction;
-            unsigned animationStep;
-            unsigned color;
-            DrawPoint pos;
-            unsigned char speed;
-            bool hasWare;
-            bool isFat;
-        };
+        }
+    };
 
-        std::vector<Bob> bobs;
+    std::vector<CreditsEntry> entries;
+    std::vector<dskCredits::CreditsEntry>::iterator itCurEntry;
 
-        unsigned int startTime;
-        unsigned int bobTime;
-        unsigned int bobSpawnTime;
+    struct Bob
+    {
+        unsigned id;
+        unsigned direction;
+        unsigned animationStep;
+        unsigned color;
+        DrawPoint pos;
+        unsigned char speed;
+        bool hasWare;
+        bool isFat;
+    };
+
+    std::vector<Bob> bobs;
+
+    unsigned startTime;
+    unsigned bobTime;
+    unsigned bobSpawnTime;
 };
 
 #endif // !dskCREDITS_H_INCLUDED

@@ -24,18 +24,18 @@
 /// Klasse des Replay-Listen-Fensters.
 class iwPlayReplay : public IngameWindow
 {
-    public:
-        iwPlayReplay();
+public:
+    iwPlayReplay();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-        void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
-    private:
-        void PopulateTable();
+private:
+    void PopulateTable();
 
-        /// Startet das Replay (aktuell ausgewählter Eintrag)
-        void StartReplay();
+    /// Startet das Replay (aktuell ausgewählter Eintrag)
+    void StartReplay();
 };
 
 #endif // !iwPLAYREPLAY_H_INCLUDED

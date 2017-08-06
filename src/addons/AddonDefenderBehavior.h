@@ -28,22 +28,19 @@
  */
 class AddonDefenderBehavior : public AddonList
 {
-    public:
-        AddonDefenderBehavior() : AddonList(AddonId::DEFENDER_BEHAVIOR,
-                                                ADDONGROUP_MILITARY,
-                                                _("Change defender behavior"),
-                                                _("Change the military setting 'defender'.\n\n"
-                                                        "You can choose to disallow any changes to that setting "
-                                                        "or you can limit the amount of reoccupying troops "
-                                                        "(during an attack) according to the defender setting."),
-                                                0
-                                               )
-        {
-            addOption(_("No change"));
-            addOption(_("Disallow change"));
-            addOption(_("Reduce reoccupying troops accordingly"));
-        }
+public:
+    AddonDefenderBehavior()
+        : AddonList(AddonId::DEFENDER_BEHAVIOR, ADDONGROUP_MILITARY, _("Change defender behavior"),
+                    _("Change the military setting 'defender'.\n\n"
+                      "You can choose to disallow any changes to that setting "
+                      "or you can limit the amount of reoccupying troops "
+                      "(during an attack) according to the defender setting."),
+                    0)
+    {
+        addOption(_("No change"));
+        addOption(_("Disallow change"));
+        addOption(_("Reduce reoccupying troops accordingly"));
+    }
 };
 
 #endif // !ADDONDEFENDERBEHAVIOR_H_INCLUDED
-

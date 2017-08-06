@@ -17,29 +17,27 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameServerPlayer.h"
-#include "GameMessages.h"
 #include "GameMessage_GameCommand.h"
+#include "GameMessages.h"
 #include "drivers/VideoDriverWrapper.h"
 
 #include <algorithm>
 
-GameServerPlayer::GameServerPlayer():
-    connecttime(0),
-    last_command_timeout(0),
-    pinging(false),
-    send_queue(&GameMessage::create_game),
-    recv_queue(&GameMessage::create_game),
-    lastping(0)
-{}
+GameServerPlayer::GameServerPlayer()
+    : connecttime(0), last_command_timeout(0), pinging(false), send_queue(&GameMessage::create_game), recv_queue(&GameMessage::create_game),
+      lastping(0)
+{
+}
 
 GameServerPlayer::~GameServerPlayer()
-{}
+{
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// pingt ggf den Spieler
 void GameServerPlayer::doPing()
 {
-    if( (ps == PS_OCCUPIED) && (!pinging) && ( ( VIDEODRIVER.GetTickCount() - lastping ) > 1000 ) )
+    if((ps == PS_OCCUPIED) && (!pinging) && ((VIDEODRIVER.GetTickCount() - lastping) > 1000))
     {
         pinging = true;
 
@@ -54,7 +52,7 @@ void GameServerPlayer::doPing()
 /// prüft auf Ping-Timeout beim verbinden
 void GameServerPlayer::checkConnectTimeout()
 {
-    if( (ps == PS_RESERVED) && ( ( VIDEODRIVER.GetTickCount() - connecttime ) > PING_TIMEOUT ) )
+    if((ps == PS_RESERVED) && ((VIDEODRIVER.GetTickCount() - connecttime) > PING_TIMEOUT))
     {
         LOG.write("SERVER: Reserved slot freed due to ping timeout\n");
         CloseConnections();
@@ -102,4 +100,3 @@ void GameServerPlayer::NotLagging()
     /// Laggt nicht mehr
     last_command_timeout = 0;
 }
-

@@ -27,21 +27,22 @@
  */
 class MouseCoords
 {
-    public:
-        MouseCoords() : x(0), y(0), ldown(false), rdown(false), dbl_click(false) {}
-        MouseCoords(int x, int y, bool ldown, bool rdown, const bool dbl_click)
-            : x(x), y(y), ldown(ldown), rdown(rdown), dbl_click(dbl_click) {}
+public:
+    MouseCoords() : x(0), y(0), ldown(false), rdown(false), dbl_click(false) {}
+    MouseCoords(int x, int y, bool ldown, bool rdown, const bool dbl_click) : x(x), y(y), ldown(ldown), rdown(rdown), dbl_click(dbl_click)
+    {
+    }
 
-        int x;      /// xKoordinate
-        int y;      /// yKoordinate
-        bool ldown; /// Linke Maustaste gedrückt
-        bool rdown; /// Rechte Maustaste gedrückt
-        bool dbl_click; /// Linke Maustaste - Doppelklick
+    int x;          /// xKoordinate
+    int y;          /// yKoordinate
+    bool ldown;     /// Linke Maustaste gedrückt
+    bool rdown;     /// Rechte Maustaste gedrückt
+    bool dbl_click; /// Linke Maustaste - Doppelklick
 
-        Point<int> GetPos() const { return Point<int>(x, y); }
+    Point<int> GetPos() const { return Point<int>(x, y); }
 };
 
 /// Maximale Zeitdifferenz in ms für einen Doppeklick
 const unsigned DOUBLE_CLICK_INTERVAL = 500;
 
-#endif //!MOUSEANDKEYS_H_INCLUDED
+#endif //! MOUSEANDKEYS_H_INCLUDED

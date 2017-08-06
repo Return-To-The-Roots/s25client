@@ -20,19 +20,20 @@
 #ifndef ctrlTextDeepening_h__
 #define ctrlTextDeepening_h__
 
-#include "controls/ctrlDeepening.h"
 #include "controls/ctrlBaseText.h"
+#include "controls/ctrlDeepening.h"
 
 class glArchivItem_Font;
 
 /// Deepening with text
-class ctrlTextDeepening: public ctrlDeepening, public ctrlBaseText
+class ctrlTextDeepening : public ctrlDeepening, public ctrlBaseText
 {
 public:
-    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size,
-        TextureColor tc, const std::string& text, glArchivItem_Font* font, unsigned color);
+    ctrlTextDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc, const std::string& text,
+                      glArchivItem_Font* font, unsigned color);
 
     Rect GetBoundaryRect() const override;
+
 protected:
     void DrawContent() const override;
 };

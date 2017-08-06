@@ -22,7 +22,6 @@
 #include "libendian/src/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
 
-
 std::string Replay::GetSignature() const
 {
     /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
@@ -37,8 +36,7 @@ uint16_t Replay::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : nwf_length(0), random_init(0),
-                   lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
+Replay::Replay() : nwf_length(0), random_init(0), lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
 {
 }
 
@@ -88,8 +86,7 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
 
     switch(mapInfo.type)
     {
-        default:
-            break;
+        default: break;
         case MAPTYPE_OLDMAP:
         {
             RTTR_Assert(!mapInfo.savegame);
@@ -103,13 +100,15 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
                 file.WriteUnsignedInt(mapInfo.luaData.data.size());
                 file.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
             }
-        } break;
+        }
+        break;
         case MAPTYPE_SAVEGAME:
         {
             // Savegame speichern
             if(!mapInfo.savegame->Save(file))
                 return false;
-        } break;
+        }
+        break;
     }
 
     // Mapname
@@ -119,7 +118,7 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
     // Alles sofort reinschreiben
     file.Flush();
 
-    gf_file_pos  = 0;
+    gf_file_pos = 0;
 
     return true;
 }
@@ -158,8 +157,7 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
     {
         switch(mapType)
         {
-            default:
-                break;
+            default: break;
             case MAPTYPE_OLDMAP:
             {
                 // Map-Daten
@@ -172,7 +170,8 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
                     mapInfo->luaData.data.resize(file.ReadUnsignedInt());
                     file.ReadRawData(&mapInfo->luaData.data[0], mapInfo->luaData.data.size());
                 }
-            } break;
+            }
+            break;
             case MAPTYPE_SAVEGAME:
             {
                 // Load savegame
@@ -182,7 +181,8 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
                     lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo->savegame->GetLastErrorMsg();
                     return false;
                 }
-            } break;
+            }
+            break;
         }
 
         mapFileName = file.ReadShortString();
@@ -215,8 +215,7 @@ void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const
         file.Seek(gf_file_pos, SEEK_SET);
         file.WriteUnsignedInt(gf);
         file.Seek(current_pos, SEEK_SET);
-    }
-    else
+    } else
         file.WriteUnsignedInt(gf);
 
     // Type (0)
@@ -242,7 +241,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
         return;
 
     //// Marker schreiben
-    //file.WriteRawData("GCCM", 4);
+    // file.WriteRawData("GCCM", 4);
 
     // GF-Anzahl
     if(gf_file_pos)
@@ -251,8 +250,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
         file.Seek(gf_file_pos, SEEK_SET);
         file.WriteUnsignedInt(gf);
         file.Seek(current_pos, SEEK_SET);
-    }
-    else
+    } else
         file.WriteUnsignedInt(gf);
 
     // Type (RC_GAME)
@@ -274,7 +272,7 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
 bool Replay::ReadGF(unsigned* gf)
 {
     //// kein Marker bedeutet das Ende der Welt
-    //if(memcmp(marker, "GCCM", 4) != 0)
+    // if(memcmp(marker, "GCCM", 4) != 0)
     //  return false;
 
     // GF-Anzahl

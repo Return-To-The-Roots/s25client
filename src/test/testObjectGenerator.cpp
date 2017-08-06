@@ -21,15 +21,17 @@
 #include "libsiedler2/src/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 
-namespace{
-    class ObjGenFixture{
-    protected:
-        RandomConfig config;
-        ObjectGenerator objGen;
-    public:
-        ObjGenFixture(): config(MapStyle::Random, 0x1337), objGen(config){}
-    };
-}
+namespace {
+class ObjGenFixture
+{
+protected:
+    RandomConfig config;
+    ObjectGenerator objGen;
+
+public:
+    ObjGenFixture() : config(MapStyle::Random, 0x1337), objGen(config) {}
+};
+} // namespace
 
 BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
 
@@ -39,27 +41,27 @@ BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
  */
 BOOST_AUTO_TEST_CASE(IsHarborAllowed_TerrainType)
 {
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SNOW),              false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA),              false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA2),             false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA3),             false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA4),             false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER),             false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER_NOSHIP),      false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_DESERT),            false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN1),         false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN2),         false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN3),         false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN4),         false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SWAMPLAND),         false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_BUILDABLE_WATER),   false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_STEPPE),            true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SAVANNAH),          true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW1),           true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW2),           true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW3),           true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW_FLOWERS),    true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAINMEADOW),    true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SNOW), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA2), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA3), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA4), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER_NOSHIP), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_DESERT), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN1), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN2), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN3), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN4), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SWAMPLAND), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_BUILDABLE_WATER), false);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_STEPPE), true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SAVANNAH), true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW1), true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW2), true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW3), true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW_FLOWERS), true);
+    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAINMEADOW), true);
 }
 
 /**
@@ -88,11 +90,11 @@ BOOST_AUTO_TEST_CASE(IsTree_TreeExists)
     Map map(MapExtent(16, 8), "name", "author");
 
     map.objectInfo[0] = libsiedler2::OI_Palm;
-    
+
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), true);
 
     map.objectInfo[0] = libsiedler2::OI_TreeOrPalm;
-    
+
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), true);
 }
 
@@ -102,7 +104,7 @@ BOOST_AUTO_TEST_CASE(IsTree_TreeExists)
 BOOST_AUTO_TEST_CASE(IsTree_Empty)
 {
     Map map(MapExtent(16, 8), "name", "author");
-    
+
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), false);
 }
 
@@ -113,9 +115,9 @@ BOOST_AUTO_TEST_CASE(IsTree_Empty)
 BOOST_AUTO_TEST_CASE(CreateTexture_NoHarbor)
 {
     Map map(MapExtent(16, 8), "name", "author");
-    
+
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
-    
+
     BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_WATER));
     BOOST_REQUIRE_EQUAL(map.textureLsd[0], TerrainData::GetTextureIdentifier(TT_WATER));
 }
@@ -127,13 +129,11 @@ BOOST_AUTO_TEST_CASE(CreateTexture_NoHarbor)
 BOOST_AUTO_TEST_CASE(CreateTexture_Harbor)
 {
     Map map(MapExtent(16, 8), "name", "author");
-    
+
     ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
-    
-    BOOST_REQUIRE_EQUAL(map.textureRsu[0],
-                        (TerrainData::GetTextureIdentifier(TT_MEADOW1) | libsiedler2::HARBOR_MASK));
-    BOOST_REQUIRE_EQUAL(map.textureLsd[0],
-                        (TerrainData::GetTextureIdentifier(TT_MEADOW1) | libsiedler2::HARBOR_MASK));
+
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], (TerrainData::GetTextureIdentifier(TT_MEADOW1) | libsiedler2::HARBOR_MASK));
+    BOOST_REQUIRE_EQUAL(map.textureLsd[0], (TerrainData::GetTextureIdentifier(TT_MEADOW1) | libsiedler2::HARBOR_MASK));
 }
 
 /**
@@ -143,12 +143,11 @@ BOOST_AUTO_TEST_CASE(CreateTexture_Harbor)
 BOOST_AUTO_TEST_CASE(CreateTexture_HarborNotSupported)
 {
     Map map(MapExtent(16, 8), "name", "author");
-    
+
     ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
-    
+
     BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_WATER));
     BOOST_REQUIRE_EQUAL(map.textureLsd[0], TerrainData::GetTextureIdentifier(TT_WATER));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

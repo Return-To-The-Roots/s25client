@@ -20,27 +20,28 @@
 #include "random/XorShift.h"
 #include "test/initTestHelpers.h"
 #include "libutil/src/Serializer.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/assign/std/vector.hpp>
-#include <boost/random/seed_seq.hpp>
 #include <boost/foreach.hpp>
-#include <vector>
+#include <boost/random/seed_seq.hpp>
+#include <boost/test/unit_test.hpp>
 #include <limits>
+#include <vector>
 //#include <iostream>
 
 using namespace boost::assign;
 
-namespace{
-    struct SeedFixture{
-        SeedFixture()
-        {
-            // For every seed the rng must return good random values
-            // so try a regular one and some corner cases
-            seeds += 0x1337, 0, std::numeric_limits<unsigned>::max(), std::numeric_limits<unsigned short>::max();
-        }
-        std::vector<unsigned> seeds;
-    };
-}
+namespace {
+struct SeedFixture
+{
+    SeedFixture()
+    {
+        // For every seed the rng must return good random values
+        // so try a regular one and some corner cases
+        seeds += 0x1337, 0, std::numeric_limits<unsigned>::max(), std::numeric_limits<unsigned short>::max();
+    }
+    std::vector<unsigned> seeds;
+};
+} // namespace
 
 BOOST_FIXTURE_TEST_SUITE(RNG_Tests, SeedFixture)
 
@@ -49,9 +50,9 @@ BOOST_AUTO_TEST_CASE(RandomTest)
     BOOST_FOREACH(unsigned seed, seeds)
     {
         RANDOM.Init(seed);
-        std::vector< std::vector<unsigned> > results;
-        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11),
-            std::vector<unsigned>(13), std::vector<unsigned>(32), std::vector<unsigned>(33);
+        std::vector<std::vector<unsigned> > results;
+        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11), std::vector<unsigned>(13),
+          std::vector<unsigned>(32), std::vector<unsigned>(33);
         const unsigned numSamples = 3000;
         for(unsigned i = 0; i < numSamples; i++)
         {
@@ -84,7 +85,7 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
     results += 713, 860, 519, 141, 414, 616, 313, 458, 421, 302;
     BOOST_FOREACH(int result, results)
     {
-        //std::cout << RANDOM_RAND(0, 1024) << std::endl;
+        // std::cout << RANDOM_RAND(0, 1024) << std::endl;
         BOOST_REQUIRE_EQUAL(RANDOM_RAND(0, 1024), result);
     }
 }
@@ -118,9 +119,9 @@ void testRange(const T_Seeds& seeds)
             BOOST_REQUIRE_LE(val, max);
         }
 
-        std::vector< std::vector<unsigned> > results;
-        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11),
-            std::vector<unsigned>(13), std::vector<unsigned>(32), std::vector<unsigned>(33);
+        std::vector<std::vector<unsigned> > results;
+        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11), std::vector<unsigned>(13),
+          std::vector<unsigned>(32), std::vector<unsigned>(33);
         const unsigned numSamples = 3000;
         for(unsigned i = 0; i < numSamples; i++)
         {

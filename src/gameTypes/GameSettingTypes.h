@@ -18,9 +18,33 @@
 #ifndef GameSettingTypes_h__
 #define GameSettingTypes_h__
 
-enum GameSpeed { GS_VERYSLOW = 0, GS_SLOW, GS_NORMAL, GS_FAST, GS_VERYFAST };
-enum GameObjective { GO_NONE = 0, GO_CONQUER3_4, GO_TOTALDOMINATION };
-enum StartWares { SWR_VLOW = 0, SWR_LOW, SWR_NORMAL, SWR_ALOT };
-enum Exploration { EXP_DISABLED = 0, EXP_CLASSIC, EXP_FOGOFWAR, EXP_FOGOFWARE_EXPLORED };
+enum GameSpeed
+{
+    GS_VERYSLOW = 0,
+    GS_SLOW,
+    GS_NORMAL,
+    GS_FAST,
+    GS_VERYFAST
+};
+enum GameObjective
+{
+    GO_NONE = 0,
+    GO_CONQUER3_4,
+    GO_TOTALDOMINATION
+};
+enum StartWares
+{
+    SWR_VLOW = 0,
+    SWR_LOW,
+    SWR_NORMAL,
+    SWR_ALOT
+};
+enum Exploration
+{
+    EXP_DISABLED = 0,
+    EXP_CLASSIC,
+    EXP_FOGOFWAR,
+    EXP_FOGOFWARE_EXPLORED
+};
 
 #endif // GameSettingTypes_h__

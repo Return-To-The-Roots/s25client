@@ -16,103 +16,101 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "Loader.h"
+#include "MockupVideoDriver.h"
+#include "PointOutput.h"
+#include "Window.h"
+#include "WindowManager.h"
 #include "animation/AnimationManager.h"
+#include "animation/BlinkButtonAnim.h"
 #include "animation/MoveAnimation.h"
 #include "animation/ToggleAnimation.h"
-#include "animation/BlinkButtonAnim.h"
-#include "Window.h"
-#include "Loader.h"
-#include "desktops/Desktop.h"
 #include "controls/ctrlButton.h"
-#include "WindowManager.h"
+#include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "MockupVideoDriver.h"
-#include "initTestHelpers.h"
-#include "PointOutput.h"
 #include "helpers/containerUtils.h"
+#include "initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 
-namespace{
-    typedef boost::test_tools::predicate_result PredRes;
-    struct TestAnimation;
+namespace {
+typedef boost::test_tools::predicate_result PredRes;
+struct TestAnimation;
 
-    struct TestWindow: public Window
+struct TestWindow : public Window
+{
+    TestWindow(const DrawPoint& position, unsigned id, Window* parent, const Extent& size) : Window(parent, id, position, size) {}
+
+protected:
+    void Draw_() override {}
+};
+
+struct WindowFixture
+{
+    TestWindow wnd;
+    AnimationManager& animMgr;
+    ctrlButton *bt, *bt2;
+    bool animFinished;
+    double lastNextFramepartTime;
+    unsigned lastFrame;
+    WindowFixture() : wnd(DrawPoint(0, 0), 0, NULL, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
     {
-        TestWindow(const DrawPoint& position, unsigned id, Window* parent, const Extent& size):
-            Window(parent, id, position, size)
-        {}
-    protected:
-        void Draw_() override{}
-    };
-
-    struct WindowFixture
-    {
-        TestWindow wnd;
-        AnimationManager& animMgr;
-        ctrlButton *bt, *bt2;
-        bool animFinished;
-        double lastNextFramepartTime;
-        unsigned lastFrame;
-        WindowFixture(): wnd(DrawPoint(0, 0), 0, NULL, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
-        {
-            bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
-            bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
-        }
-
-        PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime);
-    };
-
-    struct TestAnimation: public Animation
-    {
-        TestAnimation(WindowFixture& parent, Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat):
-            Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false)
-        {}
-        WindowFixture& parent;
-        bool updateCalled;
-        double lastNextFramepartTime;
-        double getLinInterpolation() const
-        {
-            return getCurLinearInterpolationFactor(lastNextFramepartTime);
-        }
-    protected:
-        void doUpdate(Window* element, double nextFramepartTime) override
-        {
-            updateCalled = true;
-            lastNextFramepartTime = nextFramepartTime;
-            parent.lastNextFramepartTime = nextFramepartTime;
-            parent.lastFrame = getCurFrame();
-            if(isFinished())
-                parent.animFinished = true;
-        }
-    };
-
-    PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime)
-    {
-        unsigned animId = animMgr.getAnimationId(anim);
-        animMgr.update(time);
-        BOOST_REQUIRE(animMgr.isAnimationActive(animId));
-        if(anim->updateCalled != reqUpdate)
-        {
-            PredRes result(false);
-            result.message() << "Update: " << anim->updateCalled << " != " << reqUpdate;
-            return result;
-        }
-        if(anim->getCurFrame() != reqCurFrame)
-        {
-            PredRes result(false);
-            result.message() << "CurFrame: " << anim->getCurFrame() << " != " << reqCurFrame;
-            return result;
-        }
-        if(anim->lastNextFramepartTime != reqFramepartTime)
-        {
-            PredRes result(false);
-            result.message() << "lastNextFramepartTime: " << anim->lastNextFramepartTime << " != " << reqFramepartTime;
-            return result;
-        }
-        anim->updateCalled = false;
-        return true;
+        bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TC_RED1, "Test", NormalFont);
+        bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TC_RED1, "Test", NormalFont);
     }
+
+    PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime);
+};
+
+struct TestAnimation : public Animation
+{
+    TestAnimation(WindowFixture& parent, Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
+        : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false)
+    {
+    }
+    WindowFixture& parent;
+    bool updateCalled;
+    double lastNextFramepartTime;
+    double getLinInterpolation() const { return getCurLinearInterpolationFactor(lastNextFramepartTime); }
+
+protected:
+    void doUpdate(Window* element, double nextFramepartTime) override
+    {
+        updateCalled = true;
+        lastNextFramepartTime = nextFramepartTime;
+        parent.lastNextFramepartTime = nextFramepartTime;
+        parent.lastFrame = getCurFrame();
+        if(isFinished())
+            parent.animFinished = true;
+    }
+};
+
+PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame, double reqFramepartTime)
+{
+    unsigned animId = animMgr.getAnimationId(anim);
+    animMgr.update(time);
+    BOOST_REQUIRE(animMgr.isAnimationActive(animId));
+    if(anim->updateCalled != reqUpdate)
+    {
+        PredRes result(false);
+        result.message() << "Update: " << anim->updateCalled << " != " << reqUpdate;
+        return result;
+    }
+    if(anim->getCurFrame() != reqCurFrame)
+    {
+        PredRes result(false);
+        result.message() << "CurFrame: " << anim->getCurFrame() << " != " << reqCurFrame;
+        return result;
+    }
+    if(anim->lastNextFramepartTime != reqFramepartTime)
+    {
+        PredRes result(false);
+        result.message() << "lastNextFramepartTime: " << anim->lastNextFramepartTime << " != " << reqFramepartTime;
+        return result;
+    }
+    anim->updateCalled = false;
+    return true;
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_SUITE(Animations, WindowFixture)
 
@@ -145,7 +143,7 @@ BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
     animMgr.removeAnimation(animIds[1]);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 2u);
     BOOST_REQUIRE(!animMgr.isAnimationActive(animIds[1]));
-    BOOST_REQUIRE_EQUAL(animMgr.getAnimation(animIds[1]), (Animation*) NULL);
+    BOOST_REQUIRE_EQUAL(animMgr.getAnimation(animIds[1]), (Animation*)NULL);
 
     // Add animation for another element so we can test that it isn't returned for getElementAnimations
     // and not removed for removeElementAnimations
@@ -233,8 +231,8 @@ BOOST_AUTO_TEST_CASE(EnsureTiming)
 BOOST_AUTO_TEST_CASE(FinishAnims)
 {
     unsigned time = 10;
-    boost::array<Animation::RepeatType, 4> rpts = {{ Animation::RPT_None, Animation::RPT_Repeat,
-        Animation::RPT_Oscillate, Animation::RPT_OscillateOnce }};
+    boost::array<Animation::RepeatType, 4> rpts = {
+      {Animation::RPT_None, Animation::RPT_Repeat, Animation::RPT_Oscillate, Animation::RPT_OscillateOnce}};
 
     for(unsigned i = 0; i < rpts.size(); i++)
     {
@@ -476,7 +474,7 @@ BOOST_AUTO_TEST_CASE(OscillateOnce)
     BOOST_REQUIRE(testAdvanceTime(anim, time += 40, true, 3, 0.));
     // Next frame
     BOOST_REQUIRE(testAdvanceTime(anim, time += 10, true, 2, 0.));
-    // Skip over end    
+    // Skip over end
     lastFrame = 1111;
     animMgr.update(time += 100);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
@@ -485,7 +483,7 @@ BOOST_AUTO_TEST_CASE(OscillateOnce)
     anim = new TestAnimation(*this, bt, 6, 10, Animation::RPT_OscillateOnce);
     animMgr.addAnimation(anim);
     animMgr.update(time += 10);
-    // Skip over end    
+    // Skip over end
     lastFrame = 1111;
     animMgr.update(time += 1000);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
@@ -562,7 +560,7 @@ BOOST_AUTO_TEST_CASE(LinearInterpolationFactor)
     BOOST_REQUIRE_CLOSE(anim->getLinInterpolation(), 0.22, 0.001);
     BOOST_REQUIRE(testAdvanceTime(anim, time += 160, true, 3u, 0.8));
     BOOST_REQUIRE_CLOSE(anim->getLinInterpolation(), 0.38, 0.001);
-    
+
     // Test around wrapping
     anim->setRepeat(Animation::RPT_Repeat);
     BOOST_REQUIRE(testAdvanceTime(anim, time += 600, true, 9u, 0.8));

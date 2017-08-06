@@ -19,8 +19,9 @@
 #include "ctrlBaseVarText.h"
 #include <sstream>
 
-ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned color, glArchivItem_Font* font, unsigned count, va_list fmtArgs):
-    ctrlBaseText(fmtString, color, font)
+ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned color, glArchivItem_Font* font, unsigned count,
+                                 va_list fmtArgs)
+    : ctrlBaseText(fmtString, color, font)
 {
     for(unsigned i = 0; i < count; ++i)
         vars.push_back(va_arg(fmtArgs, void*));
@@ -40,28 +41,25 @@ std::string ctrlBaseVarText::GetFormatedText() const
             isInFormat = false;
             switch(*it)
             {
-            case 'd':
-                str << *reinterpret_cast<int*>(vars[curVar]);
-                curVar++;
-                break;
-            case 'u':
-                str << *reinterpret_cast<unsigned*>(vars[curVar]);
-                curVar++;
-                break;
-            case 's':
-                str << reinterpret_cast<const char*>(vars[curVar]);
-                curVar++;
-                break;
-            case '%':
-                str << '%';
-                break;
-            default:
-                RTTR_Assert(false); // Invalid format string
-                str << '%' << *it;
-                break;
+                case 'd':
+                    str << *reinterpret_cast<int*>(vars[curVar]);
+                    curVar++;
+                    break;
+                case 'u':
+                    str << *reinterpret_cast<unsigned*>(vars[curVar]);
+                    curVar++;
+                    break;
+                case 's':
+                    str << reinterpret_cast<const char*>(vars[curVar]);
+                    curVar++;
+                    break;
+                case '%': str << '%'; break;
+                default:
+                    RTTR_Assert(false); // Invalid format string
+                    str << '%' << *it;
+                    break;
             }
-        }
-        else if(*it == '%')
+        } else if(*it == '%')
             isInFormat = true;
         else
             str << *it;

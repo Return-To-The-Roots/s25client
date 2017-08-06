@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GameObject.h"
 #include "EventManager.h"
 #include "GameEvent.h"
+#include "GameObject.h"
 #include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
 
@@ -35,19 +35,16 @@ BOOST_AUTO_TEST_CASE(AdvanceGFs)
     }
 }
 
-class TestEventHandler: public GameObject
+class TestEventHandler : public GameObject
 {
 public:
     std::vector<unsigned> handledEventIds;
 
-    void HandleEvent(const unsigned evId) override
-    {
-        handledEventIds.push_back(evId);
-    }
+    void HandleEvent(const unsigned evId) override { handledEventIds.push_back(evId); }
 
-    void Destroy() override{}
-    void Serialize(SerializedGameData& sgd) const override{}
-    GO_Type GetGOT() const override{ return GOT_UNKNOWN; }
+    void Destroy() override {}
+    void Serialize(SerializedGameData& sgd) const override {}
+    GO_Type GetGOT() const override { return GOT_UNKNOWN; }
 };
 
 BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
@@ -122,17 +119,14 @@ BOOST_AUTO_TEST_CASE(MultipleEvents)
     BOOST_REQUIRE_EQUAL(obj.handledEventIds[2], 44u);
 }
 
-class TestLogKill: public TestEventHandler
+class TestLogKill : public TestEventHandler
 {
 public:
     EventManager& em;
-    TestLogKill(EventManager& em): em(em){}
+    TestLogKill(EventManager& em) : em(em) {}
 
     static unsigned killNum;
-    ~TestLogKill()
-    {
-        killNum++;
-    }
+    ~TestLogKill() { killNum++; }
     void HandleEvent(const unsigned evId) override
     {
         BOOST_REQUIRE(!em.ObjectIsInKillList(this));
@@ -158,12 +152,12 @@ BOOST_AUTO_TEST_CASE(KillList)
     BOOST_REQUIRE(!evMgr.ObjectIsInKillList(obj));
 }
 
-class TestRemoveEvent: public TestEventHandler
+class TestRemoveEvent : public TestEventHandler
 {
 public:
     EventManager& em;
     GameEvent* ev2Remove;
-    TestRemoveEvent(EventManager& em): em(em), ev2Remove(NULL){}
+    TestRemoveEvent(EventManager& em) : em(em), ev2Remove(NULL) {}
 
     void HandleEvent(const unsigned evId) override
     {

@@ -17,10 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AudioDriverWrapper.h"
+#include "MusicPlayer.h"
+#include "Settings.h"
 #include "VideoDriverWrapper.h"
 #include "driver/src/AudioInterface.h"
-#include "Settings.h"
-#include "MusicPlayer.h"
+#include "libsiedler2/src/ArchivItem_Sound.h"
+#include "libutil/src/tmpFile.h"
+#include <ostream>
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver(0)
 {
@@ -90,7 +93,8 @@ bool AudioDriverWrapper::LoadDriver()
     if(!driver_wrapper.Load(DriverWrapper::DT_AUDIO, SETTINGS.driver.audio))
         return false;
 
-    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance = pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
+    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance =
+      pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("CreateAudioInstance"));
 
     // Instanz erzeugen
     audiodriver = CreateAudioInstance(this, VIDEODRIVER.GetMapPointer());
@@ -107,33 +111,54 @@ bool AudioDriverWrapper::LoadDriver()
     return true;
 }
 
-
 /**
  *  Lädt einen Sound.
  *
- *  @param[in] type      Typ (Musik/Effekt)
- *  @param[in] data_type Datentyp
- *  @param[in] data      Datenblock
- *  @param[in] size      Größe des Datenblocks
- *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioDriverWrapper::LoadMusic(AudioType data_type, const unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadMusic(const std::string& filepath)
 {
     if(!audiodriver)
         return NULL;
 
-    return audiodriver->LoadMusic(data_type, data, size);
+    return audiodriver->LoadMusic(filepath);
 }
 
-Sound* AudioDriverWrapper::LoadEffect(AudioType data_type, const unsigned char* data, unsigned int size)
+Sound* AudioDriverWrapper::LoadMusic(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension)
+{
+    std::ofstream fs;
+    std::string filePath = createTempFile(fs, extension);
+    if(!fs)
+        return NULL;
+    if(soundArchiv.write(fs) != 0)
+        return NULL;
+    fs.close();
+    Sound* sound = LoadMusic(filePath);
+    unlinkFile(filePath);
+    return sound;
+}
+
+Sound* AudioDriverWrapper::LoadEffect(const std::string& filepath)
 {
     if(!audiodriver)
         return NULL;
 
-    return audiodriver->LoadEffect(data_type, data, size);
+    return audiodriver->LoadEffect(filepath);
 }
 
+Sound* AudioDriverWrapper::LoadEffect(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension)
+{
+    std::ofstream fs;
+    std::string filePath = createTempFile(fs, extension);
+    if(!fs)
+        return NULL;
+    if(soundArchiv.write(fs) != 0)
+        return NULL;
+    fs.close();
+    Sound* sound = LoadEffect(filePath);
+    unlinkFile(filePath);
+    return sound;
+}
 
 unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
@@ -143,7 +168,7 @@ unsigned AudioDriverWrapper::PlayEffect(Sound* sound, const unsigned char volume
     return audiodriver->PlayEffect(sound, volume, loop);
 }
 
-void AudioDriverWrapper::StopEffect(const unsigned int play_id)
+void AudioDriverWrapper::StopEffect(const unsigned play_id)
 {
     if(!audiodriver)
         return;
@@ -156,4 +181,3 @@ void AudioDriverWrapper::Msg_MusicFinished()
     // MusicManager Bescheid sagen
     MUSICPLAYER.MusicFinished();
 }
-

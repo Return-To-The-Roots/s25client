@@ -23,18 +23,17 @@
 
 class iwChat : public IngameWindow
 {
-    private:
-        /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
-        static unsigned char chat_dest;
+private:
+    /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
+    static unsigned char chat_dest;
 
-    public:
-        iwChat();
+public:
+    iwChat();
 
-    private:
-
-        void Msg_PaintBefore() override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
+private:
+    void Msg_PaintBefore() override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
 };
 
 #endif // !iwCHAT_H_INCLUDED

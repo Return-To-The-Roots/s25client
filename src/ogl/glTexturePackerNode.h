@@ -19,8 +19,8 @@
 #define glTexturePackerNode_h__
 
 #include "Point.h"
-#include <vector>
 #include <stdint.h>
+#include <vector>
 
 class glSmartBitmap;
 class glTexturePackerNode;
@@ -36,8 +36,8 @@ class glTexturePackerNode
     glTexturePackerNode* child[2];
 
 public:
-    glTexturePackerNode(): pos(0, 0), size(0, 0), bmp(NULL) { child[0] = child[1] = NULL; }
-    glTexturePackerNode(const Extent& size): pos(0, 0), size(size), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode() : pos(0, 0), size(0, 0), bmp(NULL) { child[0] = child[1] = NULL; }
+    glTexturePackerNode(const Extent& size) : pos(0, 0), size(size), bmp(NULL) { child[0] = child[1] = NULL; }
     /// Find a position in the buffer to draw the bitmap starting at this node
     /// todo list is cleared and used to avoid frequent allocations
     bool insert(glSmartBitmap* b, std::vector<uint32_t>& buffer, const Extent& bufferSize, std::vector<glTexturePackerNode*>& todo);

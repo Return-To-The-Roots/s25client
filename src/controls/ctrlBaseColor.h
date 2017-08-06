@@ -21,13 +21,14 @@
 /// Base class for controls showing a color
 class ctrlBaseColor
 {
-    public:
-        ctrlBaseColor(): color_(0){}
-        ctrlBaseColor(unsigned color): color_(color){}
-        void SetColor(unsigned color){ color_ = color; }
-        unsigned GetColor() const { return color_; }
-    protected:
-        unsigned color_;
+public:
+    ctrlBaseColor() : color_(0) {}
+    ctrlBaseColor(unsigned color) : color_(color) {}
+    void SetColor(unsigned color) { color_ = color; }
+    unsigned GetColor() const { return color_; }
+
+protected:
+    unsigned color_;
 };
 
 #endif // ctrlBaseColor_h__

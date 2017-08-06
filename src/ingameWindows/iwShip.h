@@ -27,20 +27,19 @@ class GameCommandFactory;
 
 class iwShip : public IngameWindow
 {
-        GameWorldView& gwv;
-        GameCommandFactory& gcFactory;
-        unsigned char player; /// Besitzer des Schiffes, den wir für die Umwandlung ID->richtiges Schiff brauchen
-        unsigned ship_id; /// ID des Schiffes, welches gerade angezeigt wird
+    GameWorldView& gwv;
+    GameCommandFactory& gcFactory;
+    unsigned char player; /// Besitzer des Schiffes, den wir für die Umwandlung ID->richtiges Schiff brauchen
+    unsigned ship_id;     /// ID des Schiffes, welches gerade angezeigt wird
 
-    public:
-        iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship);
+public:
+    iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, noShip* const ship);
 
-    private:
+private:
+    void Msg_PaintAfter() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 
-        void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-
-        void DrawCargo();
+    void DrawCargo();
 };
 
 #endif // !iwSHIP_H_INCLUDED

@@ -18,24 +18,22 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noFlag.h"
 
-#include "Loader.h"
-#include "figures/nofCarrier.h"
+#include "EventManager.h"
+#include "FOWObjects.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "EventManager.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "Ware.h"
 #include "buildings/noBuilding.h"
-#include "SerializedGameData.h"
-#include "FOWObjects.h"
+#include "figures/nofCarrier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
-#include "gameData/TerrainData.h"
 #include "world/GameWorldGame.h"
+#include "gameData/TerrainData.h"
 
-noFlag::noFlag(const MapPoint pos,
-               const unsigned char player, const unsigned char dis_dir)
-    : noRoadNode(NOP_FLAG, pos, player),
-      ani_offset(rand() % 20000), flagtype(FT_NORMAL)
+noFlag::noFlag(const MapPoint pos, const unsigned char player, const unsigned char dis_dir)
+    : noRoadNode(NOP_FLAG, pos, player), ani_offset(rand() % 20000), flagtype(FT_NORMAL)
 {
     for(unsigned i = 0; i < wares.size(); ++i)
         wares[i] = NULL;
@@ -62,9 +60,8 @@ noFlag::noFlag(const MapPoint pos,
     }
 }
 
-noFlag::noFlag(SerializedGameData& sgd, const unsigned int obj_id)
-    : noRoadNode(sgd, obj_id),
-      ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
+noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
+    : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(FlagType(sgd.PopUnsignedChar()))
 {
     for(unsigned i = 0; i < wares.size(); ++i)
         wares[i] = sgd.PopObject<Ware>(GOT_WARE);
@@ -126,17 +123,7 @@ void noFlag::Serialize_noFlag(SerializedGameData& sgd) const
 void noFlag::Draw(DrawPoint drawPt)
 {
     // Positionen der Waren an der Flagge relativ zur Flagge
-    static const DrawPointInit WARES_POS[8] =
-    {
-        { 0,  0},
-        {-4,  0},
-        { 3, -1},
-        {-7, -1},
-        { 6, -2},
-        {-10, -2},
-        { 9, -5},
-        {-13, -5}
-    };
+    static const DrawPointInit WARES_POS[8] = {{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}};
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
@@ -215,13 +202,13 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
         {
             if(best_ware)
             {
-                if(gwg->GetPlayer(player).GetTransportPriority(wares[i]->type) < gwg->GetPlayer(player).GetTransportPriority(best_ware->type))
+                if(gwg->GetPlayer(player).GetTransportPriority(wares[i]->type)
+                   < gwg->GetPlayer(player).GetTransportPriority(best_ware->type))
                 {
                     best_ware = wares[i];
                     best_ware_index = i;
                 }
-            }
-            else
+            } else
             {
                 best_ware = wares[i];
                 best_ware_index = i;
@@ -254,8 +241,7 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
                     if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->FreePlaceAtFlag())
                         break;
                 }
-            }
-            else
+            } else
             {
                 // Richtiger Weg --> Träger Bescheid sagen
                 for(unsigned char c = 0; c < 2; ++c)
@@ -277,9 +263,9 @@ unsigned noFlag::GetWaresCountForRoad(const Direction dir) const
 {
     unsigned ret = 0;
 
-    for(unsigned i=0; i < wares.size(); i++)
+    for(unsigned i = 0; i < wares.size(); i++)
     {
-        if (wares[i] && (wares[i]->GetNextDir() == dir.toUInt()))
+        if(wares[i] && (wares[i]->GetNextDir() == dir.toUInt()))
             ret++;
     }
     return ret;
@@ -298,9 +284,10 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     const RoadSegment* routeInDir = routes[dir.toUInt()];
     if(!routeInDir->isOccupied())
         points += 500;
-	else if (routes[dir.toUInt()]->hasCarrier(0) && routes[dir.toUInt()]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
-        && !routes[dir.toUInt()]->hasCarrier(1)) //no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
-		points += 50;
+    else if(routes[dir.toUInt()]->hasCarrier(0) && routes[dir.toUInt()]->getCarrier(0)->GetCarrierState() == CARRS_FIGUREWORK
+            && !routes[dir.toUInt()]->hasCarrier(
+                 1)) // no donkey and the normal carrier has been ordered from the warehouse but has not yet arrived
+        points += 50;
 
     return points;
 }
@@ -360,7 +347,7 @@ void noFlag::Capture(const unsigned char new_owner)
 bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
 {
     // Zeitintervall, in der die Zugänglichkeit der Flaggen von einer bestimmten BWU überprüft wird
-    const unsigned int MAX_BWU_INTERVAL = 2000;
+    const unsigned MAX_BWU_INTERVAL = 2000;
 
     // BWU-ID erstmal suchen
     for(unsigned i = 0; i < bwus.size(); ++i)

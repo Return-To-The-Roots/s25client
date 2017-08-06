@@ -19,28 +19,29 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwMilitaryBuilding.h"
 
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "gameData/MilitaryConsts.h"
+#include "Loader.h"
 #include "WindowManager.h"
-#include "iwDemolishBuilding.h"
-#include "iwMsgbox.h"
-#include "iwHelp.h"
+#include "addons/const_addons.h"
 #include "buildings/nobMilitary.h"
-#include "world/GameWorldView.h"
-#include "world/GameWorldBase.h"
+#include "controls/ctrlImageButton.h"
 #include "figures/nofPassiveSoldier.h"
+#include "iwDemolishBuilding.h"
+#include "iwHelp.h"
+#include "iwMsgbox.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
-#include "controls/ctrlImageButton.h"
-#include "addons/const_addons.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldView.h"
+#include "gameData/MilitaryConsts.h"
 #include <boost/foreach.hpp>
 #include <set>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
-    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
-    gwv(gwv), gcFactory(gcFactory), building(building)
+    : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]),
+                   LOADER.GetImageN("resource", 41)),
+      gwv(gwv), gcFactory(gcFactory), building(building)
 {
     // Schwert
     AddImage(0, DrawPoint(28, 39), LOADER.GetMapImageN(2298));
@@ -51,27 +52,30 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     AddImage(3, DrawPoint(196, 39), LOADER.GetMapImageN(2250 + GD_SHIELDROMANS));
 
     // Hilfe
-    AddImageButton(4, DrawPoint( 16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(4, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint( 50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io",  23));
+    AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23));
     // Gold an/aus (227,226)
-    AddImageButton(6, DrawPoint( 90, 147), Extent(32, 32), TC_GREY, LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
+    AddImageButton(6, DrawPoint(90, 147), Extent(32, 32), TC_GREY,
+                   LOADER.GetImageN("io", ((building->IsGoldDisabledVirtual()) ? 226 : 227)));
     // "Gehe Zu Ort"
     AddImageButton(7, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
     AddImage(8, DrawPoint(117, 114), LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType()));
-	// "Go to next" (building of same type)
-    AddImageButton( 9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
-	//addon military control active? -> show button
-	if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
-		AddImageButton( 10, DrawPoint(124, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
+    // "Go to next" (building of same type)
+    AddImageButton(9, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next military building"));
+    // addon military control active? -> show button
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_CONTROL))
+        AddImageButton(10, DrawPoint(124, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 12),
+                       _("Send max rank soldiers to a warehouse"));
 }
 
 void iwMilitaryBuilding::Msg_PaintAfter()
 {
     // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
+    LOADER.GetNationImage(building->GetNation(), 250 + 5 * building->GetBuildingType() + 1)
+      ->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->GetMaxCoinCt();
@@ -90,10 +94,8 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     BOOST_FOREACH(const noFigure* fig, building->GetLeavingFigures())
     {
         const GO_Type figType = fig->GetGOT();
-        if( figType == GOT_NOF_ATTACKER ||
-            figType == GOT_NOF_AGGRESSIVEDEFENDER ||
-            figType == GOT_NOF_DEFENDER ||
-            figType == GOT_NOF_PASSIVESOLDIER)
+        if(figType == GOT_NOF_ATTACKER || figType == GOT_NOF_AGGRESSIVEDEFENDER || figType == GOT_NOF_DEFENDER
+           || figType == GOT_NOF_PASSIVESOLDIER)
         {
             soldiers.insert(static_cast<const nofSoldier*>(fig));
         }
@@ -113,26 +115,29 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     }
 
     // Draw health above soldiers
-    if (gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS)) {
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+    {
         DrawPoint healthPos = troopsPos - DrawPoint(0, 14);
 
         // black background for hitpoints
         DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
-        for (std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end(); ++it) {
+        for(std::multiset<const nofSoldier*, ComparatorSoldiersByRank<true> >::const_iterator it = soldiers.begin(); it != soldiers.end();
+            ++it)
+        {
             int hitpoints = static_cast<int>((*it)->GetHitpoints());
             int maxHitpoints = static_cast<int>(HITPOINTS[building->GetNation()][(*it)->GetRank()]);
-            unsigned int hitpointsColour;
-            if (hitpoints <= maxHitpoints / 2)
+            unsigned hitpointsColour;
+            if(hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;
             else
             {
-                if (hitpoints == maxHitpoints)
+                if(hitpoints == maxHitpoints)
                     hitpointsColour = COLOR_GREEN;
                 else
                     hitpointsColour = COLOR_ORANGE;
-            }  
+            }
             std::stringstream hitpointsText;
             hitpointsText << hitpoints;
             NormalFont->Draw(healthPos, hitpointsText.str(), glArchivItem_Font::DF_CENTER, hitpointsColour);
@@ -141,15 +146,15 @@ void iwMilitaryBuilding::Msg_PaintAfter()
     }
 }
 
-
-void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 4: // Hilfe
         {
             WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[building->GetBuildingType()])));
-        } break;
+        }
+        break;
         case 5: // Gebäude abbrennen
         {
             // Darf das Gebäude abgerissen werden?
@@ -157,14 +162,14 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
             {
                 // Messagebox anzeigen
                 DemolitionNotAllowed(gwv.GetWorld().GetGGS());
-            }
-            else
+            } else
             {
                 // Abreißen?
                 Close();
                 WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, building));
             }
-        } break;
+        }
+        break;
         case 6: // Gold einstellen/erlauben
         {
             if(!GAMECLIENT.IsReplayModeOn())
@@ -181,37 +186,40 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned int ctrl_id)
                         GetCtrl<ctrlImageButton>(6)->SetImage(LOADER.GetImageN("io", 227));
                 }
             }
-        } break;
+        }
+        break;
         case 7: // "Gehe Zu Ort"
         {
             gwv.MoveToMapPt(building->GetPos());
-        } break;
-		case 9: //go to next of same type
-		{
+        }
+        break;
+        case 9: // go to next of same type
+        {
             const std::list<nobMilitary*>& militaryBuildings = gwv.GetWorld().GetPlayer(building->GetPlayer()).GetMilitaryBuildings();
-			//go through list once we get to current building -> open window for the next one and go to next location
-			for(std::list<nobMilitary*>::const_iterator it=militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
-			{
-				if((*it)->GetX()==building->GetX() && (*it)->GetY()==building->GetY()) //got to current building in the list?
-				{
-					//close old window, open new window (todo: only open if it isnt already open), move to location of next building
-					Close();
-					++it;
-					if(it == militaryBuildings.end()) //was last entry in list -> goto first
-						it=militaryBuildings.begin();
-					gwv.MoveToMapPt((*it)->GetPos());
-					iwMilitaryBuilding* nextscrn=new iwMilitaryBuilding(gwv, gcFactory, *it);
-					nextscrn->SetPos(GetPos());
-					WINDOWMANAGER.Show(nextscrn);
-					break;
-				}
-			}
-		} break;
-		case 10: //send home button (addon)
-		{
-			gcFactory.SendSoldiersHome(building->GetPos());
-		}
-		break;
+            // go through list once we get to current building -> open window for the next one and go to next location
+            for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
+            {
+                if((*it)->GetX() == building->GetX() && (*it)->GetY() == building->GetY()) // got to current building in the list?
+                {
+                    // close old window, open new window (todo: only open if it isnt already open), move to location of next building
+                    Close();
+                    ++it;
+                    if(it == militaryBuildings.end()) // was last entry in list -> goto first
+                        it = militaryBuildings.begin();
+                    gwv.MoveToMapPt((*it)->GetPos());
+                    iwMilitaryBuilding* nextscrn = new iwMilitaryBuilding(gwv, gcFactory, *it);
+                    nextscrn->SetPos(GetPos());
+                    WINDOWMANAGER.Show(nextscrn);
+                    break;
+                }
+            }
+        }
+        break;
+        case 10: // send home button (addon)
+        {
+            gcFactory.SendSoldiersHome(building->GetPos());
+        }
+        break;
     }
 }
 
@@ -228,4 +236,3 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
 
     WINDOWMANAGER.Show(new iwMsgbox(_("Demolition not possible"), msg, NULL, MSB_OK, MSB_EXCLAMATIONRED));
 }
-

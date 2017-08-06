@@ -15,16 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayer.h"
 
-AIPlayer::AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level): AIBase(playerId, gwb, level)
+AIPlayer::AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerId, gwb, level)
 {
 }
 
-
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned  /*gf*/, bool  /*gfisnwf*/)
+void AIPlayer::RunGF(const unsigned /*gf*/, bool /*gfisnwf*/)
 {
 }

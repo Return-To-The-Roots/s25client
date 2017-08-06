@@ -18,31 +18,30 @@
 #define DEBUG_H_
 
 #include "Random.h"
-#include "Socket.h"
+#include "libutil/src/Socket.h"
 
 class DebugInfo
 {
     Socket sock;
 
-    public:
-        DebugInfo();
-        ~DebugInfo();
+public:
+    DebugInfo();
+    ~DebugInfo();
 
-        bool Send(const void* buffer, int length);
-        bool SendSigned(signed i);
-        bool SendUnsigned(unsigned i);
-        bool SendString(const char* str, unsigned len = 0);
-        bool SendString(const std::string& str);
+    bool Send(const void* buffer, int length);
+    bool SendSigned(signed i);
+    bool SendUnsigned(unsigned i);
+    bool SendString(const char* str, unsigned len = 0);
+    bool SendString(const std::string& str);
 
 #ifdef _MSC_VER
-        bool SendStackTrace(LPCONTEXT ctx = NULL);
+    bool SendStackTrace(LPCONTEXT ctx = NULL);
 #else
-        bool SendStackTrace();
+    bool SendStackTrace();
 #endif
-        bool SendReplay();
-        bool SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
-                          const std::vector<RandomEntry> &a, const std::vector<RandomEntry> &b, unsigned identical);
+    bool SendReplay();
+    bool SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
+                      const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical);
 };
 
 #endif
-

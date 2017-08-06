@@ -19,16 +19,19 @@
 
 #pragma once
 
-#include "../libsiedler2/src/ArchivItem_Bitmap_Shadow.h"
 #include "glArchivItem_Bitmap.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Shadow.h"
 
 /// Klasse für GL-Shadow-Bitmaps.
 class glArchivItem_Bitmap_Shadow : public libsiedler2::baseArchivItem_Bitmap_Shadow, public glArchivItem_Bitmap
 {
-    public:
-        glArchivItem_Bitmap_Shadow() {}
+public:
+    glArchivItem_Bitmap_Shadow() {}
 
-        glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow& item) : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item) {}
+    glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow& item)
+        : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item)
+    {
+    }
 };
 
 #endif // !GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED

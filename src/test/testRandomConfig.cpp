@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
-#include <boost/foreach.hpp>
 #include <boost/array.hpp>
+#include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(RandomConfigTest)
@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_SUITE(RandomConfigTest)
  */
 BOOST_AUTO_TEST_CASE(MaxHeightBelowTextureCount)
 {
-    boost::array<MapStyle, 7> mapStyles = { { MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland,
-        MapStyle::Migration, MapStyle::Islands, MapStyle::Continent, MapStyle::Random } };
+    boost::array<MapStyle, 7> mapStyles = {{MapStyle::Greenland, MapStyle::Riverland, MapStyle::Ringland, MapStyle::Migration,
+                                            MapStyle::Islands, MapStyle::Continent, MapStyle::Random}};
     BOOST_FOREACH(MapStyle mapStyle, mapStyles)
     {
         RandomConfig config(mapStyle, 0x1337);
@@ -42,4 +42,3 @@ BOOST_AUTO_TEST_CASE(MaxHeightBelowTextureCount)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

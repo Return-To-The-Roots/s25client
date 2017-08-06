@@ -20,14 +20,14 @@
 #pragma once
 
 #include "FOWObjects.h"
-#include "Serializer.h"
+#include "helpers/GetInsertIterator.hpp"
+#include "helpers/ReserveElements.hpp"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
-#include "helpers/ReserveElements.hpp"
-#include "helpers/GetInsertIterator.hpp"
+#include "libutil/src/Serializer.h"
 #include <boost/static_assert.hpp>
-#include <set>
 #include <map>
+#include <set>
 #include <stdexcept>
 
 class GameObject;
@@ -40,12 +40,11 @@ class GameEvent;
 class SerializedGameData : public Serializer
 {
 public:
-
     /// Exception that is thrown if an error during (de)serialization occured
-    class Error: public std::runtime_error
+    class Error : public std::runtime_error
     {
     public:
-        explicit Error(const std::string& msg): std::runtime_error(msg){}
+        explicit Error(const std::string& msg) : std::runtime_error(msg) {}
     };
 
     SerializedGameData();
@@ -76,11 +75,11 @@ public:
     void PushObject(const GameEvent* event, const bool known);
 
     /// Copies a container of GameObjects
-    template <typename T>
+    template<typename T>
     void PushObjectContainer(const T& gos, const bool known);
 
     /// Pushes a container of values
-    template <typename T>
+    template<typename T>
     void PushContainer(const T& container);
 
     /// FoW-Objekt
@@ -90,27 +89,30 @@ public:
     void PushPoint(const Point<T>& pt);
 
     /// Point of map coords
-    void PushMapPoint(const MapPoint pt){ PushPoint(pt); }
+    void PushMapPoint(const MapPoint pt) { PushPoint(pt); }
 
     //////////////////////////////////////////////////////////////////////////
     // Read methods
     //////////////////////////////////////////////////////////////////////////
 
     /// Objekt(referenzen) lesen
-    template <typename T>
-    T* PopObject(GO_Type got) { return static_cast<T*>(PopObject_(got)); }
-    
+    template<typename T>
+    T* PopObject(GO_Type got)
+    {
+        return static_cast<T*>(PopObject_(got));
+    }
+
     GameEvent* PopEvent();
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();
 
     /// Liest einen Vektor von GameObjects
-    template <typename T>
+    template<typename T>
     void PopObjectContainer(T& gos, GO_Type got);
 
     /// Reads a container of values, param NOT used. Only for automatic type deduction
-    template <typename T>
+    template<typename T>
     T PopContainer(const T& = T());
 
     template<typename T>
@@ -160,22 +162,21 @@ private:
     GameObject* GetReadGameObject(const unsigned obj_id) const;
 };
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Implementation
 ////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template<typename T>
 void SerializedGameData::PushObjectContainer(const T& gos, const bool known)
 {
     // Anzahl
     PushUnsignedInt(gos.size());
     // einzelne Objekte
-    for (typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
+    for(typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
         PushObject(*it, known);
 }
 
-template <typename T>
+template<typename T>
 void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
 {
     typedef typename T::value_type ObjectPtr;
@@ -184,22 +185,20 @@ void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
     unsigned size = PopUnsignedInt();
     helpers::ReserveElements<T>::reserve(gos, size);
     typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(gos);
-    for (unsigned i = 0; i < size; ++i)
+    for(unsigned i = 0; i < size; ++i)
         *it = PopObject<Object>(got);
 }
 
-template <typename T>
+template<typename T>
 void SerializedGameData::PushContainer(const T& container)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
-    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value ||
-                            boost::is_same<Type, unsigned char>::value ||
-                            boost::is_same<Type, int>::value ||
-                            boost::is_same<Type, unsigned>::value),
-        "Unimplemented type for PushContainer");
+    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value || boost::is_same<Type, unsigned char>::value
+                             || boost::is_same<Type, int>::value || boost::is_same<Type, unsigned>::value),
+                            "Unimplemented type for PushContainer");
     PushUnsignedInt(container.size());
-    for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    for(typename T::const_iterator it = container.begin(); it != container.end(); ++it)
     {
         if(boost::is_same<Type, signed char>::value)
             PushSignedChar(*it);
@@ -214,22 +213,20 @@ void SerializedGameData::PushContainer(const T& container)
     }
 }
 
-template <typename T>
+template<typename T>
 T SerializedGameData::PopContainer(const T&)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
-    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value ||
-        boost::is_same<Type, unsigned char>::value ||
-        boost::is_same<Type, int>::value ||
-        boost::is_same<Type, unsigned>::value),
-        "Unimplemented type for PushContainer");
+    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value || boost::is_same<Type, unsigned char>::value
+                             || boost::is_same<Type, int>::value || boost::is_same<Type, unsigned>::value),
+                            "Unimplemented type for PushContainer");
 
     T result;
     unsigned size = PopUnsignedInt();
     helpers::ReserveElements<T>::reserve(result, size);
     typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(result);
-    for (unsigned i = 0; i < size; ++i)
+    for(unsigned i = 0; i < size; ++i)
     {
         if(boost::is_same<Type, signed char>::value)
             *it = PopSignedChar();
@@ -260,7 +257,5 @@ Point<T> SerializedGameData::PopPoint()
     pt.y = Pop<T>();
     return pt;
 }
-
-
 
 #endif // !SERIALIZED_GAME_DATA_H_

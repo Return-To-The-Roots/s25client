@@ -17,11 +17,12 @@
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
 
-Map::Map() : size(0, 0){}
+Map::Map() : size(0, 0)
+{
+}
 
-Map::Map(const MapExtent& size,
-         const std::string& name,
-         const std::string& author) : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
+Map::Map(const MapExtent& size, const std::string& name, const std::string& author)
+    : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
 {
     const unsigned numNodes = size.x * size.y;
 
@@ -41,14 +42,13 @@ Map::Map(const MapExtent& size,
     unknown5.resize(numNodes, 0x00);
 }
 
-
 libsiedler2::ArchivInfo* Map::CreateArchiv()
 {
     libsiedler2::ArchivInfo* info = new libsiedler2::ArchivInfo();
     libsiedler2::ArchivItem_Map* map = new libsiedler2::ArchivItem_Map();
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header();
     std::vector<unsigned char> data;
-    
+
     // create header information for the archiv
     header->setName(name);
     header->setAuthor(author);
@@ -56,27 +56,27 @@ libsiedler2::ArchivInfo* Map::CreateArchiv()
     header->setHeight(size.y);
     header->setPlayer(players);
     header->setGfxSet(type);
-    
-    for (unsigned i = 0; i < positions.size(); i++)
+
+    for(unsigned i = 0; i < positions.size(); i++)
     {
         header->setPlayerHQ(i, positions[i].x, positions[i].y);
     }
-    
-    map->set(0, header);
-    map->set(1, new libsiedler2::ArchivItem_Raw(z));
-    map->set(2, new libsiedler2::ArchivItem_Raw(textureRsu));
-    map->set(3, new libsiedler2::ArchivItem_Raw(textureLsd));
-    map->set(4, new libsiedler2::ArchivItem_Raw(road));
-    map->set(5, new libsiedler2::ArchivItem_Raw(objectType));
-    map->set(6, new libsiedler2::ArchivItem_Raw(objectInfo));
-    map->set(7, new libsiedler2::ArchivItem_Raw(animal));
-    map->set(8, new libsiedler2::ArchivItem_Raw(unknown1));
-    map->set(9, new libsiedler2::ArchivItem_Raw(build));
-    map->set(10, new libsiedler2::ArchivItem_Raw(unknown2));
-    map->set(11, new libsiedler2::ArchivItem_Raw(unknown3));
-    map->set(12, new libsiedler2::ArchivItem_Raw(resource));
-    map->set(13, new libsiedler2::ArchivItem_Raw(shading));
-    map->set(14, new libsiedler2::ArchivItem_Raw(unknown5));
+
+    map->push(header);
+    map->push(new libsiedler2::ArchivItem_Raw(z));
+    map->push(new libsiedler2::ArchivItem_Raw(textureRsu));
+    map->push(new libsiedler2::ArchivItem_Raw(textureLsd));
+    map->push(new libsiedler2::ArchivItem_Raw(road));
+    map->push(new libsiedler2::ArchivItem_Raw(objectType));
+    map->push(new libsiedler2::ArchivItem_Raw(objectInfo));
+    map->push(new libsiedler2::ArchivItem_Raw(animal));
+    map->push(new libsiedler2::ArchivItem_Raw(unknown1));
+    map->push(new libsiedler2::ArchivItem_Raw(build));
+    map->push(new libsiedler2::ArchivItem_Raw(unknown2));
+    map->push(new libsiedler2::ArchivItem_Raw(unknown3));
+    map->push(new libsiedler2::ArchivItem_Raw(resource));
+    map->push(new libsiedler2::ArchivItem_Raw(shading));
+    map->push(new libsiedler2::ArchivItem_Raw(unknown5));
 
     info->push(map);
 

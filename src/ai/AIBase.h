@@ -29,38 +29,39 @@ class GlobalGameSettings;
 /// Basisklasse für sämtliche KI-Spieler
 class AIBase
 {
-    protected:
-        /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
-        const unsigned char playerId;
-        /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
-        const GameWorldBase& gwb;
-        /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
-        const GamePlayer& player;
-        /// Queue der GameCommands, die noch bearbeitet werden müssen
-        std::vector<gc::GameCommandPtr> gcs;
-        /// Stärke der KI
-        const AI::Level level;
-        /// Abstrahiertes Interfaces, leitet Befehle weiter an
-        AIInterface aii;
+protected:
+    /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
+    const unsigned char playerId;
+    /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
+    const GameWorldBase& gwb;
+    /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
+    const GamePlayer& player;
+    /// Queue der GameCommands, die noch bearbeitet werden müssen
+    std::vector<gc::GameCommandPtr> gcs;
+    /// Stärke der KI
+    const AI::Level level;
+    /// Abstrahiertes Interfaces, leitet Befehle weiter an
+    AIInterface aii;
 
-    public:
+public:
+    AIBase(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
+        : playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId), ggs(gwb.GetGGS())
+    {
+    }
 
-        AIBase(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-            : playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId), ggs(gwb.GetGGS()) {}
+    virtual ~AIBase() {}
 
-        virtual ~AIBase() {}
+    /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
+    virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
 
-        /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-        virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
+    /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
+    /// (beispielsweise Siegesbedingungen, FOW usw.)
+    const GlobalGameSettings& ggs;
 
-        /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
-        /// (beispielsweise Siegesbedingungen, FOW usw.)
-        const GlobalGameSettings& ggs;
-
-        /// Zugriff auf die GameCommands, um diese abarbeiten zu können
-        const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
-        /// Markiert die GameCommands als abgearbeitet
-        void FetchGameCommands() { gcs.clear(); }
+    /// Zugriff auf die GameCommands, um diese abarbeiten zu können
+    const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
+    /// Markiert die GameCommands als abgearbeitet
+    void FetchGameCommands() { gcs.clear(); }
 };
 
-#endif //!AIBASE_H_INCLUDED
+#endif //! AIBASE_H_INCLUDED

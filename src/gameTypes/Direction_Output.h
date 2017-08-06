@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma  once
+#pragma once
 
 #ifndef Direction_Output_h__
 #define Direction_Output_h__
@@ -27,12 +27,12 @@ inline std::ostream& operator<<(std::ostream& os, const Direction& dir)
 {
     switch(Direction::Type(dir))
     {
-    case Direction::WEST:      os << "WEST"; break;
-    case Direction::NORTHWEST: os << "NORTHWEST"; break;
-    case Direction::NORTHEAST: os << "NORTHEAST"; break;
-    case Direction::EAST:      os << "EAST"; break;
-    case Direction::SOUTHEAST: os << "SOUTHEAST"; break;
-    case Direction::SOUTHWEST: os << "SOUTHWEST"; break;
+        case Direction::WEST: os << "WEST"; break;
+        case Direction::NORTHWEST: os << "NORTHWEST"; break;
+        case Direction::NORTHEAST: os << "NORTHEAST"; break;
+        case Direction::EAST: os << "EAST"; break;
+        case Direction::SOUTHEAST: os << "SOUTHEAST"; break;
+        case Direction::SOUTHWEST: os << "SOUTHWEST"; break;
     }
     return os;
 }

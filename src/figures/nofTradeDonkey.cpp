@@ -19,14 +19,14 @@
 #include "nofTradeDonkey.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
-#include "Loader.h"
-#include "gameData/JobConsts.h"
 #include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
 #include "libutil/src/colors.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
@@ -35,12 +35,10 @@ nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, c
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id),
-      successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
-      gt(GoodType(sgd.PopUnsignedChar())),
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(GoodType(sgd.PopUnsignedChar())),
       next_dirs(sgd.PopContainer(next_dirs))
-{}
-
+{
+}
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
@@ -90,8 +88,7 @@ void nofTradeDonkey::Walked()
             CancelTradeCaravane();
             WanderFailedTrade();
         }
-    }
-    else if(nextDir != INVALID_DIR)
+    } else if(nextDir != INVALID_DIR)
         StartWalking(Direction::fromInt(nextDir));
     else
     {
@@ -100,7 +97,7 @@ void nofTradeDonkey::Walked()
     }
 }
 
-void nofTradeDonkey::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofTradeDonkey::HandleDerivedEvent(const unsigned /*id*/)
 {
 }
 void nofTradeDonkey::AbrogateWorkplace()
@@ -127,15 +124,13 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
             // Ware im Korb zeichnen
             LOADER.GetMapImageN(2350 + gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir().toUInt()][ani_step]);
         }
-    }
-    else
+    } else
         DrawWalking(drawPt);
 }
 
 void nofTradeDonkey::LostWork()
 {
 }
-
 
 void nofTradeDonkey::CancelTradeCaravane()
 {

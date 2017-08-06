@@ -18,25 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlEdit.h"
 
-#include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Font.h"
-#include "driver/src/MouseCoords.h"
 #include "CollisionDetection.h"
+#include "driver/src/MouseCoords.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
+#include "ogl/glArchivItem_Font.h"
 #include <sstream>
 
-ctrlEdit::ctrlEdit(Window* parent,
-                   unsigned int id,
-                   const DrawPoint& pos,
-                   const Extent& size,
-                   TextureColor tc,
-                   glArchivItem_Font* font,
-                   unsigned short maxlength,
-                   bool password,
-                   bool disabled,
-                   bool notify)
-    : Window(parent, id, pos, size),
-      maxLength_(maxlength), texColor_(tc), font_(font), isPassword_(password), isDisabled_(disabled),
+ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                   unsigned short maxlength, bool password, bool disabled, bool notify)
+    : Window(parent, id, pos, size), maxLength_(maxlength), texColor_(tc), font_(font), isPassword_(password), isDisabled_(disabled),
       focus_(false), newFocus_(false), notify_(notify), numberOnly_(false)
 {
     SetText("");
@@ -59,7 +50,7 @@ void ctrlEdit::SetText(const std::string& text)
         AddChar(*it);
 }
 
-void ctrlEdit::SetText(const unsigned int text)
+void ctrlEdit::SetText(const unsigned text)
 {
     cursorPos_ = 0;
     viewStart_ = 0;
@@ -121,7 +112,7 @@ void ctrlEdit::Draw_()
     if(cursorPos_ <= 5)
         start = 0;
     font_->Draw(GetDrawPos() + DrawPoint(4, GetSize().y / 2), dtext.substr(start), glArchivItem_Font::DF_VCENTER,
-               (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, GetSize().x - 8);
+                (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, GetSize().x - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
     if(focus_ && !isDisabled_ && VIDEODRIVER.GetTickCount() % 1000 < 500)
@@ -142,7 +133,7 @@ void ctrlEdit::Draw_()
  *
  *  @param[in] text Das Zeichen
  */
-void ctrlEdit::AddChar(unsigned int c)
+void ctrlEdit::AddChar(unsigned c)
 {
     // Number-only text fields accept numbers only ;)
     if(numberOnly_ && !(c >= '0' && c <= '9'))
@@ -221,11 +212,12 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
     {
         default:
             return false;
-            // Wird bereits über Char geliefert !!
+        // Wird bereits über Char geliefert !!
         case KT_SPACE: // Leertaste
         {
             AddChar(0x20);
-        } break;
+        }
+        break;
 
         case KT_LEFT: // Cursor nach Links
         {
@@ -233,7 +225,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while (cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) != std::wstring::npos)
+                while(cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) != std::wstring::npos)
                 {
                     CursorLeft();
                     if(cursorPos_ == 0)
@@ -241,7 +233,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
                 }
 
                 // Und dann über alles, was kein Trenner ist
-                while (cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) == std::wstring::npos)
+                while(cursorPos_ > 0 && std::wstring(L" \t\n-+=").find(text_[cursorPos_ - 1]) == std::wstring::npos)
                 {
                     CursorLeft();
                     if(cursorPos_ == 0)
@@ -250,9 +242,10 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             }
 
             // Sonst nur einen Schritt
-            if (cursorPos_ > 0)
+            if(cursorPos_ > 0)
                 CursorLeft();
-        } break;
+        }
+        break;
 
         case KT_RIGHT: // Cursor nach Rechts
         {
@@ -260,14 +253,14 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             if(ke.ctrl)
             {
                 // Erst über alle Trennzeichen hinweg
-                while (cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) != std::wstring::npos)
+                while(cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) != std::wstring::npos)
                 {
                     CursorRight();
                     if(cursorPos_ == text_.length())
                         break;
                 }
                 // Und dann über alles, was kein Trenner ist
-                while (cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) == std::wstring::npos)
+                while(cursorPos_ + 1 < text_.length() && std::wstring(L" \t\n-+=").find(text_[cursorPos_ + 1]) == std::wstring::npos)
                 {
                     CursorRight();
                     if(cursorPos_ == text_.length())
@@ -276,21 +269,24 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
             }
 
             // Sonst nur einen Schritt
-            if (cursorPos_ < text_.length())
+            if(cursorPos_ < text_.length())
                 CursorRight();
-        } break;
+        }
+        break;
 
         case KT_CHAR: // Zeichen eingegeben
         {
-            if(!isDisabled_ && font_->CharExist( ke.c ))
+            if(!isDisabled_ && font_->CharExist(ke.c))
                 AddChar(ke.c);
-        } break;
+        }
+        break;
 
         case KT_BACKSPACE: // Backspace gedrückt
         {
             if(!isDisabled_)
                 RemoveChar();
-        } break;
+        }
+        break;
 
         case KT_DELETE: // Entfernen gedrückt
         {
@@ -299,25 +295,29 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
                 CursorRight();
                 RemoveChar();
             }
-        } break;
+        }
+        break;
 
         case KT_RETURN: // Enter gedrückt
         {
             if(!isDisabled_ && GetParent())
                 GetParent()->Msg_EditEnter(GetID());
-        } break;
+        }
+        break;
 
         case KT_HOME: // Pos1 gedrückt
         {
             while(cursorPos_ > 0)
                 CursorLeft();
-        } break;
+        }
+        break;
 
         case KT_END: // Ende gedrückt
         {
             while(cursorPos_ < text_.length())
                 CursorRight();
-        } break;
+        }
+        break;
     }
 
     return true;

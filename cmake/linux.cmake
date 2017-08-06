@@ -10,7 +10,7 @@ if(CCACHE_FOUND)
 endif(CCACHE_FOUND)
 
 # set compiler flags
-IF(ENABLE_OPTIMIZATIONS)
+IF(RTTR_ENABLE_OPTIMIZATIONS)
 	FORCE_ADD_FLAGS(CMAKE_C_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -ggdb)
 	FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -ggdb)
-ENDIF(ENABLE_OPTIMIZATIONS)
+ENDIF(RTTR_ENABLE_OPTIMIZATIONS)

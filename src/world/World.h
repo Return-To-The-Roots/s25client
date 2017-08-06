@@ -18,27 +18,28 @@
 #ifndef World_h__
 #define World_h__
 
-#include "world/MilitarySquares.h"
-#include "gameTypes/GO_Type.h"
-#include "gameTypes/MapNode.h"
-#include "gameTypes/HarborPos.h"
-#include "gameTypes/MapCoordinates.h"
-#include "gameTypes/MapTypes.h"
-#include "gameTypes/LandscapeType.h"
-#include "gameTypes/Direction.h"
 #include "Identity.h"
 #include "ReturnConst.h"
 #include "helpers/Deleter.h"
+#include "world/MilitarySquares.h"
+#include "gameTypes/Direction.h"
+#include "gameTypes/GO_Type.h"
+#include "gameTypes/HarborPos.h"
+#include "gameTypes/LandscapeType.h"
+#include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapNode.h"
+#include "gameTypes/MapTypes.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
-#include <vector>
 #include <list>
+#include <vector>
 
 class noNothing;
 class CatapultStone;
 class FOWObject;
 class noBase;
 struct ShipDirection;
-template <typename T> struct Point;
+template<typename T>
+struct Point;
 
 /// Base class representing the world itself, no algorithms, handlers etc!
 class World
@@ -49,8 +50,8 @@ class World
         /// Anzahl der Knoten, welches sich in diesem Meer befinden
         unsigned nodes_count;
 
-        Sea(): nodes_count(0) {}
-        Sea(const unsigned nodes_count): nodes_count(nodes_count) {}
+        Sea() : nodes_count(0) {}
+        Sea(const unsigned nodes_count) : nodes_count(nodes_count) {}
     };
 
     friend class MapLoader;
@@ -75,9 +76,10 @@ protected:
     /// Internal method for access to nodes with write access
     MapNode& GetNodeInt(const MapPoint pt);
     MapNode& GetNeighbourNodeInt(const MapPoint pt, Direction dir);
+
 public:
     /// Currently flying catapult stones
-    std::list<CatapultStone*> catapult_stones; 
+    std::list<CatapultStone*> catapult_stones;
     MilitarySquares militarySquares;
 
     World();
@@ -106,17 +108,17 @@ public:
     MapCoord GetYA(const MapCoord x, const MapCoord y, unsigned dir) const;
     MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const;
 
-    /// Return all points in a radius around pt (excluding pt) that satisfy a given condition. 
+    /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
     /// Number of results is constrained to maxResults (if > 0)
     /// Overloads are used due to missing template default args until C++11
     template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
-    std::vector<typename T_TransformPt::result_type>
-    GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt = false) const;
+    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt,
+                                                                       T_IsValidPt isValid, bool includePt = false) const;
 
     template<class T_TransformPt>
-    std::vector<typename T_TransformPt::result_type>
-    GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt) const
+    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius,
+                                                                       T_TransformPt transformPt) const
     {
         return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
     }
@@ -135,7 +137,6 @@ public:
     /// If includePt is true, then the point itself is also checked
     template<class T_IsValidPt>
     bool CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
-
 
     /// Return the distance between 2 points on the map (includes wrapping around map borders)
     unsigned CalcDistance(const Point<int> p1, const Point<int> p2) const;
@@ -167,8 +168,8 @@ public:
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
-    void SetResource(const MapPoint pt, const unsigned char newResource){ GetNodeInt(pt).resources = newResource; }
-    void SetOwner(const MapPoint pt, const unsigned char newOwner){ GetNodeInt(pt).owner = newOwner; }
+    void SetResource(const MapPoint pt, const unsigned char newResource) { GetNodeInt(pt).resources = newResource; }
+    void SetOwner(const MapPoint pt, const unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
     void SetReserved(const MapPoint pt, const bool reserved);
     void SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime);
 
@@ -185,9 +186,17 @@ public:
     const std::list<noBase*>& GetFigures(const MapPoint pt) const { return GetNode(pt).figures; }
 
     /// Return a specific object or NULL
-    template<typename T> T* GetSpecObj(const MapPoint pt) { return dynamic_cast<T*>(GetNode(pt).obj); }
+    template<typename T>
+    T* GetSpecObj(const MapPoint pt)
+    {
+        return dynamic_cast<T*>(GetNode(pt).obj);
+    }
     /// Return a specific object or NULL
-    template<typename T> const T* GetSpecObj(const MapPoint pt) const { return dynamic_cast<const T*>(GetNode(pt).obj); }
+    template<typename T>
+    const T* GetSpecObj(const MapPoint pt) const
+    {
+        return dynamic_cast<const T*>(GetNode(pt).obj);
+    }
 
     /// Return the terrain to the right when walking from the point in the given direction
     /// 0 = left upper triangle, 1 = triangle above, ..., 4 = triangle below
@@ -236,7 +245,7 @@ protected:
     virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
     /// Sets the road for the given (road) direction
     void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
-    BoundaryStones& GetBoundaryStones(const MapPoint pt){ return GetNodeInt(pt).boundary_stones; }
+    BoundaryStones& GetBoundaryStones(const MapPoint pt) { return GetNodeInt(pt).boundary_stones; }
     /// Set the BQ at the point and return true if it was changed
     bool SetBQ(const MapPoint pt, BuildingQuality bq);
 
@@ -249,10 +258,22 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 // Convenience functions
-inline MapCoord World::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const { return GetXA(MapPoint(x, y), dir); }
-inline MapCoord World::GetXA(const MapPoint pt, unsigned dir) const { return GetNeighbour(pt, dir).x; }
-inline MapCoord World::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const { return GetNeighbour(MapPoint(x, y), dir).y; }
-inline MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const { return GetNeighbour(pt, Direction::fromInt(dir)); }
+inline MapCoord World::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const
+{
+    return GetXA(MapPoint(x, y), dir);
+}
+inline MapCoord World::GetXA(const MapPoint pt, unsigned dir) const
+{
+    return GetNeighbour(pt, dir).x;
+}
+inline MapCoord World::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const
+{
+    return GetNeighbour(MapPoint(x, y), dir).y;
+}
+inline MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const
+{
+    return GetNeighbour(pt, Direction::fromInt(dir));
+}
 
 inline unsigned World::GetIdx(const MapPoint pt) const
 {
@@ -322,8 +343,7 @@ World::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt
 }
 
 template<class T_IsValidPt>
-inline bool
-World::CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const
+inline bool World::CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const
 {
     if(includePt && isValid(pt))
         return true;

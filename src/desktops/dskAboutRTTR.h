@@ -24,12 +24,11 @@
 ///  Klasse des Über-Siedler-RTTR Desktops.
 class dskAboutRTTR : public Desktop
 {
-    public:
-        dskAboutRTTR();
+public:
+    dskAboutRTTR();
 
-    private:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !dskABOUTRTTR_H_INCLUDED

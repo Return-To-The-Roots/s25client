@@ -17,28 +17,29 @@
 
 #include "defines.h" // IWYU pragma: keep
 
-#include "test/initTestHelpers.h"
-#include "Random.h"
-#include "desktops/Desktop.h"
-#include "WindowManager.h"
 #include "Loader.h"
+#include "Random.h"
+#include "WindowManager.h"
+#include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "test/MockupVideoDriver.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
 #ifndef _WIN32
-#   include <execinfo.h>
-#   include <csignal>
+#include <csignal>
+#include <execinfo.h>
 
 void SegFaultHandler(int /*sig*/)
 {
-    const unsigned int maxTrace = 256;
+    const unsigned maxTrace = 256;
     void* stacktrace[maxTrace];
     unsigned num_frames = backtrace(stacktrace, maxTrace);
     char** stacktraceNames = backtrace_symbols(stacktrace, num_frames);
-    for(unsigned i = 0; i < num_frames; i++){
+    for(unsigned i = 0; i < num_frames; i++)
+    {
         std::cerr << std::hex << stacktrace[i];
         if(stacktraceNames)
             std::cerr << ": " << stacktraceNames[i];
@@ -59,7 +60,9 @@ void installSegFaultHandler()
     sigaction(SIGSEGV, &newAction, NULL);
 }
 #else
-void installSegFaultHandler(){}
+void installSegFaultHandler()
+{
+}
 #endif
 
 void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
@@ -69,12 +72,14 @@ void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""
 #endif
     RANDOM.Init(defaultValue);
     if(fileName && fileName[0])
-        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentState() << "(" << defaultValue << ")" << std::endl;
+        std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentState() << "(" << defaultValue << ")"
+                  << std::endl;
 }
 
-class DummyDesktop: public Desktop
+class DummyDesktop : public Desktop
 {
-public: DummyDesktop(): Desktop(NULL){}
+public:
+    DummyDesktop() : Desktop(NULL) {}
 };
 
 void initGUITests()

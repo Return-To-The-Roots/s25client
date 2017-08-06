@@ -16,21 +16,21 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GamePlayer.h"
-#include "buildings/nobBaseMilitary.h"
-#include "GameMessages.h"
 #include "GameClient.h"
-#include "nodeObjs/noStaticObject.h"
-#include "world/GameWorldViewer.h"
+#include "GameMessages.h"
+#include "GamePlayer.h"
 #include "RTTR_AssertError.h"
+#include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
 #include "initTestHelpers.h"
 #include "test/BQOutput.h"
+#include "test/CreateEmptyWorld.h"
 #include "test/PointOutput.h"
 #include "test/WorldFixture.h"
-#include "test/CreateEmptyWorld.h"
-#include <boost/test/unit_test.hpp>
+#include "world/GameWorldViewer.h"
+#include "nodeObjs/noStaticObject.h"
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)
@@ -198,13 +198,14 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1P){
+BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1P)
+{
     initGUITests();
     // Init BQ
     world.InitAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
         world.SetOwner(pt, 1);
-        
+
     // Set player
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(0));
 
@@ -255,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1P){
     gameDesktop.DemolishRoad(2);
     BOOST_REQUIRE(gwv.IsOnRoad(roadPts[0]));
     BOOST_REQUIRE(gwv.IsOnRoad(roadPts[1]));
-    for(unsigned i=2; i<roadPts.size(); i++)
+    for(unsigned i = 2; i < roadPts.size(); i++)
         BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[i]));
     // Remove rest
     gameDesktop.GI_SetRoadBuildMode(RM_DISABLED);
@@ -366,9 +367,11 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1P)
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt)->GetGOT(), GOT_FLAG);
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::WEST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHWEST), 0), BQ_CASTLE); // Building to this flag
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHEAST), 0), BQ_NOTHING); // Buildings flag or flag to close to this
-    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::EAST), 0), BQ_HOUSE); // This flag blocks castles extensions
-                                                                                                // This flag is to close and border prohibits building
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::NORTHEAST), 0),
+                        BQ_NOTHING); // Buildings flag or flag to close to this
+    BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::EAST), 0),
+                        BQ_HOUSE); // This flag blocks castles extensions
+                                   // This flag is to close and border prohibits building
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHEAST), 0), BQ_NOTHING);
     BOOST_REQUIRE_EQUAL(world.GetBQ(world.GetNeighbour(flagPt, Direction::SOUTHWEST), 0), BQ_NOTHING);
 }

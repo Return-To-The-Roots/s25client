@@ -18,11 +18,11 @@
 #ifndef XorShift_h__
 #define XorShift_h__
 
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/is_integral.hpp>
+#include <boost/array.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/limits.hpp>
-#include <boost/array.hpp>
+#include <boost/type_traits/is_integral.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <iosfwd>
 
 class Serializer;
@@ -39,7 +39,10 @@ public:
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit XorShift(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0) { seed(seedSeq); }
+    explicit XorShift(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0)
+    {
+        seed(seedSeq);
+    }
 
     void seed() { seed(0x1337); }
     void seed(uint64_t newSeed);
@@ -59,8 +62,8 @@ public:
 private:
     friend std::ostream& operator<<(std::ostream& os, const XorShift& obj);
     friend std::istream& operator>>(std::istream& is, XorShift& obj);
-    friend bool operator==(const XorShift& lhs, const XorShift& rhs){ return lhs.state_ == rhs.state_; }
-    friend bool operator!=(const XorShift& lhs, const XorShift& rhs){ return !(lhs == rhs); }
+    friend bool operator==(const XorShift& lhs, const XorShift& rhs) { return lhs.state_ == rhs.state_; }
+    friend bool operator!=(const XorShift& lhs, const XorShift& rhs) { return !(lhs == rhs); }
 
     uint64_t state_;
 };

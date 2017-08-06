@@ -23,29 +23,29 @@ struct ShipDirection
 {
     enum Type
     {
-        NORTH,      // 0
-        NORTHEAST,  // 1
-        SOUTHEAST,  // 2
-        SOUTH,      // 3
-        SOUTHWEST,  // 4
-        NORTHWEST   // 5
+        NORTH,     // 0
+        NORTHEAST, // 1
+        SOUTHEAST, // 2
+        SOUTH,     // 3
+        SOUTHWEST, // 4
+        NORTHWEST  // 5
     };
     static const int COUNT = NORTHWEST + 1;
 
     Type t_;
     ShipDirection(Type t) : t_(t) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt safely to a Direction
-    explicit ShipDirection(unsigned t): t_(Type(t % COUNT)){ RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
+    explicit ShipDirection(unsigned t) : t_(Type(t % COUNT)) { RTTR_Assert(t_ >= NORTH && t_ < COUNT); }
     /// Converts an UInt to a Direction without checking its value. Use only when this is actually a Direction
-    static ShipDirection fromInt(unsigned t){ return Type(t); }
-    static ShipDirection fromInt(int t){ return Type(t); }
+    static ShipDirection fromInt(unsigned t) { return Type(t); }
+    static ShipDirection fromInt(int t) { return Type(t); }
     operator Type() const { return t_; }
     /// Returns the Direction as an UInt (for legacy code)
-    unsigned toUInt() const{ return t_; }
+    unsigned toUInt() const { return t_; }
     ShipDirection operator+(unsigned i) const { return ShipDirection(t_ + i); }
     // TODO: Add iterator to iterate over all values from a given value
 private:
-    //prevent automatic conversion for any other built-in types such as bool, int, etc
+    // prevent automatic conversion for any other built-in types such as bool, int, etc
     template<typename T>
     operator T() const;
 };

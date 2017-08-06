@@ -18,40 +18,31 @@
 #ifndef GameWorldWithLuaAccess_h__
 #define GameWorldWithLuaAccess_h__
 
-#include "GlobalGameSettings.h"
 #include "EventManager.h"
+#include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "GlobalVars.h"
 #include "lua/LuaInterfaceGame.h"
-#include "GamePlayer.h"
+#include "test/initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/initTestHelpers.h"
 #include "libutil/src/Log.h"
-#include "libutil/src/colors.h"
 #include "libutil/src/StringStreamWriter.h"
+#include "libutil/src/colors.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-class GameWorldWithLuaAccess: public GameWorldGame
+class GameWorldWithLuaAccess : public GameWorldGame
 {
 public:
     GlobalGameSettings ggs;
     EventManager em;
 
-    GameWorldWithLuaAccess(): GameWorldGame(CreatePlayers(), ggs, em), em(0)
-    {
-        createLua();
-    }
+    GameWorldWithLuaAccess() : GameWorldGame(CreatePlayers(), ggs, em), em(0) { createLua(); }
 
-    void createLua()
-    {
-        lua.reset(new LuaInterfaceGame(*this));
-    }
+    void createLua() { lua.reset(new LuaInterfaceGame(*this)); }
 
-    void executeLua(const std::string& luaCode)
-    {
-        lua->LoadScriptString(luaCode);
-    }
+    void executeLua(const std::string& luaCode) { lua->LoadScriptString(luaCode); }
 
     static std::vector<PlayerInfo> CreatePlayers()
     {
@@ -75,7 +66,8 @@ public:
     }
 };
 
-struct LuaTestsFixture{
+struct LuaTestsFixture
+{
     StringStreamWriter* logWriter;
     GameWorldWithLuaAccess world;
     std::vector<MapPoint> hqPositions;
@@ -95,10 +87,7 @@ struct LuaTestsFixture{
         GameObject::SetPointers(NULL);
     }
 
-    void clearLog()
-    {
-        logWriter->getStream().str("");
-    }
+    void clearLog() { logWriter->getStream().str(""); }
 
     std::string getLog(bool clear = true)
     {
@@ -108,15 +97,9 @@ struct LuaTestsFixture{
         return result;
     }
 
-    void executeLua(const std::string& luaCode)
-    {
-        world.executeLua(luaCode);
-    }
+    void executeLua(const std::string& luaCode) { world.executeLua(luaCode); }
 
-    void executeLua(const boost::format& luaCode)
-    {
-        executeLua(luaCode.str());
-    }
+    void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
 
     boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
     {

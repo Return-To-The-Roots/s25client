@@ -18,11 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlImageButton.h"
 
-ctrlImageButton::ctrlImageButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                                 const Extent& size, const TextureColor tc,
+ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                  glArchivItem_Bitmap* const image, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseImage(image)
-{}
+{
+}
 
 void ctrlImageButton::DrawContent() const
 {

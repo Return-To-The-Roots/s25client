@@ -26,8 +26,9 @@ class GameWorldGame;
 class LuaWorld
 {
     GameWorldGame& gw;
+
 public:
-    LuaWorld(GameWorldGame& gw): gw(gw){}
+    LuaWorld(GameWorldGame& gw) : gw(gw) {}
     static void Register(kaguya::State& state);
     bool AddEnvObject(int x, int y, unsigned id, unsigned file = 0xFFFF);
     bool AddStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 1);

@@ -25,21 +25,19 @@ class LobbyServerInfo;
 
 class iwLobbyServerInfo : public IngameWindow
 {
-    private:
-        unsigned serverId_;
+private:
+    unsigned serverId_;
 
-    public:
-        iwLobbyServerInfo(unsigned serverId);
+public:
+    iwLobbyServerInfo(unsigned serverId);
 
-        void SetServerId(unsigned serverId);
-        unsigned GetServerId() const { return serverId_; }
+    void SetServerId(unsigned serverId);
+    unsigned GetServerId() const { return serverId_; }
 
-    protected:
-        void UpdateServerInfo();
+protected:
+    void UpdateServerInfo();
 
-        void Msg_Timer(const unsigned int ctrl_id) override;
-
-
+    void Msg_Timer(const unsigned ctrl_id) override;
 };
 
 #endif // iwLOBBYSERVERINFO_H_INCLUDED

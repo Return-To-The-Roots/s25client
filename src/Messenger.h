@@ -21,29 +21,30 @@
 
 #include "gameTypes/ChatDestination.h"
 #include "libutil/src/colors.h"
-#include <string>
 #include <list>
+#include <string>
 
 class Messenger
 {
-        struct Msg
-        {
-            std::string author;
-            unsigned color_author;
-            ChatDestination cd;
-            std::string msg;
-            unsigned color_msg;
-            unsigned starttime;
-            unsigned short width;
-        };
+    struct Msg
+    {
+        std::string author;
+        unsigned color_author;
+        ChatDestination cd;
+        std::string msg;
+        unsigned color_msg;
+        unsigned starttime;
+        unsigned short width;
+    };
 
-        std::list<Msg> messages;
+    std::list<Msg> messages;
 
-    public:
-        ~Messenger();
+public:
+    ~Messenger();
 
-        void Draw();
-        void AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg, const unsigned color_msg = COLOR_YELLOW);
+    void Draw();
+    void AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd, const std::string& msg,
+                    const unsigned color_msg = COLOR_YELLOW);
 };
 
 #endif // !MESSENGER_H_INCLUDED

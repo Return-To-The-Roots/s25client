@@ -18,30 +18,28 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noGrainfield.h"
 
-#include "Loader.h"
+#include "EventManager.h"
 #include "GameClient.h"
+#include "Loader.h"
 #include "Random.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
-#include "EventManager.h"
 #include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
-
 
 /// Länge des Wachs-Wartens
 const unsigned GROWING_WAITING_LENGTH = 1100;
 /// Länge des Wachsens
 const unsigned GROWING_LENGTH = 16;
 
-noGrainfield::noGrainfield(const MapPoint pos) : noCoordBase(NOP_GRAINFIELD, pos),
-    type(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)), state(STATE_GROWING_WAITING), size(0)
+noGrainfield::noGrainfield(const MapPoint pos)
+    : noCoordBase(NOP_GRAINFIELD, pos), type(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)), state(STATE_GROWING_WAITING), size(0)
 {
     event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
 noGrainfield::~noGrainfield()
 {
-
 }
 
 void noGrainfield::Destroy_noGrainfield()
@@ -64,11 +62,9 @@ void noGrainfield::Serialize_noGrainfield(SerializedGameData& sgd) const
     sgd.PushObject(event, true);
 }
 
-noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    type(sgd.PopUnsignedChar()),
-    state(State(sgd.PopUnsignedChar())),
-    size(sgd.PopUnsignedChar()),
-    event(sgd.PopEvent())
+noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())), size(sgd.PopUnsignedChar()),
+      event(sgd.PopEvent())
 {
 }
 
@@ -77,10 +73,9 @@ void noGrainfield::Draw(DrawPoint drawPt)
     switch(state)
     {
         case STATE_GROWING_WAITING:
-        case STATE_NORMAL:
-        {
-            LOADER.grainfield_cache[type][size].draw(drawPt);
-        } break;
+        case STATE_NORMAL: { LOADER.grainfield_cache[type][size].draw(drawPt);
+        }
+        break;
         case STATE_GROWING:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
@@ -90,19 +85,20 @@ void noGrainfield::Draw(DrawPoint drawPt)
 
             // neues Feld einblenden
             LOADER.grainfield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
-        } break;
+        }
+        break;
         case STATE_WITHERING:
         {
             unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
 
             // Feld ausblenden
             LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
-        } break;
+        }
+        break;
     }
-
 }
 
-void noGrainfield::HandleEvent(const unsigned int  /*id*/)
+void noGrainfield::HandleEvent(const unsigned /*id*/)
 {
     switch(state)
     {
@@ -111,7 +107,8 @@ void noGrainfield::HandleEvent(const unsigned int  /*id*/)
             // Feld hat gewartet, also wächst es jetzt
             event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
             state = STATE_GROWING;
-        } break;
+        }
+        break;
         case STATE_GROWING:
         {
             // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wächst
@@ -120,32 +117,32 @@ void noGrainfield::HandleEvent(const unsigned int  /*id*/)
                 event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
                 // Erstmal wieder bis zum nächsten Wachsstumsschub warten
                 state = STATE_GROWING_WAITING;
-            }
-            else
+            } else
             {
                 // bin nun ausgewachsen
                 state = STATE_NORMAL;
                 // nach langer Zeit verdorren
                 event = GetEvMgr().AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 1000));
             }
-
-        } break;
+        }
+        break;
         case STATE_NORMAL:
         {
             // Jetzt lebt es schon zu lange --> hokus pokus verschwindibus!
             state = STATE_WITHERING;
             event = GetEvMgr().AddEvent(this, 20);
-        } break;
+        }
+        break;
         case STATE_WITHERING:
         {
             // Selbst zerstören
             event = 0;
             gwg->SetNO(pos, NULL);
             GetEvMgr().AddToKillList(this);
-        } break;
+        }
+        break;
     }
 }
-
 
 void noGrainfield::BeginHarvesting()
 {
@@ -160,4 +157,3 @@ void noGrainfield::EndHarvesting()
     // nach langer Zeit verdorren (von neuem)
     event = GetEvMgr().AddEvent(this, 3000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 1000));
 }
-

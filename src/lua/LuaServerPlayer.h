@@ -24,13 +24,15 @@
 struct JoinPlayerInfo;
 class GameServerInterface;
 
-class LuaServerPlayer: public LuaPlayerBase
+class LuaServerPlayer : public LuaPlayerBase
 {
     GameServerInterface& gameServer_;
     const unsigned playerId;
     JoinPlayerInfo& player;
+
 protected:
     const BasePlayerInfo& GetPlayer() const override;
+
 public:
     LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId);
     static void Register(kaguya::State& state);

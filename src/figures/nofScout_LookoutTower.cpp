@@ -17,42 +17,45 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
+#include "EventManager.h"
+#include "GameClient.h"
+#include "buildings/nobUsual.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
-#include "EventManager.h"
-#include "buildings/nobUsual.h"
-#include "GameClient.h"
 #include "gameData/MilitaryConsts.h"
 class SerializedGameData;
 class nobBaseWarehouse;
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(JOB_SCOUT, pos, player, workplace)
-{}
+{
+}
 
 nofScout_LookoutTower::nofScout_LookoutTower(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
     : nofBuildingWorker(JOB_SCOUT, pos, player, goalWh)
-{}
+{
+}
 
-nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id)
-    : nofBuildingWorker(sgd, obj_id)
-{}
-
+nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
+{
+}
 
 void nofScout_LookoutTower::Serialize_nofScout_LookoutTower(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 }
 
-
 void nofScout_LookoutTower::WalkedDerived()
-{}
+{
+}
 
 void nofScout_LookoutTower::DrawWorking(DrawPoint /*drawPt*/)
-{}
+{
+}
 
-void nofScout_LookoutTower::HandleDerivedEvent(const unsigned int  /*id*/)
-{}
+void nofScout_LookoutTower::HandleDerivedEvent(const unsigned /*id*/)
+{
+}
 
 void nofScout_LookoutTower::WorkAborted()
 {
@@ -66,7 +69,8 @@ void nofScout_LookoutTower::WorkplaceReached()
     gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
+    SendPostMessage(player,
+                    new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
 }
 
 bool nofScout_LookoutTower::AreWaresAvailable()

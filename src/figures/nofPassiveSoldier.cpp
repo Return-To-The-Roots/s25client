@@ -17,17 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofPassiveSoldier.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobMilitary.h"
-#include "Random.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "Random.h"
+#include "SerializedGameData.h"
+#include "buildings/nobMilitary.h"
+#include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 class RoadSegment;
 
-nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier),
-    healing_event(NULL)
+nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(NULL)
 {
     // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
     Heal();
@@ -35,17 +34,15 @@ nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(sol
     current_ev = NULL;
 }
 
-nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player,
-                                     nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank)
+nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
+                                     nobBaseMilitary* const home, const unsigned char rank)
     : nofSoldier(pos, player, goal, home, rank), healing_event(NULL)
 {
 }
 
-
 nofPassiveSoldier::~nofPassiveSoldier()
 {
 }
-
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
@@ -60,8 +57,8 @@ void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) con
     sgd.PushObject(healing_event, true);
 }
 
-nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id) : nofSoldier(sgd, obj_id),
-    healing_event(sgd.PopEvent())
+nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
+    : nofSoldier(sgd, obj_id), healing_event(sgd.PopEvent())
 {
 }
 
@@ -71,11 +68,11 @@ void nofPassiveSoldier::Draw(DrawPoint drawPt)
     DrawSoldierWalking(drawPt);
 }
 
-void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
+void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
 {
     switch(id)
     {
-            // "Heilungs-Event"
+        // "Heilungs-Event"
         case 1:
         {
             healing_event = 0;
@@ -90,11 +87,12 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned int id)
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
                     if(hitpoints < HITPOINTS[gwg->GetPlayer(player).nation][job_ - JOB_PRIVATE])
-                        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
+                        healing_event = GetEvMgr().AddEvent(
+                          this, CONVALESCE_TIME + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), CONVALESCE_TIME_RANDOM), 1);
                 }
             }
-
-        } break;
+        }
+        break;
     }
 }
 
@@ -135,7 +133,6 @@ void nofPassiveSoldier::InBuildingDestroyed()
     StartWandering();
 
     StartWalking(Direction::fromInt(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6)));
-
 }
 
 void nofPassiveSoldier::LeaveBuilding()
@@ -149,10 +146,11 @@ void nofPassiveSoldier::LeaveBuilding()
     building = NULL;
 }
 
-
 void nofPassiveSoldier::Upgrade()
 {
-    RTTR_Assert(!building || !helpers::contains(static_cast<nobMilitary*>(building)->GetTroops(), this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
+    RTTR_Assert(!building
+                || !helpers::contains(static_cast<nobMilitary*>(building)->GetTroops(),
+                                      this)); // We must not be in the buildings list while upgrading. This would destroy the ordered list
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 
@@ -176,4 +174,3 @@ void nofPassiveSoldier::NotNeeded()
     building = NULL;
     GoHome();
 }
-

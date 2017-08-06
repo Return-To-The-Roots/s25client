@@ -26,57 +26,61 @@ class nobBaseMilitary;
 /// übernehmen
 class nofPassiveSoldier : public nofSoldier
 {
-    private:
+private:
+    /// "Heilungs-Event"
+    GameEvent* healing_event;
 
-        /// "Heilungs-Event"
-        GameEvent* healing_event;
+private:
+    /// Eventhandling
+    void HandleDerivedEvent(const unsigned id) override;
 
-    private:
+    // informieren, wenn ...
+    void GoalReached() override; // das Ziel erreicht wurde
 
-        /// Eventhandling
-        void HandleDerivedEvent(const unsigned int id) override;
+    /// wenn man gelaufen ist
+    void Walked() override;
+    /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
+    void Heal();
 
-        // informieren, wenn ...
-        void GoalReached() override; // das Ziel erreicht wurde
+public:
+    nofPassiveSoldier(const nofSoldier& soldier);
+    nofPassiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home,
+                      const unsigned char rank);
+    nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// wenn man gelaufen ist
-        void Walked() override;
-        /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
-        void Heal();
+    ~nofPassiveSoldier() override;
 
-    public:
+    /// Aufräummethoden
+protected:
+    void Destroy_nofPassiveSoldier();
 
-        nofPassiveSoldier(const nofSoldier& soldier);
-        nofPassiveSoldier(const MapPoint pt, const unsigned char player, nobBaseMilitary* const goal, nobBaseMilitary* const home, const unsigned char rank);
-        nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Destroy() override { Destroy_nofPassiveSoldier(); }
 
-        ~nofPassiveSoldier() override;
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofPassiveSoldier(SerializedGameData& sgd) const;
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofPassiveSoldier();
-    public:     void Destroy() override { Destroy_nofPassiveSoldier(); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofPassiveSoldier(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofPassiveSoldier(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofPassiveSoldier(sgd); }
+    GO_Type GetGOT() const override { return GOT_NOF_PASSIVESOLDIER; }
 
-        GO_Type GetGOT() const override { return GOT_NOF_PASSIVESOLDIER; }
+    // Zeichnet den Soldaten
+    void Draw(DrawPoint drawPt) override;
 
-        // Zeichnet den Soldaten
-        void Draw(DrawPoint drawPt) override;
+    /// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
+    void InBuildingDestroyed();
+    /// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
+    void LeaveBuilding();
 
-        /// wenn Militärgebäude abgerissen wurde und sich der Soldat im Gebäude befand
-        void InBuildingDestroyed();
-        /// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
-        void LeaveBuilding();
+    /// Befördert einen Soldaten
+    void Upgrade();
 
-        /// Befördert einen Soldaten
-        void Upgrade();
-
-        /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
-        void NotNeeded();
-        /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
-        void LeftBuilding(){ building = NULL; }
+    /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
+    void NotNeeded();
+    /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
+    void LeftBuilding() { building = NULL; }
 };
 
 #endif // !NOF_PASSIVESOLDIER_H_

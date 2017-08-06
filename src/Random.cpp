@@ -44,7 +44,7 @@ int Random<T_PRNG>::Rand(const char* const src_name, const unsigned src_line, co
 {
     history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, src_name, src_line, obj_id);
     ++numInvocations_;
-    
+
     // Special case: [0, 0) makes 0
     return (max == 0) ? 0 : rng_(max - 1);
 }
@@ -96,7 +96,7 @@ std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
     }
 
     ret.reserve(end - begin);
-    for (unsigned i = begin; i < end; ++i)
+    for(unsigned i = begin; i < end; ++i)
         ret.push_back(history_[i % history_.size()]);
 
     return ret;
@@ -146,9 +146,8 @@ int Random<T_PRNG>::RandomEntry::GetValue() const
 template<class T_PRNG>
 std::ostream& Random<T_PRNG>::RandomEntry::print(std::ostream& os) const
 {
-    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << rngState
-        << " | " << src_name << "#" << src_line
-        << "|id=" << obj_id << "\n";
+    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << rngState << " | " << src_name << "#" << src_line
+              << "|id=" << obj_id << "\n";
 }
 
 // Instantiate the Random class with the used PRNG

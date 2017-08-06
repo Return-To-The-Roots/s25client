@@ -27,25 +27,25 @@ class nobUsual;
 /// Klasse für den Schreiner
 class nofWellguy : public nofWorkman
 {
-    protected:
-        /// Zeichnet ihn beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
-        // TODO:der Brunnentyphat keine ID in JOBS.BOB
-        unsigned short GetCarryID() const override { return 111; }
-        /// Der Arbeiter erzeugt eine Ware
-        GoodType ProduceWare() override;
+protected:
+    /// Zeichnet ihn beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Gibt die ID in JOBS.BOB zurück, wenn der Beruf Waren rausträgt (bzw rein)
+    // TODO:der Brunnentyphat keine ID in JOBS.BOB
+    unsigned short GetCarryID() const override { return 111; }
+    /// Der Arbeiter erzeugt eine Ware
+    GoodType ProduceWare() override;
 
-        bool AreWaresAvailable() override;
+    bool AreWaresAvailable() override;
 
-    public:
-        /// Ctor for sending the figure to its workplace
-        nofWellguy(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        /// Ctor for sending the figure to a warehouse (harbor, HQ,...)
-        nofWellguy(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
-        nofWellguy(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    /// Ctor for sending the figure to its workplace
+    nofWellguy(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    /// Ctor for sending the figure to a warehouse (harbor, HQ,...)
+    nofWellguy(const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
+    nofWellguy(SerializedGameData& sgd, const unsigned obj_id);
 
-        GO_Type GetGOT() const override { return GOT_NOF_WELLGUY; }
+    GO_Type GetGOT() const override { return GOT_NOF_WELLGUY; }
 };
 
 #endif

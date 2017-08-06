@@ -17,35 +17,26 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "JoinPlayerInfo.h"
-#include "libutil/src/Serializer.h"
 #include "mygettext/src/mygettext.h"
+#include "libutil/src/Serializer.h"
 #include <cstdio>
 
-JoinPlayerInfo::JoinPlayerInfo():
-    rating(0),
-    isReady(false)
-{}
+JoinPlayerInfo::JoinPlayerInfo() : rating(0), isReady(false)
+{
+}
 
-JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) :
-    PlayerInfo(baseInfo),
-    originName(name),
-    rating(0),
-    isReady(false)
-{}
+JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) : PlayerInfo(baseInfo), originName(name), rating(0), isReady(false)
+{
+}
 
-JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo):
-    PlayerInfo(playerInfo),
-    originName(name),
-    rating(0),
-    isReady(false)
-{}
+JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), originName(name), rating(0), isReady(false)
+{
+}
 
-JoinPlayerInfo::JoinPlayerInfo(Serializer& ser):
-    PlayerInfo(ser),
-    originName(ser.PopString()),
-    rating(ser.PopUnsignedInt()),
-    isReady(ser.PopBool())
-{}
+JoinPlayerInfo::JoinPlayerInfo(Serializer& ser)
+    : PlayerInfo(ser), originName(ser.PopString()), rating(ser.PopUnsignedInt()), isReady(ser.PopBool())
+{
+}
 
 void JoinPlayerInfo::Serialize(Serializer& ser) const
 {
@@ -57,15 +48,15 @@ void JoinPlayerInfo::Serialize(Serializer& ser) const
 
 void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
 {
-	// TODO: This has a code smell.
-	// Probably some composition instead of inheritance required?
+    // TODO: This has a code smell.
+    // Probably some composition instead of inheritance required?
 
-	// Unswap fixed stuff
-	using std::swap;
-	swap(originName, other.originName);
-	swap(nation, other.nation);
-	swap(color, other.color);
-	swap(team, other.team);
+    // Unswap fixed stuff
+    using std::swap;
+    swap(originName, other.originName);
+    swap(nation, other.nation);
+    swap(color, other.color);
+    swap(team, other.team);
 }
 
 void JoinPlayerInfo::InitRating()
@@ -78,15 +69,9 @@ void JoinPlayerInfo::InitRating()
         {
             switch(aiInfo.level)
             {
-            case AI::EASY:
-                rating = 42;
-                break;
-            case AI::MEDIUM:
-                rating = 666;
-                break;
-            case AI::HARD:
-                rating = 1337;
-                break;
+                case AI::EASY: rating = 42; break;
+                case AI::MEDIUM: rating = 666; break;
+                case AI::HARD: rating = 1337; break;
             }
         } else
             rating = 0;
@@ -110,15 +95,9 @@ void JoinPlayerInfo::SetAIName(unsigned playerId)
     {
         switch(aiInfo.level)
         {
-        case AI::EASY:
-            name += _(" (easy)");
-            break;
-        case AI::MEDIUM:
-            name += _(" (medium)");
-            break;
-        case AI::HARD:
-            name += _(" (hard)");
-            break;
+            case AI::EASY: name += _(" (easy)"); break;
+            case AI::MEDIUM: name += _(" (medium)"); break;
+            case AI::HARD: name += _(" (hard)"); break;
         }
     }
 }

@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "ctrlGroup.h"
 #include "ctrlButton.h"
+#include "ctrlGroup.h"
 #include <set>
 class MouseCoords;
 class Window;
@@ -28,44 +28,44 @@ class Window;
 /// Verwaltet eine Gruppe von n Buttons, von denen 0 bis n gleichzeitig ausgewählt sind
 class ctrlMultiSelectGroup : public ctrlGroup
 {
-    public:
-        enum
-        {
-            ILLUMINATE = 0,
-            CHECK,
-            SHOW
-        };
+public:
+    enum
+    {
+        ILLUMINATE = 0,
+        CHECK,
+        SHOW
+    };
 
-    public:
-        ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type);
+public:
+    ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type);
 
-        /// Selektiert einen neuen Button
-        void AddSelection(unsigned short selection, bool notify = false);
-        /// Entfernt einen selektierten Button aus der Selektion
-        void RemoveSelection(unsigned short selection, bool notify = false);
-        /// Wechselt zwischen selektiert/nicht selektiert
-        void ToggleSelection(unsigned short selection, bool notify = false);
-        /// Gibt Liste der aktuell selektierten Buttons zurück
-        const std::set<unsigned short> &GetSelection() const { return selectedItems_; }
-        /// Prüft ob ein Button ausgewählt ist
-        bool IsSelected(unsigned short selection) const;
-        // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
-        ctrlButton* GetButton(unsigned int id) { return GetCtrl<ctrlButton>(id); }
+    /// Selektiert einen neuen Button
+    void AddSelection(unsigned short selection, bool notify = false);
+    /// Entfernt einen selektierten Button aus der Selektion
+    void RemoveSelection(unsigned short selection, bool notify = false);
+    /// Wechselt zwischen selektiert/nicht selektiert
+    void ToggleSelection(unsigned short selection, bool notify = false);
+    /// Gibt Liste der aktuell selektierten Buttons zurück
+    const std::set<unsigned short>& GetSelection() const { return selectedItems_; }
+    /// Prüft ob ein Button ausgewählt ist
+    bool IsSelected(unsigned short selection) const;
+    // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
+    ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
-        bool Msg_LeftUp(const MouseCoords& mc) override;
-        bool Msg_WheelUp(const MouseCoords& mc) override;
-        bool Msg_WheelDown(const MouseCoords& mc) override;
-        bool Msg_MouseMove(const MouseCoords& mc) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool Msg_WheelUp(const MouseCoords& mc) override;
+    bool Msg_WheelDown(const MouseCoords& mc) override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
 
-    protected:
-        /// Zeichenmethode.
-        void Draw_() override;
+protected:
+    /// Zeichenmethode.
+    void Draw_() override;
 
-    private:
-        std::set<unsigned short> selectedItems_; /// aktuell ausgewählte Buttons
-        int select_type;         /// Typ der Selektierung
+private:
+    std::set<unsigned short> selectedItems_; /// aktuell ausgewählte Buttons
+    int select_type;                         /// Typ der Selektierung
 };
 
 #endif // !CTRLMULTISELECTGROUP_H_INCLUDED

@@ -17,12 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlChat.h"
-#include "ctrlScrollBar.h"
-#include "ogl/glArchivItem_Font.h"
 #include "CollisionDetection.h"
-#include "Log.h"
-#include "driver/src/MouseCoords.h"
 #include "FileChecksum.h"
+#include "ctrlScrollBar.h"
+#include "driver/src/MouseCoords.h"
+#include "ogl/glArchivItem_Font.h"
+#include "libutil/src/Log.h"
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;
@@ -39,14 +39,8 @@ static const unsigned short SCROLLBAR_WIDTH = 20;
  *  @param[in] tc     Hintergrundtextur
  *  @param[in] font   Schriftart
  */
-ctrlChat::ctrlChat(Window* parent,
-                   unsigned int id,
-                   const DrawPoint& pos,
-                   const Extent& size,
-                   TextureColor tc,
-                   glArchivItem_Font* font)
-    : Window(parent, id, pos, size),
-      tc(tc), font(font), time_color(0xFFFFFFFF)
+ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+    : Window(parent, id, pos, size), tc(tc), font(font), time_color(0xFFFFFFFF)
 {
     // Zeilen pro Seite festlegen errechnen
     page_size = (size.y - 4) / (font->getHeight() + 2);
@@ -100,8 +94,7 @@ void ctrlChat::Resize(const Extent& newSize)
     if(was_on_bottom)
     {
         scroll->SetScrollPos(((chat_lines.size() > page_size) ? chat_lines.size() - page_size : 0));
-    }
-    else if(x_changed)
+    } else if(x_changed)
     {
         unsigned short i;
         for(i = 0; position > 0; ++i)
@@ -135,8 +128,8 @@ void ctrlChat::Draw_()
     // Listeneinträge zeichnen
     // Add margin
     DrawPoint textPos = GetDrawPos() + DrawPoint(2, 2);
-    unsigned int pos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
-    for(unsigned int i = 0; i < show_lines; ++i)
+    unsigned pos = GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
+    for(unsigned i = 0; i < show_lines; ++i)
     {
         // eine zweite oder n-nte Zeile?
         if(chat_lines[i + pos].secondary)
@@ -176,7 +169,8 @@ void ctrlChat::WrapLine(unsigned short i)
     ChatLine line = raw_chat_lines[i];
 
     // Breite von Zeitstring und Spielername berechnen (falls vorhanden)
-    unsigned short prefix_width = ( line.time_string.length() ? font->getWidth(line.time_string) : 0) + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0 );
+    unsigned short prefix_width = (line.time_string.length() ? font->getWidth(line.time_string) : 0)
+                                  + (line.player.length() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0);
 
     // Reicht die Breite des Textfeldes noch nichtmal dafür aus?
     if(prefix_width > GetSize().x - 2 - SCROLLBAR_WIDTH)
@@ -186,13 +180,14 @@ void ctrlChat::WrapLine(unsigned short i)
     }
 
     // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
-    glArchivItem_Font::WrapInfo wi = font->GetWrapInfo(line.msg, GetSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, GetSize().x - 2 - SCROLLBAR_WIDTH);
+    glArchivItem_Font::WrapInfo wi =
+      font->GetWrapInfo(line.msg, GetSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, GetSize().x - 2 - SCROLLBAR_WIDTH);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
 
     // Zeilen hinzufügen
-    for(unsigned int i = 0; i < strings.size(); ++i)
+    for(unsigned i = 0; i < strings.size(); ++i)
     {
         ChatLine wrap_line;
         // Nur bei den ersten Zeilen müssen ja Zeit und Spielername mit angegeben werden
@@ -209,10 +204,10 @@ void ctrlChat::WrapLine(unsigned short i)
 
         chat_lines.push_back(wrap_line);
     }
-
 }
 
-void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned int player_color, const std::string& msg, const unsigned int msg_color)
+void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color, const std::string& msg,
+                          const unsigned msg_color)
 {
     ChatLine line;
 
@@ -240,7 +235,7 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
     scrollbar->SetRange(unsigned(chat_lines.size()));
 
     // Waren wir am Ende? Dann mit runterscrollen
-    if(scrollbar->GetScrollPos() + page_size  == oldlength)
+    if(scrollbar->GetScrollPos() + page_size == oldlength)
         scrollbar->SetScrollPos(chat_lines.size() - page_size);
 }
 
@@ -266,11 +261,9 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(-3);
         return true;
-    }
-    else
+    } else
         return false;
 }
-
 
 bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
 {
@@ -279,8 +272,7 @@ bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
         ctrlScrollBar* scrollbar = GetCtrl<ctrlScrollBar>(0);
         scrollbar->Scroll(+3);
         return true;
-    }
-    else
+    } else
         return false;
 }
 
@@ -290,4 +282,3 @@ unsigned ctrlChat::CalcUniqueColor(const std::string& name)
     unsigned color = checksum | (checksum << 12) | 0xff000000;
     return color;
 }
-

@@ -139,33 +139,9 @@ void AudioSDL::CleanUp()
  *
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsigned long size)
+Sound* AudioSDL::LoadEffect(const std::string& filepath)
 {
-    std::ofstream dat;
-    std::string filePath = createTempFile(dat, ".wav");
-    
-    if (!dat)
-        return(NULL);
-
-    if (!dat.write(reinterpret_cast<const char*>(data), size))
-        return(NULL);
-
-    dat.close();
-
-    Mix_Chunk* sound;
-    switch(AudioType::Type(data_type))
-    {
-        default:
-            return(NULL);
-
-        case AudioType::AD_WAVE:
-        {
-            sound = Mix_LoadWAV(filePath.c_str());
-        } break;
-        /// @todo Alle Formate die SDL mit LoadWAV laden kann angeben
-    }
-
-    unlinkFile(filePath);
+    Mix_Chunk* sound = Mix_LoadWAV(filepath.c_str());
 
     if(sound == NULL)
     {
@@ -183,58 +159,12 @@ Sound* AudioSDL::LoadEffect(AudioType data_type, const unsigned char* data, unsi
 
 /**
  *  Läd ein Musikstück.
- *
- *  @param[in] type Typ der Daten
- *  @param[in] data Datenblock
- *  @param[in] size Größe des Datenblocks
- *
+
  *  @return Sounddeskriptor bei Erfolg, @p NULL bei Fehler
  */
-Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsigned long size)
+Sound* AudioSDL::LoadMusic(const std::string& filepath)
 {
-    std::string extension;
-    switch(AudioType::Type(data_type))
-    {
-        default:
-            return(NULL);
-
-        case AudioType::AD_MIDI:
-        {
-            extension = ".mid";
-        } break;
-
-        case AudioType::AD_WAVE:
-        {
-            extension = ".wav";
-        } break;
-
-        case AudioType::AD_OTHER:
-        {
-            const char* header = reinterpret_cast<const char*>(data);
-            if(strncmp(header, "OggS", 4) == 0)
-                extension = ".ogg";
-            else if (strncmp(header, "ID3", 3) == 0 || ((unsigned char)header[0] == 0xFF && (unsigned char)header[1] == 0xFB) )
-                extension = ".mp3";
-            else
-                extension = ".tmp";
-        } break;
-
-        /// @todo Alle Formate die SDL mit LoadMUS laden kann angeben
-    }
-
-    std::ofstream dat;
-    std::string filePath = createTempFile(dat, extension);
-    if (!dat)
-        return(NULL);
-
-    if (!dat.write(reinterpret_cast<const char*>(data), size))
-        return(NULL);
-
-    dat.close();
-
-    Mix_Music* music = Mix_LoadMUS(filePath.c_str());
-
-    unlinkFile(filePath);
+    Mix_Music* music = Mix_LoadMUS(filepath.c_str());
 
     if(music == NULL)
     {
@@ -253,7 +183,7 @@ Sound* AudioSDL::LoadMusic(AudioType data_type, const unsigned char* data, unsig
 /**
  *  Spielt einen Sound ab.
  */
-unsigned int AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
+unsigned AudioSDL::PlayEffect(Sound* sound, const unsigned char volume, const bool loop)
 {
     if(sound == NULL)
         return 0xFFFFFFFF;
@@ -300,7 +230,7 @@ void AudioSDL::StopMusic()
 void AudioSDL::StopEffect(const unsigned play_id)
 {
     // Alle Channels nach dieser ID abfragen und den jeweiligen zum Schweigen bringen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
             Mix_HaltChannel(i);
@@ -311,7 +241,7 @@ void AudioSDL::StopEffect(const unsigned play_id)
 bool AudioSDL::IsEffectPlaying(const unsigned play_id)
 {
     // Play-ID suchen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
             // und wird dieser Channel auch noch gespielt?
@@ -325,7 +255,7 @@ bool AudioSDL::IsEffectPlaying(const unsigned play_id)
 void AudioSDL::ChangeVolume(const unsigned play_id, const unsigned char volume)
 {
     // Play-ID suchen
-    for(unsigned int i = 0; i < CHANNEL_COUNT; ++i)
+    for(unsigned i = 0; i < CHANNEL_COUNT; ++i)
     {
         if(channels[i] == play_id)
             // Lautstärke verändern

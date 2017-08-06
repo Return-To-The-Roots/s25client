@@ -39,12 +39,11 @@ struct RoadNote;
 class GameWorldViewer
 {
 public:
-
     GameWorldViewer(unsigned playerId, GameWorldBase& gwb);
 
     /// Init the terrain renderer. Must be done before first call to GetTerrainRenderer!
     void InitTerrainRenderer();
-    
+
     /// Return the world itself
     const GameWorldBase& GetWorld() const { return gwb; }
     /// Return non-const world (TODO: Remove, this is a view only!)
@@ -104,7 +103,8 @@ public:
 
 private:
     /// Visual node status (might be different than world if GameCommand is just sent) to hide network latency
-    struct VisualMapNode{
+    struct VisualMapNode
+    {
         boost::array<unsigned char, 3> roads; // If != 0 then this road value is used (road construction) else real road is used
         BuildingQuality bq;
     };

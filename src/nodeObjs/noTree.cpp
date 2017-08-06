@@ -18,18 +18,18 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noTree.h"
 
-#include "Loader.h"
-#include "GameClient.h"
-#include "noDisappearingMapEnvObject.h"
-#include "noAnimal.h"
-#include "Random.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
 #include "FOWObjects.h"
+#include "GameClient.h"
 #include "GameInterface.h"
-#include "world/GameWorldGame.h"
-#include "ogl/glSmartBitmap.h"
+#include "Loader.h"
+#include "Random.h"
+#include "SerializedGameData.h"
 #include "addons/const_addons.h"
+#include "noAnimal.h"
+#include "noDisappearingMapEnvObject.h"
+#include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
 #include <boost/array.hpp>
 
 unsigned noTree::INSTANCE_COUNTER = 0;
@@ -43,16 +43,16 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
     {
         event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
         state = STATE_GROWING_WAIT;
-    }
-    else
+    } else
         state = STATE_NOTHING;
 
     // neuer Baum, neue Instanz
     ++INSTANCE_COUNTER;
 
     // Jeder 20. Baum produziert Tiere, aber keine Palmen und Ananas!
-	const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
-    produce_animals = (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)] == 0);
+    const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
+    produce_animals =
+      (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)] == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
@@ -61,7 +61,6 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
 
 noTree::~noTree()
 {
-
 }
 
 void noTree::Destroy_noTree()
@@ -82,16 +81,11 @@ void noTree::Serialize_noTree(SerializedGameData& sgd) const
     sgd.PushBool(produce_animals);
 }
 
-noTree::noTree(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    type(sgd.PopUnsignedChar()),
-    size(sgd.PopUnsignedChar()),
-    state(State(sgd.PopUnsignedChar())),
-    event(sgd.PopEvent()),
-    produce_animal_event(sgd.PopEvent()),
-    produce_animals(sgd.PopBool())
+noTree::noTree(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
+      event(sgd.PopEvent()), produce_animal_event(sgd.PopEvent()), produce_animals(sgd.PopBool())
 {
 }
-
 
 void noTree::Draw(DrawPoint drawPt)
 {
@@ -101,16 +95,19 @@ void noTree::Draw(DrawPoint drawPt)
         case STATE_FALLING_WAIT:
         {
             // Wenn er ausgewachsen ist, dann animiert zeichnen
-            LOADER.tree_cache[type][GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX()*GetY() * 10 * type)].draw(drawPt);
+            LOADER.tree_cache[type][GAMECLIENT.GetGlobalAnimation(8, 7 - GetX() % 2, 3 + GetY() % 3, GetX() * GetY() * 10 * type)].draw(
+              drawPt);
 
             // je mehr Bäume gezeichnet, desto mehr Vogelgezwitscher
             ++DRAW_COUNTER;
-        } break;
+        }
+        break;
         case STATE_GROWING_WAIT:
         {
             // normal zeichnen, wächst nicht
             LOADER.tree_cache[type][8 + size].draw(drawPt);
-        } break;
+        }
+        break;
         case STATE_GROWING_GROW:
         {
             // alten Baum ausblenden
@@ -118,15 +115,15 @@ void noTree::Draw(DrawPoint drawPt)
 
             LOADER.tree_cache[type][8 + size].draw(drawPt, 0xFFFFFFFF - transparency);
 
-            if (size == 2)
+            if(size == 2)
             {
                 LOADER.tree_cache[type][0].draw(drawPt, transparency | 0xFFFFFF);
-            }
-            else
+            } else
             {
                 LOADER.tree_cache[type][8 + size + 1].draw(drawPt, transparency | 0xFFFFFF);
             }
-        } break;
+        }
+        break;
         case STATE_FALLING_FALL:
         {
             // Umfallen beschleunigen --> für erste Frames mehr Zeit
@@ -140,15 +137,15 @@ void noTree::Draw(DrawPoint drawPt)
                 i = 2;
 
             LOADER.tree_cache[type][11 + i].draw(drawPt);
-        } break;
-        case STATE_FALLING_FALLEN:
-        {
-            LOADER.tree_cache[type][14].draw(drawPt);
-        } break;
+        }
+        break;
+        case STATE_FALLING_FALLEN: { LOADER.tree_cache[type][14].draw(drawPt);
+        }
+        break;
     }
 }
 
-void noTree::HandleEvent(const unsigned int id)
+void noTree::HandleEvent(const unsigned id)
 {
     // Ein Tier-Produzier-Event?
     if(id == 3)
@@ -168,8 +165,8 @@ void noTree::HandleEvent(const unsigned int id)
             // Der Baum hat gewartet, also wächst er jetzt
             event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
             state = STATE_GROWING_GROW;
-
-        } break;
+        }
+        break;
         case STATE_GROWING_GROW:
         {
             // Wenn er ausgewachsen ist, dann nicht, ansonsten nochmal ein "Warteevent" anmelden, damit er noch weiter wächst
@@ -178,28 +175,29 @@ void noTree::HandleEvent(const unsigned int id)
                 event = GetEvMgr().AddEvent(this, WAIT_LENGTH);
                 // Erstmal wieder bis zum nächsten Wachsstumsschub warten
                 state = STATE_GROWING_WAIT;
-            }
-            else
+            } else
             {
                 // bin nun ausgewachsen
                 state = STATE_NOTHING;
                 event = 0;
             }
-
-        } break;
+        }
+        break;
         case STATE_FALLING_WAIT:
         {
             // Jetzt umfallen
             state = STATE_FALLING_FALL;
 
             event = GetEvMgr().AddEvent(this, 15);
-        } break;
+        }
+        break;
         case STATE_FALLING_FALL:
         {
             // Baum ist gefallen, nach bestimmer Zeit verschwinden
             state = STATE_FALLING_FALLEN;
             event = GetEvMgr().AddEvent(this, 28);
-        } break;
+        }
+        break;
         case STATE_FALLING_FALLEN:
         {
             // Baum verschwindet nun und es bleibt ein Baumstumpf zurück
@@ -209,20 +207,18 @@ void noTree::HandleEvent(const unsigned int id)
             gwg->RecalcBQAroundPoint(pos);
 
             // Minimap Bescheid geben (Baum gefallen)
-			if(gwg->GetGameInterface())
-				gwg->GetGameInterface()->GI_UpdateMinimap(pos);
-
-        } break;
+            if(gwg->GetGameInterface())
+                gwg->GetGameInterface()->GI_UpdateMinimap(pos);
+        }
+        break;
         default: break;
     }
-
 }
 
 FOWObject* noTree::CreateFOWObject() const
 {
     return new fowTree(type, size);
 }
-
 
 void noTree::FallSoon()
 {
@@ -237,23 +233,14 @@ void noTree::DontFall()
         GetEvMgr().RemoveEvent(event);
 }
 
-
 void noTree::ProduceAnimal()
 {
     // neues Tier erzeugen, zufälliger Typ
-    static const boost::array<Species, 6> possibleSpecies =
-    {{
-        SPEC_RABBITWHITE,
-        SPEC_RABBITGREY,
-        SPEC_FOX,
-        SPEC_STAG,
-        SPEC_DEER,
-        SPEC_SHEEP
-    }};
+    static const boost::array<Species, 6> possibleSpecies = {
+      {SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
     noAnimal* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen
     gwg->AddFigure(animal, pos);
     // Und ihm die Pforten geben..
     animal->StartLiving();
 }
-

@@ -17,18 +17,20 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/TradeRoute.h"
-#include "world/GameWorldGame.h"
 #include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 
-TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal): gwg(gwg), player(player)
+TradeRoute::TradeRoute(const GameWorldGame& gwg, unsigned char player, const MapPoint& start, const MapPoint& goal)
+    : gwg(gwg), player(player)
 {
     AssignNewGoal(start, goal);
 }
 
-TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player) :
-    gwg(gwg), player(player), path(sgd), curPos(sgd.PopMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
-{}
+TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player)
+    : gwg(gwg), player(player), path(sgd), curPos(sgd.PopMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
+{
+}
 
 void TradeRoute::Serialize(SerializedGameData& sgd) const
 {

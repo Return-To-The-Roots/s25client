@@ -19,34 +19,34 @@
 
 #pragma once
 
-#include "Singleton.h"
+#include "libutil/src/Singleton.h"
 #include <string>
 #include <vector>
 
 struct Language
 {
-    Language(const std::string& name, const std::string& code): name(name), code(code) {}
+    Language(const std::string& name, const std::string& code) : name(name), code(code) {}
 
     std::string name;
-    std::string code;  // "normaler" locale-code
+    std::string code; // "normaler" locale-code
 };
 
-class Languages: public Singleton<Languages>
+class Languages : public Singleton<Languages>
 {
-    public:
-        Languages() : loaded(false) {}
+public:
+    Languages() : loaded(false) {}
 
-        void setLanguage(const std::string& lang_code);
-        const std::string setLanguage(unsigned int i);
+    void setLanguage(const std::string& lang_code);
+    const std::string setLanguage(unsigned i);
 
-        unsigned int getCount();
-        const Language& getLanguage(unsigned int i);
+    unsigned getCount();
+    const Language& getLanguage(unsigned i);
 
-    private:
-        void loadLanguages();
+private:
+    void loadLanguages();
 
-        std::vector<Language> languages;
-        bool loaded;
+    std::vector<Language> languages;
+    bool loaded;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

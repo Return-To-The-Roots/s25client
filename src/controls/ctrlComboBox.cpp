@@ -16,25 +16,18 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "Loader.h"
 #include "ctrlComboBox.h"
+#include "CollisionDetection.h"
+#include "Loader.h"
 #include "ctrlButton.h"
 #include "ctrlList.h"
-#include "CollisionDetection.h"
 #include "driver/src/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Sound.h"
 
-ctrlComboBox::ctrlComboBox(Window* parent,
-                           unsigned int id,
-                           const DrawPoint& pos,
-                           const Extent& size,
-                           TextureColor tc,
-                           glArchivItem_Font* font,
-                           unsigned short max_list_height,
-                           bool readonly)
-    : Window(parent, id, pos, size),
-      tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), last_show(false)
+ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+                           unsigned short max_list_height, bool readonly)
+    : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly), last_show(false)
 {
     ctrlList* liste = AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font);
 
@@ -66,7 +59,7 @@ void ctrlComboBox::Resize(const Extent& newSize)
     Extent listSize(newSize.x, 4);
 
     // Langsam die Höhe der maximalen annähern
-    for(unsigned int i = 0; i < list->GetLineCount(); ++i)
+    for(unsigned i = 0; i < list->GetLineCount(); ++i)
     {
         // zu große geworden?
         listSize.y += font->getHeight();
@@ -79,7 +72,8 @@ void ctrlComboBox::Resize(const Extent& newSize)
                 return;
 
             // Höhe um eins erniedrigen, damits wieder kleiner ist als die maximale
-            listSize.y -= font->getHeight();;
+            listSize.y -= font->getHeight();
+            ;
 
             break;
         }
@@ -155,11 +149,11 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
     ctrlList* list = GetCtrl<ctrlList>(0);
     if(list->IsVisible() && IsPointInRect(mc.GetPos(), list->GetDrawRect()))
         return RelayMouseMessage(&Window::Msg_WheelUp, mc);
-    
+
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         // Scrolled without list opened
-        if (list->GetSelection() > 0)
+        if(list->GetSelection() > 0)
             list->SetSelection(list->GetSelection() - 1);
         return true;
     }
@@ -183,7 +177,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         // Scrolled without list opened
-        if (list->GetSelection() + 1 < list->GetLineCount())
+        if(list->GetSelection() + 1 < list->GetLineCount())
             Msg_ListSelectItem(GetID(), list->GetSelection() + 1);
         return true;
     }
@@ -198,7 +192,7 @@ Rect ctrlComboBox::GetFullDrawRect(const ctrlList* list)
     return myRect;
 }
 
-void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
+void ctrlComboBox::Msg_ListSelectItem(const unsigned ctrl_id, const int selection)
 {
     // Liste wieder ausblenden
     ShowList(false);
@@ -212,7 +206,6 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned int ctrl_id, const int sele
         GetParent()->Msg_ComboSelectItem(GetID(), selection);
     }
 }
-
 
 /**
  *  fügt einen String zur Liste hinzu.
@@ -254,7 +247,8 @@ void ctrlComboBox::Draw_()
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetLineCount() > 0)
-        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0, GetSize().x - 2 - GetSize().y, "");
+        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0,
+                   GetSize().x - 2 - GetSize().y, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde
     // auch die Liste malen, die bei Msg_PaintAfter() sowieso gemalt wird.
@@ -286,8 +280,7 @@ void ctrlComboBox::ShowList(bool show)
     {
         GetParent()->LockRegion(this, liste->GetDrawRect());
         selectionOnListOpen = GetSelection();
-    }
-    else
+    } else
     {
         GetParent()->FreeRegion(this);
     }

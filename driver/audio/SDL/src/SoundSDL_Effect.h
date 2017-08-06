@@ -23,16 +23,15 @@ struct Mix_Chunk;
 
 class SoundSDL_Effect : public Sound
 {
-        friend class AudioSDL;
+    friend class AudioSDL;
 
-    public:
-        SoundSDL_Effect();
+public:
+    SoundSDL_Effect();
 
-        ~SoundSDL_Effect() override;
+    ~SoundSDL_Effect() override;
 
-
-    private:
-        Mix_Chunk* sound; /// Das PCM-Handle.
+private:
+    Mix_Chunk* sound; /// Das PCM-Handle.
 };
 
 #endif // !SOUNDSDL_EFFECT_H_INCLUDED

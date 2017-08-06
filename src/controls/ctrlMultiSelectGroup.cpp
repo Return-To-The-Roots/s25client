@@ -19,8 +19,8 @@
 #include "ctrlMultiSelectGroup.h"
 class MouseCoords;
 
-ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned int id, int select_type): ctrlGroup(parent, id),
-      selectedItems_(std::set<unsigned short>()), select_type(select_type)
+ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type)
+    : ctrlGroup(parent, id), selectedItems_(std::set<unsigned short>()), select_type(select_type)
 {
 }
 
@@ -43,8 +43,8 @@ void ctrlMultiSelectGroup::AddSelection(unsigned short selection, bool notify)
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(true); break;
-        case CHECK:      button->SetChecked(true);       break;
-        case SHOW:       button->SetVisible(false);     break;
+        case CHECK: button->SetChecked(true); break;
+        case SHOW: button->SetVisible(false); break;
     }
 
     this->selectedItems_.insert(selection);
@@ -64,8 +64,8 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
     switch(select_type)
     {
         case ILLUMINATE: button->SetIlluminated(false); break;
-        case CHECK:      button->SetChecked(false);       break;
-        case SHOW:       button->SetVisible(true);        break;
+        case CHECK: button->SetChecked(false); break;
+        case SHOW: button->SetVisible(true); break;
     }
 
     this->selectedItems_.erase(selection);
@@ -74,13 +74,12 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned short selection, bool notify
         GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
-
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
  */
 void ctrlMultiSelectGroup::ToggleSelection(unsigned short selection, bool notify)
 {
-    if (IsSelected(selection))
+    if(IsSelected(selection))
         RemoveSelection(selection, notify);
     else
         AddSelection(selection, notify);
@@ -91,7 +90,7 @@ bool ctrlMultiSelectGroup::IsSelected(unsigned short selection) const
     return (this->selectedItems_.count(selection) == 1);
 }
 
-void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned ctrl_id)
 {
     ToggleSelection(ctrl_id, true);
 }

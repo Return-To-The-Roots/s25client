@@ -25,14 +25,13 @@ class MouseCoords;
 /// Klasse des Splashscreen Desktops.
 class dskSplash : public Desktop
 {
-    public:
-        dskSplash();
-        ~dskSplash() override;
+public:
+    dskSplash();
+    ~dskSplash() override;
 
-    private:
-
-        void Msg_Timer(const unsigned int ctrl_id) override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
+private:
+    void Msg_Timer(const unsigned ctrl_id) override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
 };
 
 #endif // !dskSPLASH_H_INCLUDED

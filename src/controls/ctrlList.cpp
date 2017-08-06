@@ -17,19 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlList.h"
-#include "ctrlScrollBar.h"
 #include "CollisionDetection.h"
+#include "ctrlScrollBar.h"
 #include "driver/src/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlList::ctrlList(Window* parent,
-                   unsigned int id,
-                   const DrawPoint& pos,
-                   const Extent& size,
-                   TextureColor tc,
-                   glArchivItem_Font* font)
-    : Window(parent, id, pos, elMax(size, Extent(22, 4))),
-      tc(tc), font(font), selection_(-1), mouseover(-1)
+ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
+    : Window(parent, id, pos, elMax(size, Extent(22, 4))), tc(tc), font(font), selection_(-1), mouseover(-1)
 {
     pagesize = (GetSize().y - 4) / font->getHeight();
 
@@ -59,7 +53,7 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetListDrawArea()))
     {
         // Neue Selektierung
-        mouseover = (mc.y - (GetDrawPos().y + 2) ) / font->getHeight();
+        mouseover = (mc.y - (GetDrawPos().y + 2)) / font->getHeight();
         const std::string itemTxt = GetItemText(mouseover);
         tooltip_.ShowTooltip((font->getWidth(itemTxt) > GetListDrawArea().getSize().x) ? itemTxt : "");
         return true;
@@ -86,7 +80,8 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
         // aktuellen Eintrag selektieren
         selection_ = mouseover + scrollbar->GetScrollPos();
 
-        if(GetParent()) GetParent()->Msg_ListSelectItem(GetID(), selection_);
+        if(GetParent())
+            GetParent()->Msg_ListSelectItem(GetID(), selection_);
 
         return true;
     }

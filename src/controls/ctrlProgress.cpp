@@ -18,31 +18,21 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlProgress.h"
 
-#include "WindowManager.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
 #include "CollisionDetection.h"
+#include "Loader.h"
+#include "WindowManager.h"
+#include "ogl/glArchivItem_Font.h"
 #include <boost/math/special_functions/round.hpp>
 #include <sstream>
 
-ctrlProgress::ctrlProgress(Window* parent,
-                           const unsigned int id,
-                           const DrawPoint& pos,
-                           const Extent& size,
-                           const TextureColor tc,
-                           unsigned short button_minus,
-                           unsigned short button_plus,
-                           const unsigned short maximum,
-                           const Extent& padding,
-                           const unsigned int force_color,
-                           const std::string& tooltip,
-                           const std::string& button_minus_tooltip,
-                           const std::string& button_plus_tooltip,
-                           unsigned short* const  /*write_val*/)
-    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip),
-      tc(tc), position(0), maximum(maximum), padding_(padding), force_color(force_color)
+ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
+                           unsigned short button_minus, unsigned short button_plus, const unsigned short maximum, const Extent& padding,
+                           const unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip,
+                           const std::string& button_plus_tooltip, unsigned short* const /*write_val*/)
+    : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), position(0), maximum(maximum), padding_(padding),
+      force_color(force_color)
 {
-    const char* str1 = "io", * str2 = "io";
+    const char *str1 = "io", *str2 = "io";
     if(button_minus >= 1000)
     {
         str1 = "io_new";
@@ -55,8 +45,10 @@ ctrlProgress::ctrlProgress(Window* parent,
     }
 
     Extent btSize = Extent::all(size.y);
-    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(str1, button_minus), (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")) );
-    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(str2, button_plus),  (button_plus_tooltip.length( ) ? button_plus_tooltip  : _("More")) );
+    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(str1, button_minus),
+                   (button_minus_tooltip.length() ? button_minus_tooltip : _("Less")));
+    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(str2, button_plus),
+                   (button_plus_tooltip.length() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar
     padding_.x -= 2;
@@ -87,11 +79,11 @@ void ctrlProgress::Draw_()
     DrawControls();
 
     const DrawPoint innerPadding(4, 4);
-    unsigned int percentage = position * 100 / maximum;
-    unsigned int progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
+    unsigned percentage = position * 100 / maximum;
+    unsigned progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
 
     // Farbe herausfinden
-    unsigned int color = 0xFFD70000;
+    unsigned color = 0xFFD70000;
 
     // Feste Farbe?
     if(force_color)
@@ -113,7 +105,8 @@ void ctrlProgress::Draw_()
     // Prozentzahlen zeichnen
     std::stringstream percent;
     percent << percentage << "%";
-    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER,
+                    COLOR_YELLOW);
 }
 
 void ctrlProgress::Resize(const Extent& newSize)
@@ -133,7 +126,7 @@ unsigned ctrlProgress::CalcBarWidth() const
     return GetSize().x - 2 * (padding_.x + GetSize().y);
 }
 
-void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlProgress::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -143,14 +136,16 @@ void ctrlProgress::Msg_ButtonClick(const unsigned int ctrl_id)
                 --position;
             if(GetParent())
                 GetParent()->Msg_ProgressChange(GetID(), position);
-        } break;
+        }
+        break;
         case 1: // Plus
         {
             if(position < maximum)
                 ++position;
             if(GetParent())
                 GetParent()->Msg_ProgressChange(GetID(), position);
-        } break;
+        }
+        break;
     }
 }
 
@@ -166,8 +161,7 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
         if(GetParent())
             GetParent()->Msg_ProgressChange(GetID(), position);
         return true;
-    }
-    else
+    } else
         return RelayMouseMessage(&Window::Msg_LeftDown, mc);
 }
 
@@ -210,8 +204,7 @@ bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
     {
         WINDOWMANAGER.SetToolTip(this, tooltip_);
         return true;
-    }
-    else
+    } else
     {
         WINDOWMANAGER.SetToolTip(this, "");
         return false;

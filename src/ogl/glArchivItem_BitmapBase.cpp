@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_BitmapBase.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "Loader.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "oglIncludes.h"
 
 /** @class glArchivItem_BitmapBase
@@ -31,13 +31,12 @@
  *  OpenGL-Textur des Bildes.
  */
 
-glArchivItem_BitmapBase::glArchivItem_BitmapBase()
-    : texture(0), filter(GL_NEAREST)
+glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), filter(GL_NEAREST)
 {
 }
 
 glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item)
-    : ArchivItem_BitmapBase(item), texture(0), filter(item.filter)
+    : ArchivItem_BitmapBase(item), texture(0), textureSize_(item.textureSize_), filter(item.filter)
 {
 }
 
@@ -46,20 +45,10 @@ glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
     DeleteTexture();
 }
 
-glArchivItem_BitmapBase& glArchivItem_BitmapBase::operator=(const glArchivItem_BitmapBase& item)
-{
-    if(this == &item)
-        return *this;
-    ArchivItem_BitmapBase::operator=(item);
-    texture = 0;
-    filter = item.filter;
-    return *this;
-}
-
 /**
  *  Liefert das GL-Textur-Handle.
  */
-unsigned int glArchivItem_BitmapBase::GetTexture()
+unsigned glArchivItem_BitmapBase::GetTexture()
 {
     if(texture == 0)
         GenerateTexture();
@@ -72,14 +61,14 @@ unsigned int glArchivItem_BitmapBase::GetTexture()
 void glArchivItem_BitmapBase::DeleteTexture()
 {
     VIDEODRIVER.DeleteTexture(texture);
-    //glDeleteTextures(1, (const GLuint*)&texture);
+    // glDeleteTextures(1, (const GLuint*)&texture);
     texture = 0;
 }
 
 /**
  *  Setzt den Texturfilter auf einen bestimmten Wert.
  */
-void glArchivItem_BitmapBase::setFilter(unsigned int filter)
+void glArchivItem_BitmapBase::setFilter(unsigned filter)
 {
     if(this->filter == filter)
         return;
@@ -91,18 +80,25 @@ void glArchivItem_BitmapBase::setFilter(unsigned int filter)
         DeleteTexture();
 }
 
+Extent glArchivItem_BitmapBase::GetTexSize() const
+{
+    RTTR_Assert(texture); // Invalid if no texture exists
+    return textureSize_;
+}
+
 /**
  *  Erzeugt die Textur.
  */
 void glArchivItem_BitmapBase::GenerateTexture()
 {
-    if(tex_width_ == 0 || tex_height_ == 0)
+    textureSize_ = CalcTextureSize();
+    if(textureSize_.x == 0 || textureSize_.y == 0)
         return;
 
     texture = VIDEODRIVER.GenerateTexture();
 
-    if(!palette_)
-        setPalette(LOADER.GetPaletteN("pal5"));
+    if(!getPalette() && getFormat() == libsiedler2::FORMAT_PALETTED)
+        setPaletteCopy(*LOADER.GetPaletteN("pal5"));
 
     VIDEODRIVER.BindTexture(texture);
 

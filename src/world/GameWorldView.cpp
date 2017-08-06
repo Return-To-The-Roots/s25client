@@ -17,45 +17,31 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldView.h"
-#include "drivers/VideoDriverWrapper.h"
-#include "buildings/nobUsual.h"
-#include "buildings/nobMilitary.h"
-#include "buildings/noBuildingSite.h"
 #include "CatapultStone.h"
-#include "GameClient.h"
-#include "SoundManager.h"
-#include "Loader.h"
-#include "gameData/MapConsts.h"
 #include "FOWObjects.h"
+#include "GameClient.h"
 #include "GameServer.h"
+#include "Loader.h"
+#include "SoundManager.h"
+#include "addons/AddonMaxWaterwayLength.h"
 #include "ai/AIPlayerJH.h"
-#include "world/GameWorldViewer.h"
+#include "buildings/noBuildingSite.h"
+#include "buildings/nobMilitary.h"
+#include "buildings/nobUsual.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
-#include "addons/AddonMaxWaterwayLength.h"
+#include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
-#include "helpers/converters.h"
 #include "gameData/GuiConsts.h"
+#include "gameData/MapConsts.h"
 #include <boost/format.hpp>
 #include <stdexcept>
 
-GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size):
-	selPt(0, 0),
-	debugNodePrinter(NULL),
-	show_bq(false),
-	show_names(false),
-	show_productivity(false),
-	offset(0, 0),
-	lastOffset(0, 0),
-	gwv(gwv),
-	d_what(0),
-	d_player(0),
-	d_active(false),
-	pos(pos),
-	size_(size),
-    zoomFactor_(1.f),
-    targetZoomFactor_(1.f),
-    zoomSpeed_(0.f)
+GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size)
+    : selPt(0, 0), debugNodePrinter(NULL), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0),
+      gwv(gwv), d_what(0), d_player(0), d_active(false), pos(pos), size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
@@ -71,29 +57,28 @@ const GameWorldBase& GameWorldView::GetWorld() const
 
 void GameWorldView::SetNextZoomFactor()
 {
-    if (zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step
+    if(zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step
         return;
 
     float remainingZoomDiff = targetZoomFactor_ - zoomFactor_;
 
-    if (std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed_ * zoomSpeed_ / ZOOM_ACCELERATION)
+    if(std::abs(remainingZoomDiff) <= 0.5 * zoomSpeed_ * zoomSpeed_ / ZOOM_ACCELERATION)
     {
         // deceleration towards zero zoom speed
-        if (zoomSpeed_ > 0)
+        if(zoomSpeed_ > 0)
             zoomSpeed_ -= ZOOM_ACCELERATION;
         else
             zoomSpeed_ += ZOOM_ACCELERATION;
-    }
-    else
+    } else
     {
         // acceleration to unlimited speed
-        if (remainingZoomDiff > 0)
+        if(remainingZoomDiff > 0)
             zoomSpeed_ += ZOOM_ACCELERATION;
         else
             zoomSpeed_ -= ZOOM_ACCELERATION;
     }
 
-    if (std::abs(remainingZoomDiff) < std::abs(zoomSpeed_))
+    if(std::abs(remainingZoomDiff) < std::abs(zoomSpeed_))
     {
         // last step
         zoomFactor_ = targetZoomFactor_;
@@ -104,11 +89,11 @@ void GameWorldView::SetNextZoomFactor()
     CalcFxLx();
 }
 
-void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition/* = true*/)
+void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    if (zoomFactor < ZOOM_MIN)
+    if(zoomFactor < ZOOM_MIN)
         targetZoomFactor_ = ZOOM_MIN;
-    else if (zoomFactor > ZOOM_MAX)
+    else if(zoomFactor > ZOOM_MAX)
         targetZoomFactor_ = ZOOM_MAX;
     else
         targetZoomFactor_ = zoomFactor;
@@ -189,7 +174,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
 
                 DrawFigures(curPt, curPos, between_lines);
 
-                //Construction aid mode
+                // Construction aid mode
                 if(show_bq)
                     DrawConstructionAid(curPt, curPos);
             } else if(visibility == VIS_FOW)
@@ -202,7 +187,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
             if(debugNodePrinter)
                 debugNodePrinter->print(curPt, curPos);
 
-            if (d_active)
+            if(d_active)
                 DrawAIDebug(curPt, curPos);
         }
 
@@ -234,7 +219,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
 }
 
-void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt)
+void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected,
+                            const MapPoint& selectedPt)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
     MapPoint road_points[6];
@@ -264,16 +250,17 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             {
                 // Mauszeiger am boden
                 unsigned mid = 22;
-                if(rb.mode == RM_DISABLED){
+                if(rb.mode == RM_DISABLED)
+                {
                     switch(gwv.GetBQ(curPt))
                     {
-                    case BQ_FLAG: mid = 40; break;
-                    case BQ_MINE: mid = 41; break;
-                    case BQ_HUT: mid = 42; break;
-                    case BQ_HOUSE: mid = 43; break;
-                    case BQ_CASTLE: mid = 44; break;
-                    case BQ_HARBOR: mid = 45; break;
-                    default: break;
+                        case BQ_FLAG: mid = 40; break;
+                        case BQ_MINE: mid = 41; break;
+                        case BQ_HUT: mid = 42; break;
+                        case BQ_HOUSE: mid = 43; break;
+                        case BQ_CASTLE: mid = 44; break;
+                        case BQ_HARBOR: mid = 45; break;
+                        default: break;
                     }
                 }
 
@@ -303,18 +290,22 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     continue;
 
                 if((gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
-                    || (gwv.GetBQ(curPt) == BQ_FLAG))
+                   || (gwv.GetBQ(curPt) == BQ_FLAG))
                 {
                     unsigned id;
                     switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
                     {
-                    case 1: id = 61; break;
-                    case 2: case 3: id = 62; break;
-                    case 4: case 5: id = 63; break;
-                    case -1: id = 64; break;
-                    case -2: case -3: id = 65; break;
-                    case -4: case -5: id = 66; break;
-                    default: id = 60; break;
+                        case 1: id = 61; break;
+                        case 2:
+                        case 3: id = 62; break;
+                        case 4:
+                        case 5: id = 63; break;
+                        case -1: id = 64; break;
+                        case -2:
+                        case -3: id = 65; break;
+                        case -4:
+                        case -5: id = 66; break;
+                        default: id = 60; break;
                     }
 
                     LOADER.GetMapImageN(id)->DrawFull(curPos);
@@ -355,12 +346,13 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             // Draw object name
             if(show_names)
             {
-                unsigned int color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
-                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+                unsigned color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
+                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]),
+                                glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
                 curPos.y += SmallFont->getHeight();
             }
 
-            //Draw productivity/soldiers
+            // Draw productivity/soldiers
             if(show_productivity)
                 DrawProductivity(*no, curPos);
         }
@@ -373,16 +365,16 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     if(got == GOT_BUILDINGSITE)
     {
         char text[256];
-        unsigned int color = COLOR_GREY;
+        unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
         snprintf(text, 256, "(%d %%)", p);
         SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-    }else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
+    } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
     {
         const nobUsual& n = static_cast<const nobUsual&>(no);
         std::string text;
-        unsigned int color = COLOR_0_PERCENT;
+        unsigned color = COLOR_0_PERCENT;
 
         if(!n.HasWorker())
             text = _("(House unoccupied)");
@@ -404,7 +396,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
                 color = COLOR_20_PERCENT;
         }
         SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
-    }else if(got == GOT_NOB_MILITARY)
+    } else if(got == GOT_NOB_MILITARY)
     {
         // Display amount of soldiers
         unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetTroopsCount();
@@ -412,17 +404,14 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         if(soldiers_count == 1)
             sSoldiers = _("(1 soldier)");
         else
-            sSoldiers = boost::str(
-                boost::format(_("(%d soldiers)")) % soldiers_count
-                );
-
+            sSoldiers = boost::str(boost::format(_("(%d soldiers)")) % soldiers_count);
 
         SmallFont->Draw(curPos, sSoldiers, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
-            (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
+                        (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
     }
 }
 
-void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint&curPos, std::vector<ObjectBetweenLines>& between_lines)
+void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines)
 {
     const std::list<noBase*>& figures = GetWorld().GetNode(pt).figures;
     for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
@@ -443,12 +432,13 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
     if(bq != BQ_NOTHING)
     {
         glArchivItem_Bitmap* bm = LOADER.GetMapImageN(49 + bq);
-        //Draw building quality icon
+        // Draw building quality icon
         bm->DrawFull(curPos);
-        //Show ability to construct military buildings
+        // Show ability to construct military buildings
         if(GetWorld().GetGGS().isEnabled(AddonId::MILITARY_AID))
         {
-            if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId()) && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
+            if(!GetWorld().IsMilitaryBuildingNearNode(pt, gwv.GetPlayerId())
+               && (bq == BQ_HUT || bq == BQ_HOUSE || bq == BQ_CASTLE || bq == BQ_HARBOR))
                 LOADER.GetImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getHeight() + 5));
         }
     }
@@ -463,18 +453,16 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
     obj->Draw(curPos);
 
     return;
-    //TODO: military aid - display icon overlay of attack possibility
+    // TODO: military aid - display icon overlay of attack possibility
 
     noBuilding* building = dynamic_cast<noBuilding*>(obj);
     if(!building || gwv.GetPlayer().IsAlly(building->GetPlayer()))
         return;
 
     BuildingType bt = building->GetBuildingType();
-    if((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
-        || bt == BLD_HEADQUARTERS
-        || bt == BLD_HARBORBUILDING) //is it a military building?
+    if((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS) || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) // is it a military building?
     {
-        if(gwv.GetNumSoldiersForAttack(building->GetPos())) //soldiers available for attack?
+        if(gwv.GetNumSoldiersForAttack(building->GetPos())) // soldiers available for attack?
             LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
     }
 }
@@ -533,12 +521,10 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     {
         if(boundary_stones[i + 1])
         {
-            DrawPoint tmp = pos - DrawPoint((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetNeighbourPos(pt, 3 + i)) / 2.0f);
+            DrawPoint tmp =
+              pos - DrawPoint((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetNeighbourPos(pt, 3 + i)) / 2.0f);
 
-            LOADER.boundary_stone_cache[nation].draw(
-                tmp,
-                isFoW ? FOW_DRAW_COLOR : COLOR_WHITE,
-                player_color);
+            LOADER.boundary_stone_cache[nation].draw(tmp, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
         }
     }
 }

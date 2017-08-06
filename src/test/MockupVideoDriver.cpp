@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "MockupVideoDriver.h"
 
-MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack):VideoDriver(CallBack), tickCount_(1)
+MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1)
 {
     modKeyState_.kt = KT_INVALID;
     modKeyState_.c = 0;
@@ -37,7 +37,7 @@ bool MockupVideoDriver::Initialize()
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
 {
     return ResizeScreen(width, height, fullscreen);
 }
@@ -66,7 +66,8 @@ void* MockupVideoDriver::GetFunction(const char* function) const
 }
 
 void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
-{}
+{
+}
 
 void MockupVideoDriver::SetMousePos(int x, int y)
 {

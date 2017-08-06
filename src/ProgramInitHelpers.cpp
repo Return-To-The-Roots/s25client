@@ -17,26 +17,26 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
-#include "System.h"
 #include "libutil/src/Log.h"
+#include "libutil/src/System.h"
 #include <build_paths.h>
 
-#include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
-#include <iostream>
+#include <boost/locale.hpp>
 #include <cstdlib>
+#include <iostream>
 #include <stdexcept>
 #ifdef _WIN32
-#   include <windows.h>
-#   include <shellapi.h>
+#include <windows.h>
+#include <shellapi.h>
 #endif // _WIN32
-
 
 bool InitLocale()
 {
     // Check and set locale (avoids errors caused by invalid locales later like #420)
-    try{
-        // Check for errors and use classic locale to avoid e.g. thousand separator in int2string conversions via streams
+    try
+    {
+// Check for errors and use classic locale to avoid e.g. thousand separator in int2string conversions via streams
 #ifdef _WIN32
         // On windows we want to enforce the encoding (mostly UTF8). Also using "" would use the default which uses "wrong" separators
         std::locale::global(boost::locale::generator().generate("C"));
@@ -46,7 +46,8 @@ bool InitLocale()
 #endif // _WIN32
         // Use also the encoding (mostly UTF8) for bfs paths: http://stackoverflow.com/questions/23393870
         bfs::path::imbue(std::locale());
-    } catch(std::exception& e){
+    } catch(std::exception& e)
+    {
         std::cerr << "Error initializing your locale setting. ";
 #ifdef _WIN32
         std::cerr << "Check your system language configuration!";
@@ -88,8 +89,8 @@ bfs::path GetPrefixPath(const std::string& argv0)
     }
     if(!bfs::exists(fullExeFilepath))
     {
-        LOG.write("Executable not at '%1%'\nStarting file path: %2%\nCompleted file path: %3%\n", LogTarget::Stderr)
-            % fullExeFilepath % argv0 % System::getExecutablePath(argv0);
+        LOG.write("Executable not at '%1%'\nStarting file path: %2%\nCompleted file path: %3%\n", LogTarget::Stderr) % fullExeFilepath
+          % argv0 % System::getExecutablePath(argv0);
         return "";
     }
 
@@ -109,10 +110,11 @@ bfs::path GetPrefixPath(const std::string& argv0)
         if(!bfs::equivalent(curBinDir, prefixPath / cfgBinDir))
         {
             LOG.write("Could not find install prefix.\n"
-                "Current binary dir: %1%\n"
-                "Best guess for prefixed binary dir: %2%\n"
-                "Configured binary dir: %3%\n", LogTarget::Stderr)
-                % curBinDir % (prefixPath / cfgBinDir) % cfgBinDir;
+                      "Current binary dir: %1%\n"
+                      "Best guess for prefixed binary dir: %2%\n"
+                      "Configured binary dir: %3%\n",
+                      LogTarget::Stderr)
+              % curBinDir % (prefixPath / cfgBinDir) % cfgBinDir;
             return "";
         }
     }

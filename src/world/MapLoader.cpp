@@ -17,29 +17,30 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
-#include "world/World.h"
-#include "ogl/glArchivItem_Map.h"
 #include "Random.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noStaticObject.h"
-#include "nodeObjs/noGranite.h"
-#include "nodeObjs/noTree.h"
-#include "nodeObjs/noAnimal.h"
 #include "buildings/nobHQ.h"
+#include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
+#include "world/World.h"
+#include "nodeObjs/noAnimal.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noGranite.h"
+#include "nodeObjs/noStaticObject.h"
+#include "nodeObjs/noTree.h"
 #include "gameTypes/ShipDirection.h"
-#include "gameData/TerrainData.h"
 #include "gameData/MaxPlayers.h"
+#include "gameData/TerrainData.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "Log.h"
-#include <queue>
+#include "libutil/src/Log.h"
 #include <algorithm>
+#include <queue>
 
 class noBase;
 class nobBaseWarehouse;
 
-MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations): world(world), playerNations(playerNations)
-{}
+MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world(world), playerNations(playerNations)
+{
+}
 
 bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration)
 {
@@ -97,7 +98,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         // Hafenplatz?
         if(TerrainData::IsHarborSpot(t1))
             world.harbor_pos.push_back(pt);
-            
+
         // Will be set later
         node.harborId = 0;
 
@@ -117,9 +118,9 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
             else if((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
                 resource = 0x25; // 4 Wasser
             else
-                resource = 0x27; // 7 Wasser
+                resource = 0x27;                      // 7 Wasser
         } else if(resource > 0x80 && resource < 0x90) // fish
-            resource = 0x84; // Use 4 fish
+            resource = 0x84;                          // Use 4 fish
         node.resources = resource;
 
         node.reserved = false;
@@ -131,18 +132,11 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         Visibility fowVisibility;
         switch(exploration)
         {
-        case EXP_DISABLED:
-            fowVisibility = VIS_VISIBLE;
-            break;
-        case EXP_CLASSIC:
-        case EXP_FOGOFWAR:
-            fowVisibility = VIS_INVISIBLE;
-            break;
-        case EXP_FOGOFWARE_EXPLORED:
-            fowVisibility = VIS_FOW;
-            break;
-        default:
-            throw std::invalid_argument("Visibility for FoW");
+            case EXP_DISABLED: fowVisibility = VIS_VISIBLE; break;
+            case EXP_CLASSIC:
+            case EXP_FOGOFWAR: fowVisibility = VIS_INVISIBLE; break;
+            case EXP_FOGOFWARE_EXPLORED: fowVisibility = VIS_FOW; break;
+            default: throw std::invalid_argument("Visibility for FoW");
         }
 
         // FOW-Zeug initialisieren
@@ -174,156 +168,161 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
         switch(map.GetMapDataAt(MAP_TYPE, pt.x, pt.y))
         {
             // Player Startpos (provisorisch)
-        case 0x80:
-        {
-            if(lc < MAX_PLAYERS)
+            case 0x80:
             {
-                while(hqPositions.size() <= lc)
-                    hqPositions.push_back(MapPoint::Invalid());
-                hqPositions[lc] = pt;
+                if(lc < MAX_PLAYERS)
+                {
+                    while(hqPositions.size() <= lc)
+                        hqPositions.push_back(MapPoint::Invalid());
+                    hqPositions[lc] = pt;
+                }
             }
-        } break;
-
-        // Baum 1-4
-        case 0xC4:
-        {
-            if(lc >= 0x30 && lc <= 0x3D)
-                obj = new noTree(pt, 0, 3);
-            else if(lc >= 0x70 && lc <= 0x7D)
-                obj = new noTree(pt, 1, 3);
-            else if(lc >= 0xB0 && lc <= 0xBD)
-                obj = new noTree(pt, 2, 3);
-            else if(lc >= 0xF0 && lc <= 0xFD)
-                obj = new noTree(pt, 3, 3);
-            else
-                LOG.write(_("Unknown tree1-4 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
-        } break;
-
-        // Baum 5-8
-        case 0xC5:
-        {
-            if(lc >= 0x30 && lc <= 0x3D)
-                obj = new noTree(pt, 4, 3);
-            else if(lc >= 0x70 && lc <= 0x7D)
-                obj = new noTree(pt, 5, 3);
-            else if(lc >= 0xB0 && lc <= 0xBD)
-                obj = new noTree(pt, 6, 3);
-            else if(lc >= 0xF0 && lc <= 0xFD)
-                obj = new noTree(pt, 7, 3);
-            else
-                LOG.write(_("Unknown tree5-8 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
-        } break;
-
-        // Baum 9
-        case 0xC6:
-        {
-            if(lc >= 0x30 && lc <= 0x3D)
-                obj = new noTree(pt, 8, 3);
-            else
-                LOG.write(_("Unknown tree9 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
-        } break;
-
-        // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
-        case 0xC8:
-        case 0xC9: // Note: 0xC9 is actually a bug and should be 0xC8. But the random map generator produced that...
-        {
-            // Objekte aus der map_?_z.lst
-            if(lc <= 0x0A)
-                obj = new noEnvObject(pt, 500 + lc);
-            // "wasserstein" aus der map_?_z.lst
-            else if(lc == 0x0B)
-                obj = new noStaticObject(pt, 500 + lc);
-            // Objekte aus der map_?_z.lst
-            else if(lc >= 0x0C && lc <= 0x0F)
-                obj = new noEnvObject(pt, 500 + lc);
-            // Objekte aus der map.lst
-            else if(lc >= 0x10 && lc <= 0x14)
-                obj = new noEnvObject(pt, 542 + lc - 0x10);
-            // exists in mis0bobs-mis5bobs -> take stranded ship
-            else if(lc == 0x15)
-                obj = new noStaticObject(pt, 0, 0);
-            // gate
-            else if(lc == 0x16)
-                obj = new noStaticObject(pt, 560, 0xFFFF);
-            // open gate
-            else if(lc == 0x17)
-                obj = new noStaticObject(pt, 561, 0xFFFF);
-            // Stalagmiten (mis1bobs)
-            else if(lc >= 0x18 && lc <= 0x1E)
-                obj = new noStaticObject(pt, (lc - 0x18) * 2, 1);
-            // toter Baum (mis1bobs)
-            else if(lc >= 0x1F && lc <= 0x20)
-                obj = new noStaticObject(pt, 20 + (lc - 0x1F) * 2, 1);
-            // Gerippe (mis1bobs)
-            else if(lc == 0x21)
-                obj = new noStaticObject(pt, 30, 1);
-            // Objekte aus der map.lst
-            else if(lc >= 0x22 && lc <= 0x27)
-                obj = new noEnvObject(pt, 550 + lc - 0x22);
-            // Objekte aus der map.lst
-            else if(lc >= 0x28 && lc <= 0x2B)
-                obj = new noEnvObject(pt, 556 + lc - 0x28);
-            // tent and ruin of guardhouse
-            else if(lc >= 0x2C && lc <= 0x2D)
-                obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
-            // tower ruin
-            else if(lc == 0x2E)
-                obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
-            // castle ruin
-            else if(lc == 0x2F)
-                obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 2);
-            // cross
-            else if(lc == 0x30)
-                obj = new noEnvObject(pt, (lc - 0x2C) * 2, 2);
-            // small wiking with boat
-            else if(lc == 0x31)
-                obj = new noStaticObject(pt, 0, 3);
-            // Pile of wood
-            else if(lc == 0x32)
-                obj = new noStaticObject(pt, 0, 4);
-            // whale skeleton (head right)
-            else if(lc == 0x33)
-                obj = new noStaticObject(pt, 0, 5);
-            // The next 2 are non standard and only for access in RTTR (replaced in original by
-            // whale skeleton (head left)
-            else if(lc == 0x34)
-                obj = new noStaticObject(pt, 2, 5);
-            // Cave
-            else if(lc == 0x35)
-                obj = new noStaticObject(pt, 4, 5);
-            else
-                LOG.write(_("Unknown nature object at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
-
-        } break;
-
-        // Granit Typ 1
-        case 0xCC:
-        {
-            if(lc >= 0x01 && lc <= 0x06)
-                obj = new noGranite(GT_1, lc - 1);
-            else
-                LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
-        } break;
-
-        // Granit Typ 2
-        case 0xCD:
-        {
-            if(lc >= 0x01 && lc <= 0x06)
-                obj = new noGranite(GT_2, lc - 1);
-            else
-                LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
-        } break;
-
-        // Nichts
-        case 0:
             break;
 
-        default:
+            // Baum 1-4
+            case 0xC4:
+            {
+                if(lc >= 0x30 && lc <= 0x3D)
+                    obj = new noTree(pt, 0, 3);
+                else if(lc >= 0x70 && lc <= 0x7D)
+                    obj = new noTree(pt, 1, 3);
+                else if(lc >= 0xB0 && lc <= 0xBD)
+                    obj = new noTree(pt, 2, 3);
+                else if(lc >= 0xF0 && lc <= 0xFD)
+                    obj = new noTree(pt, 3, 3);
+                else
+                    LOG.write(_("Unknown tree1-4 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+            }
+            break;
+
+            // Baum 5-8
+            case 0xC5:
+            {
+                if(lc >= 0x30 && lc <= 0x3D)
+                    obj = new noTree(pt, 4, 3);
+                else if(lc >= 0x70 && lc <= 0x7D)
+                    obj = new noTree(pt, 5, 3);
+                else if(lc >= 0xB0 && lc <= 0xBD)
+                    obj = new noTree(pt, 6, 3);
+                else if(lc >= 0xF0 && lc <= 0xFD)
+                    obj = new noTree(pt, 7, 3);
+                else
+                    LOG.write(_("Unknown tree5-8 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+            }
+            break;
+
+            // Baum 9
+            case 0xC6:
+            {
+                if(lc >= 0x30 && lc <= 0x3D)
+                    obj = new noTree(pt, 8, 3);
+                else
+                    LOG.write(_("Unknown tree9 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+            }
+            break;
+
+            // Sonstiges Naturzeug ohne Funktion, nur zur Dekoration
+            case 0xC8:
+            case 0xC9: // Note: 0xC9 is actually a bug and should be 0xC8. But the random map generator produced that...
+            {
+                // Objekte aus der map_?_z.lst
+                if(lc <= 0x0A)
+                    obj = new noEnvObject(pt, 500 + lc);
+                // "wasserstein" aus der map_?_z.lst
+                else if(lc == 0x0B)
+                    obj = new noStaticObject(pt, 500 + lc);
+                // Objekte aus der map_?_z.lst
+                else if(lc >= 0x0C && lc <= 0x0F)
+                    obj = new noEnvObject(pt, 500 + lc);
+                // Objekte aus der map.lst
+                else if(lc >= 0x10 && lc <= 0x14)
+                    obj = new noEnvObject(pt, 542 + lc - 0x10);
+                // exists in mis0bobs-mis5bobs -> take stranded ship
+                else if(lc == 0x15)
+                    obj = new noStaticObject(pt, 0, 0);
+                // gate
+                else if(lc == 0x16)
+                    obj = new noStaticObject(pt, 560, 0xFFFF);
+                // open gate
+                else if(lc == 0x17)
+                    obj = new noStaticObject(pt, 561, 0xFFFF);
+                // Stalagmiten (mis1bobs)
+                else if(lc >= 0x18 && lc <= 0x1E)
+                    obj = new noStaticObject(pt, (lc - 0x18) * 2, 1);
+                // toter Baum (mis1bobs)
+                else if(lc >= 0x1F && lc <= 0x20)
+                    obj = new noStaticObject(pt, 20 + (lc - 0x1F) * 2, 1);
+                // Gerippe (mis1bobs)
+                else if(lc == 0x21)
+                    obj = new noStaticObject(pt, 30, 1);
+                // Objekte aus der map.lst
+                else if(lc >= 0x22 && lc <= 0x27)
+                    obj = new noEnvObject(pt, 550 + lc - 0x22);
+                // Objekte aus der map.lst
+                else if(lc >= 0x28 && lc <= 0x2B)
+                    obj = new noEnvObject(pt, 556 + lc - 0x28);
+                // tent and ruin of guardhouse
+                else if(lc >= 0x2C && lc <= 0x2D)
+                    obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
+                // tower ruin
+                else if(lc == 0x2E)
+                    obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
+                // castle ruin
+                else if(lc == 0x2F)
+                    obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2, 2);
+                // cross
+                else if(lc == 0x30)
+                    obj = new noEnvObject(pt, (lc - 0x2C) * 2, 2);
+                // small wiking with boat
+                else if(lc == 0x31)
+                    obj = new noStaticObject(pt, 0, 3);
+                // Pile of wood
+                else if(lc == 0x32)
+                    obj = new noStaticObject(pt, 0, 4);
+                // whale skeleton (head right)
+                else if(lc == 0x33)
+                    obj = new noStaticObject(pt, 0, 5);
+                // The next 2 are non standard and only for access in RTTR (replaced in original by
+                // whale skeleton (head left)
+                else if(lc == 0x34)
+                    obj = new noStaticObject(pt, 2, 5);
+                // Cave
+                else if(lc == 0x35)
+                    obj = new noStaticObject(pt, 4, 5);
+                else
+                    LOG.write(_("Unknown nature object at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+            }
+            break;
+
+            // Granit Typ 1
+            case 0xCC:
+            {
+                if(lc >= 0x01 && lc <= 0x06)
+                    obj = new noGranite(GT_1, lc - 1);
+                else
+                    LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+            }
+            break;
+
+            // Granit Typ 2
+            case 0xCD:
+            {
+                if(lc >= 0x01 && lc <= 0x06)
+                    obj = new noGranite(GT_2, lc - 1);
+                else
+                    LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+            }
+            break;
+
+            // Nichts
+            case 0: break;
+
+            default:
 #ifndef NDEBUG
-            unsigned unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
-            LOG.write(_("Unknown object at (%1%, %2%): (0x%3$x: 0x%4$x)\n")) % pt.x % pt.y % unknownObj % unsigned(lc);
+                unsigned unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
+                LOG.write(_("Unknown object at (%1%, %2%): (0x%3$x: 0x%4$x)\n")) % pt.x % pt.y % unknownObj % unsigned(lc);
 #endif // !NDEBUG
-            break;
+                break;
         }
 
         world.GetNodeInt(pt).obj = obj;
@@ -340,22 +339,25 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
         {
             // TODO: Welche ID ist Polarb�r?
-        case 1: species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2)); break; // zuf�llige Hasenart nehmen
-        case 2: species = SPEC_FOX; break;
-        case 3: species = SPEC_STAG; break;
-        case 4: species = SPEC_DEER; break;
-        case 5: species = SPEC_DUCK; break;
-        case 6: species = SPEC_SHEEP; break;
-        case 0:
-        case 0xFF: // 0xFF is for (really) old S2 maps
-            species = SPEC_NOTHING; break;
-        default:
+            case 1:
+                species = Species(SPEC_RABBITWHITE + RANDOM.Rand(__FILE__, __LINE__, 0, 2));
+                break; // zuf�llige Hasenart nehmen
+            case 2: species = SPEC_FOX; break;
+            case 3: species = SPEC_STAG; break;
+            case 4: species = SPEC_DEER; break;
+            case 5: species = SPEC_DUCK; break;
+            case 6: species = SPEC_SHEEP; break;
+            case 0:
+            case 0xFF: // 0xFF is for (really) old S2 maps
+                species = SPEC_NOTHING;
+                break;
+            default:
 #ifndef NDEBUG
-            unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
-            LOG.write(_("Unknown animal species at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unknownAnimal;
+                unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
+                LOG.write(_("Unknown animal species at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unknownAnimal;
 #endif // !NDEBUG
-            species = SPEC_NOTHING;
-            break;
+                species = SPEC_NOTHING;
+                break;
         }
 
         if(species != SPEC_NOTHING)
@@ -370,7 +372,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
 
 bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos)
 {
-    //random locations? -> randomize them :)
+    // random locations? -> randomize them :)
     if(randomStartPos)
     {
         RANDOM_FUNCTOR(random);
@@ -445,13 +447,12 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     CalcHarborPosNeighbors(world);
 }
 
-
 // class for finding harbor neighbors
 class CalcHarborPosNeighborsNode
 {
 public:
     CalcHarborPosNeighborsNode() {} //-V730
-    CalcHarborPosNeighborsNode(const MapPoint pt, unsigned distance): pos(pt), distance(distance) {}
+    CalcHarborPosNeighborsNode(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
 
     MapPoint pos;
     unsigned distance;
@@ -463,7 +464,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
     PathConditionShip shipPathChecker(world);
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
-    std::vector<unsigned int> ptIsSeaPt(world.nodes.size()); //-V656
+    std::vector<unsigned> ptIsSeaPt(world.nodes.size()); //-V656
 
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -511,8 +512,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 {
                     // This is our start harbor. Add the sea points around it to our todo list.
                     todo_list.push(CalcHarborPosNeighborsNode(coastPt, 0));
-                }
-                else
+                } else
                     ptToVisitOrHb[world.GetIdx(coastPt)] = otherHbId + 1;
             }
         }
@@ -532,14 +532,15 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 if((ptToVisitOrHb[idx] > 1) && !hbFound[ptToVisitOrHb[idx]]) // found harbor we haven't already found
                 {
                     ShipDirection shipDir = world.GetShipDir(world.harbor_pos[startHbId].pos, curPt);
-                    world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(HarborPos::Neighbor(ptToVisitOrHb[idx] - 1, curNode.distance + 1));
+                    world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(
+                      HarborPos::Neighbor(ptToVisitOrHb[idx] - 1, curNode.distance + 1));
 
                     todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
 
                     hbFound[ptToVisitOrHb[idx]] = true;
 
-                    ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
-                } else if(ptToVisitOrHb[idx])    // this detects any sea point plus harbors we already visited
+                    ptToVisitOrHb[idx] = 0;   // mark as visited, so we do not go here again
+                } else if(ptToVisitOrHb[idx]) // this detects any sea point plus harbors we already visited
                 {
                     todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
 
@@ -556,7 +557,7 @@ unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned shor
 {
     // Breitensuche von diesem Punkt aus durchf�hren
     std::vector<bool> visited(world.GetWidth() * world.GetHeight(), false);
-    std::queue< MapPoint > todo;
+    std::queue<MapPoint> todo;
 
     todo.push(start);
     visited[world.GetIdx(start)] = true;

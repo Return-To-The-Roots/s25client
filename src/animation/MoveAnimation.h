@@ -18,18 +18,20 @@
 #ifndef MoveAnimation_h__
 #define MoveAnimation_h__
 
-#include "animation/Animation.h"
 #include "DrawPoint.h"
+#include "animation/Animation.h"
 
 /// Animations which moves an element to a new location
-class MoveAnimation: public Animation
+class MoveAnimation : public Animation
 {
 public:
     MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat);
 
     void onRescale(const ScreenResizeEvent& rs) override;
+
 protected:
     void doUpdate(Window* element, double nextFramepartTime) override;
+
 private:
     DrawPoint origPos_, newPos_;
 };

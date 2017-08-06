@@ -24,17 +24,17 @@ class GameWorldView;
 
 class iwHarborBuilding : public iwHQ
 {
-    public:
-        iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb);
+public:
+    iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb);
 
-    protected:
-        void Msg_Group_ButtonClick(const unsigned int group_id, const unsigned int ctrl_id) override;
+protected:
+    void Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id) override;
 
-    private:
-        void AdjustExpeditionButton(bool flip);
-        void AdjustExplorationExpeditionButton(bool flip);
+private:
+    void AdjustExpeditionButton(bool flip);
+    void AdjustExplorationExpeditionButton(bool flip);
 
-        unsigned grpIdExpedition;
+    unsigned grpIdExpedition;
 };
 
 #endif // !iwHQ_H_INCLUDED

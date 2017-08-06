@@ -18,13 +18,12 @@
 #ifndef luaIncludes_h__
 #define luaIncludes_h__
 
-extern "C"
-{
-    // IWYU pragma: begin_exports
-    #include "lua.h"
-    #include "lualib.h"
-    #include "lauxlib.h"
-    // IWYU pragma: end_exports
+extern "C" {
+// IWYU pragma: begin_exports
+#include "lauxlib.h"
+#include "lua.h"
+#include "lualib.h"
+// IWYU pragma: end_exports
 }
 
 #endif // luaIncludes_h__

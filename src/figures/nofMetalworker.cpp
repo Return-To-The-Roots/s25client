@@ -18,32 +18,34 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofMetalworker.h"
 
-#include "Loader.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "buildings/nobUsual.h"
-#include "Random.h"
-#include "SoundManager.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
+#include "GameClient.h"
 #include "GameEvent.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "Random.h"
+#include "SerializedGameData.h"
+#include "SoundManager.h"
+#include "addons/const_addons.h"
+#include "buildings/nobUsual.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "addons/const_addons.h"
 #include "gameData/ToolConsts.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
 {
 }
 
-nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
+nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
+    : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
 {
     if(state == STATE_ENTERBUILDING && current_ev == NULL && ware == GD_NOTHING && nextProducedTool == GD_NOTHING)
     {
-        LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, report this!");
+        LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, "
+                  "report this!");
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
@@ -55,15 +57,14 @@ void nofMetalworker::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(nextProducedTool);
 }
 
-
 void nofMetalworker::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = { { -11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5} };
+    const DrawPointInit offsets[NAT_COUNT] = {{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}};
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
     LOADER.GetPlayerImage("rom_bobs", 190 + (now_id % 23))
-    ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
@@ -76,8 +77,7 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
     {
         SOUNDMANAGER.PlayNOSound(54, this, now_id);
         was_sounding = true;
-    }
-    else if(now_id % 23 == 17)
+    } else if(now_id % 23 == 17)
     {
         SOUNDMANAGER.PlayNOSound(55, this, now_id);
         was_sounding = true;
@@ -87,10 +87,7 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
 }
 
 // Zuordnungnen Richtige IDs - Trage-IDs in der JOBS.BOB
-const unsigned short CARRYTOOLS_IDS[TOOL_COUNT] =
-{
-    78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90
-};
+const unsigned short CARRYTOOLS_IDS[TOOL_COUNT] = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90};
 
 unsigned short nofMetalworker::GetCarryID() const
 {
@@ -103,7 +100,7 @@ unsigned short nofMetalworker::GetCarryID() const
 unsigned nofMetalworker::ToolsOrderedTotal() const
 {
     unsigned sum = 0;
-    for (unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
         sum += gwg->GetPlayer(player).GetToolsOrdered(i);
     return sum;
 }
@@ -115,21 +112,22 @@ GoodType nofMetalworker::GetOrderedTool()
     int tool = -1;
 
     GamePlayer& owner = gwg->GetPlayer(player);
-    for (unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        if (owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > maxPrio)
+        if(owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > maxPrio)
         {
             maxPrio = owner.GetToolPriority(i);
             tool = i;
         }
     }
 
-    if (tool != -1)
+    if(tool != -1)
     {
         owner.ToolOrderProcessed(tool);
 
-        if (ToolsOrderedTotal() == 0)
-            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
+        if(ToolsOrderedTotal() == 0)
+            SendPostMessage(player,
+                            new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
 
         return TOOLS[tool];
     }
@@ -142,25 +140,25 @@ GoodType nofMetalworker::GetRandomTool()
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
-    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
         all_size += gwg->GetPlayer(player).GetToolPriority(i);
 
-	// if they're all zero
+    // if they're all zero
     if(all_size == 0)
-	{
-	    // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
-		if (gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
-			return GD_NOTHING;
-		else
-			return TOOLS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), TOOLS.size())];
-	}
+    {
+        // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
+        if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
+            return GD_NOTHING;
+        else
+            return TOOLS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), TOOLS.size())];
+    }
 
     // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
     // scheinlichkeit (Balken), desto öfter im Array enthalten
     std::vector<unsigned char> random_array(all_size);
     unsigned curIdx = 0;
 
-    for(unsigned int i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {
         for(unsigned g = 0; g < gwg->GetPlayer(player).GetToolPriority(i); ++g)
             random_array[curIdx++] = i;
@@ -195,7 +193,7 @@ GoodType nofMetalworker::ProduceWare()
     return nextProducedTool;
 }
 
-void nofMetalworker::HandleDerivedEvent(const unsigned int id)
+void nofMetalworker::HandleDerivedEvent(const unsigned id)
 {
     if(id != 2)
     {

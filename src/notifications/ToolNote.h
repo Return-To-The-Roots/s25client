@@ -31,8 +31,7 @@ struct ToolNote
         SettingsChanged // Tool settings (production priority) has changed
     };
 
-    ToolNote(Type type, unsigned player):
-        type(type), player(player){}
+    ToolNote(Type type, unsigned player) : type(type), player(player) {}
 
     const Type type;
     const unsigned player;

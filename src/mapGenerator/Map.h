@@ -20,8 +20,8 @@
 
 #include "gameTypes/MapCoordinates.h"
 #include "libsiedler2/src/archives.h"
-#include <vector>
 #include <string>
+#include <vector>
 
 typedef std::vector<unsigned char> VecUChar;
 
@@ -34,27 +34,25 @@ struct Map
      * Create a new map of size 0x0.
      */
     Map();
-    
+
     /**
      * Creates a new, empty map with the specified width and height.
      * @param size
      * @param name name of the map
      * @param author author of the map
      */
-    Map(const MapExtent& size,
-        const std::string& name,
-        const std::string& author);
+    Map(const MapExtent& size, const std::string& name, const std::string& author);
 
     /**
      * size of the map in vertices.
      */
     MapExtent size;
-    
+
     /**
      * Name of the map.
      */
     std::string name;
-    
+
     /**
      * Name of the map author.
      */
@@ -64,32 +62,32 @@ struct Map
      * Landscape type of the map.
      */
     uint8_t type;
-    
+
     /**
      * Number of players.
      */
     uint8_t players;
-    
+
     /**
      * Positions of the players' headquarters.
      */
     std::vector<Point<uint16_t> > positions;
-    
+
     /**
      * Height for each vertex of the map.
      */
     VecUChar z;
-    
+
     /**
      * Road values for each vertex of the map.
      */
     VecUChar road;
-    
+
     /**
      * Animal values for each vertex of the map.
      */
     VecUChar animal;
-    
+
     /**
      * Unknown value 1 for each vertex of the map.
      */
@@ -99,12 +97,12 @@ struct Map
      * Build values for each vertex of the map.
      */
     VecUChar build;
-    
+
     /**
      * Unknown value 2 for each vertex of the map.
      */
     VecUChar unknown2;
-    
+
     /**
      * Unknown value 3 for each vertex of the map.
      */
@@ -119,22 +117,22 @@ struct Map
      * Shading values for each vertex of the map.
      */
     VecUChar shading;
-    
+
     /**
      * Unknown value 5 for each vertex of the map.
      */
     VecUChar unknown5;
-    
+
     /**
      * Right-side-down texture values for each vertex of the map.
      */
     VecUChar textureRsu;
-    
+
     /**
      * Left-side-down texture values for each vertex of the map.
      */
     VecUChar textureLsd;
-    
+
     /**
      * Object type values for each vertex of the map.
      */
@@ -144,9 +142,9 @@ struct Map
      * Object info values for each vertex of the map.
      */
     VecUChar objectInfo;
-    
+
     /**
-     * Creates a new archiv for this map. 
+     * Creates a new archiv for this map.
      * @return a new archiv containing the information of this map
      */
     libsiedler2::ArchivInfo* CreateArchiv();

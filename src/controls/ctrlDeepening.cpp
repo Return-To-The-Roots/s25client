@@ -18,13 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlDeepening.h"
 
-ctrlDeepening::ctrlDeepening(Window* parent,
-                             unsigned id,
-                             DrawPoint pos,
-                             const Extent& size,
-                             TextureColor tc)
+ctrlDeepening::ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc)
     : Window(parent, id, pos, size), tc(tc)
-{}
+{
+}
 
 /**
  *  zeichnet das Fenster.

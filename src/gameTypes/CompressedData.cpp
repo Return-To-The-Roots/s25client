@@ -19,9 +19,9 @@
 #include "CompressedData.h"
 #include "FileChecksum.h"
 #include "libutil/src/Log.h"
-#include <bzlib.h>
-#include <boost/smart_ptr/scoped_array.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/smart_ptr/scoped_array.hpp>
+#include <bzlib.h>
 #include <cerrno>
 #include <cmath>
 #include <cstring>
@@ -38,7 +38,7 @@ bool CompressedData::DecompressToFile(const std::string& filePath, unsigned* che
 
     boost::scoped_array<char> uncompressedData(new char[length]);
 
-    unsigned int outLength = length;
+    unsigned outLength = length;
 
     int err = BZ2_bzBuffToBuffDecompress(uncompressedData.get(), &outLength, &data[0], data.size(), 0, 0);
     if(err != BZ_OK)

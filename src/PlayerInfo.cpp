@@ -19,22 +19,17 @@
 #include "PlayerInfo.h"
 #include "libutil/src/Serializer.h"
 
-PlayerInfo::PlayerInfo():
-    isHost(false),
-    ping(0)
-{}
+PlayerInfo::PlayerInfo() : isHost(false), ping(0)
+{
+}
 
-PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) :
-    BasePlayerInfo(baseInfo),
-    isHost(false),
-    ping(0)
-{}
+PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) : BasePlayerInfo(baseInfo), isHost(false), ping(0)
+{
+}
 
-PlayerInfo::PlayerInfo(Serializer& ser):
-    BasePlayerInfo(ser, false),
-    isHost(ser.PopBool()),
-    ping(ser.PopUnsignedInt())
-{}
+PlayerInfo::PlayerInfo(Serializer& ser) : BasePlayerInfo(ser, false), isHost(ser.PopBool()), ping(ser.PopUnsignedInt())
+{
+}
 
 void PlayerInfo::Serialize(Serializer& ser) const
 {
@@ -42,4 +37,3 @@ void PlayerInfo::Serialize(Serializer& ser) const
     ser.PushBool(isHost);
     ser.PushUnsignedInt(ping);
 }
-

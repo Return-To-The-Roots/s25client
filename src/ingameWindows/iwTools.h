@@ -29,32 +29,31 @@ class GameWorldViewer;
 /// Fenster mit den Militäreinstellungen.
 class iwTools : public IngameWindow
 {
-    public:
+public:
+    iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
+    ~iwTools() override;
 
-        iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-        ~iwTools() override;
+private:
+    const GameWorldViewer& gwv;
+    GameCommandFactory& gcFactory;
+    /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
+    bool settings_changed, ordersChanged;
+    bool shouldUpdateTexts;
+    bool isReplay;
+    Subscribtion toolSubscription;
 
-    private:
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
-        bool settings_changed, ordersChanged;
-        bool shouldUpdateTexts;
-        bool isReplay;
-        Subscribtion toolSubscription;
+    void AddToolSettingSlider(unsigned id, GoodType ware);
+    /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
+    void UpdateSettings();
+    /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
+    void TransmitSettings();
 
-        void AddToolSettingSlider(unsigned id, GoodType ware);
-        /// Updatet die Steuerelemente mit den aktuellen Einstellungen aus dem Spiel
-        void UpdateSettings();
-        /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-        void TransmitSettings();
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
-
-        void UpdateTexts();
-        void Msg_PaintBefore() override;
+    void UpdateTexts();
+    void Msg_PaintBefore() override;
 };
 
 #endif // !iwTOOLS_H_INCLUDED

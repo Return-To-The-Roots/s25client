@@ -18,15 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glAllocator.h"
 
-#include "glArchivItem_Sound_Wave.h"
 #include "glArchivItem_Sound_Midi.h"
-#include "glArchivItem_Sound_XMidi.h"
 #include "glArchivItem_Sound_Other.h"
+#include "glArchivItem_Sound_Wave.h"
+#include "glArchivItem_Sound_XMidi.h"
 
-#include "glArchivItem_Bitmap_RLE.h"
 #include "glArchivItem_Bitmap_Player.h"
-#include "glArchivItem_Bitmap_Shadow.h"
+#include "glArchivItem_Bitmap_RLE.h"
 #include "glArchivItem_Bitmap_Raw.h"
+#include "glArchivItem_Bitmap_Shadow.h"
 
 #include "glArchivItem_Bob.h"
 #include "glArchivItem_Font.h"
@@ -38,23 +38,22 @@
  *  @param[in] type    Der Typ des Items
  *  @param[in] subtype Der Subtyp des Items
  */
-libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsiedler2::SOUNDTYPES subtype) const
+libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BobType type, libsiedler2::SoundType subtype) const
 {
     switch(type)
     {
         case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
             switch(subtype)
             {
+                case libsiedler2::SOUNDTYPE_NONE: break;
                 case libsiedler2::SOUNDTYPE_MIDI: // MIDI
                     return new glArchivItem_Sound_Midi();
                 case libsiedler2::SOUNDTYPE_WAVE: // WAV
                     return new glArchivItem_Sound_Wave();
                 case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
                     return new glArchivItem_Sound_XMidi();
-                case libsiedler2::SOUNDTYPE_OTHER: // Andere
-                    return new glArchivItem_Sound_Other();
-                default:
-                    break;
+                default: // Andere
+                    return new glArchivItem_Sound_Other(subtype);
             }
             break;
         case libsiedler2::BOBTYPE_BOB: // Bob-File
@@ -71,8 +70,7 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsied
             return new glArchivItem_Map();
         case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
             return new glArchivItem_Bitmap_Raw();
-        default:
-            break;
+        default: break;
     }
     return libsiedler2::StandardAllocator::create(type, subtype);
 }
@@ -84,27 +82,26 @@ libsiedler2::ArchivItem* GlAllocator::create(libsiedler2::BOBTYPES type, libsied
  */
 libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item) const
 {
-    libsiedler2::BOBTYPES type = static_cast<libsiedler2::BOBTYPES>(item.getBobType());
+    libsiedler2::BobType type = static_cast<libsiedler2::BobType>(item.getBobType());
 
     switch(type)
     {
-        case libsiedler2::BOBTYPE_SOUND:   // WAVs, MIDIs
+        case libsiedler2::BOBTYPE_SOUND: // WAVs, MIDIs
         {
             const libsiedler2::baseArchivItem_Sound& soundItem = dynamic_cast<const libsiedler2::baseArchivItem_Sound&>(item);
-            libsiedler2::SOUNDTYPES subtype = static_cast<libsiedler2::SOUNDTYPES>(soundItem.getType());
+            libsiedler2::SoundType subtype = static_cast<libsiedler2::SoundType>(soundItem.getType());
 
             switch(subtype)
             {
+                case libsiedler2::SOUNDTYPE_NONE: break;
                 case libsiedler2::SOUNDTYPE_MIDI: // MIDI
                     return new glArchivItem_Sound_Midi(dynamic_cast<const glArchivItem_Sound_Midi&>(item));
                 case libsiedler2::SOUNDTYPE_WAVE: // WAV
                     return new glArchivItem_Sound_Wave(dynamic_cast<const glArchivItem_Sound_Wave&>(item));
                 case libsiedler2::SOUNDTYPE_XMIDI: // XMIDI
                     return new glArchivItem_Sound_XMidi(dynamic_cast<const glArchivItem_Sound_XMidi&>(item));
-                case libsiedler2::SOUNDTYPE_OTHER: // Andere
+                default: // Andere
                     return new glArchivItem_Sound_Other(dynamic_cast<const glArchivItem_Sound_Other&>(item));
-                default:
-                    break;
             }
             break;
         }
@@ -122,8 +119,7 @@ libsiedler2::ArchivItem* GlAllocator::clone(const libsiedler2::ArchivItem& item)
             return new glArchivItem_Map(dynamic_cast<const glArchivItem_Map&>(item));
         case libsiedler2::BOBTYPE_BITMAP_RAW: // unkomprimiertes Bitmap
             return new glArchivItem_Bitmap_Raw(dynamic_cast<const glArchivItem_Bitmap_Raw&>(item));
-        default:
-            break;
+        default: break;
     }
     return libsiedler2::StandardAllocator::clone(item);
 }

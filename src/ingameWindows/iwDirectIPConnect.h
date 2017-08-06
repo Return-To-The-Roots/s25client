@@ -19,33 +19,32 @@
 
 #pragma once
 
-#include "IngameWindow.h"
 #include "ClientInterface.h"
+#include "IngameWindow.h"
 #include "gameTypes/ServerType.h"
 
 class iwDirectIPConnect : public IngameWindow, public ClientInterface
 {
-    private:
-        ServerType server_type;
+private:
+    ServerType server_type;
 
-    public:
-        iwDirectIPConnect(ServerType server_type);
-        void SetHost(const std::string& host);
-        void SetPort(unsigned short port);
-        /// Connects to the given server or fills in the info if it has a password
-        void Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd);
+public:
+    iwDirectIPConnect(ServerType server_type);
+    void SetHost(const std::string& host);
+    void SetPort(unsigned short port);
+    /// Connects to the given server or fills in the info if it has a password
+    void Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd);
 
-    private:
-        void SetText(const std::string& text, unsigned int color, bool button);
+private:
+    void SetText(const std::string& text, unsigned color, bool button);
 
-        void Msg_EditChange(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
+    void Msg_EditChange(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
-        void CI_Error(const ClientError ce) override;
-        void CI_NextConnectState(const ConnectState cs) override;
-
+    void CI_Error(const ClientError ce) override;
+    void CI_NextConnectState(const ConnectState cs) override;
 };
 
 #endif // !iwDIRECTIPCONNECT_H_INCLUDED

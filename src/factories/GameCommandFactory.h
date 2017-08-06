@@ -29,7 +29,9 @@
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 
-namespace gc { class GameCommand; }
+namespace gc {
+class GameCommand;
+}
 struct InventorySetting;
 
 /// Factory class for creating game commands. Handling of them (storing, sending...) must be done in the derived class
@@ -91,16 +93,16 @@ public:
     /// Starts Preparation of an sea expedition in a habor
     bool StartExpedition(const MapPoint pt);
     /// Lets a ship found a colony
-    bool FoundColony(unsigned int shipID);
+    bool FoundColony(unsigned shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
-    bool TravelToNextSpot(ShipDirection direction, unsigned int shipID);
+    bool TravelToNextSpot(ShipDirection direction, unsigned shipID);
     /// Cancels an expedition
-    bool CancelExpedition(unsigned int shipID);
+    bool CancelExpedition(unsigned shipID);
     bool StartExplorationExpedition(const MapPoint pt);
     bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:
-    virtual ~GameCommandFactory(){}
+    virtual ~GameCommandFactory() {}
     /// Called for each created GC. Ownership over gc is passed!
     virtual bool AddGC(gc::GameCommand* gc) = 0;
 };

@@ -18,23 +18,23 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskMainMenu.h"
 
-#include "WindowManager.h"
-#include "Loader.h"
 #include "GlobalVars.h"
+#include "Loader.h"
+#include "WindowManager.h"
 
 #include "Settings.h"
 
-#include "desktops/dskSinglePlayer.h"
-#include "desktops/dskMultiPlayer.h"
-#include "desktops/dskOptions.h"
-#include "desktops/dskIntro.h"
-#include "desktops/dskCredits.h"
-#include "desktops/dskTest.h"
+#include "CollisionDetection.h"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
+#include "desktops/dskCredits.h"
+#include "desktops/dskIntro.h"
+#include "desktops/dskMultiPlayer.h"
+#include "desktops/dskOptions.h"
+#include "desktops/dskSinglePlayer.h"
+#include "desktops/dskTest.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwTextfile.h"
-#include "CollisionDetection.h"
 
 enum
 {
@@ -70,7 +70,7 @@ dskMainMenu::dskMainMenu()
 
     AddImage(ID_logo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 
-    if (SETTINGS.global.submit_debug_data == 0)
+    if(SETTINGS.global.submit_debug_data == 0)
         AddTimer(ID_tmrDebugData, 250);
 
     /*AddText(20, DrawPoint(50, 450), _("Font Test"), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, SmallFont);
@@ -79,17 +79,20 @@ dskMainMenu::dskMainMenu()
     //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÇüéâäàåçêëèïîì©ÄÅôöòûùÖÜáíóúñ
 }
 
-void dskMainMenu::Msg_Timer(const unsigned int ctrl_id)
+void dskMainMenu::Msg_Timer(const unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
-    WINDOWMANAGER.Show( new iwMsgbox(_("Submit debug data?"), _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this, MSB_YESNO, MSB_QUESTIONRED, 100) );
+    WINDOWMANAGER.Show(
+      new iwMsgbox(_("Submit debug data?"),
+                   _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"), this,
+                   MSB_YESNO, MSB_QUESTIONRED, 100));
 }
 
 void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
-    if (msgbox_id == 100)
+    if(msgbox_id == 100)
     {
-        if (mbr == MSR_YES)
+        if(mbr == MSR_YES)
             SETTINGS.global.submit_debug_data = 1;
         else
             SETTINGS.global.submit_debug_data = 2;
@@ -109,7 +112,7 @@ bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
     return false;
 }
 
-void dskMainMenu::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

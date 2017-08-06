@@ -18,11 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
 
+#include "ClientInterface.h"
+#include "GameManager.h"
+#include "GameMessage_GameCommand.h"
 #include "GlobalVars.h"
 #include "Random.h"
-#include "GameManager.h"
-#include "ClientInterface.h"
-#include "GameMessage_GameCommand.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/Serializer.h"
 
@@ -59,7 +59,7 @@ void GameClient::ExecuteGameFrame_Replay()
             ExecuteAllGCs(msg);
 
             // Check for async if checksum data is valid
-            if(msg.checksum.randChecksum != 0 &&  msg.checksum != checksum)
+            if(msg.checksum.randChecksum != 0 && msg.checksum != checksum)
             {
                 // Show message if this is the first async GF
                 if(replayinfo.async == 0)
@@ -70,10 +70,8 @@ void GameClient::ExecuteGameFrame_Replay()
                     if(ci)
                         ci->CI_ReplayAsync(text);
 
-                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF
-                        % msg.checksum.randChecksum % checksum.randChecksum
-                        % msg.checksum.objCt % checksum.objCt
-                        % msg.checksum.objIdCt % checksum.objIdCt;
+                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF % msg.checksum.randChecksum
+                      % checksum.randChecksum % msg.checksum.objCt % checksum.objCt % msg.checksum.objIdCt % checksum.objIdCt;
 
                     // and pause the game for further investigation
                     framesinfo.isPaused = true;
@@ -93,7 +91,9 @@ void GameClient::ExecuteGameFrame_Replay()
     if(curGF == replayinfo.replay.lastGF_)
     {
         char text[256];
-        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF, GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60, GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+        sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF,
+                GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60,
+                GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
 
         if(ci)
             ci->CI_ReplayEndReached(text);

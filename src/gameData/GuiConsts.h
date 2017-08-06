@@ -20,12 +20,11 @@
 
 #include <boost/array.hpp>
 
-const boost::array<float, 5> SUPPRESS_UNUSED ZOOM_FACTORS = {{ 0.5f, 0.75f, 1.f, 1.25f, 1.5f}};
+const boost::array<float, 5> SUPPRESS_UNUSED ZOOM_FACTORS = {{0.5f, 0.75f, 1.f, 1.25f, 1.5f}};
 const size_t ZOOM_DEFAULT_INDEX = 2;
 const float ZOOM_ACCELERATION = 0.001f;
 const float ZOOM_WHEEL_INCREMENT = 0.03f;
 const float ZOOM_MIN = 0.1f;
 const float ZOOM_MAX = 3.f;
-
 
 #endif // GUICONSTS_H_

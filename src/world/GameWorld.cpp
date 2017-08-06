@@ -17,23 +17,24 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameWorld.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
+#include "buildings/noBuildingSite.h"
+#include "lua/LuaInterfaceGame.h"
+#include "ogl/glArchivItem_Map.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-#include "lua/LuaInterfaceGame.h"
-#include "SerializedGameData.h"
-#include "ogl/glArchivItem_Map.h"
-#include "buildings/noBuildingSite.h"
 
-#include "libsiedler2/src/prototypen.h"
 #include "luaIncludes.h"
+#include "libsiedler2/src/prototypen.h"
 #include <boost/filesystem.hpp>
 
-GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em):
-    GameWorldGame(playerInfos, gameSettings, em)
-{}
+GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em)
+    : GameWorldGame(playerInfos, gameSettings, em)
+{
+}
 
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)
@@ -47,7 +48,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
 
-    if (bfs::exists(luaFilePath))
+    if(bfs::exists(luaFilePath))
     {
         lua.reset(new LuaInterfaceGame(*this));
         if(!lua->LoadScript(luaFilePath))
@@ -91,7 +92,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     {
         sgd.PushString(lua->GetScript());
         Serializer luaSaveState = lua->Serialize();
-        sgd.PushUnsignedInt(0xC0DEBA5E);  // Start Lua identifier
+        sgd.PushUnsignedInt(0xC0DEBA5E); // Start Lua identifier
         sgd.PushUnsignedInt(luaSaveState.GetLength());
         sgd.PushRawData(luaSaveState.GetData(), luaSaveState.GetLength());
         sgd.PushUnsignedInt(0xC001C0DE); // End Lua identifier

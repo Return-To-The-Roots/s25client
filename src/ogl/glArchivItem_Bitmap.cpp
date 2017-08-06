@@ -44,9 +44,9 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
     // Compatibility only!
     Extent srcSize = srcArea.getSize();
     if(srcSize.x == 0)
-        srcSize.x = width_;
+        srcSize.x = getWidth();
     if(srcSize.y == 0)
-        srcSize.y = height_;
+        srcSize.y = getHeight();
     srcArea.setSize(srcSize);
     Extent dstSize = dstArea.getSize();
     if(dstSize.x == 0)
@@ -91,9 +91,9 @@ void glArchivItem_Bitmap::DrawFull(const DrawPoint& dstPos, unsigned color)
 }
 
 void glArchivItem_Bitmap::DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
- {
-     Draw(destArea, Rect(offset, destArea.getSize()), color);
- }
+{
+    Draw(destArea, Rect(offset, destArea.getSize()), color);
+}
 
 void glArchivItem_Bitmap::DrawPart(const Rect& destArea, unsigned color /*= COLOR_WHITE*/)
 {
@@ -114,9 +114,14 @@ void glArchivItem_Bitmap::FillTexture()
 {
     int iformat = GetInternalFormat(), dformat = GL_BGRA;
 
-    std::vector<unsigned char> buffer(tex_width_ * tex_height_ * 4);
+    const Extent texSize = GetTexSize();
+    std::vector<unsigned char> buffer(prodOfComponents(texSize) * 4);
 
-    print(&buffer.front(), tex_width_, tex_height_, libsiedler2::FORMAT_RGBA, palette_);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width_, tex_height_, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
+    print(&buffer.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
 }
 
+Extent glArchivItem_Bitmap::CalcTextureSize() const
+{
+    return VIDEODRIVER.calcPreferredTextureSize(GetSize());
+}

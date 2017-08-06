@@ -18,8 +18,8 @@
 #ifndef MapLoader_h__
 #define MapLoader_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/GameSettingTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameData/NationConsts.h"
 #include <vector>
 
@@ -57,7 +57,6 @@ public:
     static void SetMapExplored(World& world, unsigned numPlayers);
     static void InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
     static bool PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos);
-
 };
 
 #endif // MapLoader_h__

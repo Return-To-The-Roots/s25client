@@ -18,8 +18,8 @@
 #ifndef CreateEmptyWorld_h__
 #define CreateEmptyWorld_h__
 
-#include "gameTypes/Nation.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/Nation.h"
 #include <vector>
 
 class GameWorldGame;
@@ -29,10 +29,10 @@ struct CreateEmptyWorld
 {
     CreateEmptyWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
+
 private:
     MapExtent size_;
     std::vector<Nation> playerNations_;
 };
-
 
 #endif // CreateEmptyWorld_h__

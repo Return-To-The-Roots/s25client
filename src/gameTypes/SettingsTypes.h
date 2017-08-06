@@ -18,11 +18,11 @@
 #ifndef SettingsTypes_h__
 #define SettingsTypes_h__
 
-#include "gameTypes/GoodTypes.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
 
-//TODO: Make this structs so meanings are obvious
+// TODO: Make this structs so meanings are obvious
 
 /// Custom mapping of (Ware, Receiver)-tuple to percentage of wares distributed to that building
 typedef boost::array<unsigned char, 23> Distributions;
@@ -44,4 +44,3 @@ typedef boost::array<unsigned char, TOOL_COUNT> ToolSettings;
 typedef boost::array<unsigned char, 8> MilitarySettings;
 
 #endif // SettingsTypes_h__
-

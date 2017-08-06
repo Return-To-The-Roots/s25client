@@ -25,8 +25,10 @@ class noFigure;
 class noRoadNode;
 
 /// static factory class to create new job figures
-class JobFactory{
+class JobFactory
+{
     JobFactory();
+
 public:
     // Erstellt Job anhand der job-id
     static noFigure* CreateJob(const Job job_id, const MapPoint pt, const unsigned char player, noRoadNode* const goal);

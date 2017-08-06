@@ -18,21 +18,21 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskSinglePlayer.h"
 
-#include "WindowManager.h"
-#include "Loader.h"
 #include "GameServer.h"
 #include "ListDir.h"
+#include "Loader.h"
 #include "Savegame.h"
+#include "WindowManager.h"
 
+#include "controls/ctrlButton.h"
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
-#include "ingameWindows/iwPlayReplay.h"
-#include "ingameWindows/iwSave.h"
-#include "ingameWindows/iwMsgbox.h"
-#include "ingameWindows/iwPleaseWait.h"
-#include "controls/ctrlButton.h"
-#include "fileFuncs.h"
 #include "files.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ingameWindows/iwPlayReplay.h"
+#include "ingameWindows/iwPleaseWait.h"
+#include "ingameWindows/iwSave.h"
+#include "libutil/src/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 /** @class dskSinglePlayer
@@ -47,7 +47,9 @@ dskSinglePlayer::dskSinglePlayer()
     AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TC_GREEN2, _("Resume last game"), NormalFont);
     AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TC_GREEN2, _("Load game"), NormalFont);
 
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")", NormalFont)->SetEnabled(false);
+    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TC_GREEN2, std::string(_("Campaign")) + " (" + _("Coming soon") + ")",
+                  NormalFont)
+      ->SetEnabled(false);
     AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TC_GREEN2, _("Unlimited Play"), NormalFont);
 
     AddTextButton(4, DrawPoint(115, 320), Extent(220, 22), TC_GREEN2, _("Play Replay"), NormalFont);
@@ -57,9 +59,7 @@ dskSinglePlayer::dskSinglePlayer()
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
-
-
-void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -74,17 +74,17 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 Savegame save;
 
                 // Datei öffnen
-                if (!save.Load(*it, false, false))
+                if(!save.Load(*it, false, false))
                     continue;
 
-                if (save.save_time > recent)
+                if(save.save_time > recent)
                 {
                     recent = save.save_time;
                     path = *it;
                 }
             }
 
-            if (recent != 0)
+            if(recent != 0)
             {
                 // Dateiname noch rausextrahieren aus dem Pfad
                 if(!path.has_filename())
@@ -110,33 +110,39 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned int ctrl_id)
                 if(GAMESERVER.TryToStart(csi, path.string(), MAPTYPE_SAVEGAME))
                     WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
                 else
-                    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
-            }
-            else
+                    WINDOWMANAGER.Show(
+                      new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+            } else
                 WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
-
-        } break;
+        }
+        break;
         case 4: // "Replay abspielen"
         {
             WINDOWMANAGER.Show(new iwPlayReplay);
-        } break;
+        }
+        break;
         case 5: // "Kampagne"
         {
             /// @todo Hier dann Auswahl zwischen Kampagne(n) und "Freies Spiel"
-            WINDOWMANAGER.Show(new iwMsgbox(_("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this, MSB_OK, MSB_EXCLAMATIONGREEN));
-        } break;
+            WINDOWMANAGER.Show(new iwMsgbox(_("Not available"), _("Please use \'Unlimited Play\' to create a Singleplayer game."), this,
+                                            MSB_OK, MSB_EXCLAMATIONGREEN));
+        }
+        break;
         case 6: // "Freies Spiel"
         {
             PrepareSinglePlayerServer();
-        } break;
+        }
+        break;
         case 7: // "Spiel laden"
         {
             PrepareLoadGame();
-        } break;
+        }
+        break;
         case 8: // "Zurück"
         {
             WINDOWMANAGER.Switch(new dskMainMenu);
-        } break;
+        }
+        break;
     }
 }
 

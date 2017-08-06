@@ -17,7 +17,7 @@
 
 // Fix syntax highlighting
 #ifdef __INTELLISENSE__
-#   include "notifications/NotificationManager.h"
+#include "notifications/NotificationManager.h"
 #endif
 #include <stdexcept>
 
@@ -25,8 +25,9 @@ template<class T_Note>
 class NotificationManager::CallbackUnregistrar
 {
     NotificationManager& noteMgr;
+
 public:
-    explicit CallbackUnregistrar(NotificationManager& noteMgr): noteMgr(noteMgr){}
+    explicit CallbackUnregistrar(NotificationManager& noteMgr) : noteMgr(noteMgr) {}
     void operator()(void* subscribtion)
     {
         if(!subscribtion)
@@ -41,9 +42,10 @@ public:
 
 struct NotificationManager::NoteCallbackBase
 {
-    NoteCallbackBase(): isSubscribed(true){}
-    void SetUnsubscribed(){ isSubscribed = false; }
+    NoteCallbackBase() : isSubscribed(true) {}
+    void SetUnsubscribed() { isSubscribed = false; }
     bool IsSubscribed() const { return isSubscribed; }
+
 private:
     /// Used internally to detect unsubscribed callbacks.
     /// This allows unsubscribing all callbacks when the manager is destroyed
@@ -51,15 +53,16 @@ private:
 };
 
 template<class T_Note>
-struct NotificationManager::NoteCallback: NoteCallbackBase
+struct NotificationManager::NoteCallback : NoteCallbackBase
 {
     typedef boost::function<void(const T_Note&)> Callback;
-    explicit NoteCallback(Callback callback): execute(callback){}
+    explicit NoteCallback(Callback callback) : execute(callback) {}
     const Callback execute;
-}; 
+};
 
-NotificationManager::NotificationManager(): isPublishing(false)
-{}
+NotificationManager::NotificationManager() : isPublishing(false)
+{
+}
 
 NotificationManager::~NotificationManager()
 {

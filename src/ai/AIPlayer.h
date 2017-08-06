@@ -26,12 +26,12 @@ class GlobalGameSettings;
 /// Klasse für die standardmäßige (vorerst) KI
 class AIPlayer : public AIBase
 {
-    public:
-        AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
+public:
+    AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
 
-        /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-        /// gf ist die GF-Zahl vom Spiel
-        void RunGF(const unsigned gf, bool gfisnwf) override;
+    /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
+    /// gf ist die GF-Zahl vom Spiel
+    void RunGF(const unsigned gf, bool gfisnwf) override;
 };
 
-#endif //!AIPLAYER_H_INCLUDED
+#endif //! AIPLAYER_H_INCLUDED

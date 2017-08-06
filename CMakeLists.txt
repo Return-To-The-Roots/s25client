@@ -10,7 +10,7 @@ IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libsiedler2/cmake/Modules")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib")
 
 INCLUDE(CMakeMacroSetCCache)
@@ -69,7 +69,7 @@ ELSE (CMAKE_CROSSCOMPILING)
 ENDIF (CMAKE_CROSSCOMPILING)
 
 #Include generic platform config
-OPTION(ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
+OPTION(RTTR_ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
 MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
@@ -95,7 +95,7 @@ else(Boost_USE_STATIC_LIBS)
 endif(Boost_USE_STATIC_LIBS)
 
 # For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
-SET(TMP_VERSIONS "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
+SET(TMP_VERSIONS "1.64" "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
 foreach(I_VERSION ${TMP_VERSIONS})
 	list(APPEND Boost_ADDITIONAL_VERSIONS "${I_VERSION}.0" "${I_VERSION}")
 endforeach()
@@ -147,6 +147,8 @@ ELSE()
 	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
 ENDIF()
 UNSET(TMP_BOOST_VERSION)
+
+find_package(ClangFormat 5.0.0)
 
 ################################################################################
 # Set paths
@@ -211,9 +213,9 @@ MACRO(CheckAndAddFlag flag)
 	STRING(REGEX REPLACE "^-Wno-" "-W" checkedFlag ${flag})
 	SET(VarName ${checkedFlag})
 	STRING(REPLACE "+" "X" VarName ${VarName})
-	STRING(REPLACE "-" "_" VarName ${VarName})
-	CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
-	CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
+	STRING(REGEX REPLACE "[=-]" "_" VarName ${VarName})
+    CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
+    CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
 	IF (CXX_FLAG_${VarName}_SUPPORTED)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 	ENDIF ()
@@ -224,20 +226,20 @@ MACRO(CheckAndAddFlag flag)
 	unset(checkedFlag)
 ENDMACRO()
 
-OPTION(ENABLE_WERROR "Build with warnings turned into errors" OFF)
+OPTION(RTTR_ENABLE_WERROR "Build with warnings turned into errors" ON)
 IF (MSVC)
 	ADD_DEFINITIONS(/W3)
 	ADD_DEFINITIONS(/MP) # parallel compilation
 	# Signed/Unsigned operations
 	ADD_DEFINITIONS(/w34389)
-	IF(ENABLE_WERROR)
+	IF(RTTR_ENABLE_WERROR)
 		ADD_DEFINITIONS(/WX) # warning = error
-	ENDIF(ENABLE_WERROR)
+	ENDIF()
 ELSE (MSVC)
 	CheckAndAddFlag("-Wall")
-	IF(ENABLE_WERROR)
+	IF(RTTR_ENABLE_WERROR)
 		CheckAndAddFlag("-Werror")
-	ENDIF(ENABLE_WERROR)
+	ENDIF()
 ENDIF (MSVC)
 CheckAndAddFlag("-pedantic")
 CheckAndAddFlag("-Wpedantic")
@@ -352,8 +354,6 @@ ENDIF()
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
 			   build_paths.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version.h.cmake"
-			   build_version.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
 			   build_version_defines.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
@@ -373,8 +373,9 @@ ENDIF()
 file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
-# add build directory to compiler search path
+# add build directory to compiler search path for configured includes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 enable_testing()
 
@@ -403,6 +404,12 @@ ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
 ADD_SUBDIRECTORY(s25update)
 ADD_SUBDIRECTORY(src)
+
+if(ClangFormat_FOUND)
+    add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
+    add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
+    add_ClangFormat_target("file")
+endif()
 
 ################################################################################
 # Install

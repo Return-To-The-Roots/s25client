@@ -16,34 +16,35 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
 #include "dskLAN.h"
+#include "RTTR_Version.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
 #include "Settings.h"
-#include "ingameWindows/iwDirectIPCreate.h"
-#include "ingameWindows/iwDirectIPConnect.h"
-#include "ingameWindows/iwMsgbox.h"
+#include "WindowManager.h"
+#include "controls/ctrlTable.h"
 #include "desktops/dskMultiPlayer.h"
+#include "ingameWindows/iwDirectIPConnect.h"
+#include "ingameWindows/iwDirectIPCreate.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/LanDiscoveryCfg.h"
-#include "controls/ctrlTable.h"
 #include "libutil/src/Serializer.h"
 #include <boost/lexical_cast.hpp>
 
 namespace {
-    enum{
-        ID_btBack = dskMenuBase::ID_FIRST_FREE,
-        ID_btConnect,
-        ID_btAddServer,
-        ID_tblServer,
-        ID_tmrRefreshServers,
-        ID_tmrRefreshList
-    };
+enum
+{
+    ID_btBack = dskMenuBase::ID_FIRST_FREE,
+    ID_btConnect,
+    ID_btAddServer,
+    ID_tblServer,
+    ID_tmrRefreshServers,
+    ID_tmrRefreshList
+};
 }
 
-dskLAN::dskLAN(): dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
+dskLAN::dskLAN() : dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
 {
     // "Server hinzufügen"
     AddTextButton(ID_btAddServer, DrawPoint(530, 250), Extent(250, 22), TC_GREEN2, _("Add Server"), NormalFont);
@@ -53,7 +54,9 @@ dskLAN::dskLAN(): dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DI
     AddTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TC_RED1, _("Back"), NormalFont);
 
     // Gameserver-Tabelle - "ID", "Server", "Karte", "Spieler", "Version"
-    AddTable(ID_tblServer, DrawPoint(20, 20), Extent(500, 530), TC_GREY, NormalFont, 5, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300, ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100, ctrlTable::SRT_STRING);
+    AddTable(ID_tblServer, DrawPoint(20, 20), Extent(500, 530), TC_GREY, NormalFont, 5, _("ID"), 0, ctrlTable::SRT_NUMBER, _("Server"), 300,
+             ctrlTable::SRT_STRING, _("Map"), 300, ctrlTable::SRT_STRING, _("Player"), 200, ctrlTable::SRT_STRING, _("Version"), 100,
+             ctrlTable::SRT_STRING);
 
     discovery.Start();
 
@@ -61,11 +64,11 @@ dskLAN::dskLAN(): dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DI
     AddTimer(ID_tmrRefreshList, 2000);
 }
 
-void dskLAN::Msg_Timer(const unsigned int ctrl_id)
+void dskLAN::Msg_Timer(const unsigned ctrl_id)
 {
-    if (ctrl_id == ID_tmrRefreshServers)
+    if(ctrl_id == ID_tmrRefreshServers)
         discovery.Refresh();
-    else if (ctrl_id == ID_tmrRefreshList)
+    else if(ctrl_id == ID_tmrRefreshList)
         UpdateServerList();
     else
         RTTR_Assert(false);
@@ -77,24 +80,22 @@ void dskLAN::Msg_PaintBefore()
     discovery.Run();
 }
 
-void dskLAN::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-    case ID_btBack:
-        WINDOWMANAGER.Switch(new dskMultiPlayer);
-        break;
-    case ID_btConnect:
-        ConnectToSelectedGame();
-        break;
-    case ID_btAddServer:
-        if(SETTINGS.proxy.typ != 0)
-            WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this, MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-        else
-        {
-            iwDirectIPCreate* servercreate = new iwDirectIPCreate(ServerType::LAN);
-            WINDOWMANAGER.Show(servercreate, true);
-        }
+        case ID_btBack: WINDOWMANAGER.Switch(new dskMultiPlayer); break;
+        case ID_btConnect: ConnectToSelectedGame(); break;
+        case ID_btAddServer:
+            if(SETTINGS.proxy.typ != 0)
+                WINDOWMANAGER.Show(new iwMsgbox(
+                  _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
+                  MSB_OK, MSB_EXCLAMATIONGREEN, 1));
+            else
+            {
+                iwDirectIPCreate* servercreate = new iwDirectIPCreate(ServerType::LAN);
+                WINDOWMANAGER.Show(servercreate, true);
+            }
     }
 }
 
@@ -108,7 +109,7 @@ void dskLAN::ReadOpenGames()
 {
     openGames.clear();
     const LANDiscoveryClient::ServiceMap& services = discovery.GetServices();
-    for (LANDiscoveryClient::ServiceMap::const_iterator it = services.begin(); it != services.end(); ++it)
+    for(LANDiscoveryClient::ServiceMap::const_iterator it = services.begin(); it != services.end(); ++it)
     {
         Serializer ser(&it->second.info.GetPayload().front(), it->second.info.GetPayload().size()); //-V807
         GameInfo info;
@@ -124,7 +125,7 @@ void dskLAN::UpdateServerList()
 
     ctrlTable* servertable = GetCtrl<ctrlTable>(ID_tblServer);
 
-    unsigned int selection = servertable->GetSelection();
+    unsigned selection = servertable->GetSelection();
     if(selection == 0xFFFF)
         selection = 0;
     unsigned short column = servertable->GetSortColumn();
@@ -138,11 +139,11 @@ void dskLAN::UpdateServerList()
     {
         std::string id = boost::lexical_cast<std::string>(curId++);
         std::string name = (it->info.hasPwd ? "(pwd) " : "") + it->info.name; //-V807
-        std::string player = boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.curPlayer)) + "/"+
-                             boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.maxPlayer));
+        std::string player = boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.curPlayer)) + "/"
+                             + boost::lexical_cast<std::string>(static_cast<unsigned>(it->info.maxPlayer));
         servertable->AddRow(0, id.c_str(), name.c_str(), it->info.map.c_str(), player.c_str(), it->info.version.c_str());
     }
-    
+
     servertable->SortRows(column, &direction);
     servertable->SetSelection(selection);
 }
@@ -153,22 +154,21 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     ctrlTable* table = GetCtrl<ctrlTable>(ID_tblServer);
-    unsigned int selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
-    if (selection >= openGames.size())
+    unsigned selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
+    if(selection >= openGames.size())
         return false;
 
     GameInfo game = openGames[selection];
-    if(game.info.version == std::string(GetWindowVersion()))
+    if(game.info.version == std::string(RTTR_Version::GetVersion()))
     {
         iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);
         WINDOWMANAGER.Show(connect);
         return true;
-    }
-    else
+    } else
     {
-        WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+        WINDOWMANAGER.Show(
+          new iwMsgbox(_("Sorry!"), _("You can't join that game with your version!"), this, MSB_OK, MSB_EXCLAMATIONRED, 1));
         return false;
     }
-
 }

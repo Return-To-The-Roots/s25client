@@ -18,8 +18,8 @@
 #ifndef BuildingFactory_h__
 #define BuildingFactory_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/BuildingTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameData/NationConsts.h"
 
 class noBuilding;
@@ -28,10 +28,13 @@ class GameWorldGame;
 /// Static Factory class used to create buildings
 /// Use ONLY this class to add new buildings to the map.
 /// Only exception is during deserialization (switch on GOT instead of building type), this case is handled in SerializedGameData
-class BuildingFactory{
+class BuildingFactory
+{
     BuildingFactory();
+
 public:
-    static noBuilding* CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
+    static noBuilding* CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
+                                      const Nation nation);
 };
 
 #endif // BuildingFactory_h__

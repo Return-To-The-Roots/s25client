@@ -20,10 +20,10 @@
 #include <boost/filesystem.hpp>
 #include <algorithm>
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // lists the files of a directory
-std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories, const std::vector<std::string>* const appendTo)
+std::vector<std::string> ListDir(const std::string& path, std::string extension, bool includeDirectories,
+                                 const std::vector<std::string>* const appendTo)
 {
     std::vector<std::string> result;
     if(appendTo)

@@ -19,6 +19,7 @@
 #include "BlinkButtonAnim.h"
 #include "controls/ctrlButton.h"
 
-BlinkButtonAnim::BlinkButtonAnim(ctrlButton* element, bool startValue, unsigned frameRate, RepeatType repeat):
-    ToggleAnimation<ctrlButton>(element, &ctrlButton::SetIlluminated, startValue, frameRate, repeat)
-{}
+BlinkButtonAnim::BlinkButtonAnim(ctrlButton* element, bool startValue, unsigned frameRate, RepeatType repeat)
+    : ToggleAnimation<ctrlButton>(element, &ctrlButton::SetIlluminated, startValue, frameRate, repeat)
+{
+}

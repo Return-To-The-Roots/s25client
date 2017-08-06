@@ -26,16 +26,17 @@ class glArchivItem_Font;
 
 class ctrlText : public Window, public ctrlBaseText
 {
-    public:
-        ctrlText(Window* parent, unsigned int id, const DrawPoint& pos, const std::string& text, unsigned int color, unsigned int format, glArchivItem_Font* font);
+public:
+    ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+             glArchivItem_Font* font);
 
-        Rect GetBoundaryRect() const override;
-    protected:
-        void Draw_() override;
+    Rect GetBoundaryRect() const override;
 
-    protected:
+protected:
+    void Draw_() override;
 
-        unsigned int format;
+protected:
+    unsigned format;
 };
 
 #endif // !CTRLTEXT_H_INCLUDED

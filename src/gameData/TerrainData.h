@@ -18,26 +18,19 @@
 #ifndef TerrainData_h__
 #define TerrainData_h__
 
-#include "gameTypes/MapTypes.h"
-#include "gameTypes/LandscapeType.h"
-#include "gameTypes/BuildingQuality.h"
 #include "Rect.h"
+#include "gameTypes/BuildingQuality.h"
+#include "gameTypes/LandscapeType.h"
+#include "gameTypes/MapTypes.h"
 #include <boost/core/scoped_enum.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ)
-{
-    NOTHING,
-    DANGER,
-    FLAG,
-    CASTLE,
-    MINE
-}
-BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
 
-class TerrainData
+  class TerrainData
 {
     // Disallow construction, only static methods
     TerrainData();
+
 public:
     /// Returns the terrain type for a given map terrain index
     static TerrainType MapIdx2Terrain(unsigned char mapIdx);
@@ -61,7 +54,7 @@ public:
     /// 0: None, 1: Snow, 2: Mountain, 3: Desert, 4: Meadow, 5: Water
     static unsigned char GetEdgeType(LandscapeType landsCape, TerrainType t1, TerrainType t2);
     /// Returns whether the given map terrain index is a harbour spot
-    static bool IsHarborSpot(unsigned char mapIdx){ return (mapIdx & 0x40) != 0;}
+    static bool IsHarborSpot(unsigned char mapIdx) { return (mapIdx & 0x40) != 0; }
     /// Returns whether the given terrain type can be used (is not deadly)
     static bool IsUseable(TerrainType t);
     /// Returns whether the given terrain type can be used by a ship (non-blocking water)

@@ -31,7 +31,7 @@ void OldLCG::Deserialize(Serializer& ser)
     state_ = ser.PopUnsignedInt();
 }
 
-void OldLCG::Serialize(Serializer & ser) const
+void OldLCG::Serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(state_);
 }

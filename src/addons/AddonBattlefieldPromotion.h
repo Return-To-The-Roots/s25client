@@ -17,7 +17,6 @@
 #ifndef ADDONBATTLEFIELDPROMOTION_H_INCLUDED
 #define ADDONBATTLEFIELDPROMOTION_H_INCLUDED
 
-
 #include "AddonBool.h"
 
 /**
@@ -25,15 +24,12 @@
  */
 class AddonBattlefieldPromotion : public AddonBool
 {
-    public:
-        AddonBattlefieldPromotion() : AddonBool(AddonId::BATTLEFIELD_PROMOTION,
-                                          ADDONGROUP_MILITARY,
-                                          _("Enable battlefield promotions"),
-                                          _("Soldiers winning a fight increase in rank."),
-                                          0
-                                         )
-        {
-        }
+public:
+    AddonBattlefieldPromotion()
+        : AddonBool(AddonId::BATTLEFIELD_PROMOTION, ADDONGROUP_MILITARY, _("Enable battlefield promotions"),
+                    _("Soldiers winning a fight increase in rank."), 0)
+    {
+    }
 };
 
 #endif

@@ -19,46 +19,51 @@
 
 #pragma once
 
-#include "ai/AIResource.h"
 #include "ai/AIInterface.h"
+#include "ai/AIResource.h"
 #include <vector>
-namespace AIJH { struct Node; }
+namespace AIJH {
+struct Node;
+}
 
 class AIResourceMap
 {
-    public:
-        AIResourceMap():res(AIJH::NOTHING), aii(NULL), nodes(NULL), resRadius(0){} // Default ctor to allow storage in arrays
-        AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node> &nodes);
-        ~AIResourceMap();
+public:
+    AIResourceMap() : res(AIJH::NOTHING), aii(NULL), nodes(NULL), resRadius(0) {} // Default ctor to allow storage in arrays
+    AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node>& nodes);
+    ~AIResourceMap();
 
-        /// Initialize the resource map
-        void Init();
-        void Recalc();
+    /// Initialize the resource map
+    void Init();
+    void Recalc();
 
-        /// Changes a single resource map around point pt in radius; to every point around pt distanceFromCenter * value is added
-        void Change(const MapPoint pt, unsigned radius, int value);
-        void Change(const MapPoint pt, int value){ Change(pt, resRadius, value); }
+    /// Changes a single resource map around point pt in radius; to every point around pt distanceFromCenter * value is added
+    void Change(const MapPoint pt, unsigned radius, int value);
+    void Change(const MapPoint pt, int value) { Change(pt, resRadius, value); }
 
-        /// Finds a good position for a specific resource in an area using the resource maps,
-        /// first position satisfying threshold is returned, returns false if no such position found
-        bool FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+    /// Finds a good position for a specific resource in an area using the resource maps,
+    /// first position satisfying threshold is returned, returns false if no such position found
+    bool FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
 
-        /// Finds the best position for a specific resource in an area using the resource maps,
-        /// satisfying the minimum value, returns false if no such position is found
-        bool FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-        bool FindBestPosition(MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true){ return FindBestPosition(pt, size, 1, radius, inTerritory); }
+    /// Finds the best position for a specific resource in an area using the resource maps,
+    /// satisfying the minimum value, returns false if no such position is found
+    bool FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
+    bool FindBestPosition(MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true)
+    {
+        return FindBestPosition(pt, size, 1, radius, inTerritory);
+    }
 
-        int& operator[](const MapPoint& pt) { return map[aii->GetIdx(pt)]; }
-        int operator[](const MapPoint& pt) const { return map[aii->GetIdx(pt)]; }
+    int& operator[](const MapPoint& pt) { return map[aii->GetIdx(pt)]; }
+    int operator[](const MapPoint& pt) const { return map[aii->GetIdx(pt)]; }
 
-    private:
-        void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
+private:
+    void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
 
-        std::vector<int> map;
-        AIJH::Resource res; // Do not change! const ommited to to able to store this in a vector
-        const AIInterface* aii;
-        const std::vector<AIJH::Node>* nodes;
-        unsigned resRadius; // Do not change! const ommited to to able to store this in a vector
+    std::vector<int> map;
+    AIJH::Resource res; // Do not change! const ommited to to able to store this in a vector
+    const AIInterface* aii;
+    const std::vector<AIJH::Node>* nodes;
+    unsigned resRadius; // Do not change! const ommited to to able to store this in a vector
 };
 
 #endif //! AIRESOURCEMAP_H_INCLUDED

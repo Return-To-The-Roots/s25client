@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -18,7 +18,8 @@
 #ifndef Resource_h__
 #define Resource_h__
 
-enum Resource{
+enum Resource
+{
     RES_IRON = 0,
     RES_GOLD = 1,
     RES_COAL = 2,
@@ -26,6 +27,5 @@ enum Resource{
     RES_WATER = 4,
     RES_TYPES_COUNT
 };
-
 
 #endif // Resource_h__

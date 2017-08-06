@@ -19,30 +19,30 @@
 #include "helpers/mathFuncs.h"
 #include <algorithm>
 
-namespace helpers{
-    int gcd(int a, int b)
-    {
-        a = abs(a);
-        b = abs(b);
-        using std::swap;
-        if(a < b)
-            swap(a, b);
+namespace helpers {
+int gcd(int a, int b)
+{
+    a = abs(a);
+    b = abs(b);
+    using std::swap;
+    if(a < b)
+        swap(a, b);
 
-        while(b > 0)
-        {
-            int remainder = a % b;
-            a = b;
-            b = remainder;
-        }
-        return a;
-    }
-
-    unsigned roundedDiv(unsigned dividend, unsigned divisor)
+    while(b > 0)
     {
-        RTTR_Assert(divisor > 0);
-        RTTR_Assert(dividend + (divisor / 2) >= dividend); // Overflow check
-        // Standard way for emulation mathematical rounding: floor(divident / divisor + 0.5)
-        // Which is the same as: floor((divident + 0.5 * divisor) / divisor) == floor((divident + divisor / 2) / divisor)
-        return (dividend + (divisor / 2)) / divisor;
+        int remainder = a % b;
+        a = b;
+        b = remainder;
     }
+    return a;
 }
+
+unsigned roundedDiv(unsigned dividend, unsigned divisor)
+{
+    RTTR_Assert(divisor > 0);
+    RTTR_Assert(dividend + (divisor / 2) >= dividend); // Overflow check
+    // Standard way for emulation mathematical rounding: floor(divident / divisor + 0.5)
+    // Which is the same as: floor((divident + 0.5 * divisor) / divisor) == floor((divident + divisor / 2) / divisor)
+    return (dividend + (divisor / 2)) / divisor;
+}
+} // namespace helpers

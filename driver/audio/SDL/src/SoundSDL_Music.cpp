@@ -34,7 +34,7 @@ SoundSDL_Music::~SoundSDL_Music()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-//int SoundSDL_Music::Play(unsigned char volume, const unsigned char volume, const bool loop)
+// int SoundSDL_Music::Play(unsigned char volume, const unsigned char volume, const bool loop)
 //{
 //  // ggf alten anhalten
 //  Stop(-1);
@@ -55,13 +55,12 @@ SoundSDL_Music::~SoundSDL_Music()
 //}
 //
 
-
 /**
  *  Abspielen Stoppen.
  *
  *  @param[in] channel Ignored
  */
-//void SoundSDL_Music::Stop(int channel)
+// void SoundSDL_Music::Stop(int channel)
 //{
 //  Mix_HaltMusic();
 //}

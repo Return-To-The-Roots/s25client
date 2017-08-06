@@ -24,24 +24,19 @@ class GamePlayer;
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellen auflistet
 class iwBuildingProductivities : public IngameWindow
 {
-        const GamePlayer& player;
-        /// Prozentzahlen der einzelnen Gebäude
-        std::vector<unsigned short> percents;
+    const GamePlayer& player;
+    /// Prozentzahlen der einzelnen Gebäude
+    std::vector<unsigned short> percents;
 
-    public:
+public:
+    iwBuildingProductivities(const GamePlayer& player);
 
-        iwBuildingProductivities(const GamePlayer& player);
+private:
+    /// Aktualisieren der Prozente
+    void UpdatePercents();
 
-    private:
-
-        /// Aktualisieren der Prozente
-        void UpdatePercents();
-
-        /// Produktivitäts-Progressbars aktualisieren
-        void Msg_PaintAfter() override;
-
+    /// Produktivitäts-Progressbars aktualisieren
+    void Msg_PaintAfter() override;
 };
 
-
-#endif //!iwBUILDINGPRODUCTIVITIES_H_
-
+#endif //! iwBUILDINGPRODUCTIVITIES_H_

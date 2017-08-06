@@ -26,28 +26,27 @@ class Window;
 /// zu übermiteln
 class GameInterface
 {
-    public:
-        virtual ~GameInterface() {}
+public:
+    virtual ~GameInterface() {}
 
-        /// Ein Spieler hat verloren
-        virtual void GI_PlayerDefeated(unsigned playerId) = 0;
-        /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        virtual void GI_UpdateMinimap(const MapPoint pt) = 0;
-        /// Flagge wurde zerstört
-        virtual void GI_FlagDestroyed(const MapPoint pt) = 0;
-        /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
-        virtual void GI_TreatyOfAllianceChanged(unsigned playerId) = 0;
+    /// Ein Spieler hat verloren
+    virtual void GI_PlayerDefeated(unsigned playerId) = 0;
+    /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
+    virtual void GI_UpdateMinimap(const MapPoint pt) = 0;
+    /// Flagge wurde zerstört
+    virtual void GI_FlagDestroyed(const MapPoint pt) = 0;
+    /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
+    virtual void GI_TreatyOfAllianceChanged(unsigned playerId) = 0;
 
-        virtual void GI_Winner(const unsigned playerId) = 0;
-        virtual void GI_TeamWinner(const unsigned playerId) = 0;
+    virtual void GI_Winner(const unsigned playerId) = 0;
+    virtual void GI_TeamWinner(const unsigned playerId) = 0;
 
-        /// An important window was closed (currently iwAction, iwRoad)
-        virtual void GI_WindowClosed(Window* wnd) = 0;
-        /// Changes the road building mode
-        virtual void GI_SetRoadBuildMode(RoadBuildMode mode) = 0;
-        /// Executes the construction of a road
-        virtual void GI_BuildRoad() = 0;
+    /// An important window was closed (currently iwAction, iwRoad)
+    virtual void GI_WindowClosed(Window* wnd) = 0;
+    /// Changes the road building mode
+    virtual void GI_SetRoadBuildMode(RoadBuildMode mode) = 0;
+    /// Executes the construction of a road
+    virtual void GI_BuildRoad() = 0;
 };
-
 
 #endif

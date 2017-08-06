@@ -23,44 +23,38 @@ class AudioDriverLoaderInterface;
 class Sound;
 
 /// Basisklasse für einen Audiotreiber.
-class AudioDriver: public IAudioDriver
+class AudioDriver : public IAudioDriver
 {
-    public:
-        AudioDriver(AudioDriverLoaderInterface* adli);
+public:
+    AudioDriver(AudioDriverLoaderInterface* adli);
 
-        ~AudioDriver() override;
+    ~AudioDriver() override;
 
-        /// Funktion zum Auslesen des Treibernamens.
-        const char* GetName() const override;
+    /// Funktion zum Auslesen des Treibernamens.
+    const char* GetName() const override;
 
-        /// prüft auf Initialisierung.
-        bool IsInitialized() override { return initialized; }
+    /// prüft auf Initialisierung.
+    bool IsInitialized() override { return initialized; }
 
-    protected:
+protected:
+    /// "Generiert" eine Play-ID
+    unsigned GeneratePlayID();
 
-        /// "Generiert" eine Play-ID
-        unsigned GeneratePlayID();
+private:
+    /// Counter für Play-IDs
+    unsigned play_id_counter;
 
-    private:
+protected:
+    AudioDriverLoaderInterface* adli;
 
-        /// Counter für Play-IDs
-        unsigned play_id_counter;
+    /// Das DriverCallback für Rückmeldungen.
 
+    bool initialized; /// Initialisierungsstatus.
 
-    protected:
+    std::vector<Sound*> sounds;
 
-        AudioDriverLoaderInterface* adli;
-
-        /// Das DriverCallback für Rückmeldungen.
-
-        bool initialized; /// Initialisierungsstatus.
-
-        std::vector<Sound*> sounds;
-
-        /// Anzahl Channels, die reserviert werden können (für Effekte!)
-        static const unsigned CHANNEL_COUNT = 64;
-
-
+    /// Anzahl Channels, die reserviert werden können (für Effekte!)
+    static const unsigned CHANNEL_COUNT = 64;
 };
 
 #endif // !AUDIODRIVER_H_INCLUDED

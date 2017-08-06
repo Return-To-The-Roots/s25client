@@ -20,15 +20,18 @@
 #pragma once
 
 #include "glArchivItem_Bitmap.h"
-#include "../libsiedler2/src/ArchivItem_Bitmap_Raw.h"
+#include "libsiedler2/src/ArchivItem_Bitmap_Raw.h"
 
 /// Klasse für GL-RAW-Bitmaps.
 class glArchivItem_Bitmap_Raw : public libsiedler2::baseArchivItem_Bitmap_Raw, public glArchivItem_Bitmap
 {
-    public:
-        glArchivItem_Bitmap_Raw() {}
+public:
+    glArchivItem_Bitmap_Raw() {}
 
-        glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw& item) : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item) {}
+    glArchivItem_Bitmap_Raw(const glArchivItem_Bitmap_Raw& item)
+        : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item)
+    {
+    }
 };
 
 #endif // !GLARCHIVITEM_BITMAP_RAW_H_INCLUDED

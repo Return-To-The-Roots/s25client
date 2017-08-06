@@ -17,16 +17,15 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofBrewer.h"
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 
-nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_BREWER, pos, player, workplace)
+nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BREWER, pos, player, workplace)
 {
 }
 
@@ -36,13 +35,13 @@ nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = { {10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17} };
+    static const DrawPointInit offsets[NAT_COUNT] = {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}};
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 
     if(now_id < 16)
         LOADER.GetPlayerImage("rom_bobs", now_id)
-        ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
     if(now_id == 5)
     {

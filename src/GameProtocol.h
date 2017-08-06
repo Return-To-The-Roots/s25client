@@ -18,8 +18,8 @@
 #ifndef GAMEPROTOCOL_H_INCLUDED
 #define GAMEPROTOCOL_H_INCLUDED
 
-#include "Protocol.h"
 #include "gameTypes/ServerType.h"
+#include "libutil/src/Protocol.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Netzwerk Messages                       // client> | <server
@@ -39,23 +39,23 @@ enum
     NMS_SERVER_CANCELCOUNTDOWN, // 0
 
     NMS_PLAYER_ID = 0x0201, // 1 playerId
-    NMS_PLAYER_NAME, // x playername
-    NMS_PLAYER_LIST, // 1 playercount | x GamePlayerInfo
-    NMS_PLAYER_SETSTATE, // 1 playerId
-    NMS_PLAYER_SET_NATION, // 0 | 1 playerId
-    NMS_PLAYER_SET_TEAM, // 0 | 1 playerId
-    NMS_PLAYER_SET_COLOR, // 0 | 1 playerId
-    NMS_PLAYER_KICKED, // 12 npk
-    NMS_PLAYER_PING, // 1 playerId, 2 playerping
-    NMS_PLAYER_NEW, // 1 playerId, x playername
-    NMS_PLAYER_READY, // 1 status | 1 playerId, 1 status
-    NMS_PLAYER_SWAP, // 1 playerId1, 1 playerId2
+    NMS_PLAYER_NAME,        // x playername
+    NMS_PLAYER_LIST,        // 1 playercount | x GamePlayerInfo
+    NMS_PLAYER_SETSTATE,    // 1 playerId
+    NMS_PLAYER_SET_NATION,  // 0 | 1 playerId
+    NMS_PLAYER_SET_TEAM,    // 0 | 1 playerId
+    NMS_PLAYER_SET_COLOR,   // 0 | 1 playerId
+    NMS_PLAYER_KICKED,      // 12 npk
+    NMS_PLAYER_PING,        // 1 playerId, 2 playerping
+    NMS_PLAYER_NEW,         // 1 playerId, x playername
+    NMS_PLAYER_READY,       // 1 status | 1 playerId, 1 status
+    NMS_PLAYER_SWAP,        // 1 playerId1, 1 playerId2
 
-    NMS_MAP_NAME = 0x0301,  // x mapname
-    NMS_MAP_INFO,           // 0 | 4 parts, 4 ziplength, 4 length
-    NMS_MAP_DATA,           // 0 | x mappartdata
-    NMS_MAP_CHECKSUM,       // 4 checksum
-    NMS_MAP_CHECKSUMOK,     // 1 checksumok
+    NMS_MAP_NAME = 0x0301, // x mapname
+    NMS_MAP_INFO,          // 0 | 4 parts, 4 ziplength, 4 length
+    NMS_MAP_DATA,          // 0 | x mappartdata
+    NMS_MAP_CHECKSUM,      // 4 checksum
+    NMS_MAP_CHECKSUMOK,    // 1 checksumok
 
     NMS_SERVER_NWF_DONE = 0x0401, // 0
     NMS_GAMECOMMANDS,
@@ -142,18 +142,18 @@ kick                    --> bc(NMS_PLAYER_KICK), NMS_DEAD_MSG
 // Gründe fürs Kicken
 enum
 {
-    NP_NOCAUSE = 0, // Ohne Grund --> manuell vom GameServer rausgehauen, weiß der Teufel warum
+    NP_NOCAUSE = 0,    // Ohne Grund --> manuell vom GameServer rausgehauen, weiß der Teufel warum
     NP_CONNECTIONLOST, // Verbindung verloren/abgebrochen, wie auch immer
-    NP_INVALIDMSG, // Unglütige Message, (evtl Cheater bzw. Asynchronität)
-    NP_INCOMPLETEMSG, // zu wenig gesendet
-    NP_PINGTIMEOUT, // Ping Timeout
-    NP_WRONGPASSWORD, // falsches passwort
-    NP_WRONGCHECKSUM, // falsche Checksumme
-    NP_ASYNC // asynchron
+    NP_INVALIDMSG,     // Unglütige Message, (evtl Cheater bzw. Asynchronität)
+    NP_INCOMPLETEMSG,  // zu wenig gesendet
+    NP_PINGTIMEOUT,    // Ping Timeout
+    NP_WRONGPASSWORD,  // falsches passwort
+    NP_WRONGCHECKSUM,  // falsche Checksumme
+    NP_ASYNC           // asynchron
 };
 
 // Wie lange maximal warten, bis Rausschmiss des Spielers (in milliseconds)
-const unsigned PING_TIMEOUT     = 2 * 60 * 1000; // 2min
+const unsigned PING_TIMEOUT = 2 * 60 * 1000; // 2min
 
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!

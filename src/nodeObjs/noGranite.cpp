@@ -18,9 +18,9 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noGranite.h"
 
+#include "FOWObjects.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "FOWObjects.h"
 
 #include "ogl/glSmartBitmap.h"
 
@@ -36,9 +36,8 @@ void noGranite::Serialize_noGranite(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(state);
 }
 
-noGranite::noGranite(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id),
-    type(GraniteType(sgd.PopUnsignedChar())),
-    state(sgd.PopUnsignedChar())
+noGranite::noGranite(SerializedGameData& sgd, const unsigned obj_id)
+    : noBase(sgd, obj_id), type(GraniteType(sgd.PopUnsignedChar())), state(sgd.PopUnsignedChar())
 {
 }
 

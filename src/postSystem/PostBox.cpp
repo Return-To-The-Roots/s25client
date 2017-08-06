@@ -20,9 +20,9 @@
 #include "PostMsg.h"
 #include <algorithm>
 
-PostBox::PostBox(): numMessages(0)
+PostBox::PostBox() : numMessages(0)
 {
-    std::fill(messages.begin(), messages.end(), (PostMsg*) NULL);
+    std::fill(messages.begin(), messages.end(), (PostMsg*)NULL);
 }
 
 PostBox::~PostBox()

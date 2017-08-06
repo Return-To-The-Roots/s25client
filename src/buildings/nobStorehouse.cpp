@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nobStorehouse.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "EventManager.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 
@@ -48,15 +48,13 @@ nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : n
 {
 }
 
-
 void nobStorehouse::Draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
     DrawBaseBuilding(drawPt);
 }
 
-
-void nobStorehouse::HandleEvent(const unsigned int id)
+void nobStorehouse::HandleEvent(const unsigned id)
 {
     HandleBaseEvent(id);
 }

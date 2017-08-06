@@ -17,10 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameObject.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
-#include "world/GameWorldGame.h"
+#include "SerializedGameData.h"
 #include "postSystem/PostBox.h"
+#include "world/GameWorldGame.h"
 
 #include <iostream>
 #include <sstream>
@@ -28,8 +28,8 @@
 /**
  *  Objekt-ID-Counter.
  */
-unsigned int GameObject::objIdCounter_ = 1;
-unsigned int GameObject::objCounter_ = 0;
+unsigned GameObject::objIdCounter_ = 1;
+unsigned GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
 
@@ -56,14 +56,14 @@ void GameObject::Destroy()
 {
 }
 
-void GameObject::Serialize(SerializedGameData&  /*sgd*/) const
+void GameObject::Serialize(SerializedGameData& /*sgd*/) const
 {
     std::cout << "ERROR: GameObject::Serialize called." << std::endl; // qx
 }
 
 GameObject::~GameObject()
 {
-    //RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(this));
+    // RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(this));
     RTTR_Assert(!gwg || !GetEvMgr().ObjectIsInKillList(this));
     // ein Objekt weniger
     --objCounter_;

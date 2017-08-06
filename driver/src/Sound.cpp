@@ -33,7 +33,7 @@
  *  Callback für Spielbenachrichtigung.
  */
 
-Sound::Sound() :  nr(-1), type(SD_UNKNOWN)
+Sound::Sound() : nr(-1), type(SD_UNKNOWN)
 {
 }
 

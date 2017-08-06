@@ -19,19 +19,19 @@
 
 #pragma once
 
-#include "Desktop.h"
-#include "Messenger.h"
-#include "ingameWindows/iwAction.h"
-#include "IngameMinimap.h"
-#include "customborderbuilder.h"
 #include "ClientInterface.h"
+#include "Desktop.h"
 #include "GameInterface.h"
-#include "LobbyInterface.h"
+#include "IngameMinimap.h"
+#include "Messenger.h"
+#include "customborderbuilder.h"
+#include "ingameWindows/iwAction.h"
+#include "notifications/Subscribtion.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
-#include "notifications/Subscribtion.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadBuildState.h"
+#include "liblobby/src/LobbyInterface.h"
 #include <boost/array.hpp>
 
 class GameClient;
@@ -45,128 +45,126 @@ class PostMsg;
 struct BuildingNote;
 struct KeyEvent;
 
-class dskGameInterface :
-    public Desktop,
-    public ClientInterface,
-    public GameInterface,
-    public LobbyInterface
+class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface
 {
-    private:
-        GameClient& gameClient;
-        GameWorldViewer worldViewer;
-        GameWorldView gwv;
+private:
+    GameClient& gameClient;
+    GameWorldViewer worldViewer;
+    GameWorldView gwv;
 
-        CustomBorderBuilder cbb;
+    CustomBorderBuilder cbb;
 
-        boost::array<glArchivItem_Bitmap*, 4> borders;
+    boost::array<glArchivItem_Bitmap*, 4> borders;
 
-        /// Straßenbauzeug
-        RoadBuildState road;
+    /// Straßenbauzeug
+    RoadBuildState road;
 
-        // Aktuell geöffnetes Aktionsfenster
-        iwAction* actionwindow;
-        // Aktuell geöffnetes Straßenbaufenster
-        iwRoadWindow* roadwindow;
-        // Messenger für die Nachrichten
-        Messenger messenger;
-        // Aktuell selektierter Punkt auf der Karte
-        MapPoint selected;
-        /// Minimap-Instanz
-        IngameMinimap minimap;
+    // Aktuell geöffnetes Aktionsfenster
+    iwAction* actionwindow;
+    // Aktuell geöffnetes Straßenbaufenster
+    iwRoadWindow* roadwindow;
+    // Messenger für die Nachrichten
+    Messenger messenger;
+    // Aktuell selektierter Punkt auf der Karte
+    MapPoint selected;
+    /// Minimap-Instanz
+    IngameMinimap minimap;
 
-        bool isScrolling;
-        Point<int> startScrollPt;
-        size_t zoomLvl;
-    public:
-        dskGameInterface(GameWorldBase& world);
-        ~dskGameInterface() override;
+    bool isScrolling;
+    Point<int> startScrollPt;
+    size_t zoomLvl;
 
-        void Resize(const Extent& newSize) override;
-        void SetActive(bool activate = true) override;
+public:
+    dskGameInterface(GameWorldBase& world);
+    ~dskGameInterface() override;
 
-        void LC_Status_ConnectionLost() override;
-        void LC_Status_Error(const std::string& error) override;
-        /// Called whenever Settings are changed ingame
-        void SettingsChanged();
+    void Resize(const Extent& newSize) override;
+    void SetActive(bool activate = true) override;
 
-        RoadBuildMode GetRoadMode() const { return road.mode; }
+    void LC_Status_ConnectionLost() override;
+    void LC_Status_Error(const std::string& error) override;
+    /// Called whenever Settings are changed ingame
+    void SettingsChanged();
 
-        void CI_PlayerLeft(const unsigned playerId) override;
-        void CI_GGSChanged(const GlobalGameSettings& ggs) override;
-        void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
-        void CI_Async(const std::string& checksums_list) override;
-        void CI_ReplayAsync(const std::string& msg) override;
-        void CI_ReplayEndReached(const std::string& msg) override;
-        void CI_GamePaused() override;
-        void CI_GameResumed() override;
-        void CI_Error(const ClientError ce) override;
-        void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
+    RoadBuildMode GetRoadMode() const { return road.mode; }
 
-        void NewPostMessage(const PostMsg& msg, unsigned msgCt);
-        void PostMessageDeleted(unsigned msgCt);
+    void CI_PlayerLeft(const unsigned playerId) override;
+    void CI_GGSChanged(const GlobalGameSettings& ggs) override;
+    void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
+    void CI_Async(const std::string& checksums_list) override;
+    void CI_ReplayAsync(const std::string& msg) override;
+    void CI_ReplayEndReached(const std::string& msg) override;
+    void CI_GamePaused() override;
+    void CI_GameResumed() override;
+    void CI_Error(const ClientError ce) override;
+    void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
 
-        /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
-        void GI_FlagDestroyed(const MapPoint pt) override;
-        /// Wenn ein Spieler verloren hat
-        void GI_PlayerDefeated(unsigned playerId) override;
-        /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
-        void GI_UpdateMinimap(const MapPoint pt) override;
-        /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
-        void GI_TreatyOfAllianceChanged(unsigned playerId) override;
-        void GI_Winner(const unsigned playerId) override;
-        void GI_TeamWinner(const unsigned playerId) override;
-        void GI_SetRoadBuildMode(RoadBuildMode mode) override;
-        /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
-        void GI_BuildRoad() override;
-        void GI_WindowClosed(Window* wnd) override;
+    void NewPostMessage(const PostMsg& msg, unsigned msgCt);
+    void PostMessageDeleted(unsigned msgCt);
 
-        // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
-        // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
-        // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
-        // call-by-reference
-        bool BuildRoadPart(MapPoint& cSel);
-        // Return the id (index + 1) of the point in the currently build road (1 = startPt)
-        // If pt is not on the road, return 0
-        unsigned GetIdInCurBuildRoad(const MapPoint pt);
-        /// Baut Weg zurück von Ende bis zu start_id
-        void DemolishRoad(const unsigned start_id);
-        // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
-        // ansonsten gibt's nur nen Button zum Abbrechen
-        void ShowRoadWindow(const DrawPoint& mousePos);
-        /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-        void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos, const bool enable_military_buildings);
+    /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
+    void GI_FlagDestroyed(const MapPoint pt) override;
+    /// Wenn ein Spieler verloren hat
+    void GI_PlayerDefeated(unsigned playerId) override;
+    /// Es wurde etwas Minimap entscheidendes geändert --> Minimap updaten
+    void GI_UpdateMinimap(const MapPoint pt) override;
+    /// Bündnisvertrag wurde abgeschlossen oder abgebrochen --> Minimap updaten
+    void GI_TreatyOfAllianceChanged(unsigned playerId) override;
+    void GI_Winner(const unsigned playerId) override;
+    void GI_TeamWinner(const unsigned playerId) override;
+    void GI_SetRoadBuildMode(RoadBuildMode mode) override;
+    /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
+    void GI_BuildRoad() override;
+    void GI_WindowClosed(Window* wnd) override;
 
-        const GameWorldViewer& GetViewer() const { return worldViewer; }
-        void SetSelectedMapPoint(const MapPoint pt);
-    private:
-        /// Initializes player specific stuff after start or player swap
-        void InitPlayer();
+    // Sucht einen Weg von road_point_x/y zu cselx/y und baut ihn ( nur visuell )
+    // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
+    // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
+    // call-by-reference
+    bool BuildRoadPart(MapPoint& cSel);
+    // Return the id (index + 1) of the point in the currently build road (1 = startPt)
+    // If pt is not on the road, return 0
+    unsigned GetIdInCurBuildRoad(const MapPoint pt);
+    /// Baut Weg zurück von Ende bis zu start_id
+    void DemolishRoad(const unsigned start_id);
+    // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
+    // ansonsten gibt's nur nen Button zum Abbrechen
+    void ShowRoadWindow(const DrawPoint& mousePos);
+    /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
+    void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
+                          const bool enable_military_buildings);
 
-        /// Lässt das Spiel laufen (zeichnen)
-        void Run();
+    const GameWorldViewer& GetViewer() const { return worldViewer; }
+    void SetSelectedMapPoint(const MapPoint pt);
 
-        /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
-        void UpdatePostIcon(const unsigned postmessages_count, bool showPigeon);
+private:
+    /// Initializes player specific stuff after start or player swap
+    void InitPlayer();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_PaintBefore() override;
-        void Msg_PaintAfter() override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
-        bool Msg_LeftUp(const MouseCoords& mc) override;
-        bool Msg_MouseMove(const MouseCoords& mc) override;
-        bool Msg_RightDown(const MouseCoords& mc) override;
-        bool Msg_RightUp(const MouseCoords& mc) override;
-        bool Msg_KeyDown(const KeyEvent& ke) override;
-        
-        bool Msg_WheelUp(const MouseCoords& mc) override;
-        bool Msg_WheelDown(const MouseCoords& mc) override;
-        void WheelZoom(float step);
+    /// Lässt das Spiel laufen (zeichnen)
+    void Run();
 
+    /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
+    void UpdatePostIcon(const unsigned postmessages_count, bool showPigeon);
 
-        void OnBuildingNote(const BuildingNote& note);
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_PaintBefore() override;
+    void Msg_PaintAfter() override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool Msg_RightDown(const MouseCoords& mc) override;
+    bool Msg_RightUp(const MouseCoords& mc) override;
+    bool Msg_KeyDown(const KeyEvent& ke) override;
 
-        PostBox& GetPostBox();
-        Subscribtion evBld;
+    bool Msg_WheelUp(const MouseCoords& mc) override;
+    bool Msg_WheelDown(const MouseCoords& mc) override;
+    void WheelZoom(float step);
+
+    void OnBuildingNote(const BuildingNote& note);
+
+    PostBox& GetPostBox();
+    Subscribtion evBld;
 };
 
 #endif // !dskGAMEINTERFACE_H_INCLUDED

@@ -37,4 +37,3 @@ struct VisualSettings
 };
 
 #endif // VisualSettings_h__
-

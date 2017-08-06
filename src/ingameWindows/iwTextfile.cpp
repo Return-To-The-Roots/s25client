@@ -20,12 +20,12 @@
 #include "iwTextfile.h"
 
 #include "Loader.h"
-#include "files.h"
 #include "Settings.h"
 #include "controls/ctrlMultiline.h"
+#include "files.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-#include "fileFuncs.h"
+#include "libutil/src/fileFuncs.h"
 
 #include <boost/filesystem/fstream.hpp>
 

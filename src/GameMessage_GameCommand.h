@@ -18,13 +18,14 @@
 #ifndef GameMessage_GameCommand_h__
 #define GameMessage_GameCommand_h__
 
-#include "GameMessage.h"
 #include "GameCommand.h"
+#include "GameMessage.h"
 #include <vector>
 
 class Serializer;
 
-struct AsyncChecksum{
+struct AsyncChecksum
+{
     unsigned randChecksum;
     unsigned objCt;
     unsigned objIdCt;
@@ -38,27 +39,24 @@ struct AsyncChecksum{
 
 class GameMessage_GameCommand : public GameMessage
 {
-    public:
-        /// Checksumme, die der Spieler übermittelt
-        AsyncChecksum checksum;
-        /// Die einzelnen GameCommands
-        std::vector<gc::GameCommandPtr> gcs;
+public:
+    /// Checksumme, die der Spieler übermittelt
+    AsyncChecksum checksum;
+    /// Die einzelnen GameCommands
+    std::vector<gc::GameCommandPtr> gcs;
 
-    public:
+public:
+    GameMessage_GameCommand(); //-V730
+    GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
 
-        GameMessage_GameCommand(); //-V730
-        GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
-
-        void Serialize(Serializer& ser) const override;
-        void Deserialize(Serializer& ser) override;
-        void Run(MessageInterface* callback) override;
+    void Serialize(Serializer& ser) const override;
+    void Deserialize(Serializer& ser) override;
+    void Run(MessageInterface* callback) override;
 };
 
 bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const
 {
-    return randChecksum == rhs.randChecksum &&
-               objCt == rhs.objCt &&
-             objIdCt == rhs.objIdCt;
+    return randChecksum == rhs.randChecksum && objCt == rhs.objCt && objIdCt == rhs.objIdCt;
 }
 
 bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const

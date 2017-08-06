@@ -38,14 +38,13 @@ public:
     bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
 
     /// Start-GF
-    unsigned int start_gf;
+    unsigned start_gf;
     /// Serialisierte Spieldaten
     SerializedGameData sgd;
 
 protected:
     std::string GetSignature() const override;
     uint16_t GetVersion() const override;
-
 };
 
-#endif //!GAMESAVEGAME_H_INCLUDED
+#endif //! GAMESAVEGAME_H_INCLUDED

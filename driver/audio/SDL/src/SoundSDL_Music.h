@@ -17,21 +17,20 @@
 #ifndef SOUNDSDL_MUSIC_H_INCLUDED
 #define SOUNDSDL_MUSIC_H_INCLUDED
 
-#include <Sound.h>
 #include <SDL_mixer.h>
+#include <Sound.h>
 
 class SoundSDL_Music : public Sound
 {
-        friend class AudioSDL;
-    public:
-        SoundSDL_Music();
+    friend class AudioSDL;
 
-        ~SoundSDL_Music() override;
+public:
+    SoundSDL_Music();
 
-    private:
+    ~SoundSDL_Music() override;
 
-        Mix_Music* music;  /// Das Music-Handle.
-
+private:
+    Mix_Music* music; /// Das Music-Handle.
 };
 
 #endif // !SOUNDSDL_MUSIC_H_INCLUDED

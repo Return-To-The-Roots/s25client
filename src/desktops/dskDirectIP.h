@@ -23,13 +23,11 @@
 
 class dskDirectIP : public dskMenuBase
 {
-    public:
-        dskDirectIP();
+public:
+    dskDirectIP();
 
-    private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
-
-
 
 #endif // !dskDIRECTIP_H_INCLUDED

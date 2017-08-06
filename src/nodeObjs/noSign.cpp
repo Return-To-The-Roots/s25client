@@ -30,9 +30,7 @@
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
  */
-noSign::noSign(const MapPoint pos,
-               const unsigned char type,
-               const unsigned char quantity)
+noSign::noSign(const MapPoint pos, const unsigned char type, const unsigned char quantity)
     : noDisappearingEnvObject(pos, 8500, 500), type(type), quantity(quantity)
 {
 }
@@ -45,9 +43,8 @@ void noSign::Serialize_noSign(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(quantity);
 }
 
-noSign::noSign(SerializedGameData& sgd, const unsigned obj_id) : noDisappearingEnvObject(sgd, obj_id),
-    type(sgd.PopUnsignedChar()),
-    quantity(sgd.PopUnsignedChar())
+noSign::noSign(SerializedGameData& sgd, const unsigned obj_id)
+    : noDisappearingEnvObject(sgd, obj_id), type(sgd.PopUnsignedChar()), quantity(sgd.PopUnsignedChar())
 {
 }
 

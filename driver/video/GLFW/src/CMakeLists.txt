@@ -3,12 +3,9 @@ IF (${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${PLATFORM_ARCH} STREQUAL "i386")
 	
 	IF (GLFW_LIBRARY)
 		FIND_PACKAGE(Boost 1.55.0 REQUIRED)
-		INCLUDE_DIRECTORIES(../../../src ${Boost_INCLUDE_DIR})
+		INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
-		INCLUDE(AddFileDependencies)
-		ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/build_version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
-
-		ADD_LIBRARY(videoGLFW SHARED GLFW.cpp GLFW.h .${PROJECT_SOURCE_DIR}/build_version.cpp ../../../src/DriverInterface.cpp)
+		ADD_LIBRARY(videoGLFW SHARED GLFW.cpp GLFW.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 		ADD_DEPENDENCIES(videoGLFW updateversion)	
 		TARGET_LINK_LIBRARIES(videoGLFW videodrv ${GLFW_LIBRARY})
 	

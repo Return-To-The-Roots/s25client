@@ -26,14 +26,14 @@ struct ScreenResizeEvent;
 /// Desktopklasse für Spielmenü-Haupthintergrundflächen.
 class Desktop : public Window
 {
-    public:
-        Desktop(glArchivItem_Bitmap* background);
-        void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
+public:
+    Desktop(glArchivItem_Bitmap* background);
+    void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
 
-    protected:
-        void Draw_() override;
+protected:
+    void Draw_() override;
 
-        glArchivItem_Bitmap* background;
+    glArchivItem_Bitmap* background;
 };
 
 #endif // !DESKTOP_H_INCLUDED

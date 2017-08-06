@@ -27,22 +27,18 @@
  */
 class AddonMoreAnimals : public AddonList
 {
-    public:
-        AddonMoreAnimals() : AddonList(AddonId::MORE_ANIMALS,
-                                               ADDONGROUP_ECONOMY,
-                                               _("More trees spawn animals"),
-                                               _("Adjust the fraction of trees that spawn animals."),
-                                               0
-                                              )
-        {
-            addOption(_("default"));
-            addOption(_("+50%"));
-            addOption(_("+100%"));
-            addOption(_("+200%"));
-			addOption(_("+500%"));
-            addOption(_("+1000%"));
-        }
+public:
+    AddonMoreAnimals()
+        : AddonList(AddonId::MORE_ANIMALS, ADDONGROUP_ECONOMY, _("More trees spawn animals"),
+                    _("Adjust the fraction of trees that spawn animals."), 0)
+    {
+        addOption(_("default"));
+        addOption(_("+50%"));
+        addOption(_("+100%"));
+        addOption(_("+200%"));
+        addOption(_("+500%"));
+        addOption(_("+1000%"));
+    }
 };
 
 #endif // !ADDONREFUNDMATERIALS_H_INCLUDED
-

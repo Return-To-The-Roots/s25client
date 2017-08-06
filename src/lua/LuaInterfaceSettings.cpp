@@ -18,15 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "LuaInterfaceSettings.h"
 #include "GameServerInterface.h"
-#include "LuaServerPlayer.h"
 #include "GlobalGameSettings.h"
-#include "lua/LuaHelpers.h"
-#include "gameTypes/GameSettingTypes.h"
+#include "LuaServerPlayer.h"
 #include "addons/Addon.h"
 #include "addons/const_addons.h"
+#include "lua/LuaHelpers.h"
+#include "gameTypes/GameSettingTypes.h"
 #include "libutil/src/Log.h"
 
-LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer): gameServer_(gameServer)
+LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer) : gameServer_(gameServer)
 {
     Register(lua);
     LuaServerPlayer::Register(lua);
@@ -34,18 +34,19 @@ LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer): gam
 }
 
 LuaInterfaceSettings::~LuaInterfaceSettings()
-{}
+{
+}
 
 void LuaInterfaceSettings::Register(kaguya::State& state)
 {
-    state["RTTRSettings"].setClass(kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
+    state["RTTRSettings"].setClass(
+      kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
         .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetPlayerCount)
         .addFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
         .addOverloadedFunctions("SetAddon", &LuaInterfaceSettings::SetAddon, &LuaInterfaceSettings::SetBoolAddon)
         .addFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
         .addFunction("ResetGameSettings", &LuaInterfaceSettings::ResetGameSettings)
-        .addFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
-    );
+        .addFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings));
 
     state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
 
@@ -132,7 +133,7 @@ void LuaInterfaceSettings::SetGameSettings(const kaguya::LuaTable& settings)
 {
     RTTR_Assert(gameServer_.IsRunning());
     GlobalGameSettings ggs = gameServer_.GetGGS();
-    std::vector<std::string>keys = settings.keys<std::string>();
+    std::vector<std::string> keys = settings.keys<std::string>();
 
     if(std::find(keys.begin(), keys.end(), "speed") != keys.end())
     {
@@ -227,7 +228,7 @@ void LuaInterfaceSettings::EventPlayerReady(unsigned playerIdx)
         func.call<void>(playerIdx);
 }
 
-bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool defaultVal/* = false*/)
+bool LuaInterfaceSettings::IsChangeAllowed(const std::string& name, const bool defaultVal /* = false*/)
 {
     kaguya::LuaRef cfg = GetAllowedChanges();
     if(cfg.isNilref())

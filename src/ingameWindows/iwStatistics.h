@@ -28,28 +28,26 @@ class GameWorldViewer;
 /// Fenster mit den Statistiken.
 class iwStatistics : public IngameWindow
 {
+public:
+    iwStatistics(const GameWorldViewer& gwv);
+    ~iwStatistics() override;
 
-    public:
+private:
+    const GameWorldViewer& gwv;
+    StatisticType currentView;
+    StatisticTime currentTime;
+    ctrlText* headline;
+    ctrlText* maxValue;
+    ctrlText* minValue;
+    std::vector<ctrlText*> timeAnnotations;
+    std::vector<bool> activePlayers;
+    unsigned numPlayingPlayers;
 
-        iwStatistics(const GameWorldViewer& gwv);
-        ~iwStatistics() override;
-
-    private:
-        const GameWorldViewer& gwv;
-        StatisticType currentView;
-        StatisticTime currentTime;
-        ctrlText* headline;
-        ctrlText* maxValue;
-        ctrlText* minValue;
-        std::vector<ctrlText*> timeAnnotations;
-        std::vector<bool> activePlayers;
-        unsigned numPlayingPlayers;
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_PaintAfter() override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
-        void DrawStatistic(StatisticType type);
-        void DrawAxis();
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_PaintAfter() override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
+    void DrawStatistic(StatisticType type);
+    void DrawAxis();
 };
 
 #endif // !iwSTATISTICS_H_INCLUDED

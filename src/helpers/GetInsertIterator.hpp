@@ -20,29 +20,23 @@
 
 #include "helpers/traits.h"
 
-namespace helpers{
+namespace helpers {
 
-    /// Returns the most efficient insert operator defining its type as "iterator"
-    template<class T, bool T_hasPushBack = has_member_function_push_back<void (T::*)(const typename T::value_type&)>::value>
-    struct GetInsertIterator
-    {
-        typedef std::back_insert_iterator<T> iterator;
-        static iterator get(T& collection)
-        {
-            return iterator(collection);
-        }
-    };
+/// Returns the most efficient insert operator defining its type as "iterator"
+template<class T, bool T_hasPushBack = has_member_function_push_back<void (T::*)(const typename T::value_type&)>::value>
+struct GetInsertIterator
+{
+    typedef std::back_insert_iterator<T> iterator;
+    static iterator get(T& collection) { return iterator(collection); }
+};
 
-    template<class T>
-    struct GetInsertIterator<T, false>
-    {
-        typedef std::insert_iterator<T> iterator;
-        static iterator get(T& collection)
-        {
-            return iterator(collection, collection.end());
-        }
-    };
+template<class T>
+struct GetInsertIterator<T, false>
+{
+    typedef std::insert_iterator<T> iterator;
+    static iterator get(T& collection) { return iterator(collection, collection.end()); }
+};
 
-}
+} // namespace helpers
 
 #endif // GetInsertIterator_h__

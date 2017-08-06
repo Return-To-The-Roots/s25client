@@ -20,7 +20,7 @@
 #include "SerializedGameData.h"
 #include <boost/foreach.hpp>
 
-TradePath::TradePath(SerializedGameData& sgd): start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
+TradePath::TradePath(SerializedGameData& sgd) : start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
 {
     route.resize(sgd.PopUnsignedInt());
     BOOST_FOREACH(Direction& dir, route)

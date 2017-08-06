@@ -25,17 +25,16 @@ class GameInterface;
 
 class iwRoadWindow : public IngameWindow
 {
-    private:
-        GameInterface& gi;
-        Point<unsigned short> mousePosAtOpen_;
+private:
+    GameInterface& gi;
+    Point<unsigned short> mousePosAtOpen_;
 
-    public:
-        iwRoadWindow(GameInterface& gi, bool flagpossible, const DrawPoint& mousePos);
-        ~iwRoadWindow() override;
+public:
+    iwRoadWindow(GameInterface& gi, bool flagpossible, const DrawPoint& mousePos);
+    ~iwRoadWindow() override;
 
-    private:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwROADWINDOW_H_INCLUDED

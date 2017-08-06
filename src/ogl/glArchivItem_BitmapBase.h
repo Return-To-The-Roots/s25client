@@ -19,41 +19,43 @@
 
 #pragma once
 
-#include "ArchivItem_Bitmap.h"
 #include "DrawPoint.h"
+#include "libsiedler2/src/ArchivItem_Bitmap.h"
 
-class glArchivItem_BitmapBase: public virtual libsiedler2::ArchivItem_BitmapBase
+class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase
 {
 public:
     glArchivItem_BitmapBase();
     glArchivItem_BitmapBase(const glArchivItem_BitmapBase& other);
     ~glArchivItem_BitmapBase() override;
 
-    glArchivItem_BitmapBase& operator=(const glArchivItem_BitmapBase& item);
-
     /// liefert das GL-Textur-Handle.
-    unsigned int GetTexture();
+    unsigned GetTexture();
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
     virtual void DeleteTexture();
     /// Setzt den Texturfilter auf einen bestimmten Wert.
-    virtual void setFilter(unsigned int filter);
+    virtual void setFilter(unsigned filter);
 
     /// Return the "Null point"
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
     Extent GetSize() const { return Extent(getWidth(), getHeight()); }
+    Extent GetTexSize() const;
 
 private:
     /// Erzeugt die Textur.
     void GenerateTexture();
 
-    unsigned int texture; /// Das GL-Textur-Handle
-    unsigned int filter;  /// Der aktuell gewählte Texturfilter
+    unsigned texture;    /// Das GL-Textur-Handle
+    Extent textureSize_; /// The size of the texture. Only valid when texture exists
+    unsigned filter;     /// Der aktuell gewählte Texturfilter
 
 protected:
     /// Returns the internal texure format
     int GetInternalFormat() const;
     /// Fill a just generated texture (glTexImage2D calls)
     virtual void FillTexture() = 0;
+    /// Calculate the actual texture size
+    virtual Extent CalcTextureSize() const = 0;
     /// Returns the currently set texture or 0 if none created
     unsigned GetTexNoCreate() { return texture; }
 };

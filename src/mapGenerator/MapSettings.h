@@ -28,27 +28,21 @@
 struct MapSettings
 {
     MapSettings()
-        : players(2),
-          size(MapExtent::all(256)),
-          ratioGold(9),
-          ratioIron(36),
-          ratioCoal(40),
-          ratioGranite(15),
-          minPlayerRadius(0.31),
-          maxPlayerRadius(0.51),
-          type(LT_GREENLAND),
-          style(MapStyle::Random) {}
-    
+        : players(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), minPlayerRadius(0.31),
+          maxPlayerRadius(0.51), type(LT_GREENLAND), style(MapStyle::Random)
+    {
+    }
+
     /**
      * Number of players.
      */
     unsigned players;
-    
+
     /**
      * Map size in vertices.
      */
     MapExtent size;
-    
+
     /**
      * Ratio of gold distributed as resources on mountain terrain.
      */
@@ -68,22 +62,22 @@ struct MapSettings
      * Ratio of granite distributed as resources on mountain terrain.
      */
     unsigned short ratioGranite;
-    
+
     /**
      * Minimum radius from the center of the map for player placement.
      */
     double minPlayerRadius;
-    
+
     /**
      * Maximum radius from the center of the map for player placement.
      */
     double maxPlayerRadius;
-    
+
     /**
      * Landscape type used for map generation.
      */
     LandscapeType type;
-    
+
     /**
      * Style of the map.
      */

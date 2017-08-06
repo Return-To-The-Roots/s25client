@@ -24,7 +24,9 @@ class GamePlayer;
 class GameCommandFactory;
 
 // fwd decl
-namespace gc{ class GameCommand; }
+namespace gc {
+class GameCommand;
+}
 
 void intrusive_ptr_add_ref(gc::GameCommand* x);
 void intrusive_ptr_release(gc::GameCommand* x);
@@ -33,103 +35,107 @@ void intrusive_ptr_release(gc::GameCommand* x);
 
 // Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
 // Only factory classes should be in here
-#define GC_FRIEND_DECL friend class GameCommand;         \
-                       friend class ::GameCommandFactory
+#define GC_FRIEND_DECL        \
+    friend class GameCommand; \
+    friend class ::GameCommandFactory
 
-namespace gc
+namespace gc {
+
+enum Type
 {
+    NOTSEND = 0,
+    NOTHING,
+    SETFLAG,
+    DESTROYFLAG,
+    BUILDROAD,
+    DESTROYROAD,
+    CHANGEDISTRIBUTION,
+    CHANGEBUILDORDER,
+    SETBUILDINGSITE,
+    DESTROYBUILDING,
+    CHANGETRANSPORT,
+    CHANGEMILITARY,
+    CHANGETOOLS,
+    CALLGEOLOGIST,
+    CALLSCOUT,
+    ATTACK,
+    UNUSED,
+    SET_COINS_ALLOWED,
+    SET_PRODUCTION_ENABLED,
+    SET_INVENTORY_SETTING,
+    SET_ALL_INVENTORY_SETTINGS,
+    CHANGERESERVE,
+    SUGGESTPACT,
+    ACCEPTPACT,
+    CANCELPACT,
+    TOGGLESHIPYARDMODE,
+    STARTEXPEDITION,
+    STARTATTACKINGEXPEDITION,
+    EXPEDITION_COMMAND,
+    SEAATTACK,
+    STARTEXPLORATIONEXPEDITION,
+    TRADEOVERLAND,
+    SURRENDER,
+    CHEAT_ARMAGEDDON,
+    DESTROYALL,
+    UPGRADEROAD,
+    SENDSOLDIERSHOME,
+    ORDERNEWSOLDIERS,
+    NOTIFYALLIESOFLOCATION
+};
 
-    enum Type
+class GameCommand
+{
+    /// Type of this command
+    Type gst;
+    unsigned refCounter_;
+    friend void ::intrusive_ptr_add_ref(GameCommand* x);
+    friend void ::intrusive_ptr_release(GameCommand* x);
+
+public:
+    GameCommand(const GameCommand& obj) : gst(obj.gst), refCounter_(0) // Do not copy refCounter!
     {
-        NOTSEND = 0,
-        NOTHING,
-        SETFLAG,
-        DESTROYFLAG,
-        BUILDROAD,
-        DESTROYROAD,
-        CHANGEDISTRIBUTION,
-        CHANGEBUILDORDER,
-        SETBUILDINGSITE,
-        DESTROYBUILDING,
-        CHANGETRANSPORT,
-        CHANGEMILITARY,
-        CHANGETOOLS,
-        CALLGEOLOGIST,
-        CALLSCOUT,
-        ATTACK,
-        UNUSED,
-        SET_COINS_ALLOWED,
-        SET_PRODUCTION_ENABLED,
-        SET_INVENTORY_SETTING,
-        SET_ALL_INVENTORY_SETTINGS,
-        CHANGERESERVE,
-        SUGGESTPACT,
-        ACCEPTPACT,
-        CANCELPACT,
-        TOGGLESHIPYARDMODE,
-        STARTEXPEDITION,
-        STARTATTACKINGEXPEDITION,
-        EXPEDITION_COMMAND,
-        SEAATTACK,
-        STARTEXPLORATIONEXPEDITION,
-        TRADEOVERLAND,
-        SURRENDER,
-        CHEAT_ARMAGEDDON,
-        DESTROYALL,
-        UPGRADEROAD,
-        SENDSOLDIERSHOME,
-        ORDERNEWSOLDIERS,
-        NOTIFYALLIESOFLOCATION
-    };
+    }
+    virtual ~GameCommand() {}
 
-    class GameCommand
+    GameCommand& operator=(const GameCommand& obj)
     {
-        /// Type of this command
-        Type gst;
-        unsigned refCounter_;
-        friend void ::intrusive_ptr_add_ref(GameCommand* x);
-        friend void ::intrusive_ptr_release(GameCommand* x);
-    public:
-        GameCommand(const GameCommand& obj): gst(obj.gst), refCounter_(0) // Do not copy refCounter!
-        {}
-        virtual ~GameCommand() {}
-
-        GameCommand& operator=(const GameCommand& obj)
-        {
-            if(this == &obj)
-                return *this;
-            gst = obj.gst;
-            // Do not copy or reset refCounter!
+        if(this == &obj)
             return *this;
-        }
+        gst = obj.gst;
+        // Do not copy or reset refCounter!
+        return *this;
+    }
 
-        /// Builds a GameCommand depending on Type
-        static GameCommand* Deserialize(const Type gst, Serializer& ser);
+    /// Builds a GameCommand depending on Type
+    static GameCommand* Deserialize(const Type gst, Serializer& ser);
 
-        /// Returns the Type
-        Type GetType() const { return gst; }
-        /// Serializes this GameCommand
-        virtual void Serialize(Serializer& ser) const = 0;
+    /// Returns the Type
+    Type GetType() const { return gst; }
+    /// Serializes this GameCommand
+    virtual void Serialize(Serializer& ser) const = 0;
 
-        /// Execute this GameCommand
-        virtual void Execute(GameWorldGame& gwg, unsigned char playerId) = 0;
+    /// Execute this GameCommand
+    virtual void Execute(GameWorldGame& gwg, unsigned char playerId) = 0;
 
-    protected:
-        GameCommand(const Type gst) : gst(gst), refCounter_(0) {}
-    };
+protected:
+    GameCommand(const Type gst) : gst(gst), refCounter_(0) {}
+};
 
-    // Use this for safely using Pointers to GameCommands
-    typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
+// Use this for safely using Pointers to GameCommands
+typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
 
-} // ns gc
+} // namespace gc
 
-inline void intrusive_ptr_add_ref(gc::GameCommand* x){
+inline void intrusive_ptr_add_ref(gc::GameCommand* x)
+{
     ++x->refCounter_;
 }
 
-inline void intrusive_ptr_release(gc::GameCommand* x){
+inline void intrusive_ptr_release(gc::GameCommand* x)
+{
     RTTR_Assert(x->refCounter_);
-    if(--x->refCounter_ == 0) 
+    if(--x->refCounter_ == 0)
         delete x;
 }
 

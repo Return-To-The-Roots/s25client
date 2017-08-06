@@ -28,4 +28,3 @@ noNothing::noNothing() : noBase(NOP_NOTHING)
 void noNothing::Draw(DrawPoint /*drawPt*/)
 {
 }
-

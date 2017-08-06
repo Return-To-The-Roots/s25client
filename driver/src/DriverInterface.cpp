@@ -19,9 +19,9 @@
 #include "DriverInterfaceVersion.h"
 
 #ifdef _WIN32
-#   define DRIVERDLLAPI extern "C" __declspec(dllexport)
+#define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else
-#   define DRIVERDLLAPI extern "C"
+#define DRIVERDLLAPI extern "C"
 #endif // !_WIN32
 
 /**
@@ -29,7 +29,7 @@
  *
  *  @return liefert die API-Version des Treibers
  */
-DRIVERDLLAPI unsigned int GetDriverAPIVersion(void)
+DRIVERDLLAPI unsigned GetDriverAPIVersion(void)
 {
     return DRIVERAPIVERSION;
 }

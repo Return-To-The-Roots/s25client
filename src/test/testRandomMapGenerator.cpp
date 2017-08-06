@@ -16,10 +16,10 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "mapGenerator/RandomMapGenerator.h"
-#include "mapGenerator/RandomConfig.h"
-#include "gameData/MaxPlayers.h"
 #include "PointOutput.h"
+#include "mapGenerator/RandomConfig.h"
+#include "mapGenerator/RandomMapGenerator.h"
+#include "gameData/MaxPlayers.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     Map* map = generator.Create(settings);
 
     BOOST_REQUIRE_EQUAL(map->size, settings.size);
-    
+
     delete map;
 }
 
@@ -66,24 +66,23 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
     Map* map = generator.Create(settings);
     BOOST_REQUIRE_EQUAL(map->players, settings.players);
 
-    for (unsigned i = 0; i < settings.players; i++)
+    for(unsigned i = 0; i < settings.players; i++)
     {
         Point<uint16_t> p = map->positions[i];
         BOOST_REQUIRE_NE(p.x, 0xFF);
         BOOST_REQUIRE_NE(p.y, 0xFF);
-        
+
         BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.size.x + p.x], i);
         BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.size.x + p.x], libsiedler2::OI_HeadquarterMask);
     }
 
-    for (unsigned i = settings.players; i < MAX_PLAYERS; i++)
+    for(unsigned i = settings.players; i < MAX_PLAYERS; i++)
     {
         BOOST_REQUIRE_EQUAL(map->positions[i].x, 0xFF);
         BOOST_REQUIRE_EQUAL(map->positions[i].y, 0xFF);
     }
-    
+
     delete map;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

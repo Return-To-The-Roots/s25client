@@ -24,7 +24,7 @@
 #include "helpers/containerUtils.h"
 #include "libutil/src/colors.h"
 
-void Addon::hideGui(Window* window, unsigned int id) const
+void Addon::hideGui(Window* window, unsigned id) const
 {
     ctrlText* text = window->GetCtrl<ctrlText>(id);
     if(text)
@@ -35,7 +35,7 @@ void Addon::hideGui(Window* window, unsigned int id) const
         button->SetVisible(false);
 }
 
-void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  /*readonly*/, unsigned int  /*status*/) const //-V669
+void Addon::createGui(Window* window, unsigned id, unsigned short& y, bool /*readonly*/, unsigned /*status*/) const //-V669
 {
     DrawPoint btPos(20, y), txtPos(52, y + 4);
     ctrlButton* button = window->GetCtrl<ctrlButton>(id + 1);
@@ -51,10 +51,9 @@ void Addon::createGui(Window* window, unsigned int id, unsigned short& y, bool  
 
     text->SetVisible(true);
     text->SetPos(txtPos);
-
 }
 
-unsigned int Addon::getGuiStatus(Window* /*window*/, unsigned int /*id*/, bool& failed) const
+unsigned Addon::getGuiStatus(Window* /*window*/, unsigned /*id*/, bool& failed) const
 {
     failed = false;
     return getDefaultStatus();

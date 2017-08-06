@@ -18,25 +18,24 @@
 #include "defines.h" // IWYU pragma: keep
 #include "notifications/NotificationManager.h"
 #include "notifications/notifications.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/bind.hpp>
-#include <vector>
+#include <boost/test/unit_test.hpp>
 #include <string>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(NotificationsTestSuite)
 
-struct TestNote{
+struct TestNote
+{
     ENABLE_NOTIFICATION(TestNote)
 
-    TestNote(const std::string& text): text(text){}
+    TestNote(const std::string& text) : text(text) {}
     std::string text;
 };
 
-struct PushToVec{
-    static void push(std::vector<TestNote>& vec, const TestNote& note)
-    {
-        vec.push_back(note);
-    }
+struct PushToVec
+{
+    static void push(std::vector<TestNote>& vec, const TestNote& note) { vec.push_back(note); }
 };
 
 BOOST_AUTO_TEST_CASE(SubscribeAndNotify)
@@ -71,7 +70,7 @@ BOOST_AUTO_TEST_CASE(Unsubscribe)
         mgr.publish(TestNote("Test"));
         BOOST_REQUIRE_EQUAL(notes1.size(), 1u);
         BOOST_REQUIRE_EQUAL(notes2.size(), 1u);
-        //subscribtion2 goes out of scope and should be unregistred...
+        // subscribtion2 goes out of scope and should be unregistred...
     }
     // ... but subscription1 should still be active
     mgr.publish(TestNote("Test"));

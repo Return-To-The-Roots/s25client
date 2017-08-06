@@ -20,9 +20,8 @@
 #pragma once
 
 /// Definition des GetDriverAPIVersion-Zeigers
-typedef unsigned int (*PDRIVER_GETDRIVERAPIVERSION)();
+typedef unsigned (*PDRIVER_GETDRIVERAPIVERSION)();
 /// Definition des GetDriverName
 typedef const char* (*PDRIVER_GETDRIVERNAME)();
-
 
 #endif // !INTERFACE_H_INCLUDED

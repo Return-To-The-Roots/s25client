@@ -18,14 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "BurnedWarehouse.h"
 
-#include "SerializedGameData.h"
 #include "EventManager.h"
-#include "Random.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
+#include "Random.h"
+#include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "world/GameWorldGame.h"
 
 /// Anzahl der Rausgeh-Etappen
 const unsigned GO_OUT_PHASES = 10;
@@ -39,26 +39,22 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
     GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
 }
 
-BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    player(sgd.PopUnsignedChar()),
-    go_out_phase(sgd.PopUnsignedInt())
+BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
     for(PeopleArray::iterator it = people.begin(); it != people.end(); ++it)
         *it = sgd.PopUnsignedInt();
 }
 
-
 BurnedWarehouse::~BurnedWarehouse()
 {
 }
-
 
 void BurnedWarehouse::Destroy()
 {
     gwg->RemoveFigure(this, pos);
     noCoordBase::Destroy();
 }
-
 
 void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
 {
@@ -71,8 +67,7 @@ void BurnedWarehouse::Serialize_BurnedWarehouse(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(*it);
 }
 
-
-void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
+void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
@@ -93,7 +88,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
         // Das ist traurig, dann muss die Titanic mit allen restlichen an Board leider untergehen
         GetEvMgr().AddToKillList(this);
         // restliche Leute von der Inventur abziehen
-        for(unsigned int i = 0; i < people.size(); ++i)
+        for(unsigned i = 0; i < people.size(); ++i)
             gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), people[i]);
 
         return;
@@ -103,7 +98,7 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
     {
         // Anzahl ausrechnen, die in dieser Runde rausgeht
         unsigned count;
-        if (go_out_phase + 1 >= GO_OUT_PHASES)
+        if(go_out_phase + 1 >= GO_OUT_PHASES)
             count = people[iJob]; // Take all on last round
         else
             count = people[iJob] / (GO_OUT_PHASES - go_out_phase);
@@ -151,12 +146,9 @@ void BurnedWarehouse::HandleEvent(const unsigned int  /*id*/)
         // Prüfen, ob alle evakuiert wurden und keiner mehr an Board ist
         for(PeopleArray::const_iterator it = people.begin(); it != people.end(); ++it)
             RTTR_Assert(*it == 0);
-    }
-    else
+    } else
     {
         // Nächstes Event anmelden
         GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
     }
-
 }
-

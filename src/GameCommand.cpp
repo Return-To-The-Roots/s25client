@@ -22,12 +22,12 @@
 
 #include <stdexcept>
 
-namespace gc{
+namespace gc {
 
-    GameCommand* GameCommand::Deserialize(const Type gst, Serializer& ser)
+GameCommand* GameCommand::Deserialize(const Type gst, Serializer& ser)
+{
+    switch(gst)
     {
-        switch(gst)
-        {
         case SETFLAG: return new SetFlag(ser);
         case DESTROYFLAG: return new DestroyFlag(ser);
         case BUILDROAD: return new BuildRoad(ser);
@@ -64,8 +64,8 @@ namespace gc{
         case SENDSOLDIERSHOME: return new SendSoldiersHome(ser);
         case NOTIFYALLIESOFLOCATION: return new NotifyAlliesOfLocation(ser);
         default: break;
-        }
-
-        throw std::logic_error("Invalid GC Type: " + helpers::toString(gst));
     }
+
+    throw std::logic_error("Invalid GC Type: " + helpers::toString(gst));
+}
 } // namespace gc

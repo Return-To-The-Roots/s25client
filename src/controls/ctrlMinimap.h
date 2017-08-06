@@ -25,46 +25,37 @@ class Minimap;
 /// Übersichtskarte (MapPreview)
 class ctrlMinimap : public Window
 {
-    public:
+public:
+    ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding, const Extent& mapSize);
 
-        ctrlMinimap( Window* parent,
-                     const unsigned int id,
-                     const DrawPoint& pos,
-                     const Extent& size,
-                     const Extent& padding,
-                     const Extent& mapSize);
+    Extent GetCurMapSize() const { return curMapSize; }
 
-        Extent GetCurMapSize() const { return curMapSize; }
+    /// Get area the map covers (relative to control origin)
+    Rect GetMapArea() const;
+    Rect GetBoundaryRect() const override;
+    Rect GetMapDrawArea() const;
 
-        /// Get area the map covers (relative to control origin)
-        Rect GetMapArea() const;
-        Rect GetBoundaryRect() const override;
-        Rect GetMapDrawArea() const;
+    /// Größe ändern
+    void Resize(const Extent& size) override;
+    void SetMapSize(const Extent& newMapSize);
 
-        /// Größe ändern
-        void Resize(const Extent& size) override;
-        void SetMapSize(const Extent& newMapSize);
+    /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
+    DrawPoint CalcMapCoord(MapPoint pt) const;
 
-        /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
-        DrawPoint CalcMapCoord(MapPoint pt) const;
+    /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box)
+    void RemoveBoundingBox(const Extent& minSize);
 
-        /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box)
-        void RemoveBoundingBox(const Extent& minSize);
+protected:
+    /// Zeichnet die Minimap an sich
+    void DrawMap(Minimap& map);
 
-    protected:
-
-        /// Zeichnet die Minimap an sich
-        void DrawMap(Minimap& map);
-
-        /// Real size of the minimap (gets scaled with retained aspect ratio)
-        Extent curMapSize;
-        /// Abstand der Minimap vom Rand des Controls
-        Extent padding;
-        /// Requested size of the drawn map
-        Extent mapSize;
-        bool useBoundingBox;
+    /// Real size of the minimap (gets scaled with retained aspect ratio)
+    Extent curMapSize;
+    /// Abstand der Minimap vom Rand des Controls
+    Extent padding;
+    /// Requested size of the drawn map
+    Extent mapSize;
+    bool useBoundingBox;
 };
 
-
 #endif // !MapPreview_H_
-

@@ -27,16 +27,15 @@ class GameWorldViewer;
 /// Diplomatiefenster: Übersicht über alle Spieler im Spiel und Schmieden von Bündnissen
 class iwDiplomacy : public IngameWindow
 {
-    public:
+public:
+    iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
 
-        iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);
-
-    private:
-        const GameWorldViewer& gwv;
-        GameCommandFactory& gcFactory;
-        void Msg_PaintBefore() override;
-        void Msg_PaintAfter() override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    const GameWorldViewer& gwv;
+    GameCommandFactory& gcFactory;
+    void Msg_PaintBefore() override;
+    void Msg_PaintAfter() override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 /// Kleines Fenster, über das einem Spieler ein neues Bündnis angeboten werden kann
@@ -45,10 +44,11 @@ class iwSuggestPact : public IngameWindow
     const PactType pt;
     const GamePlayer& player;
     GameCommandFactory& gcFactory;
+
 public:
     iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory);
 
-    void Msg_ButtonClick(const unsigned int ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwBUILDORDER_H_INCLUDED

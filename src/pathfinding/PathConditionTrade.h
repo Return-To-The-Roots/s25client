@@ -7,7 +7,7 @@
 // the Free Software Foundation,  either version 2 of the License,  or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -20,16 +20,16 @@
 #ifndef PathConditionTrade_h__
 #define PathConditionTrade_h__
 
+#include "GamePlayer.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "world/GameWorldBase.h"
-#include "GamePlayer.h"
 #include <boost/config.hpp>
 
-struct PathConditionTrade: public PathConditionHuman
+struct PathConditionTrade : public PathConditionHuman
 {
     const GamePlayer& player;
 
-    PathConditionTrade(const GameWorldBase& gwb, const unsigned char player): PathConditionHuman(gwb), player(gwb.GetPlayer(player)){}
+    PathConditionTrade(const GameWorldBase& gwb, const unsigned char player) : PathConditionHuman(gwb), player(gwb.GetPlayer(player)) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const

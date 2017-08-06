@@ -20,11 +20,11 @@
 
 /// Define this to 1 if you want assertions enabled
 #ifndef RTTR_ENABLE_ASSERTS
-#   ifdef NDEBUG
-#       define RTTR_ENABLE_ASSERTS 0
-#   else
-#       define RTTR_ENABLE_ASSERTS 1
-#   endif
+#ifdef NDEBUG
+#define RTTR_ENABLE_ASSERTS 0
+#else
+#define RTTR_ENABLE_ASSERTS 1
+#endif
 #endif // !RTTR_ENABLE_ASSERTS
 
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function);
@@ -40,20 +40,22 @@ extern bool RTTR_AssertEnableBreak;
     - Use sizeof for disabled assert to avoid unused value warnings and actual code generation
  */
 #if RTTR_ENABLE_ASSERTS
-#   define RTTR_Assert(cond)                                                       \
-		do{                                                                        \
-			if(!(cond))                                                            \
-			{                                                                      \
-				if(RTTR_IsBreakOnAssertFailureEnabled())                           \
-                    RTTR_BREAKPOINT;                                               \
-				RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME); \
-			}                                                                      \
-		}while(false)
+#define RTTR_Assert(cond)                                                      \
+    do                                                                         \
+    {                                                                          \
+        if(!(cond))                                                            \
+        {                                                                      \
+            if(RTTR_IsBreakOnAssertFailureEnabled())                           \
+                RTTR_BREAKPOINT;                                               \
+            RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME); \
+        }                                                                      \
+    } while(false)
 #else
-#   define RTTR_Assert(cond)    \
-        do{                     \
-            (void)sizeof(cond); \
-        } while(false)
+#define RTTR_Assert(cond)   \
+    do                      \
+    {                       \
+        (void)sizeof(cond); \
+    } while(false)
 #endif
 
 #endif // RTTRAssert_h__

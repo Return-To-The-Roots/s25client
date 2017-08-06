@@ -23,13 +23,11 @@
 
 class iwSurrender : public IngameWindow
 {
-    public:
+public:
+    iwSurrender();
 
-        iwSurrender();
-
-    private:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwSURRENDER_H_INCLUDED

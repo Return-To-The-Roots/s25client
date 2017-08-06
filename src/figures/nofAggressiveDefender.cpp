@@ -17,16 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofAggressiveDefender.h"
-#include "nofAttacker.h"
-#include "nofPassiveSoldier.h"
 #include "GameClient.h"
 #include "Random.h"
 #include "SerializedGameData.h"
-#include "world/GameWorldGame.h"
 #include "addons/const_addons.h"
+#include "nofAttacker.h"
+#include "nofPassiveSoldier.h"
+#include "world/GameWorldGame.h"
 
-nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player,
-        nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker)
+nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,
+                                             const unsigned char rank, nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
       attacked_goal(attacker->GetAttackedGoal())
 {
@@ -35,8 +35,7 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
 }
 
 nofAggressiveDefender::nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
-    : nofActiveSoldier(*other, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker),
-      attacked_goal(attacker->GetAttackedGoal())
+    : nofActiveSoldier(*other, STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR), attacker(attacker), attacked_goal(attacker->GetAttackedGoal())
 {
     // Angegriffenem Gebäude Bescheid sagen
     attacked_goal->LinkAggressiveDefender(this);
@@ -70,8 +69,7 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
     {
         attacker = sgd.PopObject<nofAttacker>(GOT_NOF_ATTACKER);
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
-    }
-    else
+    } else
     {
         attacker = NULL;
         attacked_goal = NULL;
@@ -84,10 +82,9 @@ void nofAggressiveDefender::Walked()
     switch(state)
     {
         default: nofActiveSoldier::Walked(); return;
-        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR:
-        {
-            MissAggressiveDefendingWalk();
-        } return;
+        case STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR: { MissAggressiveDefendingWalk();
+        }
+            return;
     }
 }
 
@@ -123,9 +120,9 @@ void nofAggressiveDefender::CancelAtAttackedBld()
 /// Wenn ein Kampf gewonnen wurde
 void nofAggressiveDefender::WonFighting()
 {
-	//addon BattlefieldPromotion active? -> increase rank!
-	if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
-		IncreaseRank();
+    // addon BattlefieldPromotion active? -> increase rank!
+    if(gwg->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+        IncreaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!building)
@@ -156,7 +153,6 @@ void nofAggressiveDefender::LostFighting()
     InformTargetsAboutCancelling();
 }
 
-
 void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 {
     RTTR_Assert(!attacker);
@@ -177,8 +173,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     {
         // zum Angreifer gehen und mit ihm kämpfen
         MissAggressiveDefendingWalk();
-    }
-    else
+    } else
     {
         // keiner will mehr mit mir kämpfen, dann geh ich halt wieder nach Hause
         ReturnHomeMissionAggressiveDefending();
@@ -197,10 +192,9 @@ void nofAggressiveDefender::AttackedGoalDestroyed()
 
 void nofAggressiveDefender::MissAggressiveDefendingContinueWalking()
 {
-    state =  STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
+    state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
     MissAggressiveDefendingWalk();
 }
-
 
 void nofAggressiveDefender::MissAggressiveDefendingWalk()
 {
@@ -241,7 +235,8 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     }
 
     // Look for enemies
-    if(FindEnemiesNearby()){
+    if(FindEnemiesNearby())
+    {
         // Enemy found -> abort, because nofActiveSoldier handles all things now
         // Note it is ok, if the enemy is our attacker.
         // If we win, we will either see, that the attacker is busy or be notified because he did
@@ -260,8 +255,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         // Look for new attacker
         CancelAtAttacker();
         MissionAggressiveDefendingLookForNewAggressor();
-    }
-    else
+    } else
     {
         // Continue walking towards him
         StartWalking(Direction(dir));
@@ -281,7 +275,6 @@ void nofAggressiveDefender::AttackerLost()
     RTTR_Assert(attacker);
     attacker = NULL;
 }
-
 
 void nofAggressiveDefender::NeedForHomeDefence()
 {
@@ -315,4 +308,3 @@ void nofAggressiveDefender::FreeFightEnded()
     // Continue with normal walking towards our goal
     state = STATE_AGGRESSIVEDEFENDING_WALKINGTOAGGRESSOR;
 }
-

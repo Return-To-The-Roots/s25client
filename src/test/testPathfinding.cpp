@@ -16,15 +16,15 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "WorldFixture.h"
 #include "CreateEmptyWorld.h"
+#include "WorldFixture.h"
+#include "test/PointOutput.h"
 #include "nodeObjs/noGranite.h"
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
-#include "test/PointOutput.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 #include <vector>
 
 using namespace boost::assign;
@@ -72,24 +72,12 @@ void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, Te
 {
     switch(Direction::Type(dir))
     {
-    case Direction::WEST:
-        world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t;
-        break;
-    case Direction::NORTHWEST:
-        world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t;
-        break;
-    case Direction::NORTHEAST:
-        world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHEAST)).t1 = t;
-        break;
-    case Direction::EAST:
-        world.GetNodeWriteable(pt).t2 = t;
-        break;
-    case Direction::SOUTHEAST:
-        world.GetNodeWriteable(pt).t1 = t;
-        break;
-    case Direction::SOUTHWEST:
-        world.GetNodeWriteable(world.GetNeighbour(pt, Direction::WEST)).t2 = t;
-        break;
+        case Direction::WEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t; break;
+        case Direction::NORTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t; break;
+        case Direction::NORTHEAST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHEAST)).t1 = t; break;
+        case Direction::EAST: world.GetNodeWriteable(pt).t2 = t; break;
+        case Direction::SOUTHEAST: world.GetNodeWriteable(pt).t1 = t; break;
+        case Direction::SOUTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::WEST)).t2 = t; break;
     }
 }
 
@@ -98,7 +86,8 @@ void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, Ter
     setRightTerrain(world, pt, Direction(dir.toUInt() + 6 - 1), t);
 }
 
-void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, TerrainType tWalkable, TerrainType tOther, bool bothTerrain, Direction dir)
+void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, TerrainType tWalkable, TerrainType tOther, bool bothTerrain,
+                       Direction dir)
 {
     // test cases 2-4: Everything covered in walkable terrain (white) and we want to walk 3 steps into a specified direction
     // after 1 step we encounter other terrain at both(2) or the left(3/4) side of the path
@@ -118,8 +107,8 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
     testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
     std::vector<TerrainType> friendlyTerrains;
-    friendlyTerrains += TT_DESERT, TT_MEADOW_FLOWERS, TT_MOUNTAIN1, TT_MOUNTAIN2, TT_MOUNTAIN3, TT_MOUNTAIN4, TT_SAVANNAH,
-        TT_MEADOW1, TT_MEADOW2, TT_MEADOW3, TT_STEPPE, TT_MOUNTAINMEADOW, TT_BUILDABLE_WATER, TT_BUILDABLE_MOUNTAIN;
+    friendlyTerrains += TT_DESERT, TT_MEADOW_FLOWERS, TT_MOUNTAIN1, TT_MOUNTAIN2, TT_MOUNTAIN3, TT_MOUNTAIN4, TT_SAVANNAH, TT_MEADOW1,
+      TT_MEADOW2, TT_MEADOW3, TT_STEPPE, TT_MOUNTAINMEADOW, TT_BUILDABLE_WATER, TT_BUILDABLE_MOUNTAIN;
 
     const MapPoint startPt(0, 6);
 
@@ -156,7 +145,8 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     BOOST_REQUIRE_EQUAL(length, 6u);
     BOOST_REQUIRE_EQUAL(route.size(), 6u);
     std::vector<Direction> expectedRoute;
-    expectedRoute += Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST, Direction::NORTHEAST, Direction::EAST, Direction::EAST;
+    expectedRoute += Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST, Direction::NORTHEAST, Direction::EAST,
+      Direction::EAST;
     BOOST_REQUIRE_EQUAL_COLLECTIONS(route.begin(), route.end(), expectedRoute.begin(), expectedRoute.end());
     // Inverse route
     BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route), INVALID_DIR);
@@ -287,7 +277,7 @@ BOOST_FIXTURE_TEST_CASE(BlockedPaths, WorldFixtureEmpty0P)
     BOOST_FOREACH(const MapPoint& pt, surroundingPts)
         world.SetNO(pt, new noGranite(GT_1, 1));
     std::vector<MapPoint> surroundingPts2;
-    for(unsigned i=0; i<12; i++)
+    for(unsigned i = 0; i < 12; i++)
         surroundingPts2.push_back(world.GetNeighbour2(startPt, i));
     BOOST_FOREACH(const MapPoint& pt, surroundingPts2)
         BOOST_REQUIRE_EQUAL(world.FindHumanPath(startPt, pt), INVALID_DIR);

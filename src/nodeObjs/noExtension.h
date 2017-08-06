@@ -25,28 +25,31 @@ class SerializedGameData;
 // Große Gebäude erstrecken sich über 4 Felder, die restlichen 3 werden mit dieser Klasse gefüllt
 class noExtension : public noBase
 {
-    public:
-        noExtension(noBase* const base) : noBase(NOP_EXTENSION), base(base) {}
-        noExtension(SerializedGameData& sgd, const unsigned obj_id);
-        ~noExtension() override;
+public:
+    noExtension(noBase* const base) : noBase(NOP_EXTENSION), base(base) {}
+    noExtension(SerializedGameData& sgd, const unsigned obj_id);
+    ~noExtension() override;
 
-        void Destroy() override { Destroy_noExtension(); }
-        noBase* GetBaseObject() const { return base; }
-        void Draw(DrawPoint /*drawPt*/) override {}
+    void Destroy() override { Destroy_noExtension(); }
+    noBase* GetBaseObject() const { return base; }
+    void Draw(DrawPoint /*drawPt*/) override {}
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noExtension(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noExtension(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noExtension(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_EXTENSION; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noExtension(sgd); }
 
-        BlockingManner GetBM() const override { return BlockingManner::Single; }
+    GO_Type GetGOT() const override { return GOT_EXTENSION; }
 
-    protected:
-        void Destroy_noExtension() { Destroy_noBase(); }
+    BlockingManner GetBM() const override { return BlockingManner::Single; }
 
-    private:
-        noBase* const base;
+protected:
+    void Destroy_noExtension() { Destroy_noBase(); }
+
+private:
+    noBase* const base;
 };
 
 #endif // !NOEXTENSION_H_INCLUDED

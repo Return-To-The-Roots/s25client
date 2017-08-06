@@ -27,52 +27,52 @@ class GameEvent;
 /// Kampf an einem Punkt zwischen 2 Soldaten, der erstgenannt ist immer der, der links steht
 class noFighting : public noBase
 {
-        /// die kämpfenden Soldaten
-        nofActiveSoldier* soldiers[2];
-        // Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
-        unsigned char turn;
-        /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
-        unsigned char defending_animation;
-        /// Event
-        GameEvent* current_ev;
-        /// Spieler des Soldaten, der gewonnen hat
-        unsigned char player_won;
+    /// die kämpfenden Soldaten
+    nofActiveSoldier* soldiers[2];
+    // Wer ist an der Reihe mit angreifen (2 = Beginn des Kampfes)
+    unsigned char turn;
+    /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
+    unsigned char defending_animation;
+    /// Event
+    GameEvent* current_ev;
+    /// Spieler des Soldaten, der gewonnen hat
+    unsigned char player_won;
 
-    private:
+private:
+    /// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
+    /// bereitet also alles für eine solche Angrifsseinheit vor
+    void StartAttack();
 
-        /// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
-        /// bereitet also alles für eine solche Angrifsseinheit vor
-        void StartAttack();
+public:
+    noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
+    noFighting(SerializedGameData& sgd, const unsigned obj_id);
+    ~noFighting() override;
 
-    public:
+    /// Aufräummethoden
+protected:
+    void Destroy_noFighting();
 
-        noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2);
-        noFighting(SerializedGameData& sgd, const unsigned obj_id);
-        ~noFighting() override;
+public:
+    void Destroy() override { Destroy_noFighting(); }
 
-        /// Aufräummethoden
-    protected:  void Destroy_noFighting();
-    public:     void Destroy() override { Destroy_noFighting(); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noFighting(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noFighting(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noFighting(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noFighting(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_FIGHTING; }
+    GO_Type GetGOT() const override { return GOT_FIGHTING; }
 
-        void Draw(DrawPoint drawPt) override;
-        void HandleEvent(const unsigned int id) override;
+    void Draw(DrawPoint drawPt) override;
+    void HandleEvent(const unsigned id) override;
 
-        /// Dürfen andern Figuren diesen Kampf schon durchqueren?
-        bool IsActive() const;
-		bool IsFighter(nofActiveSoldier* as) {return as==soldiers[0] || as ==soldiers[1];}
+    /// Dürfen andern Figuren diesen Kampf schon durchqueren?
+    bool IsActive() const;
+    bool IsFighter(nofActiveSoldier* as) { return as == soldiers[0] || as == soldiers[1]; }
 
-        /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
-        bool IsSoldierOfPlayer(const unsigned char player) const;
-
+    /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
+    bool IsSoldierOfPlayer(const unsigned char player) const;
 };
-
-
-
 
 #endif

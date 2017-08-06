@@ -16,36 +16,40 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include <build_version.h>
 #include "iwOptionsWindow.h"
+#include "RTTR_Version.h"
 
-#include "WindowManager.h"
 #include "Loader.h"
 #include "Settings.h"
+#include "WindowManager.h"
 
-#include "iwEndgame.h"
-#include "iwSurrender.h"
-#include "iwTextfile.h"
-#include "iwSave.h"
-#include "iwSettings.h"
+#include "MusicPlayer.h"
+#include "SoundManager.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlProgress.h"
-#include "SoundManager.h"
 #include "drivers/AudioDriverWrapper.h"
-#include "MusicPlayer.h"
+#include "iwEndgame.h"
 #include "iwMusicPlayer.h"
+#include "iwSave.h"
+#include "iwSettings.h"
+#include "iwSurrender.h"
+#include "iwTextfile.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
-iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"), LOADER.GetImageN("resource", 41))
+iwOptionsWindow::iwOptionsWindow()
+    : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, Extent(300, 515), _("Game menu"), LOADER.GetImageN("resource", 41))
 {
     // Der Soldat oben
     AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddVarText(2, DrawPoint(150, 76), _("Return To The Roots v%s-%s"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, GetWindowVersion(), GetWindowRevisionShort());
+    AddVarText(2, DrawPoint(150, 76), _("Return To The Roots v%s-%s"), COLOR_YELLOW,
+               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, RTTR_Version::GetVersion(),
+               RTTR_Version::GetShortRevision());
     // Copyright
-    AddVarText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, GetCurrentYear());
+    AddVarText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW,
+               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, RTTR_Version::GetYear());
 
     // "Tastaturbelegung"
     AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
@@ -57,8 +61,8 @@ iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow
 
     // "Spiel laden!"
     // TODO: Implement
-    //AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 48));
-    //AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 48));
+    // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
 
     // "Spiel speichern!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
@@ -72,12 +76,10 @@ iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow
     AddImageButton(13, DrawPoint(35, 340), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
 
     // Geräuschlautstärke
-    AddProgress(14, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)
-    ->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
+    AddProgress(14, DrawPoint(100, 306), Extent(160, 22), TC_GREEN2, 139, 138, 10)->SetPosition(SETTINGS.sound.effekte_volume * 10 / 255);
 
     // Musiklautstärke
-    AddProgress(15, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)
-    ->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
+    AddProgress(15, DrawPoint(100, 346), Extent(160, 22), TC_GREEN2, 139, 138, 10)->SetPosition(SETTINGS.sound.musik_volume * 10 / 255);
 
     //// Music Player
     AddTextButton(16, DrawPoint(100, 380), Extent(160, 22), TC_GREEN2, _("Music player"), NormalFont);
@@ -89,11 +91,9 @@ iwOptionsWindow::iwOptionsWindow(): IngameWindow(CGI_OPTIONSWINDOW, IngameWindow
     AddTextButton(17, DrawPoint(67, 443), Extent(168, 24), TC_RED1, _("Surrender"), NormalFont);
     // "Spiel beenden"
     AddTextButton(0, DrawPoint(67, 474), Extent(168, 24), TC_RED1, _("End game"), NormalFont);
-
 }
 
-
-void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -101,19 +101,23 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
         {
             WINDOWMANAGER.Show(new iwEndgame);
             Close();
-        } break;
+        }
+        break;
         case 4: // "Tastaturbelegung laden"
         {
             WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
-        } break;
+        }
+        break;
         case 6: // "'Lies mich'-Datei laden"
         {
             WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
-        } break;
+        }
+        break;
         case 10: // "Spiel speichern"
         {
             WINDOWMANAGER.Show(new iwSave);
-        } break;
+        }
+        break;
 
         case 12: // Geräusche an/aus
         {
@@ -122,7 +126,8 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
 
             if(!SETTINGS.sound.effekte)
                 SOUNDMANAGER.StopAll();
-        } break;
+        }
+        break;
 
         case 13: // Musik an/aus
         {
@@ -132,26 +137,29 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned int ctrl_id)
                 MUSICPLAYER.Play();
             else
                 MUSICPLAYER.Stop();
-        } break;
+        }
+        break;
         case 16: // Music player
         {
             WINDOWMANAGER.Show(new iwMusicPlayer);
-        } break;
+        }
+        break;
         case 17: // Aufgeben
         {
             WINDOWMANAGER.Show(new iwSurrender);
             Close();
-        } break;
+        }
+        break;
         case 18: // Advanced
         {
             WINDOWMANAGER.Show(new iwSettings());
             Close();
-        } break;
-
+        }
+        break;
     }
 }
 
-void iwOptionsWindow::Msg_ProgressChange(const unsigned int ctrl_id, const unsigned short position)
+void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -159,11 +167,13 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned int ctrl_id, const unsig
         {
             SETTINGS.sound.effekte_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
             AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume);
-        } break;
+        }
+        break;
         case 15:
         {
             SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
             AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
-        } break;
+        }
+        break;
     }
 }

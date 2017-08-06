@@ -25,34 +25,36 @@ class SerializedGameData;
 class GameEvent;
 
 /// Menschliches Skelett (Zierobjekt, das sich automatisch umwandelt und dann verschwindet)
-class noSkeleton: public noCoordBase
+class noSkeleton : public noCoordBase
 {
-    public:
+public:
+    noSkeleton(const MapPoint pt);
+    noSkeleton(SerializedGameData& sgd, const unsigned obj_id);
 
-        noSkeleton(const MapPoint pt);
-        noSkeleton(SerializedGameData& sgd, const unsigned obj_id);
+    ~noSkeleton() override;
 
-        ~noSkeleton() override;
+    void Destroy() override { Destroy_noSkeleton(); }
 
-        void Destroy() override { Destroy_noSkeleton(); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noSkeleton(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noSkeleton(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noSkeleton(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noSkeleton(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_SKELETON; }
+    GO_Type GetGOT() const override { return GOT_SKELETON; }
 
-    protected:
-        void Destroy_noSkeleton();
+protected:
+    void Destroy_noSkeleton();
 
-        void Draw(DrawPoint drawPt) override;
-        void HandleEvent(const unsigned int id) override;
+    void Draw(DrawPoint drawPt) override;
+    void HandleEvent(const unsigned id) override;
 
-    private:
-        /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
-        unsigned char type;
-        /// GameEvent*, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
-        GameEvent* current_event;
+private:
+    /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
+    unsigned char type;
+    /// GameEvent*, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
+    GameEvent* current_event;
 };
 
 #endif // !NOSKELETON_H_INCLUDED

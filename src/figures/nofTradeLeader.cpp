@@ -17,26 +17,24 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofTradeLeader.h"
+#include "GamePlayer.h"
+#include "SerializedGameData.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "nofTradeDonkey.h"
 #include "world/GameWorldGame.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "SerializedGameData.h"
-#include "GamePlayer.h"
 #include "gameData/GameConsts.h"
 
-nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos, const MapPoint goalPos)
+nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
+                               const MapPoint goalPos)
     : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), homePos(homePos), goalPos(goalPos)
-{}
-
-nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id),
-      tr(sgd, *gwg, player),
-      successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
-      homePos(sgd.PopMapPoint()),
-      goalPos(sgd.PopMapPoint())
 {
 }
 
+nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), tr(sgd, *gwg, player), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
+      homePos(sgd.PopMapPoint()), goalPos(sgd.PopMapPoint())
+{
+}
 
 void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 {
@@ -51,7 +49,8 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 
 void nofTradeLeader::GoalReached()
 {
-    if(successor){
+    if(successor)
+    {
         successor->AddNextDir(REACHED_GOAL);
         successor = NULL;
     }
@@ -78,7 +77,7 @@ void nofTradeLeader::Walked()
             WanderFailedTrade();
         }
         return;
-    }else if(pos == goalPos)
+    } else if(pos == goalPos)
         GoalReached();
     else
     {
@@ -94,7 +93,7 @@ void nofTradeLeader::Walked()
                 WanderFailedTrade();
             }
             return;
-        }else if(next_dir == REACHED_GOAL)
+        } else if(next_dir == REACHED_GOAL)
             next_dir = Direction::NORTHWEST; // Walk into building
         StartWalking(Direction::fromInt(next_dir));
         if(successor)
@@ -102,7 +101,7 @@ void nofTradeLeader::Walked()
     }
 }
 
-void nofTradeLeader::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofTradeLeader::HandleDerivedEvent(const unsigned /*id*/)
 {
 }
 void nofTradeLeader::AbrogateWorkplace()

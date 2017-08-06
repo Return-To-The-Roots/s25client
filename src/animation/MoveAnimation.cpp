@@ -17,14 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MoveAnimation.h"
-#include "Window.h"
 #include "RescaleWindowProp.h"
+#include "Window.h"
 #include "drivers/ScreenResizeEvent.h"
 #include <boost/math/special_functions/round.hpp>
 #include <cmath>
 
-MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat):
-    Animation(element, 2, animTime, repeat), origPos_(element->GetPos()), newPos_(newPos)
+MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat)
+    : Animation(element, 2, animTime, repeat), origPos_(element->GetPos()), newPos_(newPos)
 {
     Point<double> diff(newPos_ - origPos_);
     Point<double> msPerPixel(static_cast<double>(animTime) / diff);

@@ -19,8 +19,7 @@
 #include "ctrlText.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) :
-    text(text), color_(color), font(font)
+ctrlBaseText::ctrlBaseText(const std::string& text, const unsigned color, glArchivItem_Font* font) : text(text), color_(color), font(font)
 {
 }
 
@@ -34,12 +33,7 @@ void ctrlBaseText::SetFont(glArchivItem_Font* font)
     this->font = font;
 }
 
-ctrlText::ctrlText(Window* parent,
-                   unsigned int id,
-                   const DrawPoint& pos,
-                   const std::string& text,
-                   unsigned int color,
-                   unsigned int format,
+ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
                    glArchivItem_Font* font)
     : Window(parent, id, pos), ctrlBaseText(text, color, font), format(format)
 {

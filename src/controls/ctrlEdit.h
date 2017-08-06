@@ -27,50 +27,63 @@ struct KeyEvent;
 
 class ctrlEdit : public Window
 {
-    public:
-        ctrlEdit(Window* parent, unsigned int id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
-        /// setzt den Text.
-        void SetText(const std::string& text);
-        void SetText(const unsigned int text);
+public:
+    ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
+             unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
+    /// setzt den Text.
+    void SetText(const std::string& text);
+    void SetText(const unsigned text);
 
-        std::string GetText() const;
-        void SetFocus(bool focus = true) { newFocus_ = focus; }
-        void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
-        void SetNotify(bool notify = true) { this->notify_ = notify; }
-        void SetMaxLength(unsigned short maxlength = 0) { this->maxLength_ = maxlength; }
-        void SetNumberOnly(const bool activated) {this->numberOnly_ = activated; }
+    std::string GetText() const;
+    void SetFocus(bool focus = true) { newFocus_ = focus; }
+    void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
+    void SetNotify(bool notify = true) { this->notify_ = notify; }
+    void SetMaxLength(unsigned short maxlength = 0) { this->maxLength_ = maxlength; }
+    void SetNumberOnly(const bool activated) { this->numberOnly_ = activated; }
 
-        void Msg_PaintAfter() override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
-        bool Msg_LeftDown_After(const MouseCoords& mc) override;
-        bool Msg_KeyDown(const KeyEvent& ke) override;
+    void Msg_PaintAfter() override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    bool Msg_LeftDown_After(const MouseCoords& mc) override;
+    bool Msg_KeyDown(const KeyEvent& ke) override;
 
-    protected:
-        void Draw_() override;
+protected:
+    void Draw_() override;
 
-    private:
-        void AddChar(unsigned int c);
-        void RemoveChar();
-        void Notify();
+private:
+    void AddChar(unsigned c);
+    void RemoveChar();
+    void Notify();
 
-        void CursorLeft() { if(cursorPos_ == 0) return; --cursorPos_; Notify(); };
-        void CursorRight() { if(cursorPos_ == text_.length()) return; ++cursorPos_; Notify(); };
+    void CursorLeft()
+    {
+        if(cursorPos_ == 0)
+            return;
+        --cursorPos_;
+        Notify();
+    };
+    void CursorRight()
+    {
+        if(cursorPos_ == text_.length())
+            return;
+        ++cursorPos_;
+        Notify();
+    };
 
-    private:
-        unsigned short maxLength_;
-        TextureColor texColor_;
-        glArchivItem_Font* font_;
-        bool isPassword_;
-        bool isDisabled_;
-        bool focus_;
-        bool newFocus_;
-        bool notify_;
+private:
+    unsigned short maxLength_;
+    TextureColor texColor_;
+    glArchivItem_Font* font_;
+    bool isPassword_;
+    bool isDisabled_;
+    bool focus_;
+    bool newFocus_;
+    bool notify_;
 
-        ucString text_;
-        unsigned cursorPos_;
-        unsigned viewStart_;
+    ucString text_;
+    unsigned cursorPos_;
+    unsigned viewStart_;
 
-        bool numberOnly_;
+    bool numberOnly_;
 };
 
 #endif // !CTRLEDIT_H_INCLUDED

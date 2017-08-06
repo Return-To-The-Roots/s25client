@@ -24,11 +24,12 @@
 #include "traits.h"
 #include <map>
 
-namespace helpers{
-    template<class T, class Pr, class Alloc>
-    struct EraseIterValidyImpl<std::map<T, Pr, Alloc> >{
-        BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid; 
-    };
+namespace helpers {
+template<class T, class Pr, class Alloc>
+struct EraseIterValidyImpl<std::map<T, Pr, Alloc> >
+{
+    BOOST_STATIC_CONSTEXPR EEraseIterValidy::Type value = EEraseIterValidy::NextValid;
+};
 } // namespace helpers
 
 #endif // mapTraits_h__

@@ -25,43 +25,57 @@ class noFigure;
 
 class noBuilding : public noBaseBuilding
 {
-    protected:
+protected:
+    /// How many people opened the door. positive: open, 0: closed, negative: error
+    signed char opendoor;
 
-        /// How many people opened the door. positive: open, 0: closed, negative: error
-        signed char opendoor;
+    noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
+    noBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
-        noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
-        noBuilding(SerializedGameData& sgd, const unsigned obj_id);
+    /// Aufräummethoden
+protected:
+    void Destroy_noBuilding();
 
-        /// Aufräummethoden
-    protected:  void Destroy_noBuilding();
-    public:     void Destroy() override { Destroy_noBuilding(); }
+public:
+    void Destroy() override { Destroy_noBuilding(); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_noBuilding(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuilding(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_noBuilding(SerializedGameData& sgd) const;
 
-        /// Draws the basic building (no fires etc.) with the door
-        void DrawBaseBuilding(DrawPoint drawPt);
-        /// Draws the door only (if building is drawn at x, y)
-        void DrawDoor(DrawPoint drawPt);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_noBuilding(sgd); }
 
-        void OpenDoor() {++opendoor;}
-        void CloseDoor() {RTTR_Assert(opendoor); --opendoor;}
+    /// Draws the basic building (no fires etc.) with the door
+    void DrawBaseBuilding(DrawPoint drawPt);
+    /// Draws the door only (if building is drawn at x, y)
+    void DrawDoor(DrawPoint drawPt);
 
-        void GotWorker(Job job, noFigure* worker) override;
+    void OpenDoor() { ++opendoor; }
+    void CloseDoor()
+    {
+        RTTR_Assert(opendoor);
+        --opendoor;
+    }
 
-        /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-        virtual bool FreePlaceAtFlag() = 0;
+    void GotWorker(Job job, noFigure* worker) override;
 
-        /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-        FOWObject* CreateFOWObject() const override;
+    /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
+    virtual bool FreePlaceAtFlag() = 0;
+
+    /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
+    FOWObject* CreateFOWObject() const override;
 };
 
-
 /// Prüft, ob es sich um ein Gebäude handelt
-inline bool IsBuilding(const GO_Type got){ return (got >= GOT_NOB_HQ && got <= GOT_NOB_USUAL); }
+inline bool IsBuilding(const GO_Type got)
+{
+    return (got >= GOT_NOB_HQ && got <= GOT_NOB_USUAL);
+}
 /// Prüft, ob es sich um ein Gebäude oder eine Baustelle handelt
-inline bool IsBaseBuilding(const GO_Type got){ return (got >= GOT_NOB_HQ && got <= GOT_BUILDINGSITE); }
+inline bool IsBaseBuilding(const GO_Type got)
+{
+    return (got >= GOT_NOB_HQ && got <= GOT_BUILDINGSITE);
+}
 
 #endif

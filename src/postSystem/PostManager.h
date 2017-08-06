@@ -35,6 +35,7 @@ public:
     void RemovePostBox(unsigned player);
     void SendMsg(unsigned player, PostMsg* msg);
     void SetMissionGoal(unsigned player, const std::string& newGoal);
+
 private:
     boost::array<PostBox*, MAX_PLAYERS> postBoxes;
 };

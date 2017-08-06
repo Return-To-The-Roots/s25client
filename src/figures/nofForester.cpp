@@ -18,16 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofForester.h"
 
-#include "Loader.h"
 #include "GameClient.h"
-#include "GamePlayer.h"
-#include "Random.h"
-#include "nodeObjs/noTree.h"
-#include "SoundManager.h"
 #include "GameInterface.h"
-#include "world/GameWorldGame.h"
-#include "gameData/TerrainData.h"
+#include "GamePlayer.h"
+#include "Loader.h"
+#include "Random.h"
+#include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noTree.h"
+#include "gameData/TerrainData.h"
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
@@ -43,8 +43,7 @@ void nofForester::DrawWorking(DrawPoint drawPt)
 {
     unsigned short now_id = GAMECLIENT.Interpolate(36, current_ev);
     // Baum pflanzen
-    LOADER.GetPlayerImage("rom_bobs", 48 + now_id)
-    ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+    LOADER.GetPlayerImage("rom_bobs", 48 + now_id)->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
     // Schaufel-Sound
     if(now_id == 7 || now_id == 18)
@@ -58,7 +57,6 @@ void nofForester::DrawWorking(DrawPoint drawPt)
         SOUNDMANAGER.PlayNOSound(57, this, 2);
         was_sounding = true;
     }
-
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -89,20 +87,15 @@ void nofForester::WorkFinished()
         gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
-        const unsigned char AVAILABLE_TREES_COUNT[3] =
-        {
-            6, 3, 4
-        };
-        const unsigned char AVAILABLE_TREES[3][8] =
-        {
-            {0, 1, 2, 6, 7, 8,   0xFF, 0xFF},
-            {0, 1, 7,         0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
-            {0, 1, 6, 8,       0xFF, 0xFF, 0xFF, 0xFF}
-        };
+        const unsigned char AVAILABLE_TREES_COUNT[3] = {6, 3, 4};
+        const unsigned char AVAILABLE_TREES[3][8] = {
+          {0, 1, 2, 6, 7, 8, 0xFF, 0xFF}, {0, 1, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF, 0xFF, 0xFF}};
 
         // jungen Baum einsetzen
-        gwg->SetNO(pos, new noTree(pos, AVAILABLE_TREES[gwg->GetLandscapeType()]
-                              [RANDOM.Rand(__FILE__, __LINE__, GetObjId(), AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])], 0));
+        gwg->SetNO(pos, new noTree(pos,
+                                   AVAILABLE_TREES[gwg->GetLandscapeType()][RANDOM.Rand(__FILE__, __LINE__, GetObjId(),
+                                                                                        AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])],
+                                   0));
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);
@@ -126,7 +119,6 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     if(gwg->GetNode(pt).boundary_stones[0])
         return PQ_NOTPOSSIBLE;
 
-
     // darf außerdem nich auf einer Straße liegen
     for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
@@ -137,7 +129,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
     for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() ==  NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
     }
 
@@ -151,7 +143,6 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     }
     if(good_terrains != 6)
         return PQ_NOTPOSSIBLE;
-
 
     return PQ_CLASS1;
 }

@@ -28,21 +28,24 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(const MapPoint pt, const unsigned char player, const Nation nation);
     nobStorehouse(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
-    public:     void Destroy() override { Destroy_nobBaseWarehouse(); }
+    /// Aufräummethoden
+public:
+    void Destroy() override { Destroy_nobBaseWarehouse(); }
 
-        /// Serialisierungsfunktionen
-    protected: void Serialize_nobStorehouse(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobStorehouse(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nobStorehouse(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_NOB_STOREHOUSE; }
-        unsigned GetMilitaryRadius() const override { return 0; }
-        bool IsAttackable(int playerIdx) const override { return false; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nobStorehouse(sgd); }
 
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_NOB_STOREHOUSE; }
+    unsigned GetMilitaryRadius() const override { return 0; }
+    bool IsAttackable(int playerIdx) const override { return false; }
 
-        void HandleEvent(const unsigned int id) override;
+    void Draw(DrawPoint drawPt) override;
+
+    void HandleEvent(const unsigned id) override;
 };
-
 
 #endif

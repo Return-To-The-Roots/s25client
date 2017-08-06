@@ -20,10 +20,10 @@
 
 #include <stdexcept>
 
-class RTTR_AssertError: public std::runtime_error
+class RTTR_AssertError : public std::runtime_error
 {
 public:
-    RTTR_AssertError(const std::string& msg): std::runtime_error(msg){}
+    RTTR_AssertError(const std::string& msg) : std::runtime_error(msg) {}
 };
 
 #endif // RTTR_AssertError_h__

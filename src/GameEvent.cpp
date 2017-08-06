@@ -19,12 +19,9 @@
 #include "GameEvent.h"
 #include "SerializedGameData.h"
 
-GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id):
-    GameObject(sgd, obj_id),
-    obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)),
-    startGF(sgd.PopUnsignedInt()),
-    length(sgd.PopUnsignedInt()),
-    id(sgd.PopUnsignedInt())
+GameEvent::GameEvent(SerializedGameData& sgd, const unsigned obj_id)
+    : GameObject(sgd, obj_id), obj(sgd.PopObject<GameObject>(GOT_UNKNOWN)), startGF(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()),
+      id(sgd.PopUnsignedInt())
 {
     RTTR_Assert(obj);
 }

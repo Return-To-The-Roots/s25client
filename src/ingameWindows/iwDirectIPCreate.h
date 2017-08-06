@@ -20,38 +20,38 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "LobbyInterface.h"
 #include "gameTypes/ServerType.h"
+#include "liblobby/src/LobbyInterface.h"
 
 /// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
 struct CreateServerInfo
 {
-    ServerType type;    /// Typ des Servers.
-    unsigned short port;   /// Port des Servers
-    std::string gamename;  /// Name des Servers.
-    std::string password;  /// Passwort des Servers.
-    bool ipv6;             /// Soll IPv6 verwendet werden?
+    ServerType type;      /// Typ des Servers.
+    unsigned short port;  /// Port des Servers
+    std::string gamename; /// Name des Servers.
+    std::string password; /// Passwort des Servers.
+    bool ipv6;            /// Soll IPv6 verwendet werden?
     bool use_upnp;
 };
 
 class iwDirectIPCreate : public IngameWindow, public LobbyInterface
 {
-    public:
-        iwDirectIPCreate(ServerType server_type);
+public:
+    iwDirectIPCreate(ServerType server_type);
 
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Status_Error(const std::string& error) override;
 
-    protected:
-        void Msg_EditChange(const unsigned int ctrl_id) override;
-        void Msg_EditEnter(const unsigned int ctrl_id) override;
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection) override;
+protected:
+    void Msg_EditChange(const unsigned ctrl_id) override;
+    void Msg_EditEnter(const unsigned ctrl_id) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
 
-    private:
-        void SetText(const std::string& text, unsigned int color, bool button);
+private:
+    void SetText(const std::string& text, unsigned color, bool button);
 
-    private:
-        ServerType server_type;
+private:
+    ServerType server_type;
 };
 
 #endif // !iwDIRECTIPCREATE_H_INCLUDED

@@ -29,21 +29,23 @@ class RoadPathFinder
 {
     GameWorldBase& gwb_;
     unsigned currentVisit;
+
 public:
-    RoadPathFinder(GameWorldBase& gwb): gwb_(gwb), currentVisit(0) {}
+    RoadPathFinder(GameWorldBase& gwb) : gwb_(gwb), currentVisit(0) {}
 
     /// Calculates the best path from start to goal
     /// Outputs are only valid if true is returned!
     /// Direction might additionally be INVALID_DIR or SHIP_DIR
     ///
-    /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road points have already many wares)
+    /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road points have already
+    /// many wares)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
     /// @param length If != NULL will receive the final costs
     /// @param firstDir If != NULL will receive the first direction to travel
     /// @param firstNodePos If != NULL will receive the position of the first node
-    bool FindPath(const noRoadNode& start, const noRoadNode& goal, 
-                  const bool wareMode, const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = NULL,
+    bool FindPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode,
+                  const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = NULL,
                   unsigned* const length = NULL, unsigned char* const firstDir = NULL, MapPoint* const firstNodePos = NULL);
 
     /// Checks if there is ANY path from start to goal
@@ -51,14 +53,14 @@ public:
     /// @param allowWaterRoads True to allow boat roads (mostly: Ware=true, Person=false)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
-    bool PathExists(const noRoadNode& start, const noRoadNode& goal,
-                    const bool allowWaterRoads, const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = NULL);
+    bool PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
+                    const unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* const forbidden = NULL);
+
 private:
     template<class T_AdditionalCosts, class T_SegmentConstraints>
-    bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal,
-                      const unsigned max,
-                      const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
-                      unsigned* const length = NULL, unsigned char* const firstDir = NULL, MapPoint* const firstNodePos = NULL);
+    bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max, const T_AdditionalCosts addCosts,
+                      const T_SegmentConstraints isSegmentAllowed, unsigned* const length = NULL, unsigned char* const firstDir = NULL,
+                      MapPoint* const firstNodePos = NULL);
 };
 
 #endif // RoadPathFinder_h__

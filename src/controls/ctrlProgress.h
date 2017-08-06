@@ -25,49 +25,39 @@ class MouseCoords;
 
 class ctrlProgress : public Window, public ctrlBaseTooltip
 {
-    public:
-        ctrlProgress(Window* parent,
-                     const unsigned int id,
-                     const DrawPoint& pos,
-                     const Extent& size,
-                     const TextureColor tc,
-                     unsigned short button_minus,
-                     unsigned short button_plus,
-                     const unsigned short maximum,
-                     const Extent& padding,
-                     const unsigned int force_color,
-                     const std::string& tooltip,
-                     const std::string& button_minus_tooltip = NULL,
-                     const std::string& button_plus_tooltip = NULL,
-                     unsigned short* const write_val = NULL);
+public:
+    ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
+                 unsigned short button_minus, unsigned short button_plus, const unsigned short maximum, const Extent& padding,
+                 const unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = NULL,
+                 const std::string& button_plus_tooltip = NULL, unsigned short* const write_val = NULL);
 
-        void Resize(const Extent& newSize) override;
-        void SetPosition(unsigned short position);
-        const unsigned short& GetPosition() const { return position; }
+    void Resize(const Extent& newSize) override;
+    void SetPosition(unsigned short position);
+    const unsigned short& GetPosition() const { return position; }
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        bool Msg_LeftDown(const MouseCoords& mc) override;
-        bool Msg_LeftUp(const MouseCoords& mc) override;
-        bool Msg_WheelUp(const MouseCoords& mc) override;
-        bool Msg_WheelDown(const MouseCoords& mc) override;
-        bool Msg_MouseMove(const MouseCoords& mc) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    bool Msg_LeftDown(const MouseCoords& mc) override;
+    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool Msg_WheelUp(const MouseCoords& mc) override;
+    bool Msg_WheelDown(const MouseCoords& mc) override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
 
-    protected:
-        void Draw_() override;
+protected:
+    void Draw_() override;
 
-    private:
-        TextureColor tc;
+private:
+    TextureColor tc;
 
-        unsigned short position;
-        unsigned short maximum;
+    unsigned short position;
+    unsigned short maximum;
 
-        // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
-        Extent padding_;
+    // Abstand vom Button zur Leiste (Leiste wird entsprechend verkleinert!)
+    Extent padding_;
 
-        /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
-        unsigned int force_color;
+    /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
+    unsigned force_color;
 
-        unsigned CalcBarWidth() const;
+    unsigned CalcBarWidth() const;
 };
 
 #endif // !CTRLPROGRESS_H_INCLUDED

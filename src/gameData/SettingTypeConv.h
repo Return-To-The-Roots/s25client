@@ -18,8 +18,8 @@
 #ifndef SettingTypeConv_h__
 #define SettingTypeConv_h__
 
-#include "gameTypes/SettingsTypes.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/SettingsTypes.h"
 
 /// Scaling (max values) of each military setting
 extern const MilitarySettings MILITARY_SETTINGS_SCALE;
@@ -32,4 +32,3 @@ unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType 
 TransportOrders GetOrderingFromTransportPrio(const TransportPriorities& priorities);
 
 #endif // SettingTypeConv_h__
-

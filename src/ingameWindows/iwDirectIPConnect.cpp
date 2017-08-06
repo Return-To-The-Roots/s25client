@@ -17,37 +17,38 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwDirectIPConnect.h"
+#include "GameClient.h"
+#include "Loader.h"
+#include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlButton.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
-#include "Loader.h"
-#include "GameClient.h"
-#include "WindowManager.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "desktops/dskHostGame.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Font.h"
-#include "Settings.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
-    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"), LOADER.GetImageN("resource", 41), true),
+    : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"), LOADER.GetImageN("resource", 41),
+                   true),
       server_type(server_type)
 {
-    ctrlEdit* host, *port;
+    ctrlEdit *host, *port;
 
     // "IP - Adresse vom Host"
     AddText(0, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, 0, NormalFont);
-    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT),  true);
+    host = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT), true);
 
     // "Server-Port"
     AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, 0, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT),  true);
+    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, (server_type != ServerType::DIRECT), true);
 
     // "Passwort (falls vorhanden)"
     AddText(4, DrawPoint(20, 130), _("Password (if needed):"), COLOR_YELLOW, 0, NormalFont);
-    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false,  true);
+    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TC_GREEN2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
     AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
@@ -55,7 +56,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TC_GREEN2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TC_GREEN2, _("IPv6"), NormalFont);
-    ipv6->SetSelection( (SETTINGS.server.ipv6 ? 1 : 0) );
+    ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
     AddText(6, DrawPoint(150, 215), EMPTY_STRING, COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
@@ -74,13 +75,13 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     GAMECLIENT.SetInterface(this);
 }
 
-void iwDirectIPConnect::Msg_EditChange(const unsigned int  /*ctrl_id*/)
+void iwDirectIPConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
     SetText(EMPTY_STRING, COLOR_RED, true);
 }
 
-void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
+void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -92,7 +93,8 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
             host->SetFocus(false);
             port->SetFocus(true);
             pass->SetFocus(false);
-        } break;
+        }
+        break;
         case 3:
         {
             ctrlEdit* host = GetCtrl<ctrlEdit>(1);
@@ -101,15 +103,15 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned int ctrl_id)
             host->SetFocus(false);
             port->SetFocus(false);
             pass->SetFocus(true);
-        } break;
-        case 5:
-        {
-            Msg_ButtonClick(7);
-        } break;
+        }
+        break;
+        case 5: { Msg_ButtonClick(7);
+        }
+        break;
     }
 }
 
-void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -133,31 +135,32 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned int ctrl_id)
             SETTINGS.server.last_ip = edtHost->GetText();
 
             // Text auf "Verbinde mit Host..." setzen und Button deaktivieren
-            SetText( _("Connecting with Host..."), COLOR_RED, false);
+            SetText(_("Connecting with Host..."), COLOR_RED, false);
 
             GAMECLIENT.Stop();
-            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, static_cast<unsigned short>(iPort), false, SETTINGS.server.ipv6))
+            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, static_cast<unsigned short>(iPort), false,
+                                   SETTINGS.server.ipv6))
             {
                 // Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
-                SetText( _("Connection failed!"), COLOR_RED, true);
+                SetText(_("Connection failed!"), COLOR_RED, true);
             }
-
-        } break;
-        case 8:
-        {
-            Close();
-        } break;
+        }
+        break;
+        case 8: { Close();
+        }
+        break;
     }
 }
 
-void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const int selection)
+void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
         case 12: // IPv6 Ja/Nein
         {
             SETTINGS.server.ipv6 = (selection == 1);
-        } break;
+        }
+        break;
     }
 }
 
@@ -165,7 +168,7 @@ void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned int ctrl_id, const 
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  */
-void iwDirectIPConnect::SetText(const std::string& text, unsigned int color, bool button)
+void iwDirectIPConnect::SetText(const std::string& text, unsigned color, bool button)
 {
     // Text setzen
     GetCtrl<ctrlText>(6)->SetTextColor(color);
@@ -211,14 +214,14 @@ void iwDirectIPConnect::CI_Error(const ClientError ce)
 {
     switch(ce)
     {
-        case CE_SERVERFULL:        SetText(_("This Server is full!"), COLOR_RED, true); break;
-        case CE_WRONGPW:           SetText(_("Wrong Password!"), COLOR_RED, true); break;
-        case CE_WRONGVERSION:      SetText(_("Wrong client version"), COLOR_RED, true); break;
-        case CE_CONNECTIONLOST:    SetText(_("Connection to Host closed!"), COLOR_RED, true); break;
+        case CE_SERVERFULL: SetText(_("This Server is full!"), COLOR_RED, true); break;
+        case CE_WRONGPW: SetText(_("Wrong Password!"), COLOR_RED, true); break;
+        case CE_WRONGVERSION: SetText(_("Wrong client version"), COLOR_RED, true); break;
+        case CE_CONNECTIONLOST: SetText(_("Connection to Host closed!"), COLOR_RED, true); break;
         case CE_INCOMPLETEMESSAGE: SetText(_("Too short Message received!"), COLOR_RED, true); break;
         case CE_INVALIDSERVERTYPE: SetText(_("Wrong Server Type!"), COLOR_RED, true); break;
-        case CE_WRONGMAP:          SetText("", COLOR_RED, true); break;
-        default:                   break;
+        case CE_WRONGMAP: SetText("", COLOR_RED, true); break;
+        default: break;
     }
 }
 
@@ -226,15 +229,16 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_WAITFORANSWER:     SetText(_("Waiting for Reply..."), COLOR_YELLOW, true); break;
-        case CS_QUERYPW:           SetText(_("Checking Password..."), COLOR_YELLOW, true); break;
-        case CS_QUERYMAPNAME:      SetText(_("Checking Map..."), COLOR_YELLOW, true); break;
-        case CS_QUERYPLAYERLIST:   SetText(_("Waiting for Playerinfo..."), COLOR_YELLOW, true); break;
+        case CS_WAITFORANSWER: SetText(_("Waiting for Reply..."), COLOR_YELLOW, true); break;
+        case CS_QUERYPW: SetText(_("Checking Password..."), COLOR_YELLOW, true); break;
+        case CS_QUERYMAPNAME: SetText(_("Checking Map..."), COLOR_YELLOW, true); break;
+        case CS_QUERYPLAYERLIST: SetText(_("Waiting for Playerinfo..."), COLOR_YELLOW, true); break;
 
         case CS_FINISHED: // Wir wurden verbunden
         {
             WINDOWMANAGER.Switch(new dskHostGame(server_type));
-        } break;
+        }
+        break;
         default: break;
     }
 }

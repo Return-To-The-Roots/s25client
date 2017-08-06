@@ -26,26 +26,26 @@ struct GamePlayerInfo;
 /// Post message asking for a change in the diplomacy contracts. Includes Yes/No buttons
 class DiplomacyPostQuestion : public PostMsg
 {
-    public:
-        /// Create contract
-        DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer, int duration);
-        /// Cancel contract
-        DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer);
+public:
+    /// Create contract
+    DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer, int duration);
+    /// Cancel contract
+    DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer);
 
-        bool IsAccept() const { return acceptOrCancel; }
-        PactType GetPactType() const { return pact; }
-        unsigned GetPactId() const { return pactId; }
-        unsigned GetPlayerId() const { return player; }
+    bool IsAccept() const { return acceptOrCancel; }
+    PactType GetPactType() const { return pact; }
+    unsigned GetPactId() const { return pactId; }
+    unsigned GetPlayerId() const { return player; }
 
-    private:
-        /// Type of the question. True for accepting a new contract, false for canceling existing one
-        bool acceptOrCancel;
-        /// Which pact this refers to
-        PactType pact;
-        /// ID of the contract
-        unsigned pactId;
-        /// Player ID who asked for the change
-        unsigned char player;
+private:
+    /// Type of the question. True for accepting a new contract, false for canceling existing one
+    bool acceptOrCancel;
+    /// Which pact this refers to
+    PactType pact;
+    /// ID of the contract
+    unsigned pactId;
+    /// Player ID who asked for the change
+    unsigned char player;
 };
 
 #endif // DiplomacyPostQuestion_h__

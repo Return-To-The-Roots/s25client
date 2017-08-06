@@ -18,38 +18,38 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
 
-#include "WindowManager.h"
-#include "Loader.h"
-#include "GameServer.h"
 #include "GameClient.h"
+#include "GameServer.h"
 #include "ListDir.h"
-#include "files.h"
-#include "fileFuncs.h"
-#include "LobbyClient.h"
+#include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskDirectIP.h"
 #include "desktops/dskHostGame.h"
+#include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
-#include "desktops/dskLAN.h"
+#include "files.h"
 #include "mapGenerator/MapGenerator.h"
+#include "liblobby/src/LobbyClient.h"
+#include "libutil/src/fileFuncs.h"
 
-#include "ingameWindows/iwMsgbox.h"
-#include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwDirectIPCreate.h"
-#include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwMapGenerator.h"
+#include "ingameWindows/iwMsgbox.h"
+#include "ingameWindows/iwPleaseWait.h"
+#include "ingameWindows/iwSave.h"
 
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libsiedler2/src/prototypen.h"
 #include "libutil/src/ucString.h"
-#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 /** @class dskSelectMap
  *
@@ -78,15 +78,15 @@
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
  */
-dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)),
-      csi(csi)
+dskSelectMap::dskSelectMap(const CreateServerInfo& csi) : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi)
 {
     // Die Tabelle für die Maps
-    AddTable( 1, DrawPoint(110,  35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216, ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134, ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
+    AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216,
+             ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134,
+             ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
 
     // "Karten Auswahl"
-    AddText(2, DrawPoint(400,   5), _("Selection of maps"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
 
     // "Zurück"
     AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
@@ -144,7 +144,7 @@ dskSelectMap::~dskSelectMap()
 {
 }
 
-void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const int selection)
+void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
 {
     ctrlTable* table = GetCtrl<ctrlTable>(1);
 
@@ -152,7 +152,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
     table->DeleteAllItems();
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
-    static const boost::array<unsigned, 9> ids = {{ 39, 40, 41, 42, 43, 52, 91, 93, 48 }};
+    static const boost::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
     // Und wieder füllen lassen
     FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "swd"));
@@ -169,7 +169,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned int  /*ctrl_id*/, const 
 /**
  *  Occurs when user changes the selection in the table of maps.
  */
-void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int selection)
+void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
@@ -194,7 +194,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int sel
                         preview->SetMap(map);
 
                         ctrlText* text = GetCtrl<ctrlText>(12);
-                        text->SetText(cvStringToUTF8(map->getHeader().getName()) );
+                        text->SetText(cvStringToUTF8(map->getHeader().getName()));
                         DrawPoint txtPos = text->GetPos();
                         txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
                         text->SetPos(txtPos);
@@ -207,47 +207,53 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned int ctrl_id, const int sel
                     }
                 }
             }
-        } break;
+        }
+        break;
     }
 }
 
 void dskSelectMap::GoBack()
 {
-    if (csi.type == ServerType::LOCAL)
+    if(csi.type == ServerType::LOCAL)
         WINDOWMANAGER.Switch(new dskSinglePlayer);
-    else if (csi.type == ServerType::LAN)
+    else if(csi.type == ServerType::LAN)
         WINDOWMANAGER.Switch(new dskLAN);
-    else if (csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
+    else if(csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
         WINDOWMANAGER.Switch(new dskLobby);
     else
         WINDOWMANAGER.Switch(new dskDirectIP);
 }
 
-void dskSelectMap::Msg_ButtonClick(const unsigned int ctrl_id)
+void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 3: // "Zurück"
         {
             GoBack();
-        } break;
+        }
+        break;
         case 4: // "Spiel laden..."
         {
             // Ladefenster aufrufen
             WINDOWMANAGER.Show(new iwLoad(csi));
-        } break;
+        }
+        break;
         case 5: // "Weiter"
         {
             StartServer();
-        } break;
+        }
+        break;
         case 6: // random map
         {
             CreateRandomMap();
-        } break;
+        }
+        break;
         case 7: // random map generator settings
         {
             WINDOWMANAGER.Show(new iwMapGenerator(rndMapSettings));
-        } break;
+        }
+        break;
     }
 }
 
@@ -265,18 +271,18 @@ void dskSelectMap::CreateRandomMap()
 
     // create a random map and save filepath
     MapGenerator::Create(mapPath, rndMapSettings);
-    
+
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
     optionGroup->SetSelection(8, true);
-    
+
     // search for the random map entry and select it in the table
     ctrlTable* table = GetCtrl<ctrlTable>(1);
-    for (int i = 0; i < table->GetRowCount(); i++)
+    for(int i = 0; i < table->GetRowCount(); i++)
     {
         std::string entryPath = table->GetItemText(i, 5);
-        
-        if (entryPath == mapPath)
+
+        if(entryPath == mapPath)
         {
             table->SetSelection(i);
             break;
@@ -300,8 +306,7 @@ void dskSelectMap::StartServer()
         if(!GAMESERVER.TryToStart(csi, mapPath, MAPTYPE_OLDMAP))
         {
             GoBack();
-        }
-        else
+        } else
         {
             // Verbindungsfenster anzeigen
             WINDOWMANAGER.Show(new iwPleaseWait);
@@ -309,13 +314,13 @@ void dskSelectMap::StartServer()
     }
 }
 
-void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult  /*mbr*/)
+void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
     {
         GAMECLIENT.Stop();
 
-        if(csi.type == ServerType::LOBBY &&  LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
+        if(csi.type == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
         else if(csi.type == ServerType::LOBBY)
             WINDOWMANAGER.Switch(new dskDirectIP);
@@ -330,14 +335,11 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_FINISHED:
-        {
-            WINDOWMANAGER.Switch(new dskHostGame(csi.type));
-        } break;
-        default:
-            break;
+        case CS_FINISHED: { WINDOWMANAGER.Switch(new dskHostGame(csi.type));
+        }
+        break;
+        default: break;
     }
-
 }
 
 void dskSelectMap::CI_Error(const ClientError ce)
@@ -349,20 +351,13 @@ void dskSelectMap::CI_Error(const ClientError ce)
         case CE_WRONGMAP:
         {
             // Error messages, CE_* values cannot be gotten here but are added to avoid memory access errors
-            const boost::array<std::string, 8> errors =
-            {{
-                _("Incomplete message was received!"),
-                "CE_SERVERFULL",
-                "CE_WRONGPW",
-                _("Lost connection to server!"),
-                "CE_INVALIDSERVERTYPE",
-                _("Map transmission was corrupt!"),
-                "CE_WRONGVERSION",
-                "CE_LOBBYFULL"
-            }};
+            const boost::array<std::string, 8> errors = {{_("Incomplete message was received!"), "CE_SERVERFULL", "CE_WRONGPW",
+                                                          _("Lost connection to server!"), "CE_INVALIDSERVERTYPE",
+                                                          _("Map transmission was corrupt!"), "CE_WRONGVERSION", "CE_LOBBYFULL"}};
 
             WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errors[ce], this, MSB_OK, MSB_EXCLAMATIONRED, 0));
-        } break;
+        }
+        break;
         default: break;
     }
 }
@@ -410,12 +405,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         snprintf(size, 32, "%dx%d", header->getWidth(), header->getHeight());
 
         // und einfügen
-        const std::string landscapes[3] =
-        {
-            _("Greenland"),
-            _("Wasteland"),
-            _("Winter world")
-        };
+        const std::string landscapes[3] = {_("Greenland"), _("Wasteland"), _("Winter world")};
 
         std::string name = cvStringToUTF8(header->getName());
         if(hasLua)
@@ -425,4 +415,3 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filePath.c_str());
     }
 }
-

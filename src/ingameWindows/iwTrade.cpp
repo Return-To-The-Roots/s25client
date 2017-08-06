@@ -18,32 +18,30 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwTrade.h"
 
-#include "Loader.h"
 #include "GamePlayer.h"
+#include "Loader.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "world/GameWorldBase.h"
-#include "world/GameWorldViewer.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlText.h"
-#include "ogl/glArchivItem_Font.h"
 #include "factories/GameCommandFactory.h"
+#include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldBase.h"
+#include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 #include <boost/format.hpp>
 #include <cstdio>
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(wh.CreateGUIID(), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"), LOADER.GetImageN("resource", 41)),
-      wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
+    : IngameWindow(wh.CreateGUIID(), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"), LOADER.GetImageN("resource", 41)), wh(wh),
+      gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
 {
     // Get title of the player
-    SetTitle((
-		boost::format(_("Trade with %s")) % gwv.GetWorld().GetPlayer(wh.GetPlayer()).name
-			 ).str());
+    SetTitle((boost::format(_("Trade with %s")) % gwv.GetWorld().GetPlayer(wh.GetPlayer()).name).str());
     // Gebäudebild und dessen Schatten
-    AddImage( 0, DrawPoint(100, 144), LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType()));
+    AddImage(0, DrawPoint(100, 144), LOADER.GetNationImage(wh.GetNation(), 250 + 5 * wh.GetBuildingType()));
 
     const unsigned left_column = 200;
 
@@ -53,7 +51,6 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     box->AddString(_("Wares"));
     box->AddString(_("Settlers"));
     this->AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
-
 
     // Create possible wares, figures
     for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
@@ -75,7 +72,7 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     }
 
     AddImage(5, DrawPoint(left_column + 20, 130), NULL, _("Ware you like to trade"));
-    AddEdit(6, DrawPoint(left_column + 34, 120), Extent(39 , 20), TC_GREY, NormalFont)->SetNumberOnly(true);
+    AddEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TC_GREY, NormalFont)->SetNumberOnly(true);
     AddText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
 
     AddTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TC_GREEN2, _("Send"), NormalFont);
@@ -84,7 +81,6 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     box->SetSelection(0);
     Msg_ComboSelectItem(2, 0);
 }
-
 
 void iwTrade::Msg_PaintBefore()
 {
@@ -101,12 +97,12 @@ void iwTrade::Msg_PaintBefore()
 }
 
 void iwTrade::Msg_PaintAfter()
-{}
-
-
-void iwTrade::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
 {
-    //pressed the send button
+}
+
+void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+{
+    // pressed the send button
     unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection();
     bool ware_figure = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1;
     GoodType gt = ware_figure ? GD_NOTHING : wares[ware_figure_selection];
@@ -126,7 +122,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
-            // Change ware/figure mode
+        // Change ware/figure mode
         case 2:
         {
             ctrlComboBox* names = this->GetCtrl<ctrlComboBox>(4);
@@ -137,21 +133,18 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
                 for(unsigned i = 0; i < wares.size(); ++i)
                     names->AddString(_(WARE_NAMES[wares[i]]));
 
-            }
-            else
+            } else
             {
                 // Add job names
                 for(unsigned i = 0; i < jobs.size(); ++i)
                     names->AddString(_(JOB_NAMES[jobs[i]]));
-
             }
             names->SetSelection(0);
             Msg_ComboSelectItem(4, 0);
-
-        } break;
+        }
+        break;
         case 4:
         {
-
             unsigned number;
             if(this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 0)
             {
@@ -162,8 +155,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 
                 // Get the number of available wares
                 number = GetPossibleTradeAmount(wares[selection]);
-            }
-            else
+            } else
             {
                 glArchivItem_Bitmap* image = LOADER.GetMapImageN(2300 + jobs[selection]);
                 // Exception: charburner
@@ -178,7 +170,8 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
             char str[256];
             sprintf(str, "/ %u", number);
             GetCtrl<ctrlText>(7)->SetText(str);
-        } break;
+        }
+        break;
     }
 }
 
@@ -204,5 +197,4 @@ unsigned iwTrade::GetPossibleTradeAmount(const GoodType good) const
             amount += (*it)->GetAvailableWaresForTrading(good);
     }
     return amount;
-
 }

@@ -17,28 +17,28 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
-#include "GlobalVars.h"
 #include "GameClient.h"
+#include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "libutil/src/Log.h"
 #include "mygettext/src/mygettext.h"
-#include <utility>
+#include "libutil/src/Log.h"
 #include <fstream>
+#include <utility>
 
-namespace kaguya{
-    template<typename T1, typename T2>
-    struct lua_type_traits< std::pair<T1, T2> >
+namespace kaguya {
+template<typename T1, typename T2>
+struct lua_type_traits<std::pair<T1, T2> >
+{
+    static int push(lua_State* l, const std::pair<T1, T2>& v)
     {
-        static int push(lua_State* l, const std::pair<T1, T2>& v)
-        {
-            int count = 0;
-            count += lua_type_traits<T1>::push(l, v.first);
-            count += lua_type_traits<T2>::push(l, v.second);
-            return count;
-        }
-    };
-}
+        int count = 0;
+        count += lua_type_traits<T1>::push(l, v.first);
+        count += lua_type_traits<T2>::push(l, v.second);
+        return count;
+    }
+};
+} // namespace kaguya
 
 unsigned LuaInterfaceBase::GetVersion()
 {
@@ -50,7 +50,7 @@ unsigned LuaInterfaceBase::GetFeatureLevel()
     return 1;
 }
 
-LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
+LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
 {
     lua.openlib("base", luaopen_base);
     lua.openlib("package", luaopen_package);
@@ -62,18 +62,18 @@ LuaInterfaceBase::LuaInterfaceBase(): lua(kaguya::NoLoadLib())
 }
 
 LuaInterfaceBase::~LuaInterfaceBase()
-{}
+{
+}
 
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
-        .addStaticFunction("GetFeatureLevel", &LuaInterfaceBase::GetFeatureLevel)
-        .addFunction("Log", &LuaInterfaceBase::Log)
-        .addFunction("IsHost", &LuaInterfaceBase::IsHost)
-        .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
-        .addOverloadedFunctions("MsgBox", &LuaInterfaceBase::MsgBox, &LuaInterfaceBase::MsgBox2)
-        .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2)
-        );
+                                 .addStaticFunction("GetFeatureLevel", &LuaInterfaceBase::GetFeatureLevel)
+                                 .addFunction("Log", &LuaInterfaceBase::Log)
+                                 .addFunction("IsHost", &LuaInterfaceBase::IsHost)
+                                 .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
+                                 .addOverloadedFunctions("MsgBox", &LuaInterfaceBase::MsgBox, &LuaInterfaceBase::MsgBox2)
+                                 .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2));
     state.setErrorHandler(ErrorHandler);
 }
 
@@ -159,7 +159,8 @@ void LuaInterfaceBase::MsgBoxEx(const std::string& title, const std::string& msg
     WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx));
 }
 
-void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY)
+void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX,
+                                 int iconY)
 {
     iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
     msgBox->MoveIcon(DrawPoint(iconX, iconY));

@@ -26,7 +26,8 @@ class LuaServerPlayer;
 class GameServerInterface;
 struct AddonId;
 
-class LuaInterfaceSettings: public LuaInterfaceBase{
+class LuaInterfaceSettings : public LuaInterfaceBase
+{
 public:
     LuaInterfaceSettings(GameServerInterface& gameServer);
     virtual ~LuaInterfaceSettings();

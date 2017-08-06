@@ -20,11 +20,11 @@
 
 #include "Loader.h"
 
-#include "files.h"
 #include "Settings.h"
+#include "files.h"
+#include "mygettext/src/mygettext.h"
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
-#include "mygettext/src/mygettext.h"
 
 #include <algorithm>
 
@@ -40,10 +40,11 @@ bool operator<(const Language& o1, const Language& o2)
 
 void Languages::loadLanguages()
 {
-    const libsiedler2::ArchivInfo& langInfo = dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
-    unsigned int count = langInfo.size();
+    const libsiedler2::ArchivInfo& langInfo =
+      dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
+    unsigned count = langInfo.size();
 
-    for(unsigned int i = 0; i < count; i++)
+    for(unsigned i = 0; i < count; i++)
     {
         const libsiedler2::ArchivItem_Text& langEntry = dynamic_cast<const libsiedler2::ArchivItem_Text&>(*langInfo[i]);
         Language lang(langEntry.getName(), langEntry.getText());
@@ -61,7 +62,7 @@ void Languages::loadLanguages()
     loaded = true;
 }
 
-const Language& Languages::getLanguage(unsigned int i)
+const Language& Languages::getLanguage(unsigned i)
 {
     if(!loaded)
         loadLanguages();
@@ -72,7 +73,7 @@ const Language& Languages::getLanguage(unsigned int i)
     return languages.at(0);
 }
 
-unsigned int Languages::getCount()
+unsigned Languages::getCount()
 {
     if(!loaded)
         loadLanguages();
@@ -94,7 +95,7 @@ void Languages::setLanguage(const std::string& lang_code)
     textdomain(domain);
 }
 
-const std::string Languages::setLanguage(unsigned int i)
+const std::string Languages::setLanguage(unsigned i)
 {
     const Language& l = getLanguage(i);
 

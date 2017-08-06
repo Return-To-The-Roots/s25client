@@ -21,28 +21,25 @@
 
 #include "Desktop.h"
 
-#include "LobbyInterface.h"
 #include "ClientInterface.h"
+#include "liblobby/src/LobbyInterface.h"
 
 class GameWorldBase;
 
-class dskGameLoader :
-    public Desktop,
-    public ClientInterface,
-    public LobbyInterface
+class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
 {
-    public:
-        dskGameLoader(GameWorldBase& world);
-        ~dskGameLoader() override;
+public:
+    dskGameLoader(GameWorldBase& world);
+    ~dskGameLoader() override;
 
-        void LC_Status_Error(const std::string& error) override;
+    void LC_Status_Error(const std::string& error) override;
 
-    private:
-        void Msg_MsgBoxResult(const unsigned int msgbox_id, const MsgboxResult mbr) override;
-        void Msg_Timer(const unsigned int ctrl_id) override;
+private:
+    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
+    void Msg_Timer(const unsigned ctrl_id) override;
 
-        unsigned int position;
-        GameWorldBase& world;
+    unsigned position;
+    GameWorldBase& world;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

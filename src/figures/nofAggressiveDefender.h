@@ -27,72 +27,76 @@ class nobBaseMilitary;
 /// Aggressiv-verteidigender Soldat (jemand, der den Angreifer auf offenem Feld entgegenläuft)
 class nofAggressiveDefender : public nofActiveSoldier
 {
-        /// Soldaten, der er entgegenrennen soll
-        nofAttacker* attacker;
-        /// Militärgebäude, das angegriffen wird
-        nobBaseMilitary* attacked_goal;
+    /// Soldaten, der er entgegenrennen soll
+    nofAttacker* attacker;
+    /// Militärgebäude, das angegriffen wird
+    nobBaseMilitary* attacked_goal;
 
-        /// wenn man gelaufen ist
-        void Walked() override;
-        /// Geht nach Haus für MAggressiveDefending-Mission
-        void ReturnHomeMissionAggressiveDefending();
-        /// Läuft wieter
-        void MissAggressiveDefendingWalk();
-        /// Sucht sich für MissionAggressiveAttacking ein neues Ziel, wenns keins findet, gehts nach Hause
-        void MissionAggressiveDefendingLookForNewAggressor();
-        /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
-        void InformTargetsAboutCancelling() override;
+    /// wenn man gelaufen ist
+    void Walked() override;
+    /// Geht nach Haus für MAggressiveDefending-Mission
+    void ReturnHomeMissionAggressiveDefending();
+    /// Läuft wieter
+    void MissAggressiveDefendingWalk();
+    /// Sucht sich für MissionAggressiveAttacking ein neues Ziel, wenns keins findet, gehts nach Hause
+    void MissionAggressiveDefendingLookForNewAggressor();
+    /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
+    void InformTargetsAboutCancelling() override;
 
-        void CancelAtAttacker();
+    void CancelAtAttacker();
 
-        /// The derived classes regain control after a fight of nofActiveSoldier
-        void FreeFightEnded() override;
+    /// The derived classes regain control after a fight of nofActiveSoldier
+    void FreeFightEnded() override;
 
-    public:
+public:
+    nofAggressiveDefender(const MapPoint pt, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
+                          nofAttacker* const attacker);
+    nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
+    nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofAggressiveDefender(const MapPoint pt, const unsigned char player,
-                              nobBaseMilitary* const home, const unsigned char rank, nofAttacker* const attacker);
-        nofAggressiveDefender(nofPassiveSoldier* other, nofAttacker* const attacker);
-        nofAggressiveDefender(SerializedGameData& sgd, const unsigned obj_id);
+    ~nofAggressiveDefender() override;
 
-        ~nofAggressiveDefender() override;
+    /// Aufräummethoden
+protected:
+    void Destroy_nofAggressiveDefender();
 
-        /// Aufräummethoden
-    protected:  void Destroy_nofAggressiveDefender();
-    public:     void Destroy() override { Destroy_nofAggressiveDefender(); }
+public:
+    void Destroy() override { Destroy_nofAggressiveDefender(); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofAggressiveDefender(sgd); }
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofAggressiveDefender(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_NOF_AGGRESSIVEDEFENDER; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofAggressiveDefender(sgd); }
 
-        /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
-        void HomeDestroyed() override;
-        /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
-        void HomeDestroyedAtBegin() override;
+    GO_Type GetGOT() const override { return GOT_NOF_AGGRESSIVEDEFENDER; }
 
-        void CancelAtAttackedBld();
+    /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
+    void HomeDestroyed() override;
+    /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
+    void HomeDestroyedAtBegin() override;
 
-        /// Wenn ein Kampf gewonnen wurde
-        void WonFighting() override;
-        /// Wenn ein Kampf verloren wurde (Tod)
-        void LostFighting() override;
+    void CancelAtAttackedBld();
 
-        /// Gebäude, das vom aggressiv-verteidigenden Soldaten verteidigt werden sollte, wurde zerstört
-        void AttackedGoalDestroyed();
-        /// Soldat, der angehalten ist, um auf seinen Angreifer-Kollegen zu warten, soll jetzt weiterlaufen, da er um
-        /// das Angriffsgebäude schon wartet
-        void MissAggressiveDefendingContinueWalking();
-        /// Wenn der jeweils andere Soldat, mit dem man kämpfen wollte, nicht mehr kommen kann
-        void AttackerLost();
-        /// Ich befinde mich noch im Lagerhaus in der Warteschlange und muss mein HQ etc. verteidigen
-        /// Mission muss also abgebrochen werden
-        void NeedForHomeDefence();
+    /// Wenn ein Kampf gewonnen wurde
+    void WonFighting() override;
+    /// Wenn ein Kampf verloren wurde (Tod)
+    void LostFighting() override;
 
-        //Debugging
-        const nofAttacker* GetAttacker() const { return attacker; }
+    /// Gebäude, das vom aggressiv-verteidigenden Soldaten verteidigt werden sollte, wurde zerstört
+    void AttackedGoalDestroyed();
+    /// Soldat, der angehalten ist, um auf seinen Angreifer-Kollegen zu warten, soll jetzt weiterlaufen, da er um
+    /// das Angriffsgebäude schon wartet
+    void MissAggressiveDefendingContinueWalking();
+    /// Wenn der jeweils andere Soldat, mit dem man kämpfen wollte, nicht mehr kommen kann
+    void AttackerLost();
+    /// Ich befinde mich noch im Lagerhaus in der Warteschlange und muss mein HQ etc. verteidigen
+    /// Mission muss also abgebrochen werden
+    void NeedForHomeDefence();
+
+    // Debugging
+    const nofAttacker* GetAttacker() const { return attacker; }
 };
-
 
 #endif // !NOF_AGGRESSIVEDEFENDER_H_

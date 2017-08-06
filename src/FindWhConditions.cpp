@@ -20,92 +20,91 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "gameData/ShieldConsts.h"
 
-namespace FW
+namespace FW {
+
+bool HasMinWares::operator()(const nobBaseWarehouse& wh) const
 {
+    return wh.GetRealWaresCount(type) >= count;
+}
 
-    bool HasMinWares::operator()(const nobBaseWarehouse& wh) const
-    {
-        return wh.GetRealWaresCount(type) >= count;
-    }
+bool HasFigure::operator()(const nobBaseWarehouse& wh) const
+{
+    if(wh.GetRealFiguresCount(type) > 0)
+        return true;
+    else if(recruitingAllowed && type != JOB_PACKDONKEY)
+        return wh.CanRecruit(type);
+    else
+        return false;
+}
 
-    bool HasFigure::operator()(const nobBaseWarehouse& wh) const
-    {
-        if(wh.GetRealFiguresCount(type) > 0)
-            return true;
-        else if(recruitingAllowed && type != JOB_PACKDONKEY)
-            return wh.CanRecruit(type);
-        else
-            return false;
-    }
+bool HasWareAndFigure::operator()(const nobBaseWarehouse& wh) const
+{
+    return HasMinWares::operator()(wh) && HasFigure::operator()(wh);
+}
 
-    bool HasWareAndFigure::operator()(const nobBaseWarehouse& wh) const
-    {
-        return HasMinWares::operator()(wh) && HasFigure::operator()(wh);
-    }
+bool HasMinSoldiers::operator()(const nobBaseWarehouse& wh) const
+{
+    return wh.GetSoldiersCount() >= count;
+}
 
-    bool HasMinSoldiers::operator()(const nobBaseWarehouse& wh) const
-    {
-        return wh.GetSoldiersCount() >= count;
-    }
+bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const
+{
+    // Einlagern darf nicht verboten sein
+    // Schilder beachten!
+    const GoodType good = ConvertShields(type);
+    return !wh.GetInventorySetting(good).IsSet(EInventorySetting::STOP);
+}
 
-    bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const
-    {
-        // Einlagern darf nicht verboten sein
-        // Schilder beachten!
-        const GoodType good = ConvertShields(type);
-        return !wh.GetInventorySetting(good).IsSet(EInventorySetting::STOP);
-    }
+bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
+{
+    // Boat carriers are normal figures in the wh
+    Job job = type;
+    if(job == JOB_BOATCARRIER)
+        job = JOB_HELPER;
 
-    bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
-    {
-        // Boat carriers are normal figures in the wh
-        Job job = type;
-        if(job == JOB_BOATCARRIER)
-            job = JOB_HELPER;
+    return !wh.GetInventorySetting(job).IsSet(EInventorySetting::STOP);
+}
 
-        return !wh.GetInventorySetting(job).IsSet(EInventorySetting::STOP);
-    }
+bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
+{
+    // Einlagern muss gewollt sein
+    // Schilder beachten!
+    GoodType gt = ConvertShields(type);
+    return (wh.GetInventorySetting(gt).IsSet(EInventorySetting::COLLECT));
+}
 
-    bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
-    {
-        // Einlagern muss gewollt sein
-        // Schilder beachten!
-        GoodType gt = ConvertShields(type);
-        return (wh.GetInventorySetting(gt).IsSet(EInventorySetting::COLLECT));
-    }
+bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
+{
+    // Einlagern muss gewollt sein
+    Job job = type;
+    if(job == JOB_BOATCARRIER)
+        job = JOB_HELPER;
+    return (wh.GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
+}
 
-    bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
-    {
-        // Einlagern muss gewollt sein
-        Job job = type;
-        if(job == JOB_BOATCARRIER)
-            job = JOB_HELPER;
-        return (wh.GetInventorySetting(job).IsSet(EInventorySetting::COLLECT));
-    }
+bool HasWareButNoCollect::operator()(const nobBaseWarehouse& wh) const
+{
+    return HasMinWares::operator()(wh) && !CollectsWare::operator()(wh);
+}
 
-    bool HasWareButNoCollect::operator()(const nobBaseWarehouse& wh) const
-    {
-        return HasMinWares::operator()(wh) && !CollectsWare::operator()(wh);
-    }
+bool HasFigureButNoCollect::operator()(const nobBaseWarehouse& wh) const
+{
+    return HasFigure::operator()(wh) && !CollectsFigure::operator()(wh);
+}
 
-    bool HasFigureButNoCollect::operator()(const nobBaseWarehouse& wh) const
-    {
-        return HasFigure::operator()(wh) && !CollectsFigure::operator()(wh);
-    }
+bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
+{
+    const GoodType good = ConvertShields(type);
+    return AcceptsWare::operator()(wh) && !wh.GetInventorySetting(good).IsSet(EInventorySetting::SEND);
+}
 
-    bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
-    {
-        const GoodType good = ConvertShields(type);
-        return AcceptsWare::operator()(wh) && !wh.GetInventorySetting(good).IsSet(EInventorySetting::SEND);
-    }
+bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
+{
+    Job job = type;
+    if(job == JOB_BOATCARRIER)
+        job = JOB_HELPER;
 
-    bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
-    {
-        Job job = type;
-        if(job == JOB_BOATCARRIER)
-            job = JOB_HELPER;
-
-        return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::SEND);
-    }
+    return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::SEND);
+}
 
 } // namespace FW

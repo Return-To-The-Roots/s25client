@@ -33,19 +33,12 @@ Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
     */
     switch(Direction::Type(dir))
     {
-    case Direction::WEST:
-        return Point<int>(p.x - 1, p.y);
-    case Direction::NORTHWEST:
-        return Point<int>(p.x - !(p.y & 1), p.y - 1);
-    case Direction::NORTHEAST:
-        return Point<int>(p.x + (p.y & 1), p.y - 1);
-    case Direction::EAST:
-        return Point<int>(p.x + 1, p.y);
-    case Direction::SOUTHEAST:
-        return Point<int>(p.x + (p.y & 1), p.y + 1);
-    default:
-        RTTR_Assert(dir == Direction::SOUTHWEST);
-        return Point<int>(p.x - !(p.y & 1), p.y + 1);
+        case Direction::WEST: return Point<int>(p.x - 1, p.y);
+        case Direction::NORTHWEST: return Point<int>(p.x - !(p.y & 1), p.y - 1);
+        case Direction::NORTHEAST: return Point<int>(p.x + (p.y & 1), p.y - 1);
+        case Direction::EAST: return Point<int>(p.x + 1, p.y);
+        case Direction::SOUTHEAST: return Point<int>(p.x + (p.y & 1), p.y + 1);
+        default: RTTR_Assert(dir == Direction::SOUTHWEST); return Point<int>(p.x - !(p.y & 1), p.y + 1);
     }
 }
 
@@ -54,24 +47,25 @@ Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
     if(dir >= 12)
         throw std::logic_error("Invalid direction!");
 
-    static const int ADD_Y[12] =
-    { 0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1 };
+    static const int ADD_Y[12] = {0, -1, -2, -2, -2, -1, 0, 1, 2, 2, 2, 1};
 
     switch(dir)
     {
-    case 0:  pt.x -= 2; break;
-    case 1:  pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
-    case 2:  pt.x -= 1; break;
-    case 3:  break;
-    case 4:  pt.x += 1; break;
-    case 5:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
-    case 6:  pt.x += 2; break;
-    case 7:  pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
-    case 8:  pt.x += 1; break;
-    case 9:  break;
-    case 10: pt.x -= 1; break;
-    default: RTTR_Assert(dir == 11);
-             pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
+        case 0: pt.x -= 2; break;
+        case 1: pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
+        case 2: pt.x -= 1; break;
+        case 3: break;
+        case 4: pt.x += 1; break;
+        case 5: pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
+        case 6: pt.x += 2; break;
+        case 7: pt.x += 2 - ((pt.y & 1) ? 0 : 1); break;
+        case 8: pt.x += 1; break;
+        case 9: break;
+        case 10: pt.x -= 1; break;
+        default:
+            RTTR_Assert(dir == 11);
+            pt.x -= 2 - ((pt.y & 1) ? 1 : 0);
+            break;
     }
     pt.y += ADD_Y[dir];
     return pt;

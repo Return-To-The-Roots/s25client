@@ -25,19 +25,17 @@ class GameWorldView;
 /// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
 class iwBuildings : public IngameWindow
 {
-	GameWorldView& gwv;
+    GameWorldView& gwv;
     GameCommandFactory& gcFactory;
-    public:
 
-        iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory);
+public:
+    iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory);
 
-    private:
+private:
+    /// Anzahlen der Gebäude zeichnen
+    void Msg_PaintAfter() override;
 
-        /// Anzahlen der Gebäude zeichnen
-        void Msg_PaintAfter() override;
-		
-		void Msg_ButtonClick(const unsigned int ctrl_id) override;
-
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif

@@ -24,12 +24,8 @@ ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0)
 {
 }
 
-ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent,
-                                       const unsigned int id,
-                                       const DrawPoint& pos,
-                                       const Extent& size,
-                                       glArchivItem_Map* s2map) :
-    ctrlMinimap(parent, id, pos, size, Extent(2, 2), size), minimap(NULL)
+ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* s2map)
+    : ctrlMinimap(parent, id, pos, size, Extent(2, 2), size), minimap(NULL)
 {
     SetMap(s2map);
 }

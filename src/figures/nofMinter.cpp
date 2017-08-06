@@ -18,16 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofMinter.h"
 
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "buildings/nobUsual.h"
-#include "world/GameWorldGame.h"
+#include "Loader.h"
 #include "SoundManager.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 
-nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINTER, pos, player, workplace)
+nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINTER, pos, player, workplace)
 {
 }
 
@@ -42,14 +41,14 @@ nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofMinter::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = { {19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12} };
+    const DrawPointInit offsets[NAT_COUNT] = {{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}};
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 
     if(now_id < 91)
     {
         LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
-        ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
+          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, gwg->GetPlayer(workplace->GetPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)

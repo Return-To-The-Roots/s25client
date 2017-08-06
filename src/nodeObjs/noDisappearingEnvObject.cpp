@@ -18,10 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noDisappearingEnvObject.h"
 
-#include "GameClient.h"
-#include "SerializedGameData.h"
-#include "Random.h"
 #include "EventManager.h"
+#include "GameClient.h"
+#include "Random.h"
+#include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
 #include "libutil/src/colors.h"
 
@@ -33,10 +33,8 @@
  *  @param[in] type     Typ der Ressource
  *  @param[in] quantity Menge der Ressource
  */
-noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos,
-        const unsigned living_time, const unsigned add_var_living_time)
-    : noCoordBase(NOP_ENVIRONMENT, pos),
-      disappearing(false)
+noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsigned living_time, const unsigned add_var_living_time)
+    : noCoordBase(NOP_ENVIRONMENT, pos), disappearing(false)
 {
     dead_event = GetEvMgr().AddEvent(this, living_time + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), add_var_living_time));
 }
@@ -49,9 +47,8 @@ void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
     sgd.PushObject(dead_event, true);
 }
 
-noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    disappearing(sgd.PopBool()),
-    dead_event(sgd.PopEvent())
+noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), disappearing(sgd.PopBool()), dead_event(sgd.PopEvent())
 {
 }
 
@@ -60,10 +57,9 @@ unsigned noDisappearingEnvObject::GetDrawColor() const
 {
     if(disappearing)
     {
-        unsigned int transparency = 0xFF - GAMECLIENT.Interpolate(0xFF, dead_event);
+        unsigned transparency = 0xFF - GAMECLIENT.Interpolate(0xFF, dead_event);
         return transparency | (transparency << 8) | (transparency << 16) | (transparency << 24);
-    }
-    else
+    } else
         return 0xFFFFFFFF;
 }
 
@@ -72,26 +68,23 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 {
     if(disappearing)
     {
-        unsigned int transparency = 0x40 - GAMECLIENT.Interpolate(0x40, dead_event);
+        unsigned transparency = 0x40 - GAMECLIENT.Interpolate(0x40, dead_event);
         return (transparency << 24);
-    }
-    else
+    } else
         return COLOR_SHADOW;
 }
-
 
 /**
  *  Benachrichtigen, wenn neuer GF erreicht wurde.
  */
-void noDisappearingEnvObject::HandleEvent(const unsigned int id)
+void noDisappearingEnvObject::HandleEvent(const unsigned id)
 {
     if(id)
     {
         // endgültig vernichten
         GetEvMgr().AddToKillList(this);
         dead_event = 0;
-    }
-    else
+    } else
     {
         // Jetzt verschwinden
         disappearing = true;
@@ -99,7 +92,6 @@ void noDisappearingEnvObject::HandleEvent(const unsigned int id)
         dead_event = GetEvMgr().AddEvent(this, 30, 1);
     }
 }
-
 
 /**
  *  Räumt das Objekt auf.

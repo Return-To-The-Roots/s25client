@@ -18,15 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofMiner.h"
 
-#include "Loader.h"
 #include "GameClient.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 class SerializedGameData;
 
-nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_MINER, pos, player, workplace)
+nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace)
 {
 }
 
@@ -36,14 +35,14 @@ nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT][4] = //work animation offset per nation and (granite, coal, iron, gold)
-    {
-        {{5, 3},  {5, 3},  {5, 3},  {5, 3}},  //africans
-        {{4, 1},  {4, 1},  {4, 1},  {4, 1}},  //japanese
-        {{9, 4},  {9, 4},  {9, 4},  {9, 4}},  //romans
-        {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, //vikings
-        {{8, 3},  {8, 3},  {8, 3},  {8, 3}}   //babylonians
-    };
+    const DrawPointInit offsets[NAT_COUNT][4] = // work animation offset per nation and (granite, coal, iron, gold)
+      {
+        {{5, 3}, {5, 3}, {5, 3}, {5, 3}},     // africans
+        {{4, 1}, {4, 1}, {4, 1}, {4, 1}},     // japanese
+        {{9, 4}, {9, 4}, {9, 4}, {9, 4}},     // romans
+        {{10, 3}, {10, 3}, {10, 3}, {10, 3}}, // vikings
+        {{8, 3}, {8, 3}, {8, 3}, {8, 3}}      // babylonians
+      };
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     unsigned texture;
@@ -51,7 +50,8 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
         texture = 92 + now_id % 8;
     else
         texture = 1799 + now_id % 4;
-    LOADER.GetPlayerImage("rom_bobs", texture)->DrawFull(drawPt + offsets[workplace->GetNation()][(workplace->GetBuildingType() - BLD_GRANITEMINE) * 2]);
+    LOADER.GetPlayerImage("rom_bobs", texture)
+      ->DrawFull(drawPt + offsets[workplace->GetNation()][(workplace->GetBuildingType() - BLD_GRANITEMINE) * 2]);
 
     if(now_id % 8 == 3)
     {
@@ -84,6 +84,5 @@ GoodType nofMiner::ProduceWare()
 
 bool nofMiner::AreWaresAvailable()
 {
-    return nofWorkman::AreWaresAvailable() &&
-        GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
+    return nofWorkman::AreWaresAvailable() && GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
 }

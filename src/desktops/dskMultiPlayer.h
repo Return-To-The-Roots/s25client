@@ -22,13 +22,13 @@
 #include "desktops/dskMenuBase.h"
 
 /// Klasse des Multispieler Desktops.
-class dskMultiPlayer: public dskMenuBase
+class dskMultiPlayer : public dskMenuBase
 {
-    public:
-        dskMultiPlayer();
+public:
+    dskMultiPlayer();
 
-    private:
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !dskMULTIPLAYER_H_INCLUDED

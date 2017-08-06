@@ -21,14 +21,15 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/noBuildingSite.h"
-#include "world/GameWorldView.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldView.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
-    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194),
+                   _(BUILDING_NAMES[buildingsite->GetBuildingType()]), LOADER.GetImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
     // Bild des Gebäudes
@@ -37,33 +38,35 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
     AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // Hilfe
-    AddImageButton( 2, DrawPoint( 16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io",  225), _("Help"));
+    AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     // Gebäude abbrennen
-    AddImageButton( 3, DrawPoint( 50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io",  23));
+    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23));
 
     // "Gehe Zu Ort"
-    AddImageButton( 4, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
+    AddImageButton(4, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
 }
 
-void iwBuildingSite::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 2: // Hilfe
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP),
-                                                  _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()]) ) );
-        } break;
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
+        }
+        break;
         case 3: // Gebäude abbrennen
         {
             // Abreißen?
             Close();
             WINDOWMANAGER.Show(new iwDemolishBuilding(gwv, buildingsite));
-        } break;
+        }
+        break;
         case 4: // "Gehe Zu Ort"
         {
             gwv.MoveToMapPt(buildingsite->GetPos());
-        } break;
+        }
+        break;
     }
 }
 
@@ -83,17 +86,16 @@ void iwBuildingSite::Msg_PaintAfter()
     DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
-        unsigned int wares_count = 0;
-        unsigned int wares_delivered = 0;
-        unsigned int wares_used = 0;
+        unsigned wares_count = 0;
+        unsigned wares_delivered = 0;
+        unsigned wares_used = 0;
 
         if(i == 0)
         {
             wares_count = BUILDING_COSTS[buildingsite->GetNation()][buildingsite->GetBuildingType()].boards;
             wares_used = buildingsite->getUsedBoards();
             wares_delivered = buildingsite->getBoards() + wares_used;
-        }
-        else
+        } else
         {
             wares_count = BUILDING_COSTS[buildingsite->GetNation()][buildingsite->GetBuildingType()].stones;
             wares_used = buildingsite->getUsedStones();
@@ -112,7 +114,7 @@ void iwBuildingSite::Msg_PaintAfter()
         for(unsigned char z = 0; z < wares_count; ++z)
         {
             glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + (i == 0 ? GD_BOARDS : GD_STONES));
-            bitmap->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040) );
+            bitmap->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
 
             // Hammer wenn Ware verbaut
             if(z < wares_used)

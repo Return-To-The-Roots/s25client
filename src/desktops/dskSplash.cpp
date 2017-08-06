@@ -18,11 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskSplash.h"
 
-#include "WindowManager.h"
-#include "Loader.h"
 #include "GameManager.h"
-#include "ogl/glArchivItem_Bitmap.h"
+#include "Loader.h"
+#include "WindowManager.h"
 #include "dskMainMenu.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 
 dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))
@@ -37,17 +37,16 @@ dskSplash::~dskSplash()
     GAMEMANAGER.SetCursor();
 }
 
-void dskSplash::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void dskSplash::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     // Hauptmenü zeigen
     WINDOWMANAGER.Switch(new dskMainMenu);
 }
 
-bool dskSplash::Msg_LeftDown(const MouseCoords&  /*mc*/)
+bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 {
     // Hauptmenü zeigen
     WINDOWMANAGER.Switch(new dskMainMenu, true);
 
     return true;
 }
-

@@ -18,8 +18,8 @@
 #ifndef TradePath_h__
 #define TradePath_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Direction.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class SerializedGameData;
@@ -30,8 +30,8 @@ struct TradePath
     MapPoint start, goal;
     std::vector<Direction> route;
 
-    TradePath(){}
-    TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<Direction>& route): start(start), goal(goal), route(route){}
+    TradePath() {}
+    TradePath(const MapPoint& start, const MapPoint& goal, const std::vector<Direction>& route) : start(start), goal(goal), route(route) {}
     TradePath(SerializedGameData& sgd);
 
     void Serialize(SerializedGameData& sgd) const;

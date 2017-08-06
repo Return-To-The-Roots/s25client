@@ -16,145 +16,133 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "GameServerInterface.h"
 #include "GlobalGameSettings.h"
+#include "GlobalVars.h"
+#include "JoinPlayerInfo.h"
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
-#include "GameServerInterface.h"
-#include "JoinPlayerInfo.h"
-#include "GlobalVars.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/StringStreamWriter.h"
-#include <boost/test/unit_test.hpp>
-#include <boost/format.hpp>
+#include "libutil/src/colors.h"
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
+#include <boost/test/unit_test.hpp>
 #include <vector>
-#include "colors.h"
 
-namespace{
+namespace {
 
-    struct LuaSettingsTestsFixture: public GameServerInterface
+struct LuaSettingsTestsFixture : public GameServerInterface
+{
+    std::vector<JoinPlayerInfo> players;
+    GlobalGameSettings ggs;
+    LuaInterfaceSettings lua;
+    StringStreamWriter& logWriter;
+
+    bool IsRunning() const override { return true; }
+    unsigned GetMaxPlayerCount() const override { return players.size(); }
+    JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
+    void KickPlayer(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_FREE; }
+
+    void CheckAndSetColor(unsigned playerIdx, unsigned newColor) override
     {
-        std::vector<JoinPlayerInfo> players;
-        GlobalGameSettings ggs;
-        LuaInterfaceSettings lua;
-        StringStreamWriter& logWriter;
-
-        bool IsRunning() const override { return true; }
-        unsigned GetMaxPlayerCount() const override { return players.size(); }
-        JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
-        void KickPlayer(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_FREE; }
-
-        void CheckAndSetColor(unsigned playerIdx, unsigned newColor) override
+        while(true)
         {
-            while(true)
+            bool found = false;
+            unsigned curId = 0;
+            BOOST_FOREACH(JoinPlayerInfo& player, players)
             {
-                bool found = false;
-                unsigned curId = 0;
-                BOOST_FOREACH(JoinPlayerInfo& player, players)
+                if(curId != playerIdx && player.isUsed() && newColor == player.color)
                 {
-                    if(curId != playerIdx && player.isUsed() && newColor == player.color)
-                    {
-                        found = true;
-                        break;
-                    }
-                    ++curId;
+                    found = true;
+                    break;
                 }
-                if(!found)
-                {
-                    GetJoinPlayer(playerIdx).color = newColor;
-                    return;
-                }
-                newColor = rand() & (0xFF << 24);
+                ++curId;
             }
+            if(!found)
+            {
+                GetJoinPlayer(playerIdx).color = newColor;
+                return;
+            }
+            newColor = rand() & (0xFF << 24);
         }
+    }
 
-        void AnnounceStatusChange() override {}
-        const GlobalGameSettings& GetGGS() const override { return ggs; }
-        void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
-        void SendToAll(const GameMessage& msg) override {}
+    void AnnounceStatusChange() override {}
+    const GlobalGameSettings& GetGGS() const override { return ggs; }
+    void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
+    void SendToAll(const GameMessage& msg) override {}
 
-        LuaSettingsTestsFixture(): lua(*this), logWriter(dynamic_cast<StringStreamWriter&>(*LOG.getFileWriter()))
-        {
-            GLOBALVARS.isTest = true;
+    LuaSettingsTestsFixture() : lua(*this), logWriter(dynamic_cast<StringStreamWriter&>(*LOG.getFileWriter()))
+    {
+        GLOBALVARS.isTest = true;
+        clearLog();
+        players.resize(3);
+        players[0].ps = PS_OCCUPIED;
+        players[0].name = "Player1";
+        players[0].nation = NAT_VIKINGS;
+        players[0].color = 0xFF00FF00;
+        players[0].team = TM_TEAM1;
+        players[0].isHost = true;
+
+        players[1].ps = PS_AI;
+        players[1].name = "PlayerAI";
+        players[1].nation = NAT_ROMANS;
+        players[1].color = 0xFFFF0000;
+        players[1].team = TM_TEAM2;
+        players[1].isHost = false;
+
+        players[2].ps = PS_FREE;
+    }
+
+    ~LuaSettingsTestsFixture() { GLOBALVARS.isTest = false; }
+
+    void clearLog() { logWriter.getStream().str(""); }
+
+    std::string getLog(bool clear = true)
+    {
+        std::string result = logWriter.getText();
+        if(clear)
             clearLog();
-            players.resize(3);
-            players[0].ps = PS_OCCUPIED;
-            players[0].name = "Player1";
-            players[0].nation = NAT_VIKINGS;
-            players[0].color = 0xFF00FF00;
-            players[0].team = TM_TEAM1;
-            players[0].isHost = true;
+        return result;
+    }
 
-            players[1].ps = PS_AI;
-            players[1].name = "PlayerAI";
-            players[1].nation = NAT_ROMANS;
-            players[1].color = 0xFFFF0000;
-            players[1].team = TM_TEAM2;
-            players[1].isHost = false;
+    void executeLua(const std::string& luaCode) { lua.LoadScriptString(luaCode); }
 
-            players[2].ps = PS_FREE;
-        }
+    void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
 
-        ~LuaSettingsTestsFixture()
+    boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
+    {
+        try
         {
-            GLOBALVARS.isTest = false;
-        }
-
-        void clearLog()
+            executeLua(std::string("assert(") + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
+        } catch(std::runtime_error& e)
         {
-            logWriter.getStream().str("");
-        }
-
-        std::string getLog(bool clear = true)
-        {
-            std::string result = logWriter.getText();
-            if(clear)
-                clearLog();
+            boost::test_tools::predicate_result result(false);
+            std::string msg = e.what();
+            size_t xPos = msg.rfind("xxx=");
+            if(xPos != std::string::npos)
+                result.message() << "Value = " << msg.substr(xPos + 4);
+            else
+                result.message() << e.what();
             return result;
         }
+        return true;
+    }
 
-        void executeLua(const std::string& luaCode)
-        {
-            lua.LoadScriptString(luaCode);
-        }
+    void checkSettings(const GlobalGameSettings& shouldVal)
+    {
+        BOOST_REQUIRE_EQUAL(ggs.speed, shouldVal.speed);
+        BOOST_REQUIRE_EQUAL(ggs.objective, shouldVal.objective);
+        BOOST_REQUIRE_EQUAL(ggs.startWares, shouldVal.startWares);
+        BOOST_REQUIRE_EQUAL(ggs.lockedTeams, shouldVal.lockedTeams);
+        BOOST_REQUIRE_EQUAL(ggs.exploration, shouldVal.exploration);
+        BOOST_REQUIRE_EQUAL(ggs.teamView, shouldVal.teamView);
+        BOOST_REQUIRE_EQUAL(ggs.randomStartPosition, shouldVal.randomStartPosition);
+    }
+};
 
-        void executeLua(const boost::format& luaCode)
-        {
-            executeLua(luaCode.str());
-        }
-
-        boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
-        {
-            try
-            {
-                executeLua(std::string("assert(") + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
-            } catch(std::runtime_error& e)
-            {
-                boost::test_tools::predicate_result result(false);
-                std::string msg = e.what();
-                size_t xPos = msg.rfind("xxx=");
-                if(xPos != std::string::npos)
-                    result.message() << "Value = " << msg.substr(xPos + 4);
-                else
-                    result.message() << e.what();
-                return result;
-            }
-            return true;
-        }
-
-        void checkSettings(const GlobalGameSettings& shouldVal)
-        {
-            BOOST_REQUIRE_EQUAL(ggs.speed, shouldVal.speed);
-            BOOST_REQUIRE_EQUAL(ggs.objective, shouldVal.objective);
-            BOOST_REQUIRE_EQUAL(ggs.startWares, shouldVal.startWares);
-            BOOST_REQUIRE_EQUAL(ggs.lockedTeams, shouldVal.lockedTeams);
-            BOOST_REQUIRE_EQUAL(ggs.exploration, shouldVal.exploration);
-            BOOST_REQUIRE_EQUAL(ggs.teamView, shouldVal.teamView);
-            BOOST_REQUIRE_EQUAL(ggs.randomStartPosition, shouldVal.randomStartPosition);
-        }
-    };
-
-}
+} // namespace
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuiteSettings, LuaSettingsTestsFixture)
 
@@ -177,7 +165,8 @@ BOOST_AUTO_TEST_CASE(Events)
     BOOST_REQUIRE(allowedAddons.empty());
 
     clearLog();
-    executeLua("function onSettingsInit(isSinglePlayer, isSavegame)\n  rttr:Log('init: '..tostring(isSinglePlayer)..' '..tostring(isSavegame))\nend");
+    executeLua("function onSettingsInit(isSinglePlayer, isSavegame)\n  rttr:Log('init: '..tostring(isSinglePlayer)..' "
+               "'..tostring(isSavegame))\nend");
     lua.EventSettingsInit(true, false);
     BOOST_REQUIRE_EQUAL(getLog(), "init: true false\n");
     lua.EventSettingsInit(false, true);
@@ -249,9 +238,10 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
 
     GlobalGameSettings shouldSettings = ggs;
 
-#define SET_AND_CHECK(setting, value) executeLua("rttr:SetGameSettings({" #setting "=" #value "})"); \
-                                      shouldSettings.setting = value;                                \
-                                      checkSettings(shouldSettings);
+#define SET_AND_CHECK(setting, value)                              \
+    executeLua("rttr:SetGameSettings({" #setting "=" #value "})"); \
+    shouldSettings.setting = value;                                \
+    checkSettings(shouldSettings);
     SET_AND_CHECK(speed, GS_VERYSLOW);
     SET_AND_CHECK(speed, GS_FAST);
     SET_AND_CHECK(objective, GO_TOTALDOMINATION);
@@ -361,4 +351,3 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

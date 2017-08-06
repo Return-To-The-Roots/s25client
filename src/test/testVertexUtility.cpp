@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE(VertexUtilityTest)
 BOOST_FIXTURE_TEST_CASE(GetPosition_IndexOutOfBounds, VertexUtility)
 {
     Position v = VertexUtility::GetPosition(10, MapExtent(2, 2));
-        
+
     BOOST_REQUIRE_EQUAL(v.x, 0);
     BOOST_REQUIRE_EQUAL(v.y, 5);
 }
@@ -42,20 +42,20 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_IndexOutOfBounds, VertexUtility)
 BOOST_FIXTURE_TEST_CASE(GetPosition_CornerIndex, VertexUtility)
 {
     Position v = VertexUtility::GetPosition(8, MapExtent(3, 3));
-        
+
     BOOST_REQUIRE_EQUAL(v.x, 2);
     BOOST_REQUIRE_EQUAL(v.y, 2);
 }
-    
+
 /**
  * Tests the VertexUtility::GetPosition method for a zero-index. Then the method should
  * always return 0 independent of width and height.
  */
 BOOST_FIXTURE_TEST_CASE(GetPosition_ZeroIndex, VertexUtility)
 {
-    for (int width = 1; width < 100; width++)
+    for(int width = 1; width < 100; width++)
     {
-        for (int height = 1; height < 100; height++)
+        for(int height = 1; height < 100; height++)
         {
             Position v = VertexUtility::GetPosition(0, MapExtent(width, height));
             BOOST_REQUIRE_EQUAL(v.x, 0);
@@ -73,7 +73,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePositionX, VertexUtility)
 {
     const MapExtent size(4, 5);
     const int index = VertexUtility::GetIndexOf(Point<int>(-2 * size.x, 0), size);
-    
+
     BOOST_REQUIRE(index >= 0 && index < size.x * size.y);
 }
 
@@ -86,19 +86,19 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePositionY, VertexUtility)
 {
     const MapExtent size(4, 5);
     const int index = VertexUtility::GetIndexOf(Point<int>(0, -2 * size.y), size);
-    
+
     BOOST_REQUIRE(index >= 0 && index < size.x * size.y);
 }
 
 /**
- * Tests the VertexUtility::GetIndexOf method for a position outside of the bounds given by 
+ * Tests the VertexUtility::GetIndexOf method for a position outside of the bounds given by
  * width and height.
  */
 BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
 {
     const MapExtent size(4, 5);
     const int index = VertexUtility::GetIndexOf(Point<int>(2 * size), size);
-    
+
     BOOST_REQUIRE(index >= 0 && index < size.x * size.y);
 }
 
@@ -112,8 +112,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 
     RTTR_FOREACH_PT(Position, size)
     {
-        BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(pt, size),
-            pt.y * size.x + pt.x);
+        BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(pt, size), pt.y * size.x + pt.x);
     }
 }
 
@@ -126,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
 {
     std::vector<int> neighbors = VertexUtility::GetNeighbors(Point<int>(0, 0), MapExtent(10, 10), 1);
     const unsigned expectedSize = 5;
-    
+
     BOOST_REQUIRE_EQUAL(neighbors.size(), expectedSize);
 }
 
@@ -136,9 +135,8 @@ BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
 BOOST_FIXTURE_TEST_CASE(Distance_BoundaryNeighbors, VertexUtility)
 {
     const double distance = VertexUtility::Distance(Point<int>(0, 0), Point<int>(0, 9), MapExtent(10, 10));
-    
+
     BOOST_REQUIRE_LT(distance, 2.0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

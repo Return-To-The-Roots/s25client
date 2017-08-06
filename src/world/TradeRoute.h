@@ -18,8 +18,8 @@
 #ifndef TradeRoute_h__
 #define TradeRoute_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "world/TradePath.h"
+#include "gameTypes/MapCoordinates.h"
 
 class SerializedGameData;
 class GameWorldGame;
@@ -39,7 +39,6 @@ class TradeRoute
     unsigned char RecalcRoute();
 
 public:
-
     TradeRoute(const GameWorldGame& gwg, const unsigned char player, const MapPoint& start, const MapPoint& goal);
     TradeRoute(SerializedGameData& sgd, const GameWorldGame& gwg, const unsigned char player);
 
@@ -47,7 +46,8 @@ public:
 
     /// Gets the next direction the caravane has to take, REACHED_GOAL or INVALID_DIR
     unsigned char GetNextDir();
-    /// Returns the current position. This is assumed to be the position currently walking to and reached by the time GetNextDir should be called
+    /// Returns the current position. This is assumed to be the position currently walking to and reached by the time GetNextDir should be
+    /// called
     MapPoint GetCurPos() const { return curPos; }
 
     /// Returns true, if this is a valid route

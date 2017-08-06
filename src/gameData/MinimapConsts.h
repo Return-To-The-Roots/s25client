@@ -34,5 +34,4 @@ const unsigned ROAD_COLOR = 0xFFAAAAAA;
 /// ~2/sqrt(3) based on hexagons beeing regular
 const double MINIMAP_SCALE_X = 1.1547;
 
-
 #endif

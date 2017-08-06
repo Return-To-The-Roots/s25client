@@ -25,45 +25,45 @@ class noRoadNode;
 /// Frei herumlaufender Erkunder
 class nofScout_Free : public nofFlagWorker
 {
-        /// Nächster Punkt, wo der Späher hingehen soll
-        MapPoint nextPos;
-        /// Weg, weit weit er noch laufen soll
-        unsigned rest_way;
+    /// Nächster Punkt, wo der Späher hingehen soll
+    MapPoint nextPos;
+    /// Weg, weit weit er noch laufen soll
+    unsigned rest_way;
 
-    private:
+private:
+    void GoalReached() override;
+    void Walked() override;
+    void HandleDerivedEvent(const unsigned id) override;
 
-        void GoalReached() override;
-        void Walked() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+    /// Erkundet (quasi ein Umherirren)
+    void Scout();
 
-        /// Erkundet (quasi ein Umherirren)
-        void Scout();
+    /// Sucht einen neuen Zielpunkt und geht zu diesen
+    void GoToNewNode();
 
-        /// Sucht einen neuen Zielpunkt und geht zu diesen
-        void GoToNewNode();
+    /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
+    unsigned GetVisualRange() const override;
 
-        /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
-        unsigned GetVisualRange() const override;
+public:
+    nofScout_Free(const MapPoint pt, const unsigned char player, noRoadNode* goal);
+    nofScout_Free(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofScout_Free(SerializedGameData& sgd) const;
 
-        nofScout_Free(const MapPoint pt, const unsigned char player, noRoadNode* goal);
-        nofScout_Free(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_Free(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofScout_Free(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofScout_Free(sgd); }
+    GO_Type GetGOT() const override { return GOT_NOF_SCOUT_FREE; }
 
-        GO_Type GetGOT() const override { return GOT_NOF_SCOUT_FREE; }
+    void Draw(DrawPoint drawPt) override;
 
-        void Draw(DrawPoint drawPt) override;
+    /// Wird aufgerufen, wenn die Flagge abgerissen wurde
+    void LostWork() override;
 
-        /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-        void LostWork() override;
-
-        ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
-        //bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }
+    ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
+    // bool IsScouting() const { return (state == STATE_SCOUT_SCOUTING || state == STATE_GOTOFLAG); }
 };
 
-
-#endif //!NOF_SCOUT_FREE_H_
+#endif //! NOF_SCOUT_FREE_H_

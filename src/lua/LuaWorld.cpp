@@ -19,10 +19,10 @@
 #include "LuaWorld.h"
 #include "lua/LuaHelpers.h"
 #include "world/GameWorldGame.h"
+#include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/MapCoordinates.h"
-#include "nodeObjs/noAnimal.h"
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObject, 3, 5)
@@ -42,10 +42,9 @@ void LuaWorld::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 
     state["World"].setClass(kaguya::UserdataMetatable<LuaWorld>()
-        .addFunction("AddEnvObject", AddEnvObjectWrapper())
-        .addFunction("AddStaticObject", AddStaticObjectWrapper())
-        .addFunction("AddAnimal", &LuaWorld::AddAnimal)
-    );
+                              .addFunction("AddEnvObject", AddEnvObjectWrapper())
+                              .addFunction("AddStaticObject", AddStaticObjectWrapper())
+                              .addFunction("AddAnimal", &LuaWorld::AddAnimal));
 }
 
 bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
@@ -69,7 +68,7 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
 bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
 {
     lua::assertTrue(size <= 2, "Invalid size");
-    
+
     MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
     noBase* obj = gw.GetNode(pt).obj;
     if(obj)

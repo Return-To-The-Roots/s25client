@@ -25,8 +25,8 @@ class GamePlayer;
 
 class iwInventory : public iwWares
 {
-    public:
-        iwInventory(const GamePlayer& player);
+public:
+    iwInventory(const GamePlayer& player);
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

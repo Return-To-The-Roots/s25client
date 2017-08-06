@@ -17,12 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofFlagWorker.h"
-#include "world/GameWorldGame.h"
-#include "nodeObjs/noFlag.h"
+#include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
-#include "FindWhConditions.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "world/GameWorldGame.h"
+#include "nodeObjs/noFlag.h"
 
 nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : noFigure(job, pos, player, goal), flag(0), state(STATE_FIGUREWORK)
@@ -35,11 +35,9 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
         {
             this->flag = static_cast<noFlag*>(goal);
             gwg->GetPlayer(player).RegisterFlagWorker(this);
-        }
-        else
+        } else
             this->flag = 0;
-    }
-    else
+    } else
         this->flag = 0;
 }
 
@@ -70,7 +68,7 @@ void nofFlagWorker::AbrogateWorkplace()
         /// uns entfernen, da wir wieder umdrehen müssen
         gwg->GetPlayer(player).RemoveFlagWorker(this);
         flag = NULL;
-    }else
+    } else
         RTTR_Assert(!gwg->GetPlayer(player).IsFlagWorker(this));
 }
 
@@ -92,22 +90,19 @@ void nofFlagWorker::GoToFlag()
             cur_rs = &emulated_wanderroad;
             rs_pos = 0;
             WalkToGoal();
-        }
-        else
+        } else
         {
             // Weg führt nicht mehr zum Lagerhaus, dann rumirren
             StartWandering();
             Wander();
         }
 
-
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
         gwg->GetPlayer(player).RemoveFlagWorker(this);
         state = STATE_FIGUREWORK;
         flag = NULL;
-    }
-    else
+    } else
     {
         // Weg suchen
         unsigned char dir = gwg->FindHumanPath(pos, flag->GetPos(), 40);
@@ -121,11 +116,9 @@ void nofFlagWorker::GoToFlag()
             state = STATE_FIGUREWORK;
 
             flag = NULL;
-        }
-        else
+        } else
         {
             StartWalking(Direction::fromInt(dir));
         }
     }
 }
-

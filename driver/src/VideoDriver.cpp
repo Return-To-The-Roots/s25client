@@ -19,10 +19,13 @@
 #include "VideoDriver.h"
 #include <algorithm>
 
-// Do not inline! That would break DLL compatibility: http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
-IVideoDriver::~IVideoDriver(){}
+// Do not inline! That would break DLL compatibility:
+// http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
+IVideoDriver::~IVideoDriver()
+{
+}
 
-/** @var typedef void (*VideoDriverLoaderInterface *)(unsigned int msg, void *param)
+/** @var typedef void (*VideoDriverLoaderInterface *)(unsigned msg, void *param)
  *
  *  Definition des DriverCallback-Zeigertyps.
  */
@@ -62,7 +65,8 @@ IVideoDriver::~IVideoDriver(){}
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack) : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), isFullscreen_(false)
+VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
+    : CallBack(CallBack), initialized(false), screenWidth(0), screenHeight(0), isFullscreen_(false)
 {
     std::fill(keyboard.begin(), keyboard.end(), false);
 }

@@ -7,7 +7,7 @@
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -17,36 +17,36 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
+#include "BQCalculator.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
-#include "nodeObjs/noMovable.h"
-#include "nodeObjs/noFlag.h"
-#include "BQCalculator.h"
+#include "lua/LuaInterfaceGame.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"
-#include "lua/LuaInterfaceGame.h"
-#include "pathfinding/RoadPathFinder.h"
 #include "pathfinding/FreePathFinder.h"
-#include "addons/const_addons.h"
-#include "gameData/TerrainData.h"
-#include "gameData/MapConsts.h"
+#include "pathfinding/RoadPathFinder.h"
+#include "nodeObjs/noFlag.h"
+#include "nodeObjs/noMovable.h"
 #include "gameData/GameConsts.h"
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
+#include "gameData/MapConsts.h"
+#include "gameData/TerrainData.h"
 #include <boost/foreach.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 
-GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em):
-    roadPathFinder(new RoadPathFinder(*this)),
-    freePathFinder(new FreePathFinder(*this)),
-    players(players), gameSettings(gameSettings), em(em),
-    gi(NULL)
-{}
+GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em)
+    : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(players), gameSettings(gameSettings),
+      em(em), gi(NULL)
+{
+}
 
 GameWorldBase::~GameWorldBase()
-{}
+{
+}
 
 void GameWorldBase::Init(const MapExtent& mapSize, LandscapeType lt)
 {
@@ -108,7 +108,7 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
             return false;
     }
 
-    //dont build on the border
+    // dont build on the border
     if(GetNode(pt).boundary_stones[0])
         return false;
 
@@ -138,8 +138,7 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
         }
 
         return flagPossible;
-    }
-    else
+    } else
     {
         // Beim Wasserweg muss um den Punkt herum Wasser sein
         if(!IsWaterPoint(pt))
@@ -192,12 +191,12 @@ void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
         RecalcBQ(GetNeighbour(pt, i));
 }
 
-namespace{
-    bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
-    {
-        return gwb.IsMilitaryBuilding(pt) && (gwb.GetNode(pt).owner == owner);
-    }
+namespace {
+bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
+{
+    return gwb.IsMilitaryBuilding(pt) && (gwb.GetNode(pt).owner == owner);
 }
+} // namespace
 
 bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
 {
@@ -212,9 +211,8 @@ bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
     if(obj->GetType() == NOP_BUILDING || obj->GetType() == NOP_BUILDINGSITE)
     {
         BuildingType buildingType = static_cast<const noBaseBuilding*>(obj)->GetBuildingType();
-        if( (buildingType >= BLD_BARRACKS && buildingType <= BLD_FORTRESS) ||
-             buildingType == BLD_HEADQUARTERS ||
-             buildingType == BLD_HARBORBUILDING)
+        if((buildingType >= BLD_BARRACKS && buildingType <= BLD_FORTRESS) || buildingType == BLD_HEADQUARTERS
+           || buildingType == BLD_HARBORBUILDING)
             return true;
     }
 
@@ -304,7 +302,7 @@ Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsig
 {
     Visibility best_visibility = GetNode(pt).fow[player].visibility;
 
-    if (best_visibility == VIS_VISIBLE)
+    if(best_visibility == VIS_VISIBLE)
         return best_visibility;
 
     /// Teamsicht aktiviert?
@@ -339,18 +337,13 @@ bool GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) const
     return false;
 }
 
-/// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte, 
+/// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte,
 /// die sich dort befinden, zurück
 std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) const
 {
     std::vector<noBase*> objects;
     // Look also on the points above and below for figures
-    const MapPoint coords[3] =
-    {
-        pt, 
-        MapPoint(GetNeighbour(pt, 1)), 
-        MapPoint(GetNeighbour(pt, 2))
-    };
+    const MapPoint coords[3] = {pt, MapPoint(GetNeighbour(pt, 1)), MapPoint(GetNeighbour(pt, 2))};
 
     for(unsigned i = 0; i < 3; ++i)
     {
@@ -365,8 +358,7 @@ std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) con
             {
                 if(movable->GetPos() == pt)
                     objects.push_back(*it);
-            }
-            else if(i == 0)
+            } else if(i == 0)
                 // Den Rest nur bei den richtigen Koordinaten aufnehmen
                 objects.push_back(*it);
         }
@@ -375,9 +367,8 @@ std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) con
 }
 
 template<typename T_IsHarborOk>
-unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, 
-        const unsigned origin_harborId, const ShipDirection& dir,
-        const unsigned char player, T_IsHarborOk isHarborOk) const
+unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
+                                       const unsigned char player, T_IsHarborOk isHarborOk) const
 {
     RTTR_Assert(origin_harborId);
 
@@ -399,7 +390,6 @@ unsigned GameWorldBase::GetHarborInDir(const MapPoint pt,
     unsigned short seaId = GetSeaId(origin_harborId, Direction::fromInt(coastal_point_dir));
     const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(origin_harborId, dir);
 
-
     for(unsigned i = 0; i < neighbors.size(); ++i)
     {
         if(IsHarborAtSea(neighbors[i].id, seaId) && isHarborOk(neighbors[i].id))
@@ -418,7 +408,7 @@ struct IsPointOwnerDifferent
     // Owner to compare. Note that owner=0 --> No owner => owner=player+1
     const unsigned char cmpOwner;
 
-    IsPointOwnerDifferent(const GameWorldBase& gwb, const unsigned char player): gwb(gwb), cmpOwner(player + 1){}
+    IsPointOwnerDifferent(const GameWorldBase& gwb, const unsigned char player) : gwb(gwb), cmpOwner(player + 1) {}
 
     bool operator()(const MapPoint pt) const
     {
@@ -432,7 +422,8 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
 {
     MapPoint hbPos(GetHarborPoint(harborId));
 
-    // Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die Flagge im Spielergebiet liegen
+    // Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die
+    // Flagge im Spielergebiet liegen
     MapPoint flagPos = GetNeighbour(hbPos, 4);
     if(GetNode(hbPos).owner != player + 1 || GetNode(flagPos).owner != player + 1)
     {
@@ -445,7 +436,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
 
 /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
 unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
-        const unsigned char player) const
+                                               const unsigned char player) const
 {
     using boost::lambda::_1;
     using boost::lambda::bind;
@@ -455,7 +446,7 @@ unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned
 /// Berechnet die Entfernung zwischen 2 Hafenpunkten
 unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsigned harborId2) const
 {
-    if (habor_id1 == harborId2) //special case: distance to self
+    if(habor_id1 == harborId2) // special case: distance to self
         return 0;
     for(unsigned i = 0; i < 6; ++i)
     {
@@ -495,29 +486,30 @@ bool GameWorldBase::IsAHarborInSeaAttackDistance(const MapPoint pos) const
     return false;
 }
 
-
 /// Komperator zum Sortieren
 bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::PotentialSeaAttacker& pa) const
 {
     // Erst nach Rang, an zweiter Stelle nach Entfernung sortieren
     if(soldier->GetRank() == pa.soldier->GetRank())
     {
-    	if (distance == pa.distance)
-    	{
-    		return(soldier->GetObjId() < pa.soldier->GetObjId());
-    	} else
-    	{
-        	return distance < pa.distance;
-    	}
+        if(distance == pa.distance)
+        {
+            return (soldier->GetObjId() < pa.soldier->GetObjId());
+        } else
+        {
+            return distance < pa.distance;
+        }
     } else
     {
         return soldier->GetRank() > pa.soldier->GetRank();
     }
 }
 
-std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPoint targetPt, std::vector<bool>& use_seas, const unsigned char player_attacker) const
+std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPoint targetPt, std::vector<bool>& use_seas,
+                                                                     const unsigned char player_attacker) const
 {
-    // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the harbor this might be blocked
+    // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the harbor this might be
+    // blocked
     const MapPoint flagPt = GetNeighbour(targetPt, Direction::SOUTHEAST);
     std::vector<unsigned> harbor_points;
     // Check each possible harbor
@@ -544,7 +536,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
             const unsigned short seaId = GetSeaId(curHbId, Direction::fromInt(z));
             if(!seaId)
                 continue;
-            //checks previously tested sea ids to skip pathfinding
+            // checks previously tested sea ids to skip pathfinding
             bool previouslytested = false;
             for(unsigned k = 0; k < z; k++)
             {
@@ -573,9 +565,12 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
     return harbor_points;
 }
 
-std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapPoint targetPt, const std::vector<unsigned short>& usableSeas, const unsigned char player_attacker)const
+std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapPoint targetPt,
+                                                                      const std::vector<unsigned short>& usableSeas,
+                                                                      const unsigned char player_attacker) const
 {
-    // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the harbor this might be blocked
+    // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the harbor this might be
+    // blocked
     const MapPoint flagPt = GetNeighbour(targetPt, Direction::SOUTHEAST);
     std::vector<unsigned short> confirmedSeaIds;
     // Check each possible harbor
@@ -604,7 +599,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
             if(!helpers::contains(usableSeas, seaId) || helpers::contains(confirmedSeaIds, seaId))
                 continue;
 
-            //checks previously tested sea ids to skip pathfinding
+            // checks previously tested sea ids to skip pathfinding
             bool previouslytested = false;
             for(unsigned k = 0; k < z; k++)
             {
@@ -622,7 +617,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
             if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE) != INVALID_DIR)
             {
                 confirmedSeaIds.push_back(seaId);
-                //all sea ids confirmed? return without changes
+                // all sea ids confirmed? return without changes
                 if(confirmedSeaIds.size() == usableSeas.size())
                     return confirmedSeaIds;
             }
@@ -653,12 +648,13 @@ std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const
     return harbor_points;
 }
 
-/// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer bestimmten sea id aus
-unsigned int GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount)const
+/// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten können von einer
+/// bestimmten sea id aus
+unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount) const
 {
     // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
-    unsigned int attackercount = 0;
+    unsigned attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
     const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetHarbors();
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
@@ -688,17 +684,19 @@ unsigned int GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char 
             if(returnCount)
                 attackercount++;
             else
-                attackercount += (tmp_soldiers[j]->GetJobType() - 20); //private is type 21 so this increases soldiercount by 1-5 depending on rank
+                attackercount +=
+                  (tmp_soldiers[j]->GetJobType() - 20); // private is type 21 so this increases soldiercount by 1-5 depending on rank
         }
     }
     return attackercount;
 }
 
 /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
-std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const
+std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSeaAttack(const unsigned char player_attacker,
+                                                                                        const MapPoint pt) const
 {
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers;
-    //sea attack abgeschaltet per addon?
+    // sea attack abgeschaltet per addon?
     if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
         return attackers;
     // Do we have an attackble military building?
@@ -740,12 +738,14 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
         for(std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator itBld = tmp.begin(); itBld != tmp.end(); ++itBld)
         {
             // Check if the building was already inserted
-            std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator oldBldIt = std::find_if(buildings.begin(), buildings.end(), nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld->building));
+            std::vector<nobHarborBuilding::SeaAttackerBuilding>::iterator oldBldIt =
+              std::find_if(buildings.begin(), buildings.end(), nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld->building));
             if(oldBldIt == buildings.end())
             {
                 // Not found -> Add
                 buildings.push_back(*itBld);
-            }else if(oldBldIt->distance > itBld->distance || (oldBldIt->distance == itBld->distance && oldBldIt->harbor->GetObjId() > itBld->harbor->GetObjId()) )
+            } else if(oldBldIt->distance > itBld->distance
+                      || (oldBldIt->distance == itBld->distance && oldBldIt->harbor->GetObjId() > itBld->harbor->GetObjId()))
             {
                 // New distance is smaller (with tie breaker for async prevention) -> update
                 *oldBldIt = *itBld;

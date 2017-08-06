@@ -21,11 +21,12 @@
 #include <string>
 
 #ifdef _WIN32
-#   include <windows.h>
-#   include <shellapi.h>
-#   include <stdexcept>
+#include <windows.h>
+#include <shellapi.h>
+#include <stdexcept>
 
-WindowsCmdLine::WindowsCmdLine(){
+WindowsCmdLine::WindowsCmdLine()
+{
     int nArgs;
     wchar_t** argList = CommandLineToArgvW(GetCommandLineW(), &nArgs);
     if(!argList || nArgs < 1)
@@ -35,7 +36,8 @@ WindowsCmdLine::WindowsCmdLine(){
 }
 #endif // _WIN32
 
-WindowsCmdLine::WindowsCmdLine(int argc, wchar_t** argv){
+WindowsCmdLine::WindowsCmdLine(int argc, wchar_t** argv)
+{
     init(argc, argv);
 }
 
@@ -43,7 +45,8 @@ void WindowsCmdLine::init(int argc, wchar_t** argv)
 {
     // Required so pointers to data won't change
     arguments_.resize(argc);
-    for(int i = 0; i < argc; i++){
+    for(int i = 0; i < argc; i++)
+    {
         std::string argument = cvWideStringToUTF8(argv[i]);
         arguments_[i].assign(argument.begin(), argument.end());
         arguments_[i].push_back('\0');
@@ -51,6 +54,7 @@ void WindowsCmdLine::init(int argc, wchar_t** argv)
     }
 }
 
-char** WindowsCmdLine::getArgv(){
+char** WindowsCmdLine::getArgv()
+{
     return argv_.empty() ? NULL : &argv_[0];
 }

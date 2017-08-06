@@ -23,16 +23,9 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 
-ctrlCheck::ctrlCheck(Window* parent,
-                     unsigned int id,
-                     const DrawPoint& pos,
-                     const Extent& size,
-                     TextureColor tc,
-                     const std::string& text,
-                     glArchivItem_Font* font,
-                     bool readonly)
-    : Window(parent, id, pos, size),
-      tc(tc), text(text), font(font), check(false), readonly(readonly)
+ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
+                     glArchivItem_Font* font, bool readonly)
+    : Window(parent, id, pos, size), tc(tc), text(text), font(font), check(false), readonly(readonly)
 {
 }
 
@@ -71,7 +64,7 @@ void ctrlCheck::Draw_()
     {
         // If we draw only the check mark, draw surrounding box smaller and center checkbox
         drawRect.setSize(Extent(boxSize + 2 * spacing, drawRect.getSize().y));
-        drawRect.move(DrawPoint((GetSize().x - drawRect.getSize().x)  / 2, 0));
+        drawRect.move(DrawPoint((GetSize().x - drawRect.getSize().x) / 2, 0));
     }
     short boxStartOffsetX = drawRect.getSize().x - spacing - boxSize;
     if(boxStartOffsetX < 0)
@@ -84,7 +77,8 @@ void ctrlCheck::Draw_()
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, glArchivItem_Font::DF_VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0, availableWidth);
+        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, glArchivItem_Font::DF_VCENTER,
+                   (check ? COLOR_YELLOW : 0xFFBBBBBB), 0, availableWidth);
     }
 
     DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);

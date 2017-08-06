@@ -18,16 +18,16 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofPlaner.h"
 
-#include "Loader.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "world/GameWorldGame.h"
-#include "buildings/noBuildingSite.h"
+#include "Loader.h"
 #include "Random.h"
-#include "ogl/glArchivItem_Bitmap_Player.h"
-#include "SoundManager.h"
 #include "SerializedGameData.h"
-#include "EventManager.h"
+#include "SoundManager.h"
+#include "buildings/noBuildingSite.h"
+#include "ogl/glArchivItem_Bitmap_Player.h"
+#include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 class RoadSegment;
 
@@ -45,10 +45,9 @@ void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(static_cast<unsigned char>(pd));
 }
 
-nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id),
-    state(PlanerState(sgd.PopUnsignedChar())),
-    building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
-    pd(PlaningDir(sgd.PopUnsignedChar()))
+nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id)
+    : noFigure(sgd, obj_id), state(PlanerState(sgd.PopUnsignedChar())), building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
+      pd(PlaningDir(sgd.PopUnsignedChar()))
 {
 }
 
@@ -57,7 +56,7 @@ void nofPlaner::GoalReached()
     state = STATE_WALKING;
 
     // Zufällig Uhrzeigersinn oder dagegen
-    pd = ( RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0 ) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
+    pd = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) == 0) ? (PD_CLOCKWISE) : (PD_COUNTERCLOCKWISE);
 
     // Je nachdem erst nach rechts oder links gehen
     StartWalking((pd == PD_CLOCKWISE) ? Direction::SOUTHWEST : Direction::EAST);
@@ -81,8 +80,7 @@ void nofPlaner::Walked()
 
         GoHome();
         StartWalking(Direction::SOUTHEAST);
-    }
-    else
+    } else
     {
         /// Anfangen zu arbeiten
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[JOB_PLANER].work_length, 1);
@@ -133,8 +131,9 @@ void nofPlaner::Draw(DrawPoint drawPt)
         case STATE_WALKING:
         {
             DrawWalkingBobJobs(drawPt, JOB_PLANER);
-//          DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
-        } break;
+            //          DrawWalking(x,y,LOADER.GetBobN("jobs"),JOB_CONSTS[JOB_PLANER].jobs_bob_id,false);
+        }
+        break;
         case STATE_PLANING:
         {
             // 41
@@ -143,31 +142,8 @@ void nofPlaner::Draw(DrawPoint drawPt)
             unsigned now_id = GAMECLIENT.Interpolate(69, current_ev);
 
             // spezielle Animation am Ende
-            const unsigned ANIMATION[21] =
-            {
-                273,
-                273,
-                273,
-                273,
-                273,
-                274,
-                274,
-                275,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                276,
-                277,
-                277,
-                278
-            };
-
+            const unsigned ANIMATION[21] = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
+                                            276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
 
             unsigned bobId;
             if(now_id < 20)
@@ -186,16 +162,12 @@ void nofPlaner::Draw(DrawPoint drawPt)
             // Tret-Sound
             else if(now_id == 20 || now_id == 28)
                 SOUNDMANAGER.PlayNOSound(66, this, now_id, 200);
-
-        } break;
-
-
-
+        }
+        break;
     }
 }
 
-
-void nofPlaner::HandleDerivedEvent(const unsigned int id)
+void nofPlaner::HandleDerivedEvent(const unsigned id)
 {
     if(id == 1)
     {

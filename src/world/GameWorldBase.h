@@ -18,11 +18,11 @@
 #ifndef GameWorldBase_h__
 #define GameWorldBase_h__
 
-#include "world/World.h"
 #include "buildings/nobBaseMilitary.h"
-#include "postSystem/PostManager.h"
-#include "notifications/NotificationManager.h"
 #include "helpers/Deleter.h"
+#include "notifications/NotificationManager.h"
+#include "postSystem/PostManager.h"
+#include "world/World.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
@@ -40,7 +40,7 @@ class nofPassiveSoldier;
 class RoadPathFinder;
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
-class GameWorldBase: public World
+class GameWorldBase : public World
 {
     boost::interprocess::unique_ptr<RoadPathFinder, Deleter<RoadPathFinder> > roadPathFinder;
     boost::interprocess::unique_ptr<FreePathFinder, Deleter<FreePathFinder> > freePathFinder;
@@ -50,6 +50,7 @@ class GameWorldBase: public World
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
+
 protected:
     boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
     /// Interface zum GUI
@@ -95,7 +96,7 @@ public:
 
     /// Finds a path for figures. Returns 0xFF if none found
     unsigned char FindHumanPath(const MapPoint start, const MapPoint dest, unsigned max_route = 0xFFFFFFFF, bool random_route = false,
-        unsigned* length = NULL, std::vector<Direction>* route = NULL) const;
+                                unsigned* length = NULL, std::vector<Direction>* route = NULL) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     bool FindShipPathToHarbor(const MapPoint start, unsigned harborId, unsigned seaId, std::vector<Direction>* route, unsigned* length);
     /// Find path for ships with a limited distance. Return true on success
@@ -128,7 +129,8 @@ public:
     /// und gibt ggf. die Meeres-ID zurück, ansonsten 0
     bool IsCoastalPointToSeaWithHarbor(const MapPoint pt) const;
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir, const unsigned char player) const;
+    unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
+                                    const unsigned char player) const;
     /// Berechnet die Entfernung zwischen 2 Hafenpunkten
     unsigned CalcHarborDistance(const unsigned habor_id1, const unsigned harborId2) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
@@ -143,11 +145,14 @@ public:
     bool IsSinglePlayer() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
-    EventManager& GetEvMgr(){ return em; }
+    EventManager& GetEvMgr() { return em; }
     const EventManager& GetEvMgr() const { return em; }
-    PostManager& GetPostMgr(){ return postManager; }
+    PostManager& GetPostMgr() { return postManager; }
     const PostManager& GetPostMgr() const { return postManager; }
-    NotificationManager& GetNotifications() const { return const_cast<GameWorldBase*>(this)->notifications; } // We want to be abled to add notifications even on a const world
+    NotificationManager& GetNotifications() const
+    {
+        return const_cast<GameWorldBase*>(this)->notifications;
+    } // We want to be abled to add notifications even on a const world
 
     struct PotentialSeaAttacker
     {
@@ -155,11 +160,8 @@ public:
         struct CmpSoldier
         {
             nofPassiveSoldier* const search;
-            CmpSoldier(nofPassiveSoldier* const search): search(search){}
-            bool operator()(const PotentialSeaAttacker& other)
-            {
-                return other.soldier == search;
-            }
+            CmpSoldier(nofPassiveSoldier* const search) : search(search) {}
+            bool operator()(const PotentialSeaAttacker& other) { return other.soldier == search; }
         };
         /// Soldat, der als Angreifer in Frage kommt
         nofPassiveSoldier* soldier;
@@ -168,30 +170,36 @@ public:
         /// Entfernung Hafen-Hafen (entscheidende)
         unsigned distance;
 
-        PotentialSeaAttacker(nofPassiveSoldier* soldier, nobHarborBuilding* harbor, unsigned distance): soldier(soldier), harbor(harbor), distance(distance){}
+        PotentialSeaAttacker(nofPassiveSoldier* soldier, nobHarborBuilding* harbor, unsigned distance)
+            : soldier(soldier), harbor(harbor), distance(distance)
+        {
+        }
 
         /// Komperator zum Sortieren
         bool operator<(const PotentialSeaAttacker& pa) const;
     };
 
-
     /// Liefert Hafenpunkte im Umkreis von einem bestimmten Milit�rgeb�ude
     std::vector<unsigned> GetHarborPointsAroundMilitaryBuilding(const MapPoint pt) const;
     /// Return all harbor Ids that can be used as a landing site for attacking the given point
-    /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as seaId=0 is invalid sea)
-    std::vector<unsigned> GetUsableTargetHarborsForAttack(const MapPoint targetPt, std::vector<bool>& use_seas, const unsigned char player_attacker)const;
+    /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as seaId=0 is invalid
+    /// sea)
+    std::vector<unsigned> GetUsableTargetHarborsForAttack(const MapPoint targetPt, std::vector<bool>& use_seas,
+                                                          const unsigned char player_attacker) const;
     /// Return all sea Ids from @param usableSeas that can be used for attacking the given point
-    std::vector<unsigned short> GetFilteredSeaIDsForAttack(const MapPoint targetPt, const std::vector<unsigned short>& usableSeas, const unsigned char player_attacker)const;
+    std::vector<unsigned short> GetFilteredSeaIDsForAttack(const MapPoint targetPt, const std::vector<unsigned short>& usableSeas,
+                                                           const unsigned char player_attacker) const;
     /// Return all soldiers that can be used to attack the given point via a sea
     std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint targetPt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned int GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
+    unsigned GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
     void RecalcBQ(const MapPoint pt);
 
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
+
 protected:
     /// Called when the visibility of point changed for a player
     void VisibilityChanged(const MapPoint pt, unsigned player) override;
@@ -202,9 +210,8 @@ private:
     /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)
     /// T_IsHarborOk must be a predicate taking a harbor Id and returning a bool if the harbor is valid to return
     template<typename T_IsHarborOk>
-    unsigned GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
-        const unsigned char player, T_IsHarborOk isHarborOk) const;
-
+    unsigned GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir, const unsigned char player,
+                            T_IsHarborOk isHarborOk) const;
 };
 
 #endif // GameWorldBase_h__

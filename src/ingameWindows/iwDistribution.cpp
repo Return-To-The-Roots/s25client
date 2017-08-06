@@ -18,27 +18,28 @@
 #include "defines.h" // IWYU pragma: keep
 #include "iwDistribution.h"
 
+#include "GameClient.h"
+#include "GamePlayer.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlProgress.h"
 #include "controls/ctrlTab.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
-#include "WindowManager.h"
 #include "iwHelp.h"
-#include "world/GameWorldViewer.h"
 #include "ogl/glArchivItem_Font.h"
+#include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 
- std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
+std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
 
 /// Dertermines width of the progress bars: distance to the window borders
 const unsigned PROGRESS_BORDER_DISTANCE = 20;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312), _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312), _("Distribution of goods"),
+                   LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), settings_changed(false)
 {
     CreateGroups();
@@ -49,7 +50,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     DrawPoint progPos(PROGRESS_BORDER_DISTANCE - tab->GetPos().x, txtPos.y);
     const Extent progSize(GetSize().x - 2 * PROGRESS_BORDER_DISTANCE, 20);
 
-    for(unsigned groupId=0; groupId < groups.size(); groupId++)
+    for(unsigned groupId = 0; groupId < groups.size(); groupId++)
     {
         const DistributionGroup& group = groups[groupId];
         ctrlGroup* tabGrp = tab->AddTab(group.img, group.name, groupId);
@@ -111,12 +112,12 @@ void iwDistribution::TransmitSettings()
     }
 }
 
-void iwDistribution::Msg_Group_ProgressChange(const unsigned int  /*group_id*/, const unsigned int  /*ctrl_id*/, const unsigned short  /*position*/)
+void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     settings_changed = true;
 }
 
-void iwDistribution::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void iwDistribution::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte
@@ -141,7 +142,6 @@ void iwDistribution::UpdateSettings()
     }
 }
 
-
 void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
@@ -152,19 +152,19 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 2:
         {
-            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _(
-                "The priority of goods for the individual buildings can be set here. "
-                "The higher the value, the quicker the required goods are delivered "
-                "to the building concerned.")));
-
-        } break;
-            // Default button
+            WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("The priority of goods for the individual buildings can be set here. "
+                                                              "The higher the value, the quicker the required goods are delivered "
+                                                              "to the building concerned.")));
+        }
+        break;
+        // Default button
         case 10:
         {
             GAMECLIENT.visual_settings.distribution = GAMECLIENT.default_settings.distribution;
             UpdateSettings();
             settings_changed = true;
-        } break;
+        }
+        break;
     }
 }
 

@@ -21,26 +21,24 @@
 #include "mygettext/src/mygettext.h"
 #include <boost/format.hpp>
 
-PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect):
-    sendFrame_(sendFrame), text_(text), cat_(cat), pt_(pt), soundEffect_(soundEffect)
-{}
+PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), text_(text), cat_(cat), pt_(pt), soundEffect_(soundEffect)
+{
+}
 
-PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect) :
-    sendFrame_(sendFrame), text_(text), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
-{}
+PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), text_(text), cat_(cat), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
+{
+}
 
-PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect):
-    sendFrame_(sendFrame), cat_(PostCategory::Diplomacy), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
+PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled, SoundEffect soundEffect)
+    : sendFrame_(sendFrame), cat_(PostCategory::Diplomacy), pt_(MapPoint::Invalid()), soundEffect_(soundEffect)
 {
     if(acceptedOrCanceled)
     {
-        text_ = boost::str(
-            boost::format(_("The %s between player '%s' and you has been concluded.")) % PACT_NAMES[pt] % otherPlayer.name
-        );
+        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been concluded.")) % PACT_NAMES[pt] % otherPlayer.name);
     } else
     {
-        text_ = boost::str(
-            boost::format(_("The %s between player '%s' and you has been cancelled.")) % PACT_NAMES[pt] % otherPlayer.name
-        );
+        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been cancelled.")) % PACT_NAMES[pt] % otherPlayer.name);
     }
 }

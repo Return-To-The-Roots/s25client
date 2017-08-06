@@ -17,48 +17,48 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "CreateSeaWorld.h"
+#include "test/initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
-#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 
-CreateSeaWorld::CreateSeaWorld(const MapExtent& size, unsigned numPlayers):
-    size_(size), playerNations_(numPlayers, NAT_ROMANS)
-{}
+CreateSeaWorld::CreateSeaWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS)
+{
+}
 
-namespace{
-    bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbors)
+namespace {
+bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbors)
+{
+    // Get all points within a radius of 3 and place the harbor on the first possible place
+    std::vector<MapPoint> pts = world.GetPointsInRadius(pt, 3);
+    BOOST_FOREACH(MapPoint curPt, pts)
     {
-        // Get all points within a radius of 3 and place the harbor on the first possible place
-        std::vector<MapPoint> pts = world.GetPointsInRadius(pt, 3);
-        BOOST_FOREACH(MapPoint curPt, pts)
+        // Harbor only at castles
+        world.RecalcBQ(curPt);
+        if(world.GetNode(curPt).bq != BQ_CASTLE)
+            continue;
+        // We must have a coast around
+        for(unsigned i = 0; i < 6; i++)
         {
-            // Harbor only at castles
-            world.RecalcBQ(curPt);
-            if(world.GetNode(curPt).bq != BQ_CASTLE)
+            MapPoint posCoastPt = world.GetNeighbour(curPt, i);
+            // Coast must not be water
+            if(world.IsWaterPoint(posCoastPt))
                 continue;
-            // We must have a coast around
-            for(unsigned i = 0; i < 6; i++)
+            // But somewhere around must be a sea
+            for(unsigned j = 0; j < 6; j++)
             {
-                MapPoint posCoastPt = world.GetNeighbour(curPt, i);
-                // Coast must not be water
-                if(world.IsWaterPoint(posCoastPt))
-                    continue;
-                // But somewhere around must be a sea
-                for(unsigned j = 0; j < 6; j++)
+                MapPoint posSeaPt = world.GetNeighbour(posCoastPt, j);
+                if(world.IsSeaPoint(posSeaPt))
                 {
-                    MapPoint posSeaPt = world.GetNeighbour(posCoastPt, j);
-                    if(world.IsSeaPoint(posSeaPt))
-                    {
-                        harbors.push_back(curPt);
-                        return true;
-                    }
+                    harbors.push_back(curPt);
+                    return true;
                 }
             }
         }
-        return false;
     }
+    return false;
 }
+} // namespace
 
 bool CreateSeaWorld::operator()(GameWorldGame& world) const
 {
@@ -87,7 +87,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
      * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
      * WWWWWWWWWWWWWWWWWWWWWWW
      */
-     // Init some land stripes of size 15 (a bit less than the HQ radius)
+    // Init some land stripes of size 15 (a bit less than the HQ radius)
     const MapCoord offset = 7;
     const MapCoord landSize = 15;
     // We need the offset at each side, the land on each side
@@ -155,7 +155,6 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         return false;
     world.InitAfterLoad();
 
-
     /* The HQs and harbor(ids) are here: (H=HQ, 1-8=harbor)
      * WWWWWWWWWWWWWWWWWWWWWWW
      * WWWWWWWWWW1WWWWWWWWWWWW
@@ -174,8 +173,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     return true;
 }
 
-
-CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers): size_(size), playerNations_(numPlayers, NAT_ROMANS)
+CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS)
 {
     // Only 2 players supported
     RTTR_Assert(numPlayers == 2u);

@@ -31,7 +31,7 @@ AIEventManager::~AIEventManager()
 
 AIEvent::Base* AIEventManager::GetEvent()
 {
-    if (events.empty())
+    if(events.empty())
         return NULL;
 
     AIEvent::Base* ev = events.front();

@@ -29,15 +29,12 @@
  */
 class AddonMilitaryAid : public AddonBool
 {
-    public:
-        AddonMilitaryAid() : AddonBool(AddonId::MILITARY_AID,
-                                           ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY,
-                                           _("Military Aid"),
-                                           _("Adds military building indicators in construction aid mode."),
-                                           0
-                                          )
-        {
-        }
+public:
+    AddonMilitaryAid()
+        : AddonBool(AddonId::MILITARY_AID, ADDONGROUP_GAMEPLAY | ADDONGROUP_MILITARY, _("Military Aid"),
+                    _("Adds military building indicators in construction aid mode."), 0)
+    {
+    }
 };
 
 #endif // !ADDONMILITARYAID_H_INCLUDED

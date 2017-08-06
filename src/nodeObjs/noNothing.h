@@ -24,19 +24,23 @@ class SerializedGameData;
 
 class noNothing : public noBase
 {
-    public:
-        noNothing();
+public:
+    noNothing();
 
-    protected:  void Destroy_noNothing() { Destroy_noBase(); }
-    public:     void Destroy() override { Destroy_noNothing(); }
+protected:
+    void Destroy_noNothing() { Destroy_noBase(); }
 
-        /// Serialisierungsfunktionen
-    public:     void Serialize(SerializedGameData&  /*sgd*/) const override {}
+public:
+    void Destroy() override { Destroy_noNothing(); }
 
-        GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+    /// Serialisierungsfunktionen
+public:
+    void Serialize(SerializedGameData& /*sgd*/) const override {}
 
-        /// An x,y zeichnen.
-        void Draw(DrawPoint drawPt) override;
+    GO_Type GetGOT() const override { return GOT_UNKNOWN; }
+
+    /// An x,y zeichnen.
+    void Draw(DrawPoint drawPt) override;
 };
 
 #endif // !NONOTHING_H_INCLUDED

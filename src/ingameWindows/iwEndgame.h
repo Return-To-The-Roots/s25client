@@ -23,13 +23,11 @@
 
 class iwEndgame : public IngameWindow
 {
-    public:
+public:
+    iwEndgame();
 
-        iwEndgame();
-
-    private:
-
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
 };
 
 #endif // !iwENDGAME_H_INCLUDED

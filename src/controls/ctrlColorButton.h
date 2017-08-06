@@ -26,15 +26,12 @@
 /// Button mit Farbe
 class ctrlColorButton : public ctrlButton, public ctrlBaseColor
 {
-    public:
+public:
+    ctrlColorButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, unsigned fillColor,
+                    const std::string& tooltip);
 
-        ctrlColorButton(Window* parent, unsigned int id, const DrawPoint& pos,
-                        const Extent& size, const TextureColor tc,
-                        unsigned int fillColor, const std::string& tooltip);
-
-    protected:
-
-        void DrawContent() const override;
+protected:
+    void DrawContent() const override;
 };
 
 #endif // ctrlColorButton_h__

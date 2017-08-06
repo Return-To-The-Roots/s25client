@@ -13,21 +13,22 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>. 
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef GCExecutor_h__
 #define GCExecutor_h__
 
-#include "factories/GameCommandFactory.h"
 #include "GameCommand.h"
+#include "factories/GameCommandFactory.h"
 #include "libutil/src/Serializer.h"
+#include <boost/test/unit_test.hpp>
 
-class GCExecutor: public GameCommandFactory
+class GCExecutor : public GameCommandFactory
 {
 public:
-
     unsigned curPlayer;
-    GCExecutor(): curPlayer(0){}
+    GCExecutor() : curPlayer(0) {}
+
 protected:
     bool AddGC(gc::GameCommand* gc) override
     {

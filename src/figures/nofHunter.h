@@ -28,60 +28,64 @@ class nobUsual;
 /// Klasse für den Jäger, der Tiere jagt und Nahrung produziert
 class nofHunter : public nofBuildingWorker
 {
-    private:
+private:
+    /// Tier, das gejagt wird
+    noAnimal* animal;
+    /// Punkt, von dem aus geschossen wird
+    MapPoint shootingPos;
+    /// Richtung, in die geschossen wird
+    Direction shooting_dir;
 
-        /// Tier, das gejagt wird
-        noAnimal* animal;
-        /// Punkt, von dem aus geschossen wird
-        MapPoint shootingPos;
-        /// Richtung, in die geschossen wird
-        Direction shooting_dir;
+private:
+    /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
+    void WalkedDerived() override;
+    /// Malt den Arbeiter beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 89; }
 
-    private:
+    /// Trifft Vorbereitungen fürs nach Hause - Laufen
+    void StartWalkingHome();
+    /// Läuft wieder zu seiner Hütte zurück
+    void WalkHome();
 
-        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-        void WalkedDerived() override;
-        /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 89; }
+    /// Prüft, ob der Schießpunkt geeignet ist
+    bool IsShootingPointGood(const MapPoint pt);
 
-        /// Trifft Vorbereitungen fürs nach Hause - Laufen
-        void StartWalkingHome();
-        /// Läuft wieder zu seiner Hütte zurück
-        void WalkHome();
+    /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
+    void HandleStateChasing();
+    void HandleStateFindingShootingPoint();
+    void HandleStateShooting();
+    void HandleStateWalkingToCadaver();
+    void HandleStateEviscerating();
 
-        /// Prüft, ob der Schießpunkt geeignet ist
-        bool IsShootingPointGood(const MapPoint pt);
+public:
+    nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofHunter(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
-        void HandleStateChasing();
-        void HandleStateFindingShootingPoint();
-        void HandleStateShooting();
-        void HandleStateWalkingToCadaver();
-        void HandleStateEviscerating();
+    void Destroy() override
+    {
+        RTTR_Assert(!animal);
+        nofBuildingWorker::Destroy();
+    }
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofHunter(SerializedGameData& sgd) const;
 
-        nofHunter(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofHunter(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofHunter(sgd); }
 
-        void Destroy() override{ RTTR_Assert(!animal); nofBuildingWorker::Destroy(); }
+    GO_Type GetGOT() const override { return GOT_NOF_HUNTER; }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofHunter(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofHunter(sgd); }
+    void HandleDerivedEvent(const unsigned id) override;
 
-        GO_Type GetGOT() const override { return GOT_NOF_HUNTER; }
+    void TryStartHunting();
 
-        void HandleDerivedEvent(const unsigned int id) override;
-
-        void TryStartHunting();
-
-        /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
-        void AnimalLost();
-        /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-        void WorkAborted() override;
+    /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
+    void AnimalLost();
+    /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
+    void WorkAborted() override;
 };
 
 #endif

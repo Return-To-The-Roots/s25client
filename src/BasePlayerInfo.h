@@ -19,8 +19,8 @@
 #define BasePlayerInfo_h__
 
 #include "gameTypes/AIInfo.h"
-#include "gameTypes/PlayerState.h"
 #include "gameTypes/Nation.h"
+#include "gameTypes/PlayerState.h"
 #include "gameTypes/TeamTypes.h"
 #include <string>
 
@@ -51,7 +51,6 @@ struct BasePlayerInfo
     /// Returns index of color in PLAYER_COLORS array or -1 if not found
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
-
 };
 
 #endif // BasePlayerInfo_h__

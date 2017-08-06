@@ -18,14 +18,13 @@
 #ifndef VertexUtility_h__
 #define VertexUtility_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "stdint.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 class VertexUtility
 {
 public:
-    
     /**
      * Computes the position of the vertex with the specified index on the map.
      * @param index vertex index
@@ -59,9 +58,7 @@ public:
      * @param size of the map
      * @return the distance between the two vertices
      */
-    static double Distance(const Position& p1,
-                           const Position& p2,
-                           const MapExtent& size);
+    static double Distance(const Position& p1, const Position& p2, const MapExtent& size);
 };
 
 #endif // VertexUtility_h__

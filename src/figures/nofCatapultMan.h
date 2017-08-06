@@ -24,59 +24,56 @@ class nobUsual;
 /// Arbeiter im Katapult
 class nofCatapultMan : public nofBuildingWorker
 {
-        /// Drehschritte für den Katapult auf dem Dach, bis er die Angriffsrichtung erreicht hat
-        /// negativ - andere Richtung!
-        int wheel_steps;
+    /// Drehschritte für den Katapult auf dem Dach, bis er die Angriffsrichtung erreicht hat
+    /// negativ - andere Richtung!
+    int wheel_steps;
 
-        /// Ein mögliches Ziel für den Katapult
-        class PossibleTarget
-        {
-            public:
-
-                /// Gebäude
-                MapPoint pos;
-                /// Entfernung
-                unsigned distance;
-
-                PossibleTarget() : pos(0, 0), distance(0) {}
-                PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
-                PossibleTarget(SerializedGameData& sgd);
-
-                void Serialize_PossibleTarget(SerializedGameData& sgd) const;
-
-        } target; /// das anvisierte Ziel
-
-    private:
-
-        /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-        void WalkedDerived() override;
-        /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override { return 0; }
-
-        /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
-        void HandleStateTargetBuilding();
-        void HandleStateBackOff();
-
+    /// Ein mögliches Ziel für den Katapult
+    class PossibleTarget
+    {
     public:
+        /// Gebäude
+        MapPoint pos;
+        /// Entfernung
+        unsigned distance;
 
-        nofCatapultMan(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id);
+        PossibleTarget() : pos(0, 0), distance(0) {}
+        PossibleTarget(const MapPoint pt, const unsigned distance) : pos(pt), distance(distance) {}
+        PossibleTarget(SerializedGameData& sgd);
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofCatapultMan(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofCatapultMan(sgd); }
+        void Serialize_PossibleTarget(SerializedGameData& sgd) const;
 
-        GO_Type GetGOT() const override { return GOT_NOF_CATAPULTMAN; }
+    } target; /// das anvisierte Ziel
 
-        void HandleDerivedEvent(const unsigned int id) override;
+private:
+    /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
+    void WalkedDerived() override;
+    /// Malt den Arbeiter beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override { return 0; }
 
-        /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-        void WorkAborted() override;
+    /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
+    void HandleStateTargetBuilding();
+    void HandleStateBackOff();
+
+public:
+    nofCatapultMan(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id);
+
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofCatapultMan(SerializedGameData& sgd) const;
+
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofCatapultMan(sgd); }
+
+    GO_Type GetGOT() const override { return GOT_NOF_CATAPULTMAN; }
+
+    void HandleDerivedEvent(const unsigned id) override;
+
+    /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
+    void WorkAborted() override;
 };
 
-
-
 #endif
-

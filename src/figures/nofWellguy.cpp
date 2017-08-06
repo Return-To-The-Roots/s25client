@@ -18,106 +18,91 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofWellguy.h"
 
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "buildings/nobUsual.h"
+#include "Loader.h"
 #include "SoundManager.h"
-#include "world/GameWorldGame.h"
+#include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
+#include "world/GameWorldGame.h"
 
-nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace)
-    : nofWorkman(JOB_HELPER, pos, player, workplace)
-{}
+nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_HELPER, pos, player, workplace)
+{
+}
 
 nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
     : nofWorkman(JOB_HELPER, pos, player, goalWh)
-{}
+{
+}
 
 nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{}
+{
+}
 
 void nofWellguy::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = { { -20, 17}, { -18, 17}, { -20, 13}, { -20, 15}, { -18, 17} };
+    const DrawPointInit offsets[NAT_COUNT] = {{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}};
 
-    const DrawPointInit walkoffsets[NAT_COUNT][8] =   //nation, schritt
-    {
-        { {7, 7}, {9, 9}, {5, 12}, {2, 14}, { -1, 17}, { -4, 17}, { -7, 17}, { -10, 17} },
-        { {4, 4}, {8, 8}, {5, 12}, {2, 14}, { -1, 17}, { -3, 19}, { -6, 19}, { -8, 19} },
-        { {5, 5}, {8, 8}, {5, 10}, {2, 13}, { -1, 13}, { -4, 13}, { -7, 13}, { -10, 13} },
-        { {5, 5}, {8, 8}, {5, 10}, {2, 13}, { -1, 15}, { -4, 15}, { -7, 15}, { -10, 15} },
-        { {4, 4}, {8, 8}, {5, 12}, {2, 14}, { -1, 17}, { -3, 19}, { -6, 19}, { -8, 19} }
-    };
-    signed char walkdirection[NAT_COUNT][6] =
-    {
-        {4, 5, 0, 3, 2, 1},
-        {4, 5, 0, 3, 2, 1},
-        {4, 5, 0, 3, 2, 1},
-        {4, 5, 0, 3, 2, 1},
-        {4, 5, 0, 3, 2, 1}
-    };
+    const DrawPointInit walkoffsets[NAT_COUNT][8] = // nation, schritt
+      {{{7, 7}, {9, 9}, {5, 12}, {2, 14}, {-1, 17}, {-4, 17}, {-7, 17}, {-10, 17}},
+       {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}},
+       {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 13}, {-4, 13}, {-7, 13}, {-10, 13}},
+       {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 15}, {-4, 15}, {-7, 15}, {-10, 15}},
+       {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}};
+    signed char walkdirection[NAT_COUNT][6] = {
+      {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}};
 
-    unsigned int max_id = 112;
+    unsigned max_id = 112;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     unsigned char wpNation = workplace->GetNation();
-    unsigned int plColor = gwg->GetPlayer(player).color;
+    unsigned plColor = gwg->GetPlayer(player).color;
 
-    //position zum rauslaufen berechnen
+    // position zum rauslaufen berechnen
     DrawPoint walkOutPos = drawPt + walkoffsets[wpNation][now_id % 8];
-    //position zum reinlaufen berechnen
+    // position zum reinlaufen berechnen
     DrawPoint walkInPos = drawPt + walkoffsets[wpNation][7 - (now_id % 8)];
 
-    if(now_id < 2) //laufen 1
+    if(now_id < 2) // laufen 1
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[10][walkdirection[wpNation][0]][now_id % 8][false].draw(walkOutPos, COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= 2) && (now_id < 4) ) //laufen 2
+    } else if((now_id >= 2) && (now_id < 4)) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[10][walkdirection[wpNation][1]][now_id % 8][false].draw(walkOutPos, COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= 4) && (now_id < 8) ) //laufen 3
+    } else if((now_id >= 4) && (now_id < 8)) // laufen 3
     {
         LOADER.carrier_cache[10][walkdirection[wpNation][2]][now_id % 8][false].draw(walkOutPos, COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= 8) && (now_id < 16) ) //eimer runter lassen
+    } else if((now_id >= 8) && (now_id < 16)) // eimer runter lassen
     {
         if(now_id == 8)
             LOADER.GetPlayerImage("rom_bobs", 346)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
         else
             LOADER.GetPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= 16) && (now_id < max_id - 16) ) //kurbeln
+    } else if((now_id >= 16) && (now_id < max_id - 16)) // kurbeln
     {
         LOADER.GetPlayerImage("rom_bobs", 330 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= max_id - 16) && (now_id < max_id - 8) ) //eimer rauf kurbeln
+    } else if((now_id >= max_id - 16) && (now_id < max_id - 8)) // eimer rauf kurbeln
     {
         LOADER.GetPlayerImage("rom_bobs", 338 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= max_id - 8) && (now_id < max_id - 4) ) //laufen 3
+    } else if((now_id >= max_id - 8) && (now_id < max_id - 4)) // laufen 3
     {
         LOADER.carrier_cache[11][walkdirection[wpNation][3]][now_id % 8][false].draw(walkInPos, COLOR_WHITE, plColor);
-    }
-    else if( (now_id >= max_id - 4) && (now_id < max_id - 2) ) //laufen 2
+    } else if((now_id >= max_id - 4) && (now_id < max_id - 2)) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[11][walkdirection[wpNation][4]][now_id % 8][false].draw(walkInPos, COLOR_WHITE, plColor);
-    }
-    else if(now_id >= max_id - 2) //laufen 1
+    } else if(now_id >= max_id - 2) // laufen 1
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[11][walkdirection[wpNation][5]][now_id % 8][false].draw(walkInPos, COLOR_WHITE, plColor);
     }
-
 
     if((now_id >= 8) && (now_id < max_id - 8) && now_id % 8 == 4)
     {

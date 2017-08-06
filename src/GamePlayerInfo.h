@@ -21,7 +21,7 @@
 #include "PlayerInfo.h"
 
 /// Holds information for players relevant during match-making
-struct GamePlayerInfo: public PlayerInfo
+struct GamePlayerInfo : public PlayerInfo
 {
     GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo);
 
@@ -30,6 +30,7 @@ struct GamePlayerInfo: public PlayerInfo
 
 private:
     unsigned id;
+
 protected:
     bool isDefeated;
 };

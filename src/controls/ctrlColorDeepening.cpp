@@ -18,14 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlColorDeepening.h"
 
-ctrlColorDeepening::ctrlColorDeepening(Window* parent,
-                                       unsigned int id,
-                                       DrawPoint pos,
-                                       const Extent& size,
-                                       TextureColor tc,
-                                       unsigned int fillColor):
-    ctrlDeepening(parent, id, pos, size, tc),
-    ctrlBaseColor(fillColor)
+ctrlColorDeepening::ctrlColorDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc, unsigned fillColor)
+    : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseColor(fillColor)
 {
 }
 

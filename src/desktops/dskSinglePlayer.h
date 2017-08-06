@@ -22,15 +22,15 @@
 #include "desktops/dskMenuBase.h"
 
 /// Klasse des Einzelspieler Desktops.
-class dskSinglePlayer: public dskMenuBase
+class dskSinglePlayer : public dskMenuBase
 {
-    public:
-        dskSinglePlayer();
-    private:
+public:
+    dskSinglePlayer();
 
-        void Msg_ButtonClick(const unsigned int ctrl_id) override;
-        void PrepareSinglePlayerServer();
-        void PrepareLoadGame();
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void PrepareSinglePlayerServer();
+    void PrepareLoadGame();
 };
 
 #endif // !dskSINGLEPLAYER_H_INCLUDED

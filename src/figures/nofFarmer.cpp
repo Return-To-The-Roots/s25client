@@ -18,23 +18,22 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofFarmer.h"
 
-#include "Loader.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "nodeObjs/noEnvObject.h"
-#include "nodeObjs/noGrainfield.h"
+#include "Loader.h"
+#include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
+#include "nodeObjs/noEnvObject.h"
+#include "nodeObjs/noGrainfield.h"
 #include "gameData/TerrainData.h"
 
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)
 {
 }
-
 
 void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
 {
@@ -43,22 +42,19 @@ void nofFarmer::Serialize_nofFarmer(SerializedGameData& sgd) const
     sgd.PushBool(harvest);
 }
 
-nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id),
-    harvest(sgd.PopBool())
+nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
 {
 }
-
 
 /// Malt den Arbeiter beim Arbeiten
 void nofFarmer::DrawWorking(DrawPoint drawPt)
 {
     unsigned now_id;
 
-
     if(harvest)
     {
         LOADER.GetPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.Interpolate(88, current_ev)) % 8)
-        ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -67,14 +63,11 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
             was_sounding = true;
         }
 
-    }
-    else
+    } else
     {
         LOADER.GetPlayerImage("rom_bobs", 132 + GAMECLIENT.Interpolate(88, current_ev) % 8)
-        ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
+          ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
     }
-
-
 }
 
 /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
@@ -111,8 +104,7 @@ void nofFarmer::WorkFinished()
 
         // Getreide, was wir geerntet haben, in die Hand nehmen
         ware = GD_GRAIN;
-    }
-    else
+    } else
     {
         // If the point got bad (e.g. something was build), abort work
         if(GetPointQuality(pos) == PQ_NOTPOSSIBLE)
@@ -165,7 +157,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
             if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(i))))
                 ++good_terrains;
         }
-        if (good_terrains != 6)
+        if(good_terrains != 6)
             return PQ_NOTPOSSIBLE;
 
         // Ist Platz frei?
@@ -183,9 +175,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
 
         return PQ_CLASS2;
     }
-
 }
-
 
 void nofFarmer::WorkAborted()
 {
@@ -194,4 +184,3 @@ void nofFarmer::WorkAborted()
     if(harvest && state == STATE_WORK)
         gwg->GetSpecObj<noGrainfield>(pos)->EndHarvesting();
 }
-

@@ -17,26 +17,21 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlScrollBar.h"
-#include "ctrlButton.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "ctrlButton.h"
 #include "driver/src/MouseCoords.h"
 
-ctrlScrollBar::ctrlScrollBar(Window* parent,
-                             unsigned int id,
-                             const DrawPoint& pos,
-                             const Extent& size,
-                             unsigned short button_height,
-                             TextureColor tc,
-                             unsigned short pagesize)
-    : Window(parent, id, pos, size),
-      button_height(button_height), tc(tc), pagesize(pagesize),
-      scroll_range(0), scroll_pos(0), scroll_height(0), sliderHeight(0), sliderPos(0), isMouseScrolling(false), last_y(0)
+ctrlScrollBar::ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
+                             TextureColor tc, unsigned short pagesize)
+    : Window(parent, id, pos, size), button_height(button_height), tc(tc), pagesize(pagesize), scroll_range(0), scroll_pos(0),
+      scroll_height(0), sliderHeight(0), sliderPos(0), isMouseScrolling(false), last_y(0)
 {
     SetVisible(false);
 
     AddImageButton(0, DrawPoint(0, 0), Extent(size.x, button_height), tc, LOADER.GetImageN("io", 33));
-    AddImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1), Extent(size.x, button_height), tc, LOADER.GetImageN("io", 34));
+    AddImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1), Extent(size.x, button_height), tc,
+                   LOADER.GetImageN("io", 34));
 
     Resize(size);
 }
@@ -70,27 +65,27 @@ bool ctrlScrollBar::Msg_LeftUp(const MouseCoords& mc)
 
 bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
 {
-    if (IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().y + button_height + sliderPos, GetSize().x, sliderHeight)))
+    if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().y + button_height + sliderPos, GetSize().x, sliderHeight)))
     {
         // Maus auf dem Scrollbutton
         isMouseScrolling = true;
         return true;
-    }else if (IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().y + button_height, GetSize().x, sliderPos)))
+    } else if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().y + button_height, GetSize().x, sliderPos)))
     {
         // Clicked above slider -> Move half a slider height up
-        if (sliderPos < sliderHeight / 2)
+        if(sliderPos < sliderHeight / 2)
             sliderPos = 0;
         else
             sliderPos -= sliderHeight / 2;
 
         UpdatePosFromSlider();
         return true;
-    }
-    else
+    } else
     {
         unsigned short bottomSliderPos = button_height + sliderPos + sliderHeight;
 
-        if (IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().x + bottomSliderPos, GetSize().x, GetSize().y - (bottomSliderPos + button_height))))
+        if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().x + bottomSliderPos, GetSize().x,
+                                           GetSize().y - (bottomSliderPos + button_height))))
         {
             // Clicked below slider -> Move half a slider height down
             sliderPos += sliderHeight / 2;
@@ -126,7 +121,7 @@ bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
     return RelayMouseMessage(&Window::Msg_MouseMove, mc);
 }
 
-void ctrlScrollBar::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlScrollBar::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -181,8 +176,7 @@ void ctrlScrollBar::Resize(const Extent& newSize)
     {
         downButton->SetVisible(true);
         downButton->SetPos(DrawPoint(0, newSize.y - button_height));
-    }
-    else
+    } else
         downButton->SetVisible(false);
 
     RecalculateSizes();
@@ -247,8 +241,7 @@ void ctrlScrollBar::RecalculateSizes()
             SetVisible(true);
             GetParent()->Msg_ScrollShow(GetID(), IsVisible());
         }
-    }
-    else
+    } else
     {
         scroll_pos = 0;
 

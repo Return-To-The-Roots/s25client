@@ -27,28 +27,32 @@
 #include <vector>
 
 // Use unnamed namespace
-namespace{
+namespace {
 
-    //////////////////////////////////////////////////////////////////////////
-    // EraseReturnsIterator
-    struct EraseVoid{
-        typedef int iterator;
-        typedef const int const_iterator;
-        void erase(iterator);
-    };
-    struct EraseIt{
-        typedef int iterator;
-        typedef const int const_iterator;
-        iterator erase(const_iterator);
-    };
-    struct EraseItInherited: public EraseIt{};
+//////////////////////////////////////////////////////////////////////////
+// EraseReturnsIterator
+struct EraseVoid
+{
+    typedef int iterator;
+    typedef const int const_iterator;
+    void erase(iterator);
+};
+struct EraseIt
+{
+    typedef int iterator;
+    typedef const int const_iterator;
+    iterator erase(const_iterator);
+};
+struct EraseItInherited : public EraseIt
+{
+};
 
-    BOOST_STATIC_ASSERT(!helpers::detail::EraseReturnsIterator<EraseVoid>::value);
-    BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<EraseIt>::value);
-    BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<EraseItInherited>::value);
-    BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator< std::vector<int> >::value);
-    BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator< boost::container::flat_set<int> >::value);
+BOOST_STATIC_ASSERT(!helpers::detail::EraseReturnsIterator<EraseVoid>::value);
+BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<EraseIt>::value);
+BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<EraseItInherited>::value);
+BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<std::vector<int> >::value);
+BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<boost::container::flat_set<int> >::value);
 
-}
+} // namespace
 
 #endif // helperTests_h__

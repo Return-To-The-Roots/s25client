@@ -44,4 +44,4 @@ enum MsgboxResult
     MSR_NOTHING = 0xFFFFFFFF
 };
 
-#endif //!MSGBOX_H_INCLUDED
+#endif //! MSGBOX_H_INCLUDED

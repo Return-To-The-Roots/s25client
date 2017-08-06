@@ -18,13 +18,13 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noMovable.h"
 
-#include "GameClient.h"
-#include "SerializedGameData.h"
 #include "EventManager.h"
-#include "world/GameWorldGame.h"
+#include "GameClient.h"
 #include "GameEvent.h"
+#include "SerializedGameData.h"
+#include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
-#include "Log.h"
+#include "libutil/src/Log.h"
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
@@ -43,31 +43,27 @@ void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
     sgd.PushBool(moving);
 }
 
-noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id) : noCoordBase(sgd, obj_id),
-    curMoveDir(sgd.PopUnsignedChar()),
-    ascent(sgd.PopUnsignedChar()),
-    current_ev(sgd.PopEvent()),
-    pause_walked_gf(sgd.PopUnsignedInt()),
-    pause_event_length(sgd.PopUnsignedInt()),
-    moving(sgd.PopBool())
+noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.PopUnsignedChar()), ascent(sgd.PopUnsignedChar()), current_ev(sgd.PopEvent()),
+      pause_walked_gf(sgd.PopUnsignedInt()), pause_event_length(sgd.PopUnsignedInt()), moving(sgd.PopBool())
 {
 }
 
 void noMovable::Walk()
 {
     moving = false;
-	
-	if (!IsMovingUpwards())
-	{
-		gwg->RemoveFigure(this, pos);
-		
-		pos = gwg->GetNeighbour(pos, curMoveDir);
-		
-		gwg->AddFigure(this, pos);
-	} else
-	{
-		pos = gwg->GetNeighbour(pos, curMoveDir);
-	}
+
+    if(!IsMovingUpwards())
+    {
+        gwg->RemoveFigure(this, pos);
+
+        pos = gwg->GetNeighbour(pos, curMoveDir);
+
+        gwg->AddFigure(this, pos);
+    } else
+    {
+        pos = gwg->GetNeighbour(pos, curMoveDir);
+    }
 }
 
 void noMovable::FaceDir(Direction newDir)
@@ -98,13 +94,34 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
     // runter natürlich nich so viel schneller werden wie langsamer hoch
     switch(int(gwg->GetNeighbourNode(pos, dir).altitude) - int(gwg->GetNode(pos).altitude))
     {
-        default: ascent = 3; break; // gerade
-        case 1: ascent = 4; gf_length+=(gf_length/2); break; // leicht hoch
-        case 2: case 3: ascent = 5; gf_length*=2;  break; // mittelsteil hoch
-        case 4: case 5: ascent = 6; gf_length*=3;  break; // steil hoch
-        case -1: ascent = 2; break; // leicht runter
-        case -2: case -3: ascent = 1;  break; // mittelsteil runter
-        case -4: case -5: ascent = 0; break; // steil runter
+        default:
+            ascent = 3;
+            break; // gerade
+        case 1:
+            ascent = 4;
+            gf_length += (gf_length / 2);
+            break; // leicht hoch
+        case 2:
+        case 3:
+            ascent = 5;
+            gf_length *= 2;
+            break; // mittelsteil hoch
+        case 4:
+        case 5:
+            ascent = 6;
+            gf_length *= 3;
+            break; // steil hoch
+        case -1:
+            ascent = 2;
+            break; // leicht runter
+        case -2:
+        case -3:
+            ascent = 1;
+            break; // mittelsteil runter
+        case -4:
+        case -5:
+            ascent = 0;
+            break; // steil runter
     }
 
     current_ev = GetEvMgr().AddEvent(this, gf_length);
@@ -126,7 +143,9 @@ DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextP
         RTTR_Assert(current_ev->length > 0);
         if(current_ev->length == 0)
         {
-            LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: current_ev->gf_length = 0!\n") % GetEvMgr().GetCurrentGF();
+            LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: "
+                      "current_ev->gf_length = 0!\n")
+              % GetEvMgr().GetCurrentGF();
             return Point<int>(0, 0);
         }
     }
@@ -154,8 +173,7 @@ DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextP
     if(!IsMovingUpwards())
     {
         return ((nextPt - curPt) * static_cast<int>(curTimePassed)) / static_cast<int>(duration);
-    }
-    else
+    } else
     {
         return ((nextPt - curPt) * static_cast<int>(duration - curTimePassed)) / static_cast<int>(duration);
     }
@@ -164,7 +182,7 @@ DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextP
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
 DrawPoint noMovable::CalcWalkingRelative() const
 {
-    Point<int> curPt  = gwg->GetNodePos(pos);
+    Point<int> curPt = gwg->GetNodePos(pos);
     Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));
 
     // Gehen wir über einen Kartenrand (horizontale Richung?)
@@ -196,7 +214,6 @@ DrawPoint noMovable::CalcWalkingRelative() const
 
     return CalcRelative(curPt, nextPt);
 }
-
 
 void noMovable::PauseWalking()
 {

@@ -22,13 +22,13 @@
 #include "ogl/oglIncludes.h" // IWYU pragma: exports
 
 #ifdef __APPLE__
-#   define GL_COMBINE_EXT                    0x8570
-#   define GL_RGB_SCALE_EXT                  0x8573
+#define GL_COMBINE_EXT 0x8570
+#define GL_RGB_SCALE_EXT 0x8573
 #endif // !__APPLE__
 
 // WGL_EXT_swap_control
 #ifdef _WIN32
-typedef BOOL (APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
+typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
 #else
 typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
 #endif
@@ -37,10 +37,10 @@ extern PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT;
 
 #ifndef __APPLE__
 // GL_ARB_vertex_buffer_object
-extern PFNGLBINDBUFFERARBPROC glBindBufferARB; // VBO Bind-Prozedur
+extern PFNGLBINDBUFFERARBPROC glBindBufferARB;       // VBO Bind-Prozedur
 extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB; // VBO Lösch-Prozedur
-extern PFNGLGENBUFFERSARBPROC glGenBuffersARB; // VBO Namens Generations-Prozedur
-extern PFNGLBUFFERDATAARBPROC glBufferDataARB; // VBO Daten-Lade-Prozedur
+extern PFNGLGENBUFFERSARBPROC glGenBuffersARB;       // VBO Namens Generations-Prozedur
+extern PFNGLBUFFERDATAARBPROC glBufferDataARB;       // VBO Daten-Lade-Prozedur
 extern PFNGLBUFFERSUBDATAARBPROC glBufferSubDataARB; /// VBO Daten-Änder-Prozedur
 // GL_EXT_paletted_texture
 extern PFNGLCOLORTABLEEXTPROC glColorTableEXT;

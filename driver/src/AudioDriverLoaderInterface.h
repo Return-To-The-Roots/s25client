@@ -19,10 +19,10 @@
 
 class AudioDriverLoaderInterface
 {
-    public:
-        virtual ~AudioDriverLoaderInterface() {};
+public:
+    virtual ~AudioDriverLoaderInterface(){};
 
-        virtual void Msg_MusicFinished() = 0;
+    virtual void Msg_MusicFinished() = 0;
 };
 
 #endif // !DRIVERLOADERINTERFACE_H_INCLUDED

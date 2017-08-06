@@ -38,8 +38,7 @@ uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size)
         return 0;
 
     uint32_t checksum = 0;
-    for(unsigned int i = 0; i < size; ++i)
+    for(unsigned i = 0; i < size; ++i)
         checksum += buffer[i];
     return checksum;
 }
-

@@ -26,49 +26,48 @@ class SerializedGameData;
 /// Der Planierer
 class nofPlaner : public noFigure
 {
-        /// Was der Planierer gerade so schönes macht
-        enum PlanerState
-        {
-            STATE_FIGUREWORK = 0,
-            STATE_WALKING, /// läuft zum nächsten Punkt, um zu graben
-            STATE_PLANING /// planiert einen Punkt (Abspielen der Animation
-        } state;
+    /// Was der Planierer gerade so schönes macht
+    enum PlanerState
+    {
+        STATE_FIGUREWORK = 0,
+        STATE_WALKING, /// läuft zum nächsten Punkt, um zu graben
+        STATE_PLANING  /// planiert einen Punkt (Abspielen der Animation
+    } state;
 
-        /// Arbeitsstelle des Planierers
-        noBuildingSite* building_site;
+    /// Arbeitsstelle des Planierers
+    noBuildingSite* building_site;
 
-        /// Wie rum er geht
-        enum PlaningDir
-        {
-            PD_NOTWORKING,
-            PD_CLOCKWISE, /// Uhrzeigersinn
-            PD_COUNTERCLOCKWISE /// entgegen Uhrzeigersinn
-        } pd;
+    /// Wie rum er geht
+    enum PlaningDir
+    {
+        PD_NOTWORKING,
+        PD_CLOCKWISE,       /// Uhrzeigersinn
+        PD_COUNTERCLOCKWISE /// entgegen Uhrzeigersinn
+    } pd;
 
-    private:
+private:
+    void GoalReached() override;
+    void Walked() override;
+    void AbrogateWorkplace() override;
+    void HandleDerivedEvent(const unsigned id) override;
 
-        void GoalReached() override;
-        void Walked() override;
-        void AbrogateWorkplace() override;
-        void HandleDerivedEvent(const unsigned int id) override;
+public:
+    nofPlaner(const MapPoint pt, const unsigned char player, noBuildingSite* building_site);
+    nofPlaner(SerializedGameData& sgd, const unsigned obj_id);
 
-    public:
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofPlaner(SerializedGameData& sgd) const;
 
-        nofPlaner(const MapPoint pt, const unsigned char player, noBuildingSite* building_site);
-        nofPlaner(SerializedGameData& sgd, const unsigned obj_id);
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofPlaner(sgd); }
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofPlaner(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofPlaner(sgd); }
+    GO_Type GetGOT() const override { return GOT_NOF_PLANER; }
 
-        GO_Type GetGOT() const override { return GOT_NOF_PLANER; }
+    void Draw(DrawPoint drawPt) override;
 
-        void Draw(DrawPoint drawPt) override;
-
-        /// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
-        void LostWork();
+    /// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
+    void LostWork();
 };
-
-
 
 #endif

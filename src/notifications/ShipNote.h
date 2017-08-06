@@ -18,8 +18,8 @@
 #ifndef ShipNote_h__
 #define ShipNote_h__
 
-#include "gameTypes/MapCoordinates.h"
 #include "notifications/notifications.h"
+#include "gameTypes/MapCoordinates.h"
 
 struct ShipNote
 {
@@ -31,8 +31,7 @@ struct ShipNote
         Destroyed
     };
 
-    ShipNote(Type type, unsigned player, const MapPoint& pos):
-        type(type), player(player), pos(pos){}
+    ShipNote(Type type, unsigned player, const MapPoint& pos) : type(type), player(player), pos(pos) {}
 
     const Type type;
     const unsigned player;

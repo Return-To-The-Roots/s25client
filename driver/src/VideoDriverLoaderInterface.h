@@ -19,25 +19,25 @@
 
 #pragma once
 
-#include "MouseCoords.h"
 #include "KeyEvent.h"
+#include "MouseCoords.h"
 
 class VideoDriverLoaderInterface
 {
-    public:
-        virtual ~VideoDriverLoaderInterface() {};
+public:
+    virtual ~VideoDriverLoaderInterface(){};
 
-        virtual void Msg_LeftDown(MouseCoords mc) = 0;
-        virtual void Msg_LeftUp(MouseCoords mc) = 0;
-        virtual void Msg_RightDown(const MouseCoords& mc) = 0;
-        virtual void Msg_RightUp(const MouseCoords& mc) = 0;
-        virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
-        virtual void Msg_WheelDown(const MouseCoords& mc) = 0;
-        virtual void Msg_MouseMove(const MouseCoords& mc) = 0;
+    virtual void Msg_LeftDown(MouseCoords mc) = 0;
+    virtual void Msg_LeftUp(MouseCoords mc) = 0;
+    virtual void Msg_RightDown(const MouseCoords& mc) = 0;
+    virtual void Msg_RightUp(const MouseCoords& mc) = 0;
+    virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
+    virtual void Msg_WheelDown(const MouseCoords& mc) = 0;
+    virtual void Msg_MouseMove(const MouseCoords& mc) = 0;
 
-        virtual void Msg_KeyDown(const KeyEvent& ke) = 0;
+    virtual void Msg_KeyDown(const KeyEvent& ke) = 0;
 
-        virtual void ScreenResized(unsigned short width, unsigned short height) = 0;
+    virtual void ScreenResized(unsigned short width, unsigned short height) = 0;
 };
 
 #endif // !DRIVERLOADERINTERFACE_H_INCLUDED

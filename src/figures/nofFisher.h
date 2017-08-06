@@ -24,37 +24,39 @@ class nobUsual;
 
 class nofFisher : public nofFarmhand
 {
-        /// Richtung, in die er fischt
-        unsigned char fishing_dir;
-        /// Fängt er einen Fisch?
-        bool successful;
-    private:
+    /// Richtung, in die er fischt
+    unsigned char fishing_dir;
+    /// Fängt er einen Fisch?
+    bool successful;
 
-        /// Malt den Arbeiter beim Arbeiten
-        void DrawWorking(DrawPoint drawPt) override;
-        /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
-        unsigned short GetCarryID() const override;
+private:
+    /// Malt den Arbeiter beim Arbeiten
+    void DrawWorking(DrawPoint drawPt) override;
+    /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
+    unsigned short GetCarryID() const override;
 
-        /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-        void WorkStarted() override;
-        /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-        void WorkFinished() override;
+    /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
+    void WorkStarted() override;
+    /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
+    void WorkFinished() override;
 
-        /// Returns the quality of this working point or determines if the worker can work here at all
-        PointQuality GetPointQuality(const MapPoint pt) const override;
+    /// Returns the quality of this working point or determines if the worker can work here at all
+    PointQuality GetPointQuality(const MapPoint pt) const override;
 
-    public:
+public:
+    nofFisher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
+    nofFisher(SerializedGameData& sgd, const unsigned obj_id);
 
-        nofFisher(const MapPoint pt, const unsigned char player, nobUsual* workplace);
-        nofFisher(SerializedGameData& sgd, const unsigned obj_id);
+    ~nofFisher() override {}
 
-        ~nofFisher() override {}
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nofFisher(SerializedGameData& sgd) const;
 
-        /// Serialisierungsfunktionen
-    protected:  void Serialize_nofFisher(SerializedGameData& sgd) const;
-    public:     void Serialize(SerializedGameData& sgd) const override { Serialize_nofFisher(sgd); }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nofFisher(sgd); }
 
-        GO_Type GetGOT() const override { return GOT_NOF_FISHER; }
+    GO_Type GetGOT() const override { return GOT_NOF_FISHER; }
 };
 
 #endif

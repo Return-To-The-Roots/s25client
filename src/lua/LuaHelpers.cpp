@@ -19,12 +19,12 @@
 #include "LuaHelpers.h"
 #include <stdexcept>
 
-namespace lua{
+namespace lua {
 
-    void assertTrue(bool testValue, const std::string& error)
-    {
-        if(!testValue)
-            throw std::runtime_error(error);
-    }
+void assertTrue(bool testValue, const std::string& error)
+{
+    if(!testValue)
+        throw std::runtime_error(error);
+}
 
 } // namespace lua

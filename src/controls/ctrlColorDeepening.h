@@ -20,19 +20,17 @@
 #ifndef ctrlColorDeepening_h__
 #define ctrlColorDeepening_h__
 
-#include "controls/ctrlDeepening.h"
 #include "controls/ctrlBaseColor.h"
+#include "controls/ctrlDeepening.h"
 
 /// Colored Deepening
 class ctrlColorDeepening : public ctrlDeepening, public ctrlBaseColor
 {
-    public:
-        ctrlColorDeepening(Window* parent, unsigned int id, DrawPoint position, const Extent& size,
-            TextureColor tc, unsigned fillColor);
+public:
+    ctrlColorDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc, unsigned fillColor);
 
-    protected:
-        void DrawContent() const override;
-
+protected:
+    void DrawContent() const override;
 };
 
 #endif // ctrlColorDeepening_h__

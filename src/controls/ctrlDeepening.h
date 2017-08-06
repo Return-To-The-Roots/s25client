@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include "Window.h"
 #include "DrawPoint.h"
+#include "Window.h"
 
 /// Control with a "deepened" look by a 3D border
-class ctrlDeepening: public Window
+class ctrlDeepening : public Window
 {
 public:
     ctrlDeepening(Window* parent, unsigned id, DrawPoint position, const Extent& size, TextureColor tc);

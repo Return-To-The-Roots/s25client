@@ -19,8 +19,8 @@
 #include "ctrlOptionGroup.h"
 class MouseCoords;
 
-ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned int id, int select_type): ctrlGroup(parent, id),
-      selection_(0xFFFF), select_type(select_type)
+ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type)
+    : ctrlGroup(parent, id), selection_(0xFFFF), select_type(select_type)
 {
 }
 
@@ -45,8 +45,8 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         switch(select_type)
         {
             case ILLUMINATE: button->SetIlluminated(false); break;
-            case CHECK:      button->SetChecked(false);       break;
-            case SHOW:       button->SetVisible(true);     break;
+            case CHECK: button->SetChecked(false); break;
+            case SHOW: button->SetVisible(true); break;
         }
     }
 
@@ -58,8 +58,8 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         switch(select_type)
         {
             case ILLUMINATE: button->SetIlluminated(true); break;
-            case CHECK:      button->SetChecked(true);       break;
-            case SHOW:       button->SetVisible(false);     break;
+            case CHECK: button->SetChecked(true); break;
+            case SHOW: button->SetVisible(false); break;
         }
     }
 
@@ -69,7 +69,7 @@ void ctrlOptionGroup::SetSelection(unsigned short selection, bool notify)
         GetParent()->Msg_OptionGroupChange(GetID(), selection);
 }
 
-void ctrlOptionGroup::Msg_ButtonClick(const unsigned int ctrl_id)
+void ctrlOptionGroup::Msg_ButtonClick(const unsigned ctrl_id)
 {
     SetSelection(ctrl_id, true);
 }

@@ -17,25 +17,24 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LuaInterfaceGame.h"
-#include "lua/LuaPlayer.h"
-#include "lua/LuaWorld.h"
+#include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "EventManager.h"
-#include "world/GameWorldGame.h"
-#include "ingameWindows/iwMissionStatement.h"
-#include "buildings/nobBaseWarehouse.h"
-#include "WindowManager.h"
 #include "GlobalVars.h"
+#include "WindowManager.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "ingameWindows/iwMissionStatement.h"
+#include "lua/LuaPlayer.h"
+#include "lua/LuaWorld.h"
 #include "postSystem/PostMsg.h"
-#include "libutil/src/Serializer.h"
-#include "libutil/src/Log.h"
+#include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/Serializer.h"
 #include <fstream>
 
-LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
+LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
 {
-
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
 
@@ -173,13 +172,15 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw): gw(gw)
 }
 
 LuaInterfaceGame::~LuaInterfaceGame()
-{}
+{
+}
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
 
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
-    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
+    state["RTTRGame"].setClass(
+      kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
         .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
         .addFunction("GetGF", &LuaInterfaceGame::GetGF)
         .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
@@ -190,16 +191,14 @@ void LuaInterfaceGame::Register(kaguya::State& state)
         .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
         .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
         .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
-        .addFunction("GetWorld", &LuaInterfaceGame::GetWorld)
-        );
+        .addFunction("GetWorld", &LuaInterfaceGame::GetWorld));
     state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
-        .addFunction("PushInt", &Serializer::PushSignedInt)
-        .addFunction("PopInt", &Serializer::PopSignedInt)
-        .addFunction("PushBool", &Serializer::PushBool)
-        .addFunction("PopBool", &Serializer::PopBool)
-        .addFunction("PushString", &Serializer::PushString)
-        .addFunction("PopString", &Serializer::PopString)
-        );
+                                        .addFunction("PushInt", &Serializer::PushSignedInt)
+                                        .addFunction("PopInt", &Serializer::PopSignedInt)
+                                        .addFunction("PushBool", &Serializer::PushBool)
+                                        .addFunction("PopBool", &Serializer::PopBool)
+                                        .addFunction("PushString", &Serializer::PushString)
+                                        .addFunction("PopString", &Serializer::PopString));
     state.setErrorHandler(ErrorHandler);
 }
 
@@ -313,7 +312,8 @@ void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg
 
 void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
 {
-    gw.GetPostMgr().SendMsg(playerIdx, new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Point<int>(x, y))));
+    gw.GetPostMgr().SendMsg(playerIdx,
+                            new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Point<int>(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
@@ -333,7 +333,7 @@ void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt, unsigne
     kaguya::LuaRef onExplored = lua["onExplored"];
     if(onExplored.type() == LUA_TFUNCTION)
     {
-        if (owner == 0)
+        if(owner == 0)
         {
             // No owner? Pass nil value to Lua.
             onExplored.call<void>(player, pt.x, pt.y, kaguya::NilValue());

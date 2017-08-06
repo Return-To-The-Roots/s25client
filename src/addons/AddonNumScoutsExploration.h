@@ -26,24 +26,21 @@
 /**
  *  Set the number of scouts required for an exploration expedition
  */
-class AddonNumScoutsExploration: public AddonList
+class AddonNumScoutsExploration : public AddonList
 {
-    public:
-        AddonNumScoutsExploration() :
-            AddonList(AddonId::NUM_SCOUTS_EXPLORATION,
-                      ADDONGROUP_ECONOMY,
-                      _("Number of scouts required for exploration expedition"),
-                      _("Change the required number of scouts for an exploration via ship\n"
-                        "Note: Setting this to low might make some maps imbalanced!"),
-                      2)
-        {
-            addOption(_("Minimal"));
-            addOption(_("Fewer"));
-            addOption(_("Normal"));
-            addOption(_("More"));
-            addOption(_("Maximal"));
-        }
+public:
+    AddonNumScoutsExploration()
+        : AddonList(AddonId::NUM_SCOUTS_EXPLORATION, ADDONGROUP_ECONOMY, _("Number of scouts required for exploration expedition"),
+                    _("Change the required number of scouts for an exploration via ship\n"
+                      "Note: Setting this to low might make some maps imbalanced!"),
+                    2)
+    {
+        addOption(_("Minimal"));
+        addOption(_("Fewer"));
+        addOption(_("Normal"));
+        addOption(_("More"));
+        addOption(_("Maximal"));
+    }
 };
 
 #endif // AddonNumScoutsExploration_h__
-

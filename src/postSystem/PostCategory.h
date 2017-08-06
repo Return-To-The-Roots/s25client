@@ -20,14 +20,6 @@
 
 #include <boost/core/scoped_enum.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory)
-{
-    General,
-    Military,
-    Geologist,
-    Economy,
-    Diplomacy
-}
-BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(PostCategory){General, Military, Geologist, Economy, Diplomacy} BOOST_SCOPED_ENUM_DECLARE_END(PostCategory)
 
 #endif // PostCategory_h__

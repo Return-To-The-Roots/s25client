@@ -17,8 +17,8 @@
 #ifndef CATAPULT_STONE_H_
 #define CATAPULT_STONE_H_
 
-#include "GameObject.h"
 #include "DrawPoint.h"
+#include "GameObject.h"
 #include "gameTypes/MapCoordinates.h"
 
 class SerializedGameData;
@@ -32,6 +32,7 @@ public:
     const MapPoint dest_building;
     /// Actual point this is going to hit (if equal dest_building -> Hit!)
     const MapPoint dest_map;
+
 private:
     /// Koordinaten der Startposition des Steins
     const Point<int> startPos;
@@ -43,9 +44,8 @@ private:
     GameEvent* event;
 
 public:
-
-    CatapultStone(const MapPoint dest_building, const MapPoint dest_map,
-                    const DrawPoint start, const DrawPoint dest, const unsigned fly_duration);
+    CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start, const DrawPoint dest,
+                  const unsigned fly_duration);
 
     CatapultStone(SerializedGameData& sgd, const unsigned obj_id);
 
@@ -53,14 +53,17 @@ public:
     void Destroy() override;
 
     /// Serialisierungsfunktionen
-protected:  void Serialize_CatapultStone(SerializedGameData& sgd) const;
-public:     void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
+protected:
+    void Serialize_CatapultStone(SerializedGameData& sgd) const;
+
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_CatapultStone(sgd); }
 
     // Zeichnet den fliegenden Stein
     void Draw(DrawPoint drawOffset);
 
     /// Event-Handler
-    void HandleEvent(const unsigned int id) override;
+    void HandleEvent(const unsigned id) override;
 
     GO_Type GetGOT() const override { return GOT_CATAPULTSTONE; }
 };

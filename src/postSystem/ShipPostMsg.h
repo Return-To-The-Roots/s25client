@@ -23,7 +23,7 @@
 class noShip;
 
 /// Post message concerning a ship. Displays ships location and picture
-class ShipPostMsg: public PostMsg
+class ShipPostMsg : public PostMsg
 {
 public:
     /// Creates the message.

@@ -17,12 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwBuildOrder.h"
+#include "GameClient.h"
+#include "GamePlayer.h"
+#include "Loader.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlList.h"
-#include "Loader.h"
-#include "GameClient.h"
-#include "GamePlayer.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -41,9 +41,9 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     // Nach ganz oben
     AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 215), _("Top"));
     // Hoch
-    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TC_GREY, LOADER.GetImageN("io",  33), _("Up"));
+    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 33), _("Up"));
     // Runter
-    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TC_GREY, LOADER.GetImageN("io",  34), _("Down"));
+    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 34), _("Down"));
     // Nach ganz unten
     AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TC_GREY, LOADER.GetImageN("io", 216), _("Bottom"));
 
@@ -51,7 +51,7 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     AddImage(5, DrawPoint(240, 150), LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + buildOrders[0] * 5));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TC_GREY, NormalFont, 100);
-    combo->AddString(_("Sequence of given order")); // "Reihenfolge der Auftraggebung"
+    combo->AddString(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
     combo->AddString(_("After the following order")); // "Nach folgender Reihenfolge"
 
     // Eintrag in Combobox auswählen
@@ -86,7 +86,7 @@ void iwBuildOrder::TransmitSettings()
     }
 }
 
-void iwBuildOrder::Msg_Timer(const unsigned int  /*ctrl_id*/)
+void iwBuildOrder::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         // Im Replay aktualisieren wir die Werte
@@ -96,26 +96,24 @@ void iwBuildOrder::Msg_Timer(const unsigned int  /*ctrl_id*/)
         TransmitSettings();
 }
 
-
-void iwBuildOrder::Msg_ListSelectItem(const unsigned int ctrl_id, const int selection)
+void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selection)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;
     switch(ctrl_id)
     {
-        default:
-            break;
+        default: break;
 
         case 0:
         {
             GetCtrl<ctrlImage>(5)->SetImage(
-                LOADER.GetNationImage(gwv.GetPlayer().nation,
-                                       250 + GAMECLIENT.visual_settings.build_order[selection] * 5));
-        } break;
+              LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[selection] * 5));
+        }
+        break;
     }
 }
 
-void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;
@@ -129,8 +127,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
 
     switch(ctrl_id)
     {
-        default:
-            break;
+        default: break;
 
         case 1: // Nach ganz oben
         {
@@ -141,7 +138,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
                 --auswahl;
             }
             settings_changed = true;
-        } break;
+        }
+        break;
         case 2: // Hoch
         {
             if(auswahl > 0)
@@ -150,7 +148,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
                 list->Swap(auswahl - 1, auswahl);
             }
             settings_changed = true;
-        } break;
+        }
+        break;
         case 3: // Runter
         {
             if(auswahl < anzahl - 1)
@@ -159,7 +158,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
                 list->Swap(auswahl + 1, auswahl);
             }
             settings_changed = true;
-        } break;
+        }
+        break;
         case 4: // Nach ganz unten
         {
             while(auswahl < anzahl - 1)
@@ -169,7 +169,8 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
                 ++auswahl;
             }
             settings_changed = true;
-        } break;
+        }
+        break;
         case 10: // Standardwerte
         {
             // Baureihenfolge vom Spieler kopieren
@@ -183,10 +184,12 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned int ctrl_id)
                 list->AddString(_(BUILDING_NAMES[GAMECLIENT.default_settings.build_order[i]]));
             list->SetSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
+            GetCtrl<ctrlImage>(5)->SetImage(
+              LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
 
             settings_changed = true;
-        } break;
+        }
+        break;
     }
 }
 

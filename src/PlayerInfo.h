@@ -21,7 +21,7 @@
 #include "BasePlayerInfo.h"
 
 /// Holds all information about a player (Not specific to game, match-making etc.)
-struct PlayerInfo: public BasePlayerInfo
+struct PlayerInfo : public BasePlayerInfo
 {
     bool isHost;
     unsigned ping;

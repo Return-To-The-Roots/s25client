@@ -17,17 +17,18 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwMissionStatement.h"
-#include "controls/ctrlMultiline.h"
-#include "Loader.h"
-#include "ogl/glArchivItem_Font.h"
 #include "GameClient.h"
 #include "GameServer.h"
+#include "Loader.h"
+#include "controls/ctrlMultiline.h"
+#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/foreach.hpp>
 #include <vector>
 
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image)
-    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("io", 5), true, false), pauseGame_(pauseGame)
+    : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("io", 5), true, false),
+      pauseGame_(pauseGame)
 {
     glArchivItem_Bitmap* img = (image == IM_NONE) ? NULL : LOADER.GetImageN("io", image);
     const Extent imgSize(img ? img->GetSize() : Extent::all(0));
@@ -40,7 +41,8 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     const Extent buttonSize(100, 22);
 
     const unsigned short maxTextWidth = GetIwSize().x - imgSize.x - textSpace - imgSpace;
-    ctrlMultiline* text = AddMultiline(0, contentOffset + DrawPoint::all(textSpace), Extent(maxTextWidth, GetIwSize().y), TC_GREEN2, NormalFont);
+    ctrlMultiline* text =
+      AddMultiline(0, contentOffset + DrawPoint::all(textSpace), Extent(maxTextWidth, GetIwSize().y), TC_GREEN2, NormalFont);
     text->ShowBackground(false);
     text->AddString(content, COLOR_YELLOW, false);
     text->Resize(text->GetContentSize());
@@ -49,8 +51,9 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     Extent newIwSize = text->GetSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonSize.y + 2);
     newIwSize.y = std::max(newIwSize.y, imgSize.y + minImgSpaceTop) + buttonSpace;
     SetIwSize(newIwSize);
-    
-    AddTextButton(1, DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y), buttonSize, TC_GREY, _("Continue"), NormalFont);
+
+    AddTextButton(1, DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y), buttonSize,
+                  TC_GREY, _("Continue"), NormalFont);
     if(img)
     {
         DrawPoint imgPos = GetRightBottomBoundary() + img->GetOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
@@ -58,7 +61,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     }
 }
 
-void iwMissionStatement::Msg_ButtonClick(const unsigned int  /*ctrl_id*/)
+void iwMissionStatement::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // TODO: Make something better, this is quite hacky (Client and server dependency)
     if(pauseGame_)

@@ -26,28 +26,34 @@ class nobHQ : public nobBaseWarehouse
 {
     /// True if tent graphic should be used
     bool isTent_;
-    public:
-        nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
-        nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Aufräummethoden
-    protected:  void Destroy_nobHQ();
-    public:     void Destroy() override { Destroy_nobHQ(); }
+public:
+    nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
+    nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
-        /// Serialisierungsfunktionen
-    protected: void Serialize_nobHQ(SerializedGameData& sgd) const;
-    public: void Serialize(SerializedGameData& sgd) const override { Serialize_nobHQ(sgd); }
+    /// Aufräummethoden
+protected:
+    void Destroy_nobHQ();
 
-        GO_Type GetGOT() const override { return GOT_NOB_HQ; }
+public:
+    void Destroy() override { Destroy_nobHQ(); }
 
-        void Draw(DrawPoint drawPt) override;
+    /// Serialisierungsfunktionen
+protected:
+    void Serialize_nobHQ(SerializedGameData& sgd) const;
 
-        unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
+public:
+    void Serialize(SerializedGameData& sgd) const override { Serialize_nobHQ(sgd); }
 
-        void HandleEvent(const unsigned int id) override;
-        bool IsTent() const { return isTent_; }
-        void SetIsTent(const bool isTent) { isTent_ = isTent; }
+    GO_Type GetGOT() const override { return GOT_NOB_HQ; }
+
+    void Draw(DrawPoint drawPt) override;
+
+    unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
+
+    void HandleEvent(const unsigned id) override;
+    bool IsTent() const { return isTent_; }
+    void SetIsTent(const bool isTent) { isTent_ = isTent; }
 };
-
 
 #endif

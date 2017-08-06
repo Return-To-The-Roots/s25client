@@ -17,16 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Bitmap_Player.h"
+#include "Loader.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "Loader.h"
 #include "oglIncludes.h"
 #include <vector>
 
-Extent glArchivItem_Bitmap_Player::GetTexSize() const
+Extent glArchivItem_Bitmap_Player::CalcTextureSize() const
 {
     // We have the texture 2 times: one with non-player colors and one with them
-    return Extent(tex_width_ * 2u, tex_height_);
+    return VIDEODRIVER.calcPreferredTextureSize(Extent(GetSize().x * 2, GetSize().y));
 }
 
 void glArchivItem_Bitmap_Player::DrawFull(const Rect& destArea, unsigned color, unsigned player_color)
@@ -49,9 +49,9 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
     // Compatibility only!
     Extent srcSize = srcArea.getSize();
     if(srcSize.x == 0)
-        srcSize.x = width_;
+        srcSize.x = getWidth();
     if(srcSize.y == 0)
-        srcSize.y = height_;
+        srcSize.y = getHeight();
     srcArea.setSize(srcSize);
     Extent dstSize = dstArea.getSize();
     if(dstSize.x == 0)
@@ -113,13 +113,14 @@ void glArchivItem_Bitmap_Player::FillTexture()
 {
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
-    setPalette(LOADER.GetPaletteN("colors"));
+    const libsiedler2::ArchivItem_Palette* palette = LOADER.GetPaletteN("colors");
 
-    int iformat = GetInternalFormat(), dformat = GL_BGRA; //GL_BGRA_EXT;
+    int iformat = GetInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
 
-    std::vector<unsigned char> buffer(tex_width_ * 2 * tex_height_ * 4);
+    Extent texSize = GetTexSize();
+    std::vector<unsigned char> buffer(prodOfComponents(texSize) * 4);
 
-    print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, 0, 0, 0, 0, 0, 0, false);
-    print(&buffer.front(), tex_width_ * 2, tex_height_, libsiedler2::FORMAT_RGBA, palette_, 128, tex_width_, 0, 0, 0, 0, 0, true);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, tex_width_ * 2, tex_height_, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
+    print(&buffer.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, 0, 0, 0, 0, 0, 0, false);
+    print(&buffer.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, texSize.x / 2u, 0, 0, 0, 0, 0, true);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
 }

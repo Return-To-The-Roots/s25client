@@ -7,7 +7,7 @@
 // the Free Software Foundation,  either version 2 of the License,  or
 // (at your option) any later version.
 //
-// Return To The Roots is distributed in the hope that it will be useful, 
+// Return To The Roots is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
@@ -28,20 +28,17 @@ struct PathConditionShip
 {
     const World& world;
 
-    PathConditionShip(const World& world): world(world){}
+    PathConditionShip(const World& world) : world(world) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
-    {
-        return world.IsSeaPoint(pt);
-    }
+    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const { return world.IsSeaPoint(pt); }
 
     // Called for every node
     BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // We must have shippable water on both sides
-        return TerrainData::IsUsableByShip(world.GetLeftTerrain(fromPt, dir)) &&
-               TerrainData::IsUsableByShip(world.GetRightTerrain(fromPt, dir));
+        return TerrainData::IsUsableByShip(world.GetLeftTerrain(fromPt, dir))
+               && TerrainData::IsUsableByShip(world.GetRightTerrain(fromPt, dir));
     }
 };
 

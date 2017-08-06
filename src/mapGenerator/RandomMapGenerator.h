@@ -33,8 +33,8 @@ class RandomConfig;
 class RandomMapGenerator
 {
     RandomConfig& config;
-    public:
 
+public:
     /**
      * Creates a new RandomMapGenerator with random properties.
      */
@@ -46,14 +46,13 @@ class RandomMapGenerator
      * @param config configuration for the random map generator
      */
     Map* Create(const MapSettings& settings);
-    
-    private:
 
+private:
     /**
      * Helper to generate random maps (tree placement, water, coastlines, ...).
      */
     MapUtility helper;
-    
+
     /**
      * Gets the highest possible elevation (height value) for the specified terrain.
      * @param terrain terrain type to evaluate the maximum height for
@@ -61,7 +60,7 @@ class RandomMapGenerator
      * @return the maximum height value for the terrain
      */
     unsigned GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
-    
+
     /**
      * Gets the minimum height to be considered as specified terrain.
      * @param terrain terrain type to evaluate the minimum height for
@@ -69,7 +68,7 @@ class RandomMapGenerator
      * @return the minimum height value for the terrain
      */
     unsigned GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
-    
+
     /**
      * Create player positions (headquarters) for the specified map.
      * @param settings settings used for map generation
@@ -83,7 +82,7 @@ class RandomMapGenerator
      * @param map map to modify
      */
     void PlacePlayerResources(const MapSettings& settings, Map& map);
-    
+
     /**
      * Create a elevation (hills) for the specified map.
      * @param settings settings used for map generation
@@ -91,7 +90,7 @@ class RandomMapGenerator
      * @param map map to modify
      */
     void CreateHills(const MapSettings& settings, Map& map);
-    
+
     /**
      * Fill the remaining terrain (apart from the player positions) according to the generated hills.
      * @param settings settings used for map generation
@@ -99,6 +98,6 @@ class RandomMapGenerator
      * @param map map to modify
      */
     void FillRemainingTerrain(const MapSettings& settings, Map& map);
- };
+};
 
 #endif // RandomMapGenerator_h__

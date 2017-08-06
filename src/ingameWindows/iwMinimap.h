@@ -25,16 +25,15 @@ class GameWorldView;
 /// Fenster für die Minimap
 class iwMinimap : public IngameWindow
 {
-        /// Fenster vergrößert?
-        bool extended;
-    private:
-        void Msg_ButtonClick(const unsigned ctrl_id) override;
+    /// Fenster vergrößert?
+    bool extended;
 
-    public:
-        iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);
-        void Resize(const Extent& newSize) override;
+private:
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+
+public:
+    iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);
+    void Resize(const Extent& newSize) override;
 };
-
-
 
 #endif

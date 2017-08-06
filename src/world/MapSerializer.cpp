@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapSerializer.h"
-#include "world/World.h"
-#include "SerializedGameData.h"
 #include "CatapultStone.h"
+#include "SerializedGameData.h"
+#include "world/World.h"
 
 void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {

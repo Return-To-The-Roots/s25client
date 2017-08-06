@@ -18,34 +18,29 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Settings.h"
 
-#include "files.h"
-#include "fileFuncs.h"
 #include "Loader.h"
-#include "languages.h"
-#include "build_version.h"
+#include "RTTR_Version.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "files.h"
+#include "languages.h"
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
-#include "libutil/src/error.h"
 #include "libutil/src/System.h"
+#include "libutil/src/error.h"
+#include "libutil/src/fileFuncs.h"
 #include <sstream>
 #ifndef _WIN32
-#   include <cstring>
+#include <cstring>
 #endif
 
-const unsigned int Settings::SETTINGS_VERSION = 12;
-const unsigned int Settings::SETTINGS_SECTIONS = 11;
-const std::string Settings::SETTINGS_SECTION_NAMES[] =
-{
-    "global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"
-};
+const unsigned Settings::SETTINGS_VERSION = 12;
+const unsigned Settings::SETTINGS_SECTIONS = 11;
+const std::string Settings::SETTINGS_SECTION_NAMES[] = {"global", "video", "language",  "driver", "sound", "lobby",
+                                                        "server", "proxy", "interface", "ingame", "addons"};
 
 const unsigned char Settings::SCREEN_REFRESH_RATES_COUNT = 14;
-const unsigned short Settings::SCREEN_REFRESH_RATES[] =
-{
-    0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240
-};
+const unsigned short Settings::SCREEN_REFRESH_RATES[] = {0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240};
 
 Settings::Settings() //-V730
 {
@@ -67,14 +62,14 @@ bool Settings::LoadDefaults()
 
     // video
     // {
-    if (VIDEODRIVER.IsLoaded())
+    if(VIDEODRIVER.IsLoaded())
     {
         video.fullscreen_width = VIDEODRIVER.GetScreenWidth();
         video.fullscreen_height = VIDEODRIVER.GetScreenHeight();
         video.windowed_width = VIDEODRIVER.IsFullscreen() ? 800 : video.fullscreen_width;
         video.windowed_height = VIDEODRIVER.IsFullscreen() ? 600 : video.fullscreen_height;
         video.fullscreen = VIDEODRIVER.IsFullscreen();
-    }else
+    } else
     {
         video.fullscreen_width = 800;
         video.fullscreen_height = 600;
@@ -82,9 +77,9 @@ bool Settings::LoadDefaults()
         video.windowed_height = video.fullscreen_height;
         video.fullscreen = false;
     }
-    video.vsync             = 0;
-    video.vbo               = false;
-    video.shared_textures   = true;
+    video.vsync = 0;
+    video.vbo = false;
+    video.shared_textures = true;
     // }
 
     // language
@@ -102,11 +97,11 @@ bool Settings::LoadDefaults()
 
     // sound
     // {
-    sound.musik          = false;
-    sound.musik_volume   = 30;
-    sound.effekte        = true;
+    sound.musik = false;
+    sound.musik_volume = 30;
+    sound.effekte = true;
     sound.effekte_volume = 75;
-    sound.playlist       = "S2_Standard";
+    sound.playlist = "S2_Standard";
     // }
 
     // lobby
@@ -158,7 +153,7 @@ bool Settings::Load()
 {
     if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
     {
-        s25Util::warning(std::string("No or corrupt \"") + GetFilePath(FILE_PATHS[0])  + "\" found, using default values.");
+        s25Util::warning(std::string("No or corrupt \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
         return LoadDefaults();
     }
 
@@ -175,10 +170,10 @@ bool Settings::Load()
     const libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
 
     // ist eine der Kategorien nicht vorhanden?
-    if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface || !iniIngame || !iniAddons ||
-            // stimmt die Settingsversion?
-            ((unsigned int)iniGlobal->getValueI("version") != SETTINGS_VERSION)
-      )
+    if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
+       || !iniIngame || !iniAddons ||
+       // stimmt die Settingsversion?
+       ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
     {
         // nein, dann Standardeinstellungen laden
         s25Util::warning(GetFilePath(FILE_PATHS[0]) + " found, but its corrupted or has wrong version. Loading default values.");
@@ -188,7 +183,7 @@ bool Settings::Load()
     // global
     // {
     // stimmt die Spielrevision überein?
-    if(iniGlobal->getValue("gameversion") != GetWindowRevision())
+    if(iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
         s25Util::warning("Your application version has changed - please recheck your settings!\n");
 
     global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
@@ -200,18 +195,17 @@ bool Settings::Load()
 
     // video
     // {
-    video.windowed_width =       iniVideo->getValueI("windowed_width");
-    video.windowed_height =      iniVideo->getValueI("windowed_height");
-    video.fullscreen_width =       iniVideo->getValueI("fullscreen_width");
-    video.fullscreen_height =      iniVideo->getValueI("fullscreen_height");
+    video.windowed_width = iniVideo->getValueI("windowed_width");
+    video.windowed_height = iniVideo->getValueI("windowed_height");
+    video.fullscreen_width = iniVideo->getValueI("fullscreen_width");
+    video.fullscreen_height = iniVideo->getValueI("fullscreen_height");
     video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
-    video.vsync =       iniVideo->getValueI("vsync");
-    video.vbo =        (iniVideo->getValueI("vbo") != 0);
+    video.vsync = iniVideo->getValueI("vsync");
+    video.vbo = (iniVideo->getValueI("vbo") != 0);
     video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
     // };
 
-    if(video.fullscreen_width == 0 || video.fullscreen_height == 0
-            || video.windowed_width == 0 || video.windowed_height == 0)
+    if(video.fullscreen_width == 0 || video.fullscreen_height == 0 || video.windowed_width == 0 || video.windowed_height == 0)
     {
         s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
         return LoadDefaults();
@@ -232,18 +226,18 @@ bool Settings::Load()
 
     // sound
     // {
-    sound.musik =         (iniSound->getValueI("musik") != 0);
-    sound.musik_volume =   iniSound->getValueI("musik_volume");
-    sound.effekte =       (iniSound->getValueI("effekte") != 0);
+    sound.musik = (iniSound->getValueI("musik") != 0);
+    sound.musik_volume = iniSound->getValueI("musik_volume");
+    sound.effekte = (iniSound->getValueI("effekte") != 0);
     sound.effekte_volume = iniSound->getValueI("effekte_volume");
-    sound.playlist =       iniSound->getValue("playlist");
+    sound.playlist = iniSound->getValue("playlist");
     // }
 
     // lobby
     // {
-    lobby.name =           iniLobby->getValue("name");
-    lobby.email =          iniLobby->getValue("email");
-    lobby.password =       iniLobby->getValue("password");
+    lobby.name = iniLobby->getValue("name");
+    lobby.email = iniLobby->getValue("email");
+    lobby.password = iniLobby->getValue("password");
     lobby.save_password = (iniLobby->getValueI("save_password") != 0);
     // }
 
@@ -288,7 +282,7 @@ bool Settings::Load()
 
     // addons
     // {
-    for(unsigned int addon = 0; addon < iniAddons->size(); ++addon)
+    for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
     {
         const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
 
@@ -309,7 +303,7 @@ void Settings::Save()
     {
         libsiedler2::ArchivItem_Ini item;
         configInfo.alloc(SETTINGS_SECTIONS);
-        for(unsigned int i = 0; i < SETTINGS_SECTIONS; ++i)
+        for(unsigned i = 0; i < SETTINGS_SECTIONS; ++i)
         {
             item.setName(SETTINGS_SECTION_NAMES[i]);
             configInfo.setC(i, item);
@@ -329,12 +323,13 @@ void Settings::Save()
     libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
 
     // ist eine der Kategorien nicht vorhanden?
-    RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy && iniInterface && iniIngame && iniAddons);
+    RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy && iniInterface
+                && iniIngame && iniAddons);
 
     // global
     // {
     iniGlobal->setValue("version", SETTINGS_VERSION);
-    iniGlobal->setValue("gameversion", GetWindowRevision());
+    iniGlobal->setValue("gameversion", RTTR_Version::GetRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);
     iniGlobal->setValue("smartCursor", global.smartCursor ? 1 : 0);
@@ -347,9 +342,9 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreen_height);
     iniVideo->setValue("windowed_width", video.windowed_width);
     iniVideo->setValue("windowed_height", video.windowed_height);
-    iniVideo->setValue("fullscreen", (video.fullscreen ? 1 : 0) );
+    iniVideo->setValue("fullscreen", (video.fullscreen ? 1 : 0));
     iniVideo->setValue("vsync", video.vsync);
-    iniVideo->setValue("vbo", (video.vbo ? 1 : 0) );
+    iniVideo->setValue("vbo", (video.vbo ? 1 : 0));
     iniVideo->setValue("shared_textures", (video.shared_textures ? 1 : 0));
     // };
 
@@ -366,9 +361,9 @@ void Settings::Save()
 
     // sound
     // {
-    iniSound->setValue("musik", (sound.musik ? 1 : 0) );
+    iniSound->setValue("musik", (sound.musik ? 1 : 0));
     iniSound->setValue("musik_volume", sound.musik_volume);
-    iniSound->setValue("effekte", (sound.effekte ? 1 : 0) );
+    iniSound->setValue("effekte", (sound.effekte ? 1 : 0));
     iniSound->setValue("effekte_volume", sound.effekte_volume);
     iniSound->setValue("playlist", sound.playlist);
     // }
@@ -420,7 +415,7 @@ void Settings::Save()
     // addons
     // {
     iniAddons->clear();
-    for(std::map<unsigned int, unsigned int>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
+    for(std::map<unsigned, unsigned>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
     {
         std::stringstream name, value;
         name << it->first;

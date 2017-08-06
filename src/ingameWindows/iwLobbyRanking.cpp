@@ -17,10 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwLobbyRanking.h"
-#include "controls/ctrlTable.h"
 #include "Loader.h"
-#include "LobbyClient.h"
+#include "controls/ctrlTable.h"
 #include "gameData/const_gui_ids.h"
+#include "liblobby/src/LobbyClient.h"
 #include <boost/lexical_cast.hpp>
 
 /**
@@ -39,7 +39,7 @@ void iwLobbyRanking::UpdateRankings(bool first)
 
         if(rankinglist.getCount() > 0)
         {
-            for(unsigned int i = 0; i < rankinglist.getCount() && i < 10; ++i)
+            for(unsigned i = 0; i < rankinglist.getCount() && i < 10; ++i)
             {
                 const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
                 std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
@@ -54,9 +54,11 @@ void iwLobbyRanking::UpdateRankings(bool first)
 }
 
 iwLobbyRanking::iwLobbyRanking()
-    : IngameWindow(CGI_LOBBYRANKING, IngameWindow::posLastOrCenter, Extent(440, 410), _("Internet Ranking"), LOADER.GetImageN("resource", 41), true)
+    : IngameWindow(CGI_LOBBYRANKING, IngameWindow::posLastOrCenter, Extent(440, 410), _("Internet Ranking"),
+                   LOADER.GetImageN("resource", 41), true)
 {
-    AddTable(0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont, 4, _("Name"), 360, ctrlTable::SRT_STRING, _("Points"), 185, ctrlTable::SRT_NUMBER, _("Lost"), 215, ctrlTable::SRT_NUMBER, _("Won"), 240, ctrlTable::SRT_NUMBER);
+    AddTable(0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont, 4, _("Name"), 360, ctrlTable::SRT_STRING, _("Points"), 185,
+             ctrlTable::SRT_NUMBER, _("Lost"), 215, ctrlTable::SRT_NUMBER, _("Won"), 240, ctrlTable::SRT_NUMBER);
     AddTimer(1, 60000);
     AddTimer(2, 1000);
 
@@ -64,29 +66,31 @@ iwLobbyRanking::iwLobbyRanking()
     AddTextButton(3, DrawPoint(20, 370), Extent(400, 20), TC_RED1, _("Back"), NormalFont);
 }
 
-void iwLobbyRanking::Msg_Timer(const unsigned int ctrl_id)
+void iwLobbyRanking::Msg_Timer(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 1: // alle Minute
         {
             LOBBYCLIENT.SendRankingListRequest();
-        } break;
+        }
+        break;
         case 2: // alle Sek
         {
             UpdateRankings();
-        } break;
+        }
+        break;
     }
 }
 
-void iwLobbyRanking::Msg_ButtonClick(const unsigned int ctrl_id)
+void iwLobbyRanking::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 3: // "Zurück"
         {
             Close();
-        } break;
+        }
+        break;
     }
 }
-

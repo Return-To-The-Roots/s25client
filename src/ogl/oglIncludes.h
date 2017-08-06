@@ -20,15 +20,15 @@
 
 // IWYU pragma: begin_exports
 #ifdef __APPLE__
-    #include <OpenGL/gl.h>
-    #include <OpenGL/glext.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
 #else
-    #ifdef _WIN32
-        // Required for opengl
-        #include <windows.h>
-    #endif
-    #include <GL/gl.h>
-    #include <GL/glext.h>
+#ifdef _WIN32
+// Required for opengl
+#include <windows.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif // !__APPLE__
 // IWYU pragma: end_exports
 

@@ -20,21 +20,22 @@
 #pragma once
 
 #include <queue>
-namespace AIEvent { class Base; }
+namespace AIEvent {
+class Base;
+}
 
 class AIEventManager
 {
-    public:
-        AIEventManager();
-        ~AIEventManager();
-        void AddAIEvent(AIEvent::Base* ev) { events.push(ev); }
-        AIEvent::Base* GetEvent();
-        bool EventAvailable() const { return !events.empty(); }
-        unsigned GetEventNum() const { return events.size(); }
+public:
+    AIEventManager();
+    ~AIEventManager();
+    void AddAIEvent(AIEvent::Base* ev) { events.push(ev); }
+    AIEvent::Base* GetEvent();
+    bool EventAvailable() const { return !events.empty(); }
+    unsigned GetEventNum() const { return events.size(); }
 
-    protected:
-        std::queue<AIEvent::Base*> events;
+protected:
+    std::queue<AIEvent::Base*> events;
 };
-
 
 #endif // !AIEVENTMANAGER_H_INCLUDED

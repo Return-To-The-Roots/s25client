@@ -18,8 +18,8 @@
 #ifndef TERRITORY_REGION_H_
 #define TERRITORY_REGION_H_
 
-#include "gameTypes/MapCoordinates.h"
 #include "Point.h"
+#include "gameTypes/MapCoordinates.h"
 #include <vector>
 
 /// TerritoryRegion ist ein Rechteck aus der Karte quasi "ausgeschnitten", die für die Berechnung bei Militärgebäuden-
@@ -38,7 +38,7 @@ class TerritoryRegion
         /// Entfernung vom Militärgebäude
         unsigned char radius;
 
-        TRNode(): owner(0), radius(0){}
+        TRNode() : owner(0), radius(0) {}
     };
 
 public:
@@ -54,7 +54,7 @@ private:
     std::vector<TRNode> nodes;
 
     /// Check whether the point is part of the polygon
-    static bool IsPointInPolygon(const std::vector< Point<int> >& polygon, const Point<int> pt);
+    static bool IsPointInPolygon(const std::vector<Point<int> >& polygon, const Point<int> pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
     void AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
     TRNode& GetNode(const PointI& pt) { return nodes[GetIdx(pt)]; }
@@ -85,5 +85,3 @@ inline unsigned TerritoryRegion::GetIdx(const PointI& pt) const
 }
 
 #endif
-
-

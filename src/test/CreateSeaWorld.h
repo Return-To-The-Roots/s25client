@@ -18,8 +18,8 @@
 #ifndef CreateSeaWorld_h__
 #define CreateSeaWorld_h__
 
-#include "gameTypes/Nation.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/Nation.h"
 #include <vector>
 
 class GameWorldGame;
@@ -45,6 +45,7 @@ struct CreateSeaWorld
 {
     CreateSeaWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
+
 private:
     MapExtent size_;
     std::vector<Nation> playerNations_;
@@ -55,6 +56,7 @@ struct CreateWaterWorld
 {
     CreateWaterWorld(const MapExtent& size, unsigned numPlayers);
     bool operator()(GameWorldGame& world) const;
+
 private:
     MapExtent size_;
     std::vector<Nation> playerNations_;

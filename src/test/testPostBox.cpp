@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/bind.hpp>
+#include <boost/test/unit_test.hpp>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(PostBoxTestSuite)
@@ -29,14 +29,14 @@ BOOST_AUTO_TEST_CASE(AddMsg)
     PostBox box;
     std::vector<PostMsg*> msgs;
     BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), 0u);
-    BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*) NULL);
+    BOOST_REQUIRE_EQUAL(box.GetMsg(0u), (PostMsg*)NULL);
     for(unsigned i = 0; i < box.GetMaxMsgs(); i++)
     {
         PostMsg* msg = new PostMsg(0, "Test", PostCategory::General);
         box.AddMsg(msg);
         BOOST_REQUIRE_EQUAL(box.GetNumMsgs(), i + 1);
         BOOST_REQUIRE_EQUAL(box.GetMsg(i), msg);
-        BOOST_REQUIRE_EQUAL(box.GetMsg(i + 1), (PostMsg*) NULL);
+        BOOST_REQUIRE_EQUAL(box.GetMsg(i + 1), (PostMsg*)NULL);
         msgs.push_back(msg);
     }
     // Check that messages are still in their correct positions
@@ -83,14 +83,14 @@ BOOST_AUTO_TEST_CASE(DeleteMsg)
             expected++; // This one was also deleted
         BOOST_REQUIRE_EQUAL(box.GetMsg(i)->GetSendFrame(), expected);
     }
-    BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 3), (PostMsg*) NULL);
+    BOOST_REQUIRE_EQUAL(box.GetMsg(box.GetMaxMsgs() - 3), (PostMsg*)NULL);
 }
 
 struct CallbackChecker
 {
     PostBox& box;
     unsigned newCalls, delCalls;
-    CallbackChecker(PostBox& box): box(box), newCalls(0), delCalls(0){}
+    CallbackChecker(PostBox& box) : box(box), newCalls(0), delCalls(0) {}
     void OnNew(const PostMsg& /*msg*/, unsigned ct)
     {
         newCalls++;

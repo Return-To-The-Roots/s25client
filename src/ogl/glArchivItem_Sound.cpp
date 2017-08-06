@@ -18,24 +18,14 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound.h"
 
-glArchivItem_Sound::glArchivItem_Sound()
-    : baseArchivItem_Sound(), sound(NULL)
+glArchivItem_Sound::glArchivItem_Sound() : baseArchivItem_Sound(), sound(NULL)
 {
 }
 
-glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item)
-    : baseArchivItem_Sound(item), sound(item.sound)
+glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item) : baseArchivItem_Sound(item), sound(item.sound)
 {
-}
-
-glArchivItem_Sound& glArchivItem_Sound::operator=(const glArchivItem_Sound& item)
-{
-    if(this == &item)
-        return *this;
-    baseArchivItem_Sound::operator=(item);
-    sound = item.sound;
-    return *this;
 }
 
 glArchivItem_Sound::~glArchivItem_Sound()
-{}
+{
+}

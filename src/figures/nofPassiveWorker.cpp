@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofPassiveWorker.h"
-#include "world/GameWorldGame.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "world/GameWorldGame.h"
 class SerializedGameData;
 class noRoadNode;
 
@@ -27,8 +27,7 @@ nofPassiveWorker::nofPassiveWorker(const Job job, const MapPoint pos, const unsi
 {
 }
 
-nofPassiveWorker::nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id)
+nofPassiveWorker::nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
 }
 
@@ -52,7 +51,6 @@ void nofPassiveWorker::AbrogateWorkplace()
 {
 }
 
-
 /// Zeichnen
 void nofPassiveWorker::Draw(DrawPoint drawPt)
 {
@@ -60,7 +58,6 @@ void nofPassiveWorker::Draw(DrawPoint drawPt)
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-void nofPassiveWorker::HandleDerivedEvent(const unsigned int  /*id*/)
+void nofPassiveWorker::HandleDerivedEvent(const unsigned /*id*/)
 {
-
 }
