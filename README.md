@@ -13,6 +13,11 @@ Travis CI: ![Travis CI Build Info](https://travis-ci.org/Return-To-The-Roots/s25
 
 Appveyor: ![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)
 
+Coverage:
+[![Coverage Status](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
+ / 
+[![codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
+
 # How to build
 
 ## On Linux or Darwin/MacOSX
