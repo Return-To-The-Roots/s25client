@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -43,234 +43,199 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "libsiedler2/src/ArchivInfo.h"
 
-CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette* const palette) : palette(palette)
+CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& palette) : palette(palette)
 {
     edgesLoaded = false;
-    std::fill(edgesTop.begin(), edgesTop.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(edgesBottom.begin(), edgesBottom.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(edgesLeft.begin(), edgesLeft.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(edgesRight.begin(), edgesRight.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(fillersTop.begin(), fillersTop.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(fillersBottom.begin(), fillersBottom.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(fillersLeft.begin(), fillersLeft.end(), static_cast<BdrBitmap*>(NULL));
-    std::fill(fillersRight.begin(), fillersRight.end(), static_cast<BdrBitmap*>(NULL));
+    std::fill(edgesTop.begin(), edgesTop.end(), BdrBitmap());
+    std::fill(edgesBottom.begin(), edgesBottom.end(), BdrBitmap());
+    std::fill(edgesLeft.begin(), edgesLeft.end(), BdrBitmap());
+    std::fill(edgesRight.begin(), edgesRight.end(), BdrBitmap());
+    std::fill(fillersTop.begin(), fillersTop.end(), BdrBitmap());
+    std::fill(fillersBottom.begin(), fillersBottom.end(), BdrBitmap());
+    std::fill(fillersLeft.begin(), fillersLeft.end(), BdrBitmap());
+    std::fill(fillersRight.begin(), fillersRight.end(), BdrBitmap());
 }
 CustomBorderBuilder::~CustomBorderBuilder()
-{
-    if(edgesLoaded)
-    {
-        // temporäre Bitmaps löschen
-        for(unsigned char i = 0; i < numCorners; i++)
-            delete corners[i];
-        for(unsigned char i = 0; i < 3; i++)
-        {
-            delete edgesTop[i];
-            delete edgesBottom[i];
-            delete edgesLeft[i];
-            delete edgesRight[i];
-        }
-        for(unsigned char i = 0; i < numFillersTop; i++)
-            delete fillersTop[i];
-        for(unsigned char i = 0; i < numFillersBottom; i++)
-            delete fillersBottom[i];
-        for(unsigned char i = 0; i < numFillersLeft; i++)
-            delete fillersLeft[i];
-        for(unsigned char i = 0; i < numFillersRight; i++)
-            delete fillersRight[i];
-    }
-}
+{}
 
-int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo* archiveInfo)
+int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
 {
     // simples Fehlerabfangen
-    if(archiveInfo->size() != 57)
+    if(archiveInfo.size() != 57)
         return 1; // nicht RESOURCE.DAT übergeben
 
     // Musterstücke einladen
     /* Evtl. könnte man hier nur den größten Rahmen laden und alle Teile aus diesem rauskopieren, um das Ganze etwas schneller zu machen.
        Allerdings sind die einander entsprechenden Stücke teilweise nicht in jeder Auflösung tatsächlich gleich, sodass man das für jedes
        vorher prüfen müsste.*/
-    BdrBitmap* tempBMP = new BdrBitmap(1280, 1024);
-    // palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo->get(4))->getPalette();
+    BdrBitmap tempBMP(Extent(1280, 1024));
+    // palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo[4])->getPalette();
     // 640x480
     {
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(4)), tempBMP);
-        corners[0] = tempBMP->get(0, 0, 584, 12);
-        corners[1] = tempBMP->get(584, 0, 56, 12);
-        corners[2] = tempBMP->get(0, 468, 202, 12);
-        corners[3] = tempBMP->get(508, 468, 132, 12);
-        corners[4] = tempBMP->get(202, 468, 306, 12);
-        corners[5] = tempBMP->get(0, 12, 12, 352);
-        corners[6] = tempBMP->get(0, 364, 12, 104);
-        corners[7] = tempBMP->get(628, 12, 12, 268);
-        corners[8] = tempBMP->get(628, 280, 12, 188);
-        fillersTop[0] = tempBMP->get(270, 0, 2, 12);
-        fillersTop[2] = tempBMP->get(446, 0, 42, 12);
-        fillersTop[3] = tempBMP->get(166, 0, 104, 12);
-        fillersBottom[0] = tempBMP->get(508, 468, 2, 12);
+        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[4]), tempBMP);
+        corners[0] = tempBMP.get(ImgPos(0, 0), Extent(584, 12));
+        corners[1] = tempBMP.get(ImgPos(584, 0), Extent(56, 12));
+        corners[2] = tempBMP.get(ImgPos(0, 468), Extent(202, 12));
+        corners[3] = tempBMP.get(ImgPos(508, 468), Extent(132, 12));
+        corners[4] = tempBMP.get(ImgPos(202, 468), Extent(306, 12));
+        corners[5] = tempBMP.get(ImgPos(0, 12), Extent(12, 352));
+        corners[6] = tempBMP.get(ImgPos(0, 364), Extent(12, 104));
+        corners[7] = tempBMP.get(ImgPos(628, 12), Extent(12, 268));
+        corners[8] = tempBMP.get(ImgPos(628, 280), Extent(12, 188));
+        fillersTop[0] = tempBMP.get(ImgPos(270, 0), Extent(2, 12));
+        fillersTop[2] = tempBMP.get(ImgPos(446, 0), Extent(42, 12));
+        fillersTop[3] = tempBMP.get(ImgPos(166, 0), Extent(104, 12));
+        fillersBottom[0] = tempBMP.get(ImgPos(508, 468), Extent(2, 12));
     }
     // 800x600
     {
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(7)), tempBMP);
-        edgesTop[0] = tempBMP->get(584, 0, 160, 12);
-        edgesBottom[0] = tempBMP->get(508, 588, 160, 12);
-        edgesLeft[0] = tempBMP->get(0, 364, 12, 120);
-        edgesRight[0] = tempBMP->get(788, 280, 12, 120);
-        fillersTop[1] = tempBMP->get(583, 0, 32, 12);
+        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[7]), tempBMP);
+        edgesTop[0] = tempBMP.get(ImgPos(584, 0), Extent(160, 12));
+        edgesBottom[0] = tempBMP.get(ImgPos(508, 588), Extent(160, 12));
+        edgesLeft[0] = tempBMP.get(ImgPos(0, 364), Extent(12, 120));
+        edgesRight[0] = tempBMP.get(ImgPos(788, 280), Extent(12, 120));
+        fillersTop[1] = tempBMP.get(ImgPos(583, 0), Extent(32, 12));
     }
     // 1024x768
     {
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(10)), tempBMP);
-        edgesTop[1] = tempBMP->get(644, 0, 224, 12);
-        edgesBottom[1] = tempBMP->get(668, 756, 224, 12);
-        edgesLeft[1] = tempBMP->get(0, 484, 12, 168);
-        edgesRight[1] = tempBMP->get(1012, 400, 12, 168);
-        fillersBottom[1] = tempBMP->get(637, 756, 23, 12);
-        fillersBottom[2] = tempBMP->get(601, 756, 34, 12);
-        fillersBottom[3] = tempBMP->get(103, 756, 42, 12);
-        fillersBottom[4] = tempBMP->get(242, 756, 72, 12);
-        fillersLeft[0] = tempBMP->get(0, 524, 12, 2);
-        fillersLeft[2] = tempBMP->get(0, 222, 12, 17);
-        fillersLeft[3] = tempBMP->get(0, 423, 12, 30);
-        fillersLeft[4] = tempBMP->get(0, 114, 12, 82);
-        fillersRight[0] = tempBMP->get(1012, 280, 12, 2);
-        fillersRight[1] = tempBMP->get(1012, 281, 12, 8);
-        fillersRight[2] = tempBMP->get(1012, 528, 12, 15);
-        fillersRight[3] = tempBMP->get(1012, 291, 12, 29);
-        fillersRight[4] = tempBMP->get(1012, 475, 12, 54);
-        fillersRight[5] = tempBMP->get(1012, 320, 12, 78);
+        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[10]), tempBMP);
+        edgesTop[1] = tempBMP.get(ImgPos(644, 0), Extent(224, 12));
+        edgesBottom[1] = tempBMP.get(ImgPos(668, 756), Extent(224, 12));
+        edgesLeft[1] = tempBMP.get(ImgPos(0, 484), Extent(12, 168));
+        edgesRight[1] = tempBMP.get(ImgPos(1012, 400), Extent(12, 168));
+        fillersBottom[1] = tempBMP.get(ImgPos(637, 756), Extent(23, 12));
+        fillersBottom[2] = tempBMP.get(ImgPos(601, 756), Extent(34, 12));
+        fillersBottom[3] = tempBMP.get(ImgPos(103, 756), Extent(42, 12));
+        fillersBottom[4] = tempBMP.get(ImgPos(242, 756), Extent(72, 12));
+        fillersLeft[0] = tempBMP.get(ImgPos(0, 524), Extent(12, 2));
+        fillersLeft[2] = tempBMP.get(ImgPos(0, 222), Extent(12, 17));
+        fillersLeft[3] = tempBMP.get(ImgPos(0, 423), Extent(12, 30));
+        fillersLeft[4] = tempBMP.get(ImgPos(0, 114), Extent(12, 82));
+        fillersRight[0] = tempBMP.get(ImgPos(1012, 280), Extent(12, 2));
+        fillersRight[1] = tempBMP.get(ImgPos(1012, 281), Extent(12, 8));
+        fillersRight[2] = tempBMP.get(ImgPos(1012, 528), Extent(12, 15));
+        fillersRight[3] = tempBMP.get(ImgPos(1012, 291), Extent(12, 29));
+        fillersRight[4] = tempBMP.get(ImgPos(1012, 475), Extent(12, 54));
+        fillersRight[5] = tempBMP.get(ImgPos(1012, 320), Extent(12, 78));
     }
     // 1280x1024 links
     {
-        BdrBitmap* pic1 = new BdrBitmap(640, 1024);
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(13)), pic1);
-        tempBMP->put(0, 0, pic1);
-        delete pic1;
+        BdrBitmap pic1(Extent(640, 1024));
+        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[13]), pic1);
+        tempBMP.put(ImgPos(0, 0), pic1);
     }
     // und rechts
     {
-        BdrBitmap* pic2 = new BdrBitmap(640, 1024);
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE*>(archiveInfo->get(14)), pic2);
-        tempBMP->put(640, 0, pic2);
-        delete pic2;
-        edgesTop[2] = tempBMP->get(968, 0, 256, 12);
-        edgesBottom[2] = tempBMP->get(892, 1012, 256, 12);
-        edgesLeft[2] = tempBMP->get(0, 652, 12, 256);
-        edgesRight[2] = tempBMP->get(1268, 568, 12, 256);
-        fillersLeft[1] = tempBMP->get(0, 769, 12, 9);
+        BdrBitmap pic2(Extent(640, 1024));
+        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[14]), pic2);
+        tempBMP.put(ImgPos(pic2.size.x, 0), pic2);
+        edgesTop[2] = tempBMP.get(ImgPos(968, 0), Extent(256, 12));
+        edgesBottom[2] = tempBMP.get(ImgPos(892, 1012), Extent(256, 12));
+        edgesLeft[2] = tempBMP.get(ImgPos(0, 652), Extent(12, 256));
+        edgesRight[2] = tempBMP.get(ImgPos(1268, 568), Extent(12, 256));
+        fillersLeft[1] = tempBMP.get(ImgPos(0, 769), Extent(12, 9));
     }
-    delete tempBMP;
 
     edgesLoaded = true;
     return 0;
 }
 
-int CustomBorderBuilder::buildBorder(const unsigned width, const unsigned height, boost::array<glArchivItem_Bitmap*, 4>& borderInfo)
+int CustomBorderBuilder::buildBorder(const Extent& size, boost::array<glArchivItem_Bitmap*, 4>& borderInfo)
 {
     // simples Fehlerabfangen
-    if(width < 640 || height < 480)
+    if(size.x < 640 || size.y < 480)
         return 1; // kleiner geht nicht
     if(!edgesLoaded)
         return 2; // Die Stücken sind noch nicht geladen worden, so gehts nicht!
 
     // temporäre BdrBitmap's deklarieren
-    boost::array<BdrBitmap*, 4> customEdge;
-    customEdge[0] = new BdrBitmap(width, 12);       // oben
-    customEdge[1] = new BdrBitmap(width, 12);       // unten
-    customEdge[2] = new BdrBitmap(12, height - 24); // links
-    customEdge[3] = new BdrBitmap(12, height - 24); // rechts
+    boost::array<BdrBitmap, 4> customEdge;
+    customEdge[0] = BdrBitmap(Extent(size.x, 12));      // oben
+    customEdge[1] = BdrBitmap(customEdge[0].size);     // unten
+    customEdge[2] = BdrBitmap(Extent(12, size.y - 24)); // links
+    customEdge[3] = BdrBitmap(customEdge[2].size);     // rechts
 
     // den Rahmen zusammenbauen
     {
         // Ecken werden einfach eingefügt
         // horizontale Ecken:
-        customEdge[0]->put(0, 0, corners[0]);
-        customEdge[0]->put(width - 56, 0, corners[1]);
-        customEdge[1]->put(0, 0, corners[2]);
-        customEdge[1]->put(width - 132, 0, corners[3]);
+        ImgPos origin(0, 0);
+        customEdge[0].put(origin, corners[0]);
+        customEdge[0].put(ImgPos(size.x - 56, 0), corners[1]);
+        customEdge[1].put(origin, corners[2]);
+        customEdge[1].put(ImgPos(size.x - 132, 0), corners[3]);
         // das Mittelstück, damit das Bedienfeld passt
-        customEdge[1]->put(width / 2 - 118, 0, corners[4]);
+        customEdge[1].put(ImgPos(size.x / 2 - 118, 0), corners[4]);
         // vertikale Ecken:
-        customEdge[2]->put(0, 0, corners[5]);
-        customEdge[2]->put(0, height - 128, corners[6]);
-        customEdge[3]->put(0, 0, corners[7]);
-        customEdge[3]->put(0, height - 212, corners[8]);
+        customEdge[2].put(origin, corners[5]);
+        customEdge[2].put(ImgPos(0, size.y - 128), corners[6]);
+        customEdge[3].put(origin, corners[7]);
+        customEdge[3].put(ImgPos(0, size.y - 212), corners[8]);
 
         // Freie Flächen mit Kanten ausfüllen
         // Kanten
-        unsigned emptyFromPixel;
         unsigned toFillPixel;
         boost::array<unsigned char, 3> countEdge = {{0, 0, 0}};
         boost::array<unsigned short, 3> lengthEdge;
         // obere Kante
-        emptyFromPixel = 584;
-        toFillPixel = width - 640;
+        ImgPos emptyFromPixel(584, 0);
+        toFillPixel = size.x - 640;
         for(unsigned char i = 0; i < 3; i++)
-            lengthEdge[i] = edgesTop[i]->w;
+            lengthEdge[i] = edgesTop[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, 0, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop, customEdge[0]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop, customEdge[0]);
         // untere Kante links
-        emptyFromPixel = 202;
-        toFillPixel = width / 2 - 320;
+        emptyFromPixel.x = 202;
+        toFillPixel = size.x / 2 - 320;
         for(unsigned char i = 0; i < 3; i++)
-            lengthEdge[i] = edgesBottom[i]->w;
+            lengthEdge[i] = edgesBottom[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, 0, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdge[1]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdge[1]);
         // untere Kante rechts
-        emptyFromPixel = width / 2 + 188;
-        toFillPixel = width - width / 2 - 320; // hier steht w - w/2 statt w/2, um den Rundungsfehler bei ungeraden w zu kompensieren
+        emptyFromPixel.x = size.x / 2 + 188;
+        toFillPixel = size.x - size.x / 2 - 320; // hier steht w - w/2 statt w/2, um den Rundungsfehler bei ungeraden w zu kompensieren
         for(unsigned char i = 0; i < 3; i++)
-            lengthEdge[i] = edgesBottom[i]->w;
+            lengthEdge[i] = edgesBottom[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, 0, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdge[1]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdge[1]);
         // linke Kante
-        emptyFromPixel = 352;
-        toFillPixel = height - 480;
+        emptyFromPixel = ImgPos(0, 352);
+        toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
-            lengthEdge[i] = edgesLeft[i]->h;
+            lengthEdge[i] = edgesLeft[i].size.y;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(0, emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft, customEdge[2]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft, customEdge[2]);
         // rechte Kante
-        emptyFromPixel = 268;
-        toFillPixel = height - 480;
+        emptyFromPixel.y = 268;
+        toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
-            lengthEdge[i] = edgesRight[i]->h;
+            lengthEdge[i] = edgesRight[i].size.y;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(0, emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight, customEdge[3]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight, customEdge[3]);
     }
 
     // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap_RLE kovertieren
     for(unsigned i = 0; i < 4; i++)
     {
         glArchivItem_Bitmap_RLE* customEdgeRLE = new glArchivItem_Bitmap_RLE;
-        customEdgeRLE->init(customEdge[i]->w, customEdge[i]->h, libsiedler2::FORMAT_PALETTED, palette);
-        BdrBitmap2BitmapRLE2(customEdge[i], customEdgeRLE);
+        customEdgeRLE->init(customEdge[i].size.x, customEdge[i].size.y, libsiedler2::FORMAT_PALETTED, &palette);
+        BdrBitmap2BitmapRLE2(customEdge[i], *customEdgeRLE);
         borderInfo[i] = customEdgeRLE;
     }
-    // Speicher der BdrBitmap's wieder freigeben
-    for(unsigned char i = 0; i < 4; i++)
-        delete customEdge[i];
 
     return 0;
 }
 
-void CustomBorderBuilder::BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE* bitmapRLE, BdrBitmap* bdrBitmap)
+void CustomBorderBuilder::BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE& bitmapRLE, BdrBitmap& bdrBitmap)
 {
-    unsigned short x, y;
-    for(y = 0; y < bitmapRLE->getHeight(); y++)
-        for(x = 0; x < bitmapRLE->getWidth(); x++)
-        {
-            bdrBitmap->put(x, y, bitmapRLE->getPixelClrIdx(x, y, palette));
-        }
+    RTTR_FOREACH_PT(ImgPos, bitmapRLE.GetSize())
+        bdrBitmap.put(pt, bitmapRLE.getPixelClrIdx(pt.x, pt.y, &palette));
 }
 
-void CustomBorderBuilder::BdrBitmap2BitmapRLE2(BdrBitmap* bdrBitmap, glArchivItem_Bitmap_RLE* bitmapRLE)
+void CustomBorderBuilder::BdrBitmap2BitmapRLE2(BdrBitmap& bdrBitmap, glArchivItem_Bitmap_RLE& bitmapRLE)
 {
-    for(unsigned y = 0; y < bdrBitmap->h; y++)
-        for(unsigned x = 0; x < bdrBitmap->w; x++)
-        {
-            bitmapRLE->setPixel(x, y, bdrBitmap->get(x, y));
-        }
+    RTTR_FOREACH_PT(ImgPos, bdrBitmap.size)
+        bitmapRLE.setPixel(pt.x, pt.y, bdrBitmap.get(pt));
 }
 
 void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, boost::array<unsigned short, 3>& lengths,
@@ -318,14 +283,14 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, boost::array<uns
 }
 
 template<size_t T_numEdges, size_t T_numFillers>
-void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned y, const unsigned toFill,
+void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigned toFill,
                                                 const bool direction, // false = waagerecht, true = senkrecht
                                                 const boost::array<unsigned short, 3>& edgeLengths,
-                                                boost::array<unsigned char, 3>& edgeCounts, boost::array<BdrBitmap*, T_numEdges> edges,
-                                                boost::array<BdrBitmap*, T_numFillers> fillers, BdrBitmap* outBorder)
+                                                boost::array<unsigned char, 3>& edgeCounts, const boost::array<BdrBitmap, T_numEdges>& edges,
+                                                const boost::array<BdrBitmap, T_numFillers>& fillers, BdrBitmap& outBorder)
 // Schreibt die übergebene Verteilung ins Bild und füllt die restliche Fläche auf.
 {
-    unsigned emptyFromPixel = direction ? y : x;
+    unsigned emptyFromPixel = direction ? pos.y : pos.x;
     unsigned toFillPixel = toFill;
 
     // Wieviele große Stücken zu schreiben?
@@ -340,9 +305,9 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned
         if(edgeCounts[takeEdgeNum] > 0)
         {
             if(direction)
-                outBorder->put(x, emptyFromPixel, edges[takeEdgeNum]);
+                outBorder.put(ImgPos(pos.x, emptyFromPixel), edges[takeEdgeNum]);
             else
-                outBorder->put(emptyFromPixel, y, edges[takeEdgeNum]);
+                outBorder.put(ImgPos(emptyFromPixel, pos.y), edges[takeEdgeNum]);
             emptyFromPixel += edgeLengths[takeEdgeNum];
             toFillPixel -= edgeLengths[takeEdgeNum];
             edgeCounts[takeEdgeNum]--;
@@ -358,7 +323,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned
     unsigned char curFiller = T_numFillers - 1;
     while(toFillPixel > 0)
     {
-        unsigned short length = direction ? fillers[curFiller]->h : fillers[curFiller]->w;
+        unsigned short length = direction ? fillers[curFiller].size.y : fillers[curFiller].size.x;
         if(length <= toFillPixel)
         {
             numFillersToUse[curFiller]++;
@@ -370,10 +335,17 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned
             else // Wenn am Ende weniger Platz freibleibt als das kleinste Füllerstück groß ist (2 Pixel), wird sofort ein passendes
                  // Teilstück eingefügt.
             {
+                ImgPos origin(0, 0);
+                ImgPos dstOffset;
+                Extent size(12, toFillPixel);
                 if(direction)
-                    outBorder->put(x, emptyFromPixel, fillers[0]->get(0, 0, 12, toFillPixel), true);
+                    dstOffset = ImgPos(pos.x, emptyFromPixel);
                 else
-                    outBorder->put(emptyFromPixel, y, fillers[0]->get(0, 0, toFillPixel, 12), true);
+                {
+                    std::swap(size.x, size.y);
+                    dstOffset = ImgPos(emptyFromPixel, pos.y);
+                }
+                outBorder.put(dstOffset, fillers[0].get(origin, size));
                 emptyFromPixel += toFillPixel;
                 toFillPixel = 0;
             }
@@ -392,16 +364,16 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned
             for(unsigned char j = 0; j < numFillersToUse[0] / (numUsedFillers + 1); j++)
             {
                 if(direction)
-                    outBorder->put(x, emptyFromPixel, fillers[0]);
+                    outBorder.put(ImgPos(pos.x, emptyFromPixel), fillers[0]);
                 else
-                    outBorder->put(emptyFromPixel, y, fillers[0]);
-                emptyFromPixel += direction ? fillers[0]->h : fillers[0]->w;
+                    outBorder.put(ImgPos(emptyFromPixel, pos.y), fillers[0]);
+                emptyFromPixel += direction ? fillers[0].size.y : fillers[0].size.x;
             }
             if(direction)
-                outBorder->put(x, emptyFromPixel, fillers[i]);
+                outBorder.put(ImgPos(pos.x, emptyFromPixel), fillers[i]);
             else
-                outBorder->put(emptyFromPixel, y, fillers[i]);
-            emptyFromPixel += direction ? fillers[i]->h : fillers[i]->w;
+                outBorder.put(ImgPos(emptyFromPixel, pos.y), fillers[i]);
+            emptyFromPixel += direction ? fillers[i].size.y : fillers[i].size.x;
         }
     }
     // Die restlichen kleinen Füller
@@ -409,10 +381,10 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned
     for(unsigned char j = 0; j < numSmallFillers; j++)
     {
         if(direction)
-            outBorder->put(x, emptyFromPixel, fillers[0]);
+            outBorder.put(ImgPos(pos.x, emptyFromPixel), fillers[0]);
         else
-            outBorder->put(emptyFromPixel, y, fillers[0]);
-        emptyFromPixel += direction ? fillers[0]->h : fillers[0]->w;
+            outBorder.put(ImgPos(emptyFromPixel, pos.y), fillers[0]);
+        emptyFromPixel += direction ? fillers[0].size.y : fillers[0].size.x;
     }
 }
 
@@ -420,52 +392,41 @@ void CustomBorderBuilder::WriteEdgeDistribution(const unsigned x, const unsigned
 
 /*--- BdrBitmap-Klasse *******************************************************/
 // public
-CustomBorderBuilder::BdrBitmap::BdrBitmap(const unsigned width, const unsigned height)
+CustomBorderBuilder::BdrBitmap::BdrBitmap(const Extent& size):size(size)
 {
-    w = width;
-    h = height;
-    values.resize(w * h);
+    values.resize(prodOfComponents(size));
 }
 
-CustomBorderBuilder::BdrBitmap* CustomBorderBuilder::BdrBitmap::get(const unsigned x, const unsigned y, const unsigned width,
-                                                                    const unsigned height) const
+CustomBorderBuilder::BdrBitmap CustomBorderBuilder::BdrBitmap::get(const ImgPos& srcOffset, const Extent& size) const
 {
-    BdrBitmap* pic = new BdrBitmap(width, height);
-    for(unsigned i = 0; i < pic->h; i++)
-        for(unsigned j = 0; j < pic->w; j++)
-        {
-            pic->values[pic->getpos(j, i)] = values[getpos(x + j, y + i)];
-        }
+    BdrBitmap pic(size);
+    RTTR_FOREACH_PT(ImgPos, size)
+    {
+        pic.put(pt, get(pt + srcOffset));
+    }
     return pic;
 }
 
-inline unsigned char CustomBorderBuilder::BdrBitmap::get(const unsigned x, const unsigned y) const
+unsigned char CustomBorderBuilder::BdrBitmap::get(const ImgPos& pos) const
 {
-    return values[getpos(x, y)];
+    return values[getpos(pos)];
 }
 
-void CustomBorderBuilder::BdrBitmap::put(const unsigned x, const unsigned y, BdrBitmap* pic, bool picGetted)
+void CustomBorderBuilder::BdrBitmap::put(const ImgPos& dstOffset, const BdrBitmap& pic)
 {
-    for(unsigned i = 0; i < pic->h; i++)
-        for(unsigned j = 0; j < pic->w; j++)
-        {
-            values[getpos(x + j, y + i)] = pic->values[pic->getpos(j, i)];
-        }
-    if(picGetted)
-        delete pic;
+    RTTR_FOREACH_PT(ImgPos, pic.size)
+    {
+        put(pt + dstOffset, pic.get(pt));
+    }
 }
 
-inline void CustomBorderBuilder::BdrBitmap::put(const unsigned x, const unsigned y, const unsigned char c)
+void CustomBorderBuilder::BdrBitmap::put(const ImgPos& pos, unsigned char c)
 {
-    values[getpos(x, y)] = c;
+    values[getpos(pos)] = c;
 }
 
-// private
-
-inline const unsigned CustomBorderBuilder::BdrBitmap::getpos(const unsigned x, const unsigned y) const
+unsigned CustomBorderBuilder::BdrBitmap::getpos(const ImgPos& pos) const
 // liefert den Index eines Pixels (x,y) im internen Speicher value[]
 {
-    return w * y + x;
+    return pos.y * size.x + pos.x;
 }
-
-/******************************************************* BdrBitmap-Klasse ---*/

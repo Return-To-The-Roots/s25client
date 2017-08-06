@@ -100,7 +100,7 @@ enum
 
 dskGameInterface::dskGameInterface(GameWorldBase& world)
     : Desktop(NULL), gameClient(GAMECLIENT), worldViewer(gameClient.GetPlayerId(), world),
-      gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(LOADER.GetPaletteN("pal5")), actionwindow(NULL),
+      gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
       roadwindow(NULL), selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
 {
     road.mode = RM_DISABLED;
@@ -130,8 +130,8 @@ dskGameInterface::dskGameInterface(GameWorldBase& world)
     world.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
-    cbb.loadEdges(LOADER.GetInfoN("resource"));
-    cbb.buildBorder(VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenHeight(), borders);
+    cbb.loadEdges(*LOADER.GetInfoN("resource"));
+    cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
 
     InitPlayer();
     worldViewer.InitTerrainRenderer();
@@ -189,7 +189,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     // recreate borders
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
-    cbb.buildBorder(newSize.x, newSize.y, borders);
+    cbb.buildBorder(newSize, borders);
 
     // move buttons
     DrawPoint barPos((newSize.x - LOADER.GetImageN("resource", 29)->getWidth()) / 2 + 44,
