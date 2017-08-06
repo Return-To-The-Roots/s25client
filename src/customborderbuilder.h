@@ -23,7 +23,6 @@
 #include <vector>
 
 class glArchivItem_Bitmap;
-class glArchivItem_Bitmap_RLE;
 
 namespace libsiedler2 {
 class ArchivItem_Palette;
@@ -59,8 +58,8 @@ private:
         std::vector<unsigned char> values;
     };
 
-    void BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE& bitmapRLE, BdrBitmap& bdrBitmap);
-    void BdrBitmap2BitmapRLE2(BdrBitmap& bdrBitmap, glArchivItem_Bitmap_RLE& bitmapRLE);
+    void Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmap, BdrBitmap& bdrBitmap);
+    void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmap);
 
     void FindEdgeDistribution(unsigned toFill, boost::array<unsigned short, 3>& lengths, boost::array<unsigned char, 3>& counts);
     template<size_t T_numEdges, size_t T_numFillers>

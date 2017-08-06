@@ -40,7 +40,7 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 
 #include "defines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"
-#include "ogl/glArchivItem_Bitmap_RLE.h"
+#include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "libsiedler2/src/ArchivInfo.h"
 
 CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& palette) : palette(palette)
@@ -72,7 +72,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
     // palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo[4])->getPalette();
     // 640x480
     {
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[4]), tempBMP);
+        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[4]), tempBMP);
         corners[0] = tempBMP.get(ImgPos(0, 0), Extent(584, 12));
         corners[1] = tempBMP.get(ImgPos(584, 0), Extent(56, 12));
         corners[2] = tempBMP.get(ImgPos(0, 468), Extent(202, 12));
@@ -89,7 +89,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
     }
     // 800x600
     {
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[7]), tempBMP);
+        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[7]), tempBMP);
         edgesTop[0] = tempBMP.get(ImgPos(584, 0), Extent(160, 12));
         edgesBottom[0] = tempBMP.get(ImgPos(508, 588), Extent(160, 12));
         edgesLeft[0] = tempBMP.get(ImgPos(0, 364), Extent(12, 120));
@@ -98,7 +98,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
     }
     // 1024x768
     {
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[10]), tempBMP);
+        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[10]), tempBMP);
         edgesTop[1] = tempBMP.get(ImgPos(644, 0), Extent(224, 12));
         edgesBottom[1] = tempBMP.get(ImgPos(668, 756), Extent(224, 12));
         edgesLeft[1] = tempBMP.get(ImgPos(0, 484), Extent(12, 168));
@@ -121,13 +121,13 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
     // 1280x1024 links
     {
         BdrBitmap pic1(Extent(640, 1024));
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[13]), pic1);
+        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[13]), pic1);
         tempBMP.put(ImgPos(0, 0), pic1);
     }
     // und rechts
     {
         BdrBitmap pic2(Extent(640, 1024));
-        BitmapRLE2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap_RLE&>(*archiveInfo[14]), pic2);
+        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[14]), pic2);
         tempBMP.put(ImgPos(pic2.size.x, 0), pic2);
         edgesTop[2] = tempBMP.get(ImgPos(968, 0), Extent(256, 12));
         edgesBottom[2] = tempBMP.get(ImgPos(892, 1012), Extent(256, 12));
@@ -149,28 +149,28 @@ int CustomBorderBuilder::buildBorder(const Extent& size, boost::array<glArchivIt
         return 2; // Die Stücken sind noch nicht geladen worden, so gehts nicht!
 
     // temporäre BdrBitmap's deklarieren
-    boost::array<BdrBitmap, 4> customEdge;
-    customEdge[0] = BdrBitmap(Extent(size.x, 12));      // oben
-    customEdge[1] = BdrBitmap(customEdge[0].size);     // unten
-    customEdge[2] = BdrBitmap(Extent(12, size.y - 24)); // links
-    customEdge[3] = BdrBitmap(customEdge[2].size);     // rechts
+    boost::array<BdrBitmap, 4> customEdges;
+    customEdges[0] = BdrBitmap(Extent(size.x, 12));      // oben
+    customEdges[1] = BdrBitmap(customEdges[0].size);     // unten
+    customEdges[2] = BdrBitmap(Extent(12, size.y - 24)); // links
+    customEdges[3] = BdrBitmap(customEdges[2].size);     // rechts
 
     // den Rahmen zusammenbauen
     {
         // Ecken werden einfach eingefügt
         // horizontale Ecken:
         ImgPos origin(0, 0);
-        customEdge[0].put(origin, corners[0]);
-        customEdge[0].put(ImgPos(size.x - 56, 0), corners[1]);
-        customEdge[1].put(origin, corners[2]);
-        customEdge[1].put(ImgPos(size.x - 132, 0), corners[3]);
+        customEdges[0].put(origin, corners[0]);
+        customEdges[0].put(ImgPos(size.x - 56, 0), corners[1]);
+        customEdges[1].put(origin, corners[2]);
+        customEdges[1].put(ImgPos(size.x - 132, 0), corners[3]);
         // das Mittelstück, damit das Bedienfeld passt
-        customEdge[1].put(ImgPos(size.x / 2 - 118, 0), corners[4]);
+        customEdges[1].put(ImgPos(size.x / 2 - 118, 0), corners[4]);
         // vertikale Ecken:
-        customEdge[2].put(origin, corners[5]);
-        customEdge[2].put(ImgPos(0, size.y - 128), corners[6]);
-        customEdge[3].put(origin, corners[7]);
-        customEdge[3].put(ImgPos(0, size.y - 212), corners[8]);
+        customEdges[2].put(origin, corners[5]);
+        customEdges[2].put(ImgPos(0, size.y - 128), corners[6]);
+        customEdges[3].put(origin, corners[7]);
+        customEdges[3].put(ImgPos(0, size.y - 212), corners[8]);
 
         // Freie Flächen mit Kanten ausfüllen
         // Kanten
@@ -183,56 +183,56 @@ int CustomBorderBuilder::buildBorder(const Extent& size, boost::array<glArchivIt
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesTop[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop, customEdge[0]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop, customEdges[0]);
         // untere Kante links
         emptyFromPixel.x = 202;
         toFillPixel = size.x / 2 - 320;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesBottom[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdge[1]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdges[1]);
         // untere Kante rechts
         emptyFromPixel.x = size.x / 2 + 188;
         toFillPixel = size.x - size.x / 2 - 320; // hier steht w - w/2 statt w/2, um den Rundungsfehler bei ungeraden w zu kompensieren
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesBottom[i].size.x;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdge[1]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom, customEdges[1]);
         // linke Kante
         emptyFromPixel = ImgPos(0, 352);
         toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesLeft[i].size.y;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft, customEdge[2]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft, customEdges[2]);
         // rechte Kante
         emptyFromPixel.y = 268;
         toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesRight[i].size.y;
         FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight, customEdge[3]);
+        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight, customEdges[3]);
     }
 
-    // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap_RLE kovertieren
+    // Bildspeicher für Ausgaberahmen vorbereiten; in glArchivItem_Bitmap kovertieren
     for(unsigned i = 0; i < 4; i++)
     {
-        glArchivItem_Bitmap_RLE* customEdgeRLE = new glArchivItem_Bitmap_RLE;
-        customEdgeRLE->init(customEdge[i].size.x, customEdge[i].size.y, libsiedler2::FORMAT_PALETTED, &palette);
-        BdrBitmap2BitmapRLE2(customEdge[i], *customEdgeRLE);
-        borderInfo[i] = customEdgeRLE;
+        glArchivItem_Bitmap* customEdgeBmp = new glArchivItem_Bitmap_Direct;
+        customEdgeBmp->init(customEdges[i].size.x, customEdges[i].size.y, libsiedler2::FORMAT_PALETTED, &palette);
+        BdrBitmap2Bitmap(customEdges[i], *customEdgeBmp);
+        borderInfo[i] = customEdgeBmp;
     }
 
     return 0;
 }
 
-void CustomBorderBuilder::BitmapRLE2BdrBitmap(const glArchivItem_Bitmap_RLE& bitmapRLE, BdrBitmap& bdrBitmap)
+void CustomBorderBuilder::Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap)
 {
     RTTR_FOREACH_PT(ImgPos, bitmapRLE.GetSize())
         bdrBitmap.put(pt, bitmapRLE.getPixelClrIdx(pt.x, pt.y, &palette));
 }
 
-void CustomBorderBuilder::BdrBitmap2BitmapRLE2(BdrBitmap& bdrBitmap, glArchivItem_Bitmap_RLE& bitmapRLE)
+void CustomBorderBuilder::BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE)
 {
     RTTR_FOREACH_PT(ImgPos, bdrBitmap.size)
         bitmapRLE.setPixel(pt.x, pt.y, bdrBitmap.get(pt));
