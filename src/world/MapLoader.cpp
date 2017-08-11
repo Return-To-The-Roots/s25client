@@ -507,7 +507,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                 // Get designated coastal point
                 const MapPoint coastPt = world.GetCoastalPoint(otherHbId, seaId);
                 // This should not be marked for visit
-                RTTR_Assert(ptToVisitOrHb[world.GetIdx(coastPt) != 1]);
+                RTTR_Assert(ptToVisitOrHb[world.GetIdx(coastPt)] != 1);
                 if(otherHbId == startHbId)
                 {
                     // This is our start harbor. Add the sea points around it to our todo list.
