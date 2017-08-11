@@ -55,7 +55,6 @@ protected:
     Extent padding;
     /// Requested size of the drawn map
     Extent mapSize;
-    bool useBoundingBox;
 };
 
 #endif // !MapPreview_H_

@@ -53,7 +53,7 @@ void glArchivItem_Bitmap_Direct::endUpdate()
     RTTR_Assert(print(buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(), libsiedler2::FORMAT_BGRA, NULL, 0, 0, origin.x, origin.y)
                 == 0);
     VIDEODRIVER.BindTexture(GetTexNoCreate());
-    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE,
+    glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA, GL_UNSIGNED_BYTE,
                     buffer.getPixelPtr());
 }
 

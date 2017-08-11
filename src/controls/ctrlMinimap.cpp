@@ -22,7 +22,7 @@
 
 ctrlMinimap::ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding,
                          const Extent& mapSize)
-    : Window(parent, id, pos, size), padding(padding), mapSize(mapSize), useBoundingBox(true)
+    : Window(parent, id, pos, size), padding(padding), mapSize(mapSize)
 {
     SetMapSize(mapSize);
 }
@@ -45,28 +45,24 @@ Rect ctrlMinimap::GetMapDrawArea() const
 void ctrlMinimap::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
-    SetMapSize(useBoundingBox ? mapSize : newSize);
+    SetMapSize(mapSize);
 }
 
 void ctrlMinimap::SetMapSize(const Extent& newMapSize)
 {
-    mapSize = Extent(std::max(newMapSize.x, padding.x * 2u), std::max(newMapSize.y, padding.y * 2u));
+    mapSize = Extent(elMax(newMapSize, padding * 2u));
 
-    if(!useBoundingBox)
-        return;
+    curMapSize = GetSize() - padding * 2u;
 
     unsigned scaled_map_width = static_cast<unsigned>(mapSize.x * MINIMAP_SCALE_X);
-    double x_scale = double(scaled_map_width) / double(mapSize.x - padding.x * 2);
-    double y_scale = double(mapSize.y) / double(mapSize.y - padding.y * 2);
+    double x_scale = double(scaled_map_width) / double(curMapSize.y);
+    double y_scale = double(mapSize.y) / double(curMapSize.x);
 
-    bool scale_width = false;
-
-    scale_width = x_scale <= y_scale;
+    bool scale_width = x_scale <= y_scale;
 
     RTTR_Assert(mapSize.y != 0);
     RTTR_Assert(scaled_map_width != 0);
 
-    curMapSize = GetSize() - padding * 2u;
     if(scale_width)
         curMapSize.x = (scaled_map_width * curMapSize.y / mapSize.y);
     else
@@ -88,9 +84,6 @@ void ctrlMinimap::DrawMap(Minimap& map)
 
 void ctrlMinimap::RemoveBoundingBox(const Extent& minSize)
 {
-    if(!useBoundingBox)
-        return;
-    useBoundingBox = false;
     Extent newSize = curMapSize + padding * 2u;
     newSize = elMax(newSize, minSize);
     padding = Extent(0, 0);
