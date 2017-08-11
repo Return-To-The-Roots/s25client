@@ -19,6 +19,7 @@
 #include "Minimap.h"
 #include "Loader.h"
 #include "ogl/oglIncludes.h"
+#include "libsiedler2/src/PixelBufferARGB.h"
 
 Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize)
 {
@@ -29,26 +30,21 @@ void Minimap::CreateMapTexture()
     map.DeleteTexture();
 
     /// Buffer für die Daten erzeugen
-    std::vector<unsigned char> buffer(mapSize.x * 2 * mapSize.y * 4);
+    libsiedler2::PixelBufferARGB buffer(mapSize.x * 2, mapSize.y);
 
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
         // Die 2. Terraindreiecke durchgehen
         for(unsigned t = 0; t < 2; ++t)
         {
-            unsigned color = CalcPixelColor(pt, t);
-
-            unsigned pos = pt.y * mapSize.x * 2 + (pt.x * 2 + t + (pt.y & 1)) % (mapSize.x * 2);
-            pos *= 4;
-            buffer[pos + 2] = GetRed(color);
-            buffer[pos + 1] = GetGreen(color);
-            buffer[pos] = GetBlue(color);
-            buffer[pos + 3] = GetAlpha(color);
+            libsiedler2::ColorARGB color(CalcPixelColor(pt, t));
+            unsigned xCoord = (pt.x * 2 + t + (pt.y & 1)) % buffer.getWidth();
+            buffer.set(xCoord, pt.y, color);
         }
     }
 
     map.setFilter(GL_LINEAR);
-    map.create(mapSize.x * 2, mapSize.y, &buffer[0], mapSize.x * 2, mapSize.y, libsiedler2::FORMAT_BGRA, LOADER.GetPaletteN("pal5"));
+    map.create(buffer.getWidth(), buffer.getHeight(), buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(), libsiedler2::FORMAT_BGRA);
 }
 
 void Minimap::Draw(const Rect& rect)
