@@ -115,7 +115,6 @@ void AIJH::BuildJob::TryToBuild()
         /*erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
         if (type == BLD_WOODCUTTER)
         {
-            
             PositionSearch *search = aijh.CreatePositionSearch(bPos, AIJH::WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
             SearchJob *job = new SearchJob(aijh, search);
             aijh.AddJob(job, true);

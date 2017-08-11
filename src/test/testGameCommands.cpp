@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "PointOutput.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
@@ -500,6 +501,48 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), 0u);
     for(unsigned i = 1; i < 3; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
+}
+
+BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
+{
+    initGameRNG();
+
+    const MapPoint milPt = hqPos + MapPoint(6, 0);
+    GamePlayer& player = world.GetPlayer(curPlayer);
+    nobBaseWarehouse* wh = player.GetFirstWH();
+    BOOST_REQUIRE(wh);
+    // Set all military stuff to max
+    this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
+    GlobalGameSettings& ggs = const_cast<GlobalGameSettings&>(world.GetGGS());
+    ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
+    // Build a watchtower and connect it
+    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
+    BOOST_REQUIRE(bld);
+    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
+    // Let carrier out
+    for(unsigned gf = 0; gf < 30; gf++)
+        this->em.ExecuteNextGF();
+    // Let soldier out and walk a bit
+    for(unsigned gf = 0; gf < 30 + 30; gf++)
+        this->em.ExecuteNextGF();
+    std::vector<noBase*> figs = world.GetDynamicObjectsFrom(hqPos + MapPoint(1, 1));
+    if(figs.empty())
+        figs = world.GetDynamicObjectsFrom(hqPos + MapPoint(2, 1));
+    BOOST_REQUIRE_EQUAL(figs.size(), 1u);
+    nofPassiveSoldier* soldier = dynamic_cast<nofPassiveSoldier*>(figs[0]);
+    BOOST_REQUIRE(soldier);
+    BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
+    this->OrderNewSoldiers(milPt);
+    // Soldier must still have this goal!
+    BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
+    // Now run some GFs so the bld is occupied (20GFs per node walked (distance + to and from flag))
+    unsigned numGFtillAllArrive = 20 * (milPt.x - hqPos.x + 2);
+    for(unsigned gf = 0; gf < numGFtillAllArrive; gf++)
+        this->em.ExecuteNextGF();
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 2u);
+    this->OrderNewSoldiers(milPt);
+    // No one leaves!
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 2u);
 }
 
 namespace {

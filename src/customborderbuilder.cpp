@@ -56,7 +56,8 @@ CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& 
     std::fill(fillersRight.begin(), fillersRight.end(), BdrBitmap());
 }
 CustomBorderBuilder::~CustomBorderBuilder()
-{}
+{
+}
 
 int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
 {
@@ -286,7 +287,8 @@ template<size_t T_numEdges, size_t T_numFillers>
 void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigned toFill,
                                                 const bool direction, // false = waagerecht, true = senkrecht
                                                 const boost::array<unsigned short, 3>& edgeLengths,
-                                                boost::array<unsigned char, 3>& edgeCounts, const boost::array<BdrBitmap, T_numEdges>& edges,
+                                                boost::array<unsigned char, 3>& edgeCounts,
+                                                const boost::array<BdrBitmap, T_numEdges>& edges,
                                                 const boost::array<BdrBitmap, T_numFillers>& fillers, BdrBitmap& outBorder)
 // Schreibt die übergebene Verteilung ins Bild und füllt die restliche Fläche auf.
 {
@@ -392,7 +394,7 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
 
 /*--- BdrBitmap-Klasse *******************************************************/
 // public
-CustomBorderBuilder::BdrBitmap::BdrBitmap(const Extent& size):size(size)
+CustomBorderBuilder::BdrBitmap::BdrBitmap(const Extent& size) : size(size)
 {
     values.resize(prodOfComponents(size));
 }

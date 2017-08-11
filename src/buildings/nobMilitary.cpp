@@ -542,6 +542,9 @@ void nobMilitary::SendSoldiersHome()
 // used by the ai to refill the upgradebuilding with low rank soldiers! - normal orders for soldiers are done in RegulateTroops!
 void nobMilitary::OrderNewSoldiers()
 {
+    // No other ranks -> Don't send soldiers back
+    if(gwg->GetGGS().GetMaxMilitaryRank() == 0)
+        return;
     // cancel all max ranks on their way to this building
     std::vector<nofPassiveSoldier*> noNeed;
     for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end();)

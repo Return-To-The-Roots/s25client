@@ -207,8 +207,8 @@ bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, u
     }
 
     // Fenster erstellen
-    screen = CreateWindowExW(dwExStyle, windowClassName.c_str(), wTitle.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL,
-                             GetModuleHandle(NULL), NULL);
+    screen = CreateWindowExW(dwExStyle, windowClassName.c_str(), wTitle.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL,
+                             NULL, GetModuleHandle(NULL), NULL);
 
     if(screen == NULL)
         return false;

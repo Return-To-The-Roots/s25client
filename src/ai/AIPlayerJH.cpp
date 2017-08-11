@@ -1641,12 +1641,8 @@ void AIPlayerJH::MilUpgradeOptim()
             }
             if((*it)->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
                 aii.SendSoldiersHome((*it)->GetPos());
-            if(SoldierAvailable(0)
-               && (*it)->GetTroopsCount()
-                    < (unsigned)((*it)->GetBuildingType() == BLD_WATCHTOWER ?
-                                   TROOPS_COUNT[aii.GetNation()][2] :
-                                   TROOPS_COUNT[aii.GetNation()][3])) // building not full and privates in a warehouse? order new!
-                aii.OrderNewSoldiers((*it)->GetPos());
+            if(SoldierAvailable(0) && (*it)->GetTroopsCount() < (*it)->GetMaxTroopsCt()) // building not full and privates in a warehouse?
+                aii.OrderNewSoldiers((*it)->GetPos());                                   // order new!
         }
         count++;
     }

@@ -45,7 +45,7 @@ private:
     class BdrBitmap
     {
     public:
-        BdrBitmap(): size(0, 0){}
+        BdrBitmap() : size(0, 0) {}
         BdrBitmap(const Extent& size);
         BdrBitmap get(const ImgPos& srcOffset, const Extent& size) const;
         unsigned char get(const ImgPos& pos) const;
