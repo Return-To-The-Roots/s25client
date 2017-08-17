@@ -18,7 +18,7 @@
 #ifndef BuildingCount_h__
 #define BuildingCount_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include <boost/array.hpp>
 
 /// Number of buildings and building sites per type

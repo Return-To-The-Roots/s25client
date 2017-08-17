@@ -18,6 +18,8 @@
 #ifndef InventorySetting_h__
 #define InventorySetting_h__
 
+#include <boost/array.hpp>
+
 /// Setting for each item in a warehouses inventory
 struct EInventorySetting
 {

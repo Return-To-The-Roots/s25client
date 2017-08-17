@@ -22,7 +22,7 @@
 #include "GamePlayerInfo.h"
 #include "helpers/containerUtils.h"
 #include "helpers/multiArray.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"

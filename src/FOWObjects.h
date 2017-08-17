@@ -18,7 +18,7 @@
 #define FOWOBJECT_H_INCLUDED
 
 #include "DrawPoint.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/NationConsts.h"
 

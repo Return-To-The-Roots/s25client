@@ -18,7 +18,7 @@
 #ifndef GameCommandFactory_h__
 #define GameCommandFactory_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"

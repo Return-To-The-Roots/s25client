@@ -19,7 +19,7 @@
 #define LuaPlayer_h__
 
 #include "LuaPlayerBase.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include <kaguya/kaguya.hpp>

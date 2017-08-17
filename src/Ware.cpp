@@ -30,7 +30,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/Log.h"

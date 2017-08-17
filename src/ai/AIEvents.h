@@ -18,7 +18,7 @@
 #ifndef AIEvents_h__
 #define AIEvents_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"

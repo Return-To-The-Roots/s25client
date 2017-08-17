@@ -2,6 +2,8 @@
 #define IW_TRADE_H_
 
 #include "IngameWindow.h"
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/JobTypes.h"
 
 class nobBaseWarehouse;
 class GameWorldViewer;

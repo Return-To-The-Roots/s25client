@@ -19,13 +19,14 @@
 #define BUILD_COSTS_H_
 
 #include "DrawPointInit.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
 
 extern const boost::array<const char*, BLD_COUNT> BUILDING_NAMES;
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
-const BuildingCost BUILDING_COSTS[NAT_COUNT][40] = {
+const BuildingCost BUILDING_COSTS[NAT_COUNT][BLD_COUNT] = {
   // Nubier
   {{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
    {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
@@ -48,13 +49,13 @@ const BuildingCost BUILDING_COSTS[NAT_COUNT][40] = {
    {3, 3}, {4, 3}, {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}}};
 
 // Bauqualitäten der Gebäude
-const BuildingQuality BUILDING_SIZE[40] = {BQ_CASTLE,  BQ_HUT,    BQ_HUT,   BQ_NOTHING, BQ_HOUSE,  BQ_NOTHING, BQ_NOTHING, BQ_NOTHING,
-                                           BQ_NOTHING, BQ_CASTLE, BQ_MINE,  BQ_MINE,    BQ_MINE,   BQ_MINE,    BQ_HUT,     BQ_NOTHING,
-                                           BQ_HOUSE,   BQ_HUT,    BQ_HUT,   BQ_HUT,     BQ_HUT,    BQ_HOUSE,   BQ_HUT,     BQ_HOUSE,
-                                           BQ_HOUSE,   BQ_HOUSE,  BQ_HOUSE, BQ_CASTLE,  BQ_CASTLE, BQ_HOUSE,   BQ_NOTHING, BQ_HOUSE,
-                                           BQ_HOUSE,   BQ_HOUSE,  BQ_HOUSE, BQ_HUT,     BQ_HOUSE,  BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR};
+const BuildingQuality BUILDING_SIZE[BLD_COUNT] = {
+  BQ_CASTLE,  BQ_HUT,   BQ_HUT,   BQ_NOTHING, BQ_HOUSE, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_CASTLE,
+  BQ_MINE,    BQ_MINE,  BQ_MINE,  BQ_MINE,    BQ_HUT,   BQ_NOTHING, BQ_HOUSE,   BQ_HUT,     BQ_HUT,     BQ_HUT,
+  BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
+  BQ_NOTHING, BQ_HOUSE, BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE, BQ_HUT,     BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR};
 
-const UsualBuilding USUAL_BUILDING_CONSTS[30] = {
+const UsualBuilding USUAL_BUILDING_CONSTS[BLD_COUNT - 10] = {
   {JOB_MINER, GD_STONES, 3, {GD_FISH, GD_MEAT, GD_BREAD}},
   {JOB_MINER, GD_COAL, 3, {GD_FISH, GD_MEAT, GD_BREAD}},
   {JOB_MINER, GD_IRON, 3, {GD_FISH, GD_MEAT, GD_BREAD}},
@@ -88,7 +89,7 @@ const UsualBuilding USUAL_BUILDING_CONSTS[30] = {
 };
 
 /// Rauchkonstanten für alle 4 Völker unterschiedlich und erst beginnend nach den Militärgebäuden, denn die rauchen nicht
-const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][30] = {
+const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][BLD_COUNT - 10] = {
   // Nubier
   {
     {0, 0, 0},     // BLD_GRANITEMINE
@@ -278,12 +279,10 @@ const DrawPointInit BUILDING_SIGN_CONSTS[NAT_COUNT][BLD_COUNT] = {
    {-5, 0}, {-3, 2},  {-6, 0},   {-7, 0},   {-32, -2}, {-13, -3}, {-8, -2},  {-22, -18}, {-25, -8}, {0, 0},
    {0, 0},  {-8, -2}, {-17, -4}, {28, -16}, {-1, 0},   {8, -9},   {16, -15}, {-2, -25},  {-29, -9}, {0, 0}},
   // Babylonier
-  {
-
-    {0, 0},    {19, -6},  {19, -20}, {0, 0},    {5, -15},  {0, 0},    {0, 0},   {0, 0},     {0, 0},    {20, -10},
-    {15, -10}, {15, -10}, {15, -10}, {15, -10}, {0, 0},    {0, 0},    {13, -5}, {-5, -13},  {15, -20}, {15, -1},
-    {11, -7},  {1, -22},  {7, -12},  {14, -16}, {21, -18}, {13, -11}, {5, -17}, {-2, -29},  {18, -20}, {0, 0},
-    {0, 0},    {14, -13}, {3, -17},  {0, -18},  {12, -10}, {16, 0},   {4, -16}, {-15, -11}, {-24, -9}, {0, 0}}};
+  {{0, 0},    {19, -6},  {19, -20}, {0, 0},    {5, -15},  {0, 0},    {0, 0},   {0, 0},     {0, 0},    {20, -10},
+   {15, -10}, {15, -10}, {15, -10}, {15, -10}, {0, 0},    {0, 0},    {13, -5}, {-5, -13},  {15, -20}, {15, -1},
+   {11, -7},  {1, -22},  {7, -12},  {14, -16}, {21, -18}, {13, -11}, {5, -17}, {-2, -29},  {18, -20}, {0, 0},
+   {0, 0},    {14, -13}, {3, -17},  {0, -18},  {12, -10}, {16, 0},   {4, -16}, {-15, -11}, {-24, -9}, {0, 0}}};
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
@@ -292,6 +291,6 @@ const DrawPointInit NUBIAN_MINE_FIRE[4] = {
 };
 
 /// Hilfetexte für Gebäude
-extern const char* const BUILDING_HELP_STRINGS[40];
+extern const char* const BUILDING_HELP_STRINGS[BLD_COUNT];
 
 #endif

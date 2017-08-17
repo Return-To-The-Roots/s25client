@@ -23,7 +23,8 @@
 
 #include "AIEvents.h"
 #include "ai/AIResource.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingQuality.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 

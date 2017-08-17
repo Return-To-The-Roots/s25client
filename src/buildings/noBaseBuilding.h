@@ -19,7 +19,7 @@
 #define NO_BASEBUILDING_H_
 
 #include "nodeObjs/noRoadNode.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameData/BuildingConsts.h"
 

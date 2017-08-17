@@ -18,7 +18,7 @@
 #ifndef BuildingFactory_h__
 #define BuildingFactory_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameData/NationConsts.h"
 

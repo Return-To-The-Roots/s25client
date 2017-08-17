@@ -18,7 +18,7 @@
 #ifndef SettingsTypes_h__
 #define SettingsTypes_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
 #include <boost/tuple/tuple.hpp>

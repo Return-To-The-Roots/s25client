@@ -20,7 +20,7 @@
 #pragma once
 
 #include "gameTypes/BuildingCount.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 #include <deque>

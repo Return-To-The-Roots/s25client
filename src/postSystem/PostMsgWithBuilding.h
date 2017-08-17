@@ -19,7 +19,7 @@
 #define PostMsgWithBuilding_h__
 
 #include "postSystem/PostMsg.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameData/NationConsts.h"
 
 class glArchivItem_Bitmap;

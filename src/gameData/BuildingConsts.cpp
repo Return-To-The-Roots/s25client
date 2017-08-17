@@ -62,7 +62,7 @@ const boost::array<const char*, BLD_COUNT> BUILDING_NAMES = {{
   gettext_noop("Harbor building"),
 }};
 
-const char* const BUILDING_HELP_STRINGS[40] = {
+const char* const BUILDING_HELP_STRINGS[BLD_COUNT] = {
   // Headquarters
   gettext_noop("The headquarters represents the "
                "center of your realm. The large "
