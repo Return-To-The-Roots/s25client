@@ -32,6 +32,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 
 /// IDs in der IO_DAT von Boot und Schiffs-Bild für den Umschaltebutton beim Schiffsbauer
 const unsigned IODAT_BOAT_ID = 219;
@@ -115,7 +116,7 @@ void iwBuilding::Msg_PaintBefore()
 
 void iwBuilding::Msg_PaintAfter()
 {
-    if(building->GetBuildingType() >= BLD_GRANITEMINE && building->GetBuildingType() <= BLD_GOLDMINE)
+    if(BuildingProperties::IsMine(building->GetBuildingType()))
     {
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)
 

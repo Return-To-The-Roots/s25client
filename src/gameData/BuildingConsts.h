@@ -23,10 +23,10 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/NationConsts.h"
 
-extern const boost::array<const char*, BLD_COUNT> BUILDING_NAMES;
+extern const boost::array<const char*, BUILDING_TYPES_COUNT> BUILDING_NAMES;
 
 // Konstanten für die Baukosten der Gebäude von allen 4 Völkern
-const BuildingCost BUILDING_COSTS[NAT_COUNT][BLD_COUNT] = {
+const BuildingCost BUILDING_COSTS[NAT_COUNT][BUILDING_TYPES_COUNT] = {
   // Nubier
   {{0, 0}, {2, 0}, {2, 3}, {0, 0}, {3, 5}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
    {4, 0}, {0, 0}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
@@ -49,13 +49,13 @@ const BuildingCost BUILDING_COSTS[NAT_COUNT][BLD_COUNT] = {
    {3, 3}, {4, 3}, {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}}};
 
 // Bauqualitäten der Gebäude
-const BuildingQuality BUILDING_SIZE[BLD_COUNT] = {
+const BuildingQuality BUILDING_SIZE[BUILDING_TYPES_COUNT] = {
   BQ_CASTLE,  BQ_HUT,   BQ_HUT,   BQ_NOTHING, BQ_HOUSE, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_NOTHING, BQ_CASTLE,
   BQ_MINE,    BQ_MINE,  BQ_MINE,  BQ_MINE,    BQ_HUT,   BQ_NOTHING, BQ_HOUSE,   BQ_HUT,     BQ_HUT,     BQ_HUT,
   BQ_HUT,     BQ_HOUSE, BQ_HUT,   BQ_HOUSE,   BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HOUSE,
   BQ_NOTHING, BQ_HOUSE, BQ_HOUSE, BQ_HOUSE,   BQ_HOUSE, BQ_HUT,     BQ_HOUSE,   BQ_CASTLE,  BQ_CASTLE,  BQ_HARBOR};
 
-const UsualBuilding USUAL_BUILDING_CONSTS[BLD_COUNT - 10] = {
+const UsualBuilding USUAL_BUILDING_CONSTS[BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING] = {
   {JOB_MINER, GD_STONES, 3, {GD_FISH, GD_MEAT, GD_BREAD}},
   {JOB_MINER, GD_COAL, 3, {GD_FISH, GD_MEAT, GD_BREAD}},
   {JOB_MINER, GD_IRON, 3, {GD_FISH, GD_MEAT, GD_BREAD}},
@@ -89,7 +89,7 @@ const UsualBuilding USUAL_BUILDING_CONSTS[BLD_COUNT - 10] = {
 };
 
 /// Rauchkonstanten für alle 4 Völker unterschiedlich und erst beginnend nach den Militärgebäuden, denn die rauchen nicht
-const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][BLD_COUNT - 10] = {
+const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING] = {
   // Nubier
   {
     {0, 0, 0},     // BLD_GRANITEMINE
@@ -257,7 +257,7 @@ const SmokeConst BUILDING_SMOKE_CONSTS[NAT_COUNT][BLD_COUNT - 10] = {
   }};
 
 /// Offset of the production-/gold- stop signs per building
-const DrawPointInit BUILDING_SIGN_CONSTS[NAT_COUNT][BLD_COUNT] = {
+const DrawPointInit BUILDING_SIGN_CONSTS[NAT_COUNT][BUILDING_TYPES_COUNT] = {
   // Nubier
   {{0, 0},    {19, -4},  {19, -3},  {0, 0},    {23, -19}, {0, 0},    {0, 0},   {0, 0},     {0, 0},     {29, -23},
    {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {0, 0},    {0, 0},   {4, -16},   {9, -12},   {7, -10},
@@ -291,6 +291,6 @@ const DrawPointInit NUBIAN_MINE_FIRE[4] = {
 };
 
 /// Hilfetexte für Gebäude
-extern const char* const BUILDING_HELP_STRINGS[BLD_COUNT];
+extern const char* const BUILDING_HELP_STRINGS[BUILDING_TYPES_COUNT];
 
 #endif

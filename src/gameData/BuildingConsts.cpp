@@ -19,7 +19,7 @@
 #include "BuildingConsts.h"
 #include "mygettext/mygettext.h"
 
-const boost::array<const char*, BLD_COUNT> BUILDING_NAMES = {{
+const boost::array<const char*, BUILDING_TYPES_COUNT> BUILDING_NAMES = {{
   gettext_noop("Headquarters"),
   gettext_noop("Barracks"),
   gettext_noop("Guardhouse"),
@@ -62,7 +62,7 @@ const boost::array<const char*, BLD_COUNT> BUILDING_NAMES = {{
   gettext_noop("Harbor building"),
 }};
 
-const char* const BUILDING_HELP_STRINGS[BLD_COUNT] = {
+const char* const BUILDING_HELP_STRINGS[BUILDING_TYPES_COUNT] = {
   // Headquarters
   gettext_noop("The headquarters represents the "
                "center of your realm. The large "
@@ -336,5 +336,4 @@ const char* const BUILDING_HELP_STRINGS[BLD_COUNT] = {
                "this, first choose the relevant "
                "icon followed by the desired "
                "merchandise or job symbol."),
-
 };

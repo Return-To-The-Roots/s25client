@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "BuildingFactory.h"
 #include "GamePlayer.h"
+#include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
@@ -31,6 +32,7 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingTy
     noBuilding* bld;
     switch(type)
     {
+        case BLD_HEADQUARTERS: bld = new nobHQ(pt, player, nation); break;
         case BLD_STOREHOUSE: bld = new nobStorehouse(pt, player, nation); break;
         case BLD_HARBORBUILDING: bld = new nobHarborBuilding(pt, player, nation); break;
         case BLD_BARRACKS:

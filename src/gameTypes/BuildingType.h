@@ -62,13 +62,14 @@ enum BuildingType
     BLD_FARM = 37,           // NJR
     BLD_DONKEYBREEDER = 38,  //
     BLD_HARBORBUILDING = 39, //
-    BLD_NOTHING,
-    BLD_COUNT = BLD_NOTHING
+    BLD_NOTHING              // No building. Must be the last entry and never stored as it might change values
 };
 
-// Anzahl an unterschiedlichen Gebäudetypen
-const unsigned BUILDING_TYPES_COUNT = BLD_COUNT;
-// Number of NOTHING entries (currently unused buildings)
+/// Number of building types
+const unsigned BUILDING_TYPES_COUNT = BLD_NOTHING;
+/// Number of NOTHING entries (currently unused buildings)
 const unsigned NUM_UNUSED_BLD_TYPES = 7;
+/// First usual building (building that produces something)
+const unsigned FIRST_USUAL_BUILDING = BLD_GRANITEMINE;
 
 #endif // BuildingType_h__

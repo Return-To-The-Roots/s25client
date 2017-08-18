@@ -74,6 +74,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/TerrainData.h"
@@ -476,7 +477,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 WINDOWMANAGER.Show(
                   new iwHarborBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
-            else if(bt <= BLD_FORTRESS)
+            else if(BuildingProperties::IsMilitary(bt))
                 WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else
                 WINDOWMANAGER.Show(new iwBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
@@ -542,8 +543,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(worldViewer.GetPlayer().IsAlly(building->GetPlayer())
-                       && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
+                    if(worldViewer.GetPlayer().IsAlly(building->GetPlayer()) && BuildingProperties::IsWareHouse(bt))
                     {
                         WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, gameClient));
                         return true;
@@ -551,7 +551,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 }
 
                 // Ist es ein gewöhnliches Militärgebäude?
-                if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
+                if(BuildingProperties::IsMilitary(bt))
                 {
                     // Dann darf es nicht neu gebaut sein!
                     if(!static_cast<const nobMilitary*>(building)->IsNewBuilt())

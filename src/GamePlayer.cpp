@@ -47,6 +47,7 @@
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/VisualSettings.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
@@ -127,17 +128,16 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
 {
     BuildOrders ordering;
 
-    // Baureihenfolge füllen (0 ist das HQ!)
+    // Baureihenfolge füllen
     unsigned curPrio = 0;
-    for(unsigned i = 1; i < BLD_COUNT; ++i)
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {
-        // Diese Ids sind noch nicht besetzt
-        if(i == BLD_NOTHING2 || i == BLD_NOTHING3 || i == BLD_NOTHING4 || i == BLD_NOTHING5 || i == BLD_NOTHING6 || i == BLD_NOTHING7
-           || i == BLD_NOTHING9)
+        BuildingType bld = BuildingType(i);
+        if(bld == BLD_HEADQUARTERS || !BuildingProperties::IsValid(bld))
             continue;
 
         RTTR_Assert(curPrio < ordering.size());
-        ordering[curPrio] = BuildingType(i);
+        ordering[curPrio] = bld;
         ++curPrio;
     }
     RTTR_Assert(curPrio == ordering.size());
@@ -643,7 +643,7 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
     unsigned goal_count = 0;
 
-    for(unsigned i = 0; i < BLD_COUNT; ++i)
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
     {
         uint8_t percentForCurBld = distribution[ware].percent_buildings[i];
         if(percentForCurBld)
@@ -1132,14 +1132,14 @@ void GamePlayer::RemoveBuildingSite(noBuildingSite* building_site)
 
 void GamePlayer::AddUsualBuilding(nobUsual* building)
 {
-    buildings[building->GetBuildingType() - 10].push_back(building);
+    buildings[building->GetBuildingType() - FIRST_USUAL_BUILDING].push_back(building);
     ChangeStatisticValue(STAT_BUILDINGS, 1);
 }
 
 void GamePlayer::RemoveUsualBuilding(nobUsual* building)
 {
-    RTTR_Assert(helpers::contains(buildings[building->GetBuildingType() - 10], building));
-    buildings[building->GetBuildingType() - 10].remove(building);
+    RTTR_Assert(helpers::contains(buildings[building->GetBuildingType() - FIRST_USUAL_BUILDING], building));
+    buildings[building->GetBuildingType() - FIRST_USUAL_BUILDING].remove(building);
     ChangeStatisticValue(STAT_BUILDINGS, -1);
 }
 
@@ -1160,9 +1160,9 @@ void GamePlayer::RemoveMilitaryBuilding(nobMilitary* building)
 /// Gibt Liste von Gebäuden des Spieler zurück
 const std::list<nobUsual*>& GamePlayer::GetBuildings(const BuildingType type) const
 {
-    RTTR_Assert(type >= 10);
+    RTTR_Assert(static_cast<unsigned>(type) >= FIRST_USUAL_BUILDING);
 
-    return buildings[type - 10];
+    return buildings[type - FIRST_USUAL_BUILDING];
 }
 
 /// Liefert die Anzahl aller Gebäude einzeln
@@ -1173,8 +1173,8 @@ BuildingCount GamePlayer::GetBuildingCount() const
     std::fill(bc.buildingSites.begin(), bc.buildingSites.end(), 0);
 
     // Normale Gebäude zählen
-    for(unsigned i = 0; i < 30; ++i)
-        bc.buildings[i + 10] = buildings[i].size();
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
+        bc.buildings[i + FIRST_USUAL_BUILDING] = buildings[i].size();
     // Lagerhäuser zählen
     for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
         ++bc.buildings[(*it)->GetBuildingType()];
@@ -1189,9 +1189,9 @@ BuildingCount GamePlayer::GetBuildingCount() const
 
 void GamePlayer::CalcProductivities(std::vector<unsigned short>& productivities) const
 {
-    RTTR_Assert(productivities.size() == BLD_COUNT);
+    RTTR_Assert(productivities.size() == BUILDING_TYPES_COUNT);
 
-    for(unsigned i = 0; i < BLD_COUNT - 10; ++i)
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
     {
         // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
         // und den Mittelwert bildet
@@ -1203,7 +1203,7 @@ void GamePlayer::CalcProductivities(std::vector<unsigned short>& productivities)
         if(!buildings[i].empty())
             total_productivity /= buildings[i].size();
 
-        productivities[i + 10] = static_cast<unsigned short>(total_productivity);
+        productivities[i + FIRST_USUAL_BUILDING] = static_cast<unsigned short>(total_productivity);
     }
 }
 
@@ -1212,7 +1212,7 @@ unsigned short GamePlayer::CalcAverageProductivitiy()
 {
     unsigned total_productivity = 0;
     unsigned total_count = 0;
-    for(unsigned i = 0; i < 30; ++i)
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
     {
         // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
         // und den Mittelwert bildet
@@ -1223,8 +1223,7 @@ unsigned short GamePlayer::CalcAverageProductivitiy()
             total_count += buildings[i].size();
     }
     if(total_count == 0)
-        total_count = 1;
-
+        return 0;
     return total_productivity / total_count;
 }
 

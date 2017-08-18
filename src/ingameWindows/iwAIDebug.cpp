@@ -124,19 +124,29 @@ void iwAIDebug::Msg_PaintBefore()
         ss << bj->GetTarget().x << " / " << bj->GetTarget().y << std::endl;
     } else if(ej)
     {
-        ss << "EventJob:" << std::endl;
+#define RTTR_PRINT_EV(ev) \
+    case AIEvent::ev: ss << #ev << std::endl; break
         switch(ej->GetEvent()->GetType())
         {
-            case AIEvent::BuildingDestroyed: ss << "BuildingDestroyed" << std::endl; break;
-            case AIEvent::BuildingConquered: ss << "BuildingConquered" << std::endl; break;
-            case AIEvent::BuildingLost: ss << "BuildingLost" << std::endl; break;
-            case AIEvent::BorderChanged: ss << "BorderChanged" << std::endl; break;
-            case AIEvent::TerritoryLost: ss << "world/TerritoryLost" << std::endl; break;
-            case AIEvent::NoMoreResourcesReachable: ss << "NoMoreResourcesReachable" << std::endl; break;
-            case AIEvent::BuildingFinished: ss << "BuildingFinished" << std::endl; break;
-            case AIEvent::ExpeditionWaiting: ss << "ExpeditionWaiting" << std::endl; break;
+            RTTR_PRINT_EV(BuildingDestroyed);
+            RTTR_PRINT_EV(BuildingConquered);
+            RTTR_PRINT_EV(BuildingLost);
+            RTTR_PRINT_EV(BorderChanged);
+            RTTR_PRINT_EV(NoMoreResourcesReachable);
+            RTTR_PRINT_EV(BuildingFinished);
+            RTTR_PRINT_EV(ExpeditionWaiting);
+            RTTR_PRINT_EV(TreeChopped);
+            RTTR_PRINT_EV(ShipBuilt);
+            RTTR_PRINT_EV(ResourceUsed);
+            RTTR_PRINT_EV(RoadConstructionComplete);
+            RTTR_PRINT_EV(RoadConstructionFailed);
+            RTTR_PRINT_EV(NewColonyFounded);
+            RTTR_PRINT_EV(LuaConstructionOrder);
+            RTTR_PRINT_EV(ResourceFound);
+            RTTR_PRINT_EV(LostLand);
             default: ss << "Unknown Event" << std::endl; break;
         }
+#undef RTTR_PRINT_EV
 
         AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ej->GetEvent());
         if(evb)

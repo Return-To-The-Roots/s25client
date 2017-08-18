@@ -175,7 +175,7 @@ protected:
     void InitDistribution();
 
     // returns true if we can get to the startflag in <maxlen without turning back
-    bool IsFlagPartofCircle(const noFlag* startFlag, unsigned maxlen, const noFlag* curFlag, unsigned char excludeDir, bool init,
+    bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag, unsigned char excludeDir, bool init,
                             std::vector<MapPoint> oldFlags);
 
     // get me the current addon settings?
@@ -289,7 +289,7 @@ protected:
     void SetFarmedNodes(const MapPoint pt, bool set);
 
     // removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a new connection
-    bool RemoveUnusedRoad(const noFlag* startFlag, unsigned char excludeDir = 0xFF, bool firstflag = true, bool allowcircle = true,
+    bool RemoveUnusedRoad(const noFlag& startFlag, unsigned char excludeDir = 0xFF, bool firstflag = true, bool allowcircle = true,
                           bool keepstartflag = false);
     // finds all unused flags and roads, removes flags or reconnects them as neccessary
     void RemoveAllUnusedRoads(const MapPoint pt);

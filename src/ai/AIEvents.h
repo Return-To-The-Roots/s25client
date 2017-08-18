@@ -30,7 +30,6 @@ enum EventType
     BuildingConquered,
     BuildingLost,
     BorderChanged,
-    TerritoryLost,
     NoMoreResourcesReachable,
     BuildingFinished,
     ExpeditionWaiting,

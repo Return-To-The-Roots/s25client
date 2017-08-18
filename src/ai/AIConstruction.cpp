@@ -36,21 +36,21 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/Inventory.h"
 #include "gameTypes/JobTypes.h"
+#include "gameData/BuildingProperties.h"
 #include <boost/array.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/container/vector.hpp>
+#include <boost/foreach.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
 #include <list>
 
-const boost::array<BuildingType, 4> AIConstruction::millitaryBuildings = {{BLD_BARRACKS, BLD_GUARDHOUSE, BLD_WATCHTOWER, BLD_FORTRESS}};
-
-AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh) : aii(aii), aijh(aijh)
+AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
+    : aii(aii), aijh(aijh), buildingsWanted(BUILDING_TYPES_COUNT), constructionorders(BUILDING_TYPES_COUNT)
 {
-    playerID = aii.GetPlayerId();
-    buildingsWanted.resize(BUILDING_TYPES_COUNT);
+    InitMilitaryBldTypes();
     RefreshBuildingCount();
     InitBuildingsWanted();
 }
@@ -66,7 +66,8 @@ void AIConstruction::AddBuildJob(AIJH::BuildJob* job, bool front)
         delete job;
         return;
     }
-    if(job->GetType() < BLD_FORTRESS) // non military buildings can only be added once to the contruction que for every location
+    if(BuildingProperties::IsMilitary(
+         job->GetType())) // non military buildings can only be added once to the contruction que for every location
     {
         if(front)
             buildJobs.push_front(job);
@@ -128,26 +129,66 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     }
     for(; i < limit && !buildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
     {
-        AIJH::BuildJob* job = buildJobs.front();
+        AIJH::BuildJob* job = GetBuildJob();
         job->ExecuteJob();
         if(job->GetStatus() != AIJH::JOB_FINISHED && job->GetStatus() != AIJH::JOB_FAILED) // couldnt do job? -> move to back of list
         {
             buildJobs.push_back(job);
-            buildJobs.pop_front();
-        } else // job done of failed -> delete job and remove from list
-        {
-            buildJobs.pop_front();
+        } else // job done of failed -> delete job
             delete job;
-        }
     }
 }
 
-AIJH::Job* AIConstruction::GetBuildJob()
+void AIConstruction::SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir)
+{
+    // does the roadsegment still exist?
+    const RoadSegment& roadSeg = *roadNode.GetRoute(dir);
+    bool isBwdDir = roadSeg.GetNodeID(roadNode);
+    MapPoint curPos = roadNode.GetPos();
+    // Skip first
+    curPos = aii.GetNeighbour(curPos, roadSeg.GetDir(isBwdDir, 0));
+    // Start after getting first neighbor (min distance == 2)
+    // and skip last 2 points (min distance and last is flag)
+    for(unsigned i = 1; i + 2 < roadSeg.GetLength(); ++i)
+    {
+        curPos = aii.GetNeighbour(curPos, roadSeg.GetDir(isBwdDir, i));
+        aii.SetFlag(curPos);
+        constructionlocations.push_back(curPos);
+    }
+}
+
+void AIConstruction::InitMilitaryBldTypes()
+{
+    for(int i = 0; i < BUILDING_TYPES_COUNT; i++)
+    {
+        BuildingType bld = BuildingType(i);
+        if(BuildingProperties::IsMilitary(bld))
+            militaryBldTypes.push_back(bld);
+    }
+}
+
+unsigned AIConstruction::GetMilitaryBldCount() const
+{
+    unsigned result = 0;
+    BOOST_FOREACH(BuildingType bld, militaryBldTypes)
+        result += buildingCounts.buildings[bld];
+    return result;
+}
+
+unsigned AIConstruction::GetMilitaryBldSiteCount() const
+{
+    unsigned result = 0;
+    BOOST_FOREACH(BuildingType bld, militaryBldTypes)
+        result += buildingCounts.buildingSites[bld];
+    return result;
+}
+
+AIJH::BuildJob* AIConstruction::GetBuildJob()
 {
     if(buildJobs.empty())
         return NULL;
 
-    AIJH::Job* job = buildJobs.front();
+    AIJH::BuildJob* job = buildJobs.front();
     buildJobs.pop_front();
     return job;
 }
@@ -164,7 +205,7 @@ void AIConstruction::AddConnectFlagJob(const noFlag* flag)
     connectJobs.push_back(new AIJH::ConnectJob(aijh, flag->GetPos()));
 }
 
-bool AIConstruction::CanStillConstructHere(const MapPoint pt)
+bool AIConstruction::CanStillConstructHere(const MapPoint pt) const
 {
     for(unsigned i = 0; i < constructionlocations.size(); i++)
     {
@@ -172,6 +213,20 @@ bool AIConstruction::CanStillConstructHere(const MapPoint pt)
             return false;
     }
     return true;
+}
+
+void AIConstruction::ConstructionOrdered(const AIJH::BuildJob& job)
+{
+    RTTR_Assert(job.GetTarget().isValid());
+    // add new construction area to the list of active orders in the current nwf
+    constructionlocations.push_back(job.GetTarget());
+    constructionorders[job.GetType()]++;
+}
+
+void AIConstruction::ConstructionsExecuted()
+{
+    constructionlocations.clear();
+    std::fill(constructionorders.begin(), constructionorders.end(), 0u);
 }
 
 namespace {
@@ -197,7 +252,7 @@ struct IsValidFlag
 
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
-    std::vector<const noFlag*> flags = aii.GetPointsInRadius<30>(pt, radius, Point2FlagAI(aii), IsValidFlag(playerID));
+    std::vector<const noFlag*> flags = aii.GetPointsInRadius<30>(pt, radius, Point2FlagAI(aii), IsValidFlag(aii.GetPlayerId()));
 
     // TODO Performance Killer!
     /*
@@ -270,7 +325,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     std::cout << "FindFlagsNum: " << flags.size() << std::endl;
 #endif
 
-    std::vector<const noFlag*>::iterator shortest = flags.end();
+    const noFlag* shortest = NULL;
     unsigned shortestLength = 99999;
     std::vector<Direction> tmpRoute;
     bool found = false;
@@ -327,7 +382,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
         if(2 * length + distance + 10 * maxNonFlagPts < shortestLength)
         {
-            shortest = flagIt;
+            shortest = &curFlag;
             shortestLength = 2 * length + distance + 10 * maxNonFlagPts;
             route = tmpRoute;
         }
@@ -336,7 +391,13 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     if(found)
     {
         // LOG.write(("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
-        return MinorRoadImprovements(flag, *shortest, route);
+        if(!MinorRoadImprovements(flag, shortest, route))
+            return false;
+        // add new construction area to the list of active orders in the current nwf
+        // to wait till path is constructed
+        constructionlocations.push_back(flag->GetPos());
+        constructionlocations.push_back(shortest->GetPos());
+        return true;
     }
     return false;
 }
@@ -430,9 +491,9 @@ bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target
     return false;
 }
 
-bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
+bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag) const
 {
-    noFlag* targetFlag = this->FindTargetStoreHouseFlag(flag->GetPos());
+    noFlag* targetFlag = FindTargetStoreHouseFlag(flag->GetPos());
     if(targetFlag)
         return (targetFlag == flag) || aii.FindPathOnRoads(*flag, *targetFlag);
     else
@@ -441,17 +502,21 @@ bool AIConstruction::IsConnectedToRoadSystem(const noFlag* flag)
 
 BuildingType AIConstruction::GetSmallestAllowedMilBuilding() const
 {
-    for(unsigned i = 0; i < millitaryBuildings.size(); i++)
-        if(aii.CanBuildBuildingtype(millitaryBuildings[i]))
-            return millitaryBuildings[i];
+    BOOST_FOREACH(BuildingType bld, militaryBldTypes)
+    {
+        if(aii.CanBuildBuildingtype(bld))
+            return bld;
+    }
     return BLD_NOTHING;
 }
 
 BuildingType AIConstruction::GetBiggestAllowedMilBuilding() const
 {
-    for(unsigned i = millitaryBuildings.size(); i > 0; i--)
-        if(aii.CanBuildBuildingtype(millitaryBuildings[i - 1]))
-            return millitaryBuildings[i - 1];
+    BOOST_REVERSE_FOREACH(BuildingType bld, militaryBldTypes)
+    {
+        if(aii.CanBuildBuildingtype(bld))
+            return bld;
+    }
     return BLD_NOTHING;
 }
 
@@ -490,16 +555,16 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     }
 
     // avoid to build catapults in the beginning (no expansion)
-    const unsigned militaryBuildingCount =
-      GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_WATCHTOWER) + GetBuildingCount(BLD_FORTRESS);
+    const unsigned militaryBuildingCount = GetMilitaryBldCount() + GetMilitaryBldSiteCount();
 
+    uint8_t playerId = aii.GetPlayerId();
     sortedMilitaryBlds military = aii.GetMilitaryBuildings(pt, 3);
     for(sortedMilitaryBlds::iterator it = military.begin(); it != military.end(); ++it)
     {
         unsigned distance = aii.GetDistance((*it)->GetPos(), pt);
 
         // Prüfen ob Feind in der Nähe
-        if((*it)->GetPlayer() != playerID && distance < 35)
+        if((*it)->GetPlayer() != playerId && distance < 35)
         {
             int randmil = rand();
 
@@ -530,7 +595,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
             } else
             {
                 if(randmil % 2 == 0)
-                    bld = biggestBld; // BLD_FORTRESS
+                    bld = biggestBld;
                 else if(aii.CanBuildBuildingtype(BLD_WATCHTOWER))
                     bld = BLD_WATCHTOWER;
                 else
@@ -552,30 +617,27 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     return bld;
 }
 
-unsigned AIConstruction::GetBuildingCount(BuildingType type)
+unsigned AIConstruction::GetBuildingCount(BuildingType type) const
 {
     return buildingCounts.buildings[type] + buildingCounts.buildingSites[type];
 }
 
-unsigned AIConstruction::GetBuildingSitesCount(BuildingType type)
+unsigned AIConstruction::GetBuildingSitesCount(BuildingType type) const
 {
     return buildingCounts.buildingSites[type];
 }
 
-bool AIConstruction::Wanted(BuildingType type)
+bool AIConstruction::Wanted(BuildingType type) const
 {
     if(!aii.CanBuildBuildingtype(type))
         return false;
     if(type == BLD_CATAPULT)
         return aii.CanBuildCatapult() && (aii.GetInventory().goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)));
-    if((type >= BLD_BARRACKS && type <= BLD_FORTRESS) || type == BLD_STOREHOUSE)
+    if(BuildingProperties::IsMilitary(type) || type == BLD_STOREHOUSE)
         // todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
-        return ((GetBuildingCount(BLD_BARRACKS) + GetBuildingCount(BLD_GUARDHOUSE) + GetBuildingCount(BLD_FORTRESS)
-                     + GetBuildingCount(BLD_WATCHTOWER)
-                   > 0
-                 || buildingCounts.buildings[BLD_SAWMILL] > 0
+        return ((GetMilitaryBldCount() + GetMilitaryBldSiteCount() > 0 || buildingCounts.buildings[BLD_SAWMILL] > 0
                  || (aii.GetInventory().goods[GD_BOARDS] > 30 && GetBuildingCount(BLD_SAWMILL) > 0))
-                && MilitaryBuildingSitesLimit());
+                && WantMoreMilitaryBlds());
     if(type == BLD_SAWMILL && GetBuildingCount(BLD_SAWMILL) > 1)
     {
         if(aijh.AmountInStorage(GD_WOOD, 0) < 15 * (buildingCounts.buildingSites[BLD_SAWMILL] + 1))
@@ -584,12 +646,10 @@ bool AIConstruction::Wanted(BuildingType type)
     return GetBuildingCount(type) + constructionorders[type] < buildingsWanted[type];
 }
 
-bool AIConstruction::MilitaryBuildingSitesLimit()
+bool AIConstruction::WantMoreMilitaryBlds() const
 {
-    unsigned complete = buildingCounts.buildings[BLD_WATCHTOWER] + buildingCounts.buildings[BLD_FORTRESS]
-                        + buildingCounts.buildings[BLD_GUARDHOUSE] + buildingCounts.buildings[BLD_BARRACKS];
-    unsigned inconstruction = buildingCounts.buildingSites[BLD_WATCHTOWER] + buildingCounts.buildingSites[BLD_FORTRESS]
-                              + buildingCounts.buildingSites[BLD_GUARDHOUSE] + buildingCounts.buildingSites[BLD_BARRACKS];
+    unsigned complete = GetMilitaryBldCount();
+    unsigned inconstruction = GetMilitaryBldSiteCount();
     return complete + 3 > inconstruction;
 }
 
@@ -910,7 +970,11 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         // Lohnt sich die Straße?
         if(!pathAvailable || newLength * lengthFactor < oldLength)
         {
-            return BuildRoad(flag, &curFlag, route);
+            if(BuildRoad(flag, &curFlag, route))
+            {
+                constructionlocations.push_back(flag->GetPos());
+                return true;
+            }
         }
     }
 
@@ -944,7 +1008,7 @@ bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
     }
     for(std::list<noBuildingSite*>::const_iterator it = aii.GetBuildingSites().begin(); it != aii.GetBuildingSites().end(); ++it)
     {
-        if((*it)->GetBuildingType() == BLD_STOREHOUSE || (*it)->GetBuildingType() == BLD_HARBORBUILDING)
+        if(BuildingProperties::IsWareHouse((*it)->GetBuildingType()))
         {
             if(aii.CalcDistance((*it)->GetPos(), pt) < radius)
                 return true;
@@ -953,7 +1017,7 @@ bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
     return false;
 }
 
-noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt)
+noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt) const
 {
     unsigned minDistance = std::numeric_limits<unsigned>::max();
     nobBaseWarehouse* minTarget = NULL;

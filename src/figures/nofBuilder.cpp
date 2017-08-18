@@ -31,6 +31,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingProperties.h"
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
     : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK),
@@ -160,8 +161,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
                 noBuilding* bld = BuildingFactory::CreateBuilding(*gwg, building_type, pos, player, building_nation);
                 gwg->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
-                // Special handling for storehouses and harbours
-                if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING)
+                // Special handling for warehouses
+                if(BuildingProperties::IsWareHouse(building_type))
                 {
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen

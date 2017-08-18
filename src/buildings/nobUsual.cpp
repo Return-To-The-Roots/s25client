@@ -29,6 +29,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingProperties.h"
 #include <numeric>
 
 nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
@@ -253,7 +254,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds();
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
-    else if(IsMine() && worker && nation == NAT_AFRICANS)
+    else if(BuildingProperties::IsMine(GetBuildingType()) && worker && nation == NAT_AFRICANS)
         LOADER.GetMapPlayerImage(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
           ->DrawFull(drawPt + NUBIAN_MINE_FIRE[type_ - BLD_GRANITEMINE]);
 }

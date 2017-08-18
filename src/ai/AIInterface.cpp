@@ -29,6 +29,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameTypes/BuildingCount.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/TerrainData.h"
 #include <limits>
 class noRoadNode;
@@ -180,6 +181,15 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
     bool boat = false;
     return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, NULL, IsPointOK_RoadPath,
                                                                  IsPointOK_RoadPathEvenStep, NULL, (void*)&boat);
+}
+
+bool AIInterface::IsMilitaryBuildingOnNode(const MapPoint pt) const
+{
+    const NodalObjectType noType = gwb.GetNO(pt)->GetType();
+    if(noType != NOP_BUILDING && noType != NOP_BUILDINGSITE)
+        return false;
+    const BuildingType bldType = gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType();
+    return BuildingProperties::IsMilitary(bldType);
 }
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)

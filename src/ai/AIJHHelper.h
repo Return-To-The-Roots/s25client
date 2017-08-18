@@ -83,8 +83,8 @@ class Job
 public:
     Job(AIPlayerJH& aijh);
     virtual ~Job() {}
-    virtual void ExecuteJob() { return; }
-    JobStatus GetStatus() { return status; }
+    virtual void ExecuteJob() = 0;
+    JobStatus GetStatus() const { return status; }
     void SetStatus(JobStatus s) { status = s; }
 
 protected:
@@ -95,10 +95,8 @@ protected:
 class JobWithTarget
 {
 public:
-    JobWithTarget() : target(0xFFFF, 0xFFFF) {}
+    JobWithTarget() : target(MapPoint::Invalid()) {}
     inline MapPoint GetTarget() const { return target; }
-    void SetTargetX(MapCoord x) { target.x = x; }
-    void SetTargetY(MapCoord y) { target.y = y; }
     void SetTarget(MapPoint newTarget) { target = newTarget; }
 
 protected:

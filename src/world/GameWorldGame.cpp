@@ -44,6 +44,7 @@
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
@@ -170,7 +171,7 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
     }
 
     // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut werden
-    if(type >= BLD_BARRACKS && type <= BLD_FORTRESS)
+    if(BuildingProperties::IsMilitary(type))
     {
         if(IsMilitaryBuildingNearNode(pt, player))
             return;
@@ -667,7 +668,7 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Ist es ein richtiges Militärgebäude?
-        if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
         {
             // Wenn es noch nicht besetzt war(also gerade neu gebaut), darf es nicht mit einberechnet werden!
             if(static_cast<nobMilitary*>(*it)->IsNewBuilt())
@@ -799,7 +800,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() != player_attacker || (*it)->GetBuildingType() < BLD_BARRACKS || (*it)->GetBuildingType() > BLD_FORTRESS)
+        if((*it)->GetPlayer() != player_attacker || !BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             continue;
 
         // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den

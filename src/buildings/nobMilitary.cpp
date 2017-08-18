@@ -39,6 +39,7 @@
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
@@ -345,7 +346,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 frontier_distance = 3;
 
                 // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
-                if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+                if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
                     static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(3);
             }
             // in mittlerem Umkreis, also theoretisch angreifbar?
@@ -356,7 +357,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                     frontier_distance = 1;
 
                 // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
-                if((*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+                if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
                     static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(1);
             }
             // andere Richtung muss auch getestet werden, zumindest wenns eine normaler Militärgebäude ist, Bug 389843
@@ -422,7 +423,7 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = true;
 
     // Zu viele oder zu wenig Truppen?
-    int diff = CalcRequiredTroopsCount() - static_cast<int>(GetTotalSoldiers());
+    int diff = static_cast<int>(CalcRequiredTroopsCount()) - static_cast<int>(GetTotalSoldiers());
     if(diff < 0)
     {
         // Zu viel --> überflüssige Truppen nach Hause schicken
@@ -508,11 +509,14 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = false;
 }
 
-int nobMilitary::CalcRequiredTroopsCount()
+unsigned nobMilitary::CalcRequiredTroopsCount()
 {
-    return (GetMaxTroopsCt() - 1) * gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance)
-             / MILITARY_SETTINGS_SCALE[4 + frontier_distance]
-           + 1;
+    return CalcRequiredTroopsCount(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
+}
+
+unsigned nobMilitary::CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue)
+{
+    return (GetMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + assumedFrontierDistance] + 1;
 }
 
 void nobMilitary::SendSoldiersHome()
@@ -558,7 +562,7 @@ void nobMilitary::OrderNewSoldiers()
             ++it;
     }
 
-    int diff = CalcRequiredTroopsCount() - static_cast<int>(GetTotalSoldiers());
+    int diff = static_cast<int>(CalcRequiredTroopsCount()) - static_cast<int>(GetTotalSoldiers());
     // order new troops now
     if(diff > 0)
     {
@@ -955,8 +959,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // verbündetes Gebäude?
-        if(gwg->GetPlayer((*it)->GetPlayer()).IsAttackable(old_player) && (*it)->GetBuildingType() >= BLD_BARRACKS
-           && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if(gwg->GetPlayer((*it)->GetPlayer()).IsAttackable(old_player) && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             // Grenzflaggen von dem neu berechnen
             static_cast<nobMilitary*>(*it)->LookForEnemyBuildings();
     }
@@ -1012,7 +1015,7 @@ void nobMilitary::NeedOccupyingTroops()
     nofAttacker* best_attacker = NULL;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
 
-    unsigned needed_soldiers = unsigned(CalcRequiredTroopsCount());
+    unsigned needed_soldiers = CalcRequiredTroopsCount();
     unsigned currentSoldiers = troops.size() + capturing_soldiers + troops_on_mission.size();
 
     if(needed_soldiers > currentSoldiers)

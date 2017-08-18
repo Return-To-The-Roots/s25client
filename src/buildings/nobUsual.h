@@ -127,9 +127,6 @@ public:
     const unsigned short GetProductivity() const { return productivity; }
     const nofBuildingWorker* GetWorker() const { return worker; }
 
-    /// Ermittelt, ob es sich bei diesem Gebäude um ein Bergwerk handelt
-    bool IsMine() const { return type_ >= BLD_GRANITEMINE && type_ <= BLD_GOLDMINE; }
-
     /// Stoppt/Erlaubt Produktion (visuell)
     void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }
     /// Stoppt/Erlaubt Produktion (real)

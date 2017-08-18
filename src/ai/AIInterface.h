@@ -161,14 +161,7 @@ public:
     }
 
     /// test whether there is a military building on a position
-    bool IsMilitaryBuildingOnNode(const MapPoint pt) const
-    {
-        const NodalObjectType noType = gwb.GetNO(pt)->GetType();
-        if(noType != NOP_BUILDING && noType != NOP_BUILDINGSITE)
-            return false;
-        const BuildingType bldType = gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType();
-        return (bldType >= BLD_BARRACKS && bldType <= BLD_FORTRESS);
-    }
+    bool IsMilitaryBuildingOnNode(const MapPoint pt) const;
 
     /// Test whether the ai player can see a point
     bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }

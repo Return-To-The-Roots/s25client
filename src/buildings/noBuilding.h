@@ -67,15 +67,4 @@ public:
     FOWObject* CreateFOWObject() const override;
 };
 
-/// Prüft, ob es sich um ein Gebäude handelt
-inline bool IsBuilding(const GO_Type got)
-{
-    return (got >= GOT_NOB_HQ && got <= GOT_NOB_USUAL);
-}
-/// Prüft, ob es sich um ein Gebäude oder eine Baustelle handelt
-inline bool IsBaseBuilding(const GO_Type got)
-{
-    return (got >= GOT_NOB_HQ && got <= GOT_BUILDINGSITE);
-}
-
 #endif

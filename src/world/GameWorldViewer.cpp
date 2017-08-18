@@ -28,6 +28,7 @@
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noShip.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameData/BuildingProperties.h"
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -97,7 +98,7 @@ unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() == playerId_ && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
     }
 

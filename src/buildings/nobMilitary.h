@@ -134,7 +134,9 @@ public:
     unsigned char GetFrontierDistance() const { return frontier_distance; }
 
     /// Berechnet die gewünschte Besatzung je nach Grenznähe
-    int CalcRequiredTroopsCount();
+    unsigned CalcRequiredTroopsCount();
+    /// Calculate the required troop count for the given setting
+    unsigned CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue);
     /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
     void RegulateTroops();
     /// Gibt aktuelle Besetzung zurück

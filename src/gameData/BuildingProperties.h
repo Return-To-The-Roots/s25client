@@ -15,17 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BuildingCount_h__
-#define BuildingCount_h__
+#pragma once
+
+#ifndef BuildingProperties_h__
+#define BuildingProperties_h__
 
 #include "gameTypes/BuildingType.h"
-#include <boost/array.hpp>
 
-/// Number of buildings and building sites per type
-struct BuildingCount
+/// Static class to query properties of buildings (building types)
+class BuildingProperties
 {
-    boost::array<unsigned, BUILDING_TYPES_COUNT> buildings;
-    boost::array<unsigned, BUILDING_TYPES_COUNT> buildingSites;
+    /// Private ctor: Static class only!
+    BuildingProperties();
+
+public:
+    /// True iff the building type is used (not nothing)
+    static bool IsValid(BuildingType bld);
+    /// True iff this is a regular military building
+    static bool IsMilitary(BuildingType bld);
+    /// True iff this is a mine
+    static bool IsMine(BuildingType bld);
+    /// True iff wares can be stored in this building
+    static bool IsWareHouse(BuildingType bld);
 };
 
-#endif // BuildingCount_h__
+#endif // BuildingProperties_h__

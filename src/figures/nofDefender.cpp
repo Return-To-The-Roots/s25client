@@ -27,6 +27,7 @@
 #include "nofPassiveSoldier.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFighting.h"
+#include "gameData/BuildingProperties.h"
 
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
                          nofAttacker* const attacker)
@@ -196,7 +197,7 @@ void nofDefender::LostFighting()
     {
         building->NoDefender();
         // Ist das ein "normales" Militärgebäude?
-        if(building->GetBuildingType() >= BLD_BARRACKS && building->GetBuildingType() <= BLD_FORTRESS)
+        if(BuildingProperties::IsMilitary(building->GetBuildingType()))
         {
             // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));

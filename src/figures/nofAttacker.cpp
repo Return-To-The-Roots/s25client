@@ -33,6 +33,7 @@
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/BuildingProperties.h"
 
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
@@ -231,7 +232,7 @@ void nofAttacker::Walked()
             } else
             {
                 // Ist das Gebäude ein "normales Militärgebäude", das wir da erobert haben?
-                if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+                if(BuildingProperties::IsMilitary(attacked_goal->GetBuildingType()))
                 {
                     RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
                     // Meinem Heimatgebäude Bescheid sagen, dass ich nicht mehr komme (falls es noch eins gibt)
@@ -809,7 +810,7 @@ void nofAttacker::CapturingWalking()
         attacked_goal->AddActiveSoldier(this);
 
         // Ein erobernder Soldat weniger
-        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+        if(BuildingProperties::IsMilitary(attacked_goal->GetBuildingType()))
         {
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);

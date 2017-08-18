@@ -23,7 +23,9 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include <boost/container/small_vector.hpp>
 #include <deque>
+#include <stdint.h>
 #include <vector>
 
 class AIPlayerJH;
@@ -40,7 +42,8 @@ class ConnectJob;
 }
 namespace AIJH {
 class Job;
-}
+class BuildJob;
+} // namespace AIJH
 namespace boost {
 template<class T, std::size_t N>
 class array;
@@ -48,8 +51,6 @@ class array;
 
 class AIConstruction
 {
-    static const boost::array<BuildingType, 4> millitaryBuildings;
-
 public:
     AIConstruction(AIInterface& aii, AIPlayerJH& aijh);
     ~AIConstruction();
@@ -58,7 +59,7 @@ public:
     void AddBuildJob(AIJH::BuildJob* job, bool front);
     // void AddJob(AIJH::BuildJob* job, bool front);
 
-    AIJH::Job* GetBuildJob();
+    AIJH::BuildJob* GetBuildJob();
     unsigned GetBuildJobNum() const { return buildJobs.size(); }
     unsigned GetConnectJobNum() const { return connectJobs.size(); }
 
@@ -83,31 +84,28 @@ public:
     bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
 
     /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
-    bool IsConnectedToRoadSystem(const noFlag* flag);
+    bool IsConnectedToRoadSystem(const noFlag* flag) const;
 
     BuildingType GetSmallestAllowedMilBuilding() const;
     BuildingType GetBiggestAllowedMilBuilding() const;
 
-    /// Randomly chooses a military building, prefering bigger buildings if enemy nearby
+    /// Randomly chooses a military building, preferring bigger buildings if enemy nearby
     BuildingType ChooseMilitaryBuilding(const MapPoint pt);
 
     /// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetBuildingCount(BuildingType type);
+    unsigned GetBuildingCount(BuildingType type) const;
 
     /// Returns the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetBuildingSitesCount(BuildingType type);
+    unsigned GetBuildingSitesCount(BuildingType type) const;
 
     /// Refreshes the number of buildings by asking the GameClientPlayer and recalcs some wanted buildings
     void RefreshBuildingCount();
 
     /// Checks whether a building type is wanted atm
-    bool Wanted(BuildingType type);
+    bool Wanted(BuildingType type) const;
 
     /// Checks whether the ai wants to construct more mil buildings atm
-    bool MilitaryBuildingSitesLimit();
-
-    /// Initializes the wanted-buildings-vector
-    void InitBuildingsWanted();
+    bool WantMoreMilitaryBlds() const;
 
     /// Update BQ and farming ground around new building site + road
     /// HIer oder in AIPlayerJH?
@@ -120,22 +118,24 @@ public:
 
     bool OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
 
-    noFlag* FindTargetStoreHouseFlag(const MapPoint pt);
+    noFlag* FindTargetStoreHouseFlag(const MapPoint pt) const;
 
-    bool CanStillConstructHere(const MapPoint pt);
-
-    /// contains the locations pt at which the ai has done some kind of construction since the last nwf
-    // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
-    std::deque<MapPoint> constructionlocations;
-
-    // contains the type and amount of buildings ordered since the last nwf
-    std::vector<unsigned char> constructionorders;
+    bool CanStillConstructHere(const MapPoint pt) const;
 
     void ExecuteJobs(unsigned limit);
+
+    void SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir);
+
+    /// To be called after a new construction site was added
+    void ConstructionOrdered(const AIJH::BuildJob& job);
+    /// To be called when the current pending construction orders were processed (usually on NWF)
+    void ConstructionsExecuted();
 
 private:
     AIInterface& aii;
     AIPlayerJH& aijh;
+
+    boost::container::small_vector<BuildingType, 8> militaryBldTypes;
 
     /// Contains how many buildings of every type is wanted
     std::vector<unsigned> buildingsWanted;
@@ -143,11 +143,23 @@ private:
     /// Contains the build jobs the AI should try to execute
     std::deque<AIJH::BuildJob*> buildJobs;
     std::deque<AIJH::ConnectJob*> connectJobs;
+    /// contains the locations pt at which the ai has done some kind of construction since the last nwf
+    // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
+    std::deque<MapPoint> constructionlocations;
+
+    // contains the type and amount of buildings ordered since the last nwf
+    std::vector<uint8_t> constructionorders;
 
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
     BuildingCount buildingCounts;
 
-    unsigned char playerID;
+    void InitMilitaryBldTypes();
+    /// Initializes the wanted-buildings-vector
+    void InitBuildingsWanted();
+    /// Get amount of (completed) military buildings
+    unsigned GetMilitaryBldCount() const;
+    /// Get amount of construction sites of military buildings
+    unsigned GetMilitaryBldSiteCount() const;
 };
 
 #endif //! AICONSTRUCTION_H_INCLUDED

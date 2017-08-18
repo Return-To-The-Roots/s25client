@@ -791,14 +791,14 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
     if(state == CARRS_WAITFORWARE || state == CARRS_GOTOMIDDLEOFROAD)
     {
         // Stimmt die Richtung nicht? Dann umdrehen (geht aber nur, wenn wir stehen!)
-        if(rs_dir == workplace->GetNodeID(rn) && state == CARRS_WAITFORWARE)
+        if(rs_dir == workplace->GetNodeID(*rn) && state == CARRS_WAITFORWARE)
         {
             rs_dir = !rs_dir;
             // wenn wir zur Mitte laufen, müssen noch 2 von der pos abgezogen werden wegen dem Laufen
             rs_pos = cur_rs->GetLength() - rs_pos - ((state == CARRS_GOTOMIDDLEOFROAD) ? 2 : 0);
         }
         // beim Gehen in die Mitte nicht sofort umdrehen!
-        else if(rs_dir == workplace->GetNodeID(rn))
+        else if(rs_dir == workplace->GetNodeID(*rn))
             return false;
 
         // Und loslaufen, wenn wir stehen
@@ -813,7 +813,7 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
 
         // Wir übernehmen den Job
         return true;
-    } else if(state == CARRS_WAITFORWARESPACE && rs_dir == !workplace->GetNodeID(rn))
+    } else if(state == CARRS_WAITFORWARESPACE && rs_dir == !workplace->GetNodeID(*rn))
     {
         // Wenn wir auf einen freien Platz warten, können wir nun losgehen, da wir ja die Waren dann "tauschen" können
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));

@@ -34,6 +34,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
 #include <boost/format.hpp>
@@ -460,7 +461,7 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
         return;
 
     BuildingType bt = building->GetBuildingType();
-    if((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS) || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) // is it a military building?
+    if(BuildingProperties::IsMilitary(bt) || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) // is it a military building?
     {
         if(gwv.GetNumSoldiersForAttack(building->GetPos())) // soldiers available for attack?
             LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));

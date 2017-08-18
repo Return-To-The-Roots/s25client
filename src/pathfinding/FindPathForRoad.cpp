@@ -35,6 +35,12 @@ struct GetWorld<GameWorldViewer>
 {
     static const GameWorldBase& get(const GameWorldViewer& gwv) { return gwv.GetWorld(); }
 };
+
+template<class T_WorldOrViewer>
+const GameWorldBase& getWorld(const T_WorldOrViewer& world)
+{
+    return GetWorld<T_WorldOrViewer>::get(world);
+}
 } // namespace
 
 namespace detail {
@@ -45,8 +51,8 @@ std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPo
 {
     RTTR_Assert(startPt != endPt);
     std::vector<Direction> road;
-    GetWorld<T_WorldOrViewer>::get(world).GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, &road, NULL, NULL,
-                                                                       PathConditionRoad<T_WorldOrViewer>(world, isBoatRoad));
+    getWorld(world).GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, &road, NULL, NULL,
+                                                 makePathConditionRoad(world, isBoatRoad));
     return road;
 }
 

@@ -27,6 +27,7 @@
 #include "nodeObjs/noFlag.h"
 #include "gameTypes/Direction.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include <boost/array.hpp>
 #include <deque>
 #include <list>
@@ -47,40 +48,26 @@ void AIJH::BuildJob::ExecuteJob()
 
     switch(status)
     {
-        case AIJH::JOB_EXECUTING_START: { TryToBuild();
-        }
-        break;
+        case AIJH::JOB_EXECUTING_START: TryToBuild(); break;
 
-        case AIJH::JOB_EXECUTING_ROAD1: { BuildMainRoad();
-        }
-        break;
+        case AIJH::JOB_EXECUTING_ROAD1: BuildMainRoad(); break;
 
-        case AIJH::JOB_EXECUTING_ROAD2: { TryToBuildSecondaryRoad();
-        }
-        break;
+        case AIJH::JOB_EXECUTING_ROAD2: TryToBuildSecondaryRoad(); break;
         case AIJH::JOB_EXECUTING_ROAD2_2:
-        {
             // evtl noch prüfen ob auch dieser Straßenbau erfolgreich war?
             aijh.RecalcGround(target, route);
             status = AIJH::JOB_FINISHED;
-        }
-        break;
+            break;
 
         default: RTTR_Assert(false); break;
     }
-
-    // Evil harbour-hack
-    // if (type == BLD_HARBORBUILDING && status == AIJH::JOB_FINISHED && target_x != 0xFFFF)
-    //{
-    //  aijh.AddBuildJob(BLD_SHIPYARD, target, true);
-    //}
 
     // Fertig?
     if(status == AIJH::JOB_FAILED || status == AIJH::JOB_FINISHED)
         return;
 
-    if((target.x != 0xFFFF) && aijh.GetInterface().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()) && type >= BLD_BARRACKS
-       && type <= BLD_FORTRESS)
+    if(BuildingProperties::IsMilitary(type) && target.isValid()
+       && aijh.GetInterface().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()))
     {
         status = AIJH::JOB_FAILED;
 #ifdef DEBUG_AI
@@ -251,9 +238,7 @@ void AIJH::BuildJob::TryToBuild()
     aijh.GetInterface().SetBuildingSite(bPos, type);
     target = bPos;
     status = AIJH::JOB_EXECUTING_ROAD1;
-    aiConstruction.constructionlocations.push_back(target); // add new construction area to the list of active orders in the current nwf
-    aiConstruction.constructionorders[type]++;
-    return;
+    aiConstruction.ConstructionOrdered(*this);
 }
 
 void AIJH::BuildJob::BuildMainRoad()
@@ -287,7 +272,7 @@ void AIJH::BuildJob::BuildMainRoad()
         status = AIJH::JOB_FAILED;
         return;
     }
-    const noFlag* houseFlag = aiInterface.GetSpecObj<noFlag>(aiInterface.GetNeighbour(target, Direction::SOUTHEAST));
+    const noFlag* houseFlag = bld->GetFlag();
     // Gucken noch nicht ans Wegnetz angeschlossen
     AIConstruction& aiConstruction = *aijh.GetConstruction();
     if(!aiConstruction.IsConnectedToRoadSystem(houseFlag))
@@ -308,12 +293,6 @@ void AIJH::BuildJob::BuildMainRoad()
             aiInterface.DestroyFlag(houseFlag->GetPos());
             aijh.AddBuildJob(type, around);
             return;
-        } else
-        {
-            aiConstruction.constructionlocations.push_back(
-              target); // add new construction area to the list of active orders in the current nwf
-            // Warten bis Weg da ist...
-            // return;
         }
     }
 
@@ -323,22 +302,7 @@ void AIJH::BuildJob::BuildMainRoad()
 
     switch(type)
     {
-        case BLD_WOODCUTTER: break;
         case BLD_FORESTER: aijh.AddBuildJob(BLD_WOODCUTTER, target); break;
-        case BLD_QUARRY: break;
-        case BLD_BARRACKS:
-        case BLD_GUARDHOUSE:
-        case BLD_WATCHTOWER:
-        case BLD_FORTRESS: break;
-        case BLD_GOLDMINE: break;
-        case BLD_COALMINE: break;
-        case BLD_IRONMINE:
-            // if(!(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)))
-            break;
-        case BLD_GRANITEMINE: break;
-        case BLD_FISHERY: break;
-        case BLD_STOREHOUSE: break;
-        case BLD_HARBORBUILDING: break;
         case BLD_CHARBURNER:
         case BLD_FARM: aijh.SetFarmedNodes(target, true); break;
         case BLD_MILL: aijh.AddBuildJob(BLD_BAKERY, target); break;
@@ -346,7 +310,6 @@ void AIJH::BuildJob::BuildMainRoad()
         case BLD_BAKERY:
         case BLD_SLAUGHTERHOUSE:
         case BLD_BREWERY: aijh.AddBuildJob(BLD_WELL, target); break;
-
         default: break;
     }
 
@@ -355,7 +318,7 @@ void AIJH::BuildJob::BuildMainRoad()
     {
         aiInterface.CallGeologist(houseFlag->GetPos());
     }
-    if(type > BLD_FORTRESS) // not a military building? -> build secondary road now
+    if(!BuildingProperties::IsMilitary(type)) // not a military building? -> build secondary road now
     {
         status = AIJH::JOB_EXECUTING_ROAD2;
         return TryToBuildSecondaryRoad();
@@ -384,8 +347,6 @@ void AIJH::BuildJob::TryToBuildSecondaryRoad()
     if(aijh.GetConstruction()->BuildAlternativeRoad(houseFlag, route))
     {
         status = AIJH::JOB_EXECUTING_ROAD2_2;
-        aijh.GetConstruction()->constructionlocations.push_back(
-          target); // add new construction area to the list of active orders in the current nw
     } else
         status = AIJH::JOB_FINISHED;
 }
@@ -419,9 +380,7 @@ void AIJH::EventJob::ExecuteJob() // for now it is assumed that all these will b
         {
             // todo maybe do sth about it?
             AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
-            // at least for farms ai has to remove "farmed"
-            if(evb->GetBuildingType() == BLD_FARM || evb->GetBuildingType() == BLD_HARBORBUILDING)
-                aijh.HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
+            aijh.HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
             status = AIJH::JOB_FINISHED;
         }
         break;
@@ -554,16 +513,11 @@ void AIJH::ConnectJob::ExecuteJob()
             std::cout << "Flag is not connectable." << std::endl;
 #endif
             status = AIJH::JOB_FAILED;
-            return;
         } else
         {
 #ifdef DEBUG_AI
             std::cout << "Connecting flag..." << std::endl;
 #endif
-            // constructing road... wait...
-            construction.constructionlocations.push_back(
-              flagPos); // add new construction area to the list of active orders in the current nwf
-            return;
         }
     } else
     {
@@ -572,8 +526,6 @@ void AIJH::ConnectJob::ExecuteJob()
 #endif
         aijh.RecalcGround(flagPos, route);
         status = AIJH::JOB_FINISHED;
-
-        return;
     }
 }
 

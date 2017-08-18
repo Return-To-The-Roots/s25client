@@ -26,6 +26,7 @@
 #include "figures/nofDefender.h"
 #include "nobMilitary.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 
@@ -93,10 +94,10 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, Direction::SOUTHEAST);
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        if((*it)->GetPlayer() != player && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() != player && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             static_cast<nobMilitary*>(*it)->LookForEnemyBuildings(this);
     }
 
@@ -190,7 +191,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (type_ >= BLD_BARRACKS && type_ <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
+    bool capturing = (BuildingProperties::IsMilitary(type_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
     if(!capturing && gwg->ValidPointForFighting(flagPos, false))
     {

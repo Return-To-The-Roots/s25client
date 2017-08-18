@@ -51,7 +51,7 @@ public:
     /// liefert den GO-Type.
     GO_Type GetGOT() const override { return GOT_ROADSEGMENT; }
     /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst kommt Müll raus!!)
-    bool GetNodeID(const noRoadNode* rn) { return (rn == f2); }
+    bool GetNodeID(const noRoadNode& rn) const;
     /// Gibt Straßen-Typ zurück
     RoadType GetRoadType() const { return rt; }
     /// Gibt die Länge der Staße zurück
@@ -112,10 +112,10 @@ public:
     void TryGetDonkey();
     /// Ein Träger muss kündigen, aus welchen Gründen auch immer.
     void CarrierAbrogated(nofCarrier* carrier);
-    /// given a flag returns the other end location
-    noFlag* GetOtherFlag(const noFlag* flag);
+    /// given a flag returns the flag at the other end
+    const noFlag& GetOtherFlag(const noFlag& flag) const;
     /// given a flag returns last direction of the route towards the other flag
-    Direction GetOtherFlagDir(const noFlag* flag);
+    Direction GetOtherFlagDir(const noFlag& flag) const;
 
 protected:
     /// zerstört das Objekt.

@@ -31,6 +31,7 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noMovable.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MapConsts.h"
 #include "gameData/TerrainData.h"
@@ -211,8 +212,7 @@ bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
     if(obj->GetType() == NOP_BUILDING || obj->GetType() == NOP_BUILDINGSITE)
     {
         BuildingType buildingType = static_cast<const noBaseBuilding*>(obj)->GetBuildingType();
-        if((buildingType >= BLD_BARRACKS && buildingType <= BLD_FORTRESS) || buildingType == BLD_HEADQUARTERS
-           || buildingType == BLD_HARBORBUILDING)
+        if(BuildingProperties::IsMilitary(buildingType) || buildingType == BLD_HEADQUARTERS || buildingType == BLD_HARBORBUILDING)
             return true;
     }
 

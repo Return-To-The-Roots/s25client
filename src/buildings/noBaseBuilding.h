@@ -76,12 +76,6 @@ public:
     Nation GetNation() const { return nation; }
     BlockingManner GetBM() const override;
 
-    /// Harbor, storehouse or headquarters?
-    bool IsWarehouse() const
-    {
-        return (GetBuildingType() == BLD_HEADQUARTERS || GetBuildingType() == BLD_STOREHOUSE || GetBuildingType() == BLD_HARBORBUILDING);
-    }
-
     /// Ermittelt die Flagge, die vor dem Gebäude steht
     noFlag* GetFlag() const;
 
