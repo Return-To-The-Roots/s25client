@@ -30,6 +30,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "helpers/containerUtils.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/ResourceNote.h"

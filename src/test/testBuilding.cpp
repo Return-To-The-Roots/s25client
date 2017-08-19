@@ -22,6 +22,7 @@
 #include "RTTR_AssertError.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
+#include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noStaticObject.h"

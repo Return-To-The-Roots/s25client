@@ -22,6 +22,7 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
+#include "helpers/containerUtils.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 class RoadSegment;

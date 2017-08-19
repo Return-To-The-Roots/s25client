@@ -26,6 +26,7 @@
 #include "iwHelp.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
+#include <sstream>
 
 // Farben für die einzelnen Balken
 const unsigned iwMerchandiseStatistics::BarColors[14] = {

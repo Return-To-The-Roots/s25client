@@ -29,6 +29,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "figures/noFigure.h"
 #include "figures/nofAttacker.h"
+#include "helpers/containerUtils.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/ShipNote.h"
 #include "ogl/glArchivItem_Bitmap.h"

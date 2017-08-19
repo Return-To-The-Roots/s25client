@@ -24,6 +24,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"

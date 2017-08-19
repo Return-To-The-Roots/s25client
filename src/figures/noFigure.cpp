@@ -27,6 +27,7 @@
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "helpers/containerUtils.h"
 #include "nofCarrier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

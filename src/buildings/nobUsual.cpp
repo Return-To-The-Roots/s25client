@@ -26,6 +26,7 @@
 #include "Ware.h"
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
+#include "helpers/containerUtils.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"

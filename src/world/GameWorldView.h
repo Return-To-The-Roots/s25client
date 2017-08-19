@@ -29,13 +29,13 @@ struct RoadBuildState;
 class TerrainRenderer;
 class noBaseBuilding;
 
-class IDebugNodePrinter
+class IDrawNodeCallback
 {
 public:
-    virtual ~IDebugNodePrinter() {}
-    /// Called when a node is going to be printed at displayPt
+    virtual ~IDrawNodeCallback() {}
+    /// Called when a node is going to be drawn at displayPt
     /// Can e.g. print coordinates
-    virtual void print(const MapPoint& pt, const DrawPoint& displayPt) = 0;
+    virtual void onDraw(const MapPoint& pt, const DrawPoint& displayPt) = 0;
 };
 
 struct ObjectBetweenLines;
@@ -47,8 +47,8 @@ class GameWorldView
     /// Offset to selected point
     Point<int> selPtOffset;
 
-    /// Class for printing debug map data
-    IDebugNodePrinter* debugNodePrinter;
+    /// Callbacks called when node is printed
+    std::vector<IDrawNodeCallback*> drawNodeCallbacks;
 
     /// Show building quality icons
     bool show_bq;
@@ -121,8 +121,9 @@ public:
     void MoveToY(int y, bool absolute = false) { MoveTo(offset.x, (absolute ? 0 : offset.y) + y, true); }
     DrawPoint GetOffset() const { return offset; }
 
-    /// Set the debug node printer used. Max. 1 at a time. NULL for disabling
-    void SetDebugNodePrinter(IDebugNodePrinter* newPrinter) { debugNodePrinter = newPrinter; }
+    /// Add a debug node printer
+    void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
+    void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }

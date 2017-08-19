@@ -93,6 +93,7 @@ namespace detail {
             value = boost::is_convertible<T_Type, typename T_Container::key_type>::value
         };
     };
+
     template<class T_Container, class T_Type>
     struct HasCorrectFindMember<T_Container, T_Type, false>
     {
@@ -105,13 +106,13 @@ namespace detail {
     template<class T, class U, bool T_useFind = HasCorrectFindMember<T, U>::value>
     struct FindImpl
     {
-        static typename T::const_iterator find(const T& container, const U& value) { return container.find(value); }
+        static typename GetIteratorType<T>::type find(T& container, const U& value) { return container.find(value); }
     };
 
     template<class T, class U>
     struct FindImpl<T, U, false>
     {
-        static typename T::const_iterator find(const T& container, const U& value)
+        static typename GetIteratorType<T>::type find(T& container, const U& value)
         {
             return std::find(container.begin(), container.end(), value);
         }
@@ -142,12 +143,19 @@ inline void pop_front(T& container)
     detail::PopFrontImpl<T>::pop(container);
 }
 
+/// Effective implementation of find. Uses the containers find function if available
+template<typename T, typename U>
+typename GetIteratorType<T>::type find(T& container, const U& value)
+{
+    return detail::FindImpl<T, U>::find(container, value);
+}
+
 /// Returns true if the container contains the given value
 /// Uses the find member function if applicable otherwise uses the std::find method
 template<typename T, typename U>
 bool contains(const T& container, const U& value)
 {
-    return detail::FindImpl<T, U>::find(container, value) != container.end();
+    return find(container, value) != container.end();
 }
 
 } // namespace helpers

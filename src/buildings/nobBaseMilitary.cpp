@@ -24,6 +24,7 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
+#include "helpers/containerUtils.h"
 #include "nobMilitary.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingProperties.h"

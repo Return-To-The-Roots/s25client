@@ -33,6 +33,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
+#include "helpers/containerUtils.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Map.h"

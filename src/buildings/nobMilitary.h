@@ -19,7 +19,6 @@
 #define NOB_MILITARYBUILDING_H_
 
 #include "figures/nofSoldier.h"
-#include "helpers/containerUtils.h"
 #include "nobBaseMilitary.h"
 #include <list>
 #include <vector>
@@ -205,7 +204,7 @@ public:
     /// A far-away capturer arrived around the building and starts waiting
     void FarAwayCapturerReachedGoal(nofAttacker* attacker);
 
-    bool IsFarAwayCapturer(nofAttacker* attacker) { return helpers::contains(far_away_capturers, attacker); }
+    bool IsFarAwayCapturer(nofAttacker* attacker);
 
     /// Stoppt/Erlaubt Goldzufuhr (visuell)
     void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }

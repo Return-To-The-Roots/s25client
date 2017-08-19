@@ -34,6 +34,7 @@
 #include "buildings/nobUsual.h"
 #include "figures/nofCarrier.h"
 #include "figures/nofFlagWorker.h"
+#include "helpers/containerUtils.h"
 #include "notifications/ToolNote.h"
 #include "pathfinding/RoadPathFinder.h"
 #include "postSystem/DiplomacyPostQuestion.h"
@@ -576,6 +577,12 @@ void GamePlayer::RoadDestroyed()
     }
 }
 
+void GamePlayer::DeleteRoad(RoadSegment* rs)
+{
+    RTTR_Assert(helpers::contains(roads, rs));
+    roads.remove(rs);
+}
+
 /// Hafen zur Warenhausliste hinzufügen
 void GamePlayer::AddHarbor(nobHarborBuilding* hb)
 {
@@ -616,6 +623,18 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
     else
         return false;
     return true;
+}
+
+void GamePlayer::RemoveWarehouse(nobBaseWarehouse* wh)
+{
+    RTTR_Assert(helpers::contains(warehouses, wh));
+    warehouses.remove(wh);
+    TestDefeat();
+}
+
+bool GamePlayer::IsWarehouseValid(nobBaseWarehouse* wh) const
+{
+    return helpers::contains(warehouses, wh);
 }
 
 void GamePlayer::RecalcDistribution()
@@ -1365,6 +1384,11 @@ void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
         wh->OrderJob(job, flag, true);
 }
 
+bool GamePlayer::IsFlagWorker(nofFlagWorker* flagworker)
+{
+    return helpers::contains(flagworkers, flagworker);
+}
+
 void GamePlayer::FlagDestroyed(noFlag* flag)
 {
     // Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstört wurde
@@ -1793,6 +1817,11 @@ Team GamePlayer::GetFixedTeam(Team rawteam)
     if(rawteam > TM_TEAM4)
         return Team(rawteam - 3);
     return rawteam;
+}
+
+bool GamePlayer::IsWareRegistred(Ware* ware)
+{
+    return (helpers::contains(ware_list, ware));
 }
 
 bool GamePlayer::IsWareDependent(Ware* ware)

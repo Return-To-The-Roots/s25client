@@ -20,7 +20,6 @@
 #pragma once
 
 #include "DataChangedObservable.h"
-#include "helpers/containerUtils.h"
 #include "nobBaseMilitary.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
@@ -253,7 +252,7 @@ public:
         dependent_wares.remove(ware);
     }
     /// Überprüft, ob Ware abhängig ist
-    bool IsWareDependent(Ware* ware) { return helpers::contains(dependent_wares, ware); }
+    bool IsWareDependent(Ware* ware);
     /// Prüft, ob es Waren zum Auslagern gibt
     bool AreWaresToEmpty() const;
 

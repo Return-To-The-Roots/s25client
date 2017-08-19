@@ -39,6 +39,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/const_gui_ids.h"
+#include <sstream>
 
 // Tab - Flags
 enum TabID

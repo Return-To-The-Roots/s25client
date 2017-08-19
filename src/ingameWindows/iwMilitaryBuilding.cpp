@@ -37,6 +37,7 @@
 #include "gameData/MilitaryConsts.h"
 #include <boost/foreach.hpp>
 #include <set>
+#include <sstream>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]),

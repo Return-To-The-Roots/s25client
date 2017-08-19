@@ -25,6 +25,7 @@
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "helpers/containerUtils.h"
 #include "nofAggressiveDefender.h"
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"

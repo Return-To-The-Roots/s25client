@@ -24,6 +24,7 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/containerUtils.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "world/GameWorldViewer.h"
 #include "world/MapLoader.h"

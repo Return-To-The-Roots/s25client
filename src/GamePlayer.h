@@ -20,7 +20,6 @@
 
 #include "GameMessage_GameCommand.h"
 #include "GamePlayerInfo.h"
-#include "helpers/containerUtils.h"
 #include "helpers/multiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
@@ -107,24 +106,15 @@ public:
     /// Gibt dem Spieler bekannt, das eine Straße abgerissen wurde
     void RoadDestroyed();
     /// (Unbesetzte) Straße aus der Liste entfernen
-    void DeleteRoad(RoadSegment* rs)
-    {
-        RTTR_Assert(helpers::contains(roads, rs));
-        roads.remove(rs);
-    }
+    void DeleteRoad(RoadSegment* rs);
     /// Sucht einen Träger für die Straße und ruft ggf den Träger aus dem jeweiligen nächsten Lagerhaus
     bool FindCarrierForRoad(RoadSegment* rs);
     /// Warenhaus zur Warenhausliste hinzufügen
     void AddWarehouse(nobBaseWarehouse* wh) { warehouses.push_back(wh); }
     /// Warenhaus aus Warenhausliste entfernen
-    void RemoveWarehouse(nobBaseWarehouse* wh)
-    {
-        RTTR_Assert(helpers::contains(warehouses, wh));
-        warehouses.remove(wh);
-        TestDefeat();
-    }
+    void RemoveWarehouse(nobBaseWarehouse* wh);
     /// Returns true if the given wh does still exist and hence the ptr is valid
-    bool IsWarehouseValid(nobBaseWarehouse* wh) const { return helpers::contains(warehouses, wh); }
+    bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
     nobBaseWarehouse* GetFirstWH() { return warehouses.empty() ? NULL : *warehouses.begin(); }
     /// Looks for the closest warehouse for the point 'start' (including it) that matches the conditions by the functor
@@ -212,7 +202,7 @@ public:
         RTTR_Assert(IsWareRegistred(ware));
         ware_list.remove(ware);
     }
-    bool IsWareRegistred(Ware* ware) { return (helpers::contains(ware_list, ware)); }
+    bool IsWareRegistred(Ware* ware);
     bool IsWareDependent(Ware* ware);
 
     /// Fügt Waren zur Inventur hinzu
@@ -261,7 +251,7 @@ public:
         RTTR_Assert(IsFlagWorker(flagworker));
         flagworkers.remove(flagworker);
     }
-    bool IsFlagWorker(nofFlagWorker* flagworker) { return helpers::contains(flagworkers, flagworker); }
+    bool IsFlagWorker(nofFlagWorker* flagworker);
 
     /// Wird aufgerufen, wenn eine Flagge abgerissen wurde, damit das den Flaggen-Arbeitern gesagt werden kann
     void FlagDestroyed(noFlag* flag);

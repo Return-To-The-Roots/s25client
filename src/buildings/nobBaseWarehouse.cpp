@@ -1295,6 +1295,11 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
         store_event = GetEvMgr().AddEvent(this, STORE_INTERVAL, 4);
 }
 
+bool nobBaseWarehouse::IsWareDependent(Ware* ware)
+{
+    return helpers::contains(dependent_wares, ware);
+}
+
 bool nobBaseWarehouse::AreWaresToEmpty() const
 {
     // Prüfen, ob Warentyp ausgelagert werden soll und ob noch Waren davon vorhanden sind

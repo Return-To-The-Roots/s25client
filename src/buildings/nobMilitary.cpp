@@ -1302,6 +1302,11 @@ void nobMilitary::FarAwayCapturerReachedGoal(nofAttacker* attacker)
     }
 }
 
+bool nobMilitary::IsFarAwayCapturer(nofAttacker* attacker)
+{
+    return helpers::contains(far_away_capturers, attacker);
+}
+
 void nobMilitary::CallNextFarAwayCapturer(nofAttacker* attacker)
 {
     const MapPoint flagPos = GetFlag()->GetPos();
