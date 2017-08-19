@@ -14,8 +14,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef AIBASE_H_INCLUDED
-#define AIBASE_H_INCLUDED
+#ifndef AIPLAYER_H_INCLUDED
+#define AIPLAYER_H_INCLUDED
 
 #pragma once
 
@@ -26,16 +26,16 @@ class GameWorldBase;
 class GamePlayer;
 class GlobalGameSettings;
 
-/// Basisklasse für sämtliche KI-Spieler
-class AIBase
+/// Base class for all AI players
+class AIPlayer
 {
 public:
-    AIBase(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
+    AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
         : playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId), ggs(gwb.GetGGS())
     {
     }
 
-    virtual ~AIBase() {}
+    virtual ~AIPlayer() {}
 
     /// Called for every GF
     virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
@@ -64,4 +64,4 @@ protected:
     AIInterface aii;
 };
 
-#endif //! AIBASE_H_INCLUDED
+#endif //! AIPLAYER_H_INCLUDED

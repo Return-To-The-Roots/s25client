@@ -21,7 +21,7 @@
 #include "IngameWindow.h"
 #include <vector>
 
-class AIBase;
+class AIPlayer;
 class ctrlText;
 class GameWorldView;
 namespace AIJH {
@@ -31,7 +31,7 @@ class AIPlayerJH;
 class iwAIDebug : public IngameWindow
 {
 public:
-    iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais);
+    iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayer*>& ais);
 
 private:
     void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;

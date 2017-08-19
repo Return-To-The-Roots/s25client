@@ -1735,7 +1735,7 @@ bool GameClient::IsSinglePlayer() const
 }
 
 /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
-AIBase* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
+AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 {
     if(aiInfo.type == AI::DEFAULT)
         return new AIJH::AIPlayerJH(playerId, *gw, aiInfo.level);

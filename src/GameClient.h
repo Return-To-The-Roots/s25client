@@ -39,7 +39,7 @@ namespace AI {
 struct Info;
 }
 
-class AIBase;
+class AIPlayer;
 class ClientInterface;
 class GameMessage_GameCommand;
 class SavedFile;
@@ -81,7 +81,7 @@ public:
     unsigned GetPlayerId() const { return playerId_; }
     bool IsSinglePlayer() const;
     /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
-    AIBase* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
+    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
     /// Return current GameSettings. Only valid during the game!
     const GlobalGameSettings& GetGGS() const;
@@ -300,7 +300,7 @@ private:
 
     ClientInterface* ci;
 
-    boost::interprocess::unique_ptr<AIBase, Deleter<AIBase> > human_ai;
+    boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > human_ai;
 
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;

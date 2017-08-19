@@ -19,15 +19,15 @@
 
 #pragma once
 
-#include "AIBase.h"
+#include "AIPlayer.h"
 class GameWorldBase;
 class GlobalGameSettings;
 
 /// Dummy AI that does nothing
-class DummyAI : public AIBase
+class DummyAI : public AIPlayer
 {
 public:
-    DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerId, gwb, level) {}
+    DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
 
     void RunGF(const unsigned gf, bool gfisnwf) override {}
 };

@@ -21,8 +21,8 @@
 
 #include "GamePlayer.h"
 #include "PositionSearch.h"
-#include "ai/AIBase.h"
 #include "ai/AIEventManager.h"
+#include "ai/AIPlayer.h"
 #include "ai/aijh/AIJHHelper.h"
 #include "ai/aijh/AIResourceMap.h"
 #include "helpers/Deleter.h"
@@ -44,7 +44,7 @@ namespace AIJH {
 class AIConstruction;
 
 /// Klasse für die besser JH-KI
-class AIPlayerJH : public AIBase
+class AIPlayerJH : public AIPlayer
 {
     friend class BuildJob;
     friend class EventJob;

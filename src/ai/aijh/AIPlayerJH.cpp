@@ -104,7 +104,8 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 namespace AIJH {
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-    : AIBase(playerId, gwb, level), UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false), UpgradeBldPos(MapPoint::Invalid())
+    : AIPlayer(playerId, gwb, level), UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false),
+      UpgradeBldPos(MapPoint::Invalid())
 {
     construction = new AIConstruction(aii, *this);
     InitNodes();

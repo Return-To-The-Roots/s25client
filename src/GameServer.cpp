@@ -29,7 +29,7 @@
 #include "RTTR_Version.h"
 #include "Savegame.h"
 #include "Settings.h"
-#include "ai/AIBase.h"
+#include "ai/AIPlayer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
@@ -1386,7 +1386,7 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 #ifdef _WIN32
        || (MessageBoxW(NULL,
                        cvUTF8ToWideString(
-                         _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
+                       _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
                            "the future? Thank you very much!"))
                          .c_str(),
                        cvUTF8ToWideString(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)

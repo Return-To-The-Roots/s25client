@@ -160,10 +160,10 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(gwv.GetViewer().GetPlayer().isHost)
             {
-                std::vector<AIBase*> ais;
+                std::vector<AIPlayer*> ais;
                 for(unsigned i = 0; i < gwv.GetViewer().GetPlayerCount(); ++i)
                 {
-                    AIBase* ai = GAMESERVER.GetAIPlayer(i);
+                    AIPlayer* ai = GAMESERVER.GetAIPlayer(i);
                     if(ai)
                         ais.push_back(ai);
                 }
