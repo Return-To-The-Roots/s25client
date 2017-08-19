@@ -22,9 +22,11 @@
 #include <vector>
 
 class AIBase;
-class AIPlayerJH;
 class ctrlText;
 class GameWorldView;
+namespace AIJH {
+class AIPlayerJH;
+}
 
 class iwAIDebug : public IngameWindow
 {
@@ -39,7 +41,7 @@ private:
 
 private:
     GameWorldView& gwv;
-    std::vector<AIPlayerJH*> ais_;
+    std::vector<AIJH::AIPlayerJH*> ais_;
     unsigned player_;
     unsigned overlay_;
     ctrlText* text;

@@ -33,7 +33,6 @@
 #include <queue>
 
 class noFlag;
-class AIConstruction;
 class GlobalGameSettings;
 class noShip;
 class nobBaseWarehouse;
@@ -41,13 +40,16 @@ namespace AIEvent {
 class Base;
 }
 
+namespace AIJH {
+class AIConstruction;
+
 /// Klasse für die besser JH-KI
 class AIPlayerJH : public AIBase
 {
-    friend class AIJH::BuildJob;
-    friend class AIJH::EventJob;
-    friend class AIJH::ConnectJob;
-    friend class AIJH::SearchJob;
+    friend class BuildJob;
+    friend class EventJob;
+    friend class ConnectJob;
+    friend class SearchJob;
     friend class iwAIDebug;
 
 public:
@@ -59,7 +61,7 @@ public:
     const std::string& GetPlayerName() { return player.name; }
     unsigned char GetPlayerId() { return playerId; }
     AIConstruction* GetConstruction() { return construction; }
-    AIJH::Job* GetCurrentJob() { return currentJob.get(); }
+    Job* GetCurrentJob() { return currentJob.get(); }
 
     /// Test whether the player should resign or not
     bool TestDefeat();
@@ -73,9 +75,9 @@ public:
 
     bool IsInvalidShipyardPosition(const MapPoint pt);
 
-    int GetResMapValue(const MapPoint pt, AIJH::Resource res);
+    int GetResMapValue(const MapPoint pt, Resource res);
 
-    inline AIJH::Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
+    inline Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
     unsigned GetJobNum() const;
     unsigned PlannedConnectedInlandMilitary()
     {
@@ -129,7 +131,7 @@ protected:
     void UpdateNodesAround(const MapPoint pt, unsigned radius);
     void UpdateNodesAroundNoBorder(const MapPoint pt, unsigned radius);
     /// Returns the resource on a specific point
-    AIJH::Resource CalcResource(const MapPoint pt);
+    Resource CalcResource(const MapPoint pt);
     /// Initialize the resource maps
     void InitResourceMaps();
     /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know whether its a load game or
@@ -143,26 +145,26 @@ protected:
                             std::vector<MapPoint> oldFlags);
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
-    bool FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+    bool FindGoodPosition(MapPoint& pt, Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
 
-    PositionSearch* CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType bld,
+    PositionSearch* CreatePositionSearch(MapPoint& pt, Resource res, BuildingQuality size, int minimum, BuildingType bld,
                                          bool best = false);
     // Find position that satifies search->minimum or best (takes longer!)
     PositionSearchState FindGoodPosition(PositionSearch* search, bool best = false);
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    bool FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-    bool FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
+    bool FindBestPosition(MapPoint& pt, Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
+    bool FindBestPosition(MapPoint& pt, Resource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
     {
         return FindBestPosition(pt, res, size, 1, radius, inTerritory);
     }
     /// finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
-    bool FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius = -1,
+    bool FindBestPositionDiminishingResource(MapPoint& pt, Resource res, BuildingQuality size, int minimum, int radius = -1,
                                              bool inTerritory = true);
     /// Finds a position for the desired building size
     bool SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius = -1);
     /// Density in percent (0-100)
-    unsigned GetDensity(MapPoint pt, AIJH::Resource res, int radius);
+    unsigned GetDensity(MapPoint pt, Resource res, int radius);
     /// Recalculate the Buildingquality around a certain point
     void RecalcBQAround(const MapPoint pt);
     /// Does some actions after a new military building is occupied
@@ -243,19 +245,19 @@ protected:
 
     bool NoEnemyHarbor();
 
-    void SetResourceMap(AIJH::Resource res, const MapPoint pt, int newvalue) { resourceMaps[res][pt] = newvalue; }
+    void SetResourceMap(Resource res, const MapPoint pt, int newvalue) { resourceMaps[res][pt] = newvalue; }
 
     MapPoint UpgradeBldPos;
     /// The current job the AI is working on
-    boost::interprocess::unique_ptr<AIJH::Job, Deleter<AIJH::Job> > currentJob;
+    boost::interprocess::unique_ptr<Job, Deleter<Job> > currentJob;
     /// List of coordinates at which military buildings should be
     std::list<MapPoint> milBuildings;
     /// List of coordinates at which military buildingsites should be
     std::list<MapPoint> milBuildingSites;
     /// Nodes containing some information about every map node
-    std::vector<AIJH::Node> nodes;
+    std::vector<Node> nodes;
     /// Resource maps, containing a rating for every map point concerning a resource
-    boost::array<AIResourceMap, AIJH::RES_TYPE_COUNT> resourceMaps;
+    boost::array<AIResourceMap, RES_TYPE_COUNT> resourceMaps;
 
 private:
     unsigned attack_interval;
@@ -268,5 +270,7 @@ private:
 
     Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip;
 };
+
+} // namespace AIJH
 
 #endif //! AIPLAYERJH_H_INCLUDED

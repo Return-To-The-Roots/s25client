@@ -28,26 +28,20 @@
 #include <stdint.h>
 #include <vector>
 
-class AIPlayerJH;
-
 class AIInterface;
 class noFlag;
 class noRoadNode;
 class nobMilitary;
-namespace AIJH {
-class BuildJob;
-}
-namespace AIJH {
-class ConnectJob;
-}
-namespace AIJH {
-class Job;
-class BuildJob;
-} // namespace AIJH
 namespace boost {
 template<class T, std::size_t N>
 class array;
 }
+
+namespace AIJH {
+class AIPlayerJH;
+class Job;
+class BuildJob;
+class ConnectJob;
 
 class AIConstruction
 {
@@ -56,9 +50,9 @@ public:
     ~AIConstruction();
 
     /// Adds a build job to the queue
-    void AddBuildJob(AIJH::BuildJob* job, bool front);
+    void AddBuildJob(BuildJob* job, bool front);
 
-    AIJH::BuildJob* GetBuildJob();
+    BuildJob* GetBuildJob();
     unsigned GetBuildJobNum() const { return buildJobs.size(); }
     unsigned GetConnectJobNum() const { return connectJobs.size(); }
 
@@ -108,7 +102,7 @@ public:
     /// Set flags along the road starting at the given node in the given direction
     void SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir);
     /// To be called after a new construction site was added
-    void ConstructionOrdered(const AIJH::BuildJob& job);
+    void ConstructionOrdered(const BuildJob& job);
     /// To be called when the current pending construction orders were processed (usually on NWF)
     void ConstructionsExecuted();
 
@@ -128,8 +122,8 @@ private:
     /// Contains how many buildings of every type is wanted
     std::vector<unsigned> buildingsWanted;
     /// Contains the build jobs the AI should try to execute
-    std::deque<AIJH::BuildJob*> buildJobs;
-    std::deque<AIJH::ConnectJob*> connectJobs;
+    std::deque<BuildJob*> buildJobs;
+    std::deque<ConnectJob*> connectJobs;
     /// contains the locations pt at which the ai has done some kind of construction since the last nwf
     // -> so the commands are not yet executed and for now the ai will just not build again in the area until the next nwf
     std::deque<MapPoint> constructionlocations;
@@ -138,5 +132,7 @@ private:
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
     BuildingCount buildingCounts;
 };
+
+} // namespace AIJH
 
 #endif //! AICONSTRUCTION_H_INCLUDED

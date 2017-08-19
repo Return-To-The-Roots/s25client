@@ -27,6 +27,8 @@
 #include <deque>
 #include <vector>
 
+namespace AIJH {
+
 enum PositionSearchState
 {
     SEARCH_IN_PROGRESS,
@@ -40,7 +42,7 @@ struct PositionSearch
     MapPoint start;
 
     // what do we want to find?
-    AIJH::Resource res;
+    Resource res;
 
     // and how much of that at least?
     int minimum;
@@ -66,11 +68,13 @@ struct PositionSearch
 
     bool best;
 
-    PositionSearch(const MapPoint pt, AIJH::Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
+    PositionSearch(const MapPoint pt, Resource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false)
         : start(pt), res(res), minimum(minimum), size(size), nodesPerStep(32), result(MapPoint::Invalid()), resultValue(0), bld(bld),
           best(best)
     {
     }
 };
+
+} // namespace AIJH
 
 #endif // PositionSearch_h__

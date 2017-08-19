@@ -38,7 +38,7 @@
 #include "Settings.h"
 #include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
-#include "ai/AIPlayerJH.h"
+#include "ai/aijh/AIPlayerJH.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
@@ -1738,7 +1738,7 @@ bool GameClient::IsSinglePlayer() const
 AIBase* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 {
     if(aiInfo.type == AI::DEFAULT)
-        return new AIPlayerJH(playerId, *gw, aiInfo.level);
+        return new AIJH::AIPlayerJH(playerId, *gw, aiInfo.level);
     else
         return new AIPlayer(playerId, *gw, aiInfo.level);
 }

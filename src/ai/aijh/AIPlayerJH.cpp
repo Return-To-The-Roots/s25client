@@ -101,6 +101,8 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 }
 } // namespace
 
+namespace AIJH {
+
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIBase(playerId, gwb, level), UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false), UpgradeBldPos(MapPoint::Invalid())
 {
@@ -350,8 +352,7 @@ nobBaseWarehouse* AIPlayerJH::GetUpgradeBuildingWarehouse()
 void AIPlayerJH::AddBuildJob(BuildingType type, const MapPoint pt, bool front, bool searchPosition)
 {
     if(type != BLD_NOTHING)
-        construction->AddBuildJob(new AIJH::BuildJob(*this, type, pt, searchPosition ? AIJH::SEARCHMODE_RADIUS : AIJH::SEARCHMODE_NONE),
-                                  front);
+        construction->AddBuildJob(new BuildJob(*this, type, pt, searchPosition ? SEARCHMODE_RADIUS : SEARCHMODE_NONE), front);
 }
 
 void AIPlayerJH::AddBuildJobAroundEvery(BuildingType bt, bool warehouse)
@@ -422,20 +423,20 @@ void AIPlayerJH::SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewareho
     }
 }
 
-AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
+Resource AIPlayerJH::CalcResource(const MapPoint pt)
 {
-    AIJH::Resource subRes = aii.GetSubsurfaceResource(pt);
-    AIJH::Resource surfRes = aii.GetSurfaceResource(pt);
+    Resource subRes = aii.GetSubsurfaceResource(pt);
+    Resource surfRes = aii.GetSurfaceResource(pt);
 
     // no resources underground
-    if(subRes == AIJH::NOTHING)
+    if(subRes == NOTHING)
     {
         // also no resource on the ground: plant space or unusable?
-        if(surfRes == AIJH::NOTHING)
+        if(surfRes == NOTHING)
         {
             // already road, really no resources here
             if(aii.IsRoadPoint(pt))
-                return AIJH::NOTHING;
+                return NOTHING;
             // check for vital plant space
             for(unsigned i = 0; i < Direction::COUNT; ++i)
             {
@@ -443,19 +444,19 @@ AIJH::Resource AIPlayerJH::CalcResource(const MapPoint pt)
 
                 // check against valid terrains for planting
                 if(!TerrainData::IsVital(t))
-                    return AIJH::NOTHING;
+                    return NOTHING;
             }
-            return AIJH::PLANTSPACE;
+            return PLANTSPACE;
         }
 
         return surfRes;
     } else // resources in underground
     {
-        if(surfRes == AIJH::STONES || surfRes == AIJH::WOOD)
-            return AIJH::MULTIPLE;
+        if(surfRes == STONES || surfRes == WOOD)
+            return MULTIPLE;
 
-        if(subRes == AIJH::BLOCKED)
-            return AIJH::NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
+        if(subRes == BLOCKED)
+            return NOTHING; // nicht so ganz logisch... aber Blocked als res is doof TODO
 
         return subRes;
     }
@@ -586,22 +587,22 @@ void AIPlayerJH::UpdateNodes()
 
 void AIPlayerJH::InitResourceMaps()
 {
-    for(unsigned res = 0; res < AIJH::RES_TYPE_COUNT; ++res)
+    for(unsigned res = 0; res < RES_TYPE_COUNT; ++res)
     {
-        resourceMaps[res] = AIResourceMap(static_cast<AIJH::Resource>(res), aii, nodes);
+        resourceMaps[res] = AIResourceMap(static_cast<Resource>(res), aii, nodes);
         resourceMaps[res].Init();
     }
 }
 
 namespace {
-struct MapPoint2Idx
-{
-    typedef unsigned result_type;
-    const AIInterface& aii_;
+    struct MapPoint2Idx
+    {
+        typedef unsigned result_type;
+        const AIInterface& aii_;
 
-    MapPoint2Idx(const AIInterface& aii) : aii_(aii) {}
-    result_type operator()(const MapPoint pt, unsigned /*r*/) { return aii_.GetIdx(pt); }
-};
+        MapPoint2Idx(const AIInterface& aii) : aii_(aii) {}
+        result_type operator()(const MapPoint pt, unsigned /*r*/) { return aii_.GetIdx(pt); }
+    };
 } // namespace
 
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
@@ -615,12 +616,12 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
         nodes[*it].farmed = set;
 }
 
-bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIJH::Resource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
+bool AIPlayerJH::FindGoodPosition(MapPoint& pt, Resource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
     return resourceMaps[res].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
-PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, BuildingType /*bld*/,
+PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, Resource res, BuildingQuality size, int minimum, BuildingType /*bld*/,
                                                  bool best)
 {
     // set some basic parameters
@@ -661,7 +662,7 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         // get the node
         MapPoint pt = search->toTest.front();
         search->toTest.pop();
-        AIJH::Node& node = nodes[aii.GetIdx(pt)];
+        Node& node = nodes[aii.GetIdx(pt)];
 
         // and test it... TODO exception at res::borderland?
         if(resMap[pt] > search->resultValue                                                 // value better
@@ -706,11 +707,10 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
         return SEARCH_IN_PROGRESS;
 }
 
-bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius,
+bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, Resource res, BuildingQuality size, int minimum, int radius,
                                                      bool inTerritory)
 {
-    bool fixed = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                 && (res == AIJH::IRONORE || res == AIJH::COAL || res == AIJH::GOLD || res == AIJH::GRANITE);
+    bool fixed = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES) && (res == IRONORE || res == COAL || res == GOLD || res == GRANITE);
     unsigned short width = aii.GetMapWidth();
     unsigned short height = aii.GetMapHeight();
     int temp = 0;
@@ -778,7 +778,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                     // copy the value to the resource map
                     resMapVal = temp;
                 }
-                if(res == AIJH::FISH || res == AIJH::STONES)
+                if(res == FISH || res == STONES)
                 {
                     // remove permanently invalid spots to speed up future checks
                     TerrainType t1 = aii.GetTerrain(t2);
@@ -797,7 +797,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
                         continue;
                     }
                     // special case fish -> check for other fishery buildings
-                    if(res == AIJH::FISH && BuildingNearby(t2, BLD_FISHERY, 6))
+                    if(res == FISH && BuildingNearby(t2, BLD_FISHERY, 6))
                     {
                         t2 = aii.GetNeighbour(t2, Direction(curDir));
                         continue;
@@ -831,9 +831,9 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resourc
 }
 
 // TODO: this totally ignores existing buildings of the same type. It should not. Re-introduce the resource maps?
-bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
+bool AIPlayerJH::FindBestPosition(MapPoint& pt, Resource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
-    if(res == AIJH::IRONORE || res == AIJH::COAL || res == AIJH::GOLD || res == AIJH::GRANITE || res == AIJH::STONES || res == AIJH::FISH)
+    if(res == IRONORE || res == COAL || res == GOLD || res == GRANITE || res == STONES || res == FISH)
         return FindBestPositionDiminishingResource(pt, res, size, minimum, radius, inTerritory);
     unsigned short width = aii.GetMapWidth();
     unsigned short height = aii.GetMapHeight();
@@ -894,7 +894,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIJH::Resource res, BuildingQual
                     if(((bq >= size && bq < BQ_MINE) // normales Gebäude
                         || (bq == size))
                        && // auch Bergwerke
-                       (res != AIJH::BORDERLAND || !aii.IsRoadPoint(aii.GetNeighbour(t2, Direction::SOUTHEAST))))
+                       (res != BORDERLAND || !aii.IsRoadPoint(aii.GetNeighbour(t2, Direction::SOUTHEAST))))
                     // special: military buildings cannot be build next to an existing road as that would have them connected to 2 roads
                     // which the ai no longer should do
                     {
@@ -931,7 +931,7 @@ void AIPlayerJH::ExecuteAIJob()
     // Check whether current job is finished...
     /*if (currentJob)
     {
-        if (currentJob->GetStatus() == AIJH::JOB_FINISHED)
+        if (currentJob->GetStatus() == JOB_FINISHED)
         {
             delete currentJob;
             currentJob = 0;
@@ -941,7 +941,7 @@ void AIPlayerJH::ExecuteAIJob()
     // ... or it failed
     if (currentJob)
     {
-        if (currentJob->GetStatus() == AIJH::JOB_FAILED)
+        if (currentJob->GetStatus() == JOB_FAILED)
         {
             // TODO fehlerbehandlung?
             //std::cout << "Job failed." << std::endl;
@@ -953,7 +953,7 @@ void AIPlayerJH::ExecuteAIJob()
     while(eventManager.EventAvailable() && quota) // handle all new events - some will add new orders but they can all be handled instantly
     {
         quota--;
-        currentJob.reset(new AIJH::EventJob(*this, eventManager.GetEvent()));
+        currentJob.reset(new EventJob(*this, eventManager.GetEvent()));
         currentJob->ExecuteJob();
     }
     // how many construction & connect jobs the ai will attempt every gf, the ai gets new orders from events and every 200 gf
@@ -1070,7 +1070,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
     if(numCompleteWh < 1) // no warehouses -> no job
         return;
 
-    Job maxRankJob = SOLDIER_JOBS[ggs.GetMaxMilitaryRank()];
+    ::Job maxRankJob = SOLDIER_JOBS[ggs.GetMaxMilitaryRank()];
 
     if(numCompleteWh == 1) // only 1 warehouse? dont block max ranks here
     {
@@ -1209,7 +1209,7 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
     return false;
 }
 
-unsigned AIPlayerJH::GetDensity(MapPoint pt, AIJH::Resource res, int radius)
+unsigned AIPlayerJH::GetDensity(MapPoint pt, Resource res, int radius)
 {
     unsigned short width = aii.GetMapWidth();
     unsigned short height = aii.GetMapHeight();
@@ -1503,7 +1503,7 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
         aii.DestroyBuilding(pt);
         if(bld == BLD_FISHERY) // fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this
                                // location again
-            SetResourceMap(AIJH::FISH, pt, 0);
+            SetResourceMap(FISH, pt, 0);
     } else
         return;
     UpdateNodesAround(pt, 11); // todo: fix radius
@@ -1955,19 +1955,19 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
 
     // building itself
     RecalcBQAround(pt);
-    if(GetAINode(pt).res == AIJH::PLANTSPACE)
+    if(GetAINode(pt).res == PLANTSPACE)
     {
-        resourceMaps[AIJH::PLANTSPACE].Change(pt, -1);
-        GetAINode(pt).res = AIJH::NOTHING;
+        resourceMaps[PLANTSPACE].Change(pt, -1);
+        GetAINode(pt).res = NOTHING;
     }
 
     // flag of building
     pt = aii.GetNeighbour(pt, Direction::SOUTHEAST);
     RecalcBQAround(pt);
-    if(GetAINode(pt).res == AIJH::PLANTSPACE)
+    if(GetAINode(pt).res == PLANTSPACE)
     {
-        resourceMaps[AIJH::PLANTSPACE].Change(pt, -1);
-        GetAINode(pt).res = AIJH::NOTHING;
+        resourceMaps[PLANTSPACE].Change(pt, -1);
+        GetAINode(pt).res = NOTHING;
     }
 
     // along the road
@@ -1976,10 +1976,10 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
         pt = aii.GetNeighbour(pt, route_road[i]);
         RecalcBQAround(pt);
         // Auch Plantspace entsprechend anpassen:
-        if(GetAINode(pt).res == AIJH::PLANTSPACE)
+        if(GetAINode(pt).res == PLANTSPACE)
         {
-            resourceMaps[AIJH::PLANTSPACE].Change(pt, -1);
-            GetAINode(pt).res = AIJH::NOTHING;
+            resourceMaps[PLANTSPACE].Change(pt, -1);
+            GetAINode(pt).res = NOTHING;
         }
     }
 }
@@ -1987,7 +1987,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
 void AIPlayerJH::SaveResourceMapsToFile()
 {
 #ifdef DEBUG_AI
-    for(unsigned i = 0; i < AIJH::RES_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < RES_TYPE_COUNT; ++i)
     {
         std::stringstream ss;
         ss << "resmap-" << i << ".log";
@@ -2007,7 +2007,7 @@ void AIPlayerJH::SaveResourceMapsToFile()
 #endif
 }
 
-int AIPlayerJH::GetResMapValue(const MapPoint pt, AIJH::Resource res)
+int AIPlayerJH::GetResMapValue(const MapPoint pt, Resource res)
 {
     return resourceMaps[res][pt];
 }
@@ -2358,15 +2358,15 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
                // from the ai)
     {
         aii.SetBuildingSite(pt, bt);
-        AIJH::BuildJob* j = new AIJH::BuildJob(*this, bt, pt);
-        j->SetStatus(AIJH::JOB_EXECUTING_ROAD1);
+        BuildJob* j = new BuildJob(*this, bt, pt);
+        j->SetStatus(JOB_EXECUTING_ROAD1);
         j->SetTarget(pt);
         construction->AddBuildJob(j, true); // connects the buildingsite to roadsystem
     } else
     {
         if(construction->Wanted(bt))
         {
-            construction->AddBuildJob(new AIJH::BuildJob(*this, bt, pt), true); // add build job to the front of the list
+            construction->AddBuildJob(new BuildJob(*this, bt, pt), true); // add build job to the front of the list
         }
     }
 }
@@ -2691,3 +2691,5 @@ unsigned AIPlayerJH::CalcMilSettings()
     // LOG.write(("player %i inland milsetting %i \n",playerId,returnvalue);
     return returnValue;
 }
+
+} // namespace AIJH

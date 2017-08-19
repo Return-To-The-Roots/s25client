@@ -22,8 +22,10 @@
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
 
-AIResourceMap::AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node>& nodes)
-    : res(res), resRadius(AIJH::RES_RADIUS[res]), aii(&aii), nodes(&nodes)
+namespace AIJH {
+
+AIResourceMap::AIResourceMap(const Resource res, const AIInterface& aii, const std::vector<Node>& nodes)
+    : res(res), resRadius(RES_RADIUS[res]), aii(&aii), nodes(&nodes)
 {
 }
 
@@ -43,19 +45,19 @@ void AIResourceMap::Init()
         for(pt.x = 0; pt.x < width; ++pt.x)
         {
             unsigned i = aii->GetIdx(pt);
-            if((*nodes)[i].res == res && res == AIJH::FISH)
+            if((*nodes)[i].res == res && res == FISH)
             {
                 Change(pt, 1);
-            } else if((*nodes)[i].res == res && res != AIJH::BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
+            } else if((*nodes)[i].res == res && res != BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
             {
                 Change(pt, 1);
-            } else if(res == AIJH::BORDERLAND && aii->IsBorder(pt))
+            } else if(res == BORDERLAND && aii->IsBorder(pt))
             {
                 // only count border area that is actually passable terrain
                 if(TerrainData::IsUseable(aii->GetTerrain(pt)))
                     Change(pt, 1);
             }
-            if((*nodes)[i].res == AIJH::MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
+            if((*nodes)[i].res == MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
             {
                 if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
                     Change(pt, 1);
@@ -67,9 +69,9 @@ void AIResourceMap::Init()
 void AIResourceMap::Recalc()
 {
     Init();
-    if(res == AIJH::WOOD) // existing woodcutters reduce rating
+    if(res == WOOD) // existing woodcutters reduce rating
         AdjustRatingForBlds(BLD_WOODCUTTER, 7, -10);
-    else if(res == AIJH::PLANTSPACE)
+    else if(res == PLANTSPACE)
     {
         AdjustRatingForBlds(BLD_FARM, 3, -25);
         AdjustRatingForBlds(BLD_FORESTER, 6, -25);
@@ -94,14 +96,14 @@ void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int v
 }
 
 namespace {
-struct MapPoint2IdxWithRadius
-{
-    typedef std::pair<unsigned, unsigned> result_type;
-    const AIInterface& aii_;
+    struct MapPoint2IdxWithRadius
+    {
+        typedef std::pair<unsigned, unsigned> result_type;
+        const AIInterface& aii_;
 
-    MapPoint2IdxWithRadius(const AIInterface& aii) : aii_(aii) {}
-    result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(aii_.GetIdx(pt), r); }
-};
+        MapPoint2IdxWithRadius(const AIInterface& aii) : aii_(aii) {}
+        result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(aii_.GetIdx(pt), r); }
+    };
 } // namespace
 
 void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
@@ -176,3 +178,5 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
     }
     return false;
 }
+
+} // namespace AIJH

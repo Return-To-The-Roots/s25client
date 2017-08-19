@@ -47,6 +47,8 @@
 #include <limits>
 #include <list>
 
+namespace AIJH {
+
 AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
     : aii(aii), aijh(aijh), buildingsWanted(BUILDING_TYPES_COUNT), constructionorders(BUILDING_TYPES_COUNT)
 {
@@ -59,7 +61,7 @@ AIConstruction::~AIConstruction()
 {
 }
 
-void AIConstruction::AddBuildJob(AIJH::BuildJob* job, bool front)
+void AIConstruction::AddBuildJob(BuildJob* job, bool front)
 {
     if(job->GetType() == BLD_SHIPYARD && aijh.IsInvalidShipyardPosition(job->GetAround()))
     {
@@ -98,7 +100,7 @@ void AIConstruction::AddBuildJob(AIJH::BuildJob* job, bool front)
     }
 }
 
-/*void AIConstruction::AddJob(AIJH::BuildJob* job, bool front)
+/*void AIConstruction::AddJob(BuildJob* job, bool front)
 {
     if (front)
         buildJobs.push_front(job);
@@ -115,9 +117,9 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     for(; i < limit && !connectJobs.empty() && i < initconjobs;
         i++) // go through list, until limit is reached or list empty or when every entry has been checked
     {
-        AIJH::ConnectJob* job = connectJobs.front();
+        ConnectJob* job = connectJobs.front();
         job->ExecuteJob();
-        if(job->GetStatus() != AIJH::JOB_FINISHED && job->GetStatus() != AIJH::JOB_FAILED) // couldnt do job? -> move to back of list
+        if(job->GetStatus() != JOB_FINISHED && job->GetStatus() != JOB_FAILED) // couldnt do job? -> move to back of list
         {
             connectJobs.push_back(job);
             connectJobs.pop_front();
@@ -129,9 +131,9 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     }
     for(; i < limit && !buildJobs.empty() && i < (initconjobs + initbuildjobs); i++)
     {
-        AIJH::BuildJob* job = GetBuildJob();
+        BuildJob* job = GetBuildJob();
         job->ExecuteJob();
-        if(job->GetStatus() != AIJH::JOB_FINISHED && job->GetStatus() != AIJH::JOB_FAILED) // couldnt do job? -> move to back of list
+        if(job->GetStatus() != JOB_FINISHED && job->GetStatus() != JOB_FAILED) // couldnt do job? -> move to back of list
         {
             buildJobs.push_back(job);
         } else // job done of failed -> delete job
@@ -183,12 +185,12 @@ unsigned AIConstruction::GetMilitaryBldSiteCount() const
     return result;
 }
 
-AIJH::BuildJob* AIConstruction::GetBuildJob()
+BuildJob* AIConstruction::GetBuildJob()
 {
     if(buildJobs.empty())
         return NULL;
 
-    AIJH::BuildJob* job = buildJobs.front();
+    BuildJob* job = buildJobs.front();
     buildJobs.pop_front();
     return job;
 }
@@ -202,7 +204,7 @@ void AIConstruction::AddConnectFlagJob(const noFlag* flag)
             return;
     }
     // add to list
-    connectJobs.push_back(new AIJH::ConnectJob(aijh, flag->GetPos()));
+    connectJobs.push_back(new ConnectJob(aijh, flag->GetPos()));
 }
 
 bool AIConstruction::CanStillConstructHere(const MapPoint pt) const
@@ -215,7 +217,7 @@ bool AIConstruction::CanStillConstructHere(const MapPoint pt) const
     return true;
 }
 
-void AIConstruction::ConstructionOrdered(const AIJH::BuildJob& job)
+void AIConstruction::ConstructionOrdered(const BuildJob& job)
 {
     RTTR_Assert(job.GetTarget().isValid());
     // add new construction area to the list of active orders in the current nwf
@@ -230,24 +232,24 @@ void AIConstruction::ConstructionsExecuted()
 }
 
 namespace {
-struct Point2FlagAI
-{
-    typedef const noFlag* result_type;
-    const AIInterface& aii_;
+    struct Point2FlagAI
+    {
+        typedef const noFlag* result_type;
+        const AIInterface& aii_;
 
-    Point2FlagAI(const AIInterface& aii) : aii_(aii) {}
+        Point2FlagAI(const AIInterface& aii) : aii_(aii) {}
 
-    result_type operator()(const MapPoint pt, unsigned /*r*/) const { return aii_.GetSpecObj<noFlag>(pt); }
-};
+        result_type operator()(const MapPoint pt, unsigned /*r*/) const { return aii_.GetSpecObj<noFlag>(pt); }
+    };
 
-struct IsValidFlag
-{
-    const unsigned playerId_;
+    struct IsValidFlag
+    {
+        const unsigned playerId_;
 
-    IsValidFlag(const unsigned playerId) : playerId_(playerId) {}
+        IsValidFlag(const unsigned playerId) : playerId_(playerId) {}
 
-    bool operator()(const noFlag* const flag) const { return flag && flag->GetPlayer() == playerId_; }
-};
+        bool operator()(const noFlag* const flag) const { return flag && flag->GetPlayer() == playerId_; }
+    };
 } // namespace
 
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
@@ -1039,3 +1041,5 @@ noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt) const
         return minTarget->GetFlag();
     }
 }
+
+} // namespace AIJH

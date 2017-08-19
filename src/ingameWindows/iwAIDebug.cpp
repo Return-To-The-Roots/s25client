@@ -32,7 +32,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
 {
     for(std::vector<AIBase*>::const_iterator it = ais.begin(); it != ais.end(); ++it)
     {
-        AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(*it);
+        AIJH::AIPlayerJH* ai = dynamic_cast<AIJH::AIPlayerJH*>(*it);
         if(ai)
             ais_.push_back(ai);
     }
@@ -44,7 +44,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     }
 
     ctrlComboBox* players = AddComboBox(1, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
-    for(std::vector<AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
+    for(std::vector<AIJH::AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
     {
         players->AddString((*it)->GetPlayerName());
     }

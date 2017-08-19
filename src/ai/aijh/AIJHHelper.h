@@ -30,10 +30,11 @@
 
 #include <vector>
 
+namespace AIJH {
+
 class AIPlayerJH;
 struct PositionSearch;
 
-namespace AIJH {
 const unsigned RES_TYPE_COUNT = 9;
 const unsigned RES_RADIUS[RES_TYPE_COUNT] = {
   8, // Wood

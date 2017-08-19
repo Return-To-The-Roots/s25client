@@ -22,15 +22,15 @@
 #include "ai/AIInterface.h"
 #include "ai/AIResource.h"
 #include <vector>
+
 namespace AIJH {
 struct Node;
-}
 
 class AIResourceMap
 {
 public:
-    AIResourceMap() : res(AIJH::NOTHING), resRadius(0), aii(NULL), nodes(NULL) {} // Default ctor to allow storage in arrays
-    AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node>& nodes);
+    AIResourceMap() : res(NOTHING), resRadius(0), aii(NULL), nodes(NULL) {} // Default ctor to allow storage in arrays
+    AIResourceMap(const Resource res, const AIInterface& aii, const std::vector<Node>& nodes);
     ~AIResourceMap();
 
     /// Initialize the resource map
@@ -57,12 +57,14 @@ private:
     void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
     /// Which resource is stored in the map and radius of affected nodes
     /// Do not change! const omitted to to able to store this in a vector
-    AIJH::Resource res;
+    Resource res;
     unsigned resRadius;
 
     std::vector<int> map;
     const AIInterface* aii;
-    const std::vector<AIJH::Node>* nodes;
+    const std::vector<Node>* nodes;
 };
+
+} // namespace AIJH
 
 #endif //! AIRESOURCEMAP_H_INCLUDED

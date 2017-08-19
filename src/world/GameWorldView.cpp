@@ -471,7 +471,7 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
 
 void GameWorldView::DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos)
 {
-    AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(d_player));
+    AIJH::AIPlayerJH* ai = dynamic_cast<AIJH::AIPlayerJH*>(GAMESERVER.GetAIPlayer(d_player));
     if(!ai)
         return;
 
