@@ -324,7 +324,7 @@ bool AIPlayerJH::TestDefeat()
     return false;
 }
 
-unsigned AIPlayerJH::GetJobNum() const
+unsigned AIPlayerJH::GetNumJobs() const
 {
     return eventManager.GetEventNum() + construction->GetBuildJobNum() + construction->GetConnectJobNum();
 }
@@ -2009,7 +2009,7 @@ void AIPlayerJH::SaveResourceMapsToFile()
 #endif
 }
 
-int AIPlayerJH::GetResMapValue(const MapPoint pt, Resource res)
+int AIPlayerJH::GetResMapValue(const MapPoint pt, Resource res) const
 {
     return resourceMaps[res][pt];
 }

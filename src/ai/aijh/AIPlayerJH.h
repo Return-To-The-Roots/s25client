@@ -58,10 +58,11 @@ public:
 
     AIInterface& GetInterface() { return aii; }
     // Required by the AIJobs:
-    const std::string& GetPlayerName() { return player.name; }
-    unsigned char GetPlayerId() { return playerId; }
     AIConstruction* GetConstruction() { return construction; }
-    Job* GetCurrentJob() { return currentJob.get(); }
+    const Job* GetCurrentJob() const { return currentJob.get(); }
+    unsigned GetNumJobs() const;
+
+    void RunGF(const unsigned gf, bool gfisnwf) override;
 
     /// Test whether the player should resign or not
     bool TestDefeat();
@@ -75,10 +76,9 @@ public:
 
     bool IsInvalidShipyardPosition(const MapPoint pt);
 
-    int GetResMapValue(const MapPoint pt, Resource res);
+    int GetResMapValue(const MapPoint pt, Resource res) const;
 
-    inline Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
-    unsigned GetJobNum() const;
+    const Node& GetAINode(const MapPoint pt) const { return nodes[gwb.GetIdx(pt)]; }
     unsigned PlannedConnectedInlandMilitary()
     {
         return aii.GetMilitaryBuildings().size() / 5 < 6 ? 6 : aii.GetMilitaryBuildings().size() / 5;
@@ -95,12 +95,11 @@ public:
     int UpgradeBldListNumber;
 
 protected:
-    void RunGF(const unsigned gf, bool gfisnwf) override;
-
     void PlanNewBuildings(const unsigned gf);
 
     void SendAIEvent(AIEvent::Base* ev);
 
+    Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
     /// Executes a job form the job queue
     void ExecuteAIJob();
     /// Tries to build a bld of the given type at that point.

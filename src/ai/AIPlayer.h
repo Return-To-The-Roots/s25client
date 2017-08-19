@@ -40,6 +40,9 @@ public:
     /// Called for every GF
     virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
 
+    const std::string& GetPlayerName() const { return player.name; }
+    unsigned char GetPlayerId() const { return playerId; }
+
     /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
     /// (beispielsweise Siegesbedingungen, FOW usw.)
     const GlobalGameSettings& ggs;

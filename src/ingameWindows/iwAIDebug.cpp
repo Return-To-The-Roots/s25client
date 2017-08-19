@@ -26,16 +26,62 @@
 #include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
+#include <boost/foreach.hpp>
 #include <sstream>
 
-iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayer*>& ais)
-    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)), gwv(gwv)
+namespace {
+enum
 {
-    for(std::vector<AIPlayer*>::const_iterator it = ais.begin(); it != ais.end(); ++it)
+    ID_CbPlayer,
+    ID_CbOverlay,
+    ID_Text
+};
+}
+
+class iwAIDebug::DebugPrinter : public IDrawNodeCallback
+{
+public:
+    DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : ai(ai), overlay(overlay) {}
+
+    const AIJH::AIPlayerJH* ai;
+    unsigned overlay;
+
+    void onDraw(const MapPoint& pt, const DrawPoint& curPos) override
     {
-        AIJH::AIPlayerJH* ai = dynamic_cast<AIJH::AIPlayerJH*>(*it);
-        if(ai)
-            ais_.push_back(ai);
+        if(overlay == 1)
+        {
+            if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
+                LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->DrawFull(curPos);
+        } else if(overlay == 2)
+        {
+            if(ai->GetAINode(pt).reachable)
+                LOADER.GetImageN("io", 32)->DrawFull(curPos);
+            else
+                LOADER.GetImageN("io", 40)->DrawFull(curPos);
+        } else if(overlay == 3)
+        {
+            if(ai->GetAINode(pt).farmed)
+                LOADER.GetImageN("io", 32)->DrawFull(curPos);
+            else
+                LOADER.GetImageN("io", 40)->DrawFull(curPos);
+        } else if(overlay > 3 && overlay < 13)
+        {
+            std::stringstream ss;
+            ss << ai->GetResMapValue(pt, AIJH::Resource(overlay - 4));
+            NormalFont->Draw(curPos, ss.str(), 0, 0xFFFFFF00);
+        }
+    }
+};
+
+iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais)
+    : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), text(NULL), printer(NULL)
+{
+    BOOST_FOREACH(const AIPlayer* ai, ais)
+    {
+        const AIJH::AIPlayerJH* aijh = dynamic_cast<const AIJH::AIPlayerJH*>(ai);
+        if(aijh)
+            ais_.push_back(aijh);
     }
     // Wenn keine KI-Spieler, schließen
     if(ais_.empty())
@@ -44,16 +90,13 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayer*>& ais)
         return;
     }
 
-    ctrlComboBox* players = AddComboBox(1, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
-    for(std::vector<AIJH::AIPlayerJH*>::const_iterator it = ais_.begin(); it != ais_.end(); ++it)
+    ctrlComboBox* players = AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TC_GREY, NormalFont, 100);
+    BOOST_FOREACH(const AIJH::AIPlayerJH* ai, ais_)
     {
-        players->AddString((*it)->GetPlayerName());
+        players->AddString(ai->GetPlayerName());
     }
 
-    player_ = 0;
-    players->SetSelection(player_);
-
-    ctrlComboBox* overlays = AddComboBox(0, DrawPoint(15, 60), Extent(250, 20), TC_GREY, NormalFont, 100);
+    ctrlComboBox* overlays = AddComboBox(ID_CbOverlay, DrawPoint(15, 60), Extent(250, 20), TC_GREY, NormalFont, 100);
     overlays->AddString("None");
     overlays->AddString("BuildingQuality");
     overlays->AddString("Reachability");
@@ -67,37 +110,31 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIPlayer*>& ais)
     overlays->AddString("Plantspace");
     overlays->AddString("Borderland");
     overlays->AddString("Fish");
-    overlay_ = 0;
-    overlays->SetSelection(overlay_);
 
-    // jobs = AddList(1, DrawPoint(15, 60), Extent(120, 220), TC_GREY, NormalFont);
-
-    text = AddText(2, DrawPoint(15, 120), "", COLOR_YELLOW, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP,
+    text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP,
                    LOADER.GetFontN("resource", 0));
 
-    // for(unsigned char i = 0; i < 31; ++i)
-    //  list->AddString(_(BUILDING_NAMES[GAMECLIENT.visual_settings.build_order[i]]));
-    // list->SetSelection(0);
+    players->SetSelection(0);
+    overlays->SetSelection(0);
+    printer = new DebugPrinter(ais_[0], 0);
+    gwv.AddDrawNodeCallback(printer);
+}
+
+iwAIDebug::~iwAIDebug()
+{
+    if(printer)
+    {
+        gwv.RemoveDrawNodeCallback(printer);
+        delete printer;
+    }
 }
 
 void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
 {
     switch(ctrl_id)
     {
-        default: break;
-
-        case 1:
-        {
-            player_ = selection;
-            gwv.SetAIDebug(overlay_, ais_[player_]->GetPlayerId(), true);
-        }
-        break;
-        case 0:
-        {
-            overlay_ = selection;
-            gwv.SetAIDebug(overlay_, ais_[player_]->GetPlayerId(), true);
-        }
-        break;
+        case ID_CbPlayer: printer->ai = ais_[selection]; break;
+        case ID_CbOverlay: printer->overlay = selection; break;
     }
 }
 
@@ -106,17 +143,17 @@ void iwAIDebug::Msg_PaintBefore()
     IngameWindow::Msg_PaintBefore();
     std::stringstream ss;
 
-    AIJH::Job* currentJob = ais_[player_]->GetCurrentJob();
+    const AIJH::Job* currentJob = printer->ai->GetCurrentJob();
     if(!currentJob)
     {
         text->SetText(_("No current job"));
         return;
     }
 
-    ss << "Jobs to do: " << ais_[player_]->GetJobNum() << std::endl << std::endl;
+    ss << "Jobs to do: " << printer->ai->GetNumJobs() << std::endl << std::endl;
 
-    AIJH::BuildJob* bj = dynamic_cast<AIJH::BuildJob*>(currentJob);
-    AIJH::EventJob* ej = dynamic_cast<AIJH::EventJob*>(currentJob);
+    const AIJH::BuildJob* bj = dynamic_cast<const AIJH::BuildJob*>(currentJob);
+    const AIJH::EventJob* ej = dynamic_cast<const AIJH::EventJob*>(currentJob);
 
     if(bj)
     {
@@ -157,15 +194,17 @@ void iwAIDebug::Msg_PaintBefore()
         }
     }
 
+#define RTTR_PRINT_STATUS(status) \
+    case AIJH::status: ss << #status << std::endl; break
     switch(currentJob->GetStatus())
     {
-        case AIJH::JOB_WAITING: ss << "JOB_WAITING"; break;
-        case AIJH::JOB_EXECUTING_START: ss << "JOB_EXECUTING_START"; break;
-        case AIJH::JOB_EXECUTING_ROAD1: ss << "JOB_EXECUTING_ROAD1"; break;
-        case AIJH::JOB_EXECUTING_ROAD2: ss << "JOB_EXECUTING_ROAD2"; break;
-        case AIJH::JOB_EXECUTING_ROAD2_2: ss << "JOB_EXECUTING_ROAD2_2"; break;
-        case AIJH::JOB_FINISHED: ss << "JOB_FINISHED"; break;
-        case AIJH::JOB_FAILED: ss << "JOB_FAILED"; break;
+        RTTR_PRINT_STATUS(JOB_WAITING);
+        RTTR_PRINT_STATUS(JOB_EXECUTING_START);
+        RTTR_PRINT_STATUS(JOB_EXECUTING_ROAD1);
+        RTTR_PRINT_STATUS(JOB_EXECUTING_ROAD2);
+        RTTR_PRINT_STATUS(JOB_EXECUTING_ROAD2_2);
+        RTTR_PRINT_STATUS(JOB_FINISHED);
+        RTTR_PRINT_STATUS(JOB_FAILED);
         default: ss << "Unknown status"; break;
     }
 

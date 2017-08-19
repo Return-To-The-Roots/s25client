@@ -20,11 +20,11 @@
 #include "CatapultStone.h"
 #include "FOWObjects.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "GameServer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
-#include "ai/aijh/AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
@@ -44,8 +44,8 @@
 #include <stdexcept>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size)
-    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), d_what(0),
-      d_player(0), d_active(false), pos(pos), size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), pos(pos),
+      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
@@ -190,9 +190,6 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
 
             BOOST_FOREACH(IDrawNodeCallback* callback, drawNodeCallbacks)
                 callback->onDraw(curPt, curPos);
-
-            if(d_active)
-                DrawAIDebug(curPt, curPos);
         }
 
         // Figuren zwischen den Zeilen zeichnen
@@ -468,36 +465,6 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
     {
         if(gwv.GetNumSoldiersForAttack(building->GetPos())) // soldiers available for attack?
             LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
-    }
-}
-
-void GameWorldView::DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos)
-{
-    AIJH::AIPlayerJH* ai = dynamic_cast<AIJH::AIPlayerJH*>(GAMESERVER.GetAIPlayer(d_player));
-    if(!ai)
-        return;
-
-    if(d_what == 1)
-    {
-        if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
-            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->DrawFull(curPos);
-    } else if(d_what == 2)
-    {
-        if(ai->GetAINode(pt).reachable)
-            LOADER.GetImageN("io", 32)->DrawFull(curPos);
-        else
-            LOADER.GetImageN("io", 40)->DrawFull(curPos);
-    } else if(d_what == 3)
-    {
-        if(ai->GetAINode(pt).farmed)
-            LOADER.GetImageN("io", 32)->DrawFull(curPos);
-        else
-            LOADER.GetImageN("io", 40)->DrawFull(curPos);
-    } else if(d_what > 3 && d_what < 13)
-    {
-        std::stringstream ss;
-        ss << ai->GetResMapValue(pt, AIJH::Resource(d_what - 4));
-        NormalFont->Draw(curPos, ss.str(), 0, 0xFFFFFF00);
     }
 }
 

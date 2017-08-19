@@ -68,10 +68,6 @@ class GameWorldView
 
     const GameWorldViewer& gwv;
 
-    unsigned d_what;
-    unsigned d_player;
-    bool d_active;
-
     /// Top-Left position of the view (window)
     Point<int> pos;
     /// Size of the view
@@ -134,13 +130,6 @@ public:
     Point<int> GetLastPt() const { return lastPt; }
 
     void Resize(const Extent& newSize);
-
-    void SetAIDebug(unsigned what, unsigned player, bool active)
-    {
-        d_what = what;
-        d_player = player;
-        d_active = active;
-    }
 
 private:
     void CalcFxLx();
