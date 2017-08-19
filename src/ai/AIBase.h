@@ -29,20 +29,6 @@ class GlobalGameSettings;
 /// Basisklasse für sämtliche KI-Spieler
 class AIBase
 {
-protected:
-    /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
-    const unsigned char playerId;
-    /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
-    const GameWorldBase& gwb;
-    /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
-    const GamePlayer& player;
-    /// Queue der GameCommands, die noch bearbeitet werden müssen
-    std::vector<gc::GameCommandPtr> gcs;
-    /// Stärke der KI
-    const AI::Level level;
-    /// Abstrahiertes Interfaces, leitet Befehle weiter an
-    AIInterface aii;
-
 public:
     AIBase(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
         : playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId), ggs(gwb.GetGGS())
@@ -62,6 +48,20 @@ public:
     const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
     /// Markiert die GameCommands als abgearbeitet
     void FetchGameCommands() { gcs.clear(); }
+
+protected:
+    /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
+    const unsigned char playerId;
+    /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
+    const GameWorldBase& gwb;
+    /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
+    const GamePlayer& player;
+    /// Queue der GameCommands, die noch bearbeitet werden müssen
+    std::vector<gc::GameCommandPtr> gcs;
+    /// Stärke der KI
+    const AI::Level level;
+    /// Abstrahiertes Interfaces, leitet Befehle weiter an
+    AIInterface aii;
 };
 
 #endif //! AIBASE_H_INCLUDED

@@ -53,9 +53,6 @@
 #include <list>
 #include <stdexcept>
 
-// from Pathfinding.cpp
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
-
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
@@ -693,20 +690,20 @@ PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool be
     }
 
     // decide the state of the search
-
-    if(search->toTest.empty() && search->resultValue < search->minimum)
+    if(search->toTest.empty())
     {
-        // no more nodes to test, not reached minimum
-        return SEARCH_FAILED;
-    } else if((search->resultValue >= search->minimum && !best) || (search->resultValue >= search->minimum && search->toTest.empty()))
+        // no more nodes to test
+        // fail iff not reached minimum
+        if(search->resultValue < search->minimum)
+            return SEARCH_FAILED;
+        else
+            return SEARCH_SUCCESSFUL;
+    } else if(search->resultValue >= search->minimum && !best)
     {
-        // reached minimal satifiying value or best value, if needed
+        // reached minimal satisfying value and we were not looking for the best
         return SEARCH_SUCCESSFUL;
     } else
-    {
-        // more to search...
         return SEARCH_IN_PROGRESS;
-    }
 }
 
 bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIJH::Resource res, BuildingQuality size, int minimum, int radius,

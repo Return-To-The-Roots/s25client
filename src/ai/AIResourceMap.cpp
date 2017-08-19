@@ -23,7 +23,7 @@
 #include "gameData/TerrainData.h"
 
 AIResourceMap::AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node>& nodes)
-    : res(res), aii(&aii), nodes(&nodes), resRadius(AIJH::RES_RADIUS[res])
+    : res(res), resRadius(AIJH::RES_RADIUS[res]), aii(&aii), nodes(&nodes)
 {
 }
 
