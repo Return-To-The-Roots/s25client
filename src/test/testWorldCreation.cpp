@@ -19,9 +19,9 @@
 #include "CreateEmptyWorld.h"
 #include "GamePlayer.h"
 #include "WorldFixture.h"
-#include "test/PointOutput.h"
 #include "world/MapGeometry.h"
 #include "nodeObjs/noBase.h"
+#include "test/PointOutput.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>

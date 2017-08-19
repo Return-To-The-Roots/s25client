@@ -25,12 +25,12 @@
 #include "helpers/converters.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsg.h"
-#include "test/GameWorldWithLuaAccess.h"
-#include "test/PointOutput.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
+#include "test/GameWorldWithLuaAccess.h"
+#include "test/PointOutput.h"
 #include "libutil/src/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>

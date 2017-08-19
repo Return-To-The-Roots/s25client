@@ -26,8 +26,8 @@
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/ShipPostMsg.h"
-#include "test/initTestHelpers.h"
 #include "nodeObjs/noShip.h"
+#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 

@@ -22,11 +22,11 @@
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
 #include "pathfinding/FindPathForRoad.h"
-#include "test/WorldWithGCExecution.h"
-#include "test/initTestHelpers.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/SettingTypeConv.h"
+#include "test/WorldWithGCExecution.h"
+#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>

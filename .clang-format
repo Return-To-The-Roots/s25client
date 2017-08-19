@@ -61,6 +61,8 @@ IncludeCategories:
     Priority: 8
   - Regex:    '^"gameData/'
     Priority: 9
+  - Regex:    '^"test/'
+    Priority: 50
   - Regex:    '^(<|")lib.*/'
     Priority: 90
   - Regex:    '^<boost/'

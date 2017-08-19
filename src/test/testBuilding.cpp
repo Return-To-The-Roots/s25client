@@ -23,12 +23,12 @@
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
 #include "initTestHelpers.h"
+#include "world/GameWorldViewer.h"
+#include "nodeObjs/noStaticObject.h"
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/PointOutput.h"
 #include "test/WorldFixture.h"
-#include "world/GameWorldViewer.h"
-#include "nodeObjs/noStaticObject.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
 
