@@ -21,7 +21,7 @@
 
 //#define DEBUG_AI
 
-#include "AIEvents.h"
+#include "ai/AIEvents.h"
 #include "ai/AIResource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/BuildingType.h"

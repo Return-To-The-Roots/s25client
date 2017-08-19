@@ -19,7 +19,7 @@
 #include "iwAIDebug.h"
 
 #include "Loader.h"
-#include "ai/AIPlayerJH.h"
+#include "ai/aijh/AIPlayerJH.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
 #include "ogl/glArchivItem_Font.h"

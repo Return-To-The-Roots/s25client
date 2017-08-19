@@ -17,11 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIJHHelper.h"
-#include "AIConstruction.h"
-#include "AIInterface.h"
-#include "AIPlayerJH.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
+#include "ai/AIInterface.h"
+#include "ai/aijh/AIConstruction.h"
+#include "ai/aijh/AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"

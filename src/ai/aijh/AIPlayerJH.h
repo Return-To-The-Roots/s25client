@@ -19,12 +19,12 @@
 
 #pragma once
 
-#include "AIBase.h"
-#include "AIEventManager.h"
-#include "AIJHHelper.h"
-#include "AIResourceMap.h"
 #include "GamePlayer.h"
 #include "PositionSearch.h"
+#include "ai/AIBase.h"
+#include "ai/AIEventManager.h"
+#include "ai/aijh/AIJHHelper.h"
+#include "ai/aijh/AIResourceMap.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/MapCoordinates.h"
 #include <boost/array.hpp>

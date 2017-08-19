@@ -20,6 +20,7 @@ ENDMACRO()
 
 AddDirectory(addons)
 AddDirectory(ai)
+AddDirectory(ai/aijh)
 AddDirectory(animation)
 AddDirectory(buildings)
 AddDirectory(controls)

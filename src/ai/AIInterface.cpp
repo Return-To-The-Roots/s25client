@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIInterface.h"
-#include "ai/AIJHHelper.h"
+#include "ai/aijh/AIJHHelper.h"
 
 #include "buildings/noBuilding.h"
 #include "buildings/nobHQ.h"

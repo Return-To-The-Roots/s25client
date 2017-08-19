@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIResourceMap.h"
-#include "AIJHHelper.h"
+#include "ai/aijh/AIJHHelper.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
