@@ -14,15 +14,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef DUMMYAI_H_INCLUDED
+#define DUMMYAI_H_INCLUDED
 
-#include "defines.h" // IWYU pragma: keep
-#include "AIPlayer.h"
+#pragma once
 
-AIPlayer::AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerId, gwb, level)
+#include "AIBase.h"
+class GameWorldBase;
+class GlobalGameSettings;
+
+/// Dummy AI that does nothing
+class DummyAI : public AIBase
 {
-}
+public:
+    DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerId, gwb, level) {}
 
-/// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned /*gf*/, bool /*gfisnwf*/)
-{
-}
+    void RunGF(const unsigned gf, bool gfisnwf) override {}
+};
+
+#endif //! DUMMYAI_H_INCLUDED

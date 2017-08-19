@@ -37,7 +37,7 @@ public:
 
     virtual ~AIBase() {}
 
-    /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
+    /// Called for every GF
     virtual void RunGF(const unsigned gf, bool gfisnwf) = 0;
 
     /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können

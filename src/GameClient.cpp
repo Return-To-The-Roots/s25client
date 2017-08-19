@@ -37,7 +37,7 @@
 #include "SerializedGameData.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
-#include "ai/AIPlayer.h"
+#include "ai/DummyAI.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
@@ -1740,7 +1740,7 @@ AIBase* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
     if(aiInfo.type == AI::DEFAULT)
         return new AIJH::AIPlayerJH(playerId, *gw, aiInfo.level);
     else
-        return new AIPlayer(playerId, *gw, aiInfo.level);
+        return new DummyAI(playerId, *gw, aiInfo.level);
 }
 
 const GlobalGameSettings& GameClient::GetGGS() const
