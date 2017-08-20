@@ -59,6 +59,21 @@ struct GetNextCharAndIncIt<char>
     }
 };
 
+template<typename T_Iterator, typename T_Value = typename std::iterator_traits<T_Iterator>::value_type>
+struct MakePrevIt;
+
+template<typename T_Iterator>
+struct MakePrevIt<T_Iterator, uint32_t>
+{
+    void operator()(T_Iterator& it, const T_Iterator& itStart) const { --it; }
+};
+
+template<typename T_Iterator>
+struct MakePrevIt<T_Iterator, char>
+{
+    void operator()(T_Iterator& it, const T_Iterator& itStart) const { utf8::prior(it, itStart); }
+};
+
 template<class T_Iterator>
 struct Distance
 {
@@ -199,7 +214,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& textIn, unsigned 
     if(length == 0)
         length = (unsigned short)text.length();
 
-    unsigned maxNumChars = 0;
+    unsigned maxNumChars = length;
     unsigned short textWidth = getWidth(text, length, max, &maxNumChars);
 
     bool drawEnd;
@@ -242,7 +257,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& textIn, unsigned 
     }
 
     std::vector<GL_T2F_V3F_Struct> texList;
-    texList.reserve((maxNumChars + end.length()) * 4);
+    texList.reserve((maxNumChars + (drawEnd ? end.length() : 0)) * 4);
     // Get texture first as it might need to be created
     glArchivItem_Bitmap& usedFont = ((format & DF_NO_OUTLINE) == DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
     unsigned texture = usedFont.GetTexture();
@@ -307,8 +322,9 @@ unsigned glArchivItem_Font::getWidthInternal(const T_Iterator& begin, const T_It
         {
             const unsigned cw = CharWidth(curChar);
             // haben wir das maximum erreicht?
-            if(curLineLen + cw > maxWidth && it != begin)
+            if(curLineLen != 0 && curLineLen + cw > maxWidth)
             {
+                MakePrevIt<T_Iterator>()(it, begin);
                 if(maxNumChars)
                     *maxNumChars = static_cast<unsigned>(std::distance(begin, it));
                 return curLineLen;
