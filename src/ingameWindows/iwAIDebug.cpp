@@ -22,10 +22,12 @@
 #include "ai/aijh/AIPlayerJH.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
+#include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <sstream>
 
@@ -40,36 +42,40 @@ enum
 
 class iwAIDebug::DebugPrinter : public IDrawNodeCallback
 {
+    boost::array<glArchivItem_Bitmap*, 7> bqImgs;
+    boost::array<glArchivItem_Bitmap*, 2> ticks;
+    glArchivItem_Font& font;
+
 public:
-    DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : ai(ai), overlay(overlay) {}
+    DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : ai(ai), overlay(overlay), font(*NormalFont)
+    {
+        // Cache images
+        bqImgs[0] = NULL;
+        for(int i = 1; i < 6; i++)
+            bqImgs[i] = LOADER.GetMapImageN(49 + i);
+        ticks[0] = LOADER.GetImageN("io", 40);
+        ticks[1] = LOADER.GetImageN("io", 32);
+        bqImgs[6] = ticks[0]; // Invalid marker
+    }
 
     const AIJH::AIPlayerJH* ai;
     unsigned overlay;
 
     void onDraw(const MapPoint& pt, const DrawPoint& curPos) override
     {
+        if(overlay == 0)
+            return;
         if(overlay == 1)
         {
-            if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
-                LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->DrawFull(curPos);
+            glArchivItem_Bitmap* img = bqImgs[std::min<unsigned>(ai->GetAINode(pt).bq, bqImgs.size() - 1)];
+            if(img)
+                img->DrawFull(curPos);
         } else if(overlay == 2)
-        {
-            if(ai->GetAINode(pt).reachable)
-                LOADER.GetImageN("io", 32)->DrawFull(curPos);
-            else
-                LOADER.GetImageN("io", 40)->DrawFull(curPos);
-        } else if(overlay == 3)
-        {
-            if(ai->GetAINode(pt).farmed)
-                LOADER.GetImageN("io", 32)->DrawFull(curPos);
-            else
-                LOADER.GetImageN("io", 40)->DrawFull(curPos);
-        } else if(overlay > 3 && overlay < 13)
-        {
-            std::stringstream ss;
-            ss << ai->GetResMapValue(pt, AIJH::Resource(overlay - 4));
-            NormalFont->Draw(curPos, ss.str(), 0, 0xFFFFFF00);
-        }
+            ticks[ai->GetAINode(pt).reachable]->DrawFull(curPos);
+        else if(overlay == 3)
+            ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
+        else if(overlay < 13)
+            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIJH::Resource(overlay - 4))), 0, 0xFFFFFF00);
     }
 };
 
@@ -113,6 +119,9 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
 
     text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP,
                    LOADER.GetFontN("resource", 0));
+
+    // Show 7 lines of text and 1 empty line
+    SetIwSize(Extent(GetIwSize().x, text->GetPos().y + 8 * text->GetFont()->getHeight()));
 
     players->SetSelection(0);
     overlays->SetSelection(0);

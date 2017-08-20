@@ -52,6 +52,7 @@ public:
     unsigned short GetMapWidth() const { return gwb.GetWidth(); }
     /// Return the height of the map
     unsigned short GetMapHeight() const { return gwb.GetHeight(); }
+    MapExtent GetMapSize() const { return gwb.GetSize(); }
 
     unsigned GetIdx(MapPoint pt) const { return gwb.GetIdx(pt); }
 

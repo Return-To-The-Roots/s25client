@@ -35,33 +35,29 @@ AIResourceMap::~AIResourceMap()
 
 void AIResourceMap::Init()
 {
-    unsigned short width = aii->GetMapWidth();
-    unsigned short height = aii->GetMapHeight();
+    const MapExtent mapSize = aii->GetMapSize();
 
     map.clear();
-    map.resize(width * height);
-    for(MapPoint pt(0, 0); pt.y < height; ++pt.y)
+    map.resize(prodOfComponents(mapSize));
+    RTTR_FOREACH_PT(MapPoint, mapSize)
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        unsigned i = aii->GetIdx(pt);
+        if((*nodes)[i].res == res && res == FISH)
         {
-            unsigned i = aii->GetIdx(pt);
-            if((*nodes)[i].res == res && res == FISH)
-            {
+            Change(pt, 1);
+        } else if((*nodes)[i].res == res && res != BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
+        {
+            Change(pt, 1);
+        } else if(res == BORDERLAND && aii->IsBorder(pt))
+        {
+            // only count border area that is actually passable terrain
+            if(TerrainData::IsUseable(aii->GetTerrain(pt)))
                 Change(pt, 1);
-            } else if((*nodes)[i].res == res && res != BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
-            {
+        }
+        if((*nodes)[i].res == MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
+        {
+            if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
                 Change(pt, 1);
-            } else if(res == BORDERLAND && aii->IsBorder(pt))
-            {
-                // only count border area that is actually passable terrain
-                if(TerrainData::IsUseable(aii->GetTerrain(pt)))
-                    Change(pt, 1);
-            }
-            if((*nodes)[i].res == MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
-            {
-                if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
-                    Change(pt, 1);
-            }
         }
     }
 }
