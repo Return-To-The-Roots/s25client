@@ -19,10 +19,13 @@
 
 #include "DriverWrapper.h"
 #include "Point.h"
-#include "driver/src/VideoInterface.h"
+#include "driver/src/KeyEvent.h"
+#include "driver/src/VideoMode.h"
 #include "libutil/src/Singleton.h"
 #include <boost/array.hpp>
 #include <string>
+
+class IVideoDriver;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -72,7 +75,7 @@ public:
     unsigned short GetScreenWidth() const;
     unsigned short GetScreenHeight() const;
     Extent GetScreenSize() const;
-    bool IsFullscreen() const { return videodriver->IsFullscreen(); }
+    bool IsFullscreen() const;
 
     bool IsLeftDown();
     bool IsRightDown();
@@ -87,7 +90,7 @@ public:
 
     unsigned GetTickCount();
 
-    std::string GetName() const { return (videodriver) ? videodriver->GetName() : ""; }
+    std::string GetName() const;
     bool IsLoaded() const { return videodriver != NULL; }
 
     /// Calculate the size of the texture which is optimal for the driver and at least minSize

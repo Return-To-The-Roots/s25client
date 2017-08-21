@@ -456,6 +456,11 @@ unsigned VideoDriverWrapper::GetTickCount()
     return (unsigned)videodriver->GetTickCount();
 }
 
+std::string VideoDriverWrapper::GetName() const
+{
+    return (videodriver) ? videodriver->GetName() : "";
+}
+
 /**
  *  lädt eine bestimmte DriverWrapper Extension-Funktion.
  *
@@ -564,4 +569,9 @@ unsigned short VideoDriverWrapper::GetScreenHeight() const
 Extent VideoDriverWrapper::GetScreenSize() const
 {
     return Extent(GetScreenWidth(), GetScreenHeight());
+}
+
+bool VideoDriverWrapper::IsFullscreen() const
+{
+    return videodriver->IsFullscreen();
 }
