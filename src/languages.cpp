@@ -86,7 +86,7 @@ void Languages::setLanguage(const std::string& lang_code)
     SETTINGS.language.language = lang_code; //-V807
 
     std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-    if(SETTINGS.language.language.length() == 0)
+    if(SETTINGS.language.language.empty())
         SETTINGS.language.language = locale;
 
     const char* domain = "rttr";
