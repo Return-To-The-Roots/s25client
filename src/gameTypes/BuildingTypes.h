@@ -21,11 +21,13 @@
 #include "BuildingQuality.h"
 #include "GoodTypes.h"
 #include "JobTypes.h"
+#include <boost/array.hpp>
+#include <stdint.h>
 
 struct BuildingCost
 {
-    unsigned char boards;
-    unsigned char stones;
+    uint8_t boards;
+    uint8_t stones;
 };
 
 // Größe der Gebäude
@@ -37,26 +39,54 @@ enum BuildingSize
     BZ_MINE
 };
 
-// Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
-struct UsualBuilding
+struct WaresNeeded : boost::array<GoodType, 3>
 {
-    /// Arbeitertyp, der in diesem Gebäude arbeitet
+    WaresNeeded(GoodType good1 = GD_NOTHING, GoodType good2 = GD_NOTHING, GoodType good3 = GD_NOTHING)
+    {
+        elems[0] = good1;
+        elems[1] = good2;
+        elems[2] = good3;
+    }
+    /// Return number of non-empty entries (assumes GD_NOTHING implies all others are GD_NOTHING too)
+    unsigned getNum() const
+    {
+        for(unsigned i = 0; i < size(); i++)
+        {
+            if(elems[i] == GD_NOTHING)
+                return i;
+        }
+        return size();
+    }
+};
+
+/// Describes the work the building does
+struct BldWorkDescription
+{
+    BldWorkDescription(Job job = JOB_NOTHING, GoodType producedWare = GD_NOTHING, WaresNeeded waresNeeded = WaresNeeded(),
+                       uint8_t numSpacesPerWare = 6, bool useOneWareEach = true)
+        : job(job), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare), useOneWareEach(useOneWareEach)
+    {
+    }
+    /// Worker belonging to the building
     Job job;
-    /// Ware, die das Gebäude produziert
-    GoodType produced_ware;
-    /// Anzahl Waren, die das Gebäude benötigt
-    unsigned char wares_needed_count;
-    /// Waren, die das Gebäude benötigt
-    GoodType wares_needed[3];
+    /// Ware produced (maybe nothing or invalid)
+    GoodType producedWare;
+    /// Wares the building needs (maybe nothing)
+    WaresNeeded waresNeeded;
+    /// How many wares of each type can be stored
+    uint8_t numSpacesPerWare;
+    /// True if one of each waresNeeded is used per production cycle
+    /// False if the ware type is used, that the building has the most of
+    bool useOneWareEach;
 };
 
 /// Rauch-Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
 struct SmokeConst
 {
     /// Art des Rauches (von 1-4), 0 = kein Rauch!
-    unsigned char type;
+    uint8_t type;
     /// Position des Rauches relativ zum Nullpunkt des Gebäudes
-    signed char x, y;
+    int8_t x, y;
 };
 
 #endif // BuildingTypes_h__

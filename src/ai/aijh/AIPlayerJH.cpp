@@ -223,7 +223,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
             int burns = 0;
             for(std::list<nobUsual*>::const_iterator it = sawMills.begin(); it != sawMills.end(); ++it)
             {
-                if((*it)->GetProductivity() < 1 && (*it)->HasWorker() && (*it)->GetWares(0) < 1 && (sawMills.size() - burns) > 3
+                if((*it)->GetProductivity() < 1 && (*it)->HasWorker() && (*it)->GetNumWares(0) < 1 && (sawMills.size() - burns) > 3
                    && !(*it)->AreThereAnyOrderedWares())
                 {
                     aii.DestroyBuilding(*it);

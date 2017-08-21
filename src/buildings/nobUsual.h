@@ -42,7 +42,7 @@ class nobUsual : public noBuilding
     /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
     unsigned char last_ordered_ware;
     /// Rohstoffe, die zur Produktion benötigt werden
-    boost::array<unsigned char, 3> wares;
+    boost::array<unsigned char, 3> numWares;
     /// Bestellte Waren
     std::vector<std::list<Ware*> > ordered_wares;
     /// Bestell-Ware-Event
@@ -101,7 +101,7 @@ public:
     void WorkerLost();
 
     /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
-    unsigned char GetWares(const unsigned id) const { return wares[id]; }
+    unsigned char GetNumWares(unsigned id) const { return numWares[id]; }
     /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
     bool WaresAvailable();
     /// Verbraucht Waren
@@ -114,7 +114,7 @@ public:
     void TakeWare(Ware* ware) override;
 
     /// Bestellte Waren
-    inline bool AreThereAnyOrderedWares() const
+    bool AreThereAnyOrderedWares() const
     {
         for(std::vector<std::list<Ware*> >::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
             if(!it->empty())
