@@ -34,6 +34,8 @@
 #include <cstring>
 #endif
 
+#include <boost/lexical_cast.hpp>
+
 const unsigned Settings::SETTINGS_VERSION = 12;
 const unsigned Settings::SETTINGS_SECTIONS = 11;
 const std::string Settings::SETTINGS_SECTION_NAMES[] = {"global", "video", "language",  "driver", "sound", "lobby",
@@ -157,139 +159,149 @@ bool Settings::Load()
         return LoadDefaults();
     }
 
-    const libsiedler2::ArchivItem_Ini* iniGlobal = LOADER.GetSettingsIniN("global");
-    const libsiedler2::ArchivItem_Ini* iniVideo = LOADER.GetSettingsIniN("video");
-    const libsiedler2::ArchivItem_Ini* iniLanguage = LOADER.GetSettingsIniN("language");
-    const libsiedler2::ArchivItem_Ini* iniDriver = LOADER.GetSettingsIniN("driver");
-    const libsiedler2::ArchivItem_Ini* iniSound = LOADER.GetSettingsIniN("sound");
-    const libsiedler2::ArchivItem_Ini* iniLobby = LOADER.GetSettingsIniN("lobby");
-    const libsiedler2::ArchivItem_Ini* iniServer = LOADER.GetSettingsIniN("server");
-    const libsiedler2::ArchivItem_Ini* iniProxy = LOADER.GetSettingsIniN("proxy");
-    const libsiedler2::ArchivItem_Ini* iniInterface = LOADER.GetSettingsIniN("interface");
-    const libsiedler2::ArchivItem_Ini* iniIngame = LOADER.GetSettingsIniN("ingame");
-    const libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
-
-    // ist eine der Kategorien nicht vorhanden?
-    if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
-       || !iniIngame || !iniAddons ||
-       // stimmt die Settingsversion?
-       ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
+    try
     {
-        // nein, dann Standardeinstellungen laden
-        s25Util::warning(GetFilePath(FILE_PATHS[0]) + " found, but its corrupted or has wrong version. Loading default values.");
+        const libsiedler2::ArchivItem_Ini* iniGlobal = LOADER.GetSettingsIniN("global");
+        const libsiedler2::ArchivItem_Ini* iniVideo = LOADER.GetSettingsIniN("video");
+        const libsiedler2::ArchivItem_Ini* iniLanguage = LOADER.GetSettingsIniN("language");
+        const libsiedler2::ArchivItem_Ini* iniDriver = LOADER.GetSettingsIniN("driver");
+        const libsiedler2::ArchivItem_Ini* iniSound = LOADER.GetSettingsIniN("sound");
+        const libsiedler2::ArchivItem_Ini* iniLobby = LOADER.GetSettingsIniN("lobby");
+        const libsiedler2::ArchivItem_Ini* iniServer = LOADER.GetSettingsIniN("server");
+        const libsiedler2::ArchivItem_Ini* iniProxy = LOADER.GetSettingsIniN("proxy");
+        const libsiedler2::ArchivItem_Ini* iniInterface = LOADER.GetSettingsIniN("interface");
+        const libsiedler2::ArchivItem_Ini* iniIngame = LOADER.GetSettingsIniN("ingame");
+        const libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
+
+        // ist eine der Kategorien nicht vorhanden?
+        if (!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
+            || !iniIngame || !iniAddons ||
+            // stimmt die Settingsversion?
+            ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
+        {
+            // nein, dann Standardeinstellungen laden
+            s25Util::warning(GetFilePath(FILE_PATHS[0]) + " found, but its corrupted or has wrong version. Loading default values.");
+            return LoadDefaults();
+        }
+
+        // global
+        // {
+        // stimmt die Spielrevision überein?
+        if (iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
+            s25Util::warning("Your application version has changed - please recheck your settings!\n");
+
+        global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
+        global.use_upnp = iniGlobal->getValueI("use_upnp");
+        global.smartCursor = (iniGlobal->getValue("smartCursor").empty() || iniGlobal->getValueI("smartCursor") != 0);
+        global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
+
+        // };
+
+        // video
+        // {
+        video.windowed_width = iniVideo->getValueI("windowed_width");
+        video.windowed_height = iniVideo->getValueI("windowed_height");
+        video.fullscreen_width = iniVideo->getValueI("fullscreen_width");
+        video.fullscreen_height = iniVideo->getValueI("fullscreen_height");
+        video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
+        video.vsync = iniVideo->getValueI("vsync");
+        video.vbo = (iniVideo->getValueI("vbo") != 0);
+        video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
+        // };
+
+        if (video.fullscreen_width == 0 || video.fullscreen_height == 0 || video.windowed_width == 0 || video.windowed_height == 0)
+        {
+            s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
+            return LoadDefaults();
+        }
+
+        // language
+        // {
+        language.language = iniLanguage->getValue("language");
+        // }
+
+        LANGUAGES.setLanguage(language.language);
+
+        // driver
+        // {
+        driver.video = iniDriver->getValue("video");
+        driver.audio = iniDriver->getValue("audio");
+        // }
+
+        // sound
+        // {
+        sound.musik = (iniSound->getValueI("musik") != 0);
+        sound.musik_volume = iniSound->getValueI("musik_volume");
+        sound.effekte = (iniSound->getValueI("effekte") != 0);
+        sound.effekte_volume = iniSound->getValueI("effekte_volume");
+        sound.playlist = iniSound->getValue("playlist");
+        // }
+
+        // lobby
+        // {
+        lobby.name = iniLobby->getValue("name");
+        lobby.email = iniLobby->getValue("email");
+        lobby.password = iniLobby->getValue("password");
+        lobby.save_password = (iniLobby->getValueI("save_password") != 0);
+        // }
+
+        if (lobby.name.empty())
+            lobby.name = System::getUserName();
+
+        // server
+        // {
+        server.last_ip = iniServer->getValue("last_ip");
+        server.ipv6 = (iniServer->getValueI("ipv6") != 0);
+        // }
+
+        // proxy
+        // {
+        proxy.proxy = iniProxy->getValue("proxy");
+        proxy.port = iniProxy->getValueI("port");
+        proxy.typ = iniProxy->getValueI("typ");
+        // }
+
+        // leere proxyadresse deaktiviert proxy komplett
+        if (proxy.proxy.empty())
+            proxy.typ = 0;
+
+        // deaktivierter proxy entfernt proxyadresse
+        if (proxy.typ == 0)
+            proxy.proxy.clear();
+
+        // aktivierter Socks v4 deaktiviert ipv6
+        else if (proxy.typ == 4 && server.ipv6)
+            server.ipv6 = false;
+
+        // interface
+        // {
+        interface.autosave_interval = iniInterface->getValueI("autosave_interval");
+        interface.revert_mouse = (iniInterface->getValueI("revert_mouse") != 0);
+        // }
+
+        // ingame
+        // {
+        ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
+        // }
+
+        // addons
+        // {
+        for (unsigned addon = 0; addon < iniAddons->size(); ++addon)
+        {
+            const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
+
+            if (item)
+                addons.configuration.insert(std::make_pair(atoi(item->getName().c_str()), atoi(item->getText().c_str())));
+        }
+        // }
+
+    }
+    catch (boost::bad_lexical_cast& e)
+    {
+        s25Util::warning(std::string("Corrupt \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values. Error: " + e.what());
         return LoadDefaults();
+
     }
-
-    // global
-    // {
-    // stimmt die Spielrevision überein?
-    if(iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
-        s25Util::warning("Your application version has changed - please recheck your settings!\n");
-
-    global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
-    global.use_upnp = iniGlobal->getValueI("use_upnp");
-    global.smartCursor = (iniGlobal->getValue("smartCursor").empty() || iniGlobal->getValueI("smartCursor") != 0);
-    global.debugMode = (iniGlobal->getValueI("debugMode") != 0);
-
-    // };
-
-    // video
-    // {
-    video.windowed_width = iniVideo->getValueI("windowed_width");
-    video.windowed_height = iniVideo->getValueI("windowed_height");
-    video.fullscreen_width = iniVideo->getValueI("fullscreen_width");
-    video.fullscreen_height = iniVideo->getValueI("fullscreen_height");
-    video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
-    video.vsync = iniVideo->getValueI("vsync");
-    video.vbo = (iniVideo->getValueI("vbo") != 0);
-    video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
-    // };
-
-    if(video.fullscreen_width == 0 || video.fullscreen_height == 0 || video.windowed_width == 0 || video.windowed_height == 0)
-    {
-        s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
-        return LoadDefaults();
-    }
-
-    // language
-    // {
-    language.language = iniLanguage->getValue("language");
-    // }
-
-    LANGUAGES.setLanguage(language.language);
-
-    // driver
-    // {
-    driver.video = iniDriver->getValue("video");
-    driver.audio = iniDriver->getValue("audio");
-    // }
-
-    // sound
-    // {
-    sound.musik = (iniSound->getValueI("musik") != 0);
-    sound.musik_volume = iniSound->getValueI("musik_volume");
-    sound.effekte = (iniSound->getValueI("effekte") != 0);
-    sound.effekte_volume = iniSound->getValueI("effekte_volume");
-    sound.playlist = iniSound->getValue("playlist");
-    // }
-
-    // lobby
-    // {
-    lobby.name = iniLobby->getValue("name");
-    lobby.email = iniLobby->getValue("email");
-    lobby.password = iniLobby->getValue("password");
-    lobby.save_password = (iniLobby->getValueI("save_password") != 0);
-    // }
-
-    if(lobby.name.empty())
-        lobby.name = System::getUserName();
-
-    // server
-    // {
-    server.last_ip = iniServer->getValue("last_ip");
-    server.ipv6 = (iniServer->getValueI("ipv6") != 0);
-    // }
-
-    // proxy
-    // {
-    proxy.proxy = iniProxy->getValue("proxy");
-    proxy.port = iniProxy->getValueI("port");
-    proxy.typ = iniProxy->getValueI("typ");
-    // }
-
-    // leere proxyadresse deaktiviert proxy komplett
-    if(proxy.proxy.empty())
-        proxy.typ = 0;
-
-    // deaktivierter proxy entfernt proxyadresse
-    if(proxy.typ == 0)
-        proxy.proxy.clear();
-
-    // aktivierter Socks v4 deaktiviert ipv6
-    else if(proxy.typ == 4 && server.ipv6)
-        server.ipv6 = false;
-
-    // interface
-    // {
-    interface.autosave_interval = iniInterface->getValueI("autosave_interval");
-    interface.revert_mouse = (iniInterface->getValueI("revert_mouse") != 0);
-    // }
-
-    // ingame
-    // {
-    ingame.scale_statistics = (iniIngame->getValueI("scale_statistics") != 0);
-    // }
-
-    // addons
-    // {
-    for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
-    {
-        const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
-
-        if(item)
-            addons.configuration.insert(std::make_pair(atoi(item->getName().c_str()), atoi(item->getText().c_str())));
-    }
-    // }
 
     return true;
 }
