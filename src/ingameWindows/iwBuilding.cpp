@@ -70,7 +70,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddImageButton(5, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
     Window* enable_productivity = AddImageButton(6, DrawPoint(90, 147), Extent(34, 32), TC_GREY,
-                                                 LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)));
+                                                 LOADER.GetImageN("io", ((building->IsProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
     if(building->GetBuildingType() == BLD_LOOKOUTTOWER)
         enable_productivity->SetVisible(false);
     // Bei Bootsbauer Button zum Umwählen von Booten und Schiffen
