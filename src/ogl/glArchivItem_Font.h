@@ -21,12 +21,12 @@
 
 #include "DrawPoint.h"
 #include "Rect.h"
-#include "helpers/containerUtils.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 #include "libsiedler2/src/ArchivItem_Font.h"
 #include "libutil/src/colors.h"
 #include "libutil/src/ucString.h"
+#include <boost/array.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
 #include <string>
@@ -36,7 +36,7 @@
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
 public:
-    glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
+    glArchivItem_Font();
     glArchivItem_Font(const glArchivItem_Font& item);
 
     /// Draw the the text at the given position with format (alignment) and color.
@@ -103,32 +103,34 @@ public:
     };
 
     /// prüft ob ein Buchstabe existiert.
-    bool CharExist(unsigned c) const { return helpers::contains(utf8_mapping, c); }
-
+    bool CharExist(unsigned c) const;
     /// liefert die Breite eines Zeichens
     unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
-    unsigned CharWidth(CharInfo ci) const { return ci.width; }
 
 private:
-    struct GL_T2F_V3F_Struct
+    struct GL_T2F_V2F_Struct
     {
         GLfloat tx, ty;
-        GLfloat x, y, z;
+        GLfloat x, y;
     };
 
     void initFont();
+    void ClearCharInfoMapping();
+    void AddCharInfo(unsigned c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
     const CharInfo& GetCharInfo(unsigned c) const;
-    void DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices, DrawPoint& curPos, const Point<float>& texSize) const;
+    void DrawChar(unsigned curChar, std::vector<GL_T2F_V2F_Struct>& vertices, DrawPoint& curPos, const Point<float>& texSize) const;
 
     boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
     boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
+    /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
+    boost::array<std::pair<bool, CharInfo>, 256> asciiMapping;
     std::map<unsigned, CharInfo> utf8_mapping;
     CharInfo placeHolder;                   /// Placeholder if glyph is missing
-    std::vector<GL_T2F_V3F_Struct> texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
+    std::vector<GL_T2F_V2F_Struct> texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
 
-    /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)
+    /// Get width of the sequence defined by the begin/end pair of iterators
     template<class T_Iterator>
     unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const;
     /// Same as above but the width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars

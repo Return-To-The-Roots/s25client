@@ -22,13 +22,14 @@
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
-#include "libutil/src/Log.h"
-
+#include "helpers/containerUtils.h"
 #include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/src/IAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
+#include "libutil/src/Log.h"
 #include "libutil/utf8/utf8.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <cmath>
 #include <vector>
 
@@ -97,7 +98,13 @@ T_Iterator nextIt(T_Iterator it)
 
 //////////////////////////////////////////////////////////////////////////
 
-glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj) : ArchivItem_Font(obj), utf8_mapping(obj.utf8_mapping)
+glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL)
+{
+    ClearCharInfoMapping();
+}
+
+glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
+    : ArchivItem_Font(obj), asciiMapping(asciiMapping), utf8_mapping(obj.utf8_mapping)
 {
     if(obj.fontNoOutline)
         fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
@@ -105,19 +112,48 @@ glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj) : ArchivItem_
         fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
 }
 
+bool glArchivItem_Font::CharExist(unsigned c) const
+{
+    if(c < asciiMapping.size())
+        return asciiMapping[c].first;
+    return helpers::contains(utf8_mapping, c);
+}
+
 inline const glArchivItem_Font::CharInfo& glArchivItem_Font::GetCharInfo(unsigned c) const
 {
-    std::map<unsigned, CharInfo>::const_iterator it = utf8_mapping.find(c);
-    if(it != utf8_mapping.end())
-        return it->second;
-
+    if(c < asciiMapping.size())
+    {
+        if(asciiMapping[c].first)
+            return asciiMapping[c].second;
+    } else
+    {
+        std::map<unsigned, CharInfo>::const_iterator it = utf8_mapping.find(c);
+        if(it != utf8_mapping.end())
+            return it->second;
+    }
     return placeHolder;
+}
+
+void glArchivItem_Font::ClearCharInfoMapping()
+{
+    typedef std::pair<bool, CharInfo> CharPair;
+    BOOST_FOREACH(CharPair& entry, asciiMapping)
+        entry.first = false;
+    utf8_mapping.clear();
+}
+
+void glArchivItem_Font::AddCharInfo(unsigned c, const CharInfo& info)
+{
+    if(c < asciiMapping.size())
+        asciiMapping[c] = std::make_pair(true, info);
+    else
+        utf8_mapping[c] = info;
 }
 
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices, DrawPoint& curPos,
+inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V2F_Struct>& vertices, DrawPoint& curPos,
                                         const Point<float>& texSize) const
 {
     CharInfo ci = GetCharInfo(curChar);
@@ -127,33 +163,29 @@ inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V3F
     Point<float> curPos1(curPos);
     Point<float> curPos2(curPos + Position(ci.width, dy));
 
-    GL_T2F_V3F_Struct tmp;
+    GL_T2F_V2F_Struct tmp;
     tmp.tx = texCoord1.x;
     tmp.ty = texCoord1.y;
     tmp.x = curPos1.x;
     tmp.y = curPos1.y;
-    tmp.z = 0.0f;
     vertices.push_back(tmp);
 
     tmp.tx = texCoord1.x;
     tmp.ty = texCoord2.y;
     tmp.x = curPos1.x;
     tmp.y = curPos2.y;
-    tmp.z = 0.0f;
     vertices.push_back(tmp);
 
     tmp.tx = texCoord2.x;
     tmp.ty = texCoord2.y;
     tmp.x = curPos2.x;
     tmp.y = curPos2.y;
-    tmp.z = 0.0f;
     vertices.push_back(tmp);
 
     tmp.tx = texCoord2.x;
     tmp.ty = texCoord1.y;
     tmp.x = curPos2.x;
     tmp.y = curPos1.y;
-    tmp.z = 0.0f;
     vertices.push_back(tmp);
 
     curPos.x += ci.width;
@@ -296,8 +328,8 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
     if(texList.empty())
         return;
 
-    glVertexPointer(3, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_T2F_V3F_Struct), &texList[0].tx);
+    glVertexPointer(2, GL_FLOAT, sizeof(GL_T2F_V2F_Struct), &texList[0].x);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_T2F_V2F_Struct), &texList[0].tx);
     VIDEODRIVER.BindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.size());
@@ -524,7 +556,7 @@ glArchivItem_Font::WrapInfo glArchivItem_Font::GetWrapInfo(const std::string& te
  */
 void glArchivItem_Font::initFont()
 {
-    utf8_mapping.clear();
+    ClearCharInfoMapping();
     fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
     fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().create(libsiedler2::BOBTYPE_BITMAP_RLE)));
 
@@ -570,7 +602,7 @@ void glArchivItem_Font::initFont()
 
         CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));
 
-        utf8_mapping[i] = ci;
+        AddCharInfo(i, ci);
         curPos.x += dx + spacing.x * 2;
         ++numChars;
     }
@@ -578,14 +610,14 @@ void glArchivItem_Font::initFont()
     fontNoOutline->create(texSize.x, texSize.y, &bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
     fontWithOutline->create(texSize.x, texSize.y, &bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
 
-    // Set the placeholder for non-existant glyphs. Use '?' if possible (should always be)
-    if(helpers::contains(utf8_mapping, '?'))
-        placeHolder = utf8_mapping['?'];
+    // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
+    if(CharExist('?'))
+        placeHolder = GetCharInfo('?');
     else
     {
         // Fall back to first glyph in map (kinda random, but should not happen anyway)
         LOG.writeToFile("Cannot find '?' glyph in font!");
-        placeHolder = utf8_mapping.begin()->second;
+        throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
     }
 
 #ifdef RTTR_PRINT_FONTS
