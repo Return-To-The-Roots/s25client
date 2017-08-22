@@ -33,7 +33,7 @@ def transformIntoStep(arch, wspwd) {
                                   PARAMS=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
                                   PARAMS=create_stable
-                                  COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force'
+                                  COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force && cat build_version_defines.h'
                               fi
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
@@ -41,7 +41,7 @@ def transformIntoStep(arch, wspwd) {
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= \$COMMANDS && make \$PARAMS"
+                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= \$COMMANDS && make \$PARAMS"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
