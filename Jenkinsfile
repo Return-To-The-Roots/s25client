@@ -33,7 +33,7 @@ def transformIntoStep(arch, wspwd) {
                                   PARAMS=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
                                   PARAMS=create_stable
-                                  COMMANDS="&& rm -f build_version_defines.h.force && make updateversion && sed -i -e \\'s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat .stable-version)\\\"/g\\' build_version_defines.h && touch build_version_defines.h.force"
+                                  COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat .stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force'
                               fi
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
