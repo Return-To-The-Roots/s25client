@@ -93,8 +93,16 @@ echo "Current version is: $VERSION-$REVISION"
 echo "Savegame version:   $SAVEGAMEVERSION"
 
 unpackedPath=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
+
+# save build version
+cp -v build_version_defines.h build_version_defines.h.bak
+
 # Install into this folder
 cmake . -DCMAKE_INSTALL_PREFIX="${unpackedPath}" || error
+
+# restore build version, so that it stays definitly the same
+cp -v build_version_defines.h.bak build_version_defines.h
+
 make install || error
 DESTDIR="${unpackedPath}" ./prepareRelease.sh
 if [ ! $? = 0 ]; then
