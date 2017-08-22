@@ -42,6 +42,11 @@ def transformIntoStep(arch, wspwd) {
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
                                                          "cd build && ./cmake.sh --prefix=. \$BARCH -DENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= \$COMMANDS && make \$PARAMS"
+
+                              if [ \$EXIT -eq 0 ] && [ "${env.BRANCH_NAME}" == "stable" ] ; then
+                                  git tag "\$(cat .stable-version)-$BUILD_NUMBER" -m "Created release \$(cat .stable-version) from Jenkins build $BUILD_NUMBER"
+                                  git push origin --tags
+                              fi
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
