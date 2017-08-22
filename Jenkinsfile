@@ -151,8 +151,8 @@ catchError() {
             ansiColor('xterm') {
                 sh """set -x
                       if [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                          git tag "\$(cat .stable-version)-$BUILD_NUMBER" -m "Created release \$(cat .stable-version) from Jenkins build $BUILD_NUMBER"
-                          git push origin --tags
+                          git tag -a "\$(cat .stable-version)-$BUILD_NUMBER" -m "Created release \$(cat .stable-version) from Jenkins build $BUILD_NUMBER"
+                          git push git@github.com:Return-To-The-Roots/s25client.git --tags
                       fi
 
                       alias ssh="ssh -o ForwardX11=no"
