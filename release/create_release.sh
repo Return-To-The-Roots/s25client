@@ -192,7 +192,7 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 		ssh $UPLOADHOST "mkdir -vp $UPLOADPATH$UPLOADTO" || echo "mkdir $UPLOADPATH$UPLOADTO failed"
 		rsync -avz --progress $ARCHIVE/s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT $UPLOADTARGET$UPLOADTO || echo "scp failed"
 		if [ ! -z "$UPLOADTARGET" ] ; then
-			echo "${UPLOADURL}${UPLOADTO}s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT" >> ${UPLOADFILE}rapidshare.txt
+			echo "$(date +%s);${UPLOADURL}${UPLOADTO}s25rttr_$VERSION-${REVISION}_$ARCH$FORMAT" >> ${UPLOADFILE}rapidshare.txt
 		fi
 	fi
 	
