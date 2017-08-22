@@ -29,12 +29,13 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noExtension.h"
 #include "nodeObjs/noFlag.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/DoorConsts.h"
 #include "gameData/MapConsts.h"
 #include "libutil/Log.h"
 
 noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType type, const MapPoint pos, const unsigned char player)
-    : noRoadNode(nop, pos, player), type_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
+    : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
       door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
     MapPoint flagPt = gwg->GetNeighbour(pos, 4);
@@ -86,7 +87,7 @@ noBaseBuilding::~noBaseBuilding()
 void noBaseBuilding::Destroy_noBaseBuilding()
 {
     DestroyAllRoads();
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, type_));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
 
     if(gwg->GetGameInterface())
         gwg->GetGameInterface()->GI_UpdateMinimap(pos);
@@ -117,8 +118,8 @@ void noBaseBuilding::Destroy_noBaseBuilding()
             const unsigned percent = 10 * percents[percent_index];
 
             // zurückgaben berechnen (abgerundet)
-            unsigned boards = (percent * BUILDING_COSTS[nation][type_].boards) / 1000;
-            unsigned stones = (percent * BUILDING_COSTS[nation][type_].stones) / 1000;
+            unsigned boards = (percent * BUILDING_COSTS[nation][bldType_].boards) / 1000;
+            unsigned stones = (percent * BUILDING_COSTS[nation][bldType_].stones) / 1000;
 
             GoodType goods[2] = {GD_BOARDS, GD_STONES};
             bool which = 0;
@@ -156,14 +157,14 @@ void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
 {
     Serialize_noRoadNode(sgd);
 
-    sgd.PushUnsignedChar(static_cast<unsigned char>(type_));
+    sgd.PushUnsignedChar(static_cast<unsigned char>(bldType_));
     sgd.PushUnsignedChar(nation);
     sgd.PushSignedInt(door_point_x);
     sgd.PushSignedInt(door_point_y);
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
-    : noRoadNode(sgd, obj_id), type_(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
+    : noRoadNode(sgd, obj_id), bldType_(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
       door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
 {
 }
@@ -238,6 +239,11 @@ void noBaseBuilding::DestroyBuildingExtensions()
     }
 }
 
+BuildingQuality noBaseBuilding::GetSize() const
+{
+    return BUILDING_SIZE[bldType_];
+}
+
 BlockingManner noBaseBuilding::GetBM() const
 {
     return BlockingManner::Building;
@@ -246,7 +252,7 @@ BlockingManner noBaseBuilding::GetBM() const
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
 {
-    return GetBuildingImage(type_, nation, gwg->GetLandscapeType());
+    return GetBuildingImage(bldType_, nation, gwg->GetLandscapeType());
 }
 
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation)
@@ -265,35 +271,35 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation 
 /// Gibt ein Bild zurück für das Gebäudegerüst
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
 {
-    if(type_ == BLD_CHARBURNER)
+    if(bldType_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 3);
     else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 2);
+        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 2);
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
 {
-    if(type_ == BLD_CHARBURNER)
+    if(bldType_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 2);
     else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 1);
+        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 1);
 }
 
 /// Gibt ein Bild zurück für das Gebäudegerüst
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
 {
-    if(type_ == BLD_CHARBURNER)
+    if(bldType_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + 4);
     else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 3);
+        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 3);
 }
 
 /// Gibt ein Bild zurück für die Tür des Gebäudes
 glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
 {
-    if(type_ == BLD_CHARBURNER)
+    if(bldType_ == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
     else
-        return LOADER.GetNationImage(nation, 250 + 5 * type_ + 4);
+        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 4);
 }

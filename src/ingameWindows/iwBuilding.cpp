@@ -50,7 +50,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     // Exception: charburner
     if(building->GetBuildingType() != BLD_CHARBURNER)
     {
-        AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].job));
+        AddImage(13, DrawPoint(28, 39), LOADER.GetMapImageN(2300 + BLD_WORK_DESC[building->GetBuildingType()].job));
     } else
     {
         AddImage(13, DrawPoint(28, 39), LOADER.GetImageN("io_new", 5));
@@ -60,7 +60,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     AddImage(1, DrawPoint(117, 114), building->GetBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
-    GoodType producedWare = USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].producedWare;
+    GoodType producedWare = BLD_WORK_DESC[building->GetBuildingType()].producedWare;
     if(producedWare != GD_NOTHING && producedWare != GD_INVALID)
     {
         AddImage(2, DrawPoint(196, 39), LOADER.GetMapImageN(2298));
@@ -129,8 +129,7 @@ void iwBuilding::Msg_PaintAfter()
         {
             for(unsigned char z = 0; z < 2; ++z)
             {
-                glArchivItem_Bitmap* bitmap =
-                  LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].waresNeeded[i]);
+                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
                 bitmap->DrawFull(curPos, (z < building->GetNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
                 curPos.x += 24;
             }
@@ -140,7 +139,7 @@ void iwBuilding::Msg_PaintAfter()
         DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
         for(unsigned char i = 0; i < 2; ++i)
         {
-            if(USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].waresNeeded[i] == GD_NOTHING)
+            if(BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i] == GD_NOTHING)
                 break;
 
             // 6x Waren, je nachdem ob sie da sind, bei Katapult 4!
@@ -153,8 +152,7 @@ void iwBuilding::Msg_PaintAfter()
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
-                glArchivItem_Bitmap* bitmap =
-                  LOADER.GetMapImageN(2250 + USUAL_BUILDING_CONSTS[building->GetBuildingType() - 10].waresNeeded[i]);
+                glArchivItem_Bitmap* bitmap = LOADER.GetMapImageN(2250 + BLD_WORK_DESC[building->GetBuildingType()].waresNeeded[i]);
                 bitmap->DrawFull(waresPos, (z < building->GetNumWares(i) ? COLOR_WHITE : 0xFF404040));
                 waresPos.x += 24;
             }

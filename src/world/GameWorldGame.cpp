@@ -44,6 +44,7 @@
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
@@ -145,29 +146,12 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
     const BuildingQuality bq = GetBQ(pt, player);
 
-    switch(BUILDING_SIZE[type])
+    if(BUILDING_SIZE[type] != bq)
     {
-        case BQ_HUT:
-            if(!((bq >= BQ_HUT && bq <= BQ_CASTLE) || bq == BQ_HARBOR))
-                return;
-            break;
-        case BQ_HOUSE:
-            if(!((bq >= BQ_HOUSE && bq <= BQ_CASTLE) || bq == BQ_HARBOR))
-                return;
-            break;
-        case BQ_CASTLE:
-            if(!(bq == BQ_CASTLE || bq == BQ_HARBOR))
-                return;
-            break;
-        case BQ_HARBOR:
-            if(bq != BQ_HARBOR)
-                return;
-            break;
-        case BQ_MINE:
-            if(bq != BQ_MINE)
-                return;
-            break;
-        default: RTTR_Assert(false); break;
+        if(BUILDING_SIZE[type] == BQ_MINE)
+            return;
+        if(bq < BUILDING_SIZE[type])
+            return;
     }
 
     // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut werden

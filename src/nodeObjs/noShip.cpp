@@ -36,10 +36,10 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/ShipPostMsg.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/GameConsts.h"
+#include "gameData/ShipNames.h"
 #include "libutil/Log.h"
-
-const unsigned ship_count = 55;
 
 /// Zeit zum Beladen des Schiffes
 const unsigned LOADING_TIME = 200;
@@ -51,89 +51,6 @@ const unsigned MAX_EXPLORATION_EXPEDITION_DISTANCE = 100;
 /// Zeit (in GF), die das Schiff bei der Erkundungs-Expedition jeweils an einem Punkt ankert
 const unsigned EXPLORATION_EXPEDITION_WAITING_TIME = 300;
 
-const std::string ship_names[NAT_COUNT][ship_count] = {
-  /* Nubier */ {"Aica",    "Aida",   "Ainra",  "Alayna", "Alisha",  "Alma",    "Amila",        "Anina",   "Armina",   "Banu",     "Baya",
-                "Bea",     "Bia",    "Bisa",   "Cheche", "Dafina",  "Daria",   "Dina",         "Do",      "Dofi",     "Efia",     "Erin",
-                "Esi",     "Esra",   "Fahari", "Faraya", "Fujo",    "Ghiday",  "Habiaba",      "Hajunza", "Ina",      "Layla",    "Lenia",
-                "Lillian", "Malika", "Mona",   "Naja",   "Neriman", "Nyela",   "Olufunmilayo", "Panyin",  "Rayyan",   "Rhiannon", "Safiya",
-                "Sahra",   "Selda",  "Senna",  "Shaira", "Shakira", "Sharina", "Sinah",        "Suada",   "Sulamith", "Tiada",    "Yelda"},
-  /* Japaner */ {"Ai",      "Aiko",   "Aimi",   "Akemi",   "Amaya",  "Aoi",    "Ayaka",   "Ayano",  "Beniko",  "Chiyo",   "Chiyoko",
-                 "Emi",     "Fumiko", "Haruka", "Hiroko",  "Hotaru", "Kaori",  "Kasumi",  "Kazuko", "Kazumi",  "Keiko",   "Kiriko",
-                 "Kumiko",  "Mai",    "Mayumi", "Megumi",  "Midori", "Misaki", "Miu",     "Moe",    "Nanami",  "Naoko",   "Naomi",
-                 "Natsuki", "Noriko", "Reika",  "Sachiko", "Sadako", "Sakura", "Satsuki", "Sayuri", "Setsuko", "Shigeko", "Teiko",
-                 "Tomomi",  "Umeko",  "Yoko",   "Yoshiko", "Youko",  "Yukiko", "Yumi",    "Yumiko", "Yuna",    "Yuuka",   "Yuzuki"},
-  /* Römer */ {"Antia",      "Ateia",    "Aurelia",  "Camilia",  "Claudia",  "Duccia",    "Epidia",   "Equitia",  "Fabia",     "Galeria",
-               "Helvetia",   "Iunia",    "Iusta",    "Iuventia", "Lafrenia", "Livia",     "Longinia", "Maelia",   "Maxima",    "Nigilia",
-               "Nipia",      "Norbana",  "Novia",    "Orania",   "Otacilia", "Petronia",  "Pinaria",  "Piscia",   "Pisentia",  "Placidia",
-               "Quintia",    "Quirinia", "Rusonia",  "Rutilia",  "Sabucia",  "Sallustia", "Salonia",  "Salvia",   "Scribonia", "Secundia",
-               "Secundinia", "Tadia",    "Talmudia", "Tanicia",  "Tertinia", "Tita",      "Ulpia",    "Umbrenia", "Valeria",   "Varia",
-               "Vassenia",   "Vatinia",  "Vedia",    "Velia",    "Verania"},
-  /* Wikinger */ {"Adelberga", "Adelgund", "Adelheid",   "Adelinde", "Alsuna",    "Alwina",   "Amelinde",  "Astrid",
-                  "Baltrun",   "Bernhild", "Bothilde",   "Dagny",    "Dankrun",   "Eldrid",   "Erlgard",   "Fehild ",
-                  "Ferun",     "Frauke ",  "Freya",      "Gerda ",   "Gesa",      "Gismara",  "Hella",     "Henrike ",
-                  "Hilke",     "Ida",      "Irma",       "Irmlinde", "Isantrud ", "Kunheide", "Kunigunde", "Lioba",
-                  "Lykke",     "Marada",   "Margard ",   "Merlinde", "Minnegard", "Nanna",    "Norwiga",   "Oda",
-                  "Odarike",   "Osrun ",   "Raginhild ", "Raskild ", "Rinelda",   "Runa",     "Runhild ",  "Salgard",
-                  "Sarhild",   "Tanka",    "Tyra",       "Ulla",     "Uta",       "Walda",    "Wiebke"},
-  /* Babylonier */
-  {"Anu",
-   "Enlil",
-   "Ea",
-   "Sin",
-   "Samas",
-   "Istar",
-   "Marduk",
-   "Nabu",
-   "Ninurta",
-   "Nusku",
-   "Nergal",
-   "Adad",
-   "Tammuz",
-   "Asalluchi",
-   "Tutu",
-   "Nabu-mukin-zeri",
-   "Tiglath-Pileser",
-   "Shalmaneser",
-   "Marduk-apla-iddina",
-   "Sharrukin",
-   "Sin-ahhe-eriba",
-   "Bel-ibni",
-   "Ashur-nadin-shumi",
-   "Kandalanu",
-   "Sin-shumu-lishir",
-   "Sinsharishkun",
-   "Ninurta-apla",
-   "Agum",
-   "Burnaburiash",
-   "Kashtiliash",
-   "Ulamburiash",
-   "Karaindash",
-   "Kurigalzu",
-   "Shuzigash",
-   "Gandas",
-   "Abi-Rattas",
-   "Hurbazum",
-   "Gulkishar",
-   "Peshgaldaramesh",
-   "Ayadaragalama",
-   "Akurduana",
-   "Melamkurkurra",
-   "Hammurabi",
-   "Samsu-Ditana",
-   "Bishapur",
-   "Ekbatana",
-   "Gundischapur",
-   "Ktesiphon",
-   "Bactra",
-   "Pasargadae",
-   "Persepolis",
-   "Susa",
-   "Rayy",
-   "Pa-Rasit",
-   "Spi-Keone"}};
-
-//{"FloSoftius", "Demophobius", "Olivianus", "Spikeonius", "Nastius"};
-
 /// Positionen der Flaggen am Schiff für die 6 unterschiedlichen Richtungen jeweils
 const DrawPointInit SHIPS_FLAG_POS[2][6] = {
   // Standing (sails down)
@@ -143,8 +60,8 @@ const DrawPointInit SHIPS_FLAG_POS[2][6] = {
 
 noShip::noShip(const MapPoint pos, const unsigned char player)
     : noMovable(NOP_SHIP, pos), ownerId_(player), state(STATE_IDLE), seaId_(0), goal_harborId(0), goal_dir(0),
-      name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), ship_count)]), curRouteIdx(0), lost(false),
-      remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
+      name(ship_names[gwg->GetPlayer(player).nation][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), SHIP_NAMES_COUNT)]), curRouteIdx(0),
+      lost(false), remaining_sea_attackers(0), home_harbor(0), covered_distance(0)
 {
     // Meer ermitteln, auf dem dieses Schiff fährt
     for(unsigned i = 0; i < Direction::COUNT; ++i)

@@ -36,6 +36,7 @@
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"

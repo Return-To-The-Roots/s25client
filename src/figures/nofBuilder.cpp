@@ -31,6 +31,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
@@ -350,8 +351,8 @@ void nofBuilder::Draw(DrawPoint drawPt)
 bool nofBuilder::ChooseWare()
 {
     // Brauch ich ein Brett(Rohbau und wenn kein Stein benötigt wird) oder Stein?
-    if(building_site->GetBuildProgress(false) < BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()].boards * 8
-       || !BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()].stones)
+    const BuildingCost costs = BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()];
+    if(building_site->GetBuildProgress(false) < costs.boards * 8 || !costs.stones)
     {
         // Brett
         if(building_site->boards)

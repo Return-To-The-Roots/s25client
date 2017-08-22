@@ -39,6 +39,7 @@
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
@@ -134,7 +135,7 @@ void nobMilitary::Destroy_nobMilitary()
     if(!new_built)
         gwg->RecalcTerritory(*this, true, false);
 
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, type_));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, bldType_));
 }
 
 void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
@@ -215,7 +216,7 @@ void nobMilitary::Draw(DrawPoint drawPt)
 
     // Wenn Goldzufuhr gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(coinsDisabledVirtual)
-        LOADER.GetMapImageN(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][type_]);
+        LOADER.GetMapImageN(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 }
 
 void nobMilitary::HandleEvent(const unsigned id)
@@ -702,7 +703,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         gwg->RecalcTerritory(*this, false, true);
         // Tür zumachen
         CloseDoor();
-        gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, type_));
+        gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
     } else
     {
         // Evtl. Soldaten befördern
@@ -1002,8 +1003,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     SendPostMessage(player,
                     new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Military building captured"), PostCategory::Military, *this));
 
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, type_));
-    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, type_));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, bldType_));
 }
 
 void nobMilitary::NeedOccupyingTroops()

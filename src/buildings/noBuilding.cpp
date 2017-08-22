@@ -58,7 +58,7 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseB
 
 void noBuilding::DrawBaseBuilding(DrawPoint drawPt)
 {
-    LOADER.building_cache[nation][type_][0].draw(drawPt);
+    LOADER.building_cache[nation][bldType_][0].draw(drawPt);
     DrawDoor(drawPt);
 }
 
@@ -77,5 +77,5 @@ void noBuilding::GotWorker(Job /*job*/, noFigure* /*worker*/)
 
 FOWObject* noBuilding::CreateFOWObject() const
 {
-    return new fowBuilding(type_, nation);
+    return new fowBuilding(bldType_, nation);
 }

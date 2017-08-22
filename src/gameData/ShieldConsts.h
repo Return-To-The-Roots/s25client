@@ -18,6 +18,9 @@
 #ifndef ShieldConsts_h__
 #define ShieldConsts_h__
 
+#include "gameTypes/GoodTypes.h"
+#include "gameTypes/Nation.h"
+
 /// Macht ggf. aus den verschiedenen Schilden der Nationen jeweils immer das römische normale Schild für
 /// die Warensysteme usw
 inline GoodType ConvertShields(const GoodType& good)

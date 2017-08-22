@@ -192,7 +192,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAtt
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (BuildingProperties::IsMilitary(type_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
+    bool capturing = (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
     if(!capturing && gwg->ValidPointForFighting(flagPos, false))
     {

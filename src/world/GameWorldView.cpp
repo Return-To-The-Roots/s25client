@@ -36,6 +36,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"

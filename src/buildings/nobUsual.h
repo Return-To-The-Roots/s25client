@@ -19,6 +19,7 @@
 #define NOB_USUAL_H_
 
 #include "noBuilding.h"
+#include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
 #include <list>
 #include <vector>

@@ -25,6 +25,7 @@
 #include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
 #include <boost/array.hpp>

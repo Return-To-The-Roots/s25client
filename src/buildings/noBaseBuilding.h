@@ -19,9 +19,11 @@
 #define NO_BASEBUILDING_H_
 
 #include "nodeObjs/noRoadNode.h"
+#include "gameTypes/BuildingQuality.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/JobTypes.h"
 #include "gameTypes/LandscapeType.h"
-#include "gameData/BuildingConsts.h"
+#include "gameTypes/Nation.h"
 
 class glArchivItem_Bitmap;
 class noFlag;
@@ -33,7 +35,7 @@ class noBaseBuilding : public noRoadNode
 {
 protected:
     /// Typ des Gebäudes
-    BuildingType type_;
+    BuildingType bldType_;
 
     /// Volk des Gebäudes (muss extra gespeichert werden, da ja auch z.B. fremde Gebäude erobert werden können)
     const Nation nation;
@@ -70,9 +72,8 @@ public:
     /// Eine bestellte Ware konnte doch nicht kommen
     virtual void WareLost(Ware* ware) = 0;
 
-    /// Gibt diverse Sachen zurück
-    BuildingQuality GetSize() const { return BUILDING_SIZE[type_]; }
-    BuildingType GetBuildingType() const { return type_; }
+    BuildingQuality GetSize() const;
+    BuildingType GetBuildingType() const { return bldType_; }
     Nation GetNation() const { return nation; }
     BlockingManner GetBM() const override;
 

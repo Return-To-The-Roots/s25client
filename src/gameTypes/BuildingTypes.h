@@ -21,6 +21,7 @@
 #include "BuildingQuality.h"
 #include "GoodTypes.h"
 #include "JobTypes.h"
+#include "Point.h"
 #include <boost/array.hpp>
 #include <stdint.h>
 
@@ -80,13 +81,16 @@ struct BldWorkDescription
     bool useOneWareEach;
 };
 
-/// Rauch-Konstanten zu den "normalen Gebäuden" (Betrieben), beginnt erst mit Granitmine
+/// Smoke definition for buildings
 struct SmokeConst
 {
-    /// Art des Rauches (von 1-4), 0 = kein Rauch!
+    SmokeConst() : type(0), offset(Point<int8_t>::Invalid()) {}
+    SmokeConst(uint8_t type, const DrawPoint& offset) : type(type), offset(offset) {}
+    SmokeConst(uint8_t type, int8_t x, int8_t y) : type(type), offset(x, y) {}
+    /// Smoke type (1-4), 0 = no smoke
     uint8_t type;
-    /// Position des Rauches relativ zum Nullpunkt des Gebäudes
-    int8_t x, y;
+    /// Position of the smoke relativ to the buildings origin
+    Point<int8_t> offset;
 };
 
 #endif // BuildingTypes_h__

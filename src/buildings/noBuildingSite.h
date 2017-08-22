@@ -19,13 +19,8 @@
 #define NO_BUILDINGSITE_H_
 
 #include "noBaseBuilding.h"
+#include "gameTypes/GoodTypes.h"
 #include <list>
-
-// Enumforwarddeklaration bei VC nutzen
-#ifdef _MSC_VER
-enum BuildingType;
-#else
-#endif
 
 class nofBuilder;
 class nofPlaner;

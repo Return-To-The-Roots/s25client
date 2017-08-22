@@ -35,6 +35,7 @@
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/BuildingCount.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
 #include <cstdio>
 

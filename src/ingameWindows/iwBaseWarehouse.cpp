@@ -37,7 +37,7 @@
 #include "iwStorehouse.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
-
+#include "gameData/BuildingConsts.h"
 #include <stdexcept>
 
 namespace {
@@ -59,8 +59,8 @@ enum
 }
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
-    : iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _("Storehouse"), true, NormalFont, wh->GetInventory(),
-              gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+    : iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont,
+              wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
       gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
