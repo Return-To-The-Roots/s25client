@@ -58,7 +58,7 @@ fi
 
 if [ ! "$2" = "noupdate" ] ; then
 	if [ -f ./share/s25rttr/RTTR/s25update ] ; then
-		(cd ../../../ && ./s25client.app/Contents/MacOS/bin/RTTR/s25update -d "$PWD")
+		(cd ../../../ && ./s25client.app/Contents/MacOS/bin/RTTR/s25update -d "$PWD" --stable)
 	fi
 fi
 

@@ -37,7 +37,7 @@ if [ $noupdate -eq 0 ] ; then
 		echo "checking for an update ..."
 		cp $DIR/../bin/RTTR/s25update /tmp/s25update.$$
 		chmod 0755 /tmp/s25update.$$
-		/tmp/s25update.$$ --verbose --dir "$DIR/../"
+		/tmp/s25update.$$ --verbose --dir "$DIR/../" --stable
 		if [ -z "$(diff -q /tmp/s25update.$$ $DIR/../bin/RTTR/s25update)" ] ; then
 			PARAM=noupdate
 		fi
