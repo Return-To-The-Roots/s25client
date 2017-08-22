@@ -130,8 +130,8 @@ case "$SYSTEM_NAME" in
 	Darwin)
 		echo "extraction of debug symbols for Apple currently not supported" >&2
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
-		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/video/libvideoSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}share/s25rttr/driver/audio/libaudioSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/video/libvideoSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/audio/libaudioSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s25update
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/sound-convert
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s-c_resample
@@ -199,6 +199,7 @@ case "$SYSTEM_NAME" in
 		done
 
 		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
+		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/lib || exit 1
 
 		# binaries und paketdaten kopieren
 		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
@@ -207,6 +208,7 @@ case "$SYSTEM_NAME" in
 		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
 		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
 		mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
+		mv -v ${DESTDIR}lib/* ${DESTDIR}s25client.app/Contents/MacOS/lib/ || exit 1
 		
 		chmod +x ${DESTDIR}s25client.app/Contents/MacOS/* || exit 1
 
