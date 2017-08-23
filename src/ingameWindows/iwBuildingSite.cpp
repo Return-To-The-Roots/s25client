@@ -40,7 +40,7 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
     // Hilfe
     AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));
     // Gebäude abbrennen
-    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23));
+    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TC_GREY, LOADER.GetImageN("io", 23), _("Demolish house"));
 
     // "Gehe Zu Ort"
     AddImageButton(4, DrawPoint(179, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 107), _("Go to place"));
