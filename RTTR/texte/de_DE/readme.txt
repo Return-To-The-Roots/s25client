@@ -243,7 +243,7 @@ D. Abstürze und Fehler
 
 E. Übersicht: Updates und Änderungen
 
-  * 0.8.3
+  * 0.8.2 - 22.08.2017
   --------------------------------------------------------------------------
   - Viele Async Fixes
   - Nutzung von UTF8 um mehr Sprachen zu unterstützen
@@ -254,7 +254,7 @@ E. Übersicht: Updates und Änderungen
   - LAN Lobby
   - Verbesserung der Code Qualität
 
-  * 0.8.2
+  * 0.8.1
   --------------------------------------------------------------------------
   - Fehlerkorrekturen
   - Funktionierende KI
