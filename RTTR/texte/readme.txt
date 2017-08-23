@@ -236,7 +236,7 @@ D. Crash and bugs
 
 E. Summary: Updates and changelog
 
-  * 0.8.3
+  * 0.8.2 - 22.08.2017
   ------------------------------------------------------------------------------
   - Many async fixes
   - Usage of UTF8 to support more languages
@@ -247,7 +247,7 @@ E. Summary: Updates and changelog
   - LAN Lobby
   - Code quality improvements
 
-  * 0.8.2
+  * 0.8.1
   ------------------------------------------------------------------------------
   - Bug fixes
   - AI Improvements
