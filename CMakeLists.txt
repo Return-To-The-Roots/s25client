@@ -125,7 +125,10 @@ ENDIF()
 
 FIND_PACKAGE(Boost 1.55.0)
 IF(NOT Boost_FOUND)
-	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set BOOST_ROOT environment variable (currently: ${BOOST_ROOT}), since cmake was unable to find boost!")
+	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set (as CMake or environment variable) "
+    "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
+    "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
+    "since cmake was unable to find boost!")
 ELSEIF("${BOOST_LIBRARYDIR}" STREQUAL "")
 	SET(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIR}/stage/lib/${CMAKE_LIBRARY_ARCHITECTURE}")
 	MESSAGE(STATUS "Set boost library directory hint to: ${BOOST_LIBRARY_DIR}")
@@ -235,6 +238,10 @@ IF (MSVC)
 	IF(RTTR_ENABLE_WERROR)
 		ADD_DEFINITIONS(/WX) # warning = error
 	ENDIF()
+	# Link time code generation (Required for bzlib) which also disables incremental linking
+	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS /LTCG)
+	FORCE_ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS_DEBUG /INCREMENTAL:NO)
+	FORCE_ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /INCREMENTAL:NO)
 ELSE (MSVC)
 	CheckAndAddFlag("-Wall")
 	IF(RTTR_ENABLE_WERROR)
