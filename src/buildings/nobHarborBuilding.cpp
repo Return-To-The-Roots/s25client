@@ -158,12 +158,11 @@ void nobHarborBuilding::DestroyBuilding()
     }
     soldiers_for_ships.clear();
 
-    // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
-    gwg->RecalcTerritory(*this, true, false);
-
-    // Wieder aus dem Militärquadrat rauswerfen
-    gwg->GetMilitarySquares().Remove(this);
     nobBaseWarehouse::DestroyBuilding();
+
+    gwg->GetMilitarySquares().Remove(this);
+    // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
+    gwg->RecalcTerritory(*this, true, false);
 }
 
 void nobHarborBuilding::Serialize(SerializedGameData& sgd) const

@@ -338,12 +338,11 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
 void nobHQ::DestroyBuilding()
 {
+    nobBaseWarehouse::DestroyBuilding();
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetMilitarySquares().Remove(this);
-    // Land drumherum neu berechnen
-    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
+    // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
     gwg->RecalcTerritory(*this, true, false);
-    nobBaseWarehouse::DestroyBuilding();
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const

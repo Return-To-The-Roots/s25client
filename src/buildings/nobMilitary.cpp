@@ -122,12 +122,12 @@ void nobMilitary::DestroyBuilding()
     // übriggebliebene Goldmünzen in der Inventur abmelden
     gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
 
-    // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
+    nobBaseMilitary::DestroyBuilding();
+    // If this was occupied, recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
     if(!new_built)
         gwg->RecalcTerritory(*this, true, false);
 
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, bldType_));
-    nobBaseMilitary::DestroyBuilding();
 }
 
 void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
