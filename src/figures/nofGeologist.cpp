@@ -513,7 +513,7 @@ struct IsSignOfType
 
     IsSignOfType(unsigned type, const World& gwb) : type(type), gwb(gwb) {}
 
-    bool operator()(const MapPoint& pt)
+    bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
         const noSign* sign = gwb.GetSpecObj<noSign>(pt);
         return sign && sign->GetSignType() == type;

@@ -17,12 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
-
-#include "GamePlayer.h"
-
 #include "AIConstruction.h"
 #include "FindWhConditions.h"
 #include "GameMessages.h"
+#include "GamePlayer.h"
 #include "GameServer.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
@@ -41,10 +39,9 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noTree.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainData.h"
-
-#include "gameData/BuildingProperties.h"
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>

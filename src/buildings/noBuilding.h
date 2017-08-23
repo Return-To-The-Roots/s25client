@@ -32,14 +32,13 @@ protected:
     noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
     noBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
-    /// Aufräummethoden
 protected:
-    void Destroy_noBuilding();
+    /// Called to destroy derived classes after building was replaced by fire and removed from players inventory
+    virtual void DestroyBuilding() = 0;
 
 public:
-    void Destroy() override { Destroy_noBuilding(); }
+    void Destroy() override;
 
-    /// Serialisierungsfunktionen
 protected:
     void Serialize_noBuilding(SerializedGameData& sgd) const;
 

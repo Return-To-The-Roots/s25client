@@ -86,9 +86,6 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
         RefreshReserve(i);
     }
 
-    // Der Wirtschaftsverwaltung Bescheid sagen
-    gwg->GetPlayer(player).AddWarehouse(this);
-
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(unsigned i = 0; i < 6; ++i)
         seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, i));
@@ -98,15 +95,12 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
                     new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("New harbor building finished"), PostCategory::Economy, *this));
 }
 
-void nobHarborBuilding::Destroy()
+void nobHarborBuilding::DestroyBuilding()
 {
     GetEvMgr().RemoveEvent(orderware_ev);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
     GamePlayer& owner = gwg->GetPlayer(player);
-    // Remove also the warehouse so lost wares won't consider this one!
-    owner.RemoveWarehouse(this);
-    owner.HarborDestroyed(this);
 
     // Baumaterialien in der Inventur verbuchen
     if(expedition.active)
@@ -164,14 +158,12 @@ void nobHarborBuilding::Destroy()
     }
     soldiers_for_ships.clear();
 
-    Destroy_nobBaseWarehouse();
-
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
-    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     gwg->RecalcTerritory(*this, true, false);
 
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetMilitarySquares().Remove(this);
+    nobBaseWarehouse::DestroyBuilding();
 }
 
 void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
@@ -345,9 +337,9 @@ void nobHarborBuilding::StartExpedition()
         expedition.builder = false;
         // got a builder in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
+        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses())
         {
-            if((*it)->GetRealFiguresCount(JOB_BUILDER))
+            if(wh->GetRealFiguresCount(JOB_BUILDER))
             {
                 convert = false;
                 break;
@@ -421,9 +413,9 @@ void nobHarborBuilding::StartExplorationExpedition()
         unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
         // got scouts in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        for(std::list<nobBaseWarehouse*>::const_iterator it = owner.GetStorehouses().begin(); it != owner.GetStorehouses().end(); ++it)
+        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses())
         {
-            const unsigned numScouts = (*it)->GetRealFiguresCount(JOB_SCOUT);
+            const unsigned numScouts = wh->GetRealFiguresCount(JOB_SCOUT);
             if(numScouts >= missing)
             {
                 missing = 0;
@@ -1284,7 +1276,7 @@ void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
         AddLeavingFigure(attacker); // Just let him leave so he can go home
 }
 
-unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
+unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 {
     // Ist überhaupt eine Expedition im Gang und ein entsprechender Warentyp
     if(!expedition.active || !(type == GD_BOARDS || type == GD_STONES))
@@ -1292,7 +1284,7 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type)
 
     unsigned ordered_boards = 0, ordered_stones = 0;
     // Ermitteln, wiviele Bretter und Steine auf dem Weg zum Lagerhaus sind
-    for(std::list<Ware*>::iterator it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
+    for(std::list<Ware*>::const_iterator it = dependent_wares.begin(); it != dependent_wares.end(); ++it)
     {
         if((*it)->type == GD_BOARDS)
             ++ordered_boards;
@@ -1385,5 +1377,5 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
 bool nobHarborBuilding::IsBeingDestroyedNow() const
 {
     // check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
-    return !helpers::contains(gwg->GetPlayer(player).GetHarbors(), this);
+    return !helpers::contains(gwg->GetPlayer(player).GetBuildingRegister().GetHarbors(), this);
 }

@@ -28,11 +28,6 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(const MapPoint pt, const unsigned char player, const Nation nation);
     nobStorehouse(SerializedGameData& sgd, const unsigned obj_id);
 
-    /// Aufräummethoden
-public:
-    void Destroy() override { Destroy_nobBaseWarehouse(); }
-
-    /// Serialisierungsfunktionen
 protected:
     void Serialize_nobStorehouse(SerializedGameData& sgd) const;
 

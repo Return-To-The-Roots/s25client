@@ -182,30 +182,21 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
     if(!(ps == PS_OCCUPIED || ps == PS_AI))
         return;
 
-    sgd.PushObjectContainer(warehouses, false);
-    sgd.PushObjectContainer(harbors, true);
+    buildings.Serialize(sgd);
 
-    // sgd.PushObjectContainer(unoccupied_roads,true);
     sgd.PushObjectContainer(roads, true);
 
     sgd.PushUnsignedInt(jobs_wanted.size());
-    for(std::list<JobNeeded>::iterator it = jobs_wanted.begin(); it != jobs_wanted.end(); ++it)
+    BOOST_FOREACH(JobNeeded job, jobs_wanted)
     {
-        sgd.PushUnsignedChar(it->job);
-        sgd.PushObject(it->workplace, false);
+        sgd.PushUnsignedChar(job.job);
+        sgd.PushObject(job.workplace, false);
     }
 
-    for(unsigned i = 0; i < 30; ++i)
-        sgd.PushObjectContainer(buildings[i], true);
-
-    sgd.PushObjectContainer(building_sites, true);
-
-    sgd.PushObjectContainer(military_buildings, true);
+    buildings.Serialize2(sgd);
 
     sgd.PushObjectContainer(ware_list, true);
-
     sgd.PushObjectContainer(flagworkers, false);
-
     sgd.PushObjectContainer(ships, true);
 
     for(unsigned i = 0; i < defenders.size(); ++i)
@@ -293,10 +284,8 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
         return;
 
-    sgd.PopObjectContainer(warehouses, GOT_UNKNOWN);
-    sgd.PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
+    buildings.Deserialize(sgd);
 
-    // sgd.PopObjectContainer(unoccupied_roads,GOT_ROADSEGMENT);
     sgd.PopObjectContainer(roads, GOT_ROADSEGMENT);
 
     unsigned list_size = sgd.PopUnsignedInt();
@@ -308,17 +297,10 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         jobs_wanted.push_back(nj);
     }
 
-    for(unsigned i = 0; i < 30; ++i)
-        sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
-
-    sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
-
-    sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+    buildings.Deserialize2(sgd);
 
     sgd.PopObjectContainer(ware_list, GOT_WARE);
-
     sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
-
     sgd.PopObjectContainer(ships, GOT_SHIP);
 
     for(unsigned i = 0; i < defenders.size(); ++i)
@@ -411,33 +393,32 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 
     unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
 
-    for(std::list<nobBaseWarehouse*>::const_iterator itWh = warehouses.begin(); itWh != warehouses.end(); ++itWh)
+    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
     {
         // Lagerhaus geeignet?
-        RTTR_Assert(*itWh);
-        nobBaseWarehouse& wh = **itWh;
-        if(!isWarehouseGood(wh))
+        RTTR_Assert(wh);
+        if(!isWarehouseGood(*wh))
             continue;
 
-        if(start.GetPos() == wh.GetPos())
+        if(start.GetPos() == wh->GetPos())
         {
             // We are already there -> Take it
             if(length)
                 *length = 0;
-            return &wh;
+            return wh;
         }
 
         // now check if there is at least a chance that the next wh is closer than current best because pathfinding takes time
-        if(gwg->CalcDistance(start.GetPos(), wh.GetPos()) > best_length)
+        if(gwg->CalcDistance(start.GetPos(), wh->GetPos()) > best_length)
             continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen
         // bei der wegfindung
-        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : wh, to_wh ? wh : start, use_boat_roads, best_length, forbidden, &tlength))
+        if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length, forbidden, &tlength))
         {
             if(tlength < best_length || !best)
             {
                 best_length = tlength;
-                best = &wh;
+                best = wh;
             }
         }
     }
@@ -448,9 +429,62 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
     return best;
 }
 
-void GamePlayer::SetHQ(const nobBaseWarehouse* hq)
+void GamePlayer::AddBuildingSite(noBuildingSite* bldSite)
 {
-    hqPos = hq ? hq->GetPos() : MapPoint::Invalid();
+    RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
+    buildings.Add(bldSite);
+}
+
+void GamePlayer::RemoveBuildingSite(noBuildingSite* bldSite)
+{
+    RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
+    buildings.Remove(bldSite);
+}
+
+void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
+{
+    RTTR_Assert(bld->GetPlayer() == GetPlayerId());
+    buildings.Add(bld, bldType);
+    ChangeStatisticValue(STAT_BUILDINGS, 1);
+    if(bldType == BLD_HARBORBUILDING)
+    {
+        // Schiff durchgehen und denen Bescheid sagen
+        for(unsigned i = 0; i < ships.size(); ++i)
+            ships[i]->NewHarborBuilt(static_cast<nobHarborBuilding*>(bld));
+    } else if(bldType == BLD_HEADQUARTERS)
+        hqPos = bld->GetPos();
+    else if(BuildingProperties::IsMilitary(bldType))
+    {
+        nobMilitary* milBld = static_cast<nobMilitary*>(bld);
+        // New built? -> Calculate frontier distance
+        if(milBld->IsNewBuilt())
+            milBld->LookForEnemyBuildings();
+    }
+}
+
+void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
+{
+    RTTR_Assert(bld->GetPlayer() == GetPlayerId());
+    buildings.Remove(bld, bldType);
+    ChangeStatisticValue(STAT_BUILDINGS, -1);
+    if(bldType == BLD_HARBORBUILDING)
+    { // Schiffen Bescheid sagen
+        for(unsigned i = 0; i < ships.size(); ++i)
+            ships[i]->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
+    } else if(bldType == BLD_HEADQUARTERS)
+    {
+        hqPos = MapPoint::Invalid();
+        BOOST_FOREACH(const noBaseBuilding* bld, buildings.GetStorehouses())
+        {
+            if(bld->GetBuildingType() == BLD_HEADQUARTERS)
+            {
+                hqPos = bld->GetPos();
+                break;
+            }
+        }
+    }
+    if(BuildingProperties::IsWareHouse(bldType))
+        TestDefeat();
 }
 
 void GamePlayer::NewRoadConnection(RoadSegment* const rs)
@@ -462,8 +496,8 @@ void GamePlayer::NewRoadConnection(RoadSegment* const rs)
     FindWarehouseForAllRoads();
 
     // Alle Straßen müssen gucken, ob sie einen Esel bekommen können
-    for(std::list<RoadSegment*>::iterator it = roads.begin(); it != roads.end(); ++it)
-        (*it)->TryGetDonkey();
+    BOOST_FOREACH(RoadSegment* rs, roads)
+        rs->TryGetDonkey();
 
     // Alle Arbeitsplätze müssen nun gucken, ob sie einen Weg zu einem Lagerhaus mit entsprechender Arbeitskraft finden
     FindWarehouseForAllJobs(JOB_NOTHING);
@@ -476,22 +510,22 @@ void GamePlayer::NewRoadConnection(RoadSegment* const rs)
 
     // Alle Militärgebäude müssen ihre Truppen überprüfen und können nun ggf. neue bestellen
     // und müssen prüfen, ob sie evtl Gold bekommen
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
+    BOOST_FOREACH(nobMilitary* mil, buildings.GetMilitaryBuildings())
     {
-        (*it)->RegulateTroops();
-        (*it)->SearchCoins();
+        mil->RegulateTroops();
+        mil->SearchCoins();
     }
 }
 
 void GamePlayer::FindClientForLostWares()
 {
     // Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
-    for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); ++it)
+    BOOST_FOREACH(Ware* ware, ware_list)
     {
-        if((*it)->IsLostWare())
+        if(ware->IsLostWare())
         {
-            if((*it)->FindRouteToWarehouse() && (*it)->IsWaitingAtFlag())
-                (*it)->CallCarrier();
+            if(ware->FindRouteToWarehouse() && ware->IsWaitingAtFlag())
+                ware->CallCarrier();
         }
     }
 }
@@ -571,9 +605,9 @@ void GamePlayer::RoadDestroyed()
     }
 
     // Alle Häfen müssen ihre Figuren den Weg überprüfen lassen
-    for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+    BOOST_FOREACH(nobHarborBuilding* hb, buildings.GetHarbors())
     {
-        (*it)->ExamineShipRouteOfPeople();
+        hb->ExamineShipRouteOfPeople();
     }
 }
 
@@ -581,16 +615,6 @@ void GamePlayer::DeleteRoad(RoadSegment* rs)
 {
     RTTR_Assert(helpers::contains(roads, rs));
     roads.remove(rs);
-}
-
-/// Hafen zur Warenhausliste hinzufügen
-void GamePlayer::AddHarbor(nobHarborBuilding* hb)
-{
-    harbors.push_back(hb);
-
-    // Schiff durchgehen und denen Bescheid sagen
-    for(unsigned i = 0; i < ships.size(); ++i)
-        ships[i]->NewHarborBuilt(hb);
 }
 
 bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
@@ -625,16 +649,9 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
     return true;
 }
 
-void GamePlayer::RemoveWarehouse(nobBaseWarehouse* wh)
-{
-    RTTR_Assert(helpers::contains(warehouses, wh));
-    warehouses.remove(wh);
-    TestDefeat();
-}
-
 bool GamePlayer::IsWarehouseValid(nobBaseWarehouse* wh) const
 {
-    return helpers::contains(warehouses, wh);
+    return helpers::contains(buildings.GetStorehouses(), wh);
 }
 
 void GamePlayer::RecalcDistribution()
@@ -693,17 +710,17 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
 void GamePlayer::FindWarehouseForAllRoads()
 {
-    for(std::list<RoadSegment*>::iterator it = roads.begin(); it != roads.end(); ++it)
+    BOOST_FOREACH(RoadSegment* rs, roads)
     {
-        if(!(*it)->hasCarrier(0))
-            FindCarrierForRoad(*it);
+        if(!rs->hasCarrier(0))
+            FindCarrierForRoad(rs);
     }
 }
 
 void GamePlayer::FindMaterialForBuildingSites()
 {
-    for(std::list<noBuildingSite*>::iterator it = building_sites.begin(); it != building_sites.end(); ++it)
-        (*it)->OrderConstructionMaterial();
+    BOOST_FOREACH(noBuildingSite* bldSite, buildings.GetBuildingSites())
+        bldSite->OrderConstructionMaterial();
 }
 
 void GamePlayer::AddJobWanted(const Job job, noRoadNode* workplace)
@@ -841,16 +858,16 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
     {
         unsigned bestLength = 0xFFFFFFFF;
         Ware* bestWare = NULL;
-        for(std::list<Ware*>::iterator it = ware_list.begin(); it != ware_list.end(); ++it)
+        BOOST_FOREACH(Ware* curWare, ware_list)
         {
-            if((*it)->IsLostWare() && (*it)->type == ware)
+            if(curWare->IsLostWare() && curWare->type == ware)
             {
                 // got a lost ware with a road to goal -> find best
-                unsigned curLength = (*it)->CheckNewGoalForLostWare(goal);
+                unsigned curLength = curWare->CheckNewGoalForLostWare(goal);
                 if(curLength < bestLength)
                 {
                     bestLength = curLength;
-                    bestWare = (*it);
+                    bestWare = curWare;
                 }
             }
         }
@@ -891,27 +908,27 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
     // Beste Flagge dieser Straße
     *goal = NULL;
 
-    for(std::list<RoadSegment*>::iterator it = roads.begin(); it != roads.end(); ++it)
+    BOOST_FOREACH(RoadSegment* roadSeg, roads)
     {
         // Braucht die Straße einen Esel?
-        if((*it)->NeedDonkey())
+        if(roadSeg->NeedDonkey())
         {
             // Beste Flagge von diesem Weg, und beste Wegstrecke
             noRoadNode* current_best_goal = 0;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *(*it)->GetF1(), &length1, NULL, *it) != 0xFF;
-            bool isF2Reachable = gwg->FindHumanPathOnRoads(*start, *(*it)->GetF2(), &length2, NULL, *it) != 0xFF;
+            bool isF1Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF1(), &length1, NULL, roadSeg) != 0xFF;
+            bool isF2Reachable = gwg->FindHumanPathOnRoads(*start, *roadSeg->GetF2(), &length2, NULL, roadSeg) != 0xFF;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
-                current_best_goal = (isF2Reachable) ? (*it)->GetF2() : 0;
+                current_best_goal = (isF2Reachable) ? roadSeg->GetF2() : 0;
             else if(!isF2Reachable)
-                current_best_goal = (isF1Reachable) ? (*it)->GetF1() : 0;
+                current_best_goal = (isF1Reachable) ? roadSeg->GetF1() : 0;
             else
             {
                 // ansonsten die kürzeste von beiden
-                current_best_goal = (length1 < length2) ? (*it)->GetF1() : (*it)->GetF2();
+                current_best_goal = (length1 < length2) ? roadSeg->GetF1() : roadSeg->GetF2();
             }
 
             // Kein Weg führt hin, nächste Straße bitte
@@ -919,18 +936,18 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
                 continue;
 
             // Jeweiligen Weg bestimmen
-            unsigned current_best_way = ((*it)->GetF1() == current_best_goal) ? length1 : length2;
+            unsigned current_best_way = (roadSeg->GetF1() == current_best_goal) ? length1 : length2;
 
             // Produktivität ausrechnen, *10 die Produktivität + die Wegstrecke, damit die
             // auch noch mit einberechnet wird
-            unsigned current_productivity = 10 * (*it)->getCarrier(0)->GetProductivity() + current_best_way;
+            unsigned current_productivity = 10 * roadSeg->getCarrier(0)->GetProductivity() + current_best_way;
 
             // Besser als der bisher beste?
             if(current_productivity > best_productivity)
             {
                 // Dann wird der vom Thron gestoßen
                 best_productivity = current_productivity;
-                best_road = (*it);
+                best_road = roadSeg;
                 *goal = current_best_goal;
             }
         }
@@ -977,15 +994,15 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
     if(gt == GD_STONES || gt == GD_BOARDS)
     {
-        for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
+        BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
         {
-            unsigned points = (*it)->CalcDistributionPoints(gt);
+            unsigned points = harbor->CalcDistributionPoints(gt);
             if(!points)
                 continue;
 
             points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
-            unsigned distance = gwg->CalcDistance(start->GetPos(), (*it)->GetPos()) / 2;
-            possibleClients.push_back(ClientForWare(*it, points > distance ? points - distance : 0, points));
+            unsigned distance = gwg->CalcDistance(start->GetPos(), harbor->GetPos()) / 2;
+            possibleClients.push_back(ClientForWare(harbor, points > distance ? points - distance : 0, points));
         }
     }
 
@@ -996,28 +1013,28 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         if(*it == BLD_HEADQUARTERS)
         {
             // Bei Baustellen die Extraliste abfragen
-            for(std::list<noBuildingSite*>::const_iterator i = building_sites.begin(); i != building_sites.end(); ++i)
+            BOOST_FOREACH(noBuildingSite* bldSite, buildings.GetBuildingSites())
             {
-                unsigned points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
+                unsigned points = bldSite->CalcDistributionPoints(ware->GetLocation(), gt);
                 if(!points)
                     continue;
 
                 points += wareDistribution.percent_buildings[BLD_HEADQUARTERS] * 30;
-                unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
-                possibleClients.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
+                unsigned distance = gwg->CalcDistance(start->GetPos(), bldSite->GetPos()) / 2;
+                possibleClients.push_back(ClientForWare(bldSite, points > distance ? points - distance : 0, points));
             }
         } else
         {
             // Für übrige Gebäude
-            for(std::list<nobUsual*>::const_iterator i = buildings[*it - 10].begin(); i != buildings[*it - 10].end(); ++i)
+            BOOST_FOREACH(nobUsual* bld, buildings.GetBuildings(*it))
             {
-                unsigned points = (*i)->CalcDistributionPoints(ware->GetLocation(), gt);
+                unsigned points = bld->CalcDistributionPoints(ware->GetLocation(), gt);
                 if(!points)
                     continue; // Ware not needed
 
                 if(!wareDistribution.goals.empty())
                 {
-                    if((*i)->GetBuildingType() == static_cast<BuildingType>(wareDistribution.goals[wareDistribution.selected_goal]))
+                    if(bld->GetBuildingType() == static_cast<BuildingType>(wareDistribution.goals[wareDistribution.selected_goal]))
                         points += 300;
                     else if(points >= 300) // avoid overflows (async!)
                         points -= 300;
@@ -1025,8 +1042,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                         points = 0;
                 }
 
-                unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
-                possibleClients.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
+                unsigned distance = gwg->CalcDistance(start->GetPos(), bld->GetPos()) / 2;
+                possibleClients.push_back(ClientForWare(bld, points > distance ? points - distance : 0, points));
             }
         }
     }
@@ -1105,16 +1122,16 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
     unsigned best_points = 0, points;
 
     // Militärgebäude durchgehen
-    for(std::list<nobMilitary*>::const_iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
+    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
     {
         unsigned way_points;
 
-        points = (*it)->CalcCoinsPoints();
+        points = milBld->CalcCoinsPoints();
         // Wenn 0, will er gar keine Münzen (Goldzufuhr gestoppt)
         if(points)
         {
             // Weg dorthin berechnen
-            if(gwg->FindPathForWareOnRoads(*ware->GetLocation(), **it, &way_points) != 0xFF)
+            if(gwg->FindPathForWareOnRoads(*ware->GetLocation(), *milBld, &way_points) != 0xFF)
             {
                 // Die Wegpunkte noch davon abziehen
                 points -= way_points;
@@ -1122,7 +1139,7 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
                 if(points > best_points)
                 {
                     best_points = points;
-                    bb = *it;
+                    bb = milBld;
                 }
             }
         }
@@ -1133,117 +1150,6 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(Ware* ware) const
         bb = FindWarehouseForWare(*ware);
 
     return bb;
-}
-
-void GamePlayer::AddBuildingSite(noBuildingSite* building_site)
-{
-    building_sites.push_back(building_site);
-}
-
-void GamePlayer::RemoveBuildingSite(noBuildingSite* building_site)
-{
-    RTTR_Assert(helpers::contains(building_sites, building_site));
-    building_sites.remove(building_site);
-
-    if(building_site->GetBuildingType() == BLD_HARBORBUILDING)
-        gwg->RemoveHarborBuildingSiteFromSea(building_site);
-}
-
-void GamePlayer::AddUsualBuilding(nobUsual* building)
-{
-    buildings[building->GetBuildingType() - FIRST_USUAL_BUILDING].push_back(building);
-    ChangeStatisticValue(STAT_BUILDINGS, 1);
-}
-
-void GamePlayer::RemoveUsualBuilding(nobUsual* building)
-{
-    RTTR_Assert(helpers::contains(buildings[building->GetBuildingType() - FIRST_USUAL_BUILDING], building));
-    buildings[building->GetBuildingType() - FIRST_USUAL_BUILDING].remove(building);
-    ChangeStatisticValue(STAT_BUILDINGS, -1);
-}
-
-void GamePlayer::AddMilitaryBuilding(nobMilitary* building)
-{
-    military_buildings.push_back(building);
-    ChangeStatisticValue(STAT_BUILDINGS, 1);
-}
-
-void GamePlayer::RemoveMilitaryBuilding(nobMilitary* building)
-{
-    RTTR_Assert(helpers::contains(military_buildings, building));
-    military_buildings.remove(building);
-    ChangeStatisticValue(STAT_BUILDINGS, -1);
-    TestDefeat();
-}
-
-/// Gibt Liste von Gebäuden des Spieler zurück
-const std::list<nobUsual*>& GamePlayer::GetBuildings(const BuildingType type) const
-{
-    RTTR_Assert(static_cast<unsigned>(type) >= FIRST_USUAL_BUILDING);
-
-    return buildings[type - FIRST_USUAL_BUILDING];
-}
-
-/// Liefert die Anzahl aller Gebäude einzeln
-BuildingCount GamePlayer::GetBuildingCount() const
-{
-    BuildingCount bc;
-    std::fill(bc.buildings.begin(), bc.buildings.end(), 0);
-    std::fill(bc.buildingSites.begin(), bc.buildingSites.end(), 0);
-
-    // Normale Gebäude zählen
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
-        bc.buildings[i + FIRST_USUAL_BUILDING] = buildings[i].size();
-    // Lagerhäuser zählen
-    for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
-        ++bc.buildings[(*it)->GetBuildingType()];
-    // Militärgebäude zählen
-    for(std::list<nobMilitary*>::const_iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
-        ++bc.buildings[(*it)->GetBuildingType()];
-    // Baustellen zählen
-    for(std::list<noBuildingSite*>::const_iterator it = building_sites.begin(); it != building_sites.end(); ++it)
-        ++bc.buildingSites[(*it)->GetBuildingType()];
-    return bc;
-}
-
-void GamePlayer::CalcProductivities(std::vector<unsigned short>& productivities) const
-{
-    RTTR_Assert(productivities.size() == BUILDING_TYPES_COUNT);
-
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
-    {
-        // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
-        // und den Mittelwert bildet
-        unsigned total_productivity = 0;
-
-        for(std::list<nobUsual*>::const_iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
-            total_productivity += (*it)->GetProductivity();
-
-        if(!buildings[i].empty())
-            total_productivity /= buildings[i].size();
-
-        productivities[i + FIRST_USUAL_BUILDING] = static_cast<unsigned short>(total_productivity);
-    }
-}
-
-/// Berechnet die durschnittlichen Produktivität aller Gebäude
-unsigned short GamePlayer::CalcAverageProductivitiy()
-{
-    unsigned total_productivity = 0;
-    unsigned total_count = 0;
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
-    {
-        // Durschnittliche Produktivität errrechnen, indem man die Produktivitäten aller Gebäude summiert
-        // und den Mittelwert bildet
-        for(std::list<nobUsual*>::iterator it = buildings[i].begin(); it != buildings[i].end(); ++it)
-            total_productivity += (*it)->GetProductivity();
-
-        if(!buildings[i].empty())
-            total_count += buildings[i].size();
-    }
-    if(total_count == 0)
-        return 0;
-    return total_productivity / total_count;
 }
 
 unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
@@ -1262,10 +1168,11 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
     {
         // Reihenfolge der Bauaufträge, also was zuerst in Auftrag gegeben wurde, wird zuerst gebaut
         unsigned i = 0;
-        for(std::list<noBuildingSite*>::iterator it = building_sites.begin(); it != building_sites.end(); ++it, ++i)
+        BOOST_FOREACH(noBuildingSite* bldSite, buildings.GetBuildingSites())
         {
-            if(building_site == *it)
+            if(building_site == bldSite)
                 return i;
+            i++;
         }
     }
 
@@ -1318,15 +1225,15 @@ void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresetti
 
 void GamePlayer::RegulateAllTroops()
 {
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
-        (*it)->RegulateTroops();
+    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+        milBld->RegulateTroops();
 }
 
 /// Prüft von allen Militärgebäuden die Fahnen neu
 void GamePlayer::RecalcMilitaryFlags()
 {
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
-        (*it)->LookForEnemyBuildings(NULL);
+    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
+        milBld->LookForEnemyBuildings(NULL);
 }
 
 /// Sucht für Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
@@ -1336,11 +1243,11 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     RTTR_Assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
+    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
     {
-        if((*it)->IsNewBuilt())
+        if(milBld->IsNewBuilt())
         {
-            (*it)->RegulateTroops();
+            milBld->RegulateTroops();
             // Used that soldier? Go out
             if(!soldier_count)
                 return;
@@ -1348,11 +1255,11 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     }
 
     // Als nächstes Gebäude in Grenznähe
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
+    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
     {
-        if((*it)->GetFrontierDistance() == 2)
+        if(milBld->GetFrontierDistance() == 2)
         {
-            (*it)->RegulateTroops();
+            milBld->RegulateTroops();
             // Used that soldier? Go out
             if(!soldier_count)
                 return;
@@ -1360,12 +1267,12 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     }
 
     // Und den Rest ggf.
-    for(std::list<nobMilitary*>::iterator it = military_buildings.begin(); it != military_buildings.end(); ++it)
+    BOOST_FOREACH(nobMilitary* milBld, buildings.GetMilitaryBuildings())
     {
         // already checked? -> skip
-        if((*it)->GetFrontierDistance() == 2 || (*it)->IsNewBuilt())
+        if(milBld->GetFrontierDistance() == 2 || milBld->IsNewBuilt())
             continue;
-        (*it)->RegulateTroops();
+        milBld->RegulateTroops();
         if(!soldier_count) // used the soldier?
             return;
     }
@@ -1481,7 +1388,7 @@ void GamePlayer::TestDefeat()
 {
     // Nicht schon besiegt?
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
-    if(!isDefeated && military_buildings.empty() && warehouses.empty())
+    if(!isDefeated && buildings.GetMilitaryBuildings().empty() && buildings.GetStorehouses().empty())
         Surrender();
 }
 
@@ -1567,7 +1474,7 @@ void GamePlayer::CalcStatistics()
                                           + global_inventory.people[JOB_GENERAL] * 5;
 
     // Produktivität berechnen
-    statisticCurrentData[STAT_PRODUCTIVITY] = CalcAverageProductivitiy();
+    statisticCurrentData[STAT_PRODUCTIVITY] = buildings.CalcAverageProductivity();
 
     // Total points for tournament games
     statisticCurrentData[STAT_TOURNAMENT] = statisticCurrentData[STAT_MILITARY] + 3 * statisticCurrentData[STAT_VANQUISHED];
@@ -1826,9 +1733,9 @@ bool GamePlayer::IsWareRegistred(Ware* ware)
 
 bool GamePlayer::IsWareDependent(Ware* ware)
 {
-    for(std::list<nobBaseWarehouse*>::iterator it = warehouses.begin(); it != warehouses.end(); ++it)
+    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
     {
-        if((*it)->IsWareDependent(ware))
+        if(wh->IsWareDependent(ware))
             return true;
     }
 
@@ -1874,19 +1781,18 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     // we need more ships than those that are already on their way? limit search to idle ships
     if(GetShipsToHarbor(hb) < hb.GetNeededShipsCount())
     {
-        for(std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
+        BOOST_FOREACH(noShip* ship, ships)
         {
-            if((*it)->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), (*it)->GetSeaID()))
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
+            if(ship->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
+                sfh.push_back(ShipForHarbor(ship, gwg->CalcDistance(hb.GetPos(), ship->GetPos())));
         }
     } else
     {
-        for(std::vector<noShip*>::iterator it = ships.begin(); it != ships.end(); ++it)
+        BOOST_FOREACH(noShip* ship, ships)
         {
-            if(((*it)->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), (*it)->GetSeaID()))
-               || (*it)->IsGoingToHarbor(hb))
+            if((ship->IsIdling() && gwg->IsHarborAtSea(gwg->GetHarborPointID(hb.GetPos()), ship->GetSeaID())) || ship->IsGoingToHarbor(hb))
             {
-                sfh.push_back(ShipForHarbor(*it, gwg->CalcDistance(hb.GetPos(), (*it)->GetPos())));
+                sfh.push_back(ShipForHarbor(ship, gwg->CalcDistance(hb.GetPos(), ship->GetPos())));
             }
         }
     }
@@ -1974,41 +1880,41 @@ void GamePlayer::GetJobForShip(noShip* ship)
     std::vector<Direction> best_route;
 
     // Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
-    for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+    BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
     {
         // Braucht der Hafen noch Schiffe?
-        if((*it)->GetNeededShipsCount() == 0)
+        if(harbor->GetNeededShipsCount() == 0)
             continue;
 
         // Anzahl der Schiffe ermitteln, die diesen Hafen bereits anfahren
-        unsigned ships_coming = GetShipsToHarbor(**it);
+        unsigned ships_coming = GetShipsToHarbor(*harbor);
 
         // Evtl. kommen schon genug?
-        if((*it)->GetNeededShipsCount() <= ships_coming)
+        if(harbor->GetNeededShipsCount() <= ships_coming)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(gwg->IsHarborAtSea((*it)->GetHarborPosID(), ship->GetSeaID()))
+        if(gwg->IsHarborAtSea(harbor->GetHarborPosID(), ship->GetSeaID()))
         {
-            const MapPoint coastPt = gwg->GetCoastalPoint((*it)->GetHarborPosID(), ship->GetSeaID());
+            const MapPoint coastPt = gwg->GetCoastalPoint(harbor->GetHarborPosID(), ship->GetSeaID());
 
             // Evtl. sind wir schon da?
             if(ship->GetPos() == coastPt)
             {
-                (*it)->ShipArrived(ship);
+                harbor->ShipArrived(ship);
                 return;
             }
 
             unsigned length;
             std::vector<Direction> route;
 
-            if(gwg->FindShipPathToHarbor(ship->GetPos(), (*it)->GetHarborPosID(), ship->GetSeaID(), &route, &length))
+            if(gwg->FindShipPathToHarbor(ship->GetPos(), harbor->GetHarborPosID(), ship->GetSeaID(), &route, &length))
             {
                 // Punkte ausrechnen
-                int points = (*it)->GetNeedForShip(ships_coming) - length;
+                int points = harbor->GetNeedForShip(ships_coming) - length;
                 if(points > best_points || !best)
                 {
-                    best = *it;
+                    best = harbor;
                     best_points = points;
                     best_route = route;
                 }
@@ -2044,13 +1950,13 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
 void GamePlayer::GetHarborsAtSea(std::vector<nobHarborBuilding*>& harbor_buildings, const unsigned short seaId) const
 {
-    for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
+    BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
     {
-        if(helpers::contains(harbor_buildings, *it))
+        if(helpers::contains(harbor_buildings, harbor))
             continue;
 
-        if(gwg->IsHarborAtSea((*it)->GetHarborPosID(), seaId))
-            harbor_buildings.push_back(*it);
+        if(gwg->IsHarborAtSea(harbor->GetHarborPosID(), seaId))
+            harbor_buildings.push_back(harbor);
     }
 }
 
@@ -2067,16 +1973,6 @@ unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
     return count;
 }
 
-/// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstört wurde
-void GamePlayer::HarborDestroyed(nobHarborBuilding* hb)
-{
-    RTTR_Assert(helpers::contains(harbors, hb));
-    harbors.remove(hb);
-    // Schiffen Bescheid sagen
-    for(unsigned i = 0; i < ships.size(); ++i)
-        ships[i]->HarborDestroyed(hb);
-}
-
 /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
 /// gibt true zurück, falls erfolgreich
 bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsigned* goal_harborId, std::vector<Direction>* route,
@@ -2085,9 +1981,8 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, unsi
     nobHarborBuilding* best = NULL;
     unsigned best_distance = 0xffffffff;
 
-    for(std::list<nobHarborBuilding*>::iterator it = harbors.begin(); it != harbors.end(); ++it)
+    BOOST_FOREACH(nobHarborBuilding* hb, buildings.GetHarbors())
     {
-        nobHarborBuilding* hb = *it;
         // Bestimmten Hafen ausschließen
         if(hb == exception)
             continue;
@@ -2130,16 +2025,16 @@ void GamePlayer::TestForEmergencyProgramm()
     // In Lagern vorhandene Bretter und Steine zählen
     unsigned boards = 0;
     unsigned stones = 0;
-    for(std::list<nobBaseWarehouse*>::iterator w = warehouses.begin(); w != warehouses.end(); ++w)
+    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
     {
-        boards += (*w)->GetInventory().goods[GD_BOARDS];
-        stones += (*w)->GetInventory().goods[GD_STONES];
+        boards += wh->GetInventory().goods[GD_BOARDS];
+        stones += wh->GetInventory().goods[GD_STONES];
     }
 
     // Emergency happens, if we have less than 10 boards or stones...
     bool isNewEmergency = boards <= 10 || stones <= 10;
     // ...and no woddcutter or sawmill
-    isNewEmergency &= GetBuildings(BLD_WOODCUTTER).empty() || GetBuildings(BLD_SAWMILL).empty();
+    isNewEmergency &= buildings.GetBuildings(BLD_WOODCUTTER).empty() || buildings.GetBuildings(BLD_SAWMILL).empty();
 
     // Wenn nötig, Notfallprogramm auslösen
     if(isNewEmergency)
@@ -2197,7 +2092,7 @@ bool GamePlayer::CanBuildCatapult() const
     if(!gwg->GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
-    BuildingCount bc = GetBuildingCount();
+    BuildingCount bc = buildings.GetBuildingCount();
 
     unsigned max = 0;
     // proportional?
@@ -2235,9 +2130,9 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 /// For debug only
 bool GamePlayer::IsDependentFigure(noFigure* fig)
 {
-    for(std::list<nobBaseWarehouse*>::iterator it = warehouses.begin(); it != warehouses.end(); ++it)
+    BOOST_FOREACH(const nobBaseWarehouse* wh, buildings.GetStorehouses())
     {
-        if((*it)->IsDependentFigure(fig))
+        if(wh->IsDependentFigure(fig))
             return true;
     }
     return false;
@@ -2253,11 +2148,11 @@ std::vector<nobBaseWarehouse*> GamePlayer::GetWarehousesForTrading(const nobBase
 
     const MapPoint goalFlagPos = goalWh.GetFlag()->GetPos();
 
-    for(std::list<nobBaseWarehouse*>::const_iterator it = warehouses.begin(); it != warehouses.end(); ++it)
+    BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
-        if(TradePathCache::inst().PathExists(*gwg, (*it)->GetFlag()->GetPos(), goalFlagPos, GetPlayerId()))
-            result.push_back(*it);
+        if(TradePathCache::inst().PathExists(*gwg, wh->GetFlag()->GetPos(), goalFlagPos, GetPlayerId()))
+            result.push_back(wh);
     }
 
     return result;
@@ -2299,18 +2194,18 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
 
     const MapPoint goalFlagPos = goalWh->GetFlag()->GetPos();
 
-    std::vector<nobBaseWarehouse*> whs(warehouses.begin(), warehouses.end());
+    std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
     std::sort(whs.begin(), whs.end(), WarehouseDistanceComparator(*goalWh, *gwg));
-    for(std::vector<nobBaseWarehouse*>::const_iterator it = whs.begin(); it != whs.end(); ++it)
+    BOOST_FOREACH(nobBaseWarehouse* wh, whs)
     {
         // Get available wares
         unsigned available = 0;
         if(gt != GD_NOTHING)
-            available = (*it)->GetAvailableWaresForTrading(gt);
+            available = wh->GetAvailableWaresForTrading(gt);
         else
         {
             RTTR_Assert(job != JOB_NOTHING);
-            available = (*it)->GetAvailableFiguresForTrading(job);
+            available = wh->GetAvailableFiguresForTrading(job);
         }
         if(available == 0)
             continue;
@@ -2318,7 +2213,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
         available = std::min(available, count);
 
         // Find a trade path from flag to flag
-        TradeRoute tr(*gwg, GetPlayerId(), (*it)->GetFlag()->GetPos(), goalFlagPos);
+        TradeRoute tr(*gwg, GetPlayerId(), wh->GetFlag()->GetPos(), goalFlagPos);
 
         // Found a path?
         if(tr.IsValid())
@@ -2326,7 +2221,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
             // Add to cache for future searches
             TradePathCache::inst().AddEntry(*gwg, tr.GetTradePath(), GetPlayerId());
 
-            (*it)->StartTradeCaravane(gt, job, available, tr, goalWh);
+            wh->StartTradeCaravane(gt, job, available, tr, goalWh);
             count -= available;
             if(count == 0)
                 return;

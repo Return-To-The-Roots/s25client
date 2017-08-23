@@ -24,9 +24,9 @@
 #include "buildings/nobShipYard.h"
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorldBase.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
+noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
                                             const Nation nation)
 {
     noBuilding* bld;
@@ -43,12 +43,8 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldGame& gwg, const BuildingTy
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
     gwg.SetNO(pt, bld);
-    if(type == BLD_HARBORBUILDING)
-    {
-        // For harbors tell the economics about the new harbor
-        // Attention: Must be used after the harbours is added to the world (setNO) so it cannot be done in the ctor
-        gwg.GetPlayer(player).AddHarbor(static_cast<nobHarborBuilding*>(bld));
-    }
+    // Don't do this in ctor as building might not be fully initialized yet
+    gwg.GetPlayer(player).AddBuilding(bld, type);
 
     return bld;
 }

@@ -143,15 +143,8 @@ public:
 
     ~nobBaseWarehouse() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobBaseWarehouse();
-
-public:
-    void Destroy() override { Destroy_nobBaseWarehouse(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobBaseWarehouse(SerializedGameData& sgd) const;
 
 public:
@@ -296,7 +289,7 @@ public:
     void StartTradeCaravane(const GoodType gt, Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
 
     /// For debug only
-    bool IsDependentFigure(noFigure* fig);
+    bool IsDependentFigure(noFigure* fig) const;
 };
 
 #endif

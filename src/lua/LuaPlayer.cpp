@@ -166,7 +166,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
 
 void LuaPlayer::ClearResources()
 {
-    const std::list<nobBaseWarehouse*> warehouses = player.GetStorehouses();
+    const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
     for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
         (*wh)->Clear();
 }
@@ -217,14 +217,14 @@ unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
 {
     lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
-    return player.GetBuildingCount().buildings[bld];
+    return player.GetBuildingRegister().GetBuildingCount().buildings[bld];
 }
 
 unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld)
 {
     lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
-    return player.GetBuildingCount().buildingSites[bld];
+    return player.GetBuildingRegister().GetBuildingCount().buildingSites[bld];
 }
 
 unsigned LuaPlayer::GetWareCount(GoodType ware)

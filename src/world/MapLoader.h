@@ -24,6 +24,7 @@
 #include <vector>
 
 class World;
+class GameWorldBase;
 class glArchivItem_Map;
 
 class MapLoader
@@ -48,7 +49,9 @@ public:
     /// Size of @playerNations must be the player count and unused player spots must be set to NAT_INVALID
     MapLoader(World& world, const std::vector<Nation>& playerNations);
     /// Load the map from the given archive, resetting previous state. Return false on error
-    bool Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration);
+    bool Load(const glArchivItem_Map& map, Exploration exploration);
+    /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
+    bool PlaceHQs(GameWorldBase& world, bool randomStartPos);
 
     /// Return the position of the players HQ (only valid after successful load)
     MapPoint GetHQPos(unsigned player) const { return hqPositions[player]; }
@@ -56,7 +59,8 @@ public:
     static void InitShadows(World& world);
     static void SetMapExplored(World& world, unsigned numPlayers);
     static void InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
-    static bool PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos);
+    static bool PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations,
+                         bool randomStartPos);
 };
 
 #endif // MapLoader_h__

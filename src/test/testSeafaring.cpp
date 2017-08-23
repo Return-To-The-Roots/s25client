@@ -43,6 +43,7 @@ BOOST_AUTO_TEST_SUITE(SeafaringTestSuite)
 BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
 {
     const GamePlayer& player = world.GetPlayer(curPlayer);
+    const BuildingRegister& buildings = player.GetBuildingRegister();
     const MapPoint hqPos = player.GetHQPos();
     const unsigned seaId = 1;
     const unsigned hbId = 1;
@@ -52,11 +53,11 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     nobHarborBuilding* harbor =
       dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
-    BOOST_REQUIRE_EQUAL(player.GetHarbors().size(), 1u);
-    BOOST_REQUIRE_EQUAL(player.GetHarbors().front(), harbor);
+    BOOST_REQUIRE_EQUAL(buildings.GetHarbors().size(), 1u);
+    BOOST_REQUIRE_EQUAL(buildings.GetHarbors().front(), harbor);
     // A harbor is also a storehouse
-    BOOST_REQUIRE_EQUAL(player.GetStorehouses().size(), 2u);
-    BOOST_REQUIRE_EQUAL(player.GetHarbors().back(), harbor);
+    BOOST_REQUIRE_EQUAL(buildings.GetStorehouses().size(), 2u);
+    BOOST_REQUIRE_EQUAL(buildings.GetHarbors().back(), harbor);
     std::vector<nobHarborBuilding*> harbors;
     BOOST_REQUIRE_EQUAL(world.GetNode(MapPoint(0, 0)).seaId, seaId);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), seaId);
@@ -175,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     curPlayer = 0;
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
-    const nobHarborBuilding& harbor = *player.GetHarbors().front();
+    const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     const unsigned hbId = world.GetHarborPointID(hbPos);
     BOOST_REQUIRE(ship);
@@ -318,7 +319,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
 
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
-    const nobHarborBuilding& harbor = *player.GetHarbors().front();
+    const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     BOOST_REQUIRE(ship);
     BOOST_REQUIRE(ship->IsIdling());
@@ -459,10 +460,10 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     for(unsigned gf = 0; gf < 5000; gf++)
     {
         this->em.ExecuteNextGF();
-        if(player.GetHarbors().size() > 1)
+        if(player.GetBuildingRegister().GetHarbors().size() > 1)
             break;
     }
-    BOOST_REQUIRE_EQUAL(player.GetHarbors().size(), 2u);
+    BOOST_REQUIRE_EQUAL(player.GetBuildingRegister().GetHarbors().size(), 2u);
 }
 
 typedef ShipReadyFixture<2, 64, 800> ShipReadyFixtureBig;
@@ -472,7 +473,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     initGameRNG();
     const GamePlayer& player = world.GetPlayer(curPlayer);
     const noShip* ship = player.GetShipByID(0);
-    nobHarborBuilding& harbor = *player.GetHarbors().front();
+    nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     BOOST_REQUIRE(ship);
     // Go to opposite one

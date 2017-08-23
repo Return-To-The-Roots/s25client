@@ -124,6 +124,7 @@ void noBuildingSite::Destroy_noBuildingSite()
     // Hafenbaustelle?
     if(expeditionharbor)
     {
+        gwg->RemoveHarborBuildingSiteFromSea(this);
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
         gwg->RecalcTerritory(*this, true, false);
     }

@@ -42,6 +42,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "ingameWindows/iwAction.h"
+#include "ingameWindows/iwBaseWarehouse.h"
 #include "ingameWindows/iwBuilding.h"
 #include "ingameWindows/iwBuildingSite.h"
 #include "ingameWindows/iwChat.h"
@@ -60,7 +61,6 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
-#include "ingameWindows/iwStorehouse.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
 #include "notifications/BuildingNote.h"
@@ -471,7 +471,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 WINDOWMANAGER.Show(new iwHQ(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwStorehouse(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(new iwBaseWarehouse(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
                 WINDOWMANAGER.Show(
@@ -543,7 +543,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(worldViewer.GetPlayer().IsAlly(building->GetPlayer()) && BuildingProperties::IsWareHouse(bt))
+                    if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
                     {
                         WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, gameClient));
                         return true;

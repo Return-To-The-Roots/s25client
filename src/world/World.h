@@ -345,7 +345,7 @@ World::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt
 template<class T_IsValidPt>
 inline bool World::CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const
 {
-    if(includePt && isValid(pt))
+    if(includePt && isValid(pt, 0))
         return true;
     MapPoint curStartPt = pt;
     for(unsigned r = 1; r <= radius; ++r)
@@ -358,7 +358,7 @@ inline bool World::CheckPointsInRadius(const MapPoint pt, const unsigned radius,
         {
             for(unsigned step = 0; step < r; ++step)
             {
-                if(isValid(curPt))
+                if(isValid(curPt, r))
                     return true;
                 curPt = GetNeighbour(curPt, Direction(i).toUInt());
             }

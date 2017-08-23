@@ -23,7 +23,7 @@
 #include "gameData/NationConsts.h"
 
 class noBuilding;
-class GameWorldGame;
+class GameWorldBase;
 
 /// Static Factory class used to create buildings
 /// Use ONLY this class to add new buildings to the map.
@@ -33,7 +33,7 @@ class BuildingFactory
     BuildingFactory();
 
 public:
-    static noBuilding* CreateBuilding(GameWorldGame& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
+    static noBuilding* CreateBuilding(GameWorldBase& gwg, const BuildingType type, const MapPoint pt, const unsigned char player,
                                       const Nation nation);
 };
 

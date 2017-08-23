@@ -82,6 +82,8 @@ struct LoadWorldFromFileCreator
         MapLoader loader(world, nations);
         if(!loader.Load(map, false, EXP_FOGOFWAR))
             throw std::runtime_error("Could not load map");
+        if(!loader.PlaceHQs(world, false));
+            throw std::runtime_error("Could not place HQs");
         for(unsigned i = 0; i < numPlayers_; i++)
             hqs.push_back(loader.GetHQPos(i));
         return true;
@@ -110,7 +112,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 
     std::vector<Nation> nations(0);
     MapLoader loader(world, nations);
-    BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
+    BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
 }

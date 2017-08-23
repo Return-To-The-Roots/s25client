@@ -411,7 +411,7 @@ struct IsPointOwnerDifferent
 
     IsPointOwnerDifferent(const GameWorldBase& gwb, const unsigned char player) : gwb(gwb), cmpOwner(player + 1) {}
 
-    bool operator()(const MapPoint pt) const
+    bool operator()(const MapPoint pt, unsigned /*distance*/) const
     {
         const unsigned char owner = gwb.GetNode(pt).owner;
         return owner != 0 && owner != cmpOwner;
@@ -657,7 +657,7 @@ unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char play
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     unsigned attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetHarbors();
+    const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetBuildingRegister().GetHarbors();
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
@@ -716,7 +716,7 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
 
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetHarbors();
+    const std::list<nobHarborBuilding*>& harbors = GetPlayer(player_attacker).GetBuildingRegister().GetHarbors();
     for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen

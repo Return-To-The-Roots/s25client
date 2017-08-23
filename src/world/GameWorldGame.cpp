@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/GameWorldGame.h"
-
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GameInterface.h"
@@ -50,6 +49,10 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainData.h"
+#include <boost/foreach.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/if.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <stdexcept>
 
 inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
@@ -1112,72 +1115,52 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned c
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
     // Sichtbereich von Militärgebäuden
-    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    BOOST_FOREACH(const nobBaseMilitary* milBld, buildings)
     {
-        if((*it)->GetPlayer() == player && *it != exception)
+        if(milBld->GetPlayer() == player && milBld != exception)
         {
             // Prüfen, obs auch unbesetzt ist
-            if((*it)->GetGOT() == GOT_NOB_MILITARY)
+            if(milBld->GetGOT() == GOT_NOB_MILITARY)
             {
-                if(static_cast<nobMilitary*>(*it)->IsNewBuilt())
+                if(static_cast<const nobMilitary*>(milBld)->IsNewBuilt())
                     continue;
             }
 
-            if(CalcDistance(pt, (*it)->GetPos()) <= unsigned((*it)->GetMilitaryRadius() + VISUALRANGE_MILITARY))
+            if(CalcDistance(pt, milBld->GetPos()) <= unsigned(milBld->GetMilitaryRadius() + VISUALRANGE_MILITARY))
                 return true;
         }
     }
 
     // Sichtbereich von Hafenbaustellen
-    for(std::list<noBuildingSite*>::const_iterator it = harbor_building_sites_from_sea.begin(); it != harbor_building_sites_from_sea.end();
-        ++it)
+    BOOST_FOREACH(const noBuildingSite* bldSite, harbor_building_sites_from_sea)
     {
-        if((*it)->GetPlayer() == player && *it != exception)
+        if(bldSite->GetPlayer() == player && bldSite != exception)
         {
-            if(CalcDistance(pt, (*it)->GetPos()) <= unsigned(HARBOR_RADIUS + VISUALRANGE_MILITARY))
+            if(CalcDistance(pt, bldSite->GetPos()) <= unsigned(HARBOR_RADIUS + VISUALRANGE_MILITARY))
                 return true;
         }
     }
 
     // Sichtbereich von Spähtürmen
-
-    for(std::list<nobUsual*>::const_iterator it = GetPlayer(player).GetBuildings(BLD_LOOKOUTTOWER).begin();
-        it != GetPlayer(player).GetBuildings(BLD_LOOKOUTTOWER).end(); ++it)
+    BOOST_FOREACH(const nobUsual* bld, GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER))
     {
         // Ist Späturm überhaupt besetzt?
-        if(!(*it)->HasWorker())
+        if(!bld->HasWorker())
             continue;
 
         // Nicht die Ausnahme wählen
-        if(*it == exception)
+        if(bld == exception)
             continue;
 
         // Liegt Spähturm innerhalb des Sichtradius?
-        if(CalcDistance(pt, (*it)->GetPos()) <= VISUALRANGE_LOOKOUTTOWER)
+        if(CalcDistance(pt, bld->GetPos()) <= VISUALRANGE_LOOKOUTTOWER)
             return true;
     }
 
     // Erkunder prüfen
-
-    // Zunächst auf dem Punkt selbst
-    if(IsScoutingFigureOnNode(pt, player, 0))
-        return true;
-
-    // Und drumherum
-    for(MapCoord tx = GetXA(pt.x, pt.y, 0), r = 1; r <= VISUALRANGE_EXPLORATION_SHIP; tx = GetXA(tx, pt.y, 0), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, i % 6), ++r2)
-            {
-                if(IsScoutingFigureOnNode(t2, player, r))
-                    return true;
-            }
-        }
-    }
-
-    return false;
+    namespace bl = boost::lambda;
+    return CheckPointsInRadius(pt, VISUALRANGE_EXPLORATION_SHIP,
+                               bl::bind(&GameWorldGame::IsScoutingFigureOnNode, this, bl::_1, player, bl::_2), true);
 }
 
 bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned player, const unsigned distance) const
@@ -1193,8 +1176,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
             if((*it)->GetGOT() == GOT_NOF_SCOUT_FREE)
             {
                 // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
-                nofScout_Free* scout = static_cast<nofScout_Free*>(*it);
-                if(scout->GetPos() == pt && scout->GetPlayer() == player)
+                if(static_cast<nofScout_Free*>(*it)->GetPlayer() == player)
                     return true;
             }
         }
@@ -1205,8 +1187,7 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
             // Soldaten?
             if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
             {
-                nofActiveSoldier* soldier = static_cast<nofActiveSoldier*>(*it);
-                if(soldier->GetPos() == pt && soldier->GetPlayer() == player)
+                if(static_cast<nofActiveSoldier*>(*it)->GetPlayer() == player)
                     return true;
             }
             // Kämpfe (wo auch Soldaten drin sind)
@@ -1219,13 +1200,12 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
         }
 
         // Schiffe?
-
         if((*it)->GetGOT() == GOT_SHIP)
         {
             noShip* ship = static_cast<noShip*>(*it);
             if(distance <= ship->GetVisualRange())
             {
-                if(ship->GetPos() == pt && ship->GetPlayerId() == player)
+                if(ship->GetPlayerId() == player)
                     return true;
             }
         }

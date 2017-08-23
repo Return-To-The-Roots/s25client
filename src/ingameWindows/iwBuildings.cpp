@@ -26,17 +26,19 @@
 #include "buildings/nobStorehouse.h"
 #include "buildings/nobUsual.h"
 #include "files.h"
+#include "iwBaseWarehouse.h"
 #include "iwBuilding.h"
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
 #include "iwMilitaryBuilding.h"
-#include "iwStorehouse.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
+#include <boost/foreach.hpp>
 #include <cstdio>
 
 const unsigned BUILDINGS_COUNT = 32;
@@ -89,7 +91,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 void iwBuildings::Msg_PaintAfter()
 {
     // Anzahlen herausfinden
-    BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingCount();
+    BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingCount();
 
     // Anzahlen unter die Gebäude schreiben
     DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
@@ -121,63 +123,31 @@ void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
 
     // no buildings of type complete? -> do nothing
     const GamePlayer& localPlayer = gwv.GetViewer().GetPlayer();
-    BuildingCount bc = localPlayer.GetBuildingCount(); //-V807
-    if(bc.buildings[bts[ctrl_id]] < 1)
-        return;
+    const BuildingRegister& buildingRegister = localPlayer.GetBuildingRegister();
 
-    // military building open first of type if available
-    if(ctrl_id < 4)
+    BuildingType bldType = bts[ctrl_id];
+    if(BuildingProperties::IsMilitary(bldType))
+        GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.GetMilitaryBuildings());
+    else if(bldType == BLD_HARBORBUILDING)
+        GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.GetHarbors());
+    else if(BuildingProperties::IsWareHouse(bldType))
+        GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.GetStorehouses());
+    else
+        GoToFirstMatching<iwBuilding>(bldType, buildingRegister.GetBuildings(bldType));
+}
+
+template<class T_Window, class T_Building>
+void iwBuildings::GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds)
+{
+    BOOST_FOREACH(T_Building* bld, blds)
     {
-        for(std::list<nobMilitary*>::const_iterator it = localPlayer.GetMilitaryBuildings().begin();
-            it != localPlayer.GetMilitaryBuildings().end(); ++it)
+        if(bld->GetBuildingType() == bldType)
         {
-            if((*it)->GetBuildingType() == bts[ctrl_id]) // got first of type -> open building window (military)
-            {
-                gwv.MoveToMapPt((*it)->GetPos());
-                iwMilitaryBuilding* nextscrn = new iwMilitaryBuilding(gwv, gcFactory, *it);
-                WINDOWMANAGER.Show(nextscrn);
-                return;
-            }
-        }
-        return;
-    }
-    // not warehouse, harbor (military excluded) -> so it is a nobusual!
-    if(ctrl_id != 21 && ctrl_id != 31)
-    {
-        nobUsual* it = *localPlayer.GetBuildings(bts[ctrl_id]).begin();
-        gwv.MoveToMapPt(it->GetPos());
-        iwBuilding* nextscrn = new iwBuilding(gwv, gcFactory, it);
-        WINDOWMANAGER.Show(nextscrn);
-        return;
-    } else if(ctrl_id == 21) // warehouse?
-    {
-        // go through list until we get to a warehouse
-        for(std::list<nobBaseWarehouse*>::const_iterator it = localPlayer.GetStorehouses().begin();
-            it != localPlayer.GetStorehouses().end(); ++it)
-        {
-            if((*it)->GetBuildingType() == bts[ctrl_id])
-            {
-                gwv.MoveToMapPt((*it)->GetPos());
-                iwStorehouse* nextscrn = new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
-                nextscrn->SetPos(GetPos());
-                WINDOWMANAGER.Show(nextscrn);
-                return;
-            }
-        }
-    } else if(ctrl_id == 31) // harbor
-    {
-        // go through list until we get to a harbor
-        for(std::list<nobBaseWarehouse*>::const_iterator it = localPlayer.GetStorehouses().begin();
-            it != localPlayer.GetStorehouses().end(); ++it)
-        {
-            if((*it)->GetBuildingType() == bts[ctrl_id])
-            {
-                gwv.MoveToMapPt((*it)->GetPos());
-                iwHarborBuilding* nextscrn = new iwHarborBuilding(gwv, gcFactory, dynamic_cast<nobHarborBuilding*>(*it));
-                nextscrn->SetPos(GetPos());
-                WINDOWMANAGER.Show(nextscrn);
-                return;
-            }
+            gwv.MoveToMapPt(bld->GetPos());
+            T_Window* nextscrn = new T_Window(gwv, gcFactory, static_cast<T_Building*>(bld));
+            nextscrn->SetPos(GetPos());
+            WINDOWMANAGER.Show(nextscrn);
+            return;
         }
     }
 }

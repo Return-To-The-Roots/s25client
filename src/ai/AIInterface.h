@@ -162,20 +162,23 @@ public:
     /// Return the headquarter of the player (or null if destroyed)
     const nobHQ* GetHeadquarter() const;
     /// Return reference to the list of building sites
-    const std::list<noBuildingSite*>& GetBuildingSites() const { return player_.GetBuildingSites(); }
-    const std::list<noBuildingSite*>& GetPlayerBuildingSites(unsigned playerId) const { return gwb.GetPlayer(playerId).GetBuildingSites(); }
+    const std::list<noBuildingSite*>& GetBuildingSites() const { return player_.GetBuildingRegister().GetBuildingSites(); }
+    const std::list<noBuildingSite*>& GetPlayerBuildingSites(unsigned playerId) const
+    {
+        return gwb.GetPlayer(playerId).GetBuildingRegister().GetBuildingSites();
+    }
     /// Return a list to buildings of a given type
-    const std::list<nobUsual*>& GetBuildings(const BuildingType type) const { return player_.GetBuildings(type); }
+    const std::list<nobUsual*>& GetBuildings(const BuildingType type) const { return player_.GetBuildingRegister().GetBuildings(type); }
     const std::list<nobUsual*>& GetPlayerBuildings(const BuildingType type, unsigned playerId) const
     {
-        return gwb.GetPlayer(playerId).GetBuildings(type);
+        return gwb.GetPlayer(playerId).GetBuildingRegister().GetBuildings(type);
     }
     // Return a list containing all military buildings
-    const std::list<nobMilitary*>& GetMilitaryBuildings() const { return player_.GetMilitaryBuildings(); }
+    const std::list<nobMilitary*>& GetMilitaryBuildings() const { return player_.GetBuildingRegister().GetMilitaryBuildings(); }
     /// Return a list containing all harbors
-    const std::list<nobHarborBuilding*>& GetHarbors() const { return player_.GetHarbors(); }
+    const std::list<nobHarborBuilding*>& GetHarbors() const { return player_.GetBuildingRegister().GetHarbors(); }
     /// Return a list containing all storehouses and harbors and the hq
-    const std::list<nobBaseWarehouse*>& GetStorehouses() const { return player_.GetStorehouses(); }
+    const std::list<nobBaseWarehouse*>& GetStorehouses() const { return player_.GetBuildingRegister().GetStorehouses(); }
     /// Retrieves the current counts of all buildings
     BuildingCount GetBuildingCount() const;
     /// Return the inventory of the AI player

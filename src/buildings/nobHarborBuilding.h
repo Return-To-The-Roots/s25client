@@ -112,11 +112,12 @@ private:
     nobHarborBuilding(const MapPoint pt, const unsigned char player, const Nation nation);
     nobHarborBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
+protected:
+    void DestroyBuilding() override;
+
 public:
     unsigned GetMilitaryRadius() const override { return HARBOR_RADIUS; }
 
-    /// Aufräummethoden
-    void Destroy() override;
     /// Serialisierung
     void Serialize(SerializedGameData& sgd) const override;
     GO_Type GetGOT() const override { return GOT_NOB_HARBORBUILDING; }
@@ -131,7 +132,7 @@ public:
     void AddFigure(noFigure* figure, const bool increase_visual_counts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
     /// benötigt!)
-    unsigned CalcDistributionPoints(const GoodType type);
+    unsigned CalcDistributionPoints(const GoodType type) const;
 
     /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
     void CancelWareForShip(Ware* ware);

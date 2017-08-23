@@ -154,6 +154,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
                 // Baustelle abmelden
                 GamePlayer& owner = gwg->GetPlayer(player);
                 owner.RemoveBuildingSite(building_site);
+                if(gwg->IsHarborBuildingSiteFromSea(building_site))
+                    gwg->RemoveHarborBuildingSiteFromSea(building_site);
 
                 // Remove buildingsite, but don't destroy!
                 gwg->SetNO(building_site->GetPos(), NULL);
@@ -174,9 +176,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
                     owner.FindWarehouseForAllRoads();
                     owner.FindWarehouseForAllJobs(JOB_HELPER);
 
-                    // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
+                    // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen
                     owner.FindClientForLostWares();
-
                     return;
                 }
 

@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "noBuilding.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -31,13 +32,17 @@ noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsign
 {
 }
 
-void noBuilding::Destroy_noBuilding()
+void noBuilding::Destroy()
 {
     // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
     // Feuer setzen
     gwg->SetNO(pos, new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), true);
 
     Destroy_noBaseBuilding();
+
+    gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
+    // Destroy derived buildings last
+    DestroyBuilding();
 }
 
 void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const

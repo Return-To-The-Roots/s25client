@@ -50,23 +50,10 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
     // Tür aufmachen,bis Gebäude besetzt ist
     OpenDoor();
 
-    const std::list<nobUsual*>& otherBlds = owner.GetBuildings(type);
-    if(otherBlds.empty())
-        productivity = 0;
-    else
-    {
-        // New building gets half the average productivity from all buildings of the same type
-        int sumProductivity = 0;
-        for(std::list<nobUsual*>::const_iterator it = otherBlds.begin(); it != otherBlds.end(); ++it)
-            sumProductivity += (*it)->GetProductivity();
-        productivity = sumProductivity / otherBlds.size() / 2;
-    }
+    // New building gets half the average productivity from all buildings of the same type
+    productivity = owner.GetBuildingRegister().CalcAverageProductivity(type) / 2u;
     // Set last productivities to current to avoid resetting it on first recalculation event
     std::fill(last_productivities.begin(), last_productivities.end(), productivity);
-
-    // Gebäude in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
-    // Do this AFTER the productivity calculation or we will get this building too!
-    owner.AddUsualBuilding(this);
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
@@ -109,7 +96,7 @@ nobUsual::~nobUsual()
 {
 }
 
-void nobUsual::Destroy_nobUsual()
+void nobUsual::DestroyBuilding()
 {
     // Arbeiter Bescheid sagen
     if(worker)
@@ -130,11 +117,6 @@ void nobUsual::Destroy_nobUsual()
     // Events löschen
     GetEvMgr().RemoveEvent(orderware_ev);
     GetEvMgr().RemoveEvent(productivity_ev);
-    orderware_ev = NULL;
-    productivity_ev = NULL;
-
-    // Gebäude wieder aus der Liste entfernen
-    gwg->GetPlayer(player).RemoveUsualBuilding(this);
 
     // Inventur entsprechend verringern wegen den Waren, die vernichtetet werden
     for(unsigned i = 0; i < BLD_WORK_DESC[bldType_].waresNeeded.size(); ++i)
@@ -144,8 +126,6 @@ void nobUsual::Destroy_nobUsual()
             break;
         gwg->GetPlayer(player).DecreaseInventoryWare(ware, numWares[i]);
     }
-
-    Destroy_noBuilding();
 }
 
 void nobUsual::Draw(DrawPoint drawPt)

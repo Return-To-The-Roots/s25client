@@ -225,7 +225,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         case 12: // go to next of same type
         {
             const std::list<nobUsual*>& buildings =
-              gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildings(building->GetBuildingType());
+              gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetBuildings(building->GetBuildingType());
             // go through list once we get to current building -> open window for the next one and go to next location
             for(std::list<nobUsual*>::const_iterator it = buildings.begin(); it != buildings.end(); ++it)
             {

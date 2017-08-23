@@ -41,7 +41,7 @@ class nobMilitary : public nobBaseMilitary
     /// This building was captured by its current owner. This flag is set once and never to be changed again
     bool captured_not_built;
     /// Anzahl der Goldmünzen im Gebäude
-    unsigned char coins;
+    unsigned char numCoins;
     /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
     bool coinsDisabled, coinsDisabledVirtual;
     /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
@@ -76,7 +76,7 @@ private:
     /// Stellt Verteidiger zur Verfügung
     nofDefender* ProvideDefender(nofAttacker* const attacker) override;
     /// Will/kann das Gebäude noch Münzen bekommen?
-    bool WantCoins();
+    bool WantCoins() const;
     /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
     /// Beförderungsevent an
     void PrepareUpgrading();
@@ -93,15 +93,8 @@ private:
 public:
     ~nobMilitary() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobMilitary();
-
-public:
-    void Destroy() override { Destroy_nobMilitary(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobMilitary(SerializedGameData& sgd) const;
 
 public:
@@ -152,7 +145,7 @@ public:
     bool FreePlaceAtFlag() override;
 
     /// Berechnet, wie dringend eine Goldmünze gebraucht wird, in Punkten, je höher desto dringender
-    unsigned CalcCoinsPoints();
+    unsigned CalcCoinsPoints() const;
 
     /// Wird aufgerufen, wenn ein Soldat kommt
     void GotWorker(Job job, noFigure* worker) override;
@@ -214,7 +207,7 @@ public:
     bool IsGoldDisabledVirtual() const { return coinsDisabledVirtual; }
     /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)
     bool IsGoldDisabled() const { return coinsDisabled; }
-    unsigned char GetNumCoins() const { return coins; }
+    unsigned char GetNumCoins() const { return numCoins; }
     /// is there a max rank soldier in the building?
     bool HasMaxRankSoldier() const;
 

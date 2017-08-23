@@ -18,6 +18,7 @@
 #ifndef GAMECLIENTPLAYER_H_
 #define GAMECLIENTPLAYER_H_
 
+#include "BuildingRegister.h"
 #include "GameMessage_GameCommand.h"
 #include "GamePlayerInfo.h"
 #include "helpers/multiArray.h"
@@ -96,8 +97,11 @@ public:
     GameWorldGame& GetGameWorld() { return *gwg; }
 
     const MapPoint& GetHQPos() const { return hqPos; }
-    /// Set or clear HQ
-    void SetHQ(const nobBaseWarehouse* hq);
+    void AddBuilding(noBuilding* bld, BuildingType bldType);
+    void RemoveBuilding(noBuilding* bld, BuildingType bldType);
+    void AddBuildingSite(noBuildingSite* bldSite);
+    void RemoveBuildingSite(noBuildingSite* bldSite);
+    const BuildingRegister& GetBuildingRegister() const { return buildings; }
 
     /// Notify that a new road connection exists (not only an existing road splitted)
     void NewRoadConnection(RoadSegment* const rs);
@@ -109,14 +113,10 @@ public:
     void DeleteRoad(RoadSegment* rs);
     /// Sucht einen Träger für die Straße und ruft ggf den Träger aus dem jeweiligen nächsten Lagerhaus
     bool FindCarrierForRoad(RoadSegment* rs);
-    /// Warenhaus zur Warenhausliste hinzufügen
-    void AddWarehouse(nobBaseWarehouse* wh) { warehouses.push_back(wh); }
-    /// Warenhaus aus Warenhausliste entfernen
-    void RemoveWarehouse(nobBaseWarehouse* wh);
     /// Returns true if the given wh does still exist and hence the ptr is valid
     bool IsWarehouseValid(nobBaseWarehouse* wh) const;
     /// Gibt erstes Lagerhaus zurück
-    nobBaseWarehouse* GetFirstWH() { return warehouses.empty() ? NULL : *warehouses.begin(); }
+    nobBaseWarehouse* GetFirstWH() { return buildings.GetStorehouses().empty() ? NULL : buildings.GetStorehouses().front(); }
     /// Looks for the closest warehouse for the point 'start' (including it) that matches the conditions by the functor
     /// - isWarehouseGood must be a functor taking a "const nobBaseWarhouse&", that returns a bool whether this warehouse should be
     /// considered - to_wh true if path to wh is searched, false for path from wh - length is optional for the path length - forbidden
@@ -128,12 +128,6 @@ public:
     void FindWarehouseForAllRoads();
     /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
     void FindWarehouseForAllJobs(const Job job);
-    /// Hafen zur Warenhausliste hinzufügen
-    void AddHarbor(nobHarborBuilding* hb);
-    /// Gibt der Wirtschaft Bescheid, dass ein Hafen zerstört wurde
-    void HarborDestroyed(nobHarborBuilding* hb);
-    /// Gibt eine Liste der verfügbaren Häfen zurück
-    const std::list<nobHarborBuilding*>& GetHarbors() const { return harbors; }
 
     /// Lässt alle Baustellen ggf. noch vorhandenes Baumaterial bestellen
     void FindMaterialForBuildingSites();
@@ -160,29 +154,6 @@ public:
 
     /// Sucht einen Abnehmer (sprich Militärgebäude), wenn es keinen findet, wird ein Warenhaus zurückgegeben bzw. 0
     nobBaseMilitary* FindClientForCoin(Ware* ware) const;
-
-    /// Speichert Baustellen Gebäude etc, erklärt sich von selbst
-    void AddBuildingSite(noBuildingSite* building_site);
-    void RemoveBuildingSite(noBuildingSite* building_site);
-    const std::list<noBuildingSite*>& GetBuildingSites() const { return building_sites; }
-    /// Speichert normale Gebäude
-    void AddUsualBuilding(nobUsual* building);
-    void RemoveUsualBuilding(nobUsual* building);
-    const std::list<nobBaseWarehouse*>& GetStorehouses() const { return warehouses; }
-    /// Speichert Militärgebäude
-    void AddMilitaryBuilding(nobMilitary* building);
-    void RemoveMilitaryBuilding(nobMilitary* building);
-    const std::list<nobMilitary*>& GetMilitaryBuildings() const { return military_buildings; }
-
-    /// Gibt Liste von Gebäuden des Spieler zurück
-    const std::list<nobUsual*>& GetBuildings(const BuildingType type) const;
-    /// Liefert die Anzahl aller Gebäude einzeln
-    BuildingCount GetBuildingCount() const;
-    /// Calculate and fill the average productivies for all buildings. Vector must hold 1 entry per building type
-    void CalcProductivities(std::vector<unsigned short>& productivities) const;
-
-    /// Berechnet die durschnittlichen Produktivität aller Gebäude
-    unsigned short CalcAverageProductivitiy();
 
     /// Gibt Priorität der Baustelle zurück (entscheidet selbständig, welche Reihenfolge usw)
     /// je kleiner die Rückgabe, destro größer die Priorität!
@@ -382,14 +353,11 @@ public:
     static BuildOrders GetStandardBuildOrder();
 
 private:
-    // Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
+    /// Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
     GameWorldGame* gwg;
-    /// Liste der Warenhäuser des Spielers
-    std::list<nobBaseWarehouse*> warehouses;
-    /// Liste von Häfen
-    std::list<nobHarborBuilding*> harbors;
-    ///// Liste von unbesetzten Straßen (ohne Träger) von dem Spieler
-    // std::list<RoadSegment*> unoccupied_roads;
+    /// List of all buildings
+    BuildingRegister buildings;
+
     /// Lister aller Straßen von dem Spieler
     std::list<RoadSegment*> roads;
 
@@ -402,12 +370,6 @@ private:
     /// Liste von Baustellen/Gebäuden, die bestimmten Beruf wollen
     std::list<JobNeeded> jobs_wanted;
 
-    /// Listen der einzelnen Gebäudetypen (nur nobUsuals!)
-    boost::array<std::list<nobUsual*>, 30> buildings;
-    /// Liste von sämtlichen Baustellen
-    std::list<noBuildingSite*> building_sites;
-    /// Liste von allen Militärgebäuden
-    std::list<nobMilitary*> military_buildings;
     /// Liste von sämtlichen Waren, die herumgetragen werden und an Fahnen liegen
     std::list<Ware*> ware_list;
     /// Liste von Geologen und Spähern, die an eine Flagge gebunden sind

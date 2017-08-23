@@ -334,22 +334,16 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
     gwg->RecalcTerritory(*this, false, true);
-
-    GamePlayer& owner = gwg->GetPlayer(player);
-    owner.SetHQ(this);
-    owner.AddWarehouse(this);
 }
 
-void nobHQ::Destroy_nobHQ()
+void nobHQ::DestroyBuilding()
 {
-    Destroy_nobBaseWarehouse();
-
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetMilitarySquares().Remove(this);
     // Land drumherum neu berechnen
     // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     gwg->RecalcTerritory(*this, true, false);
-    gwg->GetPlayer(player).SetHQ(NULL);
+    nobBaseWarehouse::DestroyBuilding();
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const

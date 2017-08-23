@@ -66,15 +66,8 @@ public:
 
     ~nobUsual() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobUsual();
-
-public:
-    void Destroy() override { Destroy_nobUsual(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobUsual(SerializedGameData& sgd) const;
 
 public:

@@ -93,7 +93,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 /// Aktualisieren der Prozente
 void iwBuildingProductivities::UpdatePercents()
 {
-    player.CalcProductivities(percents);
+    player.GetBuildingRegister().CalcProductivities(percents);
 }
 
 /// Produktivitäts-percentbars aktualisieren

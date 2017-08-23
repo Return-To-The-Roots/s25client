@@ -45,17 +45,16 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "libutil/Log.h"
-
+#include <boost/foreach.hpp>
 #include <limits>
 #include <stdexcept>
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), new_built(true), captured_not_built(false), coins(0), coinsDisabled(false),
+    : nobBaseMilitary(type, pos, player, nation), new_built(true), captured_not_built(false), numCoins(0), coinsDisabled(false),
       coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL),
       is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
-    gwg->GetPlayer(player).AddMilitaryBuilding(this);
     gwg->GetMilitarySquares().Add(this);
 
     // Größe ermitteln
@@ -71,19 +70,15 @@ nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsi
             break;
     }
 
-    LookForEnemyBuildings();
-
     // Tür aufmachen, bis Gebäude besetzt ist
     OpenDoor();
 
     // Wenn kein Gold in neu gebaute Militärgebäude eingeliefert werden soll, wird die Goldzufuhr gestoppt
-    // Ansonsten neue Goldmünzen anfordern
     if(gwg->GetGGS().isEnabled(AddonId::NO_COINS_DEFAULT))
     {
         coinsDisabled = true;
         coinsDisabledVirtual = true;
-    } else
-        SearchCoins();
+    }
 }
 
 nobMilitary::~nobMilitary()
@@ -102,10 +97,9 @@ size_t nobMilitary::GetTotalSoldiers() const
     return sum;
 }
 
-void nobMilitary::Destroy_nobMilitary()
+void nobMilitary::DestroyBuilding()
 {
     // Remove from military square and buildings first, to avoid e.g. sending canceled soldiers back to this building
-    gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
     gwg->GetMilitarySquares().Remove(this);
 
     // Bestellungen stornieren
@@ -126,16 +120,14 @@ void nobMilitary::Destroy_nobMilitary()
     GetEvMgr().RemoveEvent(upgrade_event);
 
     // übriggebliebene Goldmünzen in der Inventur abmelden
-    gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, coins);
-
-    Destroy_nobBaseMilitary();
+    gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
 
     // Land drumherum neu berechnen (nur wenn es schon besetzt wurde!)
-    // Nach dem BaseDestroy erst, da in diesem erst das Feuer gesetzt, die Straße gelöscht wird usw.
     if(!new_built)
         gwg->RecalcTerritory(*this, true, false);
 
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, bldType_));
+    nobBaseMilitary::DestroyBuilding();
 }
 
 void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
@@ -143,7 +135,7 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
     Serialize_nobBaseMilitary(sgd);
     sgd.PushBool(new_built);
     sgd.PushBool(captured_not_built);
-    sgd.PushUnsignedChar(coins);
+    sgd.PushUnsignedChar(numCoins);
     sgd.PushBool(coinsDisabled);
     sgd.PushUnsignedChar(frontier_distance);
     sgd.PushUnsignedChar(size);
@@ -159,7 +151,7 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
-    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), captured_not_built(sgd.PopBool()), coins(sgd.PopUnsignedChar()),
+    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), captured_not_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
       coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.PopUnsignedChar()),
       size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()),
       upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
@@ -298,7 +290,7 @@ void nobMilitary::HandleEvent(const unsigned id)
                     troops.insert(*it);
 
                 // Goldmünze verbrauchen
-                --coins;
+                --numCoins;
                 gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, 1);
 
                 // Evtl neues Beförderungsevent anmelden
@@ -411,7 +403,8 @@ void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 
 void nobMilitary::RegulateTroops()
 {
-    RTTR_Assert(helpers::contains(gwg->GetPlayer(player).GetMilitaryBuildings(), this)); // If this fails, the building is Being destroyed!
+    RTTR_Assert(helpers::contains(gwg->GetPlayer(player).GetBuildingRegister().GetMilitaryBuildings(),
+                                  this)); // If this fails, the building is Being destroyed!
 
     // Wenn das Gebäude eingenommen wird, erstmal keine neuen Truppen und warten, wieviele noch reinkommen
     if(IsBeingCaptured())
@@ -605,7 +598,7 @@ void nobMilitary::TakeWare(Ware* ware)
 void nobMilitary::AddWare(Ware*& ware)
 {
     // Ein Golstück mehr
-    ++coins;
+    ++numCoins;
     // aus der Bestellliste raushaun
     RTTR_Assert(helpers::contains(ordered_coins, ware));
     ordered_coins.remove(ware);
@@ -917,8 +910,8 @@ void nobMilitary::Capture(const unsigned char new_owner)
     captured_not_built = true;
 
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
-    gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, coins);
-    gwg->GetPlayer(new_owner).IncreaseInventoryWare(GD_COINS, coins);
+    gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
+    gwg->GetPlayer(new_owner).IncreaseInventoryWare(GD_COINS, numCoins);
 
     // Soldaten, die auf Mission sind, Bescheid sagen
     for(std::list<nofActiveSoldier*>::iterator it = troops_on_mission.begin(); it != troops_on_mission.end(); ++it)
@@ -934,15 +927,13 @@ void nobMilitary::Capture(const unsigned char new_owner)
     troops_on_mission.clear();
     aggressive_defenders.clear();
 
-    // In der Wirtschaftsverwaltung dieses Gebäude jetzt zum neuen Spieler zählen und beim alten raushauen
-    gwg->GetPlayer(player).RemoveMilitaryBuilding(this);
-    gwg->GetPlayer(new_owner).AddMilitaryBuilding(this);
-
     // Alten Besitzer merken
     unsigned char old_player = player;
-
+    gwg->GetPlayer(old_player).RemoveBuilding(this, bldType_);
     // neuer Spieler
     player = new_owner;
+    // In der Wirtschaftsverwaltung dieses Gebäude jetzt zum neuen Spieler zählen und beim alten raushauen
+    gwg->GetPlayer(new_owner).AddBuilding(this, bldType_);
 
     // Flagge davor auch übernehmen
     GetFlag()->Capture(new_owner);
@@ -1116,7 +1107,7 @@ void nobMilitary::SetCoinsAllowed(const bool enabled)
     }
 }
 
-unsigned nobMilitary::CalcCoinsPoints()
+unsigned nobMilitary::CalcCoinsPoints() const
 {
     // Will ich überhaupt Goldmünzen, wenn nich, sofort raus
     if(!WantCoins())
@@ -1126,13 +1117,13 @@ unsigned nobMilitary::CalcCoinsPoints()
     int points = 10000;
 
     // Wenn hier schon Münzen drin sind oder welche bestellt sind, wirkt sich das natürlich negativ auf die "Wichtigkeit" aus
-    points -= (coins + ordered_coins.size()) * 30;
+    points -= (numCoins + ordered_coins.size()) * 30;
 
     // Beförderbare Soldaten zählen
-    for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
+    BOOST_FOREACH(const nofPassiveSoldier* soldier, troops)
     {
         // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
-        if((*it)->GetRank() < gwg->GetGGS().GetMaxMilitaryRank())
+        if(soldier->GetRank() < gwg->GetGGS().GetMaxMilitaryRank())
             points += 20;
     }
 
@@ -1142,10 +1133,10 @@ unsigned nobMilitary::CalcCoinsPoints()
     return static_cast<unsigned>(points);
 }
 
-bool nobMilitary::WantCoins()
+bool nobMilitary::WantCoins() const
 {
     // Wenn die Goldzufuhr gestoppt wurde oder Münzvorrat voll ist, will ich gar keine Goldmünzen
-    return (!coinsDisabled && coins + ordered_coins.size() != GetMaxCoinCt() && !new_built);
+    return (!coinsDisabled && numCoins + ordered_coins.size() != GetMaxCoinCt() && !new_built);
 }
 
 void nobMilitary::SearchCoins()
@@ -1179,7 +1170,7 @@ void nobMilitary::SearchCoins()
 void nobMilitary::PrepareUpgrading()
 {
     // Goldmünzen da?
-    if(!coins)
+    if(!numCoins)
         return;
 
     // Gibts auch noch kein Beförderungsevent?

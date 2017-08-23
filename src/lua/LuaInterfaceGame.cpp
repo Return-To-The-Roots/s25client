@@ -19,10 +19,8 @@
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
 #include "GameClient.h"
-#include "GamePlayer.h"
 #include "GlobalVars.h"
 #include "WindowManager.h"
-#include "buildings/nobBaseWarehouse.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
@@ -261,11 +259,7 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
 void LuaInterfaceGame::ClearResources()
 {
     for(unsigned p = 0; p < gw.GetPlayerCount(); p++)
-    {
-        const std::list<nobBaseWarehouse*> warehouses = gw.GetPlayer(p).GetStorehouses();
-        for(std::list<nobBaseWarehouse*>::const_iterator wh = warehouses.begin(); wh != warehouses.end(); ++wh)
-            (*wh)->Clear();
-    }
+        GetPlayer(p).ClearResources();
 }
 
 unsigned LuaInterfaceGame::GetGF()

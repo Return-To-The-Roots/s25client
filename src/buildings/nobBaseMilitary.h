@@ -57,15 +57,8 @@ public:
     nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id);
     ~nobBaseMilitary() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobBaseMilitary();
-
-public:
-    void Destroy() override { Destroy_nobBaseMilitary(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobBaseMilitary(SerializedGameData& sgd) const;
 
 public:

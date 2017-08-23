@@ -31,15 +31,8 @@ public:
     nobHQ(const MapPoint pt, const unsigned char player, const Nation nation, const bool isTent = false);
     nobHQ(SerializedGameData& sgd, const unsigned obj_id);
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobHQ();
-
-public:
-    void Destroy() override { Destroy_nobHQ(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobHQ(SerializedGameData& sgd) const;
 
 public:

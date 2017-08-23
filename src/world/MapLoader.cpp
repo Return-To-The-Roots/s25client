@@ -19,6 +19,7 @@
 #include "world/MapLoader.h"
 #include "Random.h"
 #include "buildings/nobHQ.h"
+#include "factories/BuildingFactory.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
 #include "world/World.h"
@@ -42,7 +43,7 @@ MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : w
 {
 }
 
-bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration)
+bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
     world.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
@@ -58,10 +59,12 @@ bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Explorati
     if(exploration == EXP_FOGOFWARE_EXPLORED)
         SetMapExplored(world, playerNations.size());
 
-    if(!PlaceHQs(world, hqPositions, playerNations, randomStartPos))
-        return false;
-
     return true;
+}
+
+bool MapLoader::PlaceHQs(GameWorldBase& world, bool randomStartPos)
+{
+    return PlaceHQs(world, hqPositions, playerNations, randomStartPos);
 }
 
 void MapLoader::InitShadows(World& world)
@@ -370,7 +373,8 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
     }
 }
 
-bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos)
+bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations,
+                         bool randomStartPos)
 {
     // random locations? -> randomize them :)
     if(randomStartPos)
@@ -391,8 +395,8 @@ bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const 
             LOG.write(_("Player %u does not have a valid start position!")) % i;
             return false;
         }
-        nobHQ* hq = new nobHQ(hqPositions[i], i, playerNations[i]);
-        world.SetNO(hqPositions[i], hq);
+
+        BuildingFactory::CreateBuilding(world, BLD_HEADQUARTERS, hqPositions[i], i, playerNations[i]);
     }
     return true;
 }

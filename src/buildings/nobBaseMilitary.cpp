@@ -42,7 +42,7 @@ nobBaseMilitary::~nobBaseMilitary()
         delete *it;
 }
 
-void nobBaseMilitary::Destroy_nobBaseMilitary()
+void nobBaseMilitary::DestroyBuilding()
 {
     // Soldaten Bescheid sagen, die evtl auf Mission sind
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
@@ -101,8 +101,6 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
         if((*it)->GetPlayer() != player && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             static_cast<nobMilitary*>(*it)->LookForEnemyBuildings(this);
     }
-
-    Destroy_noBuilding();
 }
 
 void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
