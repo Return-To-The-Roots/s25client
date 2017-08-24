@@ -153,47 +153,29 @@ void glArchivItem_Font::AddCharInfo(unsigned c, const CharInfo& info)
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glArchivItem_Font::DrawChar(unsigned curChar, std::vector<GL_T2F_V2F_Struct>& vertices, DrawPoint& curPos,
-                                        const Point<float>& texSize) const
+inline void glArchivItem_Font::DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const
 {
     CharInfo ci = GetCharInfo(curChar);
 
-    Point<float> texCoord1 = ci.pos / texSize;
-    Point<float> texCoord2 = (ci.pos + Position(ci.width, dy)) / texSize;
-    Point<float> curPos1(curPos);
-    Point<float> curPos2(curPos + Position(ci.width, dy));
+    GlPoint texCoord1(ci.pos);
+    GlPoint texCoord2(ci.pos + DrawPoint(ci.width, dy));
 
-    GL_T2F_V2F_Struct tmp;
-    tmp.tx = texCoord1.x;
-    tmp.ty = texCoord1.y;
-    tmp.x = curPos1.x;
-    tmp.y = curPos1.y;
-    vertices.push_back(tmp);
+    vertices.texCoords.push_back(texCoord1);
+    vertices.texCoords.push_back(GlPoint(texCoord1.x, texCoord2.y));
+    vertices.texCoords.push_back(texCoord2);
+    vertices.texCoords.push_back(GlPoint(texCoord2.x, texCoord1.y));
 
-    tmp.tx = texCoord1.x;
-    tmp.ty = texCoord2.y;
-    tmp.x = curPos1.x;
-    tmp.y = curPos2.y;
-    vertices.push_back(tmp);
+    GlPoint curPos1(curPos);
+    GlPoint curPos2(curPos + DrawPoint(ci.width, dy));
 
-    tmp.tx = texCoord2.x;
-    tmp.ty = texCoord2.y;
-    tmp.x = curPos2.x;
-    tmp.y = curPos2.y;
-    vertices.push_back(tmp);
-
-    tmp.tx = texCoord2.x;
-    tmp.ty = texCoord1.y;
-    tmp.x = curPos2.x;
-    tmp.y = curPos1.y;
-    vertices.push_back(tmp);
+    vertices.vertices.push_back(curPos1);
+    vertices.vertices.push_back(GlPoint(curPos1.x, curPos2.y));
+    vertices.vertices.push_back(curPos2);
+    vertices.vertices.push_back(GlPoint(curPos2.x, curPos1.y));
 
     curPos.x += ci.width;
 }
 
-/**
- *  @brief
- */
 void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color, unsigned short length,
                              unsigned short maxWidth, const ucString& end)
 {
@@ -287,11 +269,8 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         curPos.x = pos.x - line_width / 2;
     }
 
-    // Get texture first as it might need to be created
-    glArchivItem_Bitmap& usedFont = (format & DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
-    unsigned texture = usedFont.GetTexture();
-    const Point<float> texSize(usedFont.GetTexSize());
-    texList.clear();
+    texList.texCoords.clear();
+    texList.vertices.clear();
 
     for(std::string::const_iterator it = text.begin(); it != itEnd;)
     {
@@ -308,7 +287,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
                 curPos.x = pos.x;
             curPos.y += dy;
         } else
-            DrawChar(curChar, texList, curPos, texSize);
+            DrawChar(curChar, texList, curPos);
     }
 
     if(drawEnd)
@@ -321,18 +300,31 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
                 curPos.x = pos.x;
                 curPos.y += dy;
             } else
-                DrawChar(curChar, texList, curPos, texSize);
+                DrawChar(curChar, texList, curPos);
         }
     }
 
-    if(texList.empty())
+    if(texList.vertices.empty())
         return;
 
-    glVertexPointer(2, GL_FLOAT, sizeof(GL_T2F_V2F_Struct), &texList[0].x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GL_T2F_V2F_Struct), &texList[0].tx);
+    // Get texture first as it might need to be created
+    glArchivItem_Bitmap& usedFont = (format & DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
+    unsigned texture = usedFont.GetTexture();
+    const GlPoint texSize(usedFont.GetTexSize());
+    RTTR_Assert(texList.texCoords.size() == texList.vertices.size());
+    RTTR_Assert(texList.texCoords.size() % 4u == 0);
+    // Vectorizable loop
+    for(unsigned i = 0; i < texList.texCoords.size(); i += 4)
+    {
+        for(int j = 0; j < 4; j++)
+            texList.texCoords[i + j] /= texSize;
+    }
+
+    glVertexPointer(2, GL_FLOAT, 0, &texList.vertices[0]);
+    glTexCoordPointer(2, GL_FLOAT, 0, &texList.texCoords[0]);
     VIDEODRIVER.BindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-    glDrawArrays(GL_QUADS, 0, texList.size());
+    glDrawArrays(GL_QUADS, 0, texList.vertices.size());
 }
 
 template<bool T_limitWidth, class T_Iterator>

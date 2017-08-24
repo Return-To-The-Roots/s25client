@@ -108,10 +108,11 @@ public:
     unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
 
 private:
-    struct GL_T2F_V2F_Struct
+    typedef Point<GLfloat> GlPoint;
+    struct VertexArrays
     {
-        GLfloat tx, ty;
-        GLfloat x, y;
+        std::vector<GlPoint> texCoords;
+        std::vector<GlPoint> vertices;
     };
 
     void initFont();
@@ -119,7 +120,7 @@ private:
     void AddCharInfo(unsigned c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
     const CharInfo& GetCharInfo(unsigned c) const;
-    void DrawChar(unsigned curChar, std::vector<GL_T2F_V2F_Struct>& vertices, DrawPoint& curPos, const Point<float>& texSize) const;
+    void DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
     boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
     boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
@@ -127,8 +128,8 @@ private:
     /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
     boost::array<std::pair<bool, CharInfo>, 256> asciiMapping;
     std::map<unsigned, CharInfo> utf8_mapping;
-    CharInfo placeHolder;                   /// Placeholder if glyph is missing
-    std::vector<GL_T2F_V2F_Struct> texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
+    CharInfo placeHolder; /// Placeholder if glyph is missing
+    VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
 
     /// Get width of the sequence defined by the begin/end pair of iterators
     template<class T_Iterator>
