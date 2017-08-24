@@ -90,8 +90,6 @@ public:
     std::string GetName() const { return (videodriver) ? videodriver->GetName() : ""; }
     bool IsLoaded() const { return videodriver != NULL; }
 
-    /// Return the next highest power of 2 for the given value
-    static unsigned nextPowerOfTwo(unsigned k);
     /// Calculate the size of the texture which is optimal for the driver and at least minSize
     Extent calcPreferredTextureSize(const Extent& minSize) const;
 

@@ -23,6 +23,7 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "driver/src/VideoInterface.h"
+#include "helpers/roundToNextPow2.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/error.h"
 #include <algorithm>
@@ -321,24 +322,9 @@ bool VideoDriverWrapper::Run()
     return videodriver->MessageLoop();
 }
 
-unsigned VideoDriverWrapper::nextPowerOfTwo(unsigned k)
-{
-    if(k == 0)
-        return 1;
-
-    k--;
-
-    for(unsigned i = 1; i < sizeof(unsigned) * CHAR_BIT; i *= 2)
-    {
-        k = k | k >> i;
-    }
-
-    return k + 1;
-}
-
 Extent VideoDriverWrapper::calcPreferredTextureSize(const Extent& minSize) const
 {
-    return Extent(nextPowerOfTwo(minSize.x), nextPowerOfTwo(minSize.y));
+    return Extent(helpers::roundToNextPowerOfTwo(minSize.x), helpers::roundToNextPowerOfTwo(minSize.y));
 }
 
 bool VideoDriverWrapper::Initialize()
