@@ -66,9 +66,6 @@ public:
 
     const std::list<noFigure*>& GetLeavingFigures() const { return leave_house; }
 
-    /// Liefert Militärradius des Gebäudes
-    virtual unsigned GetMilitaryRadius() const = 0;
-
     /// Gibt Verteidiger zurück
     const nofDefender* GetDefender() const { return defender_; }
 

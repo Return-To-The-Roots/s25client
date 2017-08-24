@@ -20,6 +20,7 @@
 
 #include "world/GameWorldBase.h"
 #include "gameTypes/MapCoordinates.h"
+#include <boost/core/scoped_enum.hpp>
 #include <vector>
 
 class CatapultStone;
@@ -34,8 +35,14 @@ struct PlayerInfo;
 class RoadSegment;
 class TerritoryRegion;
 
-/// "Interface-Klasse" für das Spiel
-class GameWorldGame : public GameWorldBase
+BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
+  Build,     /// Building was build (and occupied for the first time)
+  Destroyed, /// Building destroyed
+  Captured   /// Owner changed
+} BOOST_SCOPED_ENUM_DECLARE_END(TerritoryChangeReason)
+
+  /// "Interface-Klasse" für das Spiel
+  class GameWorldGame : public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception,
@@ -55,7 +62,7 @@ class GameWorldGame : public GameWorldBase
     void MakeVisible(const MapPoint pt, const unsigned char player);
 
     /// Creates a region with territories marked around a building with the given radius
-    TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, const bool destroyed) const;
+    TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, bool ignoreRegionOfBld) const;
 
 protected:
     /// Create Trade graphs
@@ -108,13 +115,12 @@ public:
     /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
     void BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start, const std::vector<Direction>& route);
 
-    /// Berechnet das Land in einem bestimmten Bereich (um ein neues, abgerissenes oder eingenommenes
-    /// Militärgebäude rum) neu, destroyed gibt an, ob building abgerissen wurde und somit nicht einberechnet werden soll
-    void RecalcTerritory(const noBaseBuilding& building, const bool destroyed, const bool newBuilt);
+    /// Recalculates the ownership around a military building
+    void RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason);
 
     /// Berechnet das Land in einem bestimmten Bereich um ein aktuelles Militärgebäude rum neu und gibt zurück ob sich etwas verändern würde
     /// (auf für ki wichtigem untergrund) wenn das Gebäude zerstört werden würde
-    bool DoesTerritoryChange(const noBaseBuilding& building, const bool destroyed, const bool newBuilt) const;
+    bool DoesDestructionChangeTerritory(const noBaseBuilding& building) const;
 
     /// Greift ein Militärgebäude auf x,y an (entsendet dafür die Soldaten etc.)
     void Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count, const bool strong_soldiers);

@@ -125,7 +125,7 @@ void nobMilitary::DestroyBuilding()
     nobBaseMilitary::DestroyBuilding();
     // If this was occupied, recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
     if(!new_built)
-        gwg->RecalcTerritory(*this, true, false);
+        gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
 
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, player, pos, bldType_));
 }
@@ -306,7 +306,8 @@ void nobMilitary::HandleEvent(const unsigned id)
 
 unsigned nobMilitary::GetMilitaryRadius() const
 {
-    return MILITARY_RADIUS[size];
+    // If it was never occupied, it does not hold land
+    return (new_built) ? 0 : MILITARY_RADIUS[size];
 }
 
 unsigned nobMilitary::GetMaxCoinCt() const
@@ -579,7 +580,7 @@ bool nobMilitary::IsUseless() const
 {
     if(frontier_distance || new_built)
         return false;
-    return !gwg->DoesTerritoryChange(*this, true, false);
+    return !gwg->DoesDestructionChangeTerritory(*this);
 }
 
 bool nobMilitary::IsAttackable(int playerIdx) const
@@ -693,7 +694,7 @@ void nobMilitary::AddPassiveSoldier(nofPassiveSoldier* soldier)
         // Ist nun besetzt
         new_built = false;
         // Landgrenzen verschieben
-        gwg->RecalcTerritory(*this, false, true);
+        gwg->RecalcTerritory(*this, TerritoryChangeReason::Build);
         // Tür zumachen
         CloseDoor();
         gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
@@ -939,7 +940,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     GetFlag()->Capture(new_owner);
 
     // Territorium neu berechnen
-    gwg->RecalcTerritory(*this, false, false);
+    gwg->RecalcTerritory(*this, TerritoryChangeReason::Captured);
 
     // Sichtbarkeiten berechnen für alten Spieler
     gwg->RecalcVisibilitiesAroundPoint(pos, GetMilitaryRadius() + VISUALRANGE_MILITARY + 1, old_player, NULL);

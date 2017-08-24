@@ -26,6 +26,7 @@
 
 BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
 
+  /// Static class returning properties of terrain types
   class TerrainData
 {
     // Disallow construction, only static methods

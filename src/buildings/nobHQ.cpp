@@ -333,7 +333,7 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
 
     // ins Militärquadrat einfügen
     gwg->GetMilitarySquares().Add(this);
-    gwg->RecalcTerritory(*this, false, true);
+    gwg->RecalcTerritory(*this, TerritoryChangeReason::Build);
 }
 
 void nobHQ::DestroyBuilding()
@@ -342,7 +342,7 @@ void nobHQ::DestroyBuilding()
     // Wieder aus dem Militärquadrat rauswerfen
     gwg->GetMilitarySquares().Remove(this);
     // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
-    gwg->RecalcTerritory(*this, true, false);
+    gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
 void nobHQ::Serialize_nobHQ(SerializedGameData& sgd) const

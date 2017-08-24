@@ -77,6 +77,9 @@ public:
     Nation GetNation() const { return nation; }
     BlockingManner GetBM() const override;
 
+    /// Return the radius in which this building holds land
+    virtual unsigned GetMilitaryRadius() const = 0;
+
     /// Ermittelt die Flagge, die vor dem Gebäude steht
     noFlag* GetFlag() const;
 

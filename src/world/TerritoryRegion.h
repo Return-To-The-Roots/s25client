@@ -56,9 +56,11 @@ private:
     /// Check whether the point is part of the polygon
     static bool IsPointInPolygon(const std::vector<Point<int> >& polygon, const Point<int> pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
-    void AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers);
+    void AdjustNode(MapPoint pt, unsigned char player, unsigned char radius, const std::vector<MapPoint>* allowedArea);
     TRNode& GetNode(const PointI& pt) { return nodes[GetIdx(pt)]; }
     const TRNode& GetNode(const PointI& pt) const { return nodes[GetIdx(pt)]; }
+    /// Return a pointer to the node, if it is inside this region
+    TRNode* TryGetNode(const MapPoint& pt);
 
 public:
     TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb);

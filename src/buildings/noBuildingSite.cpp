@@ -126,7 +126,7 @@ void noBuildingSite::Destroy_noBuildingSite()
     {
         gwg->RemoveHarborBuildingSiteFromSea(this);
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
-        gwg->RecalcTerritory(*this, true, false);
+        gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
     }
     gwg->RecalcBQAroundPointBig(pos);
 }
@@ -179,6 +179,13 @@ void noBuildingSite::OrderConstructionMaterial()
             break;
         RTTR_Assert(helpers::contains(ordered_stones, w));
     }
+}
+
+unsigned noBuildingSite::GetMilitaryRadius() const
+{
+    /// Note: This actually only applies to harbor buildings made from expeditions. We rely on the calling functions to only take those into
+    /// account
+    return bldType_ == BLD_HARBORBUILDING ? HARBOR_RADIUS : 0;
 }
 
 void noBuildingSite::Draw(DrawPoint drawPt)
