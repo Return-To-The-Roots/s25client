@@ -202,6 +202,14 @@ inline Point<typename detail::MixedType<T, U>::type> operator*(const Point<T>& l
     return Point<typename detail::MixedType<T, U>::type>(lhs.x * rhs.x, lhs.y * rhs.y);
 }
 
+template<typename T>
+inline Point<T>& operator*=(Point<T>& lhs, const Point<T>& right)
+{
+    lhs.x *= right.x;
+    lhs.y *= right.y;
+    return lhs;
+}
+
 template<typename T, typename U>
 inline Point<typename detail::MixedType<T, U>::type> operator/(const Point<T>& pt, const U div)
 {
@@ -218,6 +226,14 @@ template<typename T, typename U>
 inline Point<typename detail::MixedType<T, U>::type> operator/(const Point<T>& lhs, const Point<U>& rhs)
 {
     return Point<typename detail::MixedType<T, U>::type>(lhs.x / rhs.x, lhs.y / rhs.y);
+}
+
+template<typename T>
+inline Point<T>& operator/=(Point<T>& lhs, const Point<T>& right)
+{
+    lhs.x /= right.x;
+    lhs.y /= right.y;
+    return lhs;
 }
 
 #endif // Point_h__
