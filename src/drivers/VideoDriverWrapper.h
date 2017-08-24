@@ -43,7 +43,7 @@ public:
     /// Verändert Auflösung, Fenster/Fullscreen
     bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
     /// Viewport (neu) setzen
-    void RenewViewport(bool onlyRenew = false);
+    void RenewViewport();
     /// zerstört das Fenster.
     bool DestroyScreen();
     /// räumt die Texturen auf

@@ -17,17 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
-
 #include "ExtensionList.h"
 #include "GlobalVars.h"
-#include "Settings.h"
-#include "driver/src/VideoInterface.h"
-
 #include "RTTR_Version.h"
+#include "Settings.h"
 #include "WindowManager.h"
+#include "driver/src/VideoInterface.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/error.h"
-
 #include <algorithm>
 #include <ctime>
 #include <sstream>
@@ -398,7 +395,7 @@ bool VideoDriverWrapper::Initialize()
 /**
  *  Viewport (neu) setzen
  */
-void VideoDriverWrapper::RenewViewport(bool /*onlyRenew*/)
+void VideoDriverWrapper::RenewViewport()
 {
     if(!videodriver->IsOpenGL())
         return;
@@ -414,15 +411,13 @@ void VideoDriverWrapper::RenewViewport(bool /*onlyRenew*/)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    // ... und laden
-    glOrtho(0, width, 0, height, -100, 100);
-
-    // 0; 0 soll obere linke Ecke sein
-    glRotated(180, 1, 0, 0);
-    glTranslated(0, -videodriver->GetScreenHeight(), 0);
+    // 0,0 should be top left corner
+    glOrtho(0, width, height, 0, -100, 100);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    ClearScreen();
 }
 
 /**
