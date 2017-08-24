@@ -31,6 +31,7 @@ public:
         : baseArchivItem_Sound(item), baseArchivItem_Sound_Wave(item), glArchivItem_Sound(item)
     {
     }
+    RTTR_CLONEABLE(glArchivItem_Sound_Wave)
 
     /// Spielt den Sound ab.
     unsigned Play(const unsigned char volume, const bool loop) override;

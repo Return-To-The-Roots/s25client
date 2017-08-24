@@ -38,6 +38,7 @@ class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 public:
     glArchivItem_Font();
     glArchivItem_Font(const glArchivItem_Font& item);
+    RTTR_CLONEABLE(glArchivItem_Font)
 
     /// Draw the the text at the given position with format (alignment) and color.
     /// If length is given, only that many chars (not glyphs!) will be used

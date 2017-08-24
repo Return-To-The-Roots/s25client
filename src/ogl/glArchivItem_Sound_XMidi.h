@@ -31,6 +31,7 @@ public:
         : baseArchivItem_Sound(item), baseArchivItem_Sound_XMidi(item), glArchivItem_Music(item)
     {
     }
+    RTTR_CLONEABLE(glArchivItem_Sound_XMidi)
 
     /// Spielt die Musik ab.
     void Play(const unsigned repeats) override;

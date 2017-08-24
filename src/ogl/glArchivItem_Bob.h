@@ -28,6 +28,7 @@ class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
 public:
     /// Zeichnet einen Animationsstep.
     void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
+    RTTR_CLONEABLE(glArchivItem_Bob)
 };
 
 #endif // !GLARCHIVITEM_BOB_H_INCLUDED

@@ -18,20 +18,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "defines.h" // IWYU pragma: keep
-
 #include "Loader.h"
-#include "files.h"
-
-#include "Settings.h"
-
-#include "drivers/VideoDriverWrapper.h"
-#include "libutil/src/Log.h"
-
 #include "ListDir.h"
-#include "libutil/src/fileFuncs.h"
-
+#include "Settings.h"
 #include "addons/const_addons.h"
-#include "ogl/glAllocator.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "files.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
@@ -43,12 +35,14 @@
 #include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
-
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Palette.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
 #include "libsiedler2/src/ErrorCodes.h"
+#include "libsiedler2/src/IAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/fileFuncs.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
 #include <algorithm>
@@ -1243,7 +1237,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(GlAllocator().create(bobtype));
+            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(libsiedler2::getAllocator().create(bobtype));
 
             if(!out)
             {
@@ -1283,7 +1277,7 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             libsiedler2::ArchivInfo temp;
             if(!LoadArchiv(*itFile, palette, temp))
                 return false;
-            item = GlAllocator().clone(*temp.get(0));
+            item = temp[0]->clone();
         } else if(wf.back() == "fon") // Font
         {
             glArchivItem_Font* font = new glArchivItem_Font();
