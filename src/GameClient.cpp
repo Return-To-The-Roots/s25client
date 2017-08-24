@@ -1684,9 +1684,16 @@ unsigned GameClient::SaveToFile(const std::string& filename)
 
     // Und alles speichern
     if(!save.Save(filename))
+    {
+        GameMessage_System_Chat saveAnnouncement = GameMessage_System_Chat(playerId_, "Error occurred while saving game.");
+        send_queue.sendMessage(socket, saveAnnouncement);
         return 1;
-    else
+    }
+    else {
+        GameMessage_System_Chat saveAnnouncement = GameMessage_System_Chat(playerId_, "Game saved.");
+        send_queue.sendMessage(socket, saveAnnouncement);
         return 0;
+    }
 }
 
 void GameClient::ResetVisualSettings()

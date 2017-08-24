@@ -127,7 +127,13 @@ void iwSave::SaveLoad()
     tmp += ".sav";
 
     // Speichern
-    GAMECLIENT.SaveToFile(tmp);
+    int error = GAMECLIENT.SaveToFile(tmp);
+    if (error == 0)
+    {
+        // Just close the dialog if save was successful, since player usually wants to continue playing or quit the game
+        Close();
+        return;
+    }
 
     // Aktualisieren
     RefreshTable();
