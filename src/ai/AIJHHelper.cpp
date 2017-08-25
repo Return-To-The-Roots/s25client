@@ -101,7 +101,23 @@ void AIJH::BuildJob::TryToBuild()
         return;
     }
 
-    if(!aiConstruction.Wanted(type))
+    // In case the map terrain is very unlucky (no BQ_HOUSE), try to build unwanted types (e.g. military building)
+    bool forceBuild = false;
+    if (!aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11) && aiConstruction.GetBuildingCount(BLD_SAWMILL) == 0)
+    {
+        if (!aiConstruction.Wanted(type))
+        {
+            if (type > BLD_GUARDHOUSE && type <= BLD_FORTRESS)
+            {
+                // We can't build watchtower or fortress because no BQ_HOUSE or higher is available, build a
+                // guardhouse instead
+                type = BLD_GUARDHOUSE;
+            }
+            forceBuild = aiConstruction.IncrementWanted(type);
+        }
+    }
+
+    if(!aiConstruction.Wanted(type) && !forceBuild)
     {
         status = AIJH::JOB_FINISHED;
         return;

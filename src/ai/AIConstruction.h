@@ -109,6 +109,10 @@ public:
     /// Initializes the wanted-buildings-vector
     void InitBuildingsWanted();
 
+    /// Increments a wanted count of a building type, used in case AI gets stuck, e.g. allow border expansion
+    /// where map gen was extremely unlucky and no BQ_HOUSE available for sawmill, return true if incremented
+    bool IncrementWanted(BuildingType type);
+
     /// Update BQ and farming ground around new building site + road
     /// HIer oder in AIPlayerJH?
     // void RecalcGround(const MapPoint buildingPos, std::vector<unsigned char> &route_road);
