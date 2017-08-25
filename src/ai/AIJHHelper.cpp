@@ -117,7 +117,7 @@ void AIJH::BuildJob::TryToBuild()
         }
     }
 
-    if(!aiConstruction.Wanted(type) && !forceBuild)
+    if(!forceBuild && !aiConstruction.Wanted(type))
     {
         status = AIJH::JOB_FINISHED;
         return;
