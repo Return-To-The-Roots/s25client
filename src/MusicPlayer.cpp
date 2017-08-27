@@ -233,8 +233,9 @@ void MusicPlayer::PlayNext()
         if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)
-            if(GetMusic(sng_lst, nr - 1))
-                GetMusic(sng_lst, nr - 1)->Play(1);
+            glArchivItem_Music* curSong = dynamic_cast<glArchivItem_Music*>(LOADER.sng_lst[nr - 1]);
+            if(curSong)
+                curSong->Play(1);
         }
         return;
     }
@@ -253,7 +254,7 @@ void MusicPlayer::PlayNext()
     }
 
     // Und abspielen
-    dynamic_cast<glArchivItem_Music*>(sng.get(0))->Play(1);
+    dynamic_cast<glArchivItem_Music*>(sng[0])->Play(1);
 }
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs

@@ -31,6 +31,7 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #ifdef _MSC_VER
+// Visual Studio
 #include <crtdbg.h>
 #include <stdlib.h> // Required for crtdbg.h
 #if !defined(snprintf) && _MSC_VER < 1900
@@ -42,13 +43,14 @@ extern void __cdecl __debugbreak();
 #define assert _ASSERT
 #endif
 #else
+// Not Visual Studio
 #include <assert.h>
 #define RTTR_BREAKPOINT
 #endif
 
-#undef PlaySound
 typedef int socklen_t;
 #else
+// Non-Windows
 #if(defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
 #define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
 #else
@@ -97,14 +99,12 @@ inline F pto2ptf(void* o)
     return U.f;
 }
 
-#undef min
 template<typename T>
 inline T min(T a, T b)
 {
     return (a < b) ? a : b;
 }
 
-#undef max
 template<typename T>
 inline T max(T a, T b)
 {

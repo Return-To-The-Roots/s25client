@@ -35,8 +35,6 @@
 #include <string>
 #include <vector>
 
-///////////////////////////////////////////////////////////////////////////////
-
 struct AddonId;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
@@ -191,7 +189,11 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// Makros / Defines
 #define LOADER Loader::inst()
+
+// Helper macros for easy access to fonts
+#define SmallFont (LOADER.GetFontN("outline_fonts", 0))
+#define NormalFont (LOADER.GetFontN("outline_fonts", 1))
+#define LargeFont (LOADER.GetFontN("outline_fonts", 2))
 
 #endif // LOADER_H_INCLUDED
