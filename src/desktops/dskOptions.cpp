@@ -367,7 +367,7 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const uns
         case 72:
         {
             SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
+            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
         }
         break;
     }

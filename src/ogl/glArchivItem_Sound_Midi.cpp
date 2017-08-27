@@ -32,9 +32,9 @@ void glArchivItem_Sound_Midi::Play(const unsigned repeats)
     if(!SETTINGS.sound.musik)
         return;
 
-    if(!sound)
+    if(!sound.isValid())
         sound = AUDIODRIVER.LoadMusic(*this, ".midi");
 
-    if(sound)
+    if(sound.isValid())
         AUDIODRIVER.PlayMusic(sound, repeats);
 }

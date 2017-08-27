@@ -32,7 +32,7 @@ void glArchivItem_Sound_XMidi::Play(const unsigned repeats)
     if(!SETTINGS.sound.musik)
         return;
 
-    if(!sound)
+    if(!sound.isValid())
     {
         const libsiedler2::MIDI_Track* midiTrack = getMidiTrack(0);
         if(!midiTrack)
@@ -42,6 +42,6 @@ void glArchivItem_Sound_XMidi::Play(const unsigned repeats)
         sound = AUDIODRIVER.LoadMusic(soundArchiv, ".midi");
     }
 
-    if(sound)
+    if(sound.isValid())
         AUDIODRIVER.PlayMusic(sound, repeats);
 }

@@ -19,8 +19,8 @@
 
 #pragma once
 
+#include "driver/src/SoundHandle.h"
 #include "libsiedler2/src/ArchivItem_Sound.h"
-class Sound;
 
 class glArchivItem_Sound : public virtual libsiedler2::baseArchivItem_Sound
 {
@@ -35,7 +35,7 @@ public:
 
 protected:
     /// Handle to the sound, managed by driver, hence safe to copy
-    Sound* sound;
+    SoundHandle sound;
 };
 
 #endif // !GLARCHIVITEM_SOUND_INCLUDED

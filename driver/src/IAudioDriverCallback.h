@@ -17,10 +17,10 @@
 #ifndef AUDIODRIVERLOADERINTERFACE_H_INCLUDED
 #define AUDIODRIVERLOADERINTERFACE_H_INCLUDED
 
-class AudioDriverLoaderInterface
+class IAudioDriverCallback
 {
 public:
-    virtual ~AudioDriverLoaderInterface(){};
+    virtual ~IAudioDriverCallback(){};
 
     virtual void Msg_MusicFinished() = 0;
 };
