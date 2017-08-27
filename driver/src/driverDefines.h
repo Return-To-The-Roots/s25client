@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,22 +20,10 @@
 #ifndef driverDefines_h__
 #define driverDefines_h__
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifdef _MSC_VER
-#include <crtdbg.h>
-#ifndef assert
-#define assert _ASSERT
-#endif
-#else
-#include <assert.h>
-#endif
+// IWYU pragma: begin_exports
 
-#ifdef _DEBUG
-#include <crtdbg.h>
-#endif // _WIN32 && _DEBUG
-#else
-#include <cassert>
-#endif // !_WIN32
+#include "commonSrc/commonDefines.h"
+
+// IWYU pragma: end_exports
 
 #endif // driverDefines_h__

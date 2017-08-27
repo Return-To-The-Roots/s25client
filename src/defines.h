@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -21,63 +21,8 @@
 
 // IWYU pragma: begin_exports
 
-#ifndef _CRTDBG_MAP_ALLOC
-#define _CRTDBG_MAP_ALLOC
-#endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#ifdef _MSC_VER
-// Visual Studio
-#include <crtdbg.h>
-#include <stdlib.h> // Required for crtdbg.h
-#if !defined(snprintf) && _MSC_VER < 1900
-#define snprintf _snprintf
-#endif
-extern void __cdecl __debugbreak();
-#define RTTR_BREAKPOINT __debugbreak()
-#ifndef assert
-#define assert _ASSERT
-#endif
-#else
-// Not Visual Studio
-#include <assert.h>
-#define RTTR_BREAKPOINT
-#endif
-
-typedef int socklen_t;
-#else
-// Non-Windows
-#if(defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
-#define RTTR_BREAKPOINT __asm__ __volatile__("int $3\n\t")
-#else
-#include <csignal>
-#define RTTR_BREAKPOINT raise(SIGTRAP)
-#endif
-#define SOCKET int
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define HINSTANCE void*
-
-#define closesocket close
-#define LoadLibrary(lib) dlopen(lib, RTLD_LAZY)
-#define LoadLibraryW LoadLibrary
-#define LoadLibraryA LoadLibrary
-#define GetProcAddress(lib, name) dlsym(lib, name)
-#define GetProcAddressW GetProcAddress
-#define GetProcAddressA GetProcAddress
-#define FreeLibrary(lib) dlclose(lib)
-#include <cassert>
-#endif // !_WIN32
-
-#include "RTTR_Assert.h"
+#include "commonSrc/commonDefines.h"
 #include "macros.h"
-
-// Include to use e.g. boost macros like BOOST_CONSTEXPR
-#include <boost/config.hpp>
 
 // IWYU pragma: end_exports
 
@@ -117,22 +62,5 @@ inline T SafeDiff(T a, T b)
 {
     return (a > b) ? a - b : b - a;
 }
-
-/// Deletes the ptr and sets it to NULL
-template<typename T>
-inline void deletePtr(T*& ptr)
-{
-    delete ptr;
-    ptr = 0;
-}
-
-// Fwd decl
-namespace boost {
-namespace filesystem {
-}
-} // namespace boost
-
-/// Shortcut for boost::filesystem
-namespace bfs = boost::filesystem;
 
 #endif // defines_h__

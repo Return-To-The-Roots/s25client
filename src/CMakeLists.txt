@@ -15,12 +15,11 @@ INCLUDE_DIRECTORIES(SYSTEM
 	${CMAKE_SOURCE_DIR}/contrib/kaguya/include
 	)
 
-#LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
-
 ################################################################################
 
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
 LIST(REMOVE_ITEM SOURCES_OTHER "${CMAKE_CURRENT_SOURCE_DIR}/s25client.cpp")
+LIST(APPEND SOURCES_OTHER ${COMMON_SRC})
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
 SET(SOURCES_SUBDIRS )

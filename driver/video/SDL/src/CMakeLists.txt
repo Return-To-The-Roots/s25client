@@ -14,9 +14,8 @@ IF (SDL_FOUND)
 		SET(SL_PREFIX "")
 	ENDIF ()
 
-	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
-	ADD_DEPENDENCIES(videoSDL updateversion)
-	TARGET_LINK_LIBRARIES(videoSDL videodrv ${SDL_LIBRARY})
+	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
+	TARGET_LINK_LIBRARIES(videoSDL videodrv s25util ${SDL_LIBRARY})
 
 	SET(_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${RTTR_DRIVERDIR}/video")
 	SET_TARGET_PROPERTIES(videoSDL PROPERTIES

@@ -400,6 +400,8 @@ ADD_CUSTOM_TARGET(updateversion ALL
 ################################################################################
 # Then add all other dependencies
 
+FILE(GLOB COMMON_SRC ${PROJECT_SOURCE_DIR}/commonSrc/*.cpp ${PROJECT_SOURCE_DIR}/commonSrc/*.h)
+
 ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)

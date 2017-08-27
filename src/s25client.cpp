@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "RTTR_AssertError.h"
+#include "commonSrc/RTTR_AssertError.h"
 
 #include "ProgramInitHelpers.h"
 #include "SignalHandler.h"

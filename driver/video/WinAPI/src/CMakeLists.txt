@@ -11,9 +11,8 @@ IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
 	ADD_DEFINITIONS(-DBUILD_DLL)
 	SET(SL_PREFIX "")
 
-	ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
-	ADD_DEPENDENCIES(videoWinAPI updateversion)
-	TARGET_LINK_LIBRARIES(videoWinAPI videodrv gdi32 opengl32 user32) 
+	ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
+	TARGET_LINK_LIBRARIES(videoWinAPI videodrv s25util gdi32 opengl32 user32) 
 	
 	SET(_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${RTTR_DRIVERDIR}/video")
 	SET_TARGET_PROPERTIES(videoWinAPI PROPERTIES

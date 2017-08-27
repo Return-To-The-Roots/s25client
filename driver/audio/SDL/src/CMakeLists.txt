@@ -22,9 +22,9 @@ ELSE()
 		SET(SL_PREFIX "")
 	ENDIF ()
 		
-	ADD_LIBRARY(audioSDL SHARED AudioSDL.cpp AudioSDL.h SoundSDL_Music.cpp SoundSDL_Music.h SoundSDL_Effect.cpp SoundSDL_Effect.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
-	ADD_DEPENDENCIES(audioSDL updateversion)
-	TARGET_LINK_LIBRARIES(audioSDL audiodrv endian s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${Boost_LIBRARIES})
+    FILE(GLOB LIB_SRC *.cpp *.h)
+	ADD_LIBRARY(audioSDL SHARED ${LIB_SRC} ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
+	TARGET_LINK_LIBRARIES(audioSDL audiodrv s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${Boost_LIBRARIES})
 	
 	SET(_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${RTTR_DRIVERDIR}/audio")
 	SET_TARGET_PROPERTIES(audioSDL PROPERTIES
