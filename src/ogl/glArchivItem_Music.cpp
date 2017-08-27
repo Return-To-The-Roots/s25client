@@ -18,11 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Music.h"
 
-glArchivItem_Music::glArchivItem_Music() : libsiedler2::baseArchivItem_Sound(), sound(NULL)
-{
-}
-
-glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music& item) : libsiedler2::baseArchivItem_Sound(item), sound(item.sound)
+glArchivItem_Music::glArchivItem_Music()
 {
 }
 

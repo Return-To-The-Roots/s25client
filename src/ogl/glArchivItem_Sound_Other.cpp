@@ -27,7 +27,7 @@
  *  @param[in] volume Lautstärke der Musik.
  *  @param[in] loop   Endlosschleife ja/nein
  */
-void glArchivItem_Sound_Other::Play(const unsigned repeats)
+void glArchivItem_Sound_Other::Play(unsigned repeats)
 {
     if(!SETTINGS.sound.musik)
         return;

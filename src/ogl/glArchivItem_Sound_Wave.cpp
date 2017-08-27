@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Wave.h"
-
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
@@ -27,10 +26,10 @@
  *  @param[in] volume Lautstärke des Sounds.
  *  @param[in] loop   Endlosschleife ja/nein
  */
-unsigned glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
+EffectPlayId glArchivItem_Sound_Wave::Play(uint8_t volume, bool loop)
 {
-    if(!SETTINGS.sound.effekte /* || !VIDEODRIVER.audiodriver*/)
-        return 0xFFFFFFFF;
+    if(!SETTINGS.sound.effekte)
+        return -1;
 
     if(!sound.isValid())
         sound = AUDIODRIVER.LoadEffect(*this, ".wav");

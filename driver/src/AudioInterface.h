@@ -20,9 +20,8 @@
 #include "SoundHandle.h"
 #include <stdint.h>
 #include <string>
+#include "EffectPlayId.h"
 
-/// Id of a played effect
-typedef int32_t EffectPlayId;
 
 /// Interface for audio drivers (required for use across DLL boundaries)
 class IAudioDriver

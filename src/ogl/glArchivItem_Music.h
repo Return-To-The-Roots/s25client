@@ -22,16 +22,14 @@
 #include "driver/src/SoundHandle.h"
 #include "libsiedler2/src/ArchivItem_Sound.h"
 
-class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
+class glArchivItem_Music
 {
 public:
     glArchivItem_Music();
-    glArchivItem_Music(const glArchivItem_Music& item);
-
-    ~glArchivItem_Music() override;
+    virtual ~glArchivItem_Music();
 
     /// Spielt die Musik ab.
-    virtual void Play(const unsigned repeats) = 0;
+    virtual void Play(unsigned repeats) = 0;
 
 protected:
     /// Handle to the sound, managed by driver, hence safe to copy

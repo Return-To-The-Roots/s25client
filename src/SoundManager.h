@@ -20,6 +20,7 @@
 
 #include "libutil/src/Singleton.h"
 #include <list>
+#include "driver/src/EffectPlayId.h"
 
 class noBase;
 
@@ -36,7 +37,7 @@ class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLonge
         /// Zusätzliche ID, falls das Objekt im Zuge seiner Arbeit mehrere Sounds von sich gibt
         unsigned id;
         /// Abspiel ID - identifiziert ein abgespieltes Stück, mit dem man abgespielte Stücke stoppen kann
-        unsigned play_id;
+        EffectPlayId play_id;
     };
 
     /// Liste von NO-Sounds

@@ -377,7 +377,7 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
     for(unsigned i = 0; i < segments.size(); ++i)
         GetCtrl<ctrlList>(0)->AddString(segments[i]);
 }
-void iwMusicPlayer::SetRepeats(const unsigned repeats)
+void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
     char repeats_str[32];
     sprintf(repeats_str, "%u", repeats);

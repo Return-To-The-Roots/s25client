@@ -22,19 +22,13 @@
 #include "glArchivItem_Music.h"
 #include "libsiedler2/src/ArchivItem_Sound_Midi.h"
 
-class glArchivItem_Sound_Midi : public libsiedler2::baseArchivItem_Sound_Midi, public glArchivItem_Music
+class glArchivItem_Sound_Midi : public libsiedler2::ArchivItem_Sound_Midi, public glArchivItem_Music
 {
 public:
-    glArchivItem_Sound_Midi() : baseArchivItem_Sound(), baseArchivItem_Sound_Midi(), glArchivItem_Music() {}
-
-    glArchivItem_Sound_Midi(const glArchivItem_Sound_Midi& item)
-        : baseArchivItem_Sound(item), baseArchivItem_Sound_Midi(item), glArchivItem_Music(item)
-    {
-    }
     RTTR_CLONEABLE(glArchivItem_Sound_Midi)
 
     /// Spielt die Musik ab.
-    void Play(const unsigned repeats) override;
+    void Play(unsigned repeats) override;
 };
 
 #endif // !GLARCHIVITEM_SOUND_MIDI_H_INCLUDED

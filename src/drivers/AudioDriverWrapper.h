@@ -18,15 +18,16 @@
 #define AUDIODRIVERWRAPPER_H_INCLUDED
 
 #include "DriverWrapper.h"
-#include "driver/src/AudioInterface.h"
+#include "driver/src/EffectPlayId.h"
 #include "driver/src/AudioType.h"
 #include "driver/src/IAudioDriverCallback.h"
 #include "libutil/src/Singleton.h"
 
+class IAudioDriver;
 class SoundHandle;
 
 namespace libsiedler2 {
-class baseArchivItem_Sound;
+class ArchivItem_Sound;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,9 +45,9 @@ public:
 
     /// Lädt einen Sound.
     SoundHandle LoadEffect(const std::string& filepath);
-    SoundHandle LoadEffect(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension);
+    SoundHandle LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
     SoundHandle LoadMusic(const std::string& filepath);
-    SoundHandle LoadMusic(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension);
+    SoundHandle LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
 
     /// Spielt einen Sound
     EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, const bool loop);
@@ -54,7 +55,7 @@ public:
     void StopEffect(const unsigned play_id);
 
     /// Spielt Midi ab
-    void PlayMusic(const SoundHandle& sound, const unsigned repeats);
+    void PlayMusic(const SoundHandle& sound, unsigned repeats);
 
     /// Stoppt die Musik.
     void StopMusic();

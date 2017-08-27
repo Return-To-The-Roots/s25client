@@ -37,7 +37,7 @@ AudioDriverWrapper::~AudioDriverWrapper()
 }
 
 /// Spielt Midi ab
-void AudioDriverWrapper::PlayMusic(const SoundHandle& sound, const unsigned repeats)
+void AudioDriverWrapper::PlayMusic(const SoundHandle& sound, unsigned repeats)
 {
     if(audiodriver)
         audiodriver->PlayMusic(sound, repeats);
@@ -123,19 +123,19 @@ bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
 SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
 {
     if(!audiodriver)
-        return NULL;
+        return SoundHandle();
 
     return audiodriver->LoadMusic(filepath);
 }
 
-SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension)
+SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
     std::ofstream fs;
     std::string filePath = createTempFile(fs, extension);
     if(!fs)
-        return NULL;
+        return SoundHandle();
     if(soundArchiv.write(fs) != 0)
-        return NULL;
+        return SoundHandle();
     fs.close();
     SoundHandle sound = LoadMusic(filePath);
     unlinkFile(filePath);
@@ -145,19 +145,19 @@ SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::baseArchivItem_Soun
 SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
 {
     if(!audiodriver)
-        return NULL;
+        return SoundHandle();
 
     return audiodriver->LoadEffect(filepath);
 }
 
-SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension)
+SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
     std::ofstream fs;
     std::string filePath = createTempFile(fs, extension);
     if(!fs)
-        return NULL;
+        return SoundHandle();
     if(soundArchiv.write(fs) != 0)
-        return NULL;
+        return SoundHandle();
     fs.close();
     SoundHandle sound = LoadEffect(filePath);
     unlinkFile(filePath);

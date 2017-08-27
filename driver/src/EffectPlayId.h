@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,24 +14,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_SOUND_OTHER_H_INCLUDED
-#define GLARCHIVITEM_SOUND_OTHER_H_INCLUDED
 
 #pragma once
 
-#include "glArchivItem_Music.h"
-#include "libsiedler2/src/ArchivItem_Sound_Other.h"
+#ifndef EffectPlayId_h__
+#define EffectPlayId_h__
 
-class glArchivItem_Sound_Other : public libsiedler2::ArchivItem_Sound_Other, public glArchivItem_Music
-{
-public:
-    glArchivItem_Sound_Other(libsiedler2::SoundType soundType) : ArchivItem_Sound_Other(soundType)
-    {
-    }
-    RTTR_CLONEABLE(glArchivItem_Sound_Other)
+/// Id of a played effect
+typedef int32_t EffectPlayId;
 
-    /// Spielt die Musik ab.
-    void Play(unsigned repeats) override;
-};
-
-#endif // !GLARCHIVITEM_SOUND_OTHER_H_INCLUDED
+#endif // EffectPlayId_h__
