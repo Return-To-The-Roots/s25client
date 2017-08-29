@@ -18,22 +18,22 @@
 #include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "RTTR_AssertError.h"
 #include "TerrainRenderer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
+#include "commonSrc/RTTR_AssertError.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
 #include "ingameWindows/iwHelp.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/PointOutput.h"
-#include "test/WorldFixture.h"
-#include "test/initTestHelpers.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
 #include "gameTypes/Direction_Output.h"
 #include "gameData/MapConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "test/CreateEmptyWorld.h"
+#include "test/PointOutput.h"
+#include "test/WorldFixture.h"
+#include "test/initTestHelpers.h"
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>

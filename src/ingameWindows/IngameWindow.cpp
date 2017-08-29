@@ -343,7 +343,7 @@ void IngameWindow::MoveNextToMouse()
     if(newPos.x + GetSize().x > VIDEODRIVER.GetScreenWidth())
         newPos.x = VIDEODRIVER.GetScreenWidth() - GetSize().x;
 
-    // To heigh or low?
+    // To high or low?
     if(newPos.y < 0)
         newPos.y = 0;
     else if(newPos.y + GetSize().y > VIDEODRIVER.GetScreenHeight())

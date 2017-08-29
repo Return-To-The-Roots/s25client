@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "CreateEmptyWorld.h"
-#include "test/initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "test/initTestHelpers.h"
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS)
 {

@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "world/TerritoryRegion.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/WorldFixture.h"
-#include "world/TerritoryRegion.h"
 #include <boost/assign/std/set.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>

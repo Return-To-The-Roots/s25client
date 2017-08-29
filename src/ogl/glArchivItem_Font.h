@@ -21,12 +21,12 @@
 
 #include "DrawPoint.h"
 #include "Rect.h"
-#include "helpers/containerUtils.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 #include "libsiedler2/src/ArchivItem_Font.h"
 #include "libutil/src/colors.h"
 #include "libutil/src/ucString.h"
+#include <boost/array.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>
 #include <string>
@@ -36,19 +36,24 @@
 class glArchivItem_Font : public libsiedler2::ArchivItem_Font
 {
 public:
-    glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL), fontWithOutline(NULL) {}
+    glArchivItem_Font();
     glArchivItem_Font(const glArchivItem_Font& item);
 
-    /// Zeichnet einen Text.
+    /// Draw the the text at the given position with format (alignment) and color.
+    /// If length is given, only that many chars (not glyphs!) will be used
+    /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is appended (included in
+    /// maxWidth)
     void Draw(DrawPoint pos, const ucString& wtext, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0,
-              unsigned short max = 0xFFFF, const ucString& wend = cvWideStringToUnicode(L"..."));
+              unsigned short maxWidth = 0xFFFF, const ucString& end = cvWideStringToUnicode(L"..."));
     void Draw(DrawPoint pos, const std::string& text, unsigned format, unsigned color = COLOR_WHITE, unsigned short length = 0,
-              unsigned short max = 0xFFFF, const std::string& end = "...");
+              unsigned short maxWidth = 0xFFFF, const std::string& end = "...");
 
-    /// liefert die Länge einer Zeichenkette.
-    unsigned short getWidth(const ucString& text, unsigned length = 0, unsigned max_width = 0xffffffff, unsigned* maxNumChars = NULL) const;
-    unsigned short getWidth(const std::string& text, unsigned length = 0, unsigned max_width = 0xffffffff,
-                            unsigned* maxNumChars = NULL) const;
+    /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will be set to the
+    /// maximum number of chars (not glyphs!) that fit into the width
+    unsigned short getWidth(const ucString& text, unsigned length = 0) const;
+    unsigned short getWidth(const std::string& text, unsigned length = 0) const;
+    unsigned short getWidth(const ucString& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
+    unsigned short getWidth(const std::string& text, unsigned length, unsigned maxWidth, unsigned* maxNumChars) const;
     /// liefert die Höhe des Textes ( entspricht @p getDy() )
     unsigned short getHeight() const { return dy + 1; }
 
@@ -98,35 +103,42 @@ public:
     };
 
     /// prüft ob ein Buchstabe existiert.
-    bool CharExist(unsigned c) const { return helpers::contains(utf8_mapping, c); }
-
+    bool CharExist(unsigned c) const;
     /// liefert die Breite eines Zeichens
     unsigned CharWidth(unsigned c) const { return GetCharInfo(c).width; }
-    unsigned CharWidth(CharInfo ci) const { return ci.width; }
 
 private:
-    struct GL_T2F_V3F_Struct
+    typedef Point<GLfloat> GlPoint;
+    struct VertexArrays
     {
-        GLfloat tx, ty;
-        GLfloat x, y, z;
+        std::vector<GlPoint> texCoords;
+        std::vector<GlPoint> vertices;
     };
 
     void initFont();
+    void ClearCharInfoMapping();
+    void AddCharInfo(unsigned c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
     const CharInfo& GetCharInfo(unsigned c) const;
-    void DrawChar(unsigned curChar, std::vector<GL_T2F_V3F_Struct>& vertices, DrawPoint& curPos, const Point<float>& texSize) const;
+    void DrawChar(unsigned curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
     boost::scoped_ptr<glArchivItem_Bitmap> fontNoOutline;
     boost::scoped_ptr<glArchivItem_Bitmap> fontWithOutline;
 
+    /// Holds ascii chars only. As most chars are ascii this is faster then accessing the map
+    boost::array<std::pair<bool, CharInfo>, 256> asciiMapping;
     std::map<unsigned, CharInfo> utf8_mapping;
     CharInfo placeHolder; /// Placeholder if glyph is missing
+    VertexArrays texList; /// Buffer to hold last textures. Used so memory reallocations are avoided
 
-    /// Get width of the sequence defined by the begin/end pair of iterators (returning Unicode chars)
-    /// The width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars (if specified)
+    /// Get width of the sequence defined by the begin/end pair of iterators
     template<class T_Iterator>
-    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth = 0xffffffff,
-                              unsigned* maxNumChars = NULL) const;
+    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end) const;
+    /// Same as above but the width will be at most maxWidth. The number of chars (or the iterator distance) is returned in maxNumChars
+    template<class T_Iterator>
+    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const;
+    template<bool T_unlimitedWidth, class T_Iterator>
+    unsigned getWidthInternal(const T_Iterator& begin, const T_Iterator& end, unsigned maxWidth, unsigned* maxNumChars) const;
 };
 
 #endif // !GLARCHIVITEM_FONT_H_INCLUDED

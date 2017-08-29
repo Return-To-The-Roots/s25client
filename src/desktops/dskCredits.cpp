@@ -159,8 +159,9 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     this->itCurEntry = entries.begin();
     startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
 
-    if(GetMusic(sng_lst, 8))
-        GetMusic(sng_lst, 8)->Play(0);
+    glArchivItem_Music* curSong = dynamic_cast<glArchivItem_Music*>(LOADER.sng_lst[8]);
+    if(curSong)
+        curSong->Play(0);
 }
 
 dskCredits::~dskCredits()

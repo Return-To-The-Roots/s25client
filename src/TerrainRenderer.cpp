@@ -17,14 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
-
 #include "ExtensionList.h"
 #include "GameClient.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/roundToNextPow2.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 #include "world/GameWorldBase.h"
@@ -349,18 +347,15 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
         int w = texRect.right - texRect.left;
         int h = texRect.bottom - texRect.top;
         RTTR_Assert(w > 0 && h > 0);
-        unsigned texW = helpers::roundToNextPowerOfTwo(w);
-        unsigned texH = helpers::roundToNextPowerOfTwo(h);
+        Point<float> texSize(VIDEODRIVER.calcPreferredTextureSize(Extent(w, h)));
 
-        float texScaleW = 1.f / texW;
-        float texScaleH = 1.f / texH;
         // Tip of the triangle is in the middle in x
-        texCoord[1].x = (w + 1) / 2.f * texScaleW;
+        texCoord[1].x = (w + 1) / 2.f / texSize.x;
         texCoord[1].y = 0.f;
         // Bottom of the triangle is in the middle in y
         texCoord[2].x = 0.f;
-        texCoord[2].y = (h + 1) / 2.f * texScaleH;
-        texCoord[0].x = (w - 1) * texScaleW;
+        texCoord[2].y = (h + 1) / 2.f / texSize.y;
+        texCoord[0].x = (w - 1) / texSize.x;
         texCoord[0].y = texCoord[2].y;
     }
 
@@ -379,16 +374,13 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
         int w = texRect.right - texRect.left;
         int h = texRect.bottom - texRect.top;
         RTTR_Assert(w > 0 && h > 0);
-        unsigned texW = helpers::roundToNextPowerOfTwo(w);
-        unsigned texH = helpers::roundToNextPowerOfTwo(h);
-        float texScaleW = 1.f / texW;
-        float texScaleH = 1.f / texH;
+        Point<float> texSize(VIDEODRIVER.calcPreferredTextureSize(Extent(w, h)));
         // Bottom tip of the triangle is in the middle in x
-        texCoord2[1].x = (w + 1) / 2.f * texScaleW;
-        texCoord2[1].y = (h - 1) * texScaleH;
+        texCoord2[1].x = (w + 1) / 2.f / texSize.x;
+        texCoord2[1].y = (h - 1) / texSize.y;
         // Top of the triangle is in the middle in y
-        texCoord2[2].x = (w - 1) * texScaleW;
-        texCoord2[2].y = (h + 1) / 2.f * texScaleH;
+        texCoord2[2].x = (w - 1) / texSize.x;
+        texCoord2[2].y = (h + 1) / 2.f / texSize.y;
         texCoord2[0].x = 0.f;
         texCoord2[0].y = texCoord2[2].y;
     }

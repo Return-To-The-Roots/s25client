@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "commonDefines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
 #include "libutil/src/System.h"

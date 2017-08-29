@@ -25,8 +25,6 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
 #include "postSystem/PostBox.h"
-#include "test/WorldWithGCExecution.h"
-#include "test/initTestHelpers.h"
 #include "nodeObjs/noBase.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noFlag.h"
@@ -34,6 +32,8 @@
 #include "gameTypes/VisualSettings.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
+#include "test/WorldWithGCExecution.h"
+#include "test/initTestHelpers.h"
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>

@@ -15,12 +15,11 @@ INCLUDE_DIRECTORIES(SYSTEM
 	${CMAKE_SOURCE_DIR}/contrib/kaguya/include
 	)
 
-#LINK_DIRECTORIES("${CMAKE_SOURCE_DIR}/libsiedler2/src" "${CMAKE_SOURCE_DIR}/mygettext/src" "${CMAKE_SOURCE_DIR}/libutil/src" "${CMAKE_SOURCE_DIR}/liblobby/src" "${CMAKE_SOURCE_DIR}/libendian/src")
-
 ################################################################################
 
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
 LIST(REMOVE_ITEM SOURCES_OTHER "${CMAKE_CURRENT_SOURCE_DIR}/s25client.cpp")
+LIST(APPEND SOURCES_OTHER ${COMMON_SRC})
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 
 SET(SOURCES_SUBDIRS )
@@ -76,8 +75,8 @@ IF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/decompress.c
 			${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3/bzlib.c
 		)
-	ENDIF( IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3" )
-ENDIF ( ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
+	ENDIF()
+ENDIF()
 
 INCLUDE(AddFileDependencies)
 ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
@@ -191,7 +190,7 @@ ENDIF()
 # Add Icon to Application
 IF (MSVC)
 	SET(s25client_RC "${CMAKE_CURRENT_SOURCE_DIR}/../win32/s25client.rc")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
 ELSEIF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" AND NOT ${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
 	ADD_DEFINITIONS("-DAFX_TARG_DEU")
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,--stack,8388608)

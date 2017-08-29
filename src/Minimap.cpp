@@ -44,7 +44,8 @@ void Minimap::CreateMapTexture()
     }
 
     map.setFilter(GL_LINEAR);
-    map.create(buffer.getWidth(), buffer.getHeight(), buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(), libsiedler2::FORMAT_BGRA);
+    map.create(buffer.getWidth(), buffer.getHeight(), buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(),
+               libsiedler2::FORMAT_BGRA);
 }
 
 void Minimap::Draw(const Rect& rect)

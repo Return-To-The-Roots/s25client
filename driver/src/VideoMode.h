@@ -16,14 +16,19 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
+#ifndef VideoMode_h__
+#define VideoMode_h__
 
-#ifndef driverDefines_h__
-#define driverDefines_h__
+/// Window size or resolution
+struct VideoMode
+{
+    unsigned short width;
+    unsigned short height;
 
-// IWYU pragma: begin_exports
+    VideoMode() : width(0), height(0) {}
+    VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
+    bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
+    bool operator!=(const VideoMode& o) const { return !(*this == o); }
+};
 
-#include "commonSrc/commonDefines.h"
-
-// IWYU pragma: end_exports
-
-#endif // driverDefines_h__
+#endif // VideoMode_h__

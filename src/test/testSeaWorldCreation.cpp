@@ -16,8 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "RTTR_AssertError.h"
 #include "SeaWorldWithGCExecution.h"
+#include "commonSrc/RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
 
 std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
@@ -41,7 +41,8 @@ struct CreateDummyWorld
 private:
     MapExtent size_;
 };
-typedef WorldFixture<CreateDummyWorld, 0, 512, 512> DummyWorldFixture;
+// Width must be > 100*2 and Height > 174 * 2 to avoid wrapping errors (see testShipDir)
+typedef WorldFixture<CreateDummyWorld, 0, 202, 350> DummyWorldFixture;
 
 /// Return the ship dir from a point to an other point given by their difference
 ShipDirection getShipDir(const World& world, MapPoint fromPt, const Point<int>& diff)

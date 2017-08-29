@@ -19,10 +19,13 @@
 
 #include "DriverWrapper.h"
 #include "Point.h"
-#include "driver/src/VideoInterface.h"
+#include "driver/src/KeyEvent.h"
+#include "driver/src/VideoMode.h"
 #include "libutil/src/Singleton.h"
 #include <boost/array.hpp>
 #include <string>
+
+class IVideoDriver;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -43,7 +46,7 @@ public:
     /// Verändert Auflösung, Fenster/Fullscreen
     bool ResizeScreen(const unsigned short screen_width, const unsigned short screen_height, const bool fullscreen);
     /// Viewport (neu) setzen
-    void RenewViewport(bool onlyRenew = false);
+    void RenewViewport();
     /// zerstört das Fenster.
     bool DestroyScreen();
     /// räumt die Texturen auf
@@ -72,7 +75,7 @@ public:
     unsigned short GetScreenWidth() const;
     unsigned short GetScreenHeight() const;
     Extent GetScreenSize() const;
-    bool IsFullscreen() const { return videodriver->IsFullscreen(); }
+    bool IsFullscreen() const;
 
     bool IsLeftDown();
     bool IsRightDown();
@@ -87,11 +90,9 @@ public:
 
     unsigned GetTickCount();
 
-    std::string GetName() const { return (videodriver) ? videodriver->GetName() : ""; }
+    std::string GetName() const;
     bool IsLoaded() const { return videodriver != NULL; }
 
-    /// Return the next highest power of 2 for the given value
-    static unsigned nextPowerOfTwo(unsigned k);
     /// Calculate the size of the texture which is optimal for the driver and at least minSize
     Extent calcPreferredTextureSize(const Extent& minSize) const;
 

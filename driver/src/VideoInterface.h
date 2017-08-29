@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -20,20 +20,9 @@
 #pragma once
 
 #include "KeyEvent.h"
+#include "VideoMode.h"
 #include <string>
 #include <vector>
-
-/// Window size or resolution
-struct VideoMode
-{
-    unsigned short width;
-    unsigned short height;
-
-    VideoMode() : width(0), height(0) {}
-    VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
-    bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
-    bool operator!=(const VideoMode& o) const { return !(*this == o); }
-};
 
 class IVideoDriver
 {

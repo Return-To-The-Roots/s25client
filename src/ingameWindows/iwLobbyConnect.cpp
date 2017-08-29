@@ -31,51 +31,63 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/src/LobbyClient.h"
 
+namespace {
+enum
+{
+    ID_txtUser,
+    ID_edtUser,
+    ID_txtPw,
+    ID_edtPw,
+    ID_txtEmail,
+    ID_edtEmail,
+    ID_txtSavePw,
+    ID_optSavePw,
+    ID_txtProtocol,
+    ID_optProtocol,
+    ID_btConnect,
+    ID_btRegister,
+    ID_txtStatus
+};
+}
+
 iwLobbyConnect::iwLobbyConnect()
     : IngameWindow(CGI_LOBBYCONNECT, IngameWindow::posLastOrCenter, Extent(500, 260), _("Connecting to Lobby"),
                    LOADER.GetImageN("resource", 41))
 {
-    // Benutzername
-    AddText(0, DrawPoint(20, 40), _("Username:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlEdit* user = AddEdit(1, DrawPoint(260, 40), Extent(220, 22), TC_GREEN2, NormalFont, 15);
+    AddText(ID_txtUser, DrawPoint(20, 40), _("Username:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* user = AddEdit(ID_edtUser, DrawPoint(260, 40), Extent(220, 22), TC_GREEN2, NormalFont, 15);
     user->SetFocus();
     user->SetText(SETTINGS.lobby.name); //-V807
 
-    // Passwort
-    AddText(2, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlEdit* pass = AddEdit(3, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
+    AddText(ID_txtPw, DrawPoint(20, 70), _("Password:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* pass = AddEdit(ID_edtPw, DrawPoint(260, 70), Extent(220, 22), TC_GREEN2, NormalFont, 0, true);
     pass->SetText(SETTINGS.lobby.password);
 
-    // Emailadresse
-    AddText(4, DrawPoint(20, 100), _("Email Address:"), COLOR_YELLOW, 0, NormalFont);
-    ctrlEdit* email = AddEdit(5, DrawPoint(260, 100), Extent(220, 22), TC_GREEN2, NormalFont);
+    AddText(ID_txtEmail, DrawPoint(20, 100), _("Email Address:"), COLOR_YELLOW, 0, NormalFont);
+    ctrlEdit* email = AddEdit(ID_edtEmail, DrawPoint(260, 100), Extent(220, 22), TC_GREEN2, NormalFont);
     email->SetText(SETTINGS.lobby.email);
 
-    // Passwort speichern ja/nein
-    AddText(6, DrawPoint(20, 130), _("Save Password?"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtSavePw, DrawPoint(20, 130), _("Save Password?"), COLOR_YELLOW, 0, NormalFont);
 
     Extent btSize = Extent(105, 22);
-    ctrlOptionGroup* savepassword = AddOptionGroup(10, ctrlOptionGroup::CHECK);
-    savepassword->AddTextButton(0, DrawPoint(260, 130), btSize, TC_GREEN2, _("No"), NormalFont);  // nein
-    savepassword->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("Yes"), NormalFont); // ja
+    ctrlOptionGroup* savepassword = AddOptionGroup(ID_optSavePw, ctrlOptionGroup::CHECK);
+    savepassword->AddTextButton(0, DrawPoint(260, 130), btSize, TC_GREEN2, _("No"), NormalFont);
+    savepassword->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("Yes"), NormalFont);
     savepassword->SetSelection((SETTINGS.lobby.save_password ? 1 : 0));
 
-    // ipv6 oder ipv4 benutzen
     AddText(11, DrawPoint(20, 160), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
 
-    ctrlOptionGroup* ipv6 = AddOptionGroup(12, ctrlOptionGroup::CHECK);
+    ctrlOptionGroup* ipv6 = AddOptionGroup(ID_optProtocol, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(260, 160), btSize, TC_GREEN2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(375, 160), btSize, TC_GREEN2, _("IPv6"), NormalFont);
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     btSize = Extent(220, 22);
-    AddTextButton(7, DrawPoint(20, 220), btSize, TC_RED1, _("Connect"), NormalFont);
-    // AddTextButton(8, DrawPoint(260, 220), btSize, TC_GREEN2, _("Register"), NormalFont);
+    AddTextButton(ID_btConnect, DrawPoint(20, 220), btSize, TC_RED1, _("Connect"), NormalFont);
+    AddTextButton(ID_btRegister, DrawPoint(260, 220), btSize, TC_GREEN2, _("Register"), NormalFont);
 
-    // Status
-    AddText(9, DrawPoint(250, 195), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(ID_txtStatus, DrawPoint(250, 195), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
-    // Lobby-Interface setzen
     LOBBYCLIENT.SetInterface(this);
 }
 
@@ -83,7 +95,7 @@ iwLobbyConnect::~iwLobbyConnect()
 {
     // Form abrufen und ggf in settings speichern
     std::string user, pass, email;
-    LobbyForm(user, pass, email);
+    ReadFromEditAndSaveLobbyData(user, pass, email);
 
     if(!LOBBYCLIENT.IsLoggedIn())
     {
@@ -95,12 +107,12 @@ iwLobbyConnect::~iwLobbyConnect()
 /**
  *  speichert die eingegebenen Benutzerdaten in die Settings
  */
-void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string& email)
+void iwLobbyConnect::ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass, std::string& email)
 {
     // Dann Form abrufen
-    user = GetCtrl<ctrlEdit>(1)->GetText();
-    pass = GetCtrl<ctrlEdit>(3)->GetText();
-    email = GetCtrl<ctrlEdit>(5)->GetText();
+    user = GetCtrl<ctrlEdit>(ID_edtUser)->GetText();
+    pass = GetCtrl<ctrlEdit>(ID_edtPw)->GetText();
+    email = GetCtrl<ctrlEdit>(ID_edtEmail)->GetText();
 
     // Name speichern
     SETTINGS.lobby.name = user; //-V807
@@ -123,34 +135,28 @@ void iwLobbyConnect::LobbyForm(std::string& user, std::string& pass, std::string
 void iwLobbyConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
-    SetText(0, COLOR_RED, true);
+    SetText("", COLOR_RED, true);
 }
 
 void iwLobbyConnect::Msg_EditEnter(const unsigned ctrl_id)
 {
-    ctrlEdit* user = GetCtrl<ctrlEdit>(1);
-    ctrlEdit* pass = GetCtrl<ctrlEdit>(3);
-    ctrlEdit* email = GetCtrl<ctrlEdit>(5);
+    ctrlEdit* user = GetCtrl<ctrlEdit>(ID_edtUser);
+    ctrlEdit* pass = GetCtrl<ctrlEdit>(ID_edtPw);
+    ctrlEdit* email = GetCtrl<ctrlEdit>(ID_edtEmail);
 
     switch(ctrl_id)
     {
-        case 1:
-        {
+        case ID_edtUser:
             user->SetFocus(false);
             pass->SetFocus(true);
             email->SetFocus(false);
-        }
-        break;
-        case 3:
-        {
+            break;
+        case ID_edtPw:
             user->SetFocus(false);
             pass->SetFocus(false);
             email->SetFocus(true);
-        }
-        break;
-        case 5: { Msg_ButtonClick(7);
-        }
-        break;
+            break;
+        case ID_edtEmail: Msg_ButtonClick(ID_btConnect); break;
     }
 }
 
@@ -158,14 +164,14 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 7: // Verbinden
+        case ID_btConnect: // Verbinden
         {
             // Text auf "Verbinde mit Host..." setzen und Button deaktivieren
             SetText(_("Connecting with Host..."), COLOR_RED, false);
 
             // Form abrufen und ggf in settings speichern
             std::string user, pass, email;
-            LobbyForm(user, pass, email);
+            ReadFromEditAndSaveLobbyData(user, pass, email);
 
             // Einloggen
             if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1).c_str()), user, pass,
@@ -176,7 +182,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
             }
         }
         break;
-        case 8: // Registrieren
+        case ID_btRegister: // Registrieren
         {
             WINDOWMANAGER.Show(new iwMsgbox(
               _("Error"), _("To register, you have to create a valid board account at http://forum.siedler25.org at the moment.\n"), this,
@@ -211,12 +217,12 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int sel
 {
     switch(ctrl_id)
     {
-        case 10: // Passwort speichern Ja/Nein
+        case ID_optSavePw: // Passwort speichern Ja/Nein
         {
             SETTINGS.lobby.save_password = (selection == 1);
         }
         break;
-        case 12: // IPv6 Ja/Nein
+        case ID_optProtocol: // IPv6 Ja/Nein
         {
             SETTINGS.server.ipv6 = (selection == 1);
         }
@@ -230,9 +236,9 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int sel
  */
 void iwLobbyConnect::SetText(const std::string& text, unsigned color, bool button)
 {
-    ctrlText* t = GetCtrl<ctrlText>(9);
-    ctrlButton* b = GetCtrl<ctrlButton>(7);
-    ctrlButton* b2 = GetCtrl<ctrlButton>(8);
+    ctrlText* t = GetCtrl<ctrlText>(ID_txtStatus);
+    ctrlButton* b = GetCtrl<ctrlButton>(ID_btConnect);
+    ctrlButton* b2 = GetCtrl<ctrlButton>(ID_btRegister);
 
     // Text setzen
     t->SetTextColor(color);
@@ -240,7 +246,8 @@ void iwLobbyConnect::SetText(const std::string& text, unsigned color, bool butto
 
     // Button (de)aktivieren
     b->SetEnabled(button);
-    b2->SetEnabled(button);
+    if(b2)
+        b2->SetEnabled(button);
 }
 
 /**
@@ -251,10 +258,12 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& email)
     // geänderte Daten speichern (also die erhaltene Emailadresse)
     std::string user, pass, email2 = email;
 
-    GetCtrl<ctrlEdit>(5)->SetText(email);
-    LobbyForm(user, pass, email2);
+    GetCtrl<ctrlEdit>(ID_edtEmail)->SetText(email);
+    ReadFromEditAndSaveLobbyData(user, pass, email2);
 
-    GetCtrl<ctrlButton>(8)->SetEnabled(false);
+    ctrlButton* btRegister = GetCtrl<ctrlButton>(ID_btRegister);
+    if(btRegister)
+        btRegister->SetEnabled(false);
 
     WINDOWMANAGER.Switch(new dskLobby);
 }
@@ -267,7 +276,9 @@ void iwLobbyConnect::LC_Registered()
     // Registrierung erfolgreich
     SetText(_("Registration successful!"), COLOR_YELLOW, true);
 
-    GetCtrl<ctrlButton>(8)->SetEnabled(false);
+    ctrlButton* btRegister = GetCtrl<ctrlButton>(ID_btRegister);
+    if(btRegister)
+        btRegister->SetEnabled(false);
 }
 
 /**

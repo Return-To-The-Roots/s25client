@@ -35,6 +35,7 @@
 #include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
 #include <iostream>
+#include <sstream>
 
 // Only internally visible
 namespace {

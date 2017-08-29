@@ -18,10 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "CreateEmptyWorld.h"
 #include "WorldFixture.h"
-#include "test/PointOutput.h"
 #include "nodeObjs/noGranite.h"
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
+#include "test/PointOutput.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>

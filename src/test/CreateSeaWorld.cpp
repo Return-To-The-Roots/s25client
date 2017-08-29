@@ -17,9 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "CreateSeaWorld.h"
-#include "test/initTestHelpers.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 
 CreateSeaWorld::CreateSeaWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS)
