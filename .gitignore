@@ -79,3 +79,4 @@ build_version_defines.h
 /build/put your S2-Installation in here
 /S2
 
+/build/test/testConfig.h

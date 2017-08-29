@@ -33,7 +33,7 @@
 #include <valgrind/memcheck.h>
 #endif
 
-VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), isOglEnabled_(false), texture_pos(0), texture_current(0)
+VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), loadedFromDll(false), isOglEnabled_(false), texture_pos(0), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
@@ -41,9 +41,7 @@ VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), isOglEnabled_(fals
 VideoDriverWrapper::~VideoDriverWrapper()
 {
     CleanUp();
-    PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
-    if(FreeVideoInstance)
-        FreeVideoInstance(videodriver);
+    UnloadDriver();
 }
 
 /**
@@ -55,6 +53,7 @@ VideoDriverWrapper::~VideoDriverWrapper()
  */
 bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 {
+    loadedFromDll = existingDriver == NULL;
     if(!existingDriver)
     {
         // DLL laden
@@ -67,16 +66,35 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
         // Instanz erzeugen
         videodriver = CreateVideoInstance(&WINDOWMANAGER);
         if(!videodriver)
+        {
+            UnloadDriver();
             return false;
+        }
     } else
         videodriver = existingDriver;
 
     if(!videodriver->Initialize())
+    {
+        UnloadDriver();
         return false;
+    }
 
     isOglEnabled_ = videodriver->IsOpenGL();
 
     return true;
+}
+
+void VideoDriverWrapper::UnloadDriver()
+{
+    if(loadedFromDll)
+    {
+        PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
+        if(FreeVideoInstance)
+            FreeVideoInstance(videodriver);
+        driver_wrapper.Unload();
+    } else
+        delete videodriver;
+    videodriver = NULL;
 }
 
 /**

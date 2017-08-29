@@ -39,6 +39,7 @@ public:
 
     /// Loads a new driver. Takes the existing one, if given
     bool LoadDriver(IVideoDriver* existingDriver = NULL);
+    void UnloadDriver();
     IVideoDriver* GetDriver() const { return videodriver; }
 
     /// Erstellt das Fenster.
@@ -112,6 +113,7 @@ private:
 private:
     DriverWrapper driver_wrapper;
     IVideoDriver* videodriver;
+    bool loadedFromDll;
     /// (Some) OpenGL can be disabled for testing
     bool isOglEnabled_;
 

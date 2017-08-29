@@ -42,6 +42,8 @@ public:
 
     /// Loads the driver. If audioDriver is NULL then the dll directory is checked
     bool LoadDriver(IAudioDriver* audioDriver = NULL);
+    /// Unloads the driver resetting all open handles
+    void UnloadDriver();
 
     /// Lädt einen Sound.
     SoundHandle LoadEffect(const std::string& filepath);
@@ -76,7 +78,8 @@ private:
 
 private:
     DriverWrapper driver_wrapper;
-    IAudioDriver* audiodriver;
+    IAudioDriver* audiodriver_;
+    bool loadedFromDll; /// If true then free must just dll free function else delete
 };
 
 #define AUDIODRIVER AudioDriverWrapper::inst()

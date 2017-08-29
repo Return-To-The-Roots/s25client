@@ -27,6 +27,7 @@ class SoundItem
 {
 public:
     virtual ~SoundItem() {}
+    SoundType getLoadedType() const { return handle.getType(); }
 
 protected:
     /// Load the sound item into the driver
