@@ -104,7 +104,7 @@ glArchivItem_Font::glArchivItem_Font() : ArchivItem_Font(), fontNoOutline(NULL),
 }
 
 glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
-    : ArchivItem_Font(obj), asciiMapping(asciiMapping), utf8_mapping(obj.utf8_mapping)
+    : ArchivItem_Font(obj), asciiMapping(obj.asciiMapping), utf8_mapping(obj.utf8_mapping)
 {
     if(obj.fontNoOutline)
         fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));

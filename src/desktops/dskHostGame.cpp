@@ -17,8 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "dskHostGame.h"
-#include "dskGameLoader.h"
-
 #include "GameClient.h"
 #include "GameLobby.h"
 #include "GameServer.h"
@@ -39,10 +37,12 @@
 #include "controls/ctrlTextButton.h"
 #include "controls/ctrlVarDeepening.h"
 #include "desktops/dskDirectIP.h"
+#include "desktops/dskGameLoader.h"
 #include "desktops/dskLAN.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/LuaInterfaceSettings.h"
@@ -53,6 +53,7 @@
 #include "libsiedler2/src/prototypen.h"
 #include "libutil/src/Log.h"
 #include <set>
+#include <sstream>
 
 namespace {
 enum CtrlIds
