@@ -14,12 +14,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef MUSICITEM_H_INCLUDED
+#define MUSICITEM_H_INCLUDED
 
-#include "defines.h" // IWYU pragma: keep
-#include "glArchivItem_Sound_Wave.h"
-#include "drivers/AudioDriverWrapper.h"
+#pragma once
 
-SoundHandle glArchivItem_Sound_Wave::Load()
+#include "SoundItem.h"
+
+class MusicItem : public SoundItem
 {
-    return AUDIODRIVER.LoadEffect(*this, ".wav");
-}
+public:
+    /// Plays the music
+    void Play(unsigned repeats);
+};
+
+#endif // !MUSICITEM_H_INCLUDED

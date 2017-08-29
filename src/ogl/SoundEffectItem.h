@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,13 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "glArchivItem_Sound.h"
+#ifndef SOUNDEFFECTITEM_H_INCLUDED
+#define SOUNDEFFECTITEM_H_INCLUDED
 
-glArchivItem_Sound::glArchivItem_Sound()
-{
-}
+#pragma once
 
-glArchivItem_Sound::~glArchivItem_Sound()
+#include "SoundItem.h"
+#include "driver/src/EffectPlayId.h"
+
+/// Base class for sound effects
+class SoundEffectItem : public SoundItem
 {
-}
+public:
+    /// Play the sound effect
+    EffectPlayId Play(uint8_t volume, bool loop);
+};
+
+#endif // !SOUNDEFFECTITEM_H_INCLUDED

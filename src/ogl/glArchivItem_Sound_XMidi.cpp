@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,31 +17,15 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_XMidi.h"
-#include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "libsiedler2/src/ArchivItem_Sound_Midi.h"
 
-/**
- *  Spielt die Musik ab.
- *
- *  @param[in] volume Lautstärke der Musik.
- *  @param[in] loop   Endlosschleife ja/nein
- */
-void glArchivItem_Sound_XMidi::Play(unsigned repeats)
+SoundHandle glArchivItem_Sound_XMidi::Load()
 {
-    if(!SETTINGS.sound.musik)
-        return;
-
-    if(!sound.isValid())
-    {
-        const libsiedler2::MIDI_Track* midiTrack = getMidiTrack(0);
-        if(!midiTrack)
-            return;
-        libsiedler2::ArchivItem_Sound_Midi soundArchiv;
-        soundArchiv.addTrack(*midiTrack);
-        sound = AUDIODRIVER.LoadMusic(soundArchiv, ".midi");
-    }
-
-    if(sound.isValid())
-        AUDIODRIVER.PlayMusic(sound, repeats);
+    const libsiedler2::MIDI_Track* midiTrack = getMidiTrack(0);
+    if(!midiTrack)
+        return SoundHandle();
+    libsiedler2::ArchivItem_Sound_Midi soundArchiv;
+    soundArchiv.addTrack(*midiTrack);
+    return AUDIODRIVER.LoadMusic(soundArchiv, ".midi");
 }

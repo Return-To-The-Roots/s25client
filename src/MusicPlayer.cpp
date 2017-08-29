@@ -19,12 +19,12 @@
 #include "MusicPlayer.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "ingameWindows/iwMusicPlayer.h"
-
 #include "Loader.h"
 #include "libutil/src/Log.h"
-
-#include "ogl/glArchivItem_Music.h"
+#include "ogl/MusicItem.h"
 #include "libsiedler2/src/prototypen.h"
+#include "libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/ArchivItem.h"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -233,7 +233,7 @@ void MusicPlayer::PlayNext()
         if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)
-            glArchivItem_Music* curSong = dynamic_cast<glArchivItem_Music*>(LOADER.sng_lst[nr - 1]);
+            MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[nr - 1]);
             if(curSong)
                 curSong->Play(1);
         }
@@ -254,7 +254,7 @@ void MusicPlayer::PlayNext()
     }
 
     // Und abspielen
-    dynamic_cast<glArchivItem_Music*>(sng[0])->Play(1);
+    dynamic_cast<MusicItem*>(sng[0])->Play(1);
 }
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs

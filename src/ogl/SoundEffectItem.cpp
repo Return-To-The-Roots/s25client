@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,12 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "glArchivItem_Music.h"
+#include "SoundEffectItem.h"
+#include "Settings.h"
+#include "drivers/AudioDriverWrapper.h"
 
-glArchivItem_Music::glArchivItem_Music()
+EffectPlayId SoundEffectItem::Play(uint8_t volume, bool loop)
 {
-}
-
-glArchivItem_Music::~glArchivItem_Music()
-{
+    if(!SETTINGS.sound.effekte)
+        return -1;
+    return AUDIODRIVER.PlayEffect(GetSoundHandle(), volume, loop);
 }

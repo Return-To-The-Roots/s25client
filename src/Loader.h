@@ -42,7 +42,7 @@ class glArchivItem_Bitmap_Player;
 class glArchivItem_Bitmap_Raw;
 class glArchivItem_Bob;
 class glArchivItem_Font;
-class glArchivItem_Sound;
+class SoundEffectItem;
 class glTexturePacker;
 namespace libsiedler2 {
 class ArchivItem_Ini;
@@ -115,7 +115,7 @@ public:
     glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
     glArchivItem_Font* GetFontN(const std::string& file, unsigned nr);
     libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
-    glArchivItem_Sound* GetSoundN(const std::string& file, unsigned nr);
+    SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
     std::string GetTextN(const std::string& file, unsigned nr);
     libsiedler2::ArchivInfo* GetInfoN(const std::string& file);
     glArchivItem_Bob* GetBobN(const std::string& file);

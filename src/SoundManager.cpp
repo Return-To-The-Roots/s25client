@@ -23,7 +23,7 @@
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Sound.h"
+#include "ogl/SoundEffectItem.h"
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(-1)
 {

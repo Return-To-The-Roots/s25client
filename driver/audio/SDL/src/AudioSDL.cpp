@@ -204,7 +204,7 @@ void AudioSDL::StopMusic()
 void AudioSDL::StopEffect(EffectPlayId play_id)
 {
     int channel = GetEffectChannel(play_id);
-    if(channel > 0)
+    if(channel >= 0)
     {
         Mix_HaltChannel(channel);
         RemoveEffect(play_id);

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,32 +17,15 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Other.h"
-
-#include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
-/**
- *  Spielt die Musik ab.
- *
- *  @param[in] volume Lautstärke der Musik.
- *  @param[in] loop   Endlosschleife ja/nein
- */
-void glArchivItem_Sound_Other::Play(unsigned repeats)
+SoundHandle glArchivItem_Sound_Other::Load()
 {
-    if(!SETTINGS.sound.musik)
-        return;
+    std::string extension = ".tmp";
+    if(getType() == libsiedler2::SOUNDTYPE_OGG)
+        extension = ".ogg";
+    else if(getType() == libsiedler2::SOUNDTYPE_MP3)
+        extension = ".mp3";
 
-    if(!sound.isValid())
-    {
-        std::string extension = ".tmp";
-        if(getType() == libsiedler2::SOUNDTYPE_OGG)
-            extension = ".ogg";
-        else if(getType() == libsiedler2::SOUNDTYPE_MP3)
-            extension = ".mp3";
-
-        sound = AUDIODRIVER.LoadMusic(*this, extension);
-    }
-
-    if(sound.isValid())
-        AUDIODRIVER.PlayMusic(sound, repeats);
+    return AUDIODRIVER.LoadMusic(*this, extension);
 }

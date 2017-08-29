@@ -35,7 +35,7 @@
 #include "ingameWindows/iwLobbyRanking.h"
 #include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "ogl/glArchivItem_Sound.h"
+#include "ogl/SoundEffectItem.h"
 #include "libutil/src/colors.h"
 
 #include "libutil/src/Log.h"

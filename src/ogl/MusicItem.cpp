@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,26 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_MUSIC_INCLUDED
-#define GLARCHIVITEM_MUSIC_INCLUDED
 
-#pragma once
+#include "defines.h" // IWYU pragma: keep
+#include "MusicItem.h"
+#include "Settings.h"
+#include "drivers/AudioDriverWrapper.h"
 
-#include "driver/src/SoundHandle.h"
-#include "libsiedler2/src/ArchivItem_Sound.h"
-
-class glArchivItem_Music
+void MusicItem::Play(unsigned repeats)
 {
-public:
-    glArchivItem_Music();
-    virtual ~glArchivItem_Music();
-
-    /// Spielt die Musik ab.
-    virtual void Play(unsigned repeats) = 0;
-
-protected:
-    /// Handle to the sound, managed by driver, hence safe to copy
-    SoundHandle sound;
-};
-
-#endif // !GLARCHIVITEM_MUSIC_INCLUDED
+    if(!SETTINGS.sound.musik)
+        return;
+    AUDIODRIVER.PlayMusic(GetSoundHandle(), repeats);
+}

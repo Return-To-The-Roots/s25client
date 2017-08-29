@@ -18,8 +18,8 @@
 #define AUDIODRIVERWRAPPER_H_INCLUDED
 
 #include "DriverWrapper.h"
-#include "driver/src/EffectPlayId.h"
 #include "driver/src/AudioType.h"
+#include "driver/src/EffectPlayId.h"
 #include "driver/src/IAudioDriverCallback.h"
 #include "libutil/src/Singleton.h"
 

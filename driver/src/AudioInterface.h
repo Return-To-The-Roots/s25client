@@ -17,11 +17,10 @@
 #ifndef AUDIOINTERFACE_H_INCLUDED
 #define AUDIOINTERFACE_H_INCLUDED
 
+#include "EffectPlayId.h"
 #include "SoundHandle.h"
 #include <stdint.h>
 #include <string>
-#include "EffectPlayId.h"
-
 
 /// Interface for audio drivers (required for use across DLL boundaries)
 class IAudioDriver

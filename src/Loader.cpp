@@ -24,12 +24,12 @@
 #include "addons/const_addons.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
+#include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Sound.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePacker.h"
 #include "gameTypes/Direction.h"
@@ -951,9 +951,9 @@ libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, un
     return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv.get(nr));
 }
 
-glArchivItem_Sound* Loader::GetSoundN(const std::string& file, unsigned nr)
+SoundEffectItem* Loader::GetSoundN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<glArchivItem_Sound*>(files_[file].archiv.get(nr));
+    return dynamic_cast<SoundEffectItem*>(files_[file].archiv.get(nr));
 }
 
 std::string Loader::GetTextN(const std::string& file, unsigned nr)
@@ -1119,7 +1119,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
 }
 
 /**
- *  @brief Lädt eine Datei in ein ArchivInfo.
+ *  @brief Lädt eine Datei in ein Archiv.
  *
  *  @param[in] pfad    Der Dateipfad
  *  @param[in] palette (falls benötigt) die Palette.

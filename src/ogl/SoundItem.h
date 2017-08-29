@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,27 +14,34 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_SOUND_INCLUDED
-#define GLARCHIVITEM_SOUND_INCLUDED
 
 #pragma once
 
-#include "driver/src/SoundHandle.h"
-#include "driver/src/EffectPlayId.h"
-#include "libsiedler2/src/ArchivItem_Sound.h"
+#ifndef SoundItem_h__
+#define SoundItem_h__
 
-class glArchivItem_Sound
+#include "driver/src/SoundHandle.h"
+
+/// Base class for all sound items
+class SoundItem
 {
 public:
-    glArchivItem_Sound();
-    virtual ~glArchivItem_Sound();
-
-    /// Spielt die Musik ab.
-    virtual EffectPlayId Play(uint8_t volume, bool loop) = 0;
+    virtual ~SoundItem() {}
 
 protected:
+    /// Load the sound item into the driver
+    virtual SoundHandle Load() = 0;
+    /// Return the handle loading it if required
+    SoundHandle& GetSoundHandle()
+    {
+        if(!handle.isValid())
+            handle = Load();
+        return handle;
+    }
+
+private:
     /// Handle to the sound, managed by driver, hence safe to copy
-    SoundHandle sound;
+    SoundHandle handle;
 };
 
-#endif // !GLARCHIVITEM_SOUND_INCLUDED
+#endif // SoundItem_h__

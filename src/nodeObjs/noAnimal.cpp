@@ -24,7 +24,7 @@
 #include "SerializedGameData.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "figures/nofHunter.h"
-#include "ogl/glArchivItem_Sound.h"
+#include "ogl/SoundEffectItem.h"
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainData.h"

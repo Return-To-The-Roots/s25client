@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,19 +19,17 @@
 
 #pragma once
 
-#include "glArchivItem_Music.h"
+#include "MusicItem.h"
 #include "libsiedler2/src/ArchivItem_Sound_Other.h"
 
-class glArchivItem_Sound_Other : public libsiedler2::ArchivItem_Sound_Other, public glArchivItem_Music
+class glArchivItem_Sound_Other : public libsiedler2::ArchivItem_Sound_Other, public MusicItem
 {
 public:
-    glArchivItem_Sound_Other(libsiedler2::SoundType soundType) : ArchivItem_Sound_Other(soundType)
-    {
-    }
+    glArchivItem_Sound_Other(libsiedler2::SoundType soundType) : ArchivItem_Sound_Other(soundType) {}
     RTTR_CLONEABLE(glArchivItem_Sound_Other)
 
-    /// Spielt die Musik ab.
-    void Play(unsigned repeats) override;
+protected:
+    SoundHandle Load() override;
 };
 
 #endif // !GLARCHIVITEM_SOUND_OTHER_H_INCLUDED

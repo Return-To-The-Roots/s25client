@@ -26,8 +26,8 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ingameWindows/IngameWindow.h"
+#include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Sound.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/src/Log.h"
 #include <boost/foreach.hpp>
