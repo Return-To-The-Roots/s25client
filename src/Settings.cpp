@@ -316,10 +316,7 @@ void Settings::Save()
         libsiedler2::ArchivItem_Ini item;
         configInfo.alloc(SETTINGS_SECTIONS);
         for(unsigned i = 0; i < SETTINGS_SECTIONS; ++i)
-        {
-            item.setName(SETTINGS_SECTION_NAMES[i]);
-            configInfo.setC(i, item);
-        }
+            configInfo.set(i, new libsiedler2::ArchivItem_Ini(SETTINGS_SECTION_NAMES[i]));
     }
 
     libsiedler2::ArchivItem_Ini* iniGlobal = LOADER.GetSettingsIniN("global");

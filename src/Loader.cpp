@@ -22,8 +22,10 @@
 #include "ListDir.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
+#include "boost/interprocess/smart_ptr/unique_ptr.hpp"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
+#include "helpers/Deleter.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap_RLE.h"
@@ -40,11 +42,14 @@
 #include "libsiedler2/src/ArchivItem_Text.h"
 #include "libsiedler2/src/ErrorCodes.h"
 #include "libsiedler2/src/IAllocator.h"
+#include "libsiedler2/src/PixelBufferARGB.h"
+#include "libsiedler2/src/PixelBufferPaletted.h"
 #include "libsiedler2/src/libsiedler2.h"
 #include "libutil/src/Log.h"
 #include "libutil/src/fileFuncs.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <iomanip>
@@ -269,7 +274,7 @@ bool Loader::LoadSounds()
         }
         LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
 
-        sng_lst.setC(i++, *sng.get(0));
+        sng_lst.set(i++, sng.release(0));
     }
 
     return true;
@@ -898,7 +903,6 @@ bool Loader::CreateTerrainTextures()
     // Wege
     Rect rec_roads[8] = {
       Rect(192, 0, 50, 16), Rect(192, 16, 50, 16), Rect(192, 32, 50, 16), Rect(192, 160, 50, 16),
-
       Rect(242, 0, 50, 16), Rect(242, 16, 50, 16), Rect(242, 32, 50, 16), Rect(242, 160, 50, 16),
     };
 
@@ -928,7 +932,7 @@ bool Loader::CreateTerrainTextures()
 
 glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
 {
-    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.get(nr));
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv[nr]);
 }
 
 glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
@@ -938,27 +942,27 @@ glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string
 
 glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned nr)
 {
-    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv.get(nr));
+    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
 }
 
 glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv.get(nr));
+    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv[nr]);
 }
 
 libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv.get(nr));
+    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv[nr]);
 }
 
 SoundEffectItem* Loader::GetSoundN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<SoundEffectItem*>(files_[file].archiv.get(nr));
+    return dynamic_cast<SoundEffectItem*>(files_[file].archiv[nr]);
 }
 
 std::string Loader::GetTextN(const std::string& file, unsigned nr)
 {
-    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv.get(nr));
+    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
     return archiv ? archiv->getText() : "text missing";
 }
 
@@ -1041,20 +1045,23 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
-    unsigned short width = rect.right - rect.left;
-    unsigned short height = rect.bottom - rect.top;
+    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
 
-    std::vector<unsigned char> buffer(width * height, libsiedler2::TRANSPARENT_INDEX);
-
-    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-    for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
+    if(int ec = image->print(buffer, palette, 0, 0, rect.left, rect.top))
+        throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
+    // Replace black pixels by transparent ones (background of the texture is black)
+    BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
     {
-        if(*it == 0)
-            *it = libsiedler2::TRANSPARENT_INDEX;
+        if(pxl == 0)
+            pxl = libsiedler2::TRANSPARENT_INDEX;
     }
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
-    bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+    if(int ec = bitmap->create(buffer, palette))
+    {
+        delete bitmap;
+        throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
+    }
     return bitmap;
 }
 
@@ -1067,53 +1074,43 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
-    unsigned short width = rect.right - rect.left;
-    unsigned short height = rect.bottom - rect.top;
-
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    std::vector<unsigned char> buffer(width * height, start_index);
-    std::vector<uint32_t> shiftBuffer(colorShift ? buffer.size() : 0);
+    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, start_index);
+    libsiedler2::PixelBufferARGB shiftBuffer(colorShift ? buffer.getWidth() : 0, buffer.getHeight());
 
-    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-
-    glArchivItem_Bitmap_Raw bitmap;
+    image->print(buffer, palette, 0, 0, rect.left, rect.top);
 
     libsiedler2::Archiv* destination = new libsiedler2::Archiv();
     for(unsigned char i = 0; i < color_count; ++i)
     {
-        for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
+        BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
         {
-            if(*it >= start_index && *it < start_index + color_count)
+            if(pxl >= start_index && pxl < start_index + color_count)
             {
-                if(++*it >= start_index + color_count)
-                    *it = start_index;
+                if(++pxl >= start_index + color_count)
+                    pxl = start_index;
             }
         }
+        boost::interprocess::unique_ptr<glArchivItem_Bitmap_Raw, Deleter<glArchivItem_Bitmap> > bitmap(new glArchivItem_Bitmap_Raw);
 
-        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+        if(int ec = bitmap->create(buffer, palette))
+            throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
         if(colorShift)
         {
-            bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
-            for(std::vector<uint32_t>::iterator it = shiftBuffer.begin(); it != shiftBuffer.end(); ++it)
+            libsiedler2::ColorARGB shiftClr(colorShift);
+            if(int ec = bitmap->print(shiftBuffer))
+                throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
+            BOOST_FOREACH(uint32_t& clrVal, shiftBuffer.getPixels())
             {
-                unsigned a = GetAlpha(*it) + GetAlpha(colorShift);
-                unsigned r = GetRed(*it) + GetRed(colorShift);
-                unsigned g = GetGreen(*it) + GetGreen(colorShift);
-                unsigned b = GetBlue(*it) + GetBlue(colorShift);
-                if(a > 0xFF)
-                    a -= 0xFF;
-                if(r > 0xFF)
-                    r -= 0xFF;
-                if(g > 0xFF)
-                    g -= 0xFF;
-                if(b > 0xFF)
-                    b -= 0xFF;
-                *it = MakeColor(a, r, g, b);
+                libsiedler2::ColorARGB clr(clrVal);
+                clrVal = libsiedler2::ColorARGB(clr.getAlpha() + shiftClr.getAlpha(), clr.getRed() + shiftClr.getRed(),
+                                                clr.getGreen() + shiftClr.getGreen(), clr.getBlue() + shiftClr.getBlue())
+                           .clrValue;
             }
-            bitmap.create(width, height, reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
+            bitmap->create(shiftBuffer);
         }
 
-        destination->pushC(bitmap);
+        destination->push(bitmap.release());
     }
     return destination;
 }
@@ -1372,12 +1369,12 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     for(unsigned i = 0; i < newEntries.size(); ++i)
     {
-        if(newEntries.get(i))
+        if(newEntries[i])
         {
 #ifndef NDEBUG
-            LOG.write(_("Replacing entry %d with %s\n")) % i % newEntries.get(i)->getName();
+            LOG.write(_("Replacing entry %d with %s\n")) % i % newEntries[i]->getName();
 #endif // !NDEBUG
-            existing->setC(i, *newEntries.get(i));
+            existing->set(i, newEntries.release(i));
         }
     }
 
