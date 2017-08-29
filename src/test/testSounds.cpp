@@ -18,20 +18,21 @@
 #include "defines.h" // IWYU pragma: keep
 #include "MockupAudioDriver.h"
 #include "driver/src/SoundHandle.h"
-#include <boost/test/unit_test.hpp>
 #include "drivers/AudioDriverWrapper.h"
+#include "ogl/MusicItem.h"
+#include "ogl/SoundEffectItem.h"
 #include "test/testConfig.h"
-#include "libsiedler2/src/libsiedler2.h"
 #include "libsiedler2/src/Archiv.h"
 #include "libsiedler2/src/Archivitem.h"
-#include "ogl/SoundEffectItem.h"
-#include "ogl/MusicItem.h"
+#include "libsiedler2/src/libsiedler2.h"
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(SoundTests)
 
 struct LoadMockupAudio
 {
-    LoadMockupAudio(){
+    LoadMockupAudio()
+    {
         AUDIODRIVER.LoadDriver(new MockupAudioDriver);
         BOOST_REQUIRE_NE(AUDIODRIVER.GetName(), "");
     }
@@ -78,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE(SoundHandles, LoadMockupAudio)
 BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
 {
     libsiedler2::Archiv snd;
-    boost::array<std::string, 3> musicFiles = { {"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"} };
+    boost::array<std::string, 3> musicFiles = {{"/test.ogg", "/testMidi.mid", "/testXMidi.xmi"}};
     BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd), 0);
     SoundEffectItem* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
     BOOST_REQUIRE(effect);

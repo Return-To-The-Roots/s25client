@@ -65,8 +65,7 @@ public:
     void ChangeVolume(EffectPlayId play_id, uint8_t volume) override {}
     void SetMasterEffectVolume(uint8_t volume) override {}
     void SetMusicVolume(uint8_t volume) override {}
-    void Msg_MusicFinished() override   {    }
-
+    void Msg_MusicFinished() override {}
 };
 
 #endif // MockupAudioDriver_h__

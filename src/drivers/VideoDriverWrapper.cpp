@@ -88,7 +88,8 @@ void VideoDriverWrapper::UnloadDriver()
 {
     if(loadedFromDll)
     {
-        PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance = pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
+        PDRIVER_FREEVIDEOINSTANCE FreeVideoInstance =
+          pto2ptf<PDRIVER_FREEVIDEOINSTANCE>(driver_wrapper.GetDLLFunction("FreeVideoInstance"));
         if(FreeVideoInstance)
             FreeVideoInstance(videodriver);
         driver_wrapper.Unload();

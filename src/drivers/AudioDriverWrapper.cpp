@@ -121,7 +121,8 @@ void AudioDriverWrapper::UnloadDriver()
 {
     if(loadedFromDll)
     {
-        PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance = pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
+        PDRIVER_FREEAUDIOINSTANCE FreeAudioInstance =
+          pto2ptf<PDRIVER_FREEAUDIOINSTANCE>(driver_wrapper.GetDLLFunction("FreeAudioInstance"));
         if(FreeAudioInstance)
             FreeAudioInstance(audiodriver_);
         driver_wrapper.Unload();
