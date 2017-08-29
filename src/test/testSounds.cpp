@@ -21,9 +21,10 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
+#include "Settings.h"
 #include "test/testConfig.h"
 #include "libsiedler2/src/Archiv.h"
-#include "libsiedler2/src/Archivitem.h"
+#include "libsiedler2/src/ArchivItem.h"
 #include "libsiedler2/src/libsiedler2.h"
 #include <boost/test/unit_test.hpp>
 
@@ -33,6 +34,8 @@ struct LoadMockupAudio
 {
     LoadMockupAudio()
     {
+        SETTINGS.sound.effekte = true;
+        SETTINGS.sound.musik = true;
         AUDIODRIVER.LoadDriver(new MockupAudioDriver);
         BOOST_REQUIRE_NE(AUDIODRIVER.GetName(), "");
     }

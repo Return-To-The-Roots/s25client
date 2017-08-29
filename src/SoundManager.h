@@ -50,7 +50,7 @@ class SoundManager : public Singleton<SoundManager, SingletonPolicies::WithLonge
     /// Intervall zwischen den Vogelzwitschern
     unsigned bird_interval;
     /// Play-ID fürs Meeresrauschen
-    unsigned ocean_play_id;
+    EffectPlayId ocean_play_id;
 
 public:
     BOOST_STATIC_CONSTEXPR unsigned Longevity = 29;

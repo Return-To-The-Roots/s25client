@@ -20,7 +20,9 @@
 #include "SoundHandle.h"
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
+#include <limits>
 #include <stdexcept>
+
 class IAudioDriverCallback;
 
 // Do not inline! That would break DLL compatibility:

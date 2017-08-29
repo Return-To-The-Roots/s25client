@@ -54,7 +54,7 @@ public:
         if(!sound.isValid())
             return -1;
         static int channel = 0;
-        if(channel++ > MAX_NUM_CHANNELS)
+        if(static_cast<unsigned>(++channel) >= MAX_NUM_CHANNELS)
             channel = 0;
         return AddPlayedEffect(channel);
     }
