@@ -17,14 +17,14 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MusicPlayer.h"
+#include "Loader.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "ingameWindows/iwMusicPlayer.h"
-#include "Loader.h"
-#include "libutil/src/Log.h"
 #include "ogl/MusicItem.h"
-#include "libsiedler2/src/prototypen.h"
-#include "libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/Archiv.h"
 #include "libsiedler2/src/ArchivItem.h"
+#include "libsiedler2/src/prototypen.h"
+#include "libutil/src/Log.h"
 #include <algorithm>
 #include <fstream>
 #include <sstream>

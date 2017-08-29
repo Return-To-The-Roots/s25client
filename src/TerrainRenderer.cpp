@@ -30,7 +30,7 @@
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
 #include "gameData/TerrainData.h"
-#include "libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/Archiv.h"
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
 

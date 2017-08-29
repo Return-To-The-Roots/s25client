@@ -40,7 +40,7 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
-    libsiedler2::ArchivInfo mapArchiv;
+    libsiedler2::Archiv mapArchiv;
 
     // Karteninformationen laden
     if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)

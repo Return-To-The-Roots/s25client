@@ -40,7 +40,7 @@ bool operator<(const Language& o1, const Language& o2)
 
 void Languages::loadLanguages()
 {
-    const libsiedler2::ArchivInfo& langInfo =
+    const libsiedler2::Archiv& langInfo =
       dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetInfoN("languages")->find("Languages"));
     unsigned count = langInfo.size();
 

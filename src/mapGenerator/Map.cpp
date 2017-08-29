@@ -42,9 +42,9 @@ Map::Map(const MapExtent& size, const std::string& name, const std::string& auth
     unknown5.resize(numNodes, 0x00);
 }
 
-libsiedler2::ArchivInfo* Map::CreateArchiv()
+libsiedler2::Archiv* Map::CreateArchiv()
 {
-    libsiedler2::ArchivInfo* info = new libsiedler2::ArchivInfo();
+    libsiedler2::Archiv* info = new libsiedler2::Archiv();
     libsiedler2::ArchivItem_Map* map = new libsiedler2::ArchivItem_Map();
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header();
     std::vector<unsigned char> data;

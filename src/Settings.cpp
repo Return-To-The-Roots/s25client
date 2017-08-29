@@ -310,7 +310,7 @@ bool Settings::Load()
 // Routine zum Speichern der Konfiguration
 void Settings::Save()
 {
-    libsiedler2::ArchivInfo& configInfo = *LOADER.GetInfoN(CONFIG_NAME);
+    libsiedler2::Archiv& configInfo = *LOADER.GetInfoN(CONFIG_NAME);
     if(configInfo.size() != SETTINGS_SECTIONS)
     {
         libsiedler2::ArchivItem_Ini item;

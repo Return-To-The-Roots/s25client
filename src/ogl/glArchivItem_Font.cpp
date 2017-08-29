@@ -613,7 +613,7 @@ void glArchivItem_Font::initFont()
     }
 
 #ifdef RTTR_PRINT_FONTS
-    ArchivInfo items;
+    Archiv items;
     items.pushC(*fontNoOutline);
     libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
     items.setC(0, *fontWithOutline);

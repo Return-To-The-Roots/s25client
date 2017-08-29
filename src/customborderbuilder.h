@@ -26,7 +26,7 @@ class glArchivItem_Bitmap;
 
 namespace libsiedler2 {
 class ArchivItem_Palette;
-class ArchivInfo;
+class Archiv;
 } // namespace libsiedler2
 
 /// Position in an image
@@ -37,7 +37,7 @@ class CustomBorderBuilder
 public:
     CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& palette);
     ~CustomBorderBuilder();
-    int loadEdges(const libsiedler2::ArchivInfo& archiveInfo);
+    int loadEdges(const libsiedler2::Archiv& archiveInfo);
     int buildBorder(const Extent& size, boost::array<glArchivItem_Bitmap*, 4>& borderInfo);
     const libsiedler2::ArchivItem_Palette& palette;
 

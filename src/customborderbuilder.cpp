@@ -24,12 +24,12 @@ erstellt mit libsiedler2 rev 3935
 
 Die Methode loadEdges() der Klasse lädt die zum Erstellen eines Rahmens nötigen Bitmaps in den Speicher.
 Übergeben wird
-archiveInfo:    Zeiger auf ein geladenes ArchivInfo der RESOURCE.DAT/IDX
+archiveInfo:    Zeiger auf ein geladenes Archiv der RESOURCE.DAT/IDX
 
 Die Methode buildBorder() erstellt einen Rahmen zu gegebener Größe.
 Übergeben werden:
 width, height:  die gewünschte Größe
-borderInfo:     Zeiger auf ein initialisiertes, leeres ArchivInfo
+borderInfo:     Zeiger auf ein initialisiertes, leeres Archiv
 
 In borderInfo werden vier Bilder als glArchivItem_Bitmap_RLE an Index 0 bis 3 geschrieben, das sind die Rahmen oben, unten, links und
 rechts, wobei die Ecken zu oben/unten gehören. Sie müssen also an den Stellen oben:   0        0 unten:  0        height-12 links:  0
@@ -41,7 +41,7 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 #include "defines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
-#include "libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/Archiv.h"
 
 CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& palette) : palette(palette)
 {
@@ -59,7 +59,7 @@ CustomBorderBuilder::~CustomBorderBuilder()
 {
 }
 
-int CustomBorderBuilder::loadEdges(const libsiedler2::ArchivInfo& archiveInfo)
+int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
 {
     // simples Fehlerabfangen
     if(archiveInfo.size() != 57)

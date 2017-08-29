@@ -868,7 +868,7 @@ inline void GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
         {
             case MAPTYPE_OLDMAP:
             {
-                libsiedler2::ArchivInfo map;
+                libsiedler2::Archiv map;
 
                 // Karteninformationen laden
                 if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
