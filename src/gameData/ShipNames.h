@@ -32,7 +32,7 @@ const char* const ship_names[NAT_COUNT][SHIP_NAMES_COUNT] = {
                  "Kumiko",  "Mai",    "Mayumi", "Megumi",  "Midori", "Misaki", "Miu",     "Moe",    "Nanami",  "Naoko",   "Naomi",
                  "Natsuki", "Noriko", "Reika",  "Sachiko", "Sadako", "Sakura", "Satsuki", "Sayuri", "Setsuko", "Shigeko", "Teiko",
                  "Tomomi",  "Umeko",  "Yoko",   "Yoshiko", "Youko",  "Yukiko", "Yumi",    "Yumiko", "Yuna",    "Yuuka",   "Yuzuki"},
-  /* Römer */ {"Antia",      "Ateia",    "Aurelia",  "Camilia",  "Claudia",  "Duccia",    "Epidia",   "Equitia",  "Fabia",     "Galeria",
+  /* RÃ¶mer */ {"Antia",      "Ateia",    "Aurelia",  "Camilia",  "Claudia",  "Duccia",    "Epidia",   "Equitia",  "Fabia",     "Galeria",
                "Helvetia",   "Iunia",    "Iusta",    "Iuventia", "Lafrenia", "Livia",     "Longinia", "Maelia",   "Maxima",    "Nigilia",
                "Nipia",      "Norbana",  "Novia",    "Orania",   "Otacilia", "Petronia",  "Pinaria",  "Piscia",   "Pisentia",  "Placidia",
                "Quintia",    "Quirinia", "Rusonia",  "Rutilia",  "Sabucia",  "Sallustia", "Salonia",  "Salvia",   "Scribonia", "Secundia",

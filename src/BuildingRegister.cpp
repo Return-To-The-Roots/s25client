@@ -112,7 +112,7 @@ void BuildingRegister::Remove(noBuilding* bld, BuildingType bldType)
     }
 }
 
-/// Gibt Liste von Geb‰uden des Spieler zur¸ck
+/// Gibt Liste von Geb√§uden des Spieler zur√ºck
 const std::list<nobUsual*>& BuildingRegister::GetBuildings(const BuildingType type) const
 {
     RTTR_Assert(static_cast<unsigned>(type) >= FIRST_USUAL_BUILDING);
@@ -120,23 +120,23 @@ const std::list<nobUsual*>& BuildingRegister::GetBuildings(const BuildingType ty
     return buildings[type - FIRST_USUAL_BUILDING];
 }
 
-/// Liefert die Anzahl aller Geb‰ude einzeln
+/// Liefert die Anzahl aller Geb√§ude einzeln
 BuildingCount BuildingRegister::GetBuildingCount() const
 {
     BuildingCount bc;
     std::fill(bc.buildings.begin(), bc.buildings.end(), 0);
     std::fill(bc.buildingSites.begin(), bc.buildingSites.end(), 0);
 
-    // Normale Geb‰ude z‰hlen
+    // Normale Geb√§ude z√§hlen
     for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
         bc.buildings[i + FIRST_USUAL_BUILDING] = buildings[i].size();
-    // Lagerh‰user z‰hlen
+    // Lagerh√§user z√§hlen
     BOOST_FOREACH(const nobBaseWarehouse* bld, warehouses)
         ++bc.buildings[bld->GetBuildingType()];
-    // Milit‰rgeb‰ude z‰hlen
+    // Milit√§rgeb√§ude z√§hlen
     BOOST_FOREACH(const nobMilitary* bld, military_buildings)
         ++bc.buildings[bld->GetBuildingType()];
-    // Baustellen z‰hlen
+    // Baustellen z√§hlen
     BOOST_FOREACH(const noBuildingSite* bld, building_sites)
         ++bc.buildingSites[bld->GetBuildingType()];
     return bc;
