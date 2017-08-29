@@ -95,14 +95,14 @@ public:
         return gwb.GetSpecObj<T>(pt);
     }
     /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
-    AIJH::Resource GetSubsurfaceResource(const MapPoint pt) const;
+    AIResource GetSubsurfaceResource(const MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)
-    AIJH::Resource GetSurfaceResource(const MapPoint pt) const;
+    AIResource GetSurfaceResource(const MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
-    int CalcResourceValue(const MapPoint pt, AIJH::Resource res, char direction = -1, int lastval = 0xffff) const;
+    int CalcResourceValue(const MapPoint pt, AIResource res, char direction = -1, int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
-    int GetResourceRating(const MapPoint pt, AIJH::Resource res) const;
+    int GetResourceRating(const MapPoint pt, AIResource res) const;
     /// Test whether a given point is part of the border or not
     bool IsBorder(const MapPoint pt) const { return gwb.GetNode(pt).boundary_stones[0] == (playerID_ + 1); }
     /// Test whether a given point is part of own territory

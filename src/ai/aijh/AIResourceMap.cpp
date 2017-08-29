@@ -17,15 +17,15 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIResourceMap.h"
-#include "ai/aijh/AIJHHelper.h"
+#include "ai/aijh/Node.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
 
 namespace AIJH {
 
-AIResourceMap::AIResourceMap(const Resource res, const AIInterface& aii, const std::vector<Node>& nodes)
-    : res(res), resRadius(RES_RADIUS[res]), aii(&aii), nodes(&nodes)
+AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const std::vector<Node>& nodes)
+    : res(res), resRadius(RES_RADIUS[boost::underlying_cast<unsigned>(res)]), aii(&aii), nodes(&nodes)
 {
 }
 
@@ -42,19 +42,19 @@ void AIResourceMap::Init()
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
         unsigned i = aii->GetIdx(pt);
-        if((*nodes)[i].res == res && res == FISH)
+        if((*nodes)[i].res == res && res == AIResource::FISH)
         {
             Change(pt, 1);
-        } else if((*nodes)[i].res == res && res != BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
+        } else if((*nodes)[i].res == res && res != AIResource::BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
         {
             Change(pt, 1);
-        } else if(res == BORDERLAND && aii->IsBorder(pt))
+        } else if(res == AIResource::BORDERLAND && aii->IsBorder(pt))
         {
             // only count border area that is actually passable terrain
             if(TerrainData::IsUseable(aii->GetTerrain(pt)))
                 Change(pt, 1);
         }
-        if((*nodes)[i].res == MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
+        if((*nodes)[i].res == AIResource::MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
         {
             if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
                 Change(pt, 1);
@@ -65,9 +65,9 @@ void AIResourceMap::Init()
 void AIResourceMap::Recalc()
 {
     Init();
-    if(res == WOOD) // existing woodcutters reduce rating
+    if(res == AIResource::WOOD) // existing woodcutters reduce rating
         AdjustRatingForBlds(BLD_WOODCUTTER, 7, -10);
-    else if(res == PLANTSPACE)
+    else if(res == AIResource::PLANTSPACE)
     {
         AdjustRatingForBlds(BLD_FARM, 3, -25);
         AdjustRatingForBlds(BLD_FORESTER, 6, -25);

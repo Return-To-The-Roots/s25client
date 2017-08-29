@@ -17,9 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwAIDebug.h"
-
 #include "Loader.h"
+#include "ai/AIEvents.h"
 #include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/Jobs.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
 #include "helpers/converters.h"
@@ -76,7 +77,7 @@ public:
         else if(overlay == 3)
             ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIJH::Resource(overlay - 4))), 0, 0xFFFFFF00);
+            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), 0, 0xFFFFFF00);
     }
 };
 

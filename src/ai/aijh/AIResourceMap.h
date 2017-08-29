@@ -29,8 +29,8 @@ struct Node;
 class AIResourceMap
 {
 public:
-    AIResourceMap() : res(NOTHING), resRadius(0), aii(NULL), nodes(NULL) {} // Default ctor to allow storage in arrays
-    AIResourceMap(const Resource res, const AIInterface& aii, const std::vector<Node>& nodes);
+    AIResourceMap() : res(AIResource::NOTHING), resRadius(0), aii(NULL), nodes(NULL) {} // Default ctor to allow storage in arrays
+    AIResourceMap(const AIResource res, const AIInterface& aii, const std::vector<Node>& nodes);
     ~AIResourceMap();
 
     /// Initialize the resource map
@@ -57,7 +57,7 @@ private:
     void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
     /// Which resource is stored in the map and radius of affected nodes
     /// Do not change! const omitted to to able to store this in a vector
-    Resource res;
+    AIResource res;
     unsigned resRadius;
 
     std::vector<int> map;

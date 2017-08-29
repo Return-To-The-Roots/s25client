@@ -15,26 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIResource_h__
-#define AIResource_h__
+#include "defines.h" // IWYU pragma: keep
+#include "PositionSearch.h"
 
-#include <boost/array.hpp>
-#include <boost/core/scoped_enum.hpp>
-
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(AIResource){WOOD, STONES, GOLD, IRONORE, COAL, GRANITE, PLANTSPACE, BORDERLAND, FISH, MULTIPLE,
-                                            // special:
-                                            BLOCKED = 254, NOTHING = 255} BOOST_SCOPED_ENUM_DECLARE_END(AIResource)
-
-  const boost::array<unsigned, 9> SUPPRESS_UNUSED RES_RADIUS = {{
-    8, // Wood
-    8, // Stones
-    2, // Gold
-    2, // Ironore
-    2, // Coal
-    2, // Granite
-    3, // Plantspace
-    5, // Borderland
-    5  // Fish
-  }};
-
-#endif // AIResource_h__
+AIJH::PositionSearch::PositionSearch(const MapPoint pt, AIResource res, int minimum, BuildingQuality size, BuildingType bld,
+                                     bool best /*= false*/)
+    : startPt(pt), res(res), minimum(minimum), size(size), bld(bld), searchGlobalOptimum(best), nodesPerStep(32),
+      resultPt(MapPoint::Invalid()), resultValue(0)
+{
+}

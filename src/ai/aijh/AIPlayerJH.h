@@ -20,10 +20,10 @@
 #pragma once
 
 #include "GamePlayer.h"
+#include "Node.h"
 #include "PositionSearch.h"
 #include "ai/AIEventManager.h"
 #include "ai/AIPlayer.h"
-#include "ai/aijh/AIJHHelper.h"
 #include "ai/aijh/AIResourceMap.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/MapCoordinates.h"
@@ -42,6 +42,7 @@ class Base;
 
 namespace AIJH {
 class AIConstruction;
+class Job;
 
 /// Klasse für die besser JH-KI
 class AIPlayerJH : public AIPlayer
@@ -76,7 +77,7 @@ public:
 
     bool IsInvalidShipyardPosition(const MapPoint pt);
 
-    int GetResMapValue(const MapPoint pt, Resource res) const;
+    int GetResMapValue(const MapPoint pt, AIResource res) const;
 
     const Node& GetAINode(const MapPoint pt) const { return nodes[gwb.GetIdx(pt)]; }
     unsigned PlannedConnectedInlandMilitary()
@@ -130,7 +131,7 @@ protected:
     void UpdateNodesAround(const MapPoint pt, unsigned radius);
     void UpdateNodesAroundNoBorder(const MapPoint pt, unsigned radius);
     /// Returns the resource on a specific point
-    Resource CalcResource(const MapPoint pt);
+    AIResource CalcResource(const MapPoint pt);
     /// Initialize the resource maps
     void InitResourceMaps();
     /// Initialize the Store and Military building lists (only required when loading games but the AI doesnt know whether its a load game or
@@ -144,26 +145,26 @@ protected:
                             std::vector<MapPoint> oldFlags);
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
-    bool FindGoodPosition(MapPoint& pt, Resource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+    bool FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
 
-    PositionSearch* CreatePositionSearch(MapPoint& pt, Resource res, BuildingQuality size, int minimum, BuildingType bld,
+    PositionSearch* CreatePositionSearch(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, BuildingType bld,
                                          bool best = false);
     // Find position that satifies search->minimum or best (takes longer!)
     PositionSearchState FindGoodPosition(PositionSearch* search, bool best = false);
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    bool FindBestPosition(MapPoint& pt, Resource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-    bool FindBestPosition(MapPoint& pt, Resource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
+    bool FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
+    bool FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
     {
         return FindBestPosition(pt, res, size, 1, radius, inTerritory);
     }
     /// finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
-    bool FindBestPositionDiminishingResource(MapPoint& pt, Resource res, BuildingQuality size, int minimum, int radius = -1,
+    bool FindBestPositionDiminishingResource(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
                                              bool inTerritory = true);
     /// Finds a position for the desired building size
     bool SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius = -1);
     /// Density in percent (0-100)
-    unsigned GetDensity(MapPoint pt, Resource res, int radius);
+    unsigned GetDensity(MapPoint pt, AIResource res, int radius);
     /// Recalculate the Buildingquality around a certain point
     void RecalcBQAround(const MapPoint pt);
     /// Does some actions after a new military building is occupied
@@ -244,7 +245,10 @@ protected:
 
     bool NoEnemyHarbor();
 
-    void SetResourceMap(Resource res, const MapPoint pt, int newvalue) { resourceMaps[res][pt] = newvalue; }
+    void SetResourceMap(AIResource res, const MapPoint pt, int newvalue)
+    {
+        resourceMaps[boost::underlying_cast<unsigned>(res)][pt] = newvalue;
+    }
 
     MapPoint UpgradeBldPos;
     /// The current job the AI is working on
@@ -256,7 +260,7 @@ protected:
     /// Nodes containing some information about every map node
     std::vector<Node> nodes;
     /// Resource maps, containing a rating for every map point concerning a resource
-    boost::array<AIResourceMap, RES_TYPE_COUNT> resourceMaps;
+    boost::array<AIResourceMap, RES_RADIUS.static_size> resourceMaps;
 
 private:
     unsigned attack_interval;

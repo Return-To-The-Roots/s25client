@@ -38,9 +38,6 @@ struct CreateServerInfo;
 class GameMessage;
 class GameMessage_GameCommand;
 class GameServerPlayer;
-namespace AIEvent {
-class Base;
-}
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, private GameServerInterface
 {

@@ -16,21 +16,18 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "AIJHHelper.h"
+#include "Jobs.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
+#include "ai/AIEvents.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIConstruction.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"
-#include "gameTypes/Direction.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include <boost/array.hpp>
-#include <deque>
-#include <list>
 
 namespace AIJH {
 
@@ -118,13 +115,14 @@ void BuildJob::TryToBuild()
         {
             case BLD_WOODCUTTER:
             {
-                foundPos = aijh.FindBestPosition(bPos, WOOD, BQ_HUT, 20, 11);
+                foundPos = aijh.FindBestPosition(bPos, AIResource::WOOD, BQ_HUT, 20, 11);
                 break;
             }
             case BLD_FORESTER:
                 // ensure some distance to other foresters and an minimal amount of plantspace
-                if(!aiConstruction.OtherUsualBuildingInRadius(bPos, 12, BLD_FORESTER) && (aijh.GetDensity(bPos, PLANTSPACE, 7) > 15))
-                    foundPos = aijh.FindBestPosition(bPos, WOOD, BQ_HUT, 0, 11);
+                if(!aiConstruction.OtherUsualBuildingInRadius(bPos, 12, BLD_FORESTER)
+                   && (aijh.GetDensity(bPos, AIResource::PLANTSPACE, 7) > 15))
+                    foundPos = aijh.FindBestPosition(bPos, AIResource::WOOD, BQ_HUT, 0, 11);
                 break;
             case BLD_HUNTER:
             {
@@ -136,12 +134,12 @@ void BuildJob::TryToBuild()
             case BLD_QUARRY:
             {
                 unsigned numQuarries = aiConstruction.GetBuildingCount(BLD_QUARRY);
-                foundPos = aijh.FindBestPosition(bPos, STONES, BQ_HUT,
+                foundPos = aijh.FindBestPosition(bPos, AIResource::STONES, BQ_HUT,
                                                  (numQuarries > 4) ? 40 : 1 + aiConstruction.GetBuildingCount(BLD_QUARRY) * 10, 11);
                 if(foundPos && !aijh.ValidStoneinRange(bPos))
                 {
                     foundPos = false;
-                    aijh.SetResourceMap(STONES, bPos, 0);
+                    aijh.SetResourceMap(AIResource::STONES, bPos, 0);
                 }
                 break;
             }
@@ -150,7 +148,7 @@ void BuildJob::TryToBuild()
             case BLD_WATCHTOWER:
             case BLD_FORTRESS:
             {
-                foundPos = aijh.FindBestPosition(bPos, BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIResource::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
                 // could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal
                 // buildings (probably important map part)
                 AIInterface& aiInterface = aijh.GetInterface();
@@ -172,21 +170,21 @@ void BuildJob::TryToBuild()
                 }
             }
             break;
-            case BLD_GOLDMINE: foundPos = aijh.FindBestPosition(bPos, GOLD, BQ_MINE, 11, true); break;
-            case BLD_COALMINE: foundPos = aijh.FindBestPosition(bPos, COAL, BQ_MINE, 11, true); break;
-            case BLD_IRONMINE: foundPos = aijh.FindBestPosition(bPos, IRONORE, BQ_MINE, 11, true); break;
+            case BLD_GOLDMINE: foundPos = aijh.FindBestPosition(bPos, AIResource::GOLD, BQ_MINE, 11, true); break;
+            case BLD_COALMINE: foundPos = aijh.FindBestPosition(bPos, AIResource::COAL, BQ_MINE, 11, true); break;
+            case BLD_IRONMINE: foundPos = aijh.FindBestPosition(bPos, AIResource::IRONORE, BQ_MINE, 11, true); break;
             case BLD_GRANITEMINE:
                 if(!aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
-                    foundPos = aijh.FindBestPosition(bPos, GRANITE, BQ_MINE, 11, true);
+                    foundPos = aijh.FindBestPosition(bPos, AIResource::GRANITE, BQ_MINE, 11, true);
                 else
                     foundPos = aijh.SimpleFindPosition(bPos, BQ_MINE, 11);
                 break;
 
             case BLD_FISHERY:
-                foundPos = aijh.FindBestPosition(bPos, FISH, BQ_HUT, 11, true);
+                foundPos = aijh.FindBestPosition(bPos, AIResource::FISH, BQ_HUT, 11, true);
                 if(foundPos && !aijh.ValidFishInRange(bPos))
                 {
-                    aijh.SetResourceMap(FISH, bPos, 0);
+                    aijh.SetResourceMap(AIResource::FISH, bPos, 0);
                     foundPos = false;
                 }
                 break;
@@ -204,7 +202,7 @@ void BuildJob::TryToBuild()
                 if(foundPos && aijh.IsInvalidShipyardPosition(bPos))
                     foundPos = false;
                 break;
-            case BLD_FARM: foundPos = aijh.FindBestPosition(bPos, PLANTSPACE, BQ_CASTLE, 85, 11, true); break;
+            case BLD_FARM: foundPos = aijh.FindBestPosition(bPos, AIResource::PLANTSPACE, BQ_CASTLE, 85, 11, true); break;
             case BLD_CATAPULT:
                 foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
                 if(foundPos && aijh.BuildingNearby(bPos, BLD_CATAPULT, 8))
@@ -350,6 +348,11 @@ void BuildJob::TryToBuildSecondaryRoad()
         status = JOB_EXECUTING_ROAD2_2;
     } else
         status = JOB_FINISHED;
+}
+
+EventJob::~EventJob()
+{
+    delete ev;
 }
 
 void EventJob::ExecuteJob() // for now it is assumed that all these will be finished or failed after execution (no wait or progress)
@@ -544,7 +547,7 @@ void SearchJob::ExecuteJob()
     } else
     {
         status = JOB_FINISHED;
-        aijh.AddBuildJob(search->bld, search->result, true, false);
+        aijh.AddBuildJob(search->bld, search->resultPt, true, false);
     }
 }
 

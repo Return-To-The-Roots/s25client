@@ -17,12 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIConstruction.h"
-
 #include "GlobalGameSettings.h"
+#include "Jobs.h"
 #include "Point.h"
 #include "addons/const_addons.h"
 #include "ai/AIInterface.h"
-#include "ai/aijh/AIJHHelper.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseMilitary.h"
