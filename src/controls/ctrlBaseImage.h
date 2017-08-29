@@ -32,7 +32,7 @@ public:
 
     void SetImage(glArchivItem_Bitmap* image) { img_ = image; }
     const glArchivItem_Bitmap* GetImage() const { return img_; }
-    /// Ändert Farbfilter, mit dem dieses Bild gezeichnet werden soll
+    /// Changes the color filter used for drawing
     void SetModulationColor(unsigned modulationColor) { modulationColor_ = modulationColor; }
     unsigned GetModulationColor() const { return modulationColor_; }
 
