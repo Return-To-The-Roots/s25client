@@ -7,7 +7,7 @@ if(MSVC)
     add_definitions(/FC)
 endif()
 file(GLOB TEST_SOURCES *.cpp *.h)
-add_executable(Test ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/src/ProgramInitHelpers.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)
+add_executable(Test ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/src/ProgramInitHelpers.cpp ${CMAKE_SOURCE_DIR}/driver/src/AudioDriver.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)
 target_link_libraries(Test
 						s25Main
 						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}

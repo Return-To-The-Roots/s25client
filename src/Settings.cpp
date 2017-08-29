@@ -174,10 +174,10 @@ bool Settings::Load()
         const libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
 
         // ist eine der Kategorien nicht vorhanden?
-        if (!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
-            || !iniIngame || !iniAddons ||
-            // stimmt die Settingsversion?
-            ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
+        if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
+           || !iniIngame || !iniAddons ||
+           // stimmt die Settingsversion?
+           ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
         {
             // nein, dann Standardeinstellungen laden
             s25Util::warning(GetFilePath(FILE_PATHS[0]) + " found, but its corrupted or has wrong version. Loading default values.");
@@ -187,7 +187,7 @@ bool Settings::Load()
         // global
         // {
         // stimmt die Spielrevision überein?
-        if (iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
+        if(iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
             s25Util::warning("Your application version has changed - please recheck your settings!\n");
 
         global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
@@ -209,7 +209,7 @@ bool Settings::Load()
         video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
         // };
 
-        if (video.fullscreen_width == 0 || video.fullscreen_height == 0 || video.windowed_width == 0 || video.windowed_height == 0)
+        if(video.fullscreen_width == 0 || video.fullscreen_height == 0 || video.windowed_width == 0 || video.windowed_height == 0)
         {
             s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
             return LoadDefaults();
@@ -245,7 +245,7 @@ bool Settings::Load()
         lobby.save_password = (iniLobby->getValueI("save_password") != 0);
         // }
 
-        if (lobby.name.empty())
+        if(lobby.name.empty())
             lobby.name = System::getUserName();
 
         // server
@@ -262,15 +262,15 @@ bool Settings::Load()
         // }
 
         // leere proxyadresse deaktiviert proxy komplett
-        if (proxy.proxy.empty())
+        if(proxy.proxy.empty())
             proxy.typ = 0;
 
         // deaktivierter proxy entfernt proxyadresse
-        if (proxy.typ == 0)
+        if(proxy.typ == 0)
             proxy.proxy.clear();
 
         // aktivierter Socks v4 deaktiviert ipv6
-        else if (proxy.typ == 4 && server.ipv6)
+        else if(proxy.typ == 4 && server.ipv6)
             server.ipv6 = false;
 
         // interface
@@ -286,21 +286,19 @@ bool Settings::Load()
 
         // addons
         // {
-        for (unsigned addon = 0; addon < iniAddons->size(); ++addon)
+        for(unsigned addon = 0; addon < iniAddons->size(); ++addon)
         {
             const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
 
-            if (item)
+            if(item)
                 addons.configuration.insert(std::make_pair(atoi(item->getName().c_str()), atoi(item->getText().c_str())));
         }
         // }
 
-    }
-    catch (boost::bad_lexical_cast& e)
+    } catch(boost::bad_lexical_cast& e)
     {
         s25Util::warning(std::string("Corrupt \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values. Error: " + e.what());
         return LoadDefaults();
-
     }
 
     return true;

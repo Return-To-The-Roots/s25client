@@ -49,7 +49,7 @@ public:
     typedef boost::shared_ptr<SoundDesc> Descriptor;
 
     explicit SoundHandle(Descriptor descriptor = Descriptor()) : descriptor_(descriptor) {}
-    SoundType getType() const { return (!descriptor_) ? SD_UNKNOWN : descriptor_->type_; }
+    SoundType getType() const { return isValid() ? descriptor_->type_ : SD_UNKNOWN; }
     bool isMusic() const { return getType() == SD_MUSIC; }
     bool isEffect() const { return getType() == SD_EFFECT; }
     /// Return true if the sound is still valid/loaded
