@@ -67,12 +67,83 @@ namespace detail {
 template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4, size_t T_n5>
 struct SimpleMultiArray
 {
-    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0);
-    BOOST_STATIC_ASSERT((T_n4 == 0 || T_n3 > 0) && (T_n5 == 0 || T_n4 > 0));
+    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0 && T_n5 > 0);
     typedef detail::MultiArrayRef<T, T_n2, T_n3, T_n4, T_n5> reference;
     typedef detail::MultiArrayRef<const T, T_n2, T_n3, T_n4, T_n5> const_reference;
 
-    T elems[T_n1][T_n2][T_n3 > 0 ? T_n3 : 1][T_n4 > 0 ? T_n4 : 1][T_n5 > 0 ? T_n5 : 1];
+    T elems[T_n1][T_n2][T_n3][T_n4][T_n5];
+
+    size_t size() const { return T_n1; }
+
+    reference operator[](size_t i)
+    {
+        RTTR_Assert_Msg(i < T_n1, "out of range");
+        return reference(reinterpret_cast<T*>(elems[i]));
+    }
+
+    const_reference operator[](size_t i) const
+    {
+        RTTR_Assert_Msg(i < T_n1, "out of range");
+        return const_reference(reinterpret_cast<const T*>(elems[i]));
+    }
+};
+
+template<typename T, size_t T_n1, size_t T_n2, size_t T_n3, size_t T_n4>
+struct SimpleMultiArray<T, T_n1, T_n2, T_n3, T_n4>
+{
+    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0 && T_n3 > 0 && T_n4 > 0);
+    typedef detail::MultiArrayRef<T, T_n2, T_n3, T_n4> reference;
+    typedef detail::MultiArrayRef<const T, T_n2, T_n3, T_n4> const_reference;
+
+    T elems[T_n1][T_n2][T_n3][T_n4];
+
+    size_t size() const { return T_n1; }
+
+    reference operator[](size_t i)
+    {
+        RTTR_Assert_Msg(i < T_n1, "out of range");
+        return reference(reinterpret_cast<T*>(elems[i]));
+    }
+
+    const_reference operator[](size_t i) const
+    {
+        RTTR_Assert_Msg(i < T_n1, "out of range");
+        return const_reference(reinterpret_cast<const T*>(elems[i]));
+    }
+};
+
+template<typename T, size_t T_n1, size_t T_n2, size_t T_n3>
+struct SimpleMultiArray<T, T_n1, T_n2, T_n3>
+{
+    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0 && T_n3 > 0);
+    typedef detail::MultiArrayRef<T, T_n2, T_n3> reference;
+    typedef detail::MultiArrayRef<const T, T_n2, T_n3> const_reference;
+
+    T elems[T_n1][T_n2][T_n3];
+
+    size_t size() const { return T_n1; }
+
+    reference operator[](size_t i)
+    {
+        RTTR_Assert_Msg(i < T_n1, "out of range");
+        return reference(reinterpret_cast<T*>(elems[i]));
+    }
+
+    const_reference operator[](size_t i) const
+    {
+        RTTR_Assert_Msg(i < T_n1, "out of range");
+        return const_reference(reinterpret_cast<const T*>(elems[i]));
+    }
+};
+
+template<typename T, size_t T_n1, size_t T_n2>
+struct SimpleMultiArray<T, T_n1, T_n2>
+{
+    BOOST_STATIC_ASSERT(T_n1 > 0 && T_n2 > 0);
+    typedef detail::MultiArrayRef<T, T_n2> reference;
+    typedef detail::MultiArrayRef<const T, T_n2> const_reference;
+
+    T elems[T_n1][T_n2];
 
     size_t size() const { return T_n1; }
 

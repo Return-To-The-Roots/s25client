@@ -25,16 +25,17 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(AIResource){WOOD, STONES, GOLD, IRONORE, COAL, G
                                             // special:
                                             BLOCKED = 254, NOTHING = 255} BOOST_SCOPED_ENUM_DECLARE_END(AIResource)
 
-  const boost::array<unsigned, 9> SUPPRESS_UNUSED RES_RADIUS = {{
-    8, // Wood
-    8, // Stones
-    2, // Gold
-    2, // Ironore
-    2, // Coal
-    2, // Granite
-    3, // Plantspace
-    5, // Borderland
-    5  // Fish
-  }};
+  const unsigned NUM_AIRESOURCES = 9;
+const boost::array<unsigned, NUM_AIRESOURCES> SUPPRESS_UNUSED RES_RADIUS = {{
+  8, // Wood
+  8, // Stones
+  2, // Gold
+  2, // Ironore
+  2, // Coal
+  2, // Granite
+  3, // Plantspace
+  5, // Borderland
+  5  // Fish
+}};
 
 #endif // AIResource_h__

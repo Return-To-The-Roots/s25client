@@ -160,7 +160,8 @@ void AIConstruction::SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir
 
 void AIConstruction::InitMilitaryBldTypes()
 {
-    for(int i = 0; i < BUILDING_TYPES_COUNT; i++)
+    militaryBldTypes.clear();
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; i++)
     {
         BuildingType bld = BuildingType(i);
         if(BuildingProperties::IsMilitary(bld))

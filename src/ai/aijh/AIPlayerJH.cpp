@@ -103,8 +103,8 @@ void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 namespace AIJH {
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-    : AIPlayer(playerId, gwb, level), UpgradeBldListNumber(-1), isInitGfCompleted(false), defeated(false),
-      UpgradeBldPos(MapPoint::Invalid())
+    : AIPlayer(playerId, gwb, level), UpgradeBldListNumber(-1), UpgradeBldPos(MapPoint::Invalid()), isInitGfCompleted(false),
+      defeated(false)
 {
     construction = new AIConstruction(aii, *this);
     InitNodes();
@@ -618,7 +618,7 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 
 bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    return resourceMaps[boost::underlying_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
+    return resourceMaps[static_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
 PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, BuildingType /*bld*/,
@@ -651,7 +651,7 @@ PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIResource res, B
 
 PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool best)
 {
-    AIResourceMap& resMap = resourceMaps[boost::underlying_cast<unsigned>(search->res)];
+    AIResourceMap& resMap = resourceMaps[static_cast<unsigned>(search->res)];
     // make nodesPerStep tests
     for(int i = 0; i < search->nodesPerStep; i++)
     {
@@ -741,7 +741,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
             for(MapCoord step = 0; step < r; ++step)
             {
                 unsigned n = aii.GetIdx(t2);
-                int& resMapVal = resourceMaps[boost::underlying_cast<unsigned>(res)][t2];
+                int& resMapVal = resourceMaps[static_cast<unsigned>(res)][t2];
                 if(fixed)
                     temp = resMapVal;
                 else
@@ -879,7 +879,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
                 else // last step was the previous direction
                     temp = aii.CalcResourceValue(t2, res, (curDir - 1) % 6, temp);
                 // copy the value to the resource map (map is only used in the ai debug mode)
-                resourceMaps[boost::underlying_cast<unsigned>(res)][t2] = temp;
+                resourceMaps[static_cast<unsigned>(res)][t2] = temp;
                 if(temp > best_value)
                 {
                     if(!nodes[n].reachable || (inTerritory && !aii.IsOwnTerritory(t2)) || nodes[n].farmed)
@@ -1959,7 +1959,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
     RecalcBQAround(pt);
     if(GetAINode(pt).res == AIResource::PLANTSPACE)
     {
-        resourceMaps[boost::underlying_cast<unsigned>(AIResource::PLANTSPACE)].Change(pt, -1);
+        resourceMaps[static_cast<unsigned>(AIResource::PLANTSPACE)].Change(pt, -1);
         GetAINode(pt).res = AIResource::NOTHING;
     }
 
@@ -1968,7 +1968,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
     RecalcBQAround(pt);
     if(GetAINode(pt).res == AIResource::PLANTSPACE)
     {
-        resourceMaps[boost::underlying_cast<unsigned>(AIResource::PLANTSPACE)].Change(pt, -1);
+        resourceMaps[static_cast<unsigned>(AIResource::PLANTSPACE)].Change(pt, -1);
         GetAINode(pt).res = AIResource::NOTHING;
     }
 
@@ -1980,7 +1980,7 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
         // Auch Plantspace entsprechend anpassen:
         if(GetAINode(pt).res == AIResource::PLANTSPACE)
         {
-            resourceMaps[boost::underlying_cast<unsigned>(AIResource::PLANTSPACE)].Change(pt, -1);
+            resourceMaps[static_cast<unsigned>(AIResource::PLANTSPACE)].Change(pt, -1);
             GetAINode(pt).res = AIResource::NOTHING;
         }
     }
@@ -2011,7 +2011,7 @@ void AIPlayerJH::SaveResourceMapsToFile()
 
 int AIPlayerJH::GetResMapValue(const MapPoint pt, AIResource res) const
 {
-    return resourceMaps[boost::underlying_cast<unsigned>(res)][pt];
+    return resourceMaps[static_cast<unsigned>(res)][pt];
 }
 
 void AIPlayerJH::SendAIEvent(AIEvent::Base* ev)

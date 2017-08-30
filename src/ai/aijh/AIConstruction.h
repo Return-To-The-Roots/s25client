@@ -23,7 +23,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/container/small_vector.hpp>
+#include <boost/container/static_vector.hpp>
 #include <deque>
 #include <stdint.h>
 #include <vector>
@@ -117,8 +117,8 @@ private:
 
     AIInterface& aii;
     AIPlayerJH& aijh;
-
-    boost::container::small_vector<BuildingType, 8> militaryBldTypes;
+    /// Stores the bld types that are military blds as a cache. Assumes that at most 1/4 of the blds are military
+    boost::container::static_vector<BuildingType, BUILDING_TYPES_COUNT / 4u> militaryBldTypes;
     /// Contains how many buildings of every type is wanted
     std::vector<unsigned> buildingsWanted;
     /// Contains the build jobs the AI should try to execute

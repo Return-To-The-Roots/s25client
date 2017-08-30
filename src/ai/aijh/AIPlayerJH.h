@@ -260,7 +260,7 @@ protected:
     /// Nodes containing some information about every map node
     std::vector<Node> nodes;
     /// Resource maps, containing a rating for every map point concerning a resource
-    boost::array<AIResourceMap, RES_RADIUS.static_size> resourceMaps;
+    boost::array<AIResourceMap, NUM_AIRESOURCES> resourceMaps;
 
 private:
     unsigned attack_interval;

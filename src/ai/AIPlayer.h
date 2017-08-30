@@ -31,7 +31,7 @@ class AIPlayer
 {
 public:
     AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-        : playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId), ggs(gwb.GetGGS())
+        : ggs(gwb.GetGGS()), playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId)
     {
     }
 

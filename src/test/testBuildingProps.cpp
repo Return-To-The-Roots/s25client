@@ -30,7 +30,7 @@ typedef WorldFixture<CreateEmptyWorld, 1, 8, 12> EmptyWorldFixture1P;
 BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
 {
     const MapPoint bldPos(0, 0);
-    for(int i = 0; i < BUILDING_TYPES_COUNT; i++)
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; i++)
     {
         BuildingType bldType = BuildingType(i);
         if(!BuildingProperties::IsValid(bldType))
