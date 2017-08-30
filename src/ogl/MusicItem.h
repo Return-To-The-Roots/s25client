@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,25 +14,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED
-#define GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED
+#ifndef MUSICITEM_H_INCLUDED
+#define MUSICITEM_H_INCLUDED
 
 #pragma once
 
-#include "glArchivItem_Bitmap.h"
-#include "libsiedler2/src/ArchivItem_Bitmap_Shadow.h"
+#include "SoundItem.h"
 
-/// Klasse für GL-Shadow-Bitmaps.
-class glArchivItem_Bitmap_Shadow : public libsiedler2::baseArchivItem_Bitmap_Shadow, public glArchivItem_Bitmap
+class MusicItem : public SoundItem
 {
 public:
-    glArchivItem_Bitmap_Shadow() {}
-
-    glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow& item)
-        : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item)
-    {
-    }
-    RTTR_CLONEABLE(glArchivItem_Bitmap_Shadow)
+    /// Plays the music
+    void Play(unsigned repeats);
 };
 
-#endif // !GLARCHIVITEM_BITMAP_SHADOW_H_INCLUDED
+#endif // !MUSICITEM_H_INCLUDED

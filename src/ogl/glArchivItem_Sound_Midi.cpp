@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,24 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Midi.h"
-
-#include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
-/**
- *  Spielt die Musik ab.
- *
- *  @param[in] volume Lautstärke der Musik.
- *  @param[in] loop   Endlosschleife ja/nein
- */
-void glArchivItem_Sound_Midi::Play(const unsigned repeats)
+SoundHandle glArchivItem_Sound_Midi::Load()
 {
-    if(!SETTINGS.sound.musik)
-        return;
-
-    if(!sound)
-        sound = AUDIODRIVER.LoadMusic(*this, ".midi");
-
-    if(sound)
-        AUDIODRIVER.PlayMusic(sound, repeats);
+    return AUDIODRIVER.LoadMusic(*this, ".midi");
 }

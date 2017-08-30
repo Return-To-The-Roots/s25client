@@ -45,7 +45,7 @@ public:
 
     /// Setzt Werte
     void SetSegments(const std::vector<std::string>& segments);
-    void SetRepeats(const unsigned repeats);
+    void SetRepeats(unsigned repeats);
     void SetRandomPlayback(const bool random_playback);
     void SetCurrentSong(const unsigned selection);
 

@@ -26,9 +26,9 @@
 #include "dskMainMenu.h"
 
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/MusicItem.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Music.h"
 #include "gameData/JobConsts.h"
 #include <boost/array.hpp>
 #include <cstdlib>
@@ -159,7 +159,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     this->itCurEntry = entries.begin();
     startTime = bobTime = bobSpawnTime = VIDEODRIVER.GetTickCount();
 
-    glArchivItem_Music* curSong = dynamic_cast<glArchivItem_Music*>(LOADER.sng_lst[8]);
+    MusicItem* curSong = dynamic_cast<MusicItem*>(LOADER.sng_lst[8]);
     if(curSong)
         curSong->Play(0);
 }

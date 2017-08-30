@@ -26,7 +26,6 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos
 {
 }
 
-/// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
 void ctrlTextButton::DrawContent() const
 {
     const bool isPressed = state == BUTTON_PRESSED || isChecked;

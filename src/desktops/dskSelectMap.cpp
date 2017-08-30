@@ -183,7 +183,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
                 // get path to map from table
                 std::string path = table->GetItemText(selection, 5);
 
-                libsiedler2::ArchivInfo ai;
+                libsiedler2::Archiv ai;
                 // load map data
                 if(libsiedler2::loader::LoadMAP(path, ai) == 0)
                 {
@@ -386,7 +386,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
     BOOST_FOREACH(const std::string& filePath, files)
     {
         // Karteninformationen laden
-        libsiedler2::ArchivInfo map;
+        libsiedler2::Archiv map;
         if(libsiedler2::loader::LoadMAP(filePath, map, true) != 0)
             continue;
 

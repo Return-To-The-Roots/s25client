@@ -50,6 +50,7 @@ class glArchivItem_Map : public libsiedler2::ArchivItem_Map
 public:
     glArchivItem_Map();
     ~glArchivItem_Map() override;
+    RTTR_CLONEABLE(glArchivItem_Map)
 
     /// lädt die Mapdaten aus einer Datei.
     int load(std::istream& file, bool only_header) override;

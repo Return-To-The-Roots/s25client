@@ -105,7 +105,7 @@ bool GameManager::Start()
 
     /// Lautstärken gleich mit setzen
     AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effekte_volume); //-V807
-    AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
+    AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
 
     // Treibereinstellungen abspeichern
     SETTINGS.Save();

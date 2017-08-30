@@ -17,12 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "DriverWrapper.h"
-
 #include "ListDir.h"
-#include "driver/src/AudioInterface.h"
 #include "driver/src/DriverInterfaceVersion.h"
 #include "driver/src/Interface.h"
-#include "driver/src/VideoInterface.h"
 #include "files.h"
 #include "mygettext/src/mygettext.h"
 #include "libutil/src/Log.h"
@@ -151,12 +148,18 @@ bool DriverWrapper::CheckLibrary(const std::string& path, DriverType dt, std::st
     }
 
     PDRIVER_GETDRIVERNAME GetDriverName = pto2ptf<PDRIVER_GETDRIVERNAME>(GetDLLFunction2(dll.get(), "GetDriverName"));
-    PDRIVER_CREATEAUDIOINSTANCE CreateAudioInstance =
-      pto2ptf<PDRIVER_CREATEAUDIOINSTANCE>(GetDLLFunction2(dll.get(), "CreateAudioInstance"));
-    PDRIVER_CREATEVIDEOINSTANCE CreateVideoInstance =
-      pto2ptf<PDRIVER_CREATEVIDEOINSTANCE>(GetDLLFunction2(dll.get(), "CreateVideoInstance"));
+    std::string createName, freeName;
+    if(dt == DT_VIDEO)
+    {
+        createName = "CreateVideoInstance";
+        freeName = "FreeVideoInstance";
+    } else
+    {
+        createName = "CreateAudioInstance";
+        freeName = "FreeAudioInstance";
+    }
 
-    if(!GetDriverName || (dt == DT_VIDEO && !CreateVideoInstance) || (dt == DT_AUDIO && !CreateAudioInstance))
+    if(!GetDriverName || !GetDLLFunction2(dll.get(), createName) || !GetDLLFunction2(dll.get(), freeName))
     {
         nameOrError = _("Missing required API function");
         return false;

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,23 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_Wave.h"
-
-#include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
-/**
- *  Spielt den Sound ab.
- *
- *  @param[in] volume Lautstärke des Sounds.
- *  @param[in] loop   Endlosschleife ja/nein
- */
-unsigned glArchivItem_Sound_Wave::Play(unsigned char volume, bool loop)
+SoundHandle glArchivItem_Sound_Wave::Load()
 {
-    if(!SETTINGS.sound.effekte /* || !VIDEODRIVER.audiodriver*/)
-        return 0xFFFFFFFF;
-
-    if(!sound)
-        sound = AUDIODRIVER.LoadEffect(*this, ".wav");
-
-    return AUDIODRIVER.PlayEffect(sound, volume, loop);
+    return AUDIODRIVER.LoadEffect(*this, ".wav");
 }

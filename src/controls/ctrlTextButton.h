@@ -31,7 +31,7 @@ public:
                    glArchivItem_Font* font, const std::string& tooltip);
 
 protected:
-    /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen (Text in dem Fall)
+    /// Draw actual content (text here)
     void DrawContent() const override;
 };
 

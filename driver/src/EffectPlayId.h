@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,21 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_BOB_H_INCLUDED
-#define GLARCHIVITEM_BOB_H_INCLUDED
 
 #pragma once
 
-#include "DrawPoint.h"
-#include "libsiedler2/src/ArchivItem_Bob.h"
+#ifndef EffectPlayId_h__
+#define EffectPlayId_h__
 
-/// Klasse für GL-Bobfiles.
-class glArchivItem_Bob : public libsiedler2::ArchivItem_Bob
-{
-public:
-    /// Zeichnet einen Animationsstep.
-    void Draw(unsigned item, unsigned direction, bool fat, unsigned animationstep, DrawPoint drawPt, unsigned color);
-    RTTR_CLONEABLE(glArchivItem_Bob)
-};
+#include <stdint.h>
 
-#endif // !GLARCHIVITEM_BOB_H_INCLUDED
+/// Id of a played effect
+typedef int32_t EffectPlayId;
+
+#endif // EffectPlayId_h__

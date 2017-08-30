@@ -147,7 +147,7 @@ struct Map
      * Creates a new archiv for this map.
      * @return a new archiv containing the information of this map
      */
-    libsiedler2::ArchivInfo* CreateArchiv();
+    libsiedler2::Archiv* CreateArchiv();
 };
 
 #endif // Map_h__

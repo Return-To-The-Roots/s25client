@@ -32,6 +32,7 @@ public:
         : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Raw(item), glArchivItem_Bitmap(item)
     {
     }
+    RTTR_CLONEABLE(glArchivItem_Bitmap_Raw)
 };
 
 #endif // !GLARCHIVITEM_BITMAP_RAW_H_INCLUDED

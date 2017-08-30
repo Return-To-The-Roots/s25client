@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -14,28 +14,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef GLARCHIVITEM_MUSIC_INCLUDED
-#define GLARCHIVITEM_MUSIC_INCLUDED
+
+#ifndef SOUNDEFFECTITEM_H_INCLUDED
+#define SOUNDEFFECTITEM_H_INCLUDED
 
 #pragma once
 
-#include "libsiedler2/src/ArchivItem_Sound.h"
-class Sound;
+#include "SoundItem.h"
+#include "driver/src/EffectPlayId.h"
 
-class glArchivItem_Music : public virtual libsiedler2::baseArchivItem_Sound
+/// Base class for sound effects
+class SoundEffectItem : public SoundItem
 {
 public:
-    glArchivItem_Music();
-    glArchivItem_Music(const glArchivItem_Music& item);
-
-    ~glArchivItem_Music() override;
-
-    /// Spielt die Musik ab.
-    virtual void Play(const unsigned repeats) = 0;
-
-protected:
-    /// Handle to the sound, managed by driver, hence safe to copy
-    Sound* sound;
+    /// Play the sound effect
+    EffectPlayId Play(uint8_t volume, bool loop);
 };
 
-#endif // !GLARCHIVITEM_MUSIC_INCLUDED
+#endif // !SOUNDEFFECTITEM_H_INCLUDED

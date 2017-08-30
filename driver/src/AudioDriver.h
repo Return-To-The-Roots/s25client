@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,43 +18,52 @@
 #define AUDIODRIVER_H_INCLUDED
 
 #include "AudioInterface.h"
+#include <boost/array.hpp>
 #include <vector>
-class AudioDriverLoaderInterface;
-class Sound;
+class IAudioDriverCallback;
 
-/// Basisklasse für einen Audiotreiber.
+/// Base class for audio drivers
 class AudioDriver : public IAudioDriver
 {
 public:
-    AudioDriver(AudioDriverLoaderInterface* adli);
-
+    AudioDriver(IAudioDriverCallback* driverCallback);
     ~AudioDriver() override;
-
-    /// Funktion zum Auslesen des Treibernamens.
-    const char* GetName() const override;
 
     /// prüft auf Initialisierung.
     bool IsInitialized() override { return initialized; }
+    void CleanUp() override;
 
 protected:
-    /// "Generiert" eine Play-ID
-    unsigned GeneratePlayID();
+    /// Maximum number of channels
+    BOOST_STATIC_CONSTEXPR unsigned MAX_NUM_CHANNELS = 64;
+    /// Sets the actual number of channels used. Must be called before using channels and numChannels <= MAX_NUM_CHANNELS
+    void SetNumChannels(unsigned numChannels);
+    /// Adds an effect to a channel
+    EffectPlayId AddPlayedEffect(int channel);
+    /// Get the channel an effect is being played at or -1 if not found
+    int GetEffectChannel(EffectPlayId playId);
+    /// Removes the effect from the channel list
+    void RemoveEffect(EffectPlayId playId);
+    /// Creates a handle for the given sound and adds it to the sounds list
+    /// When the last reference to the handle is lost, DoUnloadSound will be called unless the IsValid flag was set to false
+    SoundHandle CreateSoundHandle(SoundDesc* sound);
+    /// Called for a still loaded sound (IsValid() == true) and should unload the sound and set IsValid to false)
+    virtual void DoUnloadSound(SoundDesc& sound) = 0;
+
+    IAudioDriverCallback* driverCallback;
+    bool initialized; /// Is initialized?
 
 private:
-    /// Counter für Play-IDs
-    unsigned play_id_counter;
-
-protected:
-    AudioDriverLoaderInterface* adli;
-
-    /// Das DriverCallback für Rückmeldungen.
-
-    bool initialized; /// Initialisierungsstatus.
-
-    std::vector<Sound*> sounds;
-
-    /// Anzahl Channels, die reserviert werden können (für Effekte!)
-    static const unsigned CHANNEL_COUNT = 64;
+    /// Callback for unloading a sound
+    static void UnloadSound(AudioDriver& driver, SoundDesc* sound);
+    /// Generates a play id. -1 for invalid
+    int GeneratePlayID();
+    /// Next play id
+    EffectPlayId nextPlayID_;
+    std::vector<SoundDesc*> sounds_;
+    unsigned numChannels_;
+    /// Which effect is played on which channel
+    boost::array<EffectPlayId, MAX_NUM_CHANNELS> channels_;
 };
 
 #endif // !AUDIODRIVER_H_INCLUDED

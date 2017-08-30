@@ -22,8 +22,8 @@
 #include "ctrlButton.h"
 #include "ctrlList.h"
 #include "driver/src/MouseCoords.h"
+#include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Sound.h"
 
 ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                            unsigned short max_list_height, bool readonly)

@@ -17,7 +17,7 @@
 #ifndef MUSICPLAYER_H_INCLUDED
 #define MUSICPLAYER_H_INCLUDED
 
-#include "libsiedler2/src/ArchivInfo.h"
+#include "libsiedler2/src/Archiv.h"
 #include "libutil/src/Singleton.h"
 #include <string>
 #include <vector>
@@ -87,9 +87,9 @@ protected:
     void PlayNext();
 
 private:
-    bool playing;                /// Läuft die Musik gerade?
-    Playlist list;               /// Unsere aktuell aktive Playlist
-    libsiedler2::ArchivInfo sng; /// externes benutzerdefiniertes Musikstück (z.B. andere mp3)
+    bool playing;            /// Läuft die Musik gerade?
+    Playlist list;           /// Unsere aktuell aktive Playlist
+    libsiedler2::Archiv sng; /// externes benutzerdefiniertes Musikstück (z.B. andere mp3)
 };
 
 #define MUSICPLAYER MusicPlayer::inst()

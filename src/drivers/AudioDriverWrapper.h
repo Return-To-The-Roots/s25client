@@ -18,57 +18,58 @@
 #define AUDIODRIVERWRAPPER_H_INCLUDED
 
 #include "DriverWrapper.h"
-#include "driver/src/AudioDriverLoaderInterface.h"
 #include "driver/src/AudioType.h"
+#include "driver/src/EffectPlayId.h"
+#include "driver/src/IAudioDriverCallback.h"
 #include "libutil/src/Singleton.h"
 
 class IAudioDriver;
-class Sound;
+class SoundHandle;
 
 namespace libsiedler2 {
-class baseArchivItem_Sound;
+class ArchivItem_Sound;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
-class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicies::WithLongevity>, public AudioDriverLoaderInterface
+class AudioDriverWrapper : public Singleton<AudioDriverWrapper, SingletonPolicies::WithLongevity>, public IAudioDriverCallback
 {
 public:
     BOOST_STATIC_CONSTEXPR unsigned Longevity = 30;
 
     AudioDriverWrapper();
-
     ~AudioDriverWrapper() override;
 
-    /// Läd den Treiber
-    bool LoadDriver();
+    /// Loads the driver. If audioDriver is NULL then the dll directory is checked
+    bool LoadDriver(IAudioDriver* audioDriver = NULL);
+    /// Unloads the driver resetting all open handles
+    void UnloadDriver();
 
     /// Lädt einen Sound.
-    Sound* LoadEffect(const std::string& filepath);
-    Sound* LoadEffect(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension);
-    Sound* LoadMusic(const std::string& filepath);
-    Sound* LoadMusic(const libsiedler2::baseArchivItem_Sound& soundArchiv, const std::string& extension);
+    SoundHandle LoadEffect(const std::string& filepath);
+    SoundHandle LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
+    SoundHandle LoadMusic(const std::string& filepath);
+    SoundHandle LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
 
     /// Spielt einen Sound
-    unsigned PlayEffect(Sound* sound, const unsigned char volume, const bool loop);
+    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, const bool loop);
     /// Stoppt einen Sound
     void StopEffect(const unsigned play_id);
 
     /// Spielt Midi ab
-    void PlayMusic(Sound* sound, const unsigned repeats);
+    void PlayMusic(const SoundHandle& sound, unsigned repeats);
 
     /// Stoppt die Musik.
     void StopMusic();
 
     /// Wird ein Sound (noch) abgespielt?
-    bool IsEffectPlaying(const unsigned play_id);
+    bool IsEffectPlaying(EffectPlayId play_id);
 
     /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-    void ChangeVolume(const unsigned play_id, const unsigned char volume);
+    void ChangeVolume(EffectPlayId play_id, uint8_t volume);
 
-    void SetMasterEffectVolume(unsigned char volume);
-
-    void SetMasterMusicVolume(unsigned char volume);
+    void SetMasterEffectVolume(uint8_t volume);
+    void SetMusicVolume(uint8_t volume);
 
     std::string GetName() const;
 
@@ -77,7 +78,8 @@ private:
 
 private:
     DriverWrapper driver_wrapper;
-    IAudioDriver* audiodriver;
+    IAudioDriver* audiodriver_;
+    bool loadedFromDll; /// If true then free must just dll free function else delete
 };
 
 #define AUDIODRIVER AudioDriverWrapper::inst()

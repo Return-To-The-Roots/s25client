@@ -151,7 +151,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         // Altes S2-Mapformat von BB
         case MAPTYPE_OLDMAP:
         {
-            libsiedler2::ArchivInfo map;
+            libsiedler2::Archiv map;
 
             // Karteninformationen laden
             if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)

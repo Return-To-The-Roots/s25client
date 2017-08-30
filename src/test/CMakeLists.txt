@@ -6,8 +6,15 @@ if(MSVC)
     # Use full paths for defines (makes Boost.Test with the VS addin work better)
     add_definitions(/FC)
 endif()
+
+get_filename_component(RTTR_BASE_DIR ${CMAKE_SOURCE_DIR} ABSOLUTE)
+set(RTTR_LIBSIEDLER2_TEST_FILES_DIR ${RTTR_BASE_DIR}/libsiedler2/examples/test/testFiles)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake" ${CMAKE_BINARY_DIR}/test/testConfig.h @ONLY)
+unset(RTTR_BASE_DIR)
+unset(RTTR_LIBSIEDLER2_TEST_FILES_DIR)
+
 file(GLOB TEST_SOURCES *.cpp *.h)
-add_executable(Test ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/src/ProgramInitHelpers.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)
+add_executable(Test ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/src/ProgramInitHelpers.cpp ${CMAKE_SOURCE_DIR}/driver/src/AudioDriver.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)
 target_link_libraries(Test
 						s25Main
 						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}

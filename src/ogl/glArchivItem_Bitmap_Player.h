@@ -34,6 +34,7 @@ public:
         : ArchivItem_BitmapBase(item), ArchivItem_Bitmap_Player(item), glArchivItem_BitmapBase(item)
     {
     }
+    RTTR_CLONEABLE(glArchivItem_Bitmap_Player)
 
     /// Draw the texture in the given rect, stretching if required
     /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)

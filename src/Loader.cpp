@@ -18,39 +18,38 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "defines.h" // IWYU pragma: keep
-
 #include "Loader.h"
-#include "files.h"
-
-#include "Settings.h"
-
-#include "drivers/VideoDriverWrapper.h"
-#include "libutil/src/Log.h"
-
 #include "ListDir.h"
-#include "libutil/src/fileFuncs.h"
-
+#include "Settings.h"
 #include "addons/const_addons.h"
-#include "ogl/glAllocator.h"
+#include "boost/interprocess/smart_ptr/unique_ptr.hpp"
+#include "drivers/VideoDriverWrapper.h"
+#include "files.h"
+#include "helpers/Deleter.h"
+#include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Bitmap_RLE.h"
 #include "ogl/glArchivItem_Bitmap_Raw.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
-#include "ogl/glArchivItem_Sound.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePacker.h"
 #include "gameTypes/Direction.h"
 #include "gameData/JobConsts.h"
 #include "gameData/TerrainData.h"
-
 #include "libsiedler2/src/ArchivItem_Ini.h"
 #include "libsiedler2/src/ArchivItem_Palette.h"
 #include "libsiedler2/src/ArchivItem_Text.h"
 #include "libsiedler2/src/ErrorCodes.h"
+#include "libsiedler2/src/IAllocator.h"
+#include "libsiedler2/src/PixelBufferARGB.h"
+#include "libsiedler2/src/PixelBufferPaletted.h"
 #include "libsiedler2/src/libsiedler2.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/fileFuncs.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <iomanip>
@@ -59,7 +58,7 @@
 
 Loader::Loader() : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
 {
-    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::ArchivInfo*>(NULL));
+    std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(NULL));
 }
 
 Loader::~Loader()
@@ -264,7 +263,7 @@ bool Loader::LoadSounds()
     sng_lst.alloc(oggFiles.size());
     for(std::vector<std::string>::iterator it = oggFiles.begin(); it != oggFiles.end(); ++it)
     {
-        libsiedler2::ArchivInfo sng;
+        libsiedler2::Archiv sng;
 
         LOG.write(_("Loading \"%s\": ")) % *it;
         unsigned startTime = VIDEODRIVER.GetTickCount();
@@ -275,7 +274,7 @@ bool Loader::LoadSounds()
         }
         LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
 
-        sng_lst.setC(i++, *sng.get(0));
+        sng_lst.set(i++, sng.release(0));
     }
 
     return true;
@@ -376,7 +375,7 @@ void Loader::LoadDummyGUIFiles()
     palette = new libsiedler2::ArchivItem_Palette;
     files_["pal5"].archiv.push(palette);
     // GUI elements
-    libsiedler2::ArchivInfo& resource = files_["resource"].archiv;
+    libsiedler2::Archiv& resource = files_["resource"].archiv;
     resource.alloc(57);
     for(unsigned id = 4; id < 36; id++)
     {
@@ -392,7 +391,7 @@ void Loader::LoadDummyGUIFiles()
         bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
         resource.set(id, bmp);
     }
-    libsiedler2::ArchivInfo& io = files_["io"].archiv;
+    libsiedler2::Archiv& io = files_["io"].archiv;
     for(unsigned id = 0; id < 264; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
@@ -401,7 +400,7 @@ void Loader::LoadDummyGUIFiles()
         io.push(bmp);
     }
     // Fonts
-    libsiedler2::ArchivInfo& fonts = files_["outline_fonts"].archiv;
+    libsiedler2::Archiv& fonts = files_["outline_fonts"].archiv;
     fonts.alloc(3);
     std::vector<uint32_t> buffer(15 * 16, SetAlpha(0, 255));
     for(unsigned i = 0; i < 3; i++)
@@ -873,7 +872,7 @@ void Loader::ClearTerrainTextures()
 {
     for(std::map<TerrainType, glArchivItem_Bitmap*>::iterator it = terrainTextures.begin(); it != terrainTextures.end(); ++it)
         delete it->second;
-    for(std::map<TerrainType, libsiedler2::ArchivInfo*>::iterator it = terrainTexturesAnim.begin(); it != terrainTexturesAnim.end(); ++it)
+    for(std::map<TerrainType, libsiedler2::Archiv*>::iterator it = terrainTexturesAnim.begin(); it != terrainTexturesAnim.end(); ++it)
         delete it->second;
     terrainTextures.clear();
     terrainTexturesAnim.clear();
@@ -904,7 +903,6 @@ bool Loader::CreateTerrainTextures()
     // Wege
     Rect rec_roads[8] = {
       Rect(192, 0, 50, 16), Rect(192, 16, 50, 16), Rect(192, 32, 50, 16), Rect(192, 160, 50, 16),
-
       Rect(242, 0, 50, 16), Rect(242, 16, 50, 16), Rect(242, 32, 50, 16), Rect(242, 160, 50, 16),
     };
 
@@ -934,7 +932,7 @@ bool Loader::CreateTerrainTextures()
 
 glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
 {
-    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv.get(nr));
+    return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv[nr]);
 }
 
 glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
@@ -944,31 +942,31 @@ glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string
 
 glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const std::string& file, unsigned nr)
 {
-    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv.get(nr));
+    return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archiv[nr]);
 }
 
 glArchivItem_Font* Loader::GetFontN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv.get(nr));
+    return dynamic_cast<glArchivItem_Font*>(files_[file].archiv[nr]);
 }
 
 libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv.get(nr));
+    return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archiv[nr]);
 }
 
-glArchivItem_Sound* Loader::GetSoundN(const std::string& file, unsigned nr)
+SoundEffectItem* Loader::GetSoundN(const std::string& file, unsigned nr)
 {
-    return dynamic_cast<glArchivItem_Sound*>(files_[file].archiv.get(nr));
+    return dynamic_cast<SoundEffectItem*>(files_[file].archiv[nr]);
 }
 
 std::string Loader::GetTextN(const std::string& file, unsigned nr)
 {
-    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv.get(nr));
+    libsiedler2::ArchivItem_Text* archiv = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archiv[nr]);
     return archiv ? archiv->getText() : "text missing";
 }
 
-libsiedler2::ArchivInfo* Loader::GetInfoN(const std::string& file)
+libsiedler2::Archiv* Loader::GetInfoN(const std::string& file)
 {
     return &files_[file].archiv;
 }
@@ -1026,7 +1024,7 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
 {
     if(TerrainData::IsAnimated(t))
     {
-        libsiedler2::ArchivInfo* archive = terrainTexturesAnim[t];
+        libsiedler2::Archiv* archive = terrainTexturesAnim[t];
         if(!archive)
             throw std::runtime_error("Invalid terrain texture requested");
         return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
@@ -1047,85 +1045,78 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
-    unsigned short width = rect.right - rect.left;
-    unsigned short height = rect.bottom - rect.top;
+    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
 
-    std::vector<unsigned char> buffer(width * height, libsiedler2::TRANSPARENT_INDEX);
-
-    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
-    for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
+    if(int ec = image->print(buffer, palette, 0, 0, rect.left, rect.top))
+        throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
+    // Replace black pixels by transparent ones (background of the texture is black)
+    BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
     {
-        if(*it == 0)
-            *it = libsiedler2::TRANSPARENT_INDEX;
+        if(pxl == 0)
+            pxl = libsiedler2::TRANSPARENT_INDEX;
     }
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
-    bitmap->create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+    if(int ec = bitmap->create(buffer, palette))
+    {
+        delete bitmap;
+        throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
+    }
     return bitmap;
 }
 
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
-                                                        uint32_t colorShift)
+libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
+                                                    uint32_t colorShift)
 {
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
 
-    unsigned short width = rect.right - rect.left;
-    unsigned short height = rect.bottom - rect.top;
-
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    std::vector<unsigned char> buffer(width * height, start_index);
-    std::vector<uint32_t> shiftBuffer(colorShift ? buffer.size() : 0);
+    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, start_index);
+    libsiedler2::PixelBufferARGB shiftBuffer(colorShift ? buffer.getWidth() : 0, buffer.getHeight());
 
-    image->print(&buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette, 0, 0, rect.left, rect.top, width, height);
+    image->print(buffer, palette, 0, 0, rect.left, rect.top);
 
-    glArchivItem_Bitmap_Raw bitmap;
-
-    libsiedler2::ArchivInfo* destination = new libsiedler2::ArchivInfo();
+    libsiedler2::Archiv* destination = new libsiedler2::Archiv();
     for(unsigned char i = 0; i < color_count; ++i)
     {
-        for(std::vector<unsigned char>::iterator it = buffer.begin(); it != buffer.end(); ++it)
+        BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
         {
-            if(*it >= start_index && *it < start_index + color_count)
+            if(pxl >= start_index && pxl < start_index + color_count)
             {
-                if(++*it >= start_index + color_count)
-                    *it = start_index;
+                if(++pxl >= start_index + color_count)
+                    pxl = start_index;
             }
         }
+        boost::interprocess::unique_ptr<glArchivItem_Bitmap_Raw, Deleter<glArchivItem_Bitmap> > bitmap(new glArchivItem_Bitmap_Raw);
 
-        bitmap.create(width, height, &buffer.front(), width, height, libsiedler2::FORMAT_PALETTED, palette);
+        if(int ec = bitmap->create(buffer, palette))
+            throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
         if(colorShift)
         {
-            bitmap.print(reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
-            for(std::vector<uint32_t>::iterator it = shiftBuffer.begin(); it != shiftBuffer.end(); ++it)
+            libsiedler2::ColorARGB shiftClr(colorShift);
+            if(int ec = bitmap->print(shiftBuffer))
+                throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
+            BOOST_FOREACH(uint32_t& clrVal, shiftBuffer.getPixels())
             {
-                unsigned a = GetAlpha(*it) + GetAlpha(colorShift);
-                unsigned r = GetRed(*it) + GetRed(colorShift);
-                unsigned g = GetGreen(*it) + GetGreen(colorShift);
-                unsigned b = GetBlue(*it) + GetBlue(colorShift);
-                if(a > 0xFF)
-                    a -= 0xFF;
-                if(r > 0xFF)
-                    r -= 0xFF;
-                if(g > 0xFF)
-                    g -= 0xFF;
-                if(b > 0xFF)
-                    b -= 0xFF;
-                *it = MakeColor(a, r, g, b);
+                libsiedler2::ColorARGB clr(clrVal);
+                clrVal = libsiedler2::ColorARGB(clr.getAlpha() + shiftClr.getAlpha(), clr.getRed() + shiftClr.getRed(),
+                                                clr.getGreen() + shiftClr.getGreen(), clr.getBlue() + shiftClr.getBlue())
+                           .clrValue;
             }
-            bitmap.create(width, height, reinterpret_cast<unsigned char*>(&shiftBuffer.front()), width, height, libsiedler2::FORMAT_BGRA);
+            bitmap->create(shiftBuffer);
         }
 
-        destination->pushC(bitmap);
+        destination->push(bitmap.release());
     }
     return destination;
 }
 
 /**
- *  @brief Lädt eine Datei in ein ArchivInfo.
+ *  @brief Lädt eine Datei in ein Archiv.
  *
  *  @param[in] pfad    Der Dateipfad
  *  @param[in] palette (falls benötigt) die Palette.
@@ -1133,7 +1124,7 @@ libsiedler2::ArchivInfo* Loader::ExtractAnimatedTexture(const Rect& rect, unsign
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& archiv)
+bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& archiv)
 {
     unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
@@ -1160,7 +1151,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
  *  @param palette Palette to use for possible graphic files
  *  @param to Archtive to write to
  */
-bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::ArchivInfo& to)
+bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& to)
 {
     if(filePath.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + filePath);
@@ -1236,14 +1227,14 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             continue;
         } else if(wf.back() == "bmp") // Bitmap
         {
-            libsiedler2::ArchivInfo temp;
+            libsiedler2::Archiv temp;
             if(!LoadArchiv(*itFile, palette, temp))
                 return false;
 
             // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
 
             glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(GlAllocator().create(bobtype));
+            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(libsiedler2::getAllocator().create(bobtype));
 
             if(!out)
             {
@@ -1280,10 +1271,10 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
             item = out;
         } else if((wf.back() == "bbm") || (wf.back() == "act")) // Palettes
         {
-            libsiedler2::ArchivInfo temp;
+            libsiedler2::Archiv temp;
             if(!LoadArchiv(*itFile, palette, temp))
                 return false;
-            item = GlAllocator().clone(*temp.get(0));
+            item = temp[0]->clone();
         } else if(wf.back() == "fon") // Font
         {
             glArchivItem_Font* font = new glArchivItem_Font();
@@ -1351,7 +1342,7 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     }
 
     // haben wir eine override file? dann nicht-leere items überschreiben
-    libsiedler2::ArchivInfo newEntries;
+    libsiedler2::Archiv newEntries;
     if(!LoadFile(pfad, palette, newEntries))
         return false;
 
@@ -1359,13 +1350,13 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
     LOG.write(_("Replacing entries of previously loaded file '%s'\n")) % name;
 #endif // !NDEBUG
 
-    libsiedler2::ArchivInfo* existing = GetInfoN(name);
+    libsiedler2::Archiv* existing = GetInfoN(name);
     // *.bob archives have exactly 1 entry which is a 'folder' of the actual entries
     // An overwrite can be a (real) folder with those entries and we want to put them into that 'folder'
     // So we check if the new archiv is a folder or an archiv by checking if it contains only 1 BOB entry
     if(fileName.extension() == ".bob" && !(newEntries.size() == 1 && newEntries.get(0)->getBobType() == libsiedler2::BOBTYPE_BOB))
     {
-        existing = dynamic_cast<libsiedler2::ArchivInfo*>(existing->get(0));
+        existing = dynamic_cast<libsiedler2::Archiv*>(existing->get(0));
         if(!existing)
         {
             LOG.write(_("Error while replacing a BOB file\n"));
@@ -1378,12 +1369,12 @@ bool Loader::LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Pal
 
     for(unsigned i = 0; i < newEntries.size(); ++i)
     {
-        if(newEntries.get(i))
+        if(newEntries[i])
         {
 #ifndef NDEBUG
-            LOG.write(_("Replacing entry %d with %s\n")) % i % newEntries.get(i)->getName();
+            LOG.write(_("Replacing entry %d with %s\n")) % i % newEntries[i]->getName();
 #endif // !NDEBUG
-            existing->setC(i, *newEntries.get(i));
+            existing->set(i, newEntries.release(i));
         }
     }
 

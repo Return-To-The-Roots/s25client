@@ -220,7 +220,7 @@ dskHostGame::dskHostGame(const ServerType serverType)
     if(GAMECLIENT.GetMapType() == MAPTYPE_OLDMAP)
     {
         // Map laden
-        libsiedler2::ArchivInfo mapArchiv;
+        libsiedler2::Archiv mapArchiv;
         // Karteninformationen laden
         if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv) == 0)
         {

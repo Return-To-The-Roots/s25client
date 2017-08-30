@@ -32,6 +32,7 @@ class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
 public:
     glArchivItem_Bitmap_Direct();
     glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item);
+    RTTR_CLONEABLE(glArchivItem_Bitmap_Direct)
 
     /// Call before updating texture
     void beginUpdate();

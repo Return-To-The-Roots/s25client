@@ -107,9 +107,9 @@ glArchivItem_Font::glArchivItem_Font(const glArchivItem_Font& obj)
     : ArchivItem_Font(obj), asciiMapping(obj.asciiMapping), utf8_mapping(obj.utf8_mapping)
 {
     if(obj.fontNoOutline)
-        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontNoOutline)));
+        fontNoOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(obj.fontNoOutline->clone()));
     if(obj.fontWithOutline)
-        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(libsiedler2::getAllocator().clone(*obj.fontWithOutline)));
+        fontWithOutline.reset(dynamic_cast<glArchivItem_Bitmap*>(obj.fontWithOutline->clone()));
 }
 
 bool glArchivItem_Font::CharExist(unsigned c) const
@@ -613,7 +613,7 @@ void glArchivItem_Font::initFont()
     }
 
 #ifdef RTTR_PRINT_FONTS
-    ArchivInfo items;
+    Archiv items;
     items.pushC(*fontNoOutline);
     libsiedler2::Write("font" + getName() + "_noOutline.bmp", items);
     items.setC(0, *fontWithOutline);

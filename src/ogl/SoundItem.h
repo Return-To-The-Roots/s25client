@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,17 +15,34 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "glArchivItem_Sound.h"
+#pragma once
 
-glArchivItem_Sound::glArchivItem_Sound() : baseArchivItem_Sound(), sound(NULL)
-{
-}
+#ifndef SoundItem_h__
+#define SoundItem_h__
 
-glArchivItem_Sound::glArchivItem_Sound(const glArchivItem_Sound& item) : baseArchivItem_Sound(item), sound(item.sound)
-{
-}
+#include "driver/src/SoundHandle.h"
 
-glArchivItem_Sound::~glArchivItem_Sound()
+/// Base class for all sound items
+class SoundItem
 {
-}
+public:
+    virtual ~SoundItem() {}
+    SoundType getLoadedType() const { return handle.getType(); }
+
+protected:
+    /// Load the sound item into the driver
+    virtual SoundHandle Load() = 0;
+    /// Return the handle loading it if required
+    SoundHandle& GetSoundHandle()
+    {
+        if(!handle.isValid())
+            handle = Load();
+        return handle;
+    }
+
+private:
+    /// Handle to the sound, managed by driver, hence safe to copy
+    SoundHandle handle;
+};
+
+#endif // SoundItem_h__

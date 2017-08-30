@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,16 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "glArchivItem_Music.h"
+#include "MusicItem.h"
+#include "Settings.h"
+#include "drivers/AudioDriverWrapper.h"
 
-glArchivItem_Music::glArchivItem_Music() : libsiedler2::baseArchivItem_Sound(), sound(NULL)
+void MusicItem::Play(unsigned repeats)
 {
-}
-
-glArchivItem_Music::glArchivItem_Music(const glArchivItem_Music& item) : libsiedler2::baseArchivItem_Sound(item), sound(item.sound)
-{
-}
-
-glArchivItem_Music::~glArchivItem_Music()
-{
+    if(!SETTINGS.sound.musik)
+        return;
+    AUDIODRIVER.PlayMusic(GetSoundHandle(), repeats);
 }

@@ -24,9 +24,9 @@
 #include "Loader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-#include "ogl/glArchivItem_Sound.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 

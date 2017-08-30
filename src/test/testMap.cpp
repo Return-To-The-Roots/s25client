@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(CreateArchiv_NotNull)
     std::string author("author");
     Map map(MapExtent(64, 32), "name", author);
 
-    libsiedler2::ArchivInfo* archiv = map.CreateArchiv();
+    libsiedler2::Archiv* archiv = map.CreateArchiv();
 
     BOOST_REQUIRE(archiv != NULL);
 

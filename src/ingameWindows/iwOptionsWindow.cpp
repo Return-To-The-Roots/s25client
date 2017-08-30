@@ -172,7 +172,7 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
         case 15:
         {
             SETTINGS.sound.musik_volume = (unsigned char)position * 255 / 10 + (position < 10 ? 1 : 0);
-            AUDIODRIVER.SetMasterMusicVolume(SETTINGS.sound.musik_volume);
+            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musik_volume);
         }
         break;
     }
