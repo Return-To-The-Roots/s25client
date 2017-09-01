@@ -51,7 +51,7 @@ include(CleanDirectoryList)
 get_filename_component(_launchermoddir
 	${CMAKE_CURRENT_LIST_FILE}
 	PATH)
-set(_launchermoddir "${_launchermoddir}/launcher-templates")
+get_filename_component(_launchermoddir "${_launchermoddir}/launcher-templates" ABSOLUTE)
 
 macro(_launcher_system_settings)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)

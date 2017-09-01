@@ -24,7 +24,6 @@ INCLUDE(CMakeDetectOsXArchs)
 
 PROJECT(s25client)
 
-
 ################################################################################
 
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -400,7 +399,11 @@ ADD_CUSTOM_TARGET(updateversion ALL
 ################################################################################
 # Then add all other dependencies
 
-FILE(GLOB COMMON_SRC ${PROJECT_SOURCE_DIR}/commonSrc/*.cpp ${PROJECT_SOURCE_DIR}/commonSrc/*.h)
+set(COMMON_SRC
+    ${PROJECT_SOURCE_DIR}/commonSrc/commonDefines.h
+    ${PROJECT_SOURCE_DIR}/commonSrc/RTTR_Assert.cpp
+    ${PROJECT_SOURCE_DIR}/commonSrc/RTTR_Assert.h
+    ${PROJECT_SOURCE_DIR}/commonSrc/RTTR_AssertError.h)
 
 ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(libendian)
