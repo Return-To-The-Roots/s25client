@@ -17,8 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
-#include "RTTR_Version.h"
-
 #include "ClientInterface.h"
 #include "EventManager.h"
 #include "GameEvent.h"
@@ -32,14 +30,14 @@
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
+#include "RTTR_Version.h"
 #include "Random.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
-#include "ai/DummyAI.h"
-#include "ai/aijh/AIPlayerJH.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "factories/AIFactory.h"
 #include "files.h"
 #include "helpers/Deleter.h"
 #include "lua/LuaInterfaceGame.h"
@@ -59,6 +57,8 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
 #include <iostream>
+#include "GamePlayer.h"
+#include "ai/AIPlayer.h"
 
 void GameClient::ClientConfig::Clear()
 {
@@ -1734,13 +1734,9 @@ bool GameClient::IsSinglePlayer() const
     return gw->IsSinglePlayer();
 }
 
-/// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
 AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 {
-    if(aiInfo.type == AI::DEFAULT)
-        return new AIJH::AIPlayerJH(playerId, *gw, aiInfo.level);
-    else
-        return new DummyAI(playerId, *gw, aiInfo.level);
+    return AIFactory::Create(aiInfo, playerId, *gw);
 }
 
 const GlobalGameSettings& GameClient::GetGGS() const
