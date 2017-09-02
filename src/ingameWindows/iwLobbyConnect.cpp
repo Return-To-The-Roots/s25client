@@ -75,7 +75,7 @@ iwLobbyConnect::iwLobbyConnect()
     savepassword->AddTextButton(1, DrawPoint(375, 130), btSize, TC_GREEN2, _("Yes"), NormalFont);
     savepassword->SetSelection((SETTINGS.lobby.save_password ? 1 : 0));
 
-    AddText(11, DrawPoint(20, 160), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
+    AddText(ID_txtProtocol, DrawPoint(20, 160), _("Use IPv6:"), COLOR_YELLOW, 0, NormalFont);
 
     ctrlOptionGroup* ipv6 = AddOptionGroup(ID_optProtocol, ctrlOptionGroup::CHECK);
     ipv6->AddTextButton(0, DrawPoint(260, 160), btSize, TC_GREEN2, _("IPv4"), NormalFont);
