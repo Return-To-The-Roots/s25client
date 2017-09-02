@@ -7,8 +7,8 @@ MACRO(ADD_FLAGS parameter)
 	# Make a copy of the current arguments in ${parameter}
 	SET(new_parameter ${${parameter}})
 	
-        # fix arch-argument bug
-        STRING(REPLACE "-arch;" "-arch=" new_parameter "${new_parameter}")
+    # fix arch-argument bug
+    STRING(REPLACE "-arch;" "-arch=" new_parameter "${new_parameter}")
 
 	# Now loop over each required argument and see if it is in our
 	# current list of arguments.
@@ -37,8 +37,8 @@ MACRO(ADD_FLAGS parameter)
 		ENDFOREACH(option ${TMP})
 	ENDFOREACH(required_arg ${ARGN})
 	
-        # unfix arch-argument bug
-        STRING(REPLACE "-arch=" "-arch " new_parameter "${new_parameter}")
+    # unfix arch-argument bug
+    STRING(REPLACE "-arch=" "-arch " new_parameter "${new_parameter}")
 
 	SET(${parameter} ${new_parameter})
 ENDMACRO(ADD_FLAGS)

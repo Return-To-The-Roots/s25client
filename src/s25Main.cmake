@@ -43,16 +43,16 @@ SET(s25Main_SRCS
 
 # bzip linkerbug-fix
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
-    set(bzip2ContribDir "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.3")
+    set(bzip2ContribDir "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.6")
 	IF(IS_DIRECTORY "${bzip2ContribDir}" )
 		SET(SOURCES_BZIP
 			${bzip2ContribDir}/blocksort.c
-			${bzip2ContribDir}/huffman.c
-			${bzip2ContribDir}/crctable.c
-			${bzip2ContribDir}/randtable.c
-			${bzip2ContribDir}/compress.c
-			${bzip2ContribDir}/decompress.c
 			${bzip2ContribDir}/bzlib.c
+			${bzip2ContribDir}/compress.c
+			${bzip2ContribDir}/crctable.c
+			${bzip2ContribDir}/decompress.c
+			${bzip2ContribDir}/huffman.c
+			${bzip2ContribDir}/randtable.c
 		)
         add_library(bzip2 STATIC ${SOURCES_BZIP})
         set(BZIP2_LIBRARIES bzip2)
@@ -68,7 +68,7 @@ TARGET_LINK_LIBRARIES(s25Main
 	mygettext
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
-	${LUA_LIB}
+	${LUA_LIBRARY}
 	${Boost_LIBRARIES}
 )
 
@@ -83,8 +83,10 @@ if(MSVC)
 						DEPENDS version
 						WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
-    if(RTTR_BINARY_DIR)
-		ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${RTTR_BINARY_DIR}/ ${CMAKE_BINARY_DIR})
+    if(RTTR_BINARIES_TO_COPY)
+        foreach(file_i ${RTTR_BINARIES_TO_COPY})
+            add_custom_command(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${CMAKE_BINARY_DIR})
+        endforeach()
     endif()
 
 	ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")

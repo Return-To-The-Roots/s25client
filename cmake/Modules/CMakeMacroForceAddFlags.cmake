@@ -37,8 +37,8 @@ MACRO(FORCE_ADD_FLAGS parameter)
 		ENDFOREACH(option ${TMP})
 	ENDFOREACH(required_arg ${ARGN})
 	
-        # unfix arch-argument bug
-        STRING(REPLACE "-arch=" "-arch " new_parameter "${new_parameter}")
+    # unfix arch-argument bug
+    STRING(REPLACE "-arch=" "-arch " new_parameter "${new_parameter}")
 
 	SET(${parameter} ${new_parameter} CACHE STRING "" FORCE)
 ENDMACRO(FORCE_ADD_FLAGS)
