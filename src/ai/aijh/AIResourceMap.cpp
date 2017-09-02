@@ -126,9 +126,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
         {
             if((inTerritory && !(*nodes)[idx].owned) || (*nodes)[idx].farmed)
                 continue;
-            const BuildingQuality bq = aii->GetBuildingQuality(*it); //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
-            if((bq >= size && bq < BQ_MINE)                          // normales Gebäude
-               || (bq == size))                                      // auch Bergwerke
+            if(canUseBq(aii->GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
                 pt = *it;
                 return true;
@@ -157,9 +155,7 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
         {
             if(!(*nodes)[idx].reachable || (inTerritory && !(*nodes)[idx].owned) || (*nodes)[idx].farmed)
                 continue;
-            const BuildingQuality bq = aii->GetBuildingQuality(*it); //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
-            if((bq >= size && bq < BQ_MINE)                          // normales Gebäude
-               || (bq == size))                                      // auch Bergwerke
+            if(canUseBq(aii->GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
                 best = *it;
                 best_value = map[idx];

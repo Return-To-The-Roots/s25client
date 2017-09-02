@@ -284,7 +284,7 @@ bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned lis
     if(static_cast<unsigned>(aijh.UpgradeBldListNumber)
        == listpos) // upgrade bld should have road already but just in case it doesnt -> get a road asap
         return true;
-    if(listpos > (aii.GetMilitaryBuildings().size() - aijh.PlannedConnectedInlandMilitary()))
+    if(listpos > (aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds()))
         return true;
     return false;
 }

@@ -147,15 +147,8 @@ void GameWorldGame::SetBuildingSite(const BuildingType type, const MapPoint pt, 
         return;
 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    const BuildingQuality bq = GetBQ(pt, player);
-
-    if(BUILDING_SIZE[type] != bq)
-    {
-        if(BUILDING_SIZE[type] == BQ_MINE)
-            return;
-        if(bq < BUILDING_SIZE[type])
-            return;
-    }
+    if(!canUseBq(GetBQ(pt, player), BUILDING_SIZE[type]))
+        return;
 
     // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut werden
     if(BuildingProperties::IsMilitary(type))

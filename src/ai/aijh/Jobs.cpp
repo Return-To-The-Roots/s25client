@@ -100,7 +100,7 @@ void BuildJob::TryToBuild()
         /*erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
         if (type == BLD_WOODCUTTER)
         {
-            PositionSearch *search = aijh.CreatePositionSearch(bPos, WOOD, BQ_HUT, 20, BLD_WOODCUTTER, true);
+            PositionSearch *search = new PositionSearch(bPos, WOOD, 20, BLD_WOODCUTTER, true);
             SearchJob *job = new SearchJob(aijh, search);
             aijh.AddJob(job, true);
             status = JOB_FINISHED;
@@ -248,7 +248,7 @@ void BuildJob::BuildMainRoad()
     {
         // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
         BuildingQuality bq = aiInterface.GetBuildingQuality(target);
-        if((BUILDING_SIZE[type] == BQ_MINE && bq != BQ_MINE) || (bq < BUILDING_SIZE[type]))
+        if(canUseBq(bq, BUILDING_SIZE[type]))
         {
             status = JOB_FAILED;
 #ifdef DEBUG_AI
@@ -536,18 +536,16 @@ void ConnectJob::ExecuteJob()
 void SearchJob::ExecuteJob()
 {
     status = JOB_FAILED;
-    PositionSearchState state = aijh.FindGoodPosition(search, true);
+    PositionSearchState state = search->execute(aijh);
 
     if(state == SEARCH_IN_PROGRESS)
-    {
         status = JOB_WAITING;
-    } else if(state == SEARCH_FAILED)
-    {
+    else if(state == SEARCH_FAILED)
         status = JOB_FAILED;
-    } else
+    else
     {
         status = JOB_FINISHED;
-        aijh.AddBuildJob(search->bld, search->resultPt, true, false);
+        aijh.AddBuildJob(search->GetBld(), search->GetResultPt(), true, false);
     }
 }
 

@@ -58,6 +58,7 @@ public:
     ~AIPlayerJH() override;
 
     AIInterface& GetInterface() { return aii; }
+    const AIInterface& GetInterface() const { return aii; }
     // Required by the AIJobs:
     AIConstruction* GetConstruction() { return construction; }
     const Job* GetCurrentJob() const { return currentJob.get(); }
@@ -78,12 +79,10 @@ public:
     bool IsInvalidShipyardPosition(const MapPoint pt);
 
     int GetResMapValue(const MapPoint pt, AIResource res) const;
+    const AIResourceMap& GetResMap(AIResource res) const;
 
     const Node& GetAINode(const MapPoint pt) const { return nodes[gwb.GetIdx(pt)]; }
-    unsigned PlannedConnectedInlandMilitary()
-    {
-        return aii.GetMilitaryBuildings().size() / 5 < 6 ? 6 : aii.GetMilitaryBuildings().size() / 5;
-    }
+    unsigned GetNumPlannedConnectedInlandMilitaryBlds() { return std::max(6u, aii.GetMilitaryBuildings().size() / 5u); }
     /// checks distance to all harborpositions
     bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);
     /// returns the percentage*100 of possible normal building places
@@ -129,7 +128,6 @@ protected:
     void UpdateNodes();
     /// Updates the nodes around a position
     void UpdateNodesAround(const MapPoint pt, unsigned radius);
-    void UpdateNodesAroundNoBorder(const MapPoint pt, unsigned radius);
     /// Returns the resource on a specific point
     AIResource CalcResource(const MapPoint pt);
     /// Initialize the resource maps
@@ -146,11 +144,6 @@ protected:
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
     bool FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
-
-    PositionSearch* CreatePositionSearch(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, BuildingType bld,
-                                         bool best = false);
-    // Find position that satifies search->minimum or best (takes longer!)
-    PositionSearchState FindGoodPosition(PositionSearch* search, bool best = false);
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
     bool FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);

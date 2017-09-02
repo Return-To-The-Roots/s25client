@@ -33,7 +33,7 @@ class Base;
 namespace AIJH {
 
 class AIPlayerJH;
-struct PositionSearch;
+class PositionSearch;
 
 enum JobStatus
 {

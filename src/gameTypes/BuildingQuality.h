@@ -28,4 +28,14 @@ enum BuildingQuality
     BQ_HARBOR
 };
 
+/// Return true iff the BQ found matches a required BQ. E.g. A building with a given size can be constructed on a given node
+inline bool canUseBq(BuildingQuality bqIs, BuildingQuality bqRequired)
+{
+    // Exact match -> OK
+    if(bqIs == bqRequired)
+        return true;
+    // Not a special bq (mine/harbor) and we require less then we have -> OK
+    return bqIs < BQ_MINE && bqRequired < bqIs;
+}
+
 #endif // BuildingQuality_h__

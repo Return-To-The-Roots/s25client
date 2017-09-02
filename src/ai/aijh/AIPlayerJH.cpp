@@ -272,7 +272,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
         std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin();
         std::advance(it, randomStore);
         const MapPoint whPos = (*it)->GetPos();
-        UpdateNodesAroundNoBorder(whPos, 15); // update the area we want to build in first
+        UpdateNodesAround(whPos, 15); // update the area we want to build in first
         for(unsigned i = 0; i < bldToTest.size(); i++)
         {
             if(construction->Wanted(bldToTest[i]))
@@ -621,92 +621,6 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIResource res, int threshold, B
     return resourceMaps[static_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
-PositionSearch* AIPlayerJH::CreatePositionSearch(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, BuildingType /*bld*/,
-                                                 bool best)
-{
-    // set some basic parameters
-    PositionSearch* p = new PositionSearch(pt, res, minimum, size, BLD_WOODCUTTER, best);
-    p->nodesPerStep = 25; // TODO make it dependent on something...
-    p->resultValue = 0;
-
-    // allocate memory for the nodes
-    unsigned numNodes = aii.GetMapWidth() * aii.GetMapHeight();
-    p->tested.clear();
-    p->tested.resize(numNodes, false);
-    std::queue<MapPoint> emptyQueue;
-    p->toTest = emptyQueue;
-
-    // if no useful startpos is given, use headquarter
-    if(pt.x >= aii.GetMapWidth() || pt.y >= aii.GetMapHeight())
-    {
-        pt = aii.GetHeadquarter()->GetPos();
-    }
-
-    // insert start position as first node to test
-    p->toTest.push(pt);
-    p->tested[aii.GetIdx(pt)] = true;
-
-    return p;
-}
-
-PositionSearchState AIPlayerJH::FindGoodPosition(PositionSearch* search, bool best)
-{
-    AIResourceMap& resMap = resourceMaps[static_cast<unsigned>(search->res)];
-    // make nodesPerStep tests
-    for(int i = 0; i < search->nodesPerStep; i++)
-    {
-        // no more nodes to test? end this!
-        if(search->toTest.empty())
-            break;
-
-        // get the node
-        MapPoint pt = search->toTest.front();
-        search->toTest.pop();
-        Node& node = nodes[aii.GetIdx(pt)];
-
-        // and test it... TODO exception at res::borderland?
-        if(resMap[pt] > search->resultValue                                                 // value better
-           && node.owned && node.reachable && !node.farmed                                  // available node
-           && ((node.bq >= search->size && node.bq < BQ_MINE) || (node.bq == search->size)) // matching size
-        )
-        {
-            // store location & value
-            search->resultValue = resMap[pt];
-            search->resultPt = pt;
-        }
-
-        // now insert neighbouring nodes...
-        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
-        {
-            MapPoint n = aii.GetNeighbour(pt, Direction::fromInt(dir));
-            unsigned ni = aii.GetIdx(n);
-
-            // test if already tested or not in territory
-            if(!search->tested[ni] && nodes[ni].owned)
-            {
-                search->toTest.push(pt);
-                search->tested[ni] = true;
-            }
-        }
-    }
-
-    // decide the state of the search
-    if(search->toTest.empty())
-    {
-        // no more nodes to test
-        // fail iff not reached minimum
-        if(search->resultValue < search->minimum)
-            return SEARCH_FAILED;
-        else
-            return SEARCH_SUCCESSFUL;
-    } else if(search->resultValue >= search->minimum && !best)
-    {
-        // reached minimal satisfying value and we were not looking for the best
-        return SEARCH_SUCCESSFUL;
-    } else
-        return SEARCH_IN_PROGRESS;
-}
-
 bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius,
                                                      bool inTerritory)
 {
@@ -810,8 +724,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
                         continue;
                     }
                     BuildingQuality bq = aii.GetBuildingQuality(t2);
-                    if((bq >= size && bq < BQ_MINE) // normales Gebäude
-                       || (bq == size))             // auch Bergwerke
+                    if(canUseBq(aii.GetBuildingQuality(t2), size))
                     {
                         best = t2;
                         best_value = temp;
@@ -892,11 +805,8 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
                         t2 = aii.GetNeighbour(t2, Direction(curDir));
                         continue;
                     }
-                    BuildingQuality bq = aii.GetBuildingQuality(t2);
-                    if(((bq >= size && bq < BQ_MINE) // normales Gebäude
-                        || (bq == size))
-                       && // auch Bergwerke
-                       (res != AIResource::BORDERLAND || !aii.IsRoadPoint(aii.GetNeighbour(t2, Direction::SOUTHEAST))))
+                    if(canUseBq(aii.GetBuildingQuality(t2), size)
+                       && (res != AIResource::BORDERLAND || !aii.IsRoadPoint(aii.GetNeighbour(t2, Direction::SOUTHEAST))))
                     // special: military buildings cannot be build next to an existing road as that would have them connected to 2 roads
                     // which the ai no longer should do
                     {
@@ -919,11 +829,6 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
 }
 
 void AIPlayerJH::UpdateNodesAround(const MapPoint pt, unsigned radius)
-{
-    UpdateReachableNodes(pt, radius);
-}
-
-void AIPlayerJH::UpdateNodesAroundNoBorder(const MapPoint pt, unsigned radius)
 {
     UpdateReachableNodes(pt, radius);
 }
@@ -1199,9 +1104,7 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
             if(size != BQ_HARBOR)
                 continue;
         }
-        BuildingQuality bq = aii.GetBuildingQuality(*it);
-        if((bq >= size && bq < BQ_MINE) // normales Gebäude
-           || (bq == size))             // auch Bergwerke
+        if(canUseBq(aii.GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
         {
             pt = *it;
             return true;
@@ -1589,7 +1492,7 @@ void AIPlayerJH::MilUpgradeOptim()
                     aii.SetCoinsAllowed((*it)->GetPos(), false);
                 }
                 if((*it)->GetFrontierDistance() == 0
-                   && (((unsigned)count + PlannedConnectedInlandMilitary())
+                   && (((unsigned)count + GetNumPlannedConnectedInlandMilitaryBlds())
                        < militaryBuildings.size())) // send out troops until 1 private is left, then cancel road
                 {
                     if((*it)->GetTroopsCount() > 1) // more than 1 soldier remaining? -> send out order
@@ -2011,7 +1914,12 @@ void AIPlayerJH::SaveResourceMapsToFile()
 
 int AIPlayerJH::GetResMapValue(const MapPoint pt, AIResource res) const
 {
-    return resourceMaps[static_cast<unsigned>(res)][pt];
+    return GetResMap(res)[pt];
+}
+
+const AIResourceMap& AIPlayerJH::GetResMap(AIResource res) const
+{
+    return resourceMaps[static_cast<unsigned>(res)];
 }
 
 void AIPlayerJH::SendAIEvent(AIEvent::Base* ev)
@@ -2070,7 +1978,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
         if(RemoveUnusedRoad(*flags[i], 255, true, false))
             reconnectflags.push_back(flags[i]);
     }
-    UpdateNodesAroundNoBorder(pt, 25);
+    UpdateNodesAround(pt, 25);
     while(!reconnectflags.empty())
     {
         construction->AddConnectFlagJob(reconnectflags.front());
@@ -2648,7 +2556,7 @@ unsigned AIPlayerJH::CalcMilSettings()
         soldierCount += aii.GetInventory().people[SOLDIER_JOBS[i]];
 
     // now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
-    const unsigned numShouldStayConnected = PlannedConnectedInlandMilitary();
+    const unsigned numShouldStayConnected = GetNumPlannedConnectedInlandMilitaryBlds();
     int count = 0;
     unsigned soldierInUseFixed = 0;
     const int uun = UpdateUpgradeBuilding();

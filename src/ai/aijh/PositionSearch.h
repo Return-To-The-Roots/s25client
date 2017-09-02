@@ -29,6 +29,8 @@
 
 namespace AIJH {
 
+class AIPlayerJH;
+
 enum PositionSearchState
 {
     SEARCH_IN_PROGRESS,
@@ -36,31 +38,38 @@ enum PositionSearchState
     SEARCH_FAILED
 };
 
-struct PositionSearch
+class PositionSearch
 {
-    // where did the search start?
+public:
+    PositionSearch(const AIPlayerJH& player, const MapPoint pt, AIResource res, int minimum, BuildingType bld,
+                   bool searchGlobalOptimum = false);
+
+    PositionSearchState execute(const AIPlayerJH& player);
+    BuildingType GetBld() const { return bld; }
+    MapPoint GetResultPt() const { return resultPt; }
+
+private:
+    /// where did the search start?
     MapPoint startPt;
-    // what do we want to find?
+    /// what do we want to find?
     AIResource res;
-    // and how much of that at least?
+    /// and how much of that at least?
     int minimum;
-    // how much space do we need?
+    /// how much space do we need?
     BuildingQuality size;
-    // what to we want to build there?
+    /// what to we want to build there?
     BuildingType bld;
     /// If false, the first point matching the conditions will be returned. Otherwise it looks further for even better points
     bool searchGlobalOptimum;
-    // how many nodes should we test each cycle?
+    /// how many nodes should we test each cycle?
     int nodesPerStep;
-    // which nodes have already been tested or will be tested next (=already in queue)?
+    /// which nodes have already been tested or will be tested next (=already in queue)?
     std::vector<bool> tested;
-    // which nodes are currently queued to be tested next?
+    /// which nodes are currently queued to be tested next?
     std::queue<MapPoint> toTest;
-    // results
+    /// results
     MapPoint resultPt;
     int resultValue;
-
-    PositionSearch(const MapPoint pt, AIResource res, int minimum, BuildingQuality size, BuildingType bld, bool best = false);
 };
 
 } // namespace AIJH

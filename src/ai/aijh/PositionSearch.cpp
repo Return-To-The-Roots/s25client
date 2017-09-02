@@ -17,10 +17,78 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "PositionSearch.h"
+#include "AIPlayerJH.h"
+#include "gameData/BuildingConsts.h"
 
-AIJH::PositionSearch::PositionSearch(const MapPoint pt, AIResource res, int minimum, BuildingQuality size, BuildingType bld,
-                                     bool best /*= false*/)
-    : startPt(pt), res(res), minimum(minimum), size(size), bld(bld), searchGlobalOptimum(best), nodesPerStep(32),
+AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt, AIResource res, int minimum, BuildingType bld,
+                                     bool searchGlobalOptimum /*= false*/)
+    : startPt(pt), res(res), minimum(minimum), size(BUILDING_SIZE[bld]), bld(bld), searchGlobalOptimum(searchGlobalOptimum),
+      nodesPerStep(25), // TODO: Make it depend on something...
       resultPt(MapPoint::Invalid()), resultValue(0)
 {
+    // allocate memory for the nodes
+    unsigned numNodes = prodOfComponents(player.GetInterface().GetMapSize());
+    tested.resize(numNodes, false);
+
+    // insert start position as first node to test
+    toTest.push(pt);
+    tested[player.GetInterface().GetIdx(pt)] = true;
+}
+
+AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player)
+{
+    const AIResourceMap& resMap = player.GetResMap(res);
+    // make nodesPerStep tests
+    for(int i = 0; i < nodesPerStep; i++)
+    {
+        // no more nodes to test? end this!
+        if(toTest.empty())
+            break;
+
+        // get the node
+        MapPoint pt = toTest.front();
+        toTest.pop();
+        const Node& node = player.GetAINode(pt);
+
+        // and test it... TODO exception at res::borderland?
+        if(resMap[pt] > resultValue                        // value better
+           && node.owned && node.reachable && !node.farmed // available node
+           && canUseBq(node.bq, size)                      // matching size
+        )
+        {
+            // store location & value
+            resultValue = resMap[pt];
+            resultPt = pt;
+        }
+
+        // now insert neighbouring nodes...
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        {
+            MapPoint n = player.GetInterface().GetNeighbour(pt, Direction::fromInt(dir));
+            unsigned ni = player.GetInterface().GetIdx(n);
+
+            // test if already tested or not in territory
+            if(!tested[ni] && player.GetAINode(n).owned)
+            {
+                toTest.push(pt);
+                tested[ni] = true;
+            }
+        }
+    }
+
+    // decide the state of the search
+    if(toTest.empty())
+    {
+        // no more nodes to test
+        // fail iff not reached minimum
+        if(resultValue < minimum)
+            return SEARCH_FAILED;
+        else
+            return SEARCH_SUCCESSFUL;
+    } else if(resultValue >= minimum && !searchGlobalOptimum)
+    {
+        // reached minimal satisfying value and we were not looking for the best
+        return SEARCH_SUCCESSFUL;
+    } else
+        return SEARCH_IN_PROGRESS;
 }
