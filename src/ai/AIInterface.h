@@ -58,10 +58,9 @@ public:
 
     TerrainType GetTerrain(MapPoint pt) const { return gwb.GetNode(pt).t1; }
     /// Return x-coordinate of the neighboring point in given direction (6 possible directions)
-    MapCoord GetXA(const MapPoint pt, Direction direction) { return gwb.GetXA(pt, direction.toUInt()); }
-    MapCoord GetXA(const MapCoord x, const MapCoord y, Direction direction) { return gwb.GetXA(x, y, direction.toUInt()); }
+    MapCoord GetXA(const MapPoint pt, Direction direction) { return gwb.GetXA(pt, direction); }
     /// Transforms coordinates of a point into a neighbour point in given direction
-    MapPoint GetNeighbour(const MapPoint pt, Direction direction) const { return gwb.GetNeighbour(pt, direction.toUInt()); }
+    MapPoint GetNeighbour(const MapPoint pt, Direction direction) const { return gwb.GetNeighbour(pt, direction); }
     /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
     /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
     /// Number of results is constrained to maxResults (if > 0)

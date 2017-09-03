@@ -211,7 +211,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
         if(i == 6)
             curPt = pt;
         else
-            curPt = GetWorld().GetNeighbour(pt, i);
+            curPt = GetWorld().GetNeighbour(pt, Direction::fromInt(i));
 
         const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)

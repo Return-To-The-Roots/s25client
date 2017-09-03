@@ -132,7 +132,7 @@ bool nofTradeLeader::TryToGoHome()
         return false;
 
     // Find a way back home
-    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, 4);
+    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, Direction::SOUTHEAST);
     tr.AssignNewGoal(this->GetPos(), homeFlagPos);
     return tr.IsValid();
 }

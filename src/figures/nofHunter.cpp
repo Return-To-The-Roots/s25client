@@ -432,7 +432,7 @@ void nofHunter::StartWalkingHome()
 void nofHunter::WalkHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), 4);
+    MapPoint homeFlagPos = gwg->GetNeighbour(workplace->GetPos(), Direction::SOUTHEAST);
     if(pos == homeFlagPos)
     {
         // Weiteres übernimmt nofBuildingWorker

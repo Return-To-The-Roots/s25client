@@ -97,7 +97,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             bool points_found = false;
             bool wait = false;
 
-            for(MapCoord tx = gwg->GetXA(pos, 0), r = 1; r <= max_radius; tx = gwg->GetXA(tx, pos.y, 0), ++r)
+            for(MapCoord tx = gwg->GetXA(pos, Direction::WEST), r = 1; r <= max_radius; tx = gwg->GetXA(MapPoint(tx, pos.y), Direction::WEST), ++r)
             {
                 // Wurde ein Punkt in diesem Radius gefunden?
                 bool found_in_radius = false;
@@ -105,7 +105,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 MapPoint t2(tx, pos.y);
                 for(unsigned i = 2; i < 8; ++i)
                 {
-                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, i % 6), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; t2 = gwg->GetNeighbour(t2, Direction(i)), ++r2)
                     {
                         if(IsPointAvailable(t2))
                         {
@@ -247,7 +247,7 @@ void nofFarmhand::StartWalkingHome()
 {
     state = STATE_WALKINGHOME;
     // Fahne vor dem Gebäude anpeilen
-    dest = gwg->GetNeighbour(workplace->GetPos(), 4);
+    dest = gwg->GetNeighbour(workplace->GetPos(), Direction::SOUTHEAST);
 
     // Zu Laufen anfangen
     WalkHome();

@@ -958,7 +958,7 @@ void nobMilitary::Capture(const unsigned char new_owner)
     }
 
     // ehemalige Leute dieses Gebäudes nach Hause schicken, die ggf. grad auf dem Weg rein/raus waren
-    MapPoint coords[2] = {pos, MapPoint(gwg->GetNeighbour(pos, 4))};
+    MapPoint coords[2] = {pos, gwg->GetNeighbour(pos, Direction::SOUTHEAST)};
     for(unsigned short i = 0; i < 2; ++i)
     {
         const std::list<noBase*>& figures = gwg->GetFigures(coords[i]);
@@ -1023,7 +1023,7 @@ void nobMilitary::NeedOccupyingTroops()
             if((*it)->GetRadius() >= best_radius)
                 continue;
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 10, false) != 0xFF)
+            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 10, false) != 0xFF)
             {
                 // Dann is das der bisher beste
                 best_attacker = *it;

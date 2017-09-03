@@ -956,7 +956,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
     if(action_tabs.flag)
     {
-        if(world.GetNO(world.GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
+        if(world.GetNO(world.GetNeighbour(cSel, Direction::NORTHWEST))->GetGOT() == GOT_NOB_HQ)
             params = iwAction::AWFT_HQ;
         else if(world.GetNO(cSel)->GetType() == NOP_FLAG)
         {

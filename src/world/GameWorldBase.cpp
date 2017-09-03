@@ -117,7 +117,7 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
     for(unsigned z = 0; z < 6; ++z)
     {
         // Roads around charburner piles are not possible
-        if(GetNO(GetNeighbour(pt, z))->GetBM() == BlockingManner::NothingAround)
+        if(GetNO(GetNeighbour(pt, Direction::fromInt(z)))->GetBM() == BlockingManner::NothingAround)
             return false;
 
         // Other roads at this point?
@@ -179,7 +179,7 @@ bool GameWorldBase::IsFlagAround(const MapPoint& pt) const
 {
     for(unsigned i = 0; i < 6; ++i)
     {
-        if(GetNO(GetNeighbour(pt, i))->GetBM() == BlockingManner::Flag)
+        if(GetNO(GetNeighbour(pt, Direction::fromInt(i)))->GetBM() == BlockingManner::Flag)
             return true;
     }
     return false;
@@ -190,7 +190,7 @@ void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
     RecalcBQ(pt);
 
     for(unsigned i = 3; i < 6; ++i)
-        RecalcBQ(GetNeighbour(pt, i));
+        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
 }
 
 namespace {
@@ -249,7 +249,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned p
         if(i == 6)
             return NULL;
 
-        pt = GetNeighbour(pt, i);
+        pt = GetNeighbour(pt, Direction::fromInt(i));
 
         // endlich am Ende des Weges und an einer Flagge angekommen?
         if(GetNO(pt)->GetType() == NOP_FLAG)
@@ -287,7 +287,7 @@ void GameWorldBase::RecalcBQAroundPoint(const MapPoint pt)
 {
     RecalcBQ(pt);
     for(unsigned char i = 0; i < 6; ++i)
-        RecalcBQ(GetNeighbour(pt, i));
+        RecalcBQ(GetNeighbour(pt, Direction::fromInt(i)));
 }
 
 void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
@@ -344,7 +344,7 @@ std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) con
 {
     std::vector<noBase*> objects;
     // Look also on the points above and below for figures
-    const MapPoint coords[3] = {pt, MapPoint(GetNeighbour(pt, 1)), MapPoint(GetNeighbour(pt, 2))};
+    const MapPoint coords[3] = {pt, MapPoint(GetNeighbour(pt, Direction::NORTHWEST)), MapPoint(GetNeighbour(pt, Direction::NORTHEAST))};
 
     for(unsigned i = 0; i < 3; ++i)
     {
@@ -373,13 +373,13 @@ unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_
 {
     RTTR_Assert(origin_harborId);
 
-    // Herausfinden, in welcher Richtung sich dieser Punkt vom Ausgangspuknt unterscheidet
+    // Herausfinden, in welcher Richtung sich dieser Punkt vom Ausgangspunkt unterscheidet
     unsigned char coastal_point_dir = 0xFF;
     const MapPoint hbPt = GetHarborPoint(origin_harborId);
 
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(GetNeighbour(hbPt, i) == pt)
+        if(GetNeighbour(hbPt, Direction::fromInt(i)) == pt)
         {
             coastal_point_dir = i;
             break;
@@ -425,7 +425,7 @@ bool GameWorldBase::IsHarborPointFree(const unsigned harborId, const unsigned ch
 
     // Überprüfen, ob das Gebiet in einem bestimmten Radius entweder vom Spieler oder gar nicht besetzt ist außer wenn der Hafen und die
     // Flagge im Spielergebiet liegen
-    MapPoint flagPos = GetNeighbour(hbPos, 4);
+    MapPoint flagPos = GetNeighbour(hbPos, Direction::SOUTHEAST);
     if(GetNode(hbPos).owner != player + 1 || GetNode(flagPos).owner != player + 1)
     {
         if(CheckPointsInRadius(hbPos, 4, IsPointOwnerDifferent(*this, player), false))

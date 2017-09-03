@@ -124,7 +124,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direc
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
         for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, (direction + 5) % 6);
+            tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 5));
         // then clockwise around at radius distance to get all new points
         for(int i = direction + 1; i < (direction + 3); ++i)
         {
@@ -135,16 +135,16 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direc
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
                 returnVal += GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, i % 6);
+                tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
             }
         }
         // now substract old points not in range of new point
         // go to old center point:
         tmpPt = pt;
-        tmpPt = gwb.GetNeighbour(tmpPt, (direction + 3) % 6);
+        tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 3));
         // next: go to the first old point we have to substract
         for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, (direction + 2) % 6);
+            tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 2));
         // now clockwise around at radius distance to remove all old points
         for(int i = direction + 4; i < (direction + 6); ++i)
         {
@@ -154,7 +154,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direc
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
                 returnVal -= GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, i % 6);
+                tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
             }
         }
     }

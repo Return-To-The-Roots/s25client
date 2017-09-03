@@ -88,7 +88,7 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(unsigned i = 0; i < 6; ++i)
-        seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, i));
+        seaIds[i] = gwg->GetSeaFromCoastalPoint(gwg->GetNeighbour(pos, Direction::fromInt(i)));
 
     // Post versenden
     SendPostMessage(player,

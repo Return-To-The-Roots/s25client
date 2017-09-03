@@ -231,7 +231,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
     if(rb.mode != RM_DISABLED)
     {
         for(unsigned i = 0; i < 6; ++i)
-            road_points[i] = GetWorld().GetNeighbour(rb.point, i);
+            road_points[i] = GetWorld().GetNeighbour(rb.point, Direction::fromInt(i));
 
         const unsigned index = GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());

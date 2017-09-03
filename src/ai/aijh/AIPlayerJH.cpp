@@ -647,7 +647,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
     MapPoint best(0, 0);
     int best_value = -1;
 
-    for(MapCoord tx = aii.GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii.GetXA(tx, pt.y, Direction::WEST), ++r)
+    for(MapCoord tx = aii.GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned curDir = 2; curDir < 8; ++curDir)
@@ -769,7 +769,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
     int best_value = -1;
     int temp = 0;
 
-    for(MapCoord tx = aii.GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii.GetXA(tx, pt.y, Direction::WEST), ++r)
+    for(MapCoord tx = aii.GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = aii.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned curDir = 2; curDir < 8; ++curDir)
@@ -2214,12 +2214,12 @@ void AIPlayerJH::InitDistribution()
 bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
 {
     unsigned max_radius = 6;
-    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb.GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, Direction::WEST), r = 1; r <= max_radius; tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
             {
                 // point has tree & path is available?
                 if(gwb.GetNO(t2)->GetType() == NOP_TREE)
@@ -2241,12 +2241,12 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
 bool AIPlayerJH::ValidStoneinRange(const MapPoint pt)
 {
     unsigned max_radius = 8;
-    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb.GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, Direction::WEST), r = 1; r <= max_radius; tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
             {
                 // point has tree & path is available?
                 if(gwb.GetNO(t2)->GetType() == NOP_GRANITE)
@@ -2332,12 +2332,12 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
             count++;
     }
     // first count all the possible building places
-    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= range; tx = gwb.GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, Direction::WEST), r = 1; r <= range; tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
             {
                 if(limit && ((count * 100) / maxvalue) > limit)
                     return ((count * 100) / maxvalue);
@@ -2426,12 +2426,12 @@ unsigned AIPlayerJH::AmountInStorage(unsigned char num, unsigned char page)
 bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
 {
     unsigned max_radius = 5;
-    for(MapCoord tx = gwb.GetXA(pt, 0), r = 1; r <= max_radius; tx = gwb.GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = gwb.GetXA(pt, Direction::WEST), r = 1; r <= max_radius; tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
             {
                 if(gwb.GetNode(t2).resources > 0x80 && gwb.GetNode(t2).resources < 0x90) // fish on current spot?
                 {
@@ -2439,7 +2439,7 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
                     // try to find a path to a neighboring node on the coast
                     for(int j = 0; j < 6; j++)
                     {
-                        if(gwb.FindHumanPath(pt, gwb.GetNeighbour(t2, j), 10) != 0xFF)
+                        if(gwb.FindHumanPath(pt, gwb.GetNeighbour(t2, Direction::fromInt(j)), 10) != 0xFF)
                             return true;
                     }
                 }

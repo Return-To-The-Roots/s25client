@@ -186,7 +186,7 @@ struct GetMapPointWithRadius
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
-    const MapPoint flagPos = gwg->GetNeighbour(pos, 4);
+    const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
@@ -307,7 +307,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
         {
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 5, false) != 0xFF)
+            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 5, false) != 0xFF)
             {
                 // dann kann der zur Flagge gehen
                 (*it)->AttackFlag();

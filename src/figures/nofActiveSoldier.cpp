@@ -206,7 +206,7 @@ void nofActiveSoldier::ExpelEnemies()
     // And around this point
     for(unsigned i = 0; i < 6; ++i)
     {
-        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, i));
+        const std::list<noBase*>& fieldFigures = gwg->GetFigures(gwg->GetNeighbour(pos, Direction::fromInt(i)));
         for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
         {
             // Normal settler?

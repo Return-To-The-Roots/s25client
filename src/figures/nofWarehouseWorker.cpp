@@ -78,7 +78,7 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, 1));
+    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, Direction::NORTHWEST));
     if(!shouldBringWareIn)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
@@ -99,7 +99,7 @@ void nofWarehouseWorker::GoalReached()
             carried_ware = NULL;
         } else
             // ansonsten Ware wieder mit reinnehmen
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 1)));
+            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
     } else
     {
         // Ware aufnehmen

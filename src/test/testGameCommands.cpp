@@ -79,7 +79,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     // Place flag at neighbour
     for(unsigned dir = 0; dir < Direction::COUNT; dir++)
     {
-        MapPoint curPt = world.GetNeighbour(flagPt, dir);
+        MapPoint curPt = world.GetNeighbour(flagPt, Direction::fromInt(dir));
         this->SetFlag(curPt);
         // Should not work
         BOOST_REQUIRE(!world.GetSpecObj<noRoadNode>(curPt));

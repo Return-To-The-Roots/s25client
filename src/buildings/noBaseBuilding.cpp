@@ -38,7 +38,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
       door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
-    MapPoint flagPt = gwg->GetNeighbour(pos, 4);
+    MapPoint flagPt = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
     // Evtl Flagge setzen, wenn noch keine da ist
     if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
     {
@@ -73,7 +73,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint pos2 = gwg->GetNeighbour(pos, i);
+            MapPoint pos2 = gwg->GetNeighbour(pos, Direction::fromInt(i));
             gwg->DestroyNO(pos2, false);
             gwg->SetNO(pos2, new noExtension(this));
         }
@@ -178,7 +178,7 @@ int noBaseBuilding::GetDoorPointX()
         // this is why we need the x-offset here according to the equation x = m*y + n
         // with n=0 (as door point is relative to building pos) and m = dx/dy
         const Point<int> bldPos = gwg->GetNodePos(pos);
-        const Point<int> flagPos = gwg->GetNodePos(gwg->GetNeighbour(pos, 4));
+        const Point<int> flagPos = gwg->GetNodePos(gwg->GetNeighbour(pos, Direction::SOUTHEAST));
         Point<int> diff = flagPos - bldPos;
 
         // We could have crossed the map border which results in unreasonable diffs
@@ -203,7 +203,7 @@ int noBaseBuilding::GetDoorPointX()
 
 noFlag* noBaseBuilding::GetFlag() const
 {
-    return gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, 4));
+    return gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST));
 }
 
 void noBaseBuilding::WareNotNeeded(Ware* ware)
@@ -234,7 +234,7 @@ void noBaseBuilding::DestroyBuildingExtensions()
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+            gwg->DestroyNO(gwg->GetNeighbour(pos, Direction::fromInt(i)));
         }
     }
 }

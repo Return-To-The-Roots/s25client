@@ -236,9 +236,9 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
             {
                 // Gebäude?
 
-                if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, 1))->GetType() == NOP_BUILDING)
+                if(gwg->GetSpecObj<noBase>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
                 {
-                    if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->FreePlaceAtFlag())
+                    if(gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->FreePlaceAtFlag())
                         break;
                 }
             } else
@@ -298,7 +298,7 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 void noFlag::DestroyAttachedBuilding()
 {
     // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-    noBase* no = gwg->GetNO(gwg->GetNeighbour(pos, 1));
+    noBase* no = gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST));
     if(no->GetType() == NOP_BUILDINGSITE || no->GetType() == NOP_BUILDING)
     {
         no->Destroy();

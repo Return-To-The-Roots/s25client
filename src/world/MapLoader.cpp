@@ -431,7 +431,7 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         bool foundCoast = false;
         for(unsigned z = 0; z < 6; ++z)
         {
-            const unsigned short seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, z));
+            const unsigned short seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, Direction::fromInt(z)));
             it->cps[z].seaId = seaId;
             if(seaId)
                 foundCoast = true;
@@ -530,7 +530,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             {
                 if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
                     continue;
-                MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
+                MapPoint curPt = world.GetNeighbour(curNode.pos, Direction::fromInt(dir));
                 unsigned idx = world.GetIdx(curPt);
 
                 if((ptToVisitOrHb[idx] > 1) && !hbFound[ptToVisitOrHb[idx]]) // found harbor we haven't already found
@@ -579,7 +579,7 @@ unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned shor
 
         for(unsigned i = 0; i < 6; ++i)
         {
-            MapPoint neighbourPt = world.GetNeighbour(p, i);
+            MapPoint neighbourPt = world.GetNeighbour(p, Direction::fromInt(i));
             if(visited[world.GetIdx(neighbourPt)])
                 continue;
             visited[world.GetIdx(neighbourPt)] = true;

@@ -107,7 +107,7 @@ void GameWorldGame::DestroyFlag(const MapPoint pt, unsigned char playerId)
             return;
 
         // Get the attached building if existing
-        noBase* building = GetNO(GetNeighbour(pt, 1));
+        noBase* building = GetNO(GetNeighbour(pt, Direction::NORTHWEST));
 
         // Is this a military building?
         if(building->GetGOT() == GOT_NOB_MILITARY)
@@ -379,7 +379,7 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
                 // Check which neighbors are also border nodes and place the half-way stones to them
                 for(unsigned i = 0; i < 3; ++i)
                 {
-                    if(IsBorderNode(GetNeighbour(curMapPt, 3 + i), owner))
+                    if(IsBorderNode(GetNeighbour(curMapPt, Direction::fromInt(3 + i)), owner))
                         boundaryStones[i + 1] = owner;
                     else
                         boundaryStones[i + 1] = 0;
@@ -536,7 +536,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
                 bool isPlayerTerritoryNear = false;
                 for(unsigned d = 0; d < 6; ++d)
                 {
-                    if(IsPlayerTerritory(GetNeighbour(curMapPt, d)))
+                    if(IsPlayerTerritory(GetNeighbour(curMapPt, Direction::fromInt(d))))
                     {
                         isPlayerTerritoryNear = true;
                         break;
@@ -554,7 +554,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             {
                 for(unsigned char i = 0; i < 6; ++i)
                 {
-                    MapPoint neighbourPt = GetNeighbour(curMapPt, i);
+                    MapPoint neighbourPt = GetNeighbour(curMapPt, Direction::fromInt(i));
 
                     DestroyPlayerRests(neighbourPt, GetNode(curMapPt).owner, &building, false);
 
@@ -673,7 +673,7 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             // cases even without the addon so allow those buildings & their flag to survive.
             if(!allowDestructionOfMilBuildings)
             {
-                const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, 1)) : no;
+                const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
                 if(noCheckMil->GetGOT() == GOT_NOB_HQ || noCheckMil->GetGOT() == GOT_NOB_HARBORBUILDING
                    || (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !dynamic_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
                    || (noCheckMil->GetType() == NOP_BUILDINGSITE
@@ -721,7 +721,7 @@ void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
             continue;
 
         // Koordinaten um den Punkt herum
-        MapPoint nb = GetNeighbour(pt, i);
+        MapPoint nb = GetNeighbour(pt, Direction::fromInt(i));
 
         // Figuren Bescheid sagen, es können auch auf den Weg gestoppte sein, die müssen auch berücksichtigt
         // werden, daher die *From-Methode
@@ -971,7 +971,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
     // Und natürlich in unmittelbarer Umgebung suchen
     for(unsigned d = 0; d < Direction::COUNT; ++d)
     {
-        const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, d));
+        const std::list<noBase*>& fieldFigures = GetFigures(GetNeighbour(pt, Direction::fromInt(d)));
         for(std::list<noBase*>::const_iterator it = fieldFigures.begin(); it != fieldFigures.end(); ++it)
             if((*it)->GetType() == NOP_FIGURE)
                 figures.push_back(*it);
@@ -983,7 +983,7 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
         {
             if(Direction(dir + 3) == static_cast<noFigure*>(*it)->GetCurMoveDir())
             {
-                if(GetNeighbour(pt, dir) == static_cast<noFigure*>(*it)->GetPos())
+                if(GetNeighbour(pt, Direction::fromInt(dir)) == static_cast<noFigure*>(*it)->GetPos())
                     continue;
             }
         }
@@ -1054,7 +1054,7 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
     // Is this a flag of a military building?
     if(avoid_military_building_flags && GetNO(pt)->GetGOT() == GOT_FLAG)
     {
-        GO_Type got = GetNO(GetNeighbour(pt, 1))->GetGOT();
+        GO_Type got = GetNO(GetNeighbour(pt, Direction::NORTHWEST))->GetGOT();
         if(got == GOT_NOB_MILITARY || got == GOT_NOB_HARBORBUILDING || got == GOT_NOB_HQ)
             return false;
     }
@@ -1246,12 +1246,12 @@ void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCo
 {
     RecalcVisibility(pt, player, exception);
 
-    for(MapCoord tx = GetXA(pt.x, pt.y, 0), r = 1; r <= radius; tx = GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, Direction(i)), ++r2)
                 RecalcVisibility(t2, player, exception);
         }
     }
@@ -1262,12 +1262,12 @@ void GameWorldGame::SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord
 {
     MakeVisible(pt, player);
 
-    for(MapCoord tx = GetXA(pt, 0), r = 1; r <= radius; tx = GetXA(tx, pt.y, 0), ++r)
+    for(MapCoord tx = GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
         MapPoint t2(tx, pt.y);
         for(unsigned i = 2; i < 8; ++i)
         {
-            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, i % 6), ++r2)
+            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, Direction(i)), ++r2)
                 MakeVisible(t2, player);
         }
     }

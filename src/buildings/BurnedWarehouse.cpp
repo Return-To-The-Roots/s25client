@@ -78,7 +78,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     PathConditionHuman pathChecker(*gwg);
     for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, dir)))
+        if(pathChecker.IsNodeOk(gwg->GetNeighbour(pos, Direction::fromInt(dir))))
             possibleDirs[possibleDirCt++] = Direction::fromInt(dir);
     }
 
