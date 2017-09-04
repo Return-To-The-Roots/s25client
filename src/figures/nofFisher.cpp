@@ -145,7 +145,8 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
     // irgendwo drumherum muss es Fisch geben
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources > 0x80 && gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources > 0x80
+           && gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources < 0x90)
             return PQ_CLASS1;
     }
 

@@ -43,14 +43,14 @@ public:
     const std::string& GetPlayerName() const { return player.name; }
     unsigned char GetPlayerId() const { return playerId; }
 
-    /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
-    /// (beispielsweise Siegesbedingungen, FOW usw.)
-    const GlobalGameSettings& ggs;
-
     /// Zugriff auf die GameCommands, um diese abarbeiten zu können
     const std::vector<gc::GameCommandPtr>& GetGameCommands() const { return gcs; }
     /// Markiert die GameCommands als abgearbeitet
     void FetchGameCommands() { gcs.clear(); }
+
+    /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
+    /// (beispielsweise Siegesbedingungen, FOW usw.)
+    const GlobalGameSettings& ggs;
 
 protected:
     /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht

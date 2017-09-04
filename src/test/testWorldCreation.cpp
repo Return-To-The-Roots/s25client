@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(GetIdx)
     // Big world. Index will exceed uint16_t
     world.Resize(MapExtent(0xFF00, 0xEEEE));
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 0)), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00u-1, 0)), 0xFF00u - 1);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00u - 1, 0)), 0xFF00u - 1);
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), 0xFF00u);
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), 0xFF01u);
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0x100, 1)), 0x10000u);

@@ -25,6 +25,7 @@
 #include "GameManager.h"
 #include "GameMessages.h"
 #include "GameObject.h"
+#include "GamePlayer.h"
 #include "GameServer.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
@@ -36,6 +37,7 @@
 #include "SerializedGameData.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
+#include "ai/AIPlayer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
 #include "files.h"
@@ -57,8 +59,6 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
 #include <iostream>
-#include "GamePlayer.h"
-#include "ai/AIPlayer.h"
 
 void GameClient::ClientConfig::Clear()
 {

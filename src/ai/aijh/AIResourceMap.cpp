@@ -17,15 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIResourceMap.h"
-#include "ai/aijh/Node.h"
+#include "ai/AIInterface.h"
+#include "ai/aijh/AIMap.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
 
 namespace AIJH {
 
-AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const std::vector<Node>& nodes)
-    : res(res), resRadius(RES_RADIUS[boost::underlying_cast<unsigned>(res)]), aii(&aii), nodes(&nodes)
+AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap)
+    : res(res), resRadius(RES_RADIUS[static_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
 {
 }
 
@@ -35,28 +36,27 @@ AIResourceMap::~AIResourceMap()
 
 void AIResourceMap::Init()
 {
-    const MapExtent mapSize = aii->GetMapSize();
+    const MapExtent mapSize = aiMap.GetSize();
 
-    map.clear();
-    map.resize(prodOfComponents(mapSize));
+    map.Resize(mapSize);
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
-        unsigned i = aii->GetIdx(pt);
-        if((*nodes)[i].res == res && res == AIResource::FISH)
+        const Node& node = aiMap[pt];
+        if(node.res == res && res == AIResource::FISH)
         {
             Change(pt, 1);
-        } else if((*nodes)[i].res == res && res != AIResource::BORDERLAND && TerrainData::IsUseable(aii->GetTerrain(pt)))
+        } else if(node.res == res && res != AIResource::BORDERLAND && TerrainData::IsUseable(aii.GetTerrain(pt)))
         {
             Change(pt, 1);
-        } else if(res == AIResource::BORDERLAND && aii->IsBorder(pt))
+        } else if(res == AIResource::BORDERLAND && aii.IsBorder(pt))
         {
             // only count border area that is actually passable terrain
-            if(TerrainData::IsUseable(aii->GetTerrain(pt)))
+            if(TerrainData::IsUseable(aii.GetTerrain(pt)))
                 Change(pt, 1);
         }
-        if((*nodes)[i].res == AIResource::MULTIPLE && TerrainData::IsUseable(aii->GetTerrain(pt)))
+        if(node.res == AIResource::MULTIPLE && TerrainData::IsUseable(aii.GetTerrain(pt)))
         {
-            if(aii->GetSubsurfaceResource(pt) == res || aii->GetSurfaceResource(pt) == res)
+            if(aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)
                 Change(pt, 1);
         }
     }
@@ -76,13 +76,13 @@ void AIResourceMap::Recalc()
 
 void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int value)
 {
-    const unsigned playerCt = aii->GetPlayerCount();
+    const unsigned playerCt = aii.GetPlayerCount();
     for(unsigned i = 0; i < playerCt; i++)
     {
-        const std::list<nobUsual*>& blds = aii->GetPlayerBuildings(bld, i);
+        const std::list<nobUsual*>& blds = aii.GetPlayerBuildings(bld, i);
         for(std::list<nobUsual*>::const_iterator it = blds.begin(); it != blds.end(); ++it)
             Change((*it)->GetPos(), radius, value);
-        const std::list<noBuildingSite*>& bldSites = aii->GetPlayerBuildingSites(i);
+        const std::list<noBuildingSite*>& bldSites = aii.GetPlayerBuildingSites(i);
         for(std::list<noBuildingSite*>::const_iterator it = bldSites.begin(); it != bldSites.end(); ++it)
         {
             if((*it)->GetBuildingType() == bld)
@@ -92,41 +92,43 @@ void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int v
 }
 
 namespace {
-    struct MapPoint2IdxWithRadius
+    struct ValueAdjuster
     {
-        typedef std::pair<unsigned, unsigned> result_type;
-        const AIInterface& aii_;
+        NodeMapBase<int>& map;
+        unsigned radius;
+        int value;
 
-        MapPoint2IdxWithRadius(const AIInterface& aii) : aii_(aii) {}
-        result_type operator()(const MapPoint pt, unsigned r) { return std::make_pair(aii_.GetIdx(pt), r); }
+        ValueAdjuster(NodeMapBase<int>& map, unsigned radius, int value) : map(map), radius(radius), value(value) {}
+        bool operator()(const MapPoint pt, unsigned r) const
+        {
+            map[pt] += value * (radius - r);
+            return false; // Don't exit
+        }
     };
 } // namespace
 
 void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
 {
-    map[aii->GetIdx(pt)] += value * radius;
-    std::vector<MapPoint2IdxWithRadius::result_type> pts = aii->GetPointsInRadius(pt, radius, MapPoint2IdxWithRadius(*aii));
-    for(std::vector<MapPoint2IdxWithRadius::result_type>::iterator it = pts.begin(); it != pts.end(); ++it)
-        map[it->first] += value * (radius - it->second);
+    aii.gwb.CheckPointsInRadius(pt, radius, ValueAdjuster(map, radius, value), true);
 }
 
 bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    RTTR_Assert(pt.x < aii->GetMapWidth() && pt.y < aii->GetMapHeight());
+    RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 
     // TODO was besseres wär schön ;)
     if(radius == -1)
         radius = 30;
 
-    std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, radius);
+    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
     for(std::vector<MapPoint>::iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        const unsigned idx = aii->GetIdx(*it);
+        const unsigned idx = aii.GetIdx(*it);
         if(map[idx] >= threshold)
         {
-            if((inTerritory && !(*nodes)[idx].owned) || (*nodes)[idx].farmed)
+            if((inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
-            if(canUseBq(aii->GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
+            if(canUseBq(aii.GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
                 pt = *it;
                 return true;
@@ -138,7 +140,7 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
 
 bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
-    RTTR_Assert(pt.x < aii->GetMapWidth() && pt.y < aii->GetMapHeight());
+    RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 
     // TODO was besseres wär schön ;)
     if(radius == -1)
@@ -147,15 +149,15 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
     MapPoint best(0, 0);
     int best_value = -1;
 
-    std::vector<MapPoint> pts = aii->GetPointsInRadius(pt, radius);
+    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
     for(std::vector<MapPoint>::iterator it = pts.begin(); it != pts.end(); ++it)
     {
-        const unsigned idx = aii->GetIdx(*it);
+        const unsigned idx = aii.GetIdx(*it);
         if(map[idx] > best_value)
         {
-            if(!(*nodes)[idx].reachable || (inTerritory && !(*nodes)[idx].owned) || (*nodes)[idx].farmed)
+            if(!aiMap[idx].reachable || (inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
-            if(canUseBq(aii->GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
+            if(canUseBq(aii.GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
                 best = *it;
                 best_value = map[idx];

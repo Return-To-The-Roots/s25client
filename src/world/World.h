@@ -21,6 +21,7 @@
 #include "Identity.h"
 #include "ReturnConst.h"
 #include "helpers/Deleter.h"
+#include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GO_Type.h"
@@ -32,7 +33,6 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <vector>
-#include "world/MapBase.h"
 
 class noNothing;
 class CatapultStone;
@@ -40,7 +40,7 @@ class FOWObject;
 class noBase;
 struct ShipDirection;
 /// Base class representing the world itself, no algorithms, handlers etc!
-class World: public MapBase
+class World : public MapBase
 {
     /// Informationen über die Weltmeere
     struct Sea

@@ -225,6 +225,9 @@ public:
     void CallGeologist(const noFlag* flag);
     using GameCommandFactory::CallGeologist;
 
+    /// Pointer to GameWorld, containing all information about the world
+    const GameWorldBase& gwb;
+
 private:
     bool AddGC(gc::GameCommand* gc) override
     {
@@ -232,8 +235,6 @@ private:
         return true;
     }
 
-    /// Pointer to GameWorld, containing all information about the world
-    const GameWorldBase& gwb;
     /// Pointer to this player, containing all information about his economy, buildings, etc.
     const GamePlayer& player_;
     /// Pointer to the game commands queue, to send commands to the game

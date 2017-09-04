@@ -20,12 +20,14 @@
 #include "world/MapGeometry.h"
 
 MapBase::MapBase() : size_(MapExtent::all(0))
-{}
+{
+}
 
 MapBase::~MapBase()
-{}
+{
+}
 
-void MapBase::Resize(const MapExtent & newSize)
+void MapBase::Resize(const MapExtent& newSize)
 {
     size_ = newSize;
 }

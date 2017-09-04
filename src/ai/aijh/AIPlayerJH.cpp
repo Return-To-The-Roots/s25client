@@ -25,6 +25,7 @@
 #include "Jobs.h"
 #include "addons/const_addons.h"
 #include "ai/AIEvents.h"
+#include "boost/filesystem/fstream.hpp"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
@@ -109,7 +110,9 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     construction = new AIConstruction(aii, *this);
     InitNodes();
     InitResourceMaps();
+#ifdef DEBUG_AI
     SaveResourceMapsToFile();
+#endif
 
     switch(level)
     {
@@ -464,28 +467,19 @@ AIResource AIPlayerJH::CalcResource(const MapPoint pt)
 
 void AIPlayerJH::InitReachableNodes()
 {
-    unsigned short width = aii.GetMapWidth();
-    unsigned short height = aii.GetMapHeight();
-
     std::queue<MapPoint> toCheck;
 
     // Alle auf not reachable setzen
-    for(MapPoint pt(0, 0); pt.y < height; ++pt.y)
+    RTTR_FOREACH_PT(MapPoint, aiMap.GetSize())
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        Node& node = aiMap[pt];
+        node.reachable = false;
+        node.failed_penalty = 0;
+        const noFlag* myFlag = aii.GetSpecObj<noFlag>(pt);
+        if(myFlag && myFlag->GetPlayer() == playerId)
         {
-            unsigned i = gwb.GetIdx(pt);
-            nodes[i].reachable = false;
-            nodes[i].failed_penalty = 0;
-            const noFlag* myFlag = aii.GetSpecObj<noFlag>(pt);
-            if(myFlag)
-            {
-                if(myFlag->GetPlayer() == playerId)
-                {
-                    nodes[i].reachable = true;
-                    toCheck.push(pt);
-                }
-            }
+            node.reachable = true;
+            toCheck.push(pt);
         }
     }
 
@@ -500,28 +494,28 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
     while(!toCheck.empty())
     {
         // Reachable coordinate
-        MapPoint r = toCheck.front();
+        MapPoint curPt = toCheck.front();
 
         // Coordinates to test around this reachable coordinate
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            MapPoint n = aii.GetNeighbour(r, Direction::fromInt(dir));
-            unsigned ni = aii.GetIdx(n);
+            MapPoint curNeighbour = aii.GetNeighbour(curPt, Direction::fromInt(dir));
+            Node& node = aiMap[curNeighbour];
 
             // already reached, don't test again
-            if(nodes[ni].reachable)
+            if(node.reachable)
                 continue;
 
             // Test whether point is reachable; yes->add to check list
-            if(roadPathChecker.IsNodeOk(n))
+            if(roadPathChecker.IsNodeOk(curNeighbour))
             {
-                if(nodes[ni].failed_penalty == 0)
+                if(node.failed_penalty == 0)
                 {
-                    nodes[ni].reachable = true;
-                    toCheck.push(n);
+                    node.reachable = true;
+                    toCheck.push(curNeighbour);
                 } else
                 {
-                    nodes[ni].failed_penalty--;
+                    node.failed_penalty--;
                 }
             }
         }
@@ -534,50 +528,42 @@ void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
     std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
     std::queue<MapPoint> toCheck;
 
-    for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+    BOOST_FOREACH(const MapPoint& curPt, pts)
     {
-        const unsigned idx = aii.GetIdx(*it);
-        const noFlag* flag = aii.GetSpecObj<noFlag>(*it);
+        const noFlag* flag = aii.GetSpecObj<noFlag>(curPt);
         if(flag && flag->GetPlayer() == playerId)
         {
-            nodes[idx].reachable = true;
-            toCheck.push(*it);
+            aiMap[curPt].reachable = true;
+            toCheck.push(curPt);
         } else
-            nodes[idx].reachable = false;
+            aiMap[curPt].reachable = false;
     }
     IterativeReachableNodeChecker(toCheck);
 }
 
 void AIPlayerJH::InitNodes()
 {
-    unsigned short width = aii.GetMapWidth();
-    unsigned short height = aii.GetMapHeight();
-
-    nodes.resize(width * height);
+    aiMap.Resize(aii.GetMapSize());
 
     InitReachableNodes();
 
-    for(MapPoint pt(0, 0); pt.y < height; ++pt.y)
+    RTTR_FOREACH_PT(MapPoint, aiMap.GetSize())
     {
-        for(pt.x = 0; pt.x < width; ++pt.x)
+        Node& node = aiMap[pt];
+        // if reachable, we'll calc bq
+        if(node.reachable)
         {
-            unsigned i = gwb.GetIdx(pt);
-
-            // if reachable, we'll calc bq
-            if(nodes[i].reachable)
-            {
-                nodes[i].owned = true;
-                nodes[i].bq = aii.GetBuildingQuality(pt);
-            } else
-            {
-                nodes[i].owned = false;
-                nodes[i].bq = BQ_NOTHING;
-            }
-
-            nodes[i].res = CalcResource(pt);
-            nodes[i].border = aii.IsBorder(pt);
-            nodes[i].farmed = false;
+            node.owned = true;
+            node.bq = aii.GetBuildingQuality(pt);
+        } else
+        {
+            node.owned = false;
+            node.bq = BQ_NOTHING;
         }
+
+        node.res = CalcResource(pt);
+        node.border = aii.IsBorder(pt);
+        node.farmed = false;
     }
 }
 
@@ -587,33 +573,23 @@ void AIPlayerJH::UpdateNodes()
 
 void AIPlayerJH::InitResourceMaps()
 {
-    for(unsigned res = 0; res < RES_RADIUS.size(); ++res)
+    resourceMaps.clear();
+    for(unsigned res = 0; res < NUM_AIRESOURCES; ++res)
     {
-        resourceMaps[res] = AIResourceMap(static_cast<AIResource>(res), aii, nodes);
-        resourceMaps[res].Init();
+        resourceMaps.push_back(AIResourceMap(static_cast<AIResource>(res), aii, aiMap));
+        resourceMaps.back().Init();
     }
 }
-
-namespace {
-    struct MapPoint2Idx
-    {
-        typedef unsigned result_type;
-        const AIInterface& aii_;
-
-        MapPoint2Idx(const AIInterface& aii) : aii_(aii) {}
-        result_type operator()(const MapPoint pt, unsigned /*r*/) { return aii_.GetIdx(pt); }
-    };
-} // namespace
 
 void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 {
     // Radius in dem Bausplatz für Felder blockiert wird
     const unsigned radius = 3;
 
-    nodes[aii.GetIdx(pt)].farmed = set;
-    std::vector<unsigned> ptIdxs = aii.GetPointsInRadius(pt, radius, MapPoint2Idx(aii));
-    for(std::vector<unsigned>::const_iterator it = ptIdxs.begin(); it != ptIdxs.end(); ++it)
-        nodes[*it].farmed = set;
+    aiMap[pt].farmed = set;
+    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
+    BOOST_FOREACH(const MapPoint& curPt, pts)
+        aiMap[curPt].farmed = set;
 }
 
 bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
@@ -624,21 +600,15 @@ bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIResource res, int threshold, B
 bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius,
                                                      bool inTerritory)
 {
+    RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
     bool fixed = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
                  && (res == AIResource::IRONORE || res == AIResource::COAL || res == AIResource::GOLD || res == AIResource::GRANITE);
-    unsigned short width = aii.GetMapWidth();
-    unsigned short height = aii.GetMapHeight();
     int temp = 0;
     bool lastcirclevaluecalculated = false;
     bool lastvaluecalculated = false;
     // to avoid having to calculate a value twice and still move left on the same level without any problems we use this variable to
     // remember the first calculation we did in the circle.
     int circlestartvalue = 0;
-    // outside of map bounds? -> search around our main storehouse!
-    if(pt.x >= width || pt.y >= height)
-    {
-        pt = aii.GetStorehouses().front()->GetPos();
-    }
 
     // TODO was besseres wär schön ;)
     if(radius == -1)
@@ -654,7 +624,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
         {
             for(MapCoord step = 0; step < r; ++step)
             {
-                unsigned n = aii.GetIdx(t2);
+                unsigned n = aiMap.GetIdx(t2);
                 int& resMapVal = resourceMaps[static_cast<unsigned>(res)][t2];
                 if(fixed)
                     temp = resMapVal;
@@ -706,7 +676,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
                 }
                 if(temp > best_value)
                 {
-                    if(!nodes[n].reachable || (inTerritory && !aii.IsOwnTerritory(t2)) || nodes[n].farmed)
+                    if(!aiMap[n].reachable || (inTerritory && !aii.IsOwnTerritory(t2)) || aiMap[n].farmed)
                     {
                         t2 = aii.GetNeighbour(t2, Direction(curDir));
                         continue;
@@ -750,16 +720,10 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
     if(res == AIResource::IRONORE || res == AIResource::COAL || res == AIResource::GOLD || res == AIResource::GRANITE
        || res == AIResource::STONES || res == AIResource::FISH)
         return FindBestPositionDiminishingResource(pt, res, size, minimum, radius, inTerritory);
-    unsigned short width = aii.GetMapWidth();
-    unsigned short height = aii.GetMapHeight();
+    RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
     // to avoid having to calculate a value twice and still move left on the same level without any problems we use this variable to
     // remember the first calculation we did in the circle.
     int circlestartvalue = 0;
-    // outside of map bounds? -> search around our main storehouse!
-    if(pt.x >= width || pt.y >= height)
-    {
-        pt = aii.GetStorehouses().front()->GetPos();
-    }
 
     // TODO was besseres wär schön ;)
     if(radius == -1)
@@ -776,7 +740,6 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
         {
             for(MapCoord step = 0; step < r; ++step)
             {
-                unsigned n = aii.GetIdx(t2);
                 if(r == 1 && step == 0 && curDir == 2)
                 {
                     // only do a complete calculation for the first point!
@@ -795,7 +758,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
                 resourceMaps[static_cast<unsigned>(res)][t2] = temp;
                 if(temp > best_value)
                 {
-                    if(!nodes[n].reachable || (inTerritory && !aii.IsOwnTerritory(t2)) || nodes[n].farmed)
+                    if(!aiMap[t2].reachable || (inTerritory && !aii.IsOwnTerritory(t2)) || aiMap[t2].farmed)
                     {
                         t2 = aii.GetNeighbour(t2, Direction(curDir));
                         continue;
@@ -1078,35 +1041,25 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
 }
 bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius)
 {
-    unsigned short width = aii.GetMapWidth();
-    unsigned short height = aii.GetMapHeight();
-    // if(size==BQ_HARBOR)
-    //  Chat(_("looking for harbor"));
-
-    if(pt.x >= width || pt.y >= height)
-    {
-        pt = aii.GetStorehouses().front()->GetPos();
-    }
+    RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
 
     // TODO was besseres wär schön ;)
     if(radius == -1)
         radius = 30;
 
     std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
-    for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
+    BOOST_FOREACH(const MapPoint& curPt, pts)
     {
-        unsigned idx = aii.GetIdx(*it);
-
-        if(!nodes[idx].reachable || nodes[idx].farmed || !aii.IsOwnTerritory(*it))
+        if(!aiMap[curPt].reachable || aiMap[curPt].farmed || !aii.IsOwnTerritory(curPt))
             continue;
-        if(HarborPosClose(*it, 3, true))
+        if(HarborPosClose(curPt, 3, true))
         {
             if(size != BQ_HARBOR)
                 continue;
         }
-        if(canUseBq(aii.GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
+        if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
         {
-            pt = *it;
+            pt = curPt;
             return true;
         }
     }
@@ -1116,24 +1069,16 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
 
 unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
 {
-    unsigned short width = aii.GetMapWidth();
-    unsigned short height = aii.GetMapHeight();
+    RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
 
-    // TODO: check warum das so ist, und ob das sinn macht! ist so weil der punkt dann außerhalb der karte liegen würde ... könnte trotzdem
-    // crashen wenn wir kein hq mehr haben ... mehr checks!
-    if(pt.x >= width || pt.y >= height)
-    {
-        pt = aii.GetStorehouses().front()->GetPos();
-    }
-
-    std::vector<unsigned> idxs = aii.GetPointsInRadius(pt, radius, MapPoint2Idx(aii));
-    const unsigned all = idxs.size();
+    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
+    const unsigned all = pts.size();
     RTTR_Assert(all > 0);
 
     unsigned good = 0;
-    for(std::vector<unsigned>::const_iterator it = idxs.begin(); it != idxs.end(); ++it)
+    BOOST_FOREACH(const MapPoint& curPt, pts)
     {
-        if(nodes[*it].res == res)
+        if(aiMap[curPt].res == res)
             good++;
     }
 
@@ -1359,7 +1304,7 @@ void AIPlayerJH::HandleTreeChopped(const MapPoint pt)
 {
     // std::cout << "Tree chopped." << std::endl;
 
-    nodes[aii.GetIdx(pt)].reachable = true;
+    aiMap[pt].reachable = true;
 
     UpdateNodesAround(pt, 3);
 
@@ -1891,25 +1836,20 @@ void AIPlayerJH::RecalcGround(const MapPoint buildingPos, std::vector<Direction>
 
 void AIPlayerJH::SaveResourceMapsToFile()
 {
-#ifdef DEBUG_AI
-    for(unsigned i = 0; i < RES_TYPE_COUNT; ++i)
+    for(unsigned res = 0; res < NUM_AIRESOURCES; ++res)
     {
         std::stringstream ss;
-        ss << "resmap-" << i << ".log";
-        FILE* file = fopen(ss.str().c_str(), "w");
-        for(unsigned y = 0; y < aii.GetMapHeight(); ++y)
+        ss << "resmap-" << res << ".log";
+        bfs::ofstream file(ss.str());
+        for(unsigned y = 0; y < aiMap.GetHeight(); ++y)
         {
             if(y % 2 == 1)
-                fprintf(file, "  ");
-            for(unsigned x = 0; x < aii.GetMapWidth(); ++x)
-            {
-                fprintf(file, "%i   ", resourceMaps[i][aii.GetIdx(MapPoint(x, y))]);
-            }
-            fprintf(file, "\n");
+                file << "  ";
+            for(unsigned x = 0; x < aiMap.GetWidth(); ++x)
+                file << resourceMaps[res][MapPoint(x, y)] << "   ";
+            file << "\n";
         }
-        fclose(file);
     }
-#endif
 }
 
 int AIPlayerJH::GetResMapValue(const MapPoint pt, AIResource res) const
@@ -2086,14 +2026,14 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
         fy = pt.y - SQUARE_SIZE;
     else
         fy = 0;
-    if(pt.x + SQUARE_SIZE < aii.GetMapWidth())
+    if(pt.x + SQUARE_SIZE < gwb.GetWidth())
         lx = pt.x + SQUARE_SIZE;
     else
-        lx = aii.GetMapWidth() - 1;
-    if(pt.y + SQUARE_SIZE < aii.GetMapHeight())
+        lx = gwb.GetWidth() - 1;
+    if(pt.y + SQUARE_SIZE < gwb.GetHeight())
         ly = pt.y + SQUARE_SIZE;
     else
-        ly = aii.GetMapHeight() - 1;
+        ly = gwb.GetHeight() - 1;
     // Durchgehen und nach Tieren suchen
     for(MapPoint p2(0, fy); p2.y <= ly; ++p2.y)
     {

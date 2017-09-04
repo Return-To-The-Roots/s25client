@@ -16,11 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#include "ai/AIResource.h"
-#include "gameTypes/BuildingQuality.h"
-
-#ifndef Node_h__
+#ifndef AIMap_h__
 #define Node_h__
+
+#include "ai/AIResource.h"
+#include "world/NodeMapBase.h"
+#include "gameTypes/BuildingQuality.h"
 
 namespace AIJH {
 struct Node
@@ -33,6 +34,13 @@ struct Node
     bool border;
     bool farmed;
 };
+
+/// Map of AINodes.
+/// Note: Could be a typedef only but this allows fwd declarations
+class AIMap : public NodeMapBase<Node>
+{
+};
+
 } // namespace AIJH
 
 #endif // Node_h__

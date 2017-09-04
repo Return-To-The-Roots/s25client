@@ -97,7 +97,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
             bool points_found = false;
             bool wait = false;
 
-            for(MapCoord tx = gwg->GetXA(pos, Direction::WEST), r = 1; r <= max_radius; tx = gwg->GetXA(MapPoint(tx, pos.y), Direction::WEST), ++r)
+            for(MapCoord tx = gwg->GetXA(pos, Direction::WEST), r = 1; r <= max_radius;
+                tx = gwg->GetXA(MapPoint(tx, pos.y), Direction::WEST), ++r)
             {
                 // Wurde ein Punkt in diesem Radius gefunden?
                 bool found_in_radius = false;

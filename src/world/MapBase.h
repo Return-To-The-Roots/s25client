@@ -32,7 +32,6 @@ class MapBase
     MapExtent size_;
 
 public:
-
     MapBase();
     ~MapBase();
 

@@ -32,7 +32,8 @@
 #include <set>
 
 World::World() : lt(LT_GREENLAND), noNodeObj(NULL)
-{}
+{
+}
 
 World::~World()
 {
@@ -41,7 +42,7 @@ World::~World()
 
 void World::Init(const MapExtent& mapSize, LandscapeType lt)
 {
-    RTTR_Assert(GetSize() == MapExtent::all(0));     // Already init
+    RTTR_Assert(GetSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     Resize(mapSize);
     this->lt = lt;
@@ -100,7 +101,7 @@ void World::Unload()
     Resize(MapExtent::all(0));
 }
 
-void World::Resize(const MapExtent & newSize)
+void World::Resize(const MapExtent& newSize)
 {
     MapBase::Resize(newSize);
     nodes.clear();

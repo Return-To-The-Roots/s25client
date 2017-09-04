@@ -20,14 +20,15 @@
 #pragma once
 
 #include "GamePlayer.h"
-#include "Node.h"
-#include "PositionSearch.h"
 #include "ai/AIEventManager.h"
 #include "ai/AIPlayer.h"
+#include "ai/aijh/AIMap.h"
 #include "ai/aijh/AIResourceMap.h"
+#include "ai/aijh/PositionSearch.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/MapCoordinates.h"
 #include <boost/array.hpp>
+#include <boost/container/static_vector.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <queue>
@@ -81,7 +82,7 @@ public:
     int GetResMapValue(const MapPoint pt, AIResource res) const;
     const AIResourceMap& GetResMap(AIResource res) const;
 
-    const Node& GetAINode(const MapPoint pt) const { return nodes[gwb.GetIdx(pt)]; }
+    const Node& GetAINode(const MapPoint pt) const { return aiMap[pt]; }
     unsigned GetNumPlannedConnectedInlandMilitaryBlds() { return std::max(6u, aii.GetMilitaryBuildings().size() / 5u); }
     /// checks distance to all harborpositions
     bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);
@@ -94,12 +95,12 @@ public:
 
     int UpgradeBldListNumber;
 
-protected:
+private:
     void PlanNewBuildings(const unsigned gf);
 
     void SendAIEvent(AIEvent::Base* ev);
 
-    Node& GetAINode(const MapPoint pt) { return nodes[gwb.GetIdx(pt)]; }
+    Node& GetAINode(const MapPoint pt) { return aiMap[pt]; }
     /// Executes a job form the job queue
     void ExecuteAIJob();
     /// Tries to build a bld of the given type at that point.
@@ -251,11 +252,10 @@ protected:
     /// List of coordinates at which military buildingsites should be
     std::list<MapPoint> milBuildingSites;
     /// Nodes containing some information about every map node
-    std::vector<Node> nodes;
+    AIMap aiMap;
     /// Resource maps, containing a rating for every map point concerning a resource
-    boost::array<AIResourceMap, NUM_AIRESOURCES> resourceMaps;
+    boost::container::static_vector<AIResourceMap, NUM_AIRESOURCES> resourceMaps;
 
-private:
     unsigned attack_interval;
     unsigned build_interval;
     int isInitGfCompleted;

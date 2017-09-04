@@ -19,18 +19,20 @@
 
 #pragma once
 
-#include "ai/AIInterface.h"
 #include "ai/AIResource.h"
+#include "world/NodeMapBase.h"
+#include "gameTypes/BuildingQuality.h"
+#include "gameTypes/BuildingType.h"
 #include <vector>
 
+class AIInterface;
 namespace AIJH {
-struct Node;
+class AIMap;
 
 class AIResourceMap
 {
 public:
-    AIResourceMap() : res(AIResource::NOTHING), resRadius(0), aii(NULL), nodes(NULL) {} // Default ctor to allow storage in arrays
-    AIResourceMap(const AIResource res, const AIInterface& aii, const std::vector<Node>& nodes);
+    AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap);
     ~AIResourceMap();
 
     /// Initialize the resource map
@@ -50,19 +52,18 @@ public:
         return FindBestPosition(pt, size, 1, radius, inTerritory);
     }
 
-    int& operator[](const MapPoint& pt) { return map[aii->GetIdx(pt)]; }
-    int operator[](const MapPoint& pt) const { return map[aii->GetIdx(pt)]; }
+    int& operator[](const MapPoint& pt) { return map[pt]; }
+    int operator[](const MapPoint& pt) const { return map[pt]; }
 
 private:
     void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
     /// Which resource is stored in the map and radius of affected nodes
-    /// Do not change! const omitted to to able to store this in a vector
-    AIResource res;
-    unsigned resRadius;
+    const AIResource res;
+    const unsigned resRadius;
 
-    std::vector<int> map;
-    const AIInterface* aii;
-    const std::vector<Node>* nodes;
+    NodeMapBase<int> map;
+    const AIInterface& aii;
+    const AIMap& aiMap;
 };
 
 } // namespace AIJH
