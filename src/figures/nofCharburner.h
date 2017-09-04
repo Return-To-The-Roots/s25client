@@ -51,7 +51,7 @@ private:
     void WalkingStarted() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
-    void DrawReturnStates(DrawPoint drawPt) override;
+    void DrawWalkingWithWare(DrawPoint drawPt) override;
     /// Draws the charburner while walking
     /// (overriding standard method of nofFarmhand)
     void DrawOtherStates(DrawPoint drawPt) override;

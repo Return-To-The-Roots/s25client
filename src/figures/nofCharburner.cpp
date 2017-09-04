@@ -217,14 +217,9 @@ void nofCharburner::WalkingStarted()
 }
 
 /// Draws the figure while returning home / entering the building (often carrying wares)
-void nofCharburner::DrawReturnStates(DrawPoint drawPt)
+void nofCharburner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    // Carry coal?
-    if(ware == GD_COAL)
-        DrawWalking(drawPt, "charburner_bobs", 200);
-    else
-        // Draw normal walking otherwise
-        DrawWalking(drawPt);
+    DrawWalking(drawPt, "charburner_bobs", 200);
 }
 
 /// Draws the charburner while walking
