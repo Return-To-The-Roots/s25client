@@ -48,51 +48,12 @@ public:
     {
     }
 
-    /// Return the width of the map
-    unsigned short GetMapWidth() const { return gwb.GetWidth(); }
-    /// Return the height of the map
-    unsigned short GetMapHeight() const { return gwb.GetHeight(); }
-    MapExtent GetMapSize() const { return gwb.GetSize(); }
-
-    unsigned GetIdx(MapPoint pt) const { return gwb.GetIdx(pt); }
-
     TerrainType GetTerrain(MapPoint pt) const { return gwb.GetNode(pt).t1; }
-    /// Return x-coordinate of the neighboring point in given direction (6 possible directions)
-    MapCoord GetXA(const MapPoint pt, Direction direction) { return gwb.GetXA(pt, direction); }
-    /// Transforms coordinates of a point into a neighbour point in given direction
-    MapPoint GetNeighbour(const MapPoint pt, Direction direction) const { return gwb.GetNeighbour(pt, direction); }
-    /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
-    /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
-    /// Number of results is constrained to maxResults (if > 0)
-    template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
-    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt,
-                                                                       T_IsValidPt isValid) const
-    {
-        return gwb.GetPointsInRadius<T_maxResults>(pt, radius, transformPt, isValid);
-    }
-    template<class T_TransformPt>
-    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius,
-                                                                       T_TransformPt transformPt) const
-    {
-        return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
-    }
-    std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
-    {
-        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
-    }
-    /// Get Distance between to points (wraps around at end of world)
-    unsigned GetDistance(MapPoint p1, MapPoint p2) const { return gwb.CalcDistance(p1, p2); }
 
     unsigned char GetPlayerId() const { return playerID_; }
     unsigned GetPlayerCount() const { return gwb.GetPlayerCount(); }
 
     bool IsDefeated() const { return player_.IsDefeated(); }
-    /// Return a specific object from a position on the map (const version)
-    template<typename T>
-    const T* GetSpecObj(const MapPoint pt) const
-    {
-        return gwb.GetSpecObj<T>(pt);
-    }
     /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
     AIResource GetSubsurfaceResource(const MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)
@@ -106,14 +67,8 @@ public:
     bool IsBorder(const MapPoint pt) const { return gwb.GetNode(pt).boundary_stones[0] == (playerID_ + 1); }
     /// Test whether a given point is part of own territory
     bool IsOwnTerritory(const MapPoint pt) const { return gwb.GetNode(pt).owner == (playerID_ + 1); }
-    /// Get a list of dynamic objects (like figures, ships) on a given spot // TODO: to low level?
-    std::vector<noBase*> GetDynamicObjects(const MapPoint pt) const { return gwb.GetDynamicObjectsFrom(pt); }
-    /// Checks whether there is a road on a point or not
-    bool IsRoadPoint(const MapPoint pt) const;
 
     bool IsRoad(const MapPoint pt, Direction dir) { return gwb.GetPointRoad(pt, dir) > 0; }
-    /// Return the terrain on the right side when going in a given direction
-    TerrainType GetRightTerrain(const MapPoint pt, Direction direction) const { return gwb.GetRightTerrain(pt, direction); }
     /// Test whether there is a object of a certain type on a spot
     bool IsObjectTypeOnNode(const MapPoint pt, NodalObjectType objectType) const { return gwb.GetNO(pt)->GetType() == objectType; }
     /// Test whether there is specific building on a spot
@@ -123,17 +78,8 @@ public:
                  (gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == bld) :
                  false;
     }
-    /// test whether there is a military building on a position
-    bool IsMilitaryBuildingOnNode(const MapPoint pt) const;
     /// Test whether the ai player can see a point
     bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
-
-    bool IsMilitaryBuildingNearNode(const MapPoint pt, const unsigned char player) const
-    {
-        return gwb.IsMilitaryBuildingNearNode(pt, player);
-    }
-
-    bool RoadAvailable(const MapPoint pt, bool boat_road = false) { return gwb.IsRoadAvailable(boat_road, pt); }
     /// Return true when the building quality at the 2nd point is lower than the bq on the first point
     bool CalcBQSumDifference(const MapPoint pt, const MapPoint t);
     /// Return building quality on a given spot
@@ -156,8 +102,6 @@ public:
     {
         return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
     }
-    /// Return a list of military buildings around a given point and a given radius
-    sortedMilitaryBlds GetMilitaryBuildings(const MapPoint pt, unsigned radius) const { return gwb.LookForMilitaryBuildings(pt, radius); }
     /// Return the headquarter of the player (or null if destroyed)
     const nobHQ* GetHeadquarter() const;
     /// Return reference to the list of building sites
@@ -186,8 +130,6 @@ public:
     unsigned GetShipCount() const { return player_.GetShipCount(); }
     /// Return the list of ships
     const std::vector<noShip*>& GetShips() const { return player_.GetShips(); }
-    /// returns distance
-    unsigned CalcDistance(MapPoint p1, MapPoint p2) { return gwb.CalcDistance(p1, p2); }
     /// Return the ID of a given ship
     unsigned GetShipID(const noShip* ship) const { return player_.GetShipID(ship); }
     /// Test whether there is a possibility to start a expedition in a given direction from a given position, assuming a given starting

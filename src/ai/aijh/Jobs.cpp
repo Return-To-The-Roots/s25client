@@ -64,8 +64,7 @@ void BuildJob::ExecuteJob()
     if(status == JOB_FAILED || status == JOB_FINISHED)
         return;
 
-    if(BuildingProperties::IsMilitary(type) && target.isValid()
-       && aijh.GetInterface().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()))
+    if(BuildingProperties::IsMilitary(type) && target.isValid() && aijh.GetWorld().IsMilitaryBuildingNearNode(target, aijh.GetPlayerId()))
     {
         status = JOB_FAILED;
 #ifdef DEBUG_AI
@@ -194,7 +193,7 @@ void BuildJob::TryToBuild()
                 break;
             case BLD_HARBORBUILDING:
                 foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && !aijh.HarborPosRelevant(aijh.gwb.GetHarborPointID(bPos))) // bad harborspot detected DO NOT USE
+                if(foundPos && !aijh.HarborPosRelevant(aijh.GetWorld().GetHarborPointID(bPos))) // bad harborspot detected DO NOT USE
                     foundPos = false;
                 break;
             case BLD_SHIPYARD:
@@ -243,7 +242,7 @@ void BuildJob::TryToBuild()
 void BuildJob::BuildMainRoad()
 {
     AIInterface& aiInterface = aijh.GetInterface();
-    const noBuildingSite* bld = aiInterface.GetSpecObj<noBuildingSite>(target);
+    const noBuildingSite* bld = aiInterface.gwb.GetSpecObj<noBuildingSite>(target);
     if(!bld)
     {
         // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
@@ -255,7 +254,7 @@ void BuildJob::BuildMainRoad()
             std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: BQ changed for " << BUILDING_NAMES[type] << " at "
                       << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
-            aijh.aiMap[aiInterface.GetIdx(target)].bq = bq;
+            aijh.GetAINode(target).bq = bq;
             aijh.AddBuildJob(type, around);
             return;
         }
@@ -284,10 +283,10 @@ void BuildJob::BuildMainRoad()
             std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: Cannot connect " << BUILDING_NAMES[type] << " at "
                       << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
-            aijh.aiMap[aiInterface.GetIdx(target)].reachable = false;
+            aijh.GetAINode(target).reachable = false;
             // We thought this had be reachable, but it is not (might be blocked by building site itself):
             // It has to be reachable in a check for 20x times, to avoid retrying it too often.
-            aijh.aiMap[aiInterface.GetIdx(target)].failed_penalty = 20;
+            aijh.GetAINode(target).failed_penalty = 20;
             aiInterface.DestroyBuilding(target);
             aiInterface.DestroyFlag(houseFlag->GetPos());
             aijh.AddBuildJob(type, around);
@@ -329,7 +328,7 @@ void BuildJob::BuildMainRoad()
 
 void BuildJob::TryToBuildSecondaryRoad()
 {
-    const noFlag* houseFlag = aijh.GetInterface().GetSpecObj<noFlag>(aijh.GetInterface().GetNeighbour(target, Direction::SOUTHEAST));
+    const noFlag* houseFlag = aijh.GetWorld().GetSpecObj<noFlag>(aijh.GetWorld().GetNeighbour(target, Direction::SOUTHEAST));
 
     if(!houseFlag)
     {
@@ -478,8 +477,8 @@ void ConnectJob::ExecuteJob()
     if(!construction.CanStillConstructHere(flagPos))
         return;
 
-    AIInterface& aiInterface = aijh.GetInterface();
-    const noFlag* flag = aiInterface.GetSpecObj<noFlag>(flagPos);
+    const GameWorldBase& world = aijh.GetWorld();
+    const noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
 
     if(!flag)
     {
@@ -492,7 +491,7 @@ void ConnectJob::ExecuteJob()
 
     // is flag of a military building and has some road connection alraedy (not necessarily to a warehouse so this is required to avoid
     // multiple connections on mil buildings)
-    if(aiInterface.IsMilitaryBuildingOnNode(aiInterface.GetNeighbour(flag->GetPos(), Direction::NORTHWEST)))
+    if(world.IsMilitaryBuildingOnNode(world.GetNeighbour(flag->GetPos(), Direction::NORTHWEST), true))
     {
         for(unsigned dir = 2; dir < 7; dir++)
         {

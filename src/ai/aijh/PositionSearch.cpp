@@ -26,13 +26,11 @@ AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt
       nodesPerStep(25), // TODO: Make it depend on something...
       resultPt(MapPoint::Invalid()), resultValue(0)
 {
-    // allocate memory for the nodes
-    unsigned numNodes = prodOfComponents(player.GetInterface().GetMapSize());
-    tested.resize(numNodes, false);
+    tested.resize(prodOfComponents(player.GetWorld().GetSize()));
 
     // insert start position as first node to test
     toTest.push(pt);
-    tested[player.GetInterface().GetIdx(pt)] = true;
+    tested[player.GetWorld().GetIdx(pt)] = true;
 }
 
 AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player)
@@ -64,14 +62,14 @@ AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player
         // now insert neighbouring nodes...
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
-            MapPoint n = player.GetInterface().GetNeighbour(pt, Direction::fromInt(dir));
-            unsigned ni = player.GetInterface().GetIdx(n);
+            MapPoint neighbourPt = player.GetWorld().GetNeighbour(pt, Direction::fromInt(dir));
+            unsigned nIdx = player.GetWorld().GetIdx(neighbourPt);
 
             // test if already tested or not in territory
-            if(!tested[ni] && player.GetAINode(n).owned)
+            if(!tested[nIdx] && player.GetAINode(neighbourPt).owned)
             {
                 toTest.push(pt);
-                tested[ni] = true;
+                tested[nIdx] = true;
             }
         }
     }

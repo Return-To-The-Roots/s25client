@@ -196,7 +196,7 @@ void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
 namespace {
 bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
 {
-    return gwb.IsMilitaryBuilding(pt) && (gwb.GetNode(pt).owner == owner);
+    return gwb.IsMilitaryBuildingOnNode(pt, false) && (gwb.GetNode(pt).owner == owner);
 }
 } // namespace
 
@@ -207,13 +207,15 @@ bool GameWorldBase::IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigne
     return CheckPointsInRadius(nPt, 4, boost::lambda::bind(IsMilBldOfOwner, boost::lambda::constant_ref(*this), _1, player + 1), false);
 }
 
-bool GameWorldBase::IsMilitaryBuilding(const MapPoint pt) const
+bool GameWorldBase::IsMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const
 {
     const noBase* obj = GetNO(pt);
     if(obj->GetType() == NOP_BUILDING || obj->GetType() == NOP_BUILDINGSITE)
     {
         BuildingType buildingType = static_cast<const noBaseBuilding*>(obj)->GetBuildingType();
-        if(BuildingProperties::IsMilitary(buildingType) || buildingType == BLD_HEADQUARTERS || buildingType == BLD_HARBORBUILDING)
+        if(BuildingProperties::IsMilitary(buildingType))
+            return true;
+        if(!attackBldsOnly && (buildingType == BLD_HEADQUARTERS || buildingType == BLD_HARBORBUILDING))
             return true;
     }
 

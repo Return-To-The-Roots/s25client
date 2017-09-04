@@ -87,10 +87,10 @@ public:
     void RecalcBQForRoad(const MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
     bool IsMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const;
-
-    /// Test, ob auf dem besagten Punkt ein Milit�rgeb�ude steht
-    bool IsMilitaryBuilding(const MapPoint pt) const;
-
+    /// Return true if there is a military building or building site on the node
+    /// If attackBldsOnly is true, then only troop buildings are returned
+    /// Otherwise it includes e.g. HQ and harbour which cannot attack itself but hold land
+    bool IsMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const;
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer Richtung im Umkreis
     sortedMilitaryBlds LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const;
 

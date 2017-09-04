@@ -19,6 +19,7 @@
 #include "AIResourceMap.h"
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIMap.h"
+#include "boost/foreach.hpp"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
 #include "gameData/TerrainData.h"
@@ -120,17 +121,17 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
     if(radius == -1)
         radius = 30;
 
-    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
-    for(std::vector<MapPoint>::iterator it = pts.begin(); it != pts.end(); ++it)
+    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadius(pt, radius);
+    BOOST_FOREACH(const MapPoint& curPt, pts)
     {
-        const unsigned idx = aii.GetIdx(*it);
+        const unsigned idx = map.GetIdx(curPt);
         if(map[idx] >= threshold)
         {
             if((inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
-            if(canUseBq(aii.GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
+            if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
-                pt = *it;
+                pt = curPt;
                 return true;
             }
         }
@@ -149,17 +150,17 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
     MapPoint best(0, 0);
     int best_value = -1;
 
-    std::vector<MapPoint> pts = aii.GetPointsInRadius(pt, radius);
-    for(std::vector<MapPoint>::iterator it = pts.begin(); it != pts.end(); ++it)
+    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadius(pt, radius);
+    BOOST_FOREACH(const MapPoint& curPt, pts)
     {
-        const unsigned idx = aii.GetIdx(*it);
+        const unsigned idx = map.GetIdx(curPt);
         if(map[idx] > best_value)
         {
             if(!aiMap[idx].reachable || (inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
-            if(canUseBq(aii.GetBuildingQuality(*it), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
+            if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
-                best = *it;
+                best = curPt;
                 best_value = map[idx];
             }
         }

@@ -48,18 +48,13 @@ class Job;
 /// Klasse für die besser JH-KI
 class AIPlayerJH : public AIPlayer
 {
-    friend class BuildJob;
-    friend class EventJob;
-    friend class ConnectJob;
-    friend class SearchJob;
-    friend class iwAIDebug;
-
 public:
     AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level);
     ~AIPlayerJH() override;
 
     AIInterface& GetInterface() { return aii; }
     const AIInterface& GetInterface() const { return aii; }
+    const GameWorldBase& GetWorld() const { return gwb; }
     // Required by the AIJobs:
     AIConstruction* GetConstruction() { return construction; }
     const Job* GetCurrentJob() const { return currentJob.get(); }
@@ -95,7 +90,6 @@ public:
 
     int UpgradeBldListNumber;
 
-private:
     void PlanNewBuildings(const unsigned gf);
 
     void SendAIEvent(AIEvent::Base* ev);
@@ -244,6 +238,7 @@ private:
         resourceMaps[boost::underlying_cast<unsigned>(res)][pt] = newvalue;
     }
 
+private:
     MapPoint UpgradeBldPos;
     /// The current job the AI is working on
     boost::interprocess::unique_ptr<Job, Deleter<Job> > currentJob;
