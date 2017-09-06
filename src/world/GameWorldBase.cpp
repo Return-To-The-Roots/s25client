@@ -687,8 +687,7 @@ unsigned GameWorldBase::GetNumSoldiersForSeaAttackAtSea(const unsigned char play
             if(returnCount)
                 attackercount++;
             else
-                attackercount +=
-                  (tmp_soldiers[j]->GetJobType() - 20); // private is type 21 so this increases soldiercount by 1-5 depending on rank
+                attackercount += (tmp_soldiers[j]->GetRank() + 1); // private is rank 0 -> increase by 1-5
         }
     }
     return attackercount;

@@ -42,7 +42,7 @@
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 
 // Size is chosen based on current maximum attacking distances!
-struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
+struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
 {
     typedef SeaWorldWithGCExecution<62, 64> Parent;
     using Parent::world;
@@ -58,7 +58,7 @@ struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
     const nobMilitary *milBld1Near, *milBld1Far, *milBld2;
     GameWorldViewer gwv;
 
-    AttackFixture() : gwv(curPlayer, world)
+    SeaAttackFixture() : gwv(curPlayer, world)
     {
         // Make sure attacking is not limited by visibility
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
@@ -119,7 +119,7 @@ struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
             BOOST_REQUIRE(hb);
             BuildRoadForBlds(harborPos[i], hqPos[i]);
             MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
-            shipPos = world.MakeMapPoint(Point<int>(shipPos) + (Point<int>(shipPos) - Point<int>(harborPos[i])) * 2);
+            shipPos = world.MakeMapPoint(Point<int>(shipPos) + (Point<int>(shipPos) - Point<int>(harborPos[i])) * 8);
             BOOST_REQUIRE(shipPos.isValid());
             noShip* ship = new noShip(shipPos, i);
             world.AddFigure(ship, shipPos);
@@ -134,13 +134,13 @@ struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
         milBld1Near = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1NearPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Near);
 
-        milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 2), BQ_HOUSE, 1);
+        milBld1FarPos = FindBldPos(world.GetHarborPoint(4) - MapPoint(1, 4), BQ_HOUSE, 1);
         BOOST_REQUIRE(milBld1FarPos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld1FarPos, 1), BQ_HOUSE);
         milBld1Far = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1FarPos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1Far);
 
-        milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(3, 2), BQ_HOUSE, 2);
+        milBld2Pos = FindBldPos(world.GetHarborPoint(6) - MapPoint(2, 2), BQ_HOUSE, 2);
         BOOST_REQUIRE(milBld2Pos.isValid());
         BOOST_REQUIRE_GE(world.GetBQ(milBld2Pos, 2), BQ_HOUSE);
         milBld2 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld2Pos, 2, NAT_BABYLONIANS));
@@ -219,10 +219,10 @@ struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
     void TestFailingSeaAttack(MapPoint bldPos, unsigned numSoldiersLeft = 6u)
     {
         BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), numSoldiersLeft);
-        // No availbale soldiers
+        // No available soldiers
         BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(bldPos), 0u);
         this->SeaAttack(bldPos, 1, true);
-        // Noone left
+        // Same left
         BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), numSoldiersLeft);
     }
 
@@ -238,7 +238,7 @@ struct AttackFixture : public SeaWorldWithGCExecution<62, 64>
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(SeaAttackDisabled, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(SeaAttackDisabled, SeaAttackFixture)
 {
     AddSoldiers(milBld1NearPos, 6, 0);
 
@@ -261,7 +261,7 @@ BOOST_FIXTURE_TEST_CASE(SeaAttackDisabled, AttackFixture)
     TestFailingSeaAttack(milBld1FarPos);
 }
 
-BOOST_FIXTURE_TEST_CASE(NoHarborBlock, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(NoHarborBlock, SeaAttackFixture)
 {
     // Enemy harbors don't block
     ggs.setSelection(AddonId::SEA_ATTACK, 0);
@@ -311,7 +311,7 @@ BOOST_FIXTURE_TEST_CASE(NoHarborBlock, AttackFixture)
     TestFailingSeaAttack(harborPos[1], 1u);
 }
 
-BOOST_FIXTURE_TEST_CASE(HarborsBlock, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
 {
     AddSoldiers(milBld1NearPos, 6, 0);
 
@@ -376,7 +376,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, AttackFixture)
     BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 3u);
 }
 
-BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
 {
     AddSoldiers(milBld1NearPos, 6, 0);
 
@@ -413,7 +413,7 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, AttackFixture)
     BOOST_REQUIRE_EQUAL(milBld2->GetTroopsCount(), 5u);
 }
 
-BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
 {
     initGameRNG();
 
@@ -630,7 +630,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, AttackFixture)
     BOOST_REQUIRE_EQUAL(hbSrc.GetVisualFiguresCount(JOB_GENERAL), 0u);
 }
 
-BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
 {
     // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
     // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the walking path would go over

@@ -21,6 +21,7 @@
 #include "world/MapLoader.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
+#include <boost/test/test_tools.hpp>
 
 CreateSeaWorld::CreateSeaWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS)
 {
@@ -30,7 +31,7 @@ namespace {
 bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbors)
 {
     // Get all points within a radius of 3 and place the harbor on the first possible place
-    std::vector<MapPoint> pts = world.GetPointsInRadius(pt, 3);
+    std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(pt, 3);
     BOOST_FOREACH(MapPoint curPt, pts)
     {
         // Harbor only at castles
@@ -176,7 +177,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
 CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS)
 {
     // Only 2 players supported
-    RTTR_Assert(numPlayers == 2u);
+    RTTR_Assert(numPlayers <= 2u);
 }
 
 bool CreateWaterWorld::operator()(GameWorldGame& world) const
@@ -188,23 +189,31 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = TT_WATER;
     }
-    // Create some land
-    for(MapPoint pt(0, 0); pt.y < 10; ++pt.y)
+    const unsigned landRadius = 8;
+    std::vector<MapPoint> hqPositions;
+    hqPositions.push_back(MapPoint(10, 10));
+    if(playerNations_.size() > 1)
+        hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2));
+    BOOST_FOREACH(MapPoint hqPos, hqPositions)
     {
-        for(pt.x = 0; pt.x < 10; ++pt.x)
+        std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(hqPos, landRadius);
+        BOOST_FOREACH(MapPoint curPt, pts)
         {
-            MapNode& node = world.GetNodeWriteable(pt);
+            MapNode& node = world.GetNodeWriteable(curPt);
             node.t1 = node.t2 = TT_MEADOW1;
         }
     }
-    std::vector<MapPoint> hqPositions;
-    hqPositions.push_back(MapPoint(5, 9));
-    hqPositions.push_back(MapPoint(9, 9));
     MapLoader::PlaceHQs(world, hqPositions, playerNations_, false);
 
     std::vector<MapPoint> harbors;
-    PlaceHarbor(MapPoint(5, 0), world, harbors);
-    RTTR_Assert(harbors.size() == 1u);
+    BOOST_FOREACH(MapPoint hqPos, hqPositions)
+    {
+        BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos - Position(landRadius, 0)), world, harbors));
+        BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos - Position(0, landRadius)), world, harbors));
+        BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos + Position(landRadius, 0)), world, harbors));
+        BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos + Position(0, landRadius)), world, harbors));
+    }
+    RTTR_Assert(harbors.size() == hqPositions.size() * 4u);
     MapLoader::InitSeasAndHarbors(world, harbors);
     return true;
 }

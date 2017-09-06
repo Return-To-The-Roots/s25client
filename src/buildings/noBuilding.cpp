@@ -34,15 +34,14 @@ noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsign
 
 void noBuilding::Destroy()
 {
-    // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
-    // Feuer setzen
+    // First we have to remove the building from the map and the player
+    // Replace by fire (huts and mines become small fire, rest big)
     gwg->SetNO(pos, new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), true);
-
-    Destroy_noBaseBuilding();
-
     gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
-    // Destroy derived buildings last
+    // Destroy derived buildings
     DestroyBuilding();
+    // Then go further down the chain
+    Destroy_noBaseBuilding();
 }
 
 void noBuilding::Serialize_noBuilding(SerializedGameData& sgd) const

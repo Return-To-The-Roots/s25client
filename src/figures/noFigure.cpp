@@ -259,12 +259,15 @@ void noFigure::StartWalking(const Direction dir)
         return;
     }
 
-    // Gehen wir in ein Gebäude?
-    if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
-    // oder aus einem raus?
-    if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
+    if(fs != FS_WANDER)
+    {
+        // Gehen wir in ein Gebäude?
+        if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
+            gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
+        // oder aus einem raus?
+        if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+            gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
+    }
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
     if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, dir)) && cur_rs)
@@ -291,7 +294,7 @@ void noFigure::DrawShadow(DrawPoint drawPt, const unsigned char anistep, Directi
 void noFigure::WalkFigure()
 {
     // Tür hinter sich zumachen, wenn wir aus einem Gebäude kommen
-    if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(fs != FS_WANDER && GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 
     Walk();
@@ -300,7 +303,7 @@ void noFigure::WalkFigure()
         ++rs_pos;
 
     // oder in eins reingegangen sind
-    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    if(fs != FS_WANDER && GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->CloseDoor();
 }
 

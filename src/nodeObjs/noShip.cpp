@@ -391,6 +391,18 @@ void noShip::Driven()
     }
 }
 
+bool noShip::IsLoading() const
+{
+    return state == STATE_EXPEDITION_LOADING || state == STATE_EXPLORATIONEXPEDITION_LOADING || state == STATE_TRANSPORT_LOADING
+           || state == STATE_SEAATTACK_LOADING;
+}
+
+bool noShip::IsUnloading() const
+{
+    return state == STATE_EXPEDITION_UNLOADING || state == STATE_EXPLORATIONEXPEDITION_UNLOADING || state == STATE_TRANSPORT_UNLOADING
+           || state == STATE_SEAATTACK_UNLOADING;
+}
+
 /// Gibt Sichtradius dieses Schiffes zurück
 unsigned noShip::GetVisualRange() const
 {
@@ -955,7 +967,8 @@ void noShip::StartDrivingToHarborPlace()
     else
     {
         bool routeFound;
-        if(pos == gwg->GetCoastalPoint(home_harbor, seaId_))
+        // Use upper bound to distance by checking the distance between the harbors if we still have and are at the home harbor
+        if(home_harbor && pos == gwg->GetCoastalPoint(home_harbor, seaId_))
         {
             // Use the maximum distance between the harbors plus 6 fields
             unsigned maxDistance = gwg->CalcHarborDistance(home_harbor, goal_harborId) + 6;

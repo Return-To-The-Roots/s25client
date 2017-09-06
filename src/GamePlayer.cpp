@@ -449,8 +449,8 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
     if(bldType == BLD_HARBORBUILDING)
     {
         // Schiff durchgehen und denen Bescheid sagen
-        for(unsigned i = 0; i < ships.size(); ++i)
-            ships[i]->NewHarborBuilt(static_cast<nobHarborBuilding*>(bld));
+        BOOST_FOREACH(noShip* ship, ships)
+            ship->NewHarborBuilt(static_cast<nobHarborBuilding*>(bld));
     } else if(bldType == BLD_HEADQUARTERS)
         hqPos = bld->GetPos();
     else if(BuildingProperties::IsMilitary(bldType))

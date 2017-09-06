@@ -510,4 +510,159 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
 }
 
+template<unsigned T_numPlayers = 2, unsigned T_width = SmallSeaWorldDefault<T_numPlayers>::width,
+         unsigned T_height = SmallSeaWorldDefault<T_numPlayers>::height>
+struct ShipAndHarborsReadyFixture : public WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height>, public GCExecutor
+{
+public:
+    typedef WorldFixture<CreateWaterWorld, T_numPlayers, T_width, T_height> Parent;
+    using Parent::world;
+
+    virtual GameWorldGame& GetWorld() override { return world; }
+
+    nobHarborBuilding& createHarbor(unsigned hbPosId)
+    {
+        MapPoint hbPos = world.GetHarborPoint(hbPosId);
+        nobHarborBuilding* harbor =
+          static_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
+        BOOST_REQUIRE(harbor);
+        Inventory inv;
+        inv.Add(GD_WOOD, 10);
+        inv.Add(JOB_WOODCUTTER, 10);
+        harbor->AddGoods(inv, true);
+        return *harbor;
+    }
+
+    ShipAndHarborsReadyFixture()
+    {
+        GamePlayer& player = world.GetPlayer(curPlayer);
+        createHarbor(1);
+        createHarbor(2);
+
+        MapPoint hbPos = world.GetHarborPoint(1);
+        MapPoint shipPos = world.MakeMapPoint(hbPos - Position(2, 0));
+        BOOST_REQUIRE(world.IsSeaPoint(shipPos));
+        noShip* ship = new noShip(shipPos, curPlayer);
+        world.AddFigure(ship, ship->GetPos());
+        player.RegisterShip(ship);
+
+        BOOST_REQUIRE_EQUAL(player.GetShipCount(), 1u);
+    }
+};
+
+BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
+{
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip& ship = *player.GetShipByID(0);
+    const MapPoint hb1Pos = world.GetHarborPoint(1);
+    const MapPoint hb2Pos = world.GetHarborPoint(2);
+    const MapPoint hb3Pos = world.GetHarborPoint(3);
+
+    // Order goods
+    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+
+    // Destroy home before load -> Abort after ship reaches harbor
+    RTTR_EXEC_TILL(90, ship.IsMoving());
+    world.DestroyNO(hb1Pos);
+    // Remove fire
+    world.DestroyNO(hb1Pos);
+    RTTR_EXEC_TILL(10, !ship.IsMoving());
+    BOOST_REQUIRE(ship.IsIdling());
+
+    // Destroy home during load -> Continue
+    createHarbor(1);
+    // Just wait for re-order event and instantly go to loading as ship does not need to move
+    RTTR_EXEC_TILL(90, ship.IsLoading());
+    world.DestroyNO(hb1Pos);
+    // Remove fire
+    world.DestroyNO(hb1Pos);
+    BOOST_REQUIRE(ship.IsLoading());
+    BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 0u);
+    RTTR_EXEC_TILL(300, ship.IsUnloading());
+    BOOST_REQUIRE_EQUAL(ship.GetPos(), world.GetCoastalPoint(2, 1));
+    RTTR_EXEC_TILL(200, ship.IsIdling());
+
+    // Destroy destination before load -> Abort after ship reaches harbor
+    createHarbor(1);
+    RTTR_EXEC_TILL(90, ship.IsMoving());
+    world.DestroyNO(hb2Pos);
+    // Remove fire
+    world.DestroyNO(hb2Pos);
+    RTTR_EXEC_TILL(200, !ship.IsMoving());
+    BOOST_REQUIRE(ship.IsIdling());
+
+    // Destroy destination during load -> Unload again
+    createHarbor(2);
+    // Order goods
+    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    RTTR_EXEC_TILL(300, ship.IsLoading());
+    world.DestroyNO(hb2Pos);
+    // Remove fire
+    world.DestroyNO(hb2Pos);
+    BOOST_REQUIRE(ship.IsUnloading());
+    RTTR_EXEC_TILL(200, ship.IsIdling());
+
+    // Destroy destination during driving -> Go back and unload
+    createHarbor(2);
+    // Order goods
+    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    RTTR_EXEC_TILL(300, ship.IsLoading());
+    RTTR_EXEC_TILL(200, ship.IsMoving());
+    BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
+    BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
+    world.DestroyNO(hb2Pos);
+    // Remove fire
+    world.DestroyNO(hb2Pos);
+    RTTR_EXEC_TILL(10, ship.GetTargetHarbor() == 1u);
+    RTTR_EXEC_TILL(20, ship.IsUnloading());
+    BOOST_REQUIRE_EQUAL(ship.GetPos(), world.GetCoastalPoint(1, 1));
+    RTTR_EXEC_TILL(200, ship.IsIdling());
+
+    // Destroy destination during unloading -> Go back and unload
+    createHarbor(2);
+    // Order goods
+    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    RTTR_EXEC_TILL(700, ship.IsUnloading());
+    BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
+    BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
+    world.DestroyNO(hb2Pos);
+    // Remove fire
+    world.DestroyNO(hb2Pos);
+    RTTR_EXEC_TILL(10, ship.GetTargetHarbor() == 1u);
+    RTTR_EXEC_TILL(200, ship.IsUnloading());
+    BOOST_REQUIRE_EQUAL(ship.GetPos(), world.GetCoastalPoint(1, 1));
+    RTTR_EXEC_TILL(200, ship.IsIdling());
+
+    // Destroy both during unloading -> Go to 3rd and unload
+    createHarbor(2);
+    createHarbor(3);
+    // Order goods
+    SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
+    SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    RTTR_EXEC_TILL(700, ship.IsUnloading());
+    BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
+    BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
+    // Start first
+    world.DestroyNO(hb1Pos);
+    world.DestroyNO(hb2Pos);
+    // Remove fire
+    world.DestroyNO(hb1Pos);
+    world.DestroyNO(hb2Pos);
+    RTTR_EXEC_TILL(10, ship.GetTargetHarbor() == 3u);
+    // Destroy last ->
+    world.DestroyNO(hb3Pos);
+    world.DestroyNO(hb3Pos);
+    RTTR_EXEC_TILL(10, ship.IsLost());
+    BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 0u);
+    BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 0u);
+    createHarbor(1);
+    BOOST_REQUIRE(ship.IsMoving());
+    BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
+    BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 1u);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
