@@ -274,7 +274,7 @@ void nobUsual::HandleEvent(const unsigned id)
             }
 
             ++last_ordered_ware;
-            if(last_ordered_ware > workDesc.waresNeeded.size() || workDesc.waresNeeded[last_ordered_ware] == GD_NOTHING)
+            if(last_ordered_ware >= workDesc.waresNeeded.size() || workDesc.waresNeeded[last_ordered_ware] == GD_NOTHING)
                 last_ordered_ware = 0;
         }
 

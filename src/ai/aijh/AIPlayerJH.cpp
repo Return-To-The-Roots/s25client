@@ -2484,24 +2484,15 @@ unsigned AIPlayerJH::CalcMilSettings()
     const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
     for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
     {
-        unsigned convtype = 0;
-        if((*it)->GetBuildingType() == BLD_BARRACKS)
-            convtype = 0;
-        else if((*it)->GetBuildingType() == BLD_GUARDHOUSE)
-            convtype = 1;
-        else if((*it)->GetBuildingType() == BLD_WATCHTOWER)
-            convtype = 2;
-        else if((*it)->GetBuildingType() == BLD_FORTRESS)
-            convtype = 3;
         if((*it)->GetFrontierDistance() == 3 || ((*it)->GetFrontierDistance() == 2 && ggs.getSelection(AddonId::SEA_ATTACK) != 2)
            || ((*it)->GetFrontierDistance() == 0
                && (militaryBuildings.size() < (unsigned)count + numShouldStayConnected || count == uun))) // front or connected interior
         {
-            soldierInUseFixed += (*it)->CalcRequiredTroopsCount(5, 8);
+            soldierInUseFixed += (*it)->CalcRequiredTroopsCount(1, 8);
         } else if((*it)->GetFrontierDistance() == 1) // 1 bar (inland)
         {
             for(int i = 0; i < 5; i++)
-                InlandTroops[i] += (*it)->CalcRequiredTroopsCount(5, 4 + i);
+                InlandTroops[i] += (*it)->CalcRequiredTroopsCount(1, 4 + i);
         } else // setting should be 0 so add 1 soldier
             soldierInUseFixed++;
 

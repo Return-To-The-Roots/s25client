@@ -59,6 +59,7 @@ inline T_Node& NodeMapBase<T_Node>::operator[](const MapPoint& pt)
 template<typename T_Node>
 void NodeMapBase<T_Node>::Resize(const MapExtent& newSize)
 {
+    MapBase::Resize(newSize);
     nodes.clear();
     nodes.resize(prodOfComponents(newSize));
 }

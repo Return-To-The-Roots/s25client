@@ -20,6 +20,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
+#include "nodeObjs/noFlag.h"
 #include "test/PointOutput.h"
 #include "test/WorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
@@ -65,6 +66,30 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetPlayer(curPlayer).GetInventory().people[JOB_HELPER], numHelpers);
     BOOST_REQUIRE_EQUAL(fig->GetPos(), hqPos);
     BOOST_REQUIRE(fig->IsWandering());
+}
+
+BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
+{
+    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    MapPoint whFlagPos(flagPos.x + 5, flagPos.y);
+    MapPoint whPos = world.GetNeighbour(whFlagPos, Direction::NORTHWEST);
+    nobBaseWarehouse* wh =
+      static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, whPos, curPlayer, NAT_ROMANS));
+    // Build a road
+    this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::WEST));
+    // Request people and wares
+    this->SetInventorySetting(whPos, GD_WOOD, EInventorySetting::COLLECT);
+    this->SetInventorySetting(whPos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
+    noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
+    for(unsigned gf = 0; gf < 200; gf++)
+    {
+        world.GetEvMgr().ExecuteNextGF();
+        if(flag->GetWareCount() > 0)
+            break;
+    }
+    BOOST_REQUIRE_GT(flag->GetWareCount(), 0u);
+    // Destroy wh -> Cancel wares and figures
+    this->DestroyFlag(whFlagPos);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
