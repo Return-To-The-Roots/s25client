@@ -272,8 +272,6 @@ void GameClient::StartGame(const unsigned random_init)
     // Store settings (only reference stored in World)
     ggs = gameLobby->GetSettings();
     gw.reset(new GameWorld(std::vector<PlayerInfo>(gameLobby->GetPlayers().begin(), gameLobby->GetPlayers().end()), ggs, *em));
-    // Init data
-    GameObject::SetPointers(gw.get());
     gw->GetPostMgr().AddPostBox(playerId_);
     // Release lobby
     gameLobby.reset();
@@ -362,7 +360,6 @@ void GameClient::RealStart()
 void GameClient::ExitGame()
 {
     RTTR_Assert(state == CS_GAME || state == CS_LOADING);
-    GameObject::SetPointers(NULL);
     // Spielwelt zerstören
     human_ai.reset();
     gw.reset();

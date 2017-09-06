@@ -68,10 +68,12 @@ GameWorldGame::GameWorldGame(const std::vector<PlayerInfo>& players, const Globa
     : GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
 {
     TradePathCache::inst().Clear();
+    GameObject::SetPointers(this);
 }
 
 GameWorldGame::~GameWorldGame()
 {
+    GameObject::SetPointers(NULL);
 }
 
 MilitarySquares& GameWorldGame::GetMilitarySquares()

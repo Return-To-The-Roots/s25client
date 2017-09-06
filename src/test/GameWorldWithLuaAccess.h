@@ -78,14 +78,9 @@ struct LuaTestsFixture
         logWriter = dynamic_cast<StringStreamWriter*>(LOG.getFileWriter());
         BOOST_REQUIRE(logWriter);
         clearLog();
-        GameObject::SetPointers(&world);
     }
 
-    ~LuaTestsFixture()
-    {
-        GLOBALVARS.isTest = false;
-        GameObject::SetPointers(NULL);
-    }
+    ~LuaTestsFixture() { GLOBALVARS.isTest = false; }
 
     void clearLog() { logWriter->getStream().str(""); }
 

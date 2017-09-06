@@ -21,6 +21,7 @@
 #include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
+#include "addons/const_addons.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
@@ -44,21 +45,10 @@ struct WorldFixture
         : em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em),
           worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {
-        GameObject::SetPointers(&world);
-        try
-        {
-            BOOST_REQUIRE(worldCreator(world));
-        } catch(std::exception& e)
-        {
-            GameObject::SetPointers(NULL);
-            throw e;
-        }
+        // Fast moving ships
+        ggs.setSelection(AddonId::SHIP_SPEED, 4);
+        BOOST_REQUIRE(worldCreator(world));
         BOOST_REQUIRE_EQUAL(world.GetPlayerCount(), T_numPlayers);
-    }
-    ~WorldFixture()
-    {
-        // Reset to allow assertions on GameObject destruction to pass
-        GameObject::SetPointers(NULL);
     }
     static PlayerInfo GetPlayer()
     {
