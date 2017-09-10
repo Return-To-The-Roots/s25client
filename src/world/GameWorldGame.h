@@ -145,7 +145,7 @@ public:
     void RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
                                        const noBaseBuilding* const exception);
     /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
-    void SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player);
+    void MakeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player);
     /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an den Rändern neu
     void RecalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius, const Direction moving_dir,
                                   MapPoint* enemy_territory);

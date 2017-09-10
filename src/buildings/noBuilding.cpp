@@ -75,8 +75,15 @@ void noBuilding::DrawDoor(DrawPoint drawPt)
         doorImg->DrawFull(drawPt);
 }
 
-void noBuilding::GotWorker(Job /*job*/, noFigure* /*worker*/)
+void noBuilding::OpenDoor()
 {
+    ++opendoor;
+}
+
+void noBuilding::CloseDoor()
+{
+    RTTR_Assert(opendoor);
+    --opendoor;
 }
 
 FOWObject* noBuilding::CreateFOWObject() const

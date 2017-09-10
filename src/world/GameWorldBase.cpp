@@ -303,7 +303,8 @@ void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
 
 Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const
 {
-    Visibility best_visibility = GetNode(pt).fow[player].visibility;
+    const MapNode& node = GetNode(pt);
+    Visibility best_visibility = node.fow[player].visibility;
 
     if(best_visibility == VIS_VISIBLE)
         return best_visibility;
@@ -311,13 +312,14 @@ Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsig
     /// Teamsicht aktiviert?
     if(GetGGS().teamView)
     {
+        const GamePlayer& curPlayer = GetPlayer(player);
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
         for(unsigned i = 0; i < GetPlayerCount(); ++i)
         {
-            if(i != player && GetPlayer(i).IsAlly(player))
+            if(i != player && curPlayer.IsAlly(i))
             {
-                if(GetNode(pt).fow[i].visibility > best_visibility)
-                    best_visibility = GetNode(pt).fow[i].visibility;
+                if(node.fow[i].visibility > best_visibility)
+                    best_visibility = node.fow[i].visibility;
             }
         }
     }
@@ -487,25 +489,6 @@ bool GameWorldBase::IsAHarborInSeaAttackDistance(const MapPoint pos) const
         }
     }
     return false;
-}
-
-/// Komperator zum Sortieren
-bool GameWorldBase::PotentialSeaAttacker::operator<(const GameWorldBase::PotentialSeaAttacker& pa) const
-{
-    // Erst nach Rang, an zweiter Stelle nach Entfernung sortieren
-    if(soldier->GetRank() == pa.soldier->GetRank())
-    {
-        if(distance == pa.distance)
-        {
-            return (soldier->GetObjId() < pa.soldier->GetObjId());
-        } else
-        {
-            return distance < pa.distance;
-        }
-    } else
-    {
-        return soldier->GetRank() > pa.soldier->GetRank();
-    }
 }
 
 std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPoint targetPt, std::vector<bool>& use_seas,
@@ -705,9 +688,6 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
     const nobBaseMilitary* milBld = GetSpecObj<nobBaseMilitary>(pt);
     if(!milBld || !milBld->IsAttackable(player_attacker))
         return attackers;
-    // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcVisiblityWithAllies(pt, player_attacker) != VIS_VISIBLE)
-        return attackers;
     std::vector<bool> use_seas(GetNumSeas());
 
     // Mögliche Hafenpunkte in der Nähe des Gebäudes
@@ -770,8 +750,6 @@ std::vector<GameWorldBase::PotentialSeaAttacker> GameWorldBase::GetSoldiersForSe
         }
     }
 
-    // Entsprechend nach Rang sortieren
-    std::sort(attackers.begin(), attackers.end());
     return attackers;
 }
 

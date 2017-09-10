@@ -54,6 +54,8 @@
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <stdexcept>
+#include <algorithm>
+#include <functional>
 
 inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
 {
@@ -583,7 +585,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     if(reason == TerritoryChangeReason::Destroyed)
         RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), &building);
     else
-        SetVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
+        MakeVisibleAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }
 
 bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& building) const
@@ -756,10 +758,6 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
         return;
 
-    // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcVisiblityWithAllies(pt, player_attacker) != VIS_VISIBLE)
-        return;
-
     // Militärgebäude in der Nähe finden
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
@@ -772,39 +770,14 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         if((*it)->GetPlayer() != player_attacker || !BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             continue;
 
-        // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
-        // Militäreinstellungen zum Angriff eingestellt wurden
-        unsigned soldiers_count = (static_cast<nobMilitary*>(*it)->GetTroopsCount() > 1) ?
-                                    ((static_cast<nobMilitary*>(*it)->GetTroopsCount() - 1)
-                                     * GetPlayer(player_attacker).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) :
-                                    0;
-
-        unsigned distance = CalcDistance(pt, (*it)->GetPos());
-
-        // Falls Entfernung größer als Basisreichweite, Soldaten subtrahieren
-        if(distance > BASE_ATTACKING_DISTANCE)
-        {
-            // je einen soldaten zum entfernen vormerken für jeden EXTENDED_ATTACKING_DISTANCE großen Schritt
-            unsigned soldiers_to_remove =
-              ((distance - BASE_ATTACKING_DISTANCE + EXTENDED_ATTACKING_DISTANCE - 1) / EXTENDED_ATTACKING_DISTANCE);
-            if(soldiers_to_remove < soldiers_count)
-                soldiers_count -= soldiers_to_remove;
-            else
-                continue;
-        }
-
+        unsigned soldiers_count = static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
         if(!soldiers_count)
-            continue;
-
-        // The path should not be to far. If it is skip this
-        // Also use a bit of tolerance for the path
-        if(FindHumanPath(pt, (*it)->GetPos(), MAX_ATTACKING_RUN_DISTANCE)
-           == 0xFF) // TODO check: hier wird ne random-route berechnet? soll das so?
             continue;
 
         // Take soldier(s)
         unsigned i = 0;
         const SortedTroops& troops = static_cast<nobMilitary*>(*it)->GetTroops();
+        const unsigned distance = CalcDistance((*it)->GetPos(), pt);
         if(strong_soldiers)
         {
             // Strong soldiers first
@@ -871,51 +844,53 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
         it->soldier->Destroy();
         delete it->soldier;
     }
-
-    /*if(soldiers.empty())
-        LOG.write(S("GameWorldGame::Attack: WARNING: Attack failed. No Soldiers available!\n");*/
 }
+
+/// Compare sea attackers by their rank, then by their distance
+template<class T_RankCmp>
+struct CmpSeaAttacker: private T_RankCmp
+{
+    bool operator()(const GameWorldBase::PotentialSeaAttacker& lhs, const GameWorldBase::PotentialSeaAttacker& rhs)
+    {
+        // Sort after rank, then distance then objId
+        if(lhs.soldier->GetRank() == rhs.soldier->GetRank())
+        {
+            if(lhs.distance == rhs.distance)
+                return (lhs.soldier->GetObjId() < rhs.soldier->GetObjId()); // tie breaker
+            else
+                return lhs.distance < rhs.distance;
+        } else
+            return T_RankCmp::operator()(lhs.soldier->GetRank(), rhs.soldier->GetRank());
+    }
+};
 
 void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count,
                                  const bool strong_soldiers)
 {
-    // sea attack abgeschaltet per addon?
-    if(GetGGS().getSelection(AddonId::SEA_ATTACK) == 2)
-        return;
-
-    // Prüfen, ob der angreifende Spieler das Gebäude überhaupt sieht (Cheatvorsorge)
-    if(CalcVisiblityWithAllies(pt, player_attacker) != VIS_VISIBLE)
-        return;
-
-    // Ist das angegriffenne ein normales Gebäude?
-    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
-    if(!attacked_building || !attacked_building->IsAttackable(player_attacker))
-        return;
-
     // Verfügbare Soldaten herausfinden
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers = GetSoldiersForSeaAttack(player_attacker, pt);
+    if(attackers.empty())
+        return;
 
-    unsigned counter = 0;
+    // Sort them
     if(strong_soldiers)
-        for(std::vector<GameWorldBase::PotentialSeaAttacker>::iterator it = attackers.begin();
-            it != attackers.end() && counter < soldiers_count; ++it, ++counter)
-        {
-            // neuen Angreifer-Soldaten erzeugen
-            new nofAttacker(it->soldier, attacked_building, it->harbor);
-            // passiven Soldaten entsorgen
-            it->soldier->Destroy();
-            delete it->soldier;
-        }
+        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::greater<unsigned> >());
     else
-        for(std::vector<GameWorldBase::PotentialSeaAttacker>::reverse_iterator it = attackers.rbegin();
-            it != attackers.rend() && counter < soldiers_count; ++it, ++counter)
-        {
-            // neuen Angreifer-Soldaten erzeugen
-            new nofAttacker(it->soldier, attacked_building, it->harbor);
-            // passiven Soldaten entsorgen
-            it->soldier->Destroy();
-            delete it->soldier;
-        }
+        std::sort(attackers.begin(), attackers.end(), CmpSeaAttacker<std::less<unsigned> >());
+
+    nobBaseMilitary* attacked_building = GetSpecObj<nobBaseMilitary>(pt);
+    unsigned counter = 0;
+    BOOST_FOREACH(GameWorldBase::PotentialSeaAttacker& pa, attackers)
+    {
+        if(counter >= soldiers_count)
+            break;
+        // neuen Angreifer-Soldaten erzeugen
+        new nofAttacker(pa.soldier, attacked_building, pa.harbor);
+        // passiven Soldaten entsorgen
+        pa.soldier->Destroy();
+        delete pa.soldier;
+        counter++;
+    }
 }
 
 bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
@@ -1260,19 +1235,11 @@ void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCo
 }
 
 /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
-void GameWorldGame::SetVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
+void GameWorldGame::MakeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
 {
-    MakeVisible(pt, player);
-
-    for(MapCoord tx = GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, Direction(i)), ++r2)
-                MakeVisible(t2, player);
-        }
-    }
+    std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
+    BOOST_FOREACH(const MapPoint& curPt, pts)
+        MakeVisible(curPt, player);
 }
 
 /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an

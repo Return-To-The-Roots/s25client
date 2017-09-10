@@ -53,8 +53,8 @@ noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) :
     gwg->StopOnRoads(soldier1->GetPos());
 
     // Sichtradius behalten
-    gwg->SetVisibilitiesAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier1->GetPlayer());
-    gwg->SetVisibilitiesAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
+    gwg->MakeVisibleAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier1->GetPlayer());
+    gwg->MakeVisibleAroundPoint(soldier1->GetPos(), VISUALRANGE_SOLDIER, soldier2->GetPlayer());
 }
 
 noFighting::~noFighting()

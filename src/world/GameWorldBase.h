@@ -174,9 +174,6 @@ public:
             : soldier(soldier), harbor(harbor), distance(distance)
         {
         }
-
-        /// Komperator zum Sortieren
-        bool operator<(const PotentialSeaAttacker& pa) const;
     };
 
     /// Liefert Hafenpunkte im Umkreis von einem bestimmten Milit�rgeb�ude
@@ -189,7 +186,8 @@ public:
     /// Return all sea Ids from @param usableSeas that can be used for attacking the given point
     std::vector<unsigned short> GetFilteredSeaIDsForAttack(const MapPoint targetPt, const std::vector<unsigned short>& usableSeas,
                                                            const unsigned char player_attacker) const;
-    /// Return all soldiers that can be used to attack the given point via a sea
+    /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
+    /// Checks all preconditions for a sea attack (addon, attackable...)
     std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint targetPt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
     unsigned GetNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, unsigned short seaid, bool returnCount = true) const;

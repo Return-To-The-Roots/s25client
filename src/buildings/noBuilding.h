@@ -50,14 +50,8 @@ public:
     /// Draws the door only (if building is drawn at x, y)
     void DrawDoor(DrawPoint drawPt);
 
-    void OpenDoor() { ++opendoor; }
-    void CloseDoor()
-    {
-        RTTR_Assert(opendoor);
-        --opendoor;
-    }
-
-    void GotWorker(Job job, noFigure* worker) override;
+    void OpenDoor();
+    void CloseDoor();
 
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
     virtual bool FreePlaceAtFlag() = 0;

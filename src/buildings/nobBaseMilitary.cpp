@@ -342,12 +342,13 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
-bool nobBaseMilitary::IsAttackable(int playerIdx) const
+bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
 {
-    if(playerIdx < 0)
-        return true; // Nothing prevents this in general
-    else
-        return gwg->GetPlayer(player).IsAttackable(static_cast<unsigned>(playerIdx));
+    // If we cannot be seen by the player -> not attackable
+    if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != VIS_VISIBLE)
+        return false;
+    // Else it depends on the team settings
+    return gwg->GetPlayer(player).IsAttackable(playerIdx);
 }
 
 bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const

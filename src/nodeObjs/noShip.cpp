@@ -458,7 +458,7 @@ void noShip::StartExplorationExpedition(unsigned homeHarborId)
     home_harbor = homeHarborId;
     goal_harborId = homeHarborId; // This is current goal (commands are relative to current goal)
     // Sichtbarkeiten neu berechnen
-    gwg->SetVisibilitiesAroundPoint(pos, GetVisualRange(), ownerId_);
+    gwg->MakeVisibleAroundPoint(pos, GetVisualRange(), ownerId_);
 }
 
 /// Fährt weiter zu einem Hafen
