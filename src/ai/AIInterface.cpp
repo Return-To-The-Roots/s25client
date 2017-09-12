@@ -89,7 +89,7 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
            || (res == AIResource::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
                && (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))))
         {
-            return RES_RADIUS[static_cast<unsigned>(res)];
+            return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
         }
         // another building using our "resource"? reduce rating!
         if(res == AIResource::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER))
@@ -101,7 +101,7 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
     else
     {
         if(GetSubsurfaceResource(pt) == res)
-            return RES_RADIUS[static_cast<unsigned>(res)];
+            return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
     }
     return 0;
 }
@@ -112,7 +112,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direc
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
         returnVal = 0;
-        std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, RES_RADIUS[static_cast<unsigned>(res)]);
+        std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, RES_RADIUS[boost::underlying_cast<unsigned>(res)]);
         for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
             returnVal += GetResourceRating(*it, res);
         // add the center point value
@@ -123,12 +123,12 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direc
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
-        for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
+        for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
             tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 5));
         // then clockwise around at radius distance to get all new points
         for(int i = direction + 1; i < (direction + 3); ++i)
         {
-            int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
+            int resRadius = RES_RADIUS[boost::underlying_cast<unsigned>(res)];
             // add 1 extra step on the second side we check to complete the side
             if(i == direction + 2)
                 ++resRadius;
@@ -143,12 +143,12 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direc
         tmpPt = pt;
         tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 3));
         // next: go to the first old point we have to substract
-        for(unsigned i = 0; i < RES_RADIUS[static_cast<unsigned>(res)]; i++)
+        for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
             tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 2));
         // now clockwise around at radius distance to remove all old points
         for(int i = direction + 4; i < (direction + 6); ++i)
         {
-            int resRadius = RES_RADIUS[static_cast<unsigned>(res)];
+            int resRadius = RES_RADIUS[boost::underlying_cast<unsigned>(res)];
             if(i == direction + 5)
                 ++resRadius;
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)

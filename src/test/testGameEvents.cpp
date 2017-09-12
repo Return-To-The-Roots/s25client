@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "EventManager.h"
 #include "GameEvent.h"
 #include "GameObject.h"
+#include "TestEventManager.h"
 #include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
 
@@ -50,18 +50,18 @@ public:
 BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
 {
     const unsigned startGF = 1;
-    EventManager evMgr(startGF);
+    TestEventManager evMgr(startGF);
     TestEventHandler obj;
     // Check that adding an event works and data is correctly set
-    GameEvent* ev = evMgr.AddEvent(&obj, 5, 42);
+    const GameEvent* ev = evMgr.AddEvent(&obj, 5, 42);
     BOOST_REQUIRE_EQUAL(ev->obj, &obj);
     BOOST_REQUIRE_EQUAL(ev->startGF, startGF);
     BOOST_REQUIRE_EQUAL(ev->length, 5u);
     BOOST_REQUIRE_EQUAL(ev->id, 42u);
     BOOST_REQUIRE_EQUAL(ev->GetTargetGF(), startGF + ev->length);
-    BOOST_CHECK(evMgr.IsEventActive(&obj, 42));
-    BOOST_CHECK(!evMgr.IsEventActive(&obj, 43));
-    BOOST_CHECK(evMgr.ObjectHasEvents(&obj));
+    BOOST_CHECK(evMgr.IsEventActive(obj, 42));
+    BOOST_CHECK(!evMgr.IsEventActive(obj, 43));
+    BOOST_CHECK(evMgr.ObjectHasEvents(obj));
     // Check that event is not executed before it is due
     for(unsigned i = startGF + 1; i < ev->GetTargetGF(); i++)
     {
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 1u);
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.front(), 42u);
     // And nothing should be left
-    BOOST_CHECK(!evMgr.IsEventActive(&obj, 42));
-    BOOST_CHECK(!evMgr.ObjectHasEvents(&obj));
+    BOOST_CHECK(!evMgr.IsEventActive(obj, 42));
+    BOOST_CHECK(!evMgr.ObjectHasEvents(obj));
 }
 
 BOOST_AUTO_TEST_CASE(AddSuspendedEvent)
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(AddSuspendedEvent)
     EventManager evMgr(startGF);
     TestEventHandler obj;
     // Add an event with length 50, where 48 GFs have already elapsed (2 left)
-    GameEvent* ev = evMgr.AddEvent(&obj, 50, 42, 48);
+    const GameEvent* ev = evMgr.AddEvent(&obj, 50, 42, 48);
     BOOST_REQUIRE_EQUAL(ev->obj, &obj);
     BOOST_REQUIRE_EQUAL(ev->startGF, startGF - 48u); // "Started" 48 GFs ago
     BOOST_REQUIRE_EQUAL(ev->length, 50u);
@@ -119,24 +119,51 @@ BOOST_AUTO_TEST_CASE(MultipleEvents)
     BOOST_REQUIRE_EQUAL(obj.handledEventIds[2], 44u);
 }
 
+BOOST_AUTO_TEST_CASE(Reschedule)
+{
+    TestEventManager evMgr(0);
+    TestEventHandler obj;
+    const GameEvent* ev = evMgr.AddEvent(&obj, 5, 42);
+    // Run 3 of the 5 GFs
+    for(unsigned i = 1; i <= 3; i++)
+        evMgr.ExecuteNextGF();
+    std::vector<GameEvent*> evts = evMgr.GetObjEvents(obj);
+    BOOST_REQUIRE_EQUAL(evts.size(), 1u);
+    BOOST_REQUIRE_EQUAL(evts.front(), ev);
+    // Execute at GF 7 instead
+    evMgr.RescheduleEvent(*evts.front(), 7);
+    for(unsigned i = 3; i <= 5; i++)
+        evMgr.ExecuteNextGF();
+    BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 0u);
+    for(unsigned i = 5; i <= 7; i++)
+        evMgr.ExecuteNextGF();
+    BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 1u);
+}
+
 class TestLogKill : public TestEventHandler
 {
 public:
     EventManager& em;
     TestLogKill(EventManager& em) : em(em) {}
 
-    static unsigned killNum;
+    static unsigned killNum, destroyNum;
     ~TestLogKill() { killNum++; }
     void HandleEvent(const unsigned evId) override
     {
-        BOOST_REQUIRE(!em.ObjectIsInKillList(this));
+        BOOST_REQUIRE(!em.IsObjectInKillList(*this));
         // Kill this on event
         em.AddToKillList(this);
-        BOOST_REQUIRE(em.ObjectIsInKillList(this));
+        BOOST_REQUIRE(em.IsObjectInKillList(*this));
+    }
+    void Destroy() override
+    {
+        destroyNum++;
+        TestEventHandler::Destroy();
     }
 };
 
 unsigned TestLogKill::killNum = 0;
+unsigned TestLogKill::destroyNum = 0;
 
 BOOST_AUTO_TEST_CASE(KillList)
 {
@@ -146,17 +173,19 @@ BOOST_AUTO_TEST_CASE(KillList)
     // Nothing should happened yet
     evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(TestLogKill::killNum, 0u);
-    // And not it should be killed
+    BOOST_REQUIRE_EQUAL(TestLogKill::destroyNum, 0u);
+    // And not it should be killed (destroy and delete)
     evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(TestLogKill::killNum, 1u);
-    BOOST_REQUIRE(!evMgr.ObjectIsInKillList(obj));
+    BOOST_REQUIRE_EQUAL(TestLogKill::destroyNum, 1u);
+    BOOST_REQUIRE(!evMgr.IsObjectInKillList(*obj));
 }
 
 class TestRemoveEvent : public TestEventHandler
 {
 public:
     EventManager& em;
-    GameEvent* ev2Remove;
+    const GameEvent* ev2Remove;
     TestRemoveEvent(EventManager& em) : em(em), ev2Remove(NULL) {}
 
     void HandleEvent(const unsigned evId) override
@@ -189,7 +218,7 @@ BOOST_AUTO_TEST_CASE(RemoveEvent)
     evMgr.ExecuteNextGF();
     BOOST_REQUIRE_EQUAL(obj.handledEventIds.size(), 2u);
     BOOST_REQUIRE_EQUAL(obj.handledEventIds[1], 42u);
-    BOOST_CHECK(!evMgr.ObjectHasEvents(&obj));
+    BOOST_CHECK(!evMgr.ObjectHasEvents(obj));
 }
 
 BOOST_AUTO_TEST_CASE(InvalidEvent)
@@ -204,7 +233,7 @@ BOOST_AUTO_TEST_CASE(InvalidEvent)
     BOOST_CHECK_THROW(evMgr.AddEvent(&obj, 0), RTTR_AssertError);
     // ... even for continued events
     BOOST_CHECK_THROW(evMgr.AddEvent(NULL, 50, 0, 50), RTTR_AssertError);
-    // conitinued event cannot start before the game
+    // continued event cannot start before the game
     BOOST_CHECK_THROW(evMgr.AddEvent(NULL, 200, 0, 150), RTTR_AssertError);
     RTTR_AssertEnableBreak = true;
 #endif

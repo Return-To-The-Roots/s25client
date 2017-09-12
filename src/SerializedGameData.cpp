@@ -321,9 +321,9 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
     fowobj->Serialize(*this);
 }
 
-GameEvent* SerializedGameData::PopEvent()
+const GameEvent* SerializedGameData::PopEvent()
 {
-    return PopObject<GameEvent>(GOT_EVENT);
+    return PopObject<const GameEvent>(GOT_EVENT);
 }
 
 FOWObject* SerializedGameData::PopFOWObject()

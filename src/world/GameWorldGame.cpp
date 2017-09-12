@@ -53,9 +53,9 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
-#include <stdexcept>
 #include <algorithm>
 #include <functional>
+#include <stdexcept>
 
 inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
 {
@@ -848,7 +848,7 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
 
 /// Compare sea attackers by their rank, then by their distance
 template<class T_RankCmp>
-struct CmpSeaAttacker: private T_RankCmp
+struct CmpSeaAttacker : private T_RankCmp
 {
     bool operator()(const GameWorldBase::PotentialSeaAttacker& lhs, const GameWorldBase::PotentialSeaAttacker& rhs)
     {

@@ -78,7 +78,7 @@ public:
     const AIResourceMap& GetResMap(AIResource res) const;
 
     const Node& GetAINode(const MapPoint pt) const { return aiMap[pt]; }
-    unsigned GetNumPlannedConnectedInlandMilitaryBlds() { return std::max(6u, aii.GetMilitaryBuildings().size() / 5u); }
+    unsigned GetNumPlannedConnectedInlandMilitaryBlds() { return std::max<unsigned>(6u, aii.GetMilitaryBuildings().size() / 5u); }
     /// checks distance to all harborpositions
     bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);
     /// returns the percentage*100 of possible normal building places

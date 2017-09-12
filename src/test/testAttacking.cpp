@@ -40,7 +40,7 @@ struct AttackDefaults
 };
 
 template<unsigned T_numPlayers, unsigned T_width, unsigned T_height>
-struct AttackFixtureBase: public WorldWithGCExecution<T_numPlayers, T_width, T_height>
+struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_height>
 {
     /// Positions of the players HQ
     boost::array<MapPoint, T_numPlayers> hqPos;
@@ -48,7 +48,8 @@ struct AttackFixtureBase: public WorldWithGCExecution<T_numPlayers, T_width, T_h
     using Parent::world;
     using Parent::curPlayer;
 
-    AttackFixtureBase(){
+    AttackFixtureBase()
+    {
         Inventory goods;
         goods.Add(JOB_GENERAL, 3);
         for(unsigned i = 0; i < T_numPlayers; i++)
@@ -56,7 +57,7 @@ struct AttackFixtureBase: public WorldWithGCExecution<T_numPlayers, T_width, T_h
             curPlayer = i;
             hqPos[i] = world.GetPlayer(i).GetHQPos();
             MakeVisible(hqPos[i]);
-            world.GetSpecObj<nobBaseWarehouse>(hqPos[i])->AddGoods(goods, true);
+            world.template GetSpecObj<nobBaseWarehouse>(hqPos[i])->AddGoods(goods, true);
             this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
         }
         curPlayer = 0;
@@ -82,7 +83,7 @@ struct AttackFixtureBase: public WorldWithGCExecution<T_numPlayers, T_width, T_h
     void AddSoldiersWithRank(MapPoint bldPos, unsigned numSoldiers, unsigned rank)
     {
         BOOST_REQUIRE_LE(rank, world.GetGGS().GetMaxMilitaryRank());
-        nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
+        nobMilitary* bld = world.template GetSpecObj<nobMilitary>(bldPos);
         BOOST_REQUIRE(bld);
         const unsigned oldNumSoldiers = bld->GetTroopsCount();
         for(unsigned i = 0; i < numSoldiers; i++)
@@ -102,7 +103,6 @@ struct AttackFixtureBase: public WorldWithGCExecution<T_numPlayers, T_width, T_h
         AddSoldiersWithRank(bldPos, numWeak, 0);
         AddSoldiersWithRank(bldPos, numStrong, 4);
     }
-
 };
 
 // Size is chosen based on current maximum attacking distances!
@@ -146,10 +146,9 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
         curPlayer = playerIdx;
         gwv.ChangePlayer(playerIdx, false);
     }
-
 };
 
-struct AttackFixture: public AttackFixtureBase<2, AttackDefaults::width, AttackDefaults::height>
+struct AttackFixture : public AttackFixtureBase<2, AttackDefaults::width, AttackDefaults::height>
 {
     /// Tested positions for military buildings
     MapPoint milBld0Pos, milBld1Pos;

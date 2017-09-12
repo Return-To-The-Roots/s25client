@@ -27,7 +27,7 @@
 namespace AIJH {
 
 AIResourceMap::AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap)
-    : res(res), resRadius(RES_RADIUS[static_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
+    : res(res), resRadius(RES_RADIUS[boost::underlying_cast<unsigned>(res)]), aii(aii), aiMap(aiMap)
 {
 }
 

@@ -46,7 +46,7 @@ private:
     unsigned short sub_step;
 
     /// Event for glowing
-    GameEvent* event;
+    const GameEvent* event;
 
 public:
     noCharburnerPile(const MapPoint pt);

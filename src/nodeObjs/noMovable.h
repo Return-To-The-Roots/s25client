@@ -33,7 +33,7 @@ class noMovable : public noCoordBase
     Direction curMoveDir; // Richtung, in die es gerade läcft
 protected:
     unsigned char ascent; // Anstieg beim Laufen (0-2 runter, 3 gerade, 4-6 hoch)
-    GameEvent* current_ev;
+    const GameEvent* current_ev;
     /// Falls er unterwegs angehalten ist: wie weit war er schon gelaufen (0 wenn nicht)
     unsigned pause_walked_gf;
     /// Wenn er angehalten hat, wie lange das Laufevent war

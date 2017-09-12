@@ -799,7 +799,9 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
     // Soldaten ausrechnen, wie viel man davon nehmen könnte, je nachdem wie viele in den
     // Militäreinstellungen zum Angriff eingestellt wurden
 
-    unsigned short soldiers_count = (GetTroopsCount() > 1) ? ((GetTroopsCount() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) : 0;
+    unsigned short soldiers_count =
+      (GetTroopsCount() > 1) ? ((GetTroopsCount() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) :
+                               0;
 
     unsigned distance = gwg->CalcDistance(pos, dest);
 

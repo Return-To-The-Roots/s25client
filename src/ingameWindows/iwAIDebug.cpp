@@ -49,7 +49,7 @@ class iwAIDebug::DebugPrinter : public IDrawNodeCallback
     glArchivItem_Font& font;
 
 public:
-    DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : ai(ai), overlay(overlay), font(*NormalFont)
+    DebugPrinter(const AIJH::AIPlayerJH* ai, unsigned overlay) : font(*NormalFont), ai(ai), overlay(overlay)
     {
         // Cache images
         bqImgs[0] = NULL;

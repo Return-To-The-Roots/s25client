@@ -43,7 +43,7 @@ class nofAttacker : public nofActiveSoldier
     unsigned short radius;
     /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
     /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
-    GameEvent* blocking_event;
+    const GameEvent* blocking_event;
 
     /// Für Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
     MapPoint harborPos;

@@ -70,13 +70,13 @@ protected:
     /// Liste von Waren, die auf dem Weg zum Lagerhaus sind
     std::list<Ware*> dependent_wares;
     /// Produzier-Träger-Event
-    GameEvent* producinghelpers_event;
+    const GameEvent* producinghelpers_event;
     /// Rekrutierungsevent für Soldaten
-    GameEvent* recruiting_event;
+    const GameEvent* recruiting_event;
     /// Auslagerevent für Waren und Figuren
-    GameEvent* empty_event;
+    const GameEvent* empty_event;
     /// Einlagerevent für Waren und Figuren
-    GameEvent* store_event;
+    const GameEvent* store_event;
 
 protected:
     /// Soldaten-Reserve-Einstellung

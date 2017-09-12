@@ -24,16 +24,15 @@ class GameEvent : public GameObject
 {
 public:
     /// Object that will handle this event
-    GameObject* const obj;
+    GameObject* obj;
     /// GF at which this event was added
-    const unsigned startGF;
+    unsigned startGF;
     /// Number of GF till event will be executed
-    const unsigned length;
+    unsigned length;
     /// ID of the event (meaning dependent on object)
-    const unsigned id;
+    unsigned id;
 
-    GameEvent(GameObject* const obj, const unsigned startGF, const unsigned length, const unsigned id)
-        : obj(obj), startGF(startGF), length(length), id(id)
+    GameEvent(GameObject* obj, unsigned startGF, unsigned length, unsigned id) : obj(obj), startGF(startGF), length(length), id(id)
     {
         RTTR_Assert(length > 0); // Events cannot be executed in the same GF as they are added
         RTTR_Assert(obj);        // Events without an object are pointless

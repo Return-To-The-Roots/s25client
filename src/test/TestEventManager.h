@@ -15,27 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef AIResource_h__
-#define AIResource_h__
+#pragma once
+#ifndef TestEventManager_h__
+#define TestEventManager_h__
 
-#include <boost/array.hpp>
-#include <boost/core/scoped_enum.hpp>
+#include "EventManager.h"
 
-BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(AIResource, unsigned){WOOD, STONES, GOLD, IRONORE, COAL, GRANITE, PLANTSPACE, BORDERLAND, FISH, MULTIPLE,
-                                                         // special:
-                                                         BLOCKED = 254, NOTHING = 255} BOOST_SCOPED_ENUM_DECLARE_END(AIResource)
+class TestEventManager : public EventManager
+{
+public:
+    TestEventManager(unsigned startGF = 0) : EventManager(startGF) {}
 
-  const unsigned NUM_AIRESOURCES = 9;
-const boost::array<unsigned, NUM_AIRESOURCES> SUPPRESS_UNUSED RES_RADIUS = {{
-  8, // Wood
-  8, // Stones
-  2, // Gold
-  2, // Ironore
-  2, // Coal
-  2, // Granite
-  3, // Plantspace
-  5, // Borderland
-  5  // Fish
-}};
+    /// Return all events of the given object
+    std::vector<GameEvent*> GetObjEvents(const GameObject& obj);
+    /// Check if there is already an event of the given id for this object
+    bool IsEventActive(const GameObject& obj, const unsigned id) const;
+    /// Reset an event so it is executed at the given GF
+    void RescheduleEvent(GameEvent& event, unsigned targetGF);
+};
 
-#endif // AIResource_h__
+#endif // TestEventManager_h__

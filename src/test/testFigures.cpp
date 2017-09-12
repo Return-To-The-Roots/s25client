@@ -73,8 +73,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
     MapPoint whFlagPos(flagPos.x + 5, flagPos.y);
     MapPoint whPos = world.GetNeighbour(whFlagPos, Direction::NORTHWEST);
-    nobBaseWarehouse* wh =
-      static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, whPos, curPlayer, NAT_ROMANS));
+    BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, whPos, curPlayer, NAT_ROMANS);
     // Build a road
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::WEST));
     // Request people and wares

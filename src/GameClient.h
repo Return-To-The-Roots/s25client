@@ -115,8 +115,8 @@ public:
     unsigned GetFrameTime() const { return framesinfo.frameTime; }
     unsigned GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator,
                                 const unsigned offset);
-    unsigned Interpolate(unsigned max_val, GameEvent* ev);
-    int Interpolate(int x1, int x2, GameEvent* ev);
+    unsigned Interpolate(unsigned max_val, const GameEvent* ev);
+    int Interpolate(int x1, int x2, const GameEvent* ev);
 
     void Command_Chat(const std::string& text, const ChatDestination cd);
     void Command_SetNation(Nation newNation);

@@ -1558,7 +1558,7 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
-unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
+unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
@@ -1569,7 +1569,7 @@ unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
     return result;
 }
 
-int GameClient::Interpolate(int x1, int x2, GameEvent* ev)
+int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;

@@ -594,7 +594,7 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
 
 bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
-    return resourceMaps[static_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
+    return resourceMaps[boost::underlying_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
 bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius,
@@ -624,7 +624,7 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
         {
             for(MapCoord step = 0; step < r; ++step, curPt = aiMap.GetNeighbour(curPt, Direction(curDir)))
             {
-                int& resMapVal = resourceMaps[static_cast<unsigned>(res)][curPt];
+                int& resMapVal = resourceMaps[boost::underlying_cast<unsigned>(res)][curPt];
                 if(fixed)
                     temp = resMapVal;
                 else
@@ -743,7 +743,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
                 else // last step was the previous direction
                     temp = aii.CalcResourceValue(curPt, res, (curDir - 1) % 6, temp);
                 // copy the value to the resource map (map is only used in the ai debug mode)
-                resourceMaps[static_cast<unsigned>(res)][curPt] = temp;
+                resourceMaps[boost::underlying_cast<unsigned>(res)][curPt] = temp;
                 if(temp > best_value)
                 {
                     if(!aiMap[curPt].reachable || (inTerritory && !aii.IsOwnTerritory(curPt)) || aiMap[curPt].farmed)
@@ -1840,7 +1840,7 @@ int AIPlayerJH::GetResMapValue(const MapPoint pt, AIResource res) const
 
 const AIResourceMap& AIPlayerJH::GetResMap(AIResource res) const
 {
-    return resourceMaps[static_cast<unsigned>(res)];
+    return resourceMaps[boost::underlying_cast<unsigned>(res)];
 }
 
 void AIPlayerJH::SendAIEvent(AIEvent::Base* ev)

@@ -18,9 +18,9 @@
 #ifndef WorldFixture_h__
 #define WorldFixture_h__
 
-#include "EventManager.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
+#include "TestEventManager.h"
 #include "addons/const_addons.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/MapCoordinates.h"
@@ -37,7 +37,7 @@ struct WorldDefault
 template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault::width, unsigned T_height = WorldDefault::height>
 struct WorldFixture
 {
-    EventManager em;
+    TestEventManager em;
     GlobalGameSettings ggs;
     GameWorldGame world;
     T_WorldCreator worldCreator;

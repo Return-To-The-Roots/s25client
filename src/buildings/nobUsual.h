@@ -47,9 +47,9 @@ class nobUsual : public noBuilding
     /// Bestellte Waren
     std::vector<std::list<Ware*> > ordered_wares;
     /// Bestell-Ware-Event
-    GameEvent* orderware_ev;
+    const GameEvent* orderware_ev;
     /// Rechne-Produktivität-aus-Event
-    GameEvent* productivity_ev;
+    const GameEvent* productivity_ev;
     /// Letzte Produktivitäten (Durschnitt = Gesamtproduktivität), vorne das neuste !
     static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
     boost::array<unsigned short, LAST_PRODUCTIVITIES_COUNT> last_productivities;

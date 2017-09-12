@@ -62,7 +62,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     } exploration_expedition;
 
     /// Bestell-Ware-Event
-    GameEvent* orderware_ev;
+    const GameEvent* orderware_ev;
     /// Die Meeres-IDs aller angrenzenden Meere (jeweils für die 6 drumherumliegenden Küstenpunkte)
     unsigned short seaIds[6];
     /// Liste von Waren, die weggeschifft werden sollen

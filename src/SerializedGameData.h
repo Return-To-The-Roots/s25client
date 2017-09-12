@@ -102,7 +102,7 @@ public:
         return static_cast<T*>(PopObject_(got));
     }
 
-    GameEvent* PopEvent();
+    const GameEvent* PopEvent();
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();

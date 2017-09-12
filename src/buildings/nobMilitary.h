@@ -60,9 +60,9 @@ class nobMilitary : public nobBaseMilitary
     /// but who are still quite far away (didn't stand around the building)
     std::list<nofAttacker*> far_away_capturers;
     /// Gold-Bestell-Event
-    GameEvent* goldorder_event;
+    const GameEvent* goldorder_event;
     /// Beförderung-Event
-    GameEvent* upgrade_event;
+    const GameEvent* upgrade_event;
     /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
     bool is_regulating_troops;
     /// Soldatenbesatzung
