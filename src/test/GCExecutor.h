@@ -23,16 +23,6 @@
 #include "libutil/Serializer.h"
 #include <boost/test/unit_test.hpp>
 
-/// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
-#define RTTR_EXEC_TILL(maxGFs, cond)          \
-    for(unsigned gf = 0; gf < (maxGFs); gf++) \
-    {                                         \
-        world.GetEvMgr().ExecuteNextGF();     \
-        if((cond))                            \
-            break;                            \
-    }                                         \
-    BOOST_REQUIRE((cond))
-
 class GCExecutor : public GameCommandFactory
 {
 public:

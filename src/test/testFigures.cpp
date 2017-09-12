@@ -80,13 +80,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     this->SetInventorySetting(whPos, GD_WOOD, EInventorySetting::COLLECT);
     this->SetInventorySetting(whPos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
     noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
-    for(unsigned gf = 0; gf < 200; gf++)
-    {
-        world.GetEvMgr().ExecuteNextGF();
-        if(flag->GetWareCount() > 0)
-            break;
-    }
-    BOOST_REQUIRE_GT(flag->GetWareCount(), 0u);
+    RTTR_EXEC_TILL(200, flag->GetWareCount() > 0);
     // Destroy wh -> Cancel wares and figures
     this->DestroyFlag(whFlagPos);
 }

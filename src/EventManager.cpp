@@ -102,25 +102,28 @@ void EventManager::ExecuteCurrentEvents()
     // Get list of events for current GF
     EventMap::iterator itCurEvents = events.find(currentGF);
     if(itCurEvents != events.end())
+        ExecuteEvents(itCurEvents);
+}
+
+void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
+{
+    EventList& curEvents = itEvents->second;
+    // We have to allow 2 cases:
+    // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
+    // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
+    for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
     {
-        EventList& curEvents = itCurEvents->second;
-        // We have to allow 2 cases:
-        // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
-        // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
-        for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
-        {
-            GameEvent* ev = (*e_it);
-            RTTR_Assert(ev->obj);
-            RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
+        GameEvent* ev = (*e_it);
+        RTTR_Assert(ev->obj);
+        RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
 
-            curActiveEvent = ev;
-            ev->obj->HandleEvent(ev->id);
+        curActiveEvent = ev;
+        ev->obj->HandleEvent(ev->id);
 
-            delete ev;
-        }
-        curActiveEvent = NULL;
-        events.erase(itCurEvents);
+        delete ev;
     }
+    curActiveEvent = NULL;
+    events.erase(itEvents);
 }
 
 void EventManager::Serialize(SerializedGameData& sgd) const

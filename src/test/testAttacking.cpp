@@ -194,8 +194,7 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, NumSoldierTestFixture)
     BuildRoadForBlds(hqPos[0], milBld0->GetPos());
     // Let soldiers get into blds. (6 soldiers, 7 fields distance, 20GFs per field, 30GFs for leaving HQ)
     unsigned numGFs = 6 * (7 * 20 + 30);
-    for(unsigned gf = 0; gf < numGFs; gf++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(numGFs);
     // Don't wait for them just add
     AddSoldiers(milBld1Far->GetPos(), 6, 0);
     BOOST_REQUIRE_EQUAL(milBld1Near->GetTroopsCount(), 6u);
@@ -333,8 +332,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     AddSoldiersWithRank(milBld1Pos, 1, 1);
     BuildRoadForBlds(milBld0Pos, hqPos[0]);
     // Finish recruiting, carrier outhousing etc.
-    for(unsigned gf = 0; gf < 400; gf++)
-        em.ExecuteNextGF();
+    RTTR_SKIP_GFS(400);
     // Start attack ->1 (weak one first)
     this->Attack(milBld1Pos, 1, false);
     this->Attack(milBld1Pos, 5, false);

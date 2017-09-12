@@ -28,6 +28,41 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
+//////////////////////////////////////////////////////////////////////////
+// Macros for executing GFs in tests effectively by skipping GFs without any events
+
+/// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
+/// Return the number of GFs executed in gfReturnVar
+#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                                          \
+    gfReturnVar = 0;                                                                             \
+    for(unsigned endGf = this->em.GetCurrentGF() + (maxGFs); !(cond) && gfReturnVar < (maxGFs);) \
+    {                                                                                            \
+        unsigned numGF = this->em.ExecuteNextEvent(endGf);                                       \
+        if(numGF == 0)                                                                           \
+            break;                                                                               \
+        gfReturnVar += numGF;                                                                    \
+    }                                                                                            \
+    BOOST_REQUIRE((cond))
+
+/// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
+#define RTTR_EXEC_TILL(maxGFs, cond)                       \
+    {                                                      \
+        unsigned dummyReturnGF;                            \
+        RTTR_EXEC_TILL_CT_GF(maxGFs, cond, dummyReturnGF); \
+        (void)dummyReturnGF;                               \
+    }
+
+/// Skip up to numGFs GFs or until no event left
+#define RTTR_SKIP_GFS(numGFs)                                                      \
+    for(unsigned gf = 0, endGf = this->em.GetCurrentGF() + (numGFs); gf < numGFs;) \
+    {                                                                              \
+        unsigned numGFsExecuted = this->em.ExecuteNextEvent(endGf);                \
+        if(numGFsExecuted == 0)                                                    \
+            break;                                                                 \
+        gf += numGFsExecuted;                                                      \
+    }
+//////////////////////////////////////////////////////////////////////////
+
 struct WorldDefault
 {
     BOOST_STATIC_CONSTEXPR unsigned width = 32;

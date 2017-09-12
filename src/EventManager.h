@@ -74,6 +74,8 @@ protected:
     void RemoveEventFromQueue(const GameEvent& event);
     /// Execute all events of the current GF
     void ExecuteCurrentEvents();
+    /// Execute the events from the given iterator
+    void ExecuteEvents(const EventMap::iterator& itEvents);
     /// Destroy all objects in the kill list
     void DestroyCurrentObjects();
 };
