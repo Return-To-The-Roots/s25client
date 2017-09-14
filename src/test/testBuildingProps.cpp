@@ -25,7 +25,7 @@
 #include "test/WorldFixture.h"
 #include <boost/test/unit_test.hpp>
 
-typedef WorldFixture<CreateEmptyWorld, 1, 8, 12> EmptyWorldFixture1P;
+typedef WorldFixture<CreateEmptyWorld, 1> EmptyWorldFixture1P;
 
 BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
 {

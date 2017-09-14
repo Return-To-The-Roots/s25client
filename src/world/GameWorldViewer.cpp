@@ -41,16 +41,13 @@ GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : player
 void GameWorldViewer::InitVisualData()
 {
     visualNodes.resize(gwb.GetWidth() * gwb.GetHeight());
-    for(MapPoint pt(0, 0); pt.y < gwb.GetHeight(); ++pt.y)
+    RTTR_FOREACH_PT(MapPoint, gwb.GetSize())
     {
-        for(pt.x = 0; pt.x < gwb.GetWidth(); ++pt.x)
-        {
-            VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
-            const MapNode& node = gwb.GetNode(pt);
-            vNode.bq = node.bq;
-            // Roads are only overlays. At first we don't have any -> 0=use real road
-            std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
-        }
+        VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
+        const MapNode& node = gwb.GetNode(pt);
+        vNode.bq = node.bq;
+        // Roads are only overlays. At first we don't have any -> 0=use real road
+        std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
     }
     namespace bl = boost::lambda;
     using bl::_1;

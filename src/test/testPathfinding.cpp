@@ -35,8 +35,8 @@ using namespace boost::assign;
 // differently colored start/end points if multiple tests are performed on the same landscape
 BOOST_AUTO_TEST_SUITE(PathfindingSuite)
 
-typedef WorldFixture<CreateEmptyWorld, 0, 10, 8> WorldFixtureEmpty0P;
-typedef WorldFixture<CreateEmptyWorld, 1, 10, 8> WorldFixtureEmpty1P;
+typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
+typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
 
 /// Sets all terrain to the given terrain
 void clearWorld(GameWorldGame& world, TerrainType terrain)

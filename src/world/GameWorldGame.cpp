@@ -972,32 +972,28 @@ void GameWorldGame::StopOnRoads(const MapPoint pt, const unsigned char dir)
 
 void GameWorldGame::Armageddon()
 {
-    MapPoint pt(0, 0);
-    for(pt.y = 0; pt.y < GetHeight(); pt.y++)
-        for(pt.x = 0; pt.x < GetWidth(); pt.x++)
+    RTTR_FOREACH_PT(MapPoint, GetSize())
+    {
+        noFlag* flag = GetSpecObj<noFlag>(pt);
+        if(flag)
         {
-            noFlag* flag = GetSpecObj<noFlag>(pt);
-            if(flag)
-            {
-                flag->DestroyAttachedBuilding();
-                DestroyNO(pt, false);
-            }
+            flag->DestroyAttachedBuilding();
+            DestroyNO(pt, false);
         }
+    }
 }
 
 void GameWorldGame::Armageddon(const unsigned char player)
 {
-    MapPoint pt(0, 0);
-    for(pt.y = 0; pt.y < GetHeight(); pt.y++)
-        for(pt.x = 0; pt.x < GetWidth(); pt.x++)
+    RTTR_FOREACH_PT(MapPoint, GetSize())
+    {
+        noFlag* flag = GetSpecObj<noFlag>(pt);
+        if(flag && flag->GetPlayer() == player)
         {
-            noFlag* flag = GetSpecObj<noFlag>(pt);
-            if(flag && flag->GetPlayer() == player)
-            {
-                flag->DestroyAttachedBuilding();
-                DestroyNO(pt, false);
-            }
+            flag->DestroyAttachedBuilding();
+            DestroyNO(pt, false);
         }
+    }
 }
 
 bool GameWorldGame::ValidWaitingAroundBuildingPoint(const MapPoint pt, nofAttacker* /*attacker*/, const MapPoint center)
@@ -1125,16 +1121,19 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
     std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
 
     // Späher/Soldaten in der Nähe prüfen und direkt auf dem Punkt
-    for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
+    BOOST_FOREACH(noBase* obj, objects)
     {
+        const GO_Type got = obj->GetGOT();
         if(distance <= VISUALRANGE_SCOUT)
         {
             // Späher?
-            if((*it)->GetGOT() == GOT_NOF_SCOUT_FREE)
+            if(got == GOT_NOF_SCOUT_FREE)
             {
                 // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
-                if(static_cast<nofScout_Free*>(*it)->GetPlayer() == player)
+                if(static_cast<nofScout_Free*>(obj)->GetPlayer() == player)
                     return true;
+                else
+                    continue;
             }
         }
 
@@ -1142,24 +1141,28 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
         if(distance <= VISUALRANGE_SOLDIER)
         {
             // Soldaten?
-            if((*it)->GetGOT() == GOT_NOF_ATTACKER || (*it)->GetGOT() == GOT_NOF_AGGRESSIVEDEFENDER)
+            if(got == GOT_NOF_ATTACKER || got == GOT_NOF_AGGRESSIVEDEFENDER)
             {
-                if(static_cast<nofActiveSoldier*>(*it)->GetPlayer() == player)
+                if(static_cast<nofActiveSoldier*>(obj)->GetPlayer() == player)
                     return true;
+                else
+                    continue;
             }
             // Kämpfe (wo auch Soldaten drin sind)
-            else if((*it)->GetGOT() == GOT_FIGHTING)
+            else if(got == GOT_FIGHTING)
             {
                 // Prüfen, ob da ein Soldat vom angegebenen Spieler dabei ist
-                if(static_cast<noFighting*>(*it)->IsSoldierOfPlayer(player))
+                if(static_cast<noFighting*>(obj)->IsSoldierOfPlayer(player))
                     return true;
+                else
+                    continue;
             }
         }
 
         // Schiffe?
-        if((*it)->GetGOT() == GOT_SHIP)
+        if(got == GOT_SHIP)
         {
-            noShip* ship = static_cast<noShip*>(*it);
+            noShip* ship = static_cast<noShip*>(obj);
             if(distance <= ship->GetVisualRange())
             {
                 if(ship->GetPlayerId() == player)
@@ -1182,9 +1185,12 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
     // Vollständig sichtbar --> vollständig sichtbar logischerweise
     if(visible)
     {
-        if(visibility_before != VIS_VISIBLE && HasLua())
-            GetLua().EventExplored(player, pt, GetNode(pt).owner);
-        SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
+        if(visibility_before != VIS_VISIBLE)
+        {
+            if(HasLua())
+                GetLua().EventExplored(player, pt, GetNode(pt).owner);
+            SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
+        }
     } else
     {
         // nicht mehr sichtbar
@@ -1221,17 +1227,9 @@ void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
                                                   const noBaseBuilding* const exception)
 {
-    RecalcVisibility(pt, player, exception);
-
-    for(MapCoord tx = GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
-    {
-        MapPoint t2(tx, pt.y);
-        for(unsigned i = 2; i < 8; ++i)
-        {
-            for(MapCoord r2 = 0; r2 < r; t2 = GetNeighbour(t2, Direction(i)), ++r2)
-                RecalcVisibility(t2, player, exception);
-        }
-    }
+    std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
+    BOOST_FOREACH(const MapPoint& pt, pts)
+        RecalcVisibility(pt, player, exception);
 }
 
 /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
@@ -1344,16 +1342,14 @@ void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char t
 
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
     // Alle Punkte durchgehen
-    MapPoint pt(0, 0);
-    for(pt.y = 0; pt.y < GetHeight(); ++pt.y)
-        for(pt.x = 0; pt.x < GetWidth(); ++pt.x)
-        {
-            unsigned char resources = GetNode(pt).resources;
-            // Gibt es Ressourcen dieses Typs?
-            // Wenn ja, dann umwandeln bzw löschen
-            if(resources >= 0x40 + from * 8 && resources < 0x48 + from * 8)
-                SetResource(pt, (to != 0xFF) ? resources - (from * 8 - to * 8) : 0);
-        }
+    RTTR_FOREACH_PT(MapPoint, GetSize())
+    {
+        unsigned char resources = GetNode(pt).resources;
+        // Gibt es Ressourcen dieses Typs?
+        // Wenn ja, dann umwandeln bzw löschen
+        if(resources >= 0x40 + from * 8 && resources < 0x48 + from * 8)
+            SetResource(pt, (to != 0xFF) ? resources - (from * 8 - to * 8) : 0);
+    }
 }
 
 /// Gründet vom Schiff aus eine neue Kolonie

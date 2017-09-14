@@ -63,13 +63,38 @@
     }
 //////////////////////////////////////////////////////////////////////////
 
+template<unsigned T_numPlayers>
 struct WorldDefault
 {
     BOOST_STATIC_CONSTEXPR unsigned width = 32;
-    BOOST_STATIC_CONSTEXPR unsigned height = 60;
+    BOOST_STATIC_CONSTEXPR unsigned height = 40;
 };
 
-template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault::width, unsigned T_height = WorldDefault::height>
+template<>
+struct WorldDefault<0>
+{
+    BOOST_STATIC_CONSTEXPR unsigned width = 10;
+    BOOST_STATIC_CONSTEXPR unsigned height = 8;
+};
+
+template<>
+struct WorldDefault<1>
+{
+    // Note: Less than HQ radius but enough for most tests
+    BOOST_STATIC_CONSTEXPR unsigned width = 12;
+    BOOST_STATIC_CONSTEXPR unsigned height = 10;
+};
+
+template<>
+struct WorldDefault<2>
+{
+    // Based on HQ radius of 9 -> min size 20 per player
+    BOOST_STATIC_CONSTEXPR unsigned width = 20;
+    BOOST_STATIC_CONSTEXPR unsigned height = 40;
+};
+
+template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault<T_numPlayers>::width,
+         unsigned T_height = WorldDefault<T_numPlayers>::height>
 struct WorldFixture
 {
     TestEventManager em;
@@ -82,6 +107,8 @@ struct WorldFixture
     {
         // Fast moving ships
         ggs.setSelection(AddonId::SHIP_SPEED, 4);
+        // Explored area stays explored. Avoids fow creation
+        ggs.exploration = EXP_CLASSIC;
         BOOST_REQUIRE(worldCreator(world));
         BOOST_REQUIRE_EQUAL(world.GetPlayerCount(), T_numPlayers);
     }

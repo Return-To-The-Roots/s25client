@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_REQUIRE_EQUAL(wnd.GetSize(), oldSize);
 }
 
-struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1, 10, 10>
+struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>
 {
     boost::array<unsigned, JOB_TYPES_COUNT> numPeople, numPeoplePlayer;
     boost::array<unsigned, WARE_TYPES_COUNT> numGoods, numGoodsPlayer;
@@ -224,7 +224,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 #endif
 }
 
-struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1, 20, 20>
+struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
 {
     MapPoint farmPt;
     nobUsual* farm;
@@ -332,7 +332,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(grainFieldPos));
 }
 
-typedef WorldFixture<CreateEmptyWorld, 0, 10, 10> WorldFixtureEmpty0P;
+typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
 {
     world.RecalcBorderStones(Point<int>(0, 0), Point<int>(world.GetWidth() - 1, world.GetHeight() - 1));

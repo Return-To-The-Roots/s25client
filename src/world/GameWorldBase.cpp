@@ -58,13 +58,8 @@ void GameWorldBase::Init(const MapExtent& mapSize, LandscapeType lt)
 
 void GameWorldBase::InitAfterLoad()
 {
-    for(unsigned y = 0; y < GetHeight(); ++y)
-    {
-        for(unsigned x = 0; x < GetWidth(); ++x)
-        {
-            RecalcBQ(MapPoint(x, y));
-        }
-    }
+    RTTR_FOREACH_PT(MapPoint, GetSize())
+        RecalcBQ(pt);
 }
 
 GamePlayer& GameWorldBase::GetPlayer(const unsigned id)
@@ -355,17 +350,17 @@ std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) con
         const std::list<noBase*>& figures = GetFigures(coords[i]);
         if(figures.empty())
             continue;
-        for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+        BOOST_FOREACH(noBase* obj, figures)
         {
             // Ist es auch ein Figur und befindet sie sich an diesem Punkt?
-            const noMovable* movable = dynamic_cast<noMovable*>(*it);
+            const noMovable* movable = dynamic_cast<noMovable*>(obj);
             if(movable)
             {
                 if(movable->GetPos() == pt)
-                    objects.push_back(*it);
+                    objects.push_back(obj);
             } else if(i == 0)
                 // Den Rest nur bei den richtigen Koordinaten aufnehmen
-                objects.push_back(*it);
+                objects.push_back(obj);
         }
     }
     return objects;

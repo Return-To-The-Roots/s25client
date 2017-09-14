@@ -35,4 +35,14 @@ private:
     std::vector<Nation> playerNations_;
 };
 
+/// Create an uninitalized world (terrain, BQ etc not set. only nodes and size)
+struct CreateUninitWorld
+{
+    CreateUninitWorld(const MapExtent& size, unsigned numPlayers);
+    bool operator()(GameWorldGame& world) const;
+
+private:
+    MapExtent size_;
+};
+
 #endif // CreateEmptyWorld_h__

@@ -20,6 +20,7 @@
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "test/initTestHelpers.h"
+#include <stdexcept>
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS)
 {
@@ -65,5 +66,20 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
             return false;
     }
     world.InitAfterLoad();
+    return true;
+}
+
+CreateUninitWorld::CreateUninitWorld(const MapExtent& size, unsigned numPlayers) : size_(size)
+{
+    if(numPlayers > 0)
+        throw std::logic_error("Cannot have players for uninitialized world");
+}
+
+bool CreateUninitWorld::operator()(GameWorldGame& world) const
+{
+    // For consistent results
+    doInitGameRNG(0);
+
+    world.Init(size_, LT_GREENLAND);
     return true;
 }

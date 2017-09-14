@@ -28,8 +28,6 @@
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
-typedef WorldFixture<CreateEmptyWorld, 1, 20, 20> WorldFixtureEmpty1P;
-
 BOOST_AUTO_TEST_CASE(NeighbourPts)
 {
     using namespace boost::assign;
@@ -133,6 +131,8 @@ BOOST_AUTO_TEST_CASE(GetIdx)
     BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00 - 1, 0xEEEE - 1)), 0xFF00u * 0xEEEEu - 1u);
 }
 
+/// HQ radius is 9 -> min size is 20
+typedef WorldFixture<CreateEmptyWorld, 1, 20, 20> WorldFixtureEmpty1P;
 BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
 {
     GamePlayer& player = world.GetPlayer(0);

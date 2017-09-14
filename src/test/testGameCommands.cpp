@@ -98,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
 {
-    MapPoint flagPt = hqPos + MapPoint(4, 0);
+    MapPoint flagPt = hqPos + MapPoint(-5, 4);
     // 2 flags outside range of HQ
     this->SetFlag(flagPt);
     this->SetFlag(flagPt + MapPoint(4, 0));
@@ -160,7 +160,7 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     this->DestroyFlag(flagPt + MapPoint(3, 0));
     // g2) Building to close
-    this->SetBuildingSite(flagPt + MapPoint(3, 0), BLD_FORTRESS);
+    this->SetBuildingSite(flagPt + MapPoint(3, 0), BLD_FARM);
     this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
     BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     for(unsigned i = 0; i < 2; i++)
