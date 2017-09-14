@@ -1063,7 +1063,7 @@ bool GameWorldGame::ValidPointForFighting(const MapPoint pt, const bool avoid_mi
     return bm == BlockingManner::None || bm == BlockingManner::Tree || bm == BlockingManner::Flag;
 }
 
-bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception) const
+bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char player, const noBaseBuilding* exception) const
 {
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(pt, 3);
 
@@ -1110,43 +1110,38 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint pt, const unsigned c
             return true;
     }
 
-    // Erkunder prüfen
+    // Check scouts and soldiers
     namespace bl = boost::lambda;
-    return CheckPointsInRadius(pt, VISUALRANGE_EXPLORATION_SHIP,
-                               bl::bind(&GameWorldGame::IsScoutingFigureOnNode, this, bl::_1, player, bl::_2), true);
+    const unsigned range = std::max(VISUALRANGE_SCOUT, VISUALRANGE_SOLDIER);
+    if(CheckPointsInRadius(pt, range, bl::bind(&GameWorldGame::IsScoutingFigureOnNode, this, bl::_1, player, bl::_2), true))
+        return true;
+    return IsPointScoutedByShip(pt, player);
 }
 
-bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned player, const unsigned distance) const
+bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsigned distance) const
 {
+    BOOST_STATIC_ASSERT_MSG(VISUALRANGE_SCOUT >= VISUALRANGE_SOLDIER, "Visual range changed. Check loop below!");
     std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
 
     // Späher/Soldaten in der Nähe prüfen und direkt auf dem Punkt
     BOOST_FOREACH(noBase* obj, objects)
     {
         const GO_Type got = obj->GetGOT();
-        if(distance <= VISUALRANGE_SCOUT)
+        // Check for scout. Note: no need to check for distance as scouts have higher distance than soldiers
+        if(got == GOT_NOF_SCOUT_FREE)
         {
-            // Späher?
-            if(got == GOT_NOF_SCOUT_FREE)
-            {
-                // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
-                if(static_cast<nofScout_Free*>(obj)->GetPlayer() == player)
-                    return true;
-                else
-                    continue;
-            }
-        }
-
-        // Soldaten?
-        if(distance <= VISUALRANGE_SOLDIER)
+            // Prüfen, ob er auch am Erkunden ist und an der Position genau und ob es vom richtigen Spieler ist
+            if(static_cast<nofScout_Free*>(obj)->GetPlayer() == player)
+                return true;
+            else
+                continue;
+        } else if(distance <= VISUALRANGE_SOLDIER)
         {
             // Soldaten?
             if(got == GOT_NOF_ATTACKER || got == GOT_NOF_AGGRESSIVEDEFENDER)
             {
                 if(static_cast<nofActiveSoldier*>(obj)->GetPlayer() == player)
                     return true;
-                else
-                    continue;
             }
             // Kämpfe (wo auch Soldaten drin sind)
             else if(got == GOT_FIGHTING)
@@ -1154,23 +1149,22 @@ bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint pt, const unsigned pla
                 // Prüfen, ob da ein Soldat vom angegebenen Spieler dabei ist
                 if(static_cast<noFighting*>(obj)->IsSoldierOfPlayer(player))
                     return true;
-                else
-                    continue;
-            }
-        }
-
-        // Schiffe?
-        if(got == GOT_SHIP)
-        {
-            noShip* ship = static_cast<noShip*>(obj);
-            if(distance <= ship->GetVisualRange())
-            {
-                if(ship->GetPlayerId() == player)
-                    return true;
             }
         }
     }
 
+    return false;
+}
+
+bool GameWorldGame::IsPointScoutedByShip(const MapPoint& pt, unsigned player) const
+{
+    const std::vector<noShip*>& ships = GetPlayer(player).GetShips();
+    BOOST_FOREACH(const noShip* ship, ships)
+    {
+        unsigned shipDistance = CalcDistance(pt, ship->GetPos());
+        if(shipDistance <= ship->GetVisualRange())
+            return true;
+    }
     return false;
 }
 
