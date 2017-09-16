@@ -34,6 +34,7 @@
 #include "gameData/ShieldConsts.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
+#include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>
@@ -407,7 +408,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    const MapPoint milPt = hqPos + MapPoint(6, 0);
+    const MapPoint milPt = hqPos + MapPoint(4, 0);
     // Setup: Give player 3 generals
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
@@ -500,7 +501,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    const MapPoint milPt = hqPos + MapPoint(6, 0);
+    const MapPoint milPt = hqPos + MapPoint(4, 0);
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
@@ -509,19 +510,21 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     GlobalGameSettings& ggs = const_cast<GlobalGameSettings&>(world.GetGGS());
     ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
     // Build a watchtower and connect it
-    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
-    BOOST_REQUIRE(bld);
+    nobMilitary* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
-    // Let carrier out
-    RTTR_SKIP_GFS(30);
-    // Let soldier out and walk a bit
-    RTTR_SKIP_GFS(30 + 30);
-    std::vector<noBase*> figs = world.GetDynamicObjectsFrom(hqPos + MapPoint(1, 1));
-    if(figs.empty())
-        figs = world.GetDynamicObjectsFrom(hqPos + MapPoint(2, 1));
-    BOOST_REQUIRE_EQUAL(figs.size(), 1u);
-    nofPassiveSoldier* soldier = dynamic_cast<nofPassiveSoldier*>(figs[0]);
+    nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+    const std::list<noFigure*>& leavings = hq->GetLeavingFigures();
+    nofPassiveSoldier* soldier;
+    BOOST_FOREACH(noFigure* fig, leavings)
+    {
+        soldier = dynamic_cast<nofPassiveSoldier*>(fig);
+        if(soldier)
+            break;
+    }
     BOOST_REQUIRE(soldier);
+    // Let soldiers out and walk a bit
+    MapPoint sldTestPos = world.GetNeighbour(world.GetNeighbour(hqPos, Direction::SOUTHEAST), Direction::EAST);
+    RTTR_EXEC_TILL(30 * 2 + 20 * 2 + 10, soldier->GetPos() == sldTestPos);
     BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
     this->OrderNewSoldiers(milPt);
     // Soldier must still have this goal!
