@@ -52,6 +52,8 @@ void AnimationManager::update(unsigned time)
 
 unsigned AnimationManager::addAnimation(Animation* animation)
 {
+    if(!animation)
+        return 0u;
     // Make sure we don't add an animation twice
     if(getAnimationId(animation) != 0u)
         return 0u;
@@ -67,11 +69,15 @@ unsigned AnimationManager::addAnimation(Animation* animation)
 
 bool AnimationManager::isAnimationActive(unsigned animId) const
 {
+    if(!animId)
+        return false;
     return helpers::contains(animations_, animId);
 }
 
 Animation* AnimationManager::getAnimation(unsigned animId)
 {
+    if(!animId)
+        return NULL;
     AnimationMap::iterator it = animations_.find(animId);
     return it == animations_.end() ? NULL : it->second;
 }
@@ -128,6 +134,8 @@ void AnimationManager::removeAnimation(unsigned animId)
 void AnimationManager::finishAnimation(unsigned animId, bool finishImmediately)
 {
     Animation* anim = getAnimation(animId);
+    if(!anim)
+        return;
     anim->finish(parent_, finishImmediately);
     if(anim->isFinished())
         removeAnimation(animId);

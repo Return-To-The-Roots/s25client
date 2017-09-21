@@ -17,11 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MockupAudioDriver.h"
+#include "Settings.h"
 #include "driver/src/SoundHandle.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
-#include "Settings.h"
 #include "test/testConfig.h"
 #include "libsiedler2/src/Archiv.h"
 #include "libsiedler2/src/ArchivItem.h"

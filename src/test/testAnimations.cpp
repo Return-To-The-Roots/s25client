@@ -117,6 +117,9 @@ BOOST_FIXTURE_TEST_SUITE(Animations, WindowFixture)
 BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
 {
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
+    // NULL animation ignored
+    BOOST_REQUIRE_EQUAL(animMgr.addAnimation(NULL), 0u);
+    BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
     boost::array<Animation*, 3> anims;
     boost::array<unsigned, 3> animIds;
     for(unsigned i = 0; i < anims.size(); i++)
@@ -226,6 +229,26 @@ BOOST_AUTO_TEST_CASE(EnsureTiming)
     BOOST_REQUIRE_EQUAL(lastFrame, 1u);
     BOOST_REQUIRE_EQUAL(lastNextFramepartTime, 0.);
     BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 0u);
+}
+
+BOOST_AUTO_TEST_CASE(InvalidAnimIdHandling)
+{
+    animMgr.addAnimation(new TestAnimation(*this, bt, 10u, 100u, Animation::RPT_None));
+    // Test all calls with the 0 id (always invalid) and a non-existing one
+    BOOST_REQUIRE(!animMgr.isAnimationActive(0));
+    BOOST_REQUIRE(!animMgr.isAnimationActive(1337));
+    BOOST_REQUIRE(animMgr.getAnimation(0) == NULL);
+    BOOST_REQUIRE(animMgr.getAnimation(1337) == NULL);
+    BOOST_REQUIRE_EQUAL(animMgr.getAnimationId(NULL), 0u);
+    animMgr.removeAnimation(0);
+    animMgr.removeAnimation(1337);
+    animMgr.finishAnimation(0, true);
+    animMgr.finishAnimation(1337, true);
+    BOOST_REQUIRE(animMgr.getElementAnimations(1337).empty());
+    animMgr.finishElementAnimations(1337, true);
+    animMgr.removeElementAnimations(1337);
+    // Current not removed
+    BOOST_REQUIRE_EQUAL(animMgr.getNumActiveAnimations(), 1u);
 }
 
 BOOST_AUTO_TEST_CASE(FinishAnims)
