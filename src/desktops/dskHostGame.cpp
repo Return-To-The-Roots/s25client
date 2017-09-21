@@ -783,7 +783,15 @@ void dskHostGame::Msg_OptionGroupChange(const unsigned ctrl_id, const int select
         gameChat->SetVisible(selection == TAB_GAMECHAT);
         lobbyChat->SetVisible(selection == TAB_LOBBYCHAT);
         GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(selection)->SetTexture(TC_GREEN2);
-        GetAnimationManager().finishAnimation(selection == TAB_GAMECHAT ? localChatTabAnimId : lobbyChatTabAnimId, false);
+        if(selection == TAB_GAMECHAT)
+        {
+            GetAnimationManager().finishAnimation(localChatTabAnimId, false);
+            localChatTabAnimId = 0;
+        } else
+        {
+            GetAnimationManager().finishAnimation(lobbyChatTabAnimId, false);
+            lobbyChatTabAnimId = 0;
+        }
     }
 }
 
@@ -983,7 +991,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
         if(!gameChat->IsVisible())
         {
             ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(TAB_GAMECHAT);
-            GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+            localChatTabAnimId = GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
         }
     }
 }
@@ -1031,6 +1039,6 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
     if(!lobbyChat->IsVisible())
     {
         ctrlButton* bt = GetCtrl<Window>(ID_CHAT_TAB)->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
-        GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+        lobbyChatTabAnimId = GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
 }
