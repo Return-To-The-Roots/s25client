@@ -315,7 +315,15 @@ bool InitDirectories()
     }
     // Write this to file too, after folders are created
     LOG.setLogFilepath(GetFilePath(FILE_PATHS[47]));
-    LOG.write("Starting in %s\n", LogTarget::File) % curPath;
+    try
+    {
+        LOG.open();
+        LOG.write("Starting in %s\n", LogTarget::File) % curPath;
+    } catch(const std::exception& e)
+    {
+        LOG.write("Error initializing log: %1%\nSystem reports: %2%\n", LogTarget::Stderr) % e.what() % LOG.getLastError();
+        return false;
+    }
     return true;
 }
 
