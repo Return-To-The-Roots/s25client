@@ -66,18 +66,18 @@ public:
         // 30 Datensätze pro Typ
         helpers::MultiArray<unsigned, STAT_TYPE_COUNT, STAT_STEP_COUNT> data;
         // und das gleiche für die Warenstatistik
-        helpers::MultiArray<unsigned short, STAT_MERCHANDISE_TYPE_COUNT, STAT_STEP_COUNT> merchandiseData;
+        helpers::MultiArray<uint16_t, STAT_MERCHANDISE_TYPE_COUNT, STAT_STEP_COUNT> merchandiseData;
         // Index, der gerade 'vorne' (rechts im Statistikfenster) ist
-        unsigned short currentIndex;
+        uint16_t currentIndex;
         // Counter, bei jedem vierten Update jeweils Daten zu den längerfristigen Statistiken kopieren
-        unsigned short counter;
+        uint16_t counter;
     };
 
     // Informationen über die Verteilung
     struct Distribution
     {
         /// Mapping of Building to percentage of ware the building gets
-        boost::array<unsigned char, BUILDING_TYPES_COUNT> percent_buildings;
+        boost::array<uint8_t, BUILDING_TYPES_COUNT> percent_buildings;
         /// Buildings that get this ware
         std::vector<BuildingType> client_buildings;
         /// Possible preferred buildings (each building is n times in here with n=percentage)

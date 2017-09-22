@@ -27,14 +27,7 @@ class GameWorldViewer;
 
 class iwDistribution : public IngameWindow
 {
-    struct DistributionGroup
-    {
-        DistributionGroup() {}
-        DistributionGroup(std::string name, glArchivItem_Bitmap* img) : name(name), img(img) {}
-        std::string name;
-        glArchivItem_Bitmap* img;
-        std::vector<std::string> entries;
-    };
+    struct DistributionGroup;
 
 public:
     iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory);

@@ -53,7 +53,6 @@
 #include "libutil/src/Log.h"
 #include <boost/foreach.hpp>
 #include <limits>
-#include <stdint.h>
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg)
     : GamePlayerInfo(playerId, playerInfo), is_lagging(false), gwg(&gwg), hqPos(MapPoint::Invalid()), emergency(false)
@@ -646,13 +645,8 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
 
 void GamePlayer::RecalcDistribution()
 {
-    RecalcDistributionOfWare(GD_FISH);
-    RecalcDistributionOfWare(GD_GRAIN);
-    RecalcDistributionOfWare(GD_IRON);
-    RecalcDistributionOfWare(GD_COAL);
-    RecalcDistributionOfWare(GD_WOOD);
-    RecalcDistributionOfWare(GD_BOARDS);
-    RecalcDistributionOfWare(GD_WATER);
+    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+        RecalcDistributionOfWare(mapping.first);
 }
 
 void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
@@ -663,13 +657,14 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
     // 1. Anteile der einzelnen Waren ausrechnen
 
     /// Mapping of buildings that want the current ware to its percentage
-    std::vector<std::pair<BuildingType, unsigned char> > bldPercentageMap;
+    typedef std::pair<BuildingType, uint8_t> BldEntry;
+    std::vector<BldEntry> bldPercentageMap;
 
     unsigned goal_count = 0;
 
-    for(unsigned char i = 0; i < BLD_COUNT; ++i)
+    for(unsigned i = 0; i < BLD_COUNT; ++i)
     {
-        unsigned char percentForCurBld = distribution[ware].percent_buildings[i];
+        uint8_t percentForCurBld = distribution[ware].percent_buildings[i];
         if(percentForCurBld)
         {
             distribution[ware].client_buildings.push_back(static_cast<BuildingType>(i));
@@ -683,16 +678,14 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
     // Array für die Gebäudtypen erstellen
 
     distribution[ware].goals.clear();
-    distribution[ware].goals.resize(goal_count);
-
-    unsigned pos = 0;
+    distribution[ware].goals.reserve(goal_count);
 
     // just drop them in the list, the distribution will be handled by going through this list using a prime as step (see
     // GameClientPlayer::FindClientForWare)
-    for(std::vector<std::pair<BuildingType, unsigned char> >::iterator it = bldPercentageMap.begin(); it != bldPercentageMap.end(); ++it)
+    BOOST_FOREACH(const BldEntry& bldEntry, bldPercentageMap)
     {
-        for(unsigned char i = 0; i < it->second; ++i)
-            distribution[ware].goals[pos++] = it->first;
+        for(unsigned char i = 0; i < bldEntry.second; ++i)
+            distribution[ware].goals.push_back(bldEntry.first);
     }
 
     distribution[ware].selected_goal = 0;
@@ -1459,35 +1452,11 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const b
 /// Setzt neue Verteilungseinstellungen
 void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
 {
-    distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = distribution_settings[0];
-    distribution[GD_FISH].percent_buildings[BLD_COALMINE] = distribution_settings[1];
-    distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = distribution_settings[2];
-    distribution[GD_FISH].percent_buildings[BLD_GOLDMINE] = distribution_settings[3];
-
-    distribution[GD_GRAIN].percent_buildings[BLD_MILL] = distribution_settings[4];
-    distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM] = distribution_settings[5];
-    distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER] = distribution_settings[6];
-    distribution[GD_GRAIN].percent_buildings[BLD_BREWERY] = distribution_settings[7];
-    distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = distribution_settings[8];
-
-    distribution[GD_IRON].percent_buildings[BLD_ARMORY] = distribution_settings[9];
-    distribution[GD_IRON].percent_buildings[BLD_METALWORKS] = distribution_settings[10];
-
-    distribution[GD_COAL].percent_buildings[BLD_ARMORY] = distribution_settings[11];
-    distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = distribution_settings[12];
-    distribution[GD_COAL].percent_buildings[BLD_MINT] = distribution_settings[13];
-
-    distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = distribution_settings[14];
-    distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = distribution_settings[15];
-
-    distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = distribution_settings[16];
-    distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = distribution_settings[17];
-    distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = distribution_settings[18];
-
-    distribution[GD_WATER].percent_buildings[BLD_BAKERY] = distribution_settings[19];
-    distribution[GD_WATER].percent_buildings[BLD_BREWERY] = distribution_settings[20];
-    distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = distribution_settings[21];
-    distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = distribution_settings[22];
+    unsigned idx = 0;
+    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    {
+        distribution[mapping.first].percent_buildings[mapping.second] = distribution_settings[idx++];
+    }
 
     RecalcDistribution();
 }
@@ -2363,35 +2332,11 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const GoodType gt, const Job jo
 void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
 {
     Distributions& visDistribution = visualSettings.distribution;
-    visDistribution[0] = distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE]; //-V807
-    visDistribution[1] = distribution[GD_FISH].percent_buildings[BLD_COALMINE];
-    visDistribution[2] = distribution[GD_FISH].percent_buildings[BLD_IRONMINE];
-    visDistribution[3] = distribution[GD_FISH].percent_buildings[BLD_GOLDMINE];
-
-    visDistribution[4] = distribution[GD_GRAIN].percent_buildings[BLD_MILL]; //-V807
-    visDistribution[5] = distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM];
-    visDistribution[6] = distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER];
-    visDistribution[7] = distribution[GD_GRAIN].percent_buildings[BLD_BREWERY];
-    visDistribution[8] = distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER];
-
-    visDistribution[9] = distribution[GD_IRON].percent_buildings[BLD_ARMORY];
-    visDistribution[10] = distribution[GD_IRON].percent_buildings[BLD_METALWORKS];
-
-    visDistribution[11] = distribution[GD_COAL].percent_buildings[BLD_ARMORY]; //-V807
-    visDistribution[12] = distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER];
-    visDistribution[13] = distribution[GD_COAL].percent_buildings[BLD_MINT];
-
-    visDistribution[14] = distribution[GD_WOOD].percent_buildings[BLD_SAWMILL];
-    visDistribution[15] = distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER];
-
-    visDistribution[16] = distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS]; //-V807
-    visDistribution[17] = distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS];
-    visDistribution[18] = distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD];
-
-    visDistribution[19] = distribution[GD_WATER].percent_buildings[BLD_BAKERY]; //-V807
-    visDistribution[20] = distribution[GD_WATER].percent_buildings[BLD_BREWERY];
-    visDistribution[21] = distribution[GD_WATER].percent_buildings[BLD_PIGFARM];
-    visDistribution[22] = distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER];
+    unsigned visIdx = 0;
+    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    {
+        visDistribution[visIdx++] = distribution[mapping.first].percent_buildings[mapping.second];
+    }
 
     visualSettings.useCustomBuildOrder = useCustomBuildOrder_;
     visualSettings.build_order = build_order;

@@ -28,10 +28,19 @@
 #include "iwHelp.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldViewer.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 
+struct iwDistribution::DistributionGroup
+{
+    DistributionGroup() {}
+    DistributionGroup(const std::string& name, glArchivItem_Bitmap* img) : name(name), img(img) {}
+    std::string name;
+    glArchivItem_Bitmap* img;
+    std::vector<std::string> entries;
+};
 std::vector<iwDistribution::DistributionGroup> iwDistribution::groups;
 
 /// Dertermines width of the progress bars: distance to the window borders
@@ -58,7 +67,8 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
         unsigned curId = 0;
         BOOST_FOREACH(const std::string& entry, group.entries)
         {
-            tabGrp->AddText(curId++, txtPos, entry, COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
+            unsigned txtId = group.entries.size() + curId;
+            tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
             tabGrp->AddProgress(curId++, progPos, progSize, TC_GREY, 139, 138, 10);
             txtPos.y = progPos.y += progSize.y * 2;
         }
@@ -90,18 +100,22 @@ void iwDistribution::TransmitSettings()
         return;
     if(settings_changed)
     {
-        // Werte aus den Progress-Controls auslesen
+        // Read values from the progress ctrls to the struct
         Distributions newDistribution;
 
-        for(unsigned char i = 0, j = 0; i < groups.size(); ++i)
+        unsigned distIdx = 0;
+        for(unsigned i = 0; i < groups.size(); ++i)
         {
             ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(i);
+            const DistributionGroup& group = groups[i];
             // Werte der Gruppen auslesen
-            for(unsigned char k = 0; k < groups[i].entries.size(); ++k, ++j)
+            for(unsigned j = 0; j < group.entries.size(); ++j, ++distIdx)
             {
-                newDistribution[j] = (unsigned char)tab->GetCtrl<ctrlProgress>(k * 2 + 1)->GetPosition();
+                uint8_t value = static_cast<uint8_t>(tab->GetCtrl<ctrlProgress>(j)->GetPosition());
+                newDistribution[distIdx] = value;
             }
         }
+        RTTR_Assert(distIdx == newDistribution.size());
 
         // und übermitteln
         if(gcFactory.ChangeDistribution(newDistribution))
@@ -131,15 +145,17 @@ void iwDistribution::UpdateSettings()
 {
     if(GAMECLIENT.IsReplayModeOn())
         gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
-    // Globale Id für alle Gruppen für die visual_settings
-    unsigned vsi = 0;
-    // Alle Gruppen durchgehen und Einstellungen festlegen
+    unsigned distIdx = 0;
     for(unsigned g = 0; g < groups.size(); ++g)
     {
-        ctrlGroup* group = GetCtrl<ctrlTab>(0)->GetGroup(g);
-        for(unsigned i = 0; i < groups[g].entries.size(); ++i, ++vsi)
-            group->GetCtrl<ctrlProgress>(i * 2 + 1)->SetPosition(GAMECLIENT.visual_settings.distribution[vsi]);
+        // Look for correct group
+        const DistributionGroup& group = groups[g];
+        ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(g);
+        // And correct entry
+        for(unsigned i = 0; i < group.entries.size(); ++i, ++distIdx)
+            tab->GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.distribution[distIdx]);
     }
+    RTTR_Assert(distIdx == Distributions::static_size);
 }
 
 void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
@@ -170,28 +186,36 @@ void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwDistribution::CreateGroups()
 {
-    using namespace boost::assign;
     if(!groups.empty())
         return;
 
-    groups.push_back(DistributionGroup(_("Foodstuff"), LOADER.GetImageN("io", 80)));
-    groups.back().entries += _("Granite mine"), _("Coal mine"), _("Iron mine"), _("Gold mine");
-
-    groups.push_back(DistributionGroup(_("Grain"), LOADER.GetImageN("io", 90)));
-    groups.back().entries += _("Mill"), _("Pig farm"), _("Donkey breeding"), _("Brewery"), _("Charburner");
-
-    groups.push_back(DistributionGroup(_("Iron"), LOADER.GetImageN("io", 81)));
-    groups.back().entries += _("Armory"), _("Metalworks");
-
-    groups.push_back(DistributionGroup(_("Coal"), LOADER.GetImageN("io", 91)));
-    groups.back().entries += _("Armory"), _("Iron smelter"), _("Mint");
-
-    groups.push_back(DistributionGroup(_("Wood"), LOADER.GetImageN("io", 89)));
-    groups.back().entries += _("Sawmill"), _("Charburner");
-
-    groups.push_back(DistributionGroup(_("Boards"), LOADER.GetImageN("io", 82)));
-    groups.back().entries += _("Construction"), _("Metalworks"), _("Shipyard");
-
-    groups.push_back(DistributionGroup(_("Water"), LOADER.GetImageN("io", 92)));
-    groups.back().entries += _("Bakery"), _("Brewery"), _("Pig farm");
+    GoodType lastGood = GD_NOTHING;
+    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    {
+        // New group?
+        if(lastGood != mapping.first)
+        {
+            lastGood = mapping.first;
+            // Fish = all foodstuff
+            std::string name = mapping.first == GD_FISH ? gettext_noop("Foodstuff") : WARE_NAMES[mapping.first];
+            glArchivItem_Bitmap* img = NULL;
+            switch(mapping.first)
+            {
+                case GD_FISH: img = LOADER.GetImageN("io", 80); break;
+                case GD_GRAIN: img = LOADER.GetImageN("io", 90); break;
+                case GD_IRON: img = LOADER.GetImageN("io", 81); break;
+                case GD_COAL: img = LOADER.GetImageN("io", 91); break;
+                case GD_WOOD: img = LOADER.GetImageN("io", 89); break;
+                case GD_BOARDS: img = LOADER.GetImageN("io", 82); break;
+                case GD_WATER: img = LOADER.GetImageN("io", 92); break;
+                default: break;
+            }
+            if(!img)
+                throw std::runtime_error("Unexpected good in distribution");
+            groups.push_back(DistributionGroup(_(name), img));
+        }
+        // HQ = Construction
+        std::string name = mapping.second == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[mapping.second];
+        groups.back().entries.push_back(_(name));
+    }
 }
