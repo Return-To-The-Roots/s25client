@@ -21,26 +21,32 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
+#include <boost/tuple/tuple.hpp>
 
 // TODO: Make this structs so meanings are obvious
 
-/// Custom mapping of (Ware, Receiver)-tuple to percentage of wares distributed to that building
-typedef boost::array<unsigned char, 23> Distributions;
+/// 1 mapping of a required good to its building
+typedef std::pair<GoodType, BuildingType> DistributionMapping;
+/// List of all possible distribution mappings ordered by GoodType
+typedef boost::array<DistributionMapping, 23> DistributionMap;
+extern const DistributionMap SUPPRESS_UNUSED distributionMap;
+/// List of the percentage a building should get from a specific ware
+typedef boost::array<uint8_t, DistributionMap::static_size> Distributions;
 /// Ordering of building types by priority. All buildings in here except unused and HQ
 typedef boost::array<BuildingType, BLD_COUNT - NUM_UNUSED_BLD_TYPES - 1> BuildOrders;
 /// Mapping transport priority -> standard transport priority of ware(group):
 /// E.g. std prio of coins = 0 -> TransportOrders[0] = stdPrio[COINS] = 0
-/// New prio of coints = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
-typedef boost::array<unsigned char, 14> TransportOrders;
-typedef boost::array<unsigned char, WARE_TYPES_COUNT> TransportPriorities;
+/// New prio of coins = 1 -> TransportOrders[1] = stdPrio[COINS] = 0
+typedef boost::array<uint8_t, 14> TransportOrders;
+typedef boost::array<uint8_t, WARE_TYPES_COUNT> TransportPriorities;
 /// Priority of each tool
-typedef boost::array<unsigned char, TOOL_COUNT> ToolSettings;
+typedef boost::array<uint8_t, TOOL_COUNT> ToolSettings;
 /// Value of each military slider
 /// 0: Recruiting ratio (to max possible recruits)
 /// 1: Defender strength (ratio to max available rank)
 /// 2: Active defenders (engaging attackers by leaving building): Chance that one is sent
 /// 3: Ratio of used attackers to available attackers
 /// 4-7: Ratio of soldiers in buildings to full occupation for inland, middle region, harbor spots, border regions
-typedef boost::array<unsigned char, 8> MilitarySettings;
+typedef boost::array<uint8_t, 8> MilitarySettings;
 
 #endif // SettingsTypes_h__
