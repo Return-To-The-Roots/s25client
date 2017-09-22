@@ -162,6 +162,7 @@ void GamePlayer::LoadStandardDistribution()
     }
 
     // Standardverteilung der Waren
+    // TODO: Put into settings
     distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
     distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
     distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
@@ -645,8 +646,14 @@ bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
 
 void GamePlayer::RecalcDistribution()
 {
+    GoodType lastWare = GD_NOTHING;
     BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    {
+        if(lastWare == mapping.first)
+            continue;
+        lastWare = mapping.first;
         RecalcDistributionOfWare(mapping.first);
+    }
 }
 
 void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
@@ -967,19 +974,15 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
 
     // Warentyp herausfinden
     GoodType gt = ware->type;
-    // Warentyp für Client-Gebäude
-    GoodType gt_clients = ware->type;
-    // Andere Nahrung als Fisch ansehen, da nur dieser als Nahrung für Bergwerke und in der Verteilung
-    // akzeptiert wird
-    if(gt_clients == GD_BREAD || gt_clients == GD_MEAT)
-        gt_clients = GD_FISH;
+    // All food is considered fish in the distribution table
+    Distribution& wareDistribution = (gt == GD_BREAD || gt == GD_MEAT) ? distribution[GD_FISH] : distribution[gt];
 
     std::vector<ClientForWare> possibleClients;
 
     noRoadNode* start = ware->GetLocation();
 
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
-    if(gt_clients == GD_STONES || gt_clients == GD_BOARDS)
+    if(gt == GD_STONES || gt == GD_BOARDS)
     {
         for(std::list<nobHarborBuilding*>::const_iterator it = harbors.begin(); it != harbors.end(); ++it)
         {
@@ -993,8 +996,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         }
     }
 
-    for(std::vector<BuildingType>::const_iterator it = distribution[gt_clients].client_buildings.begin();
-        it != distribution[gt_clients].client_buildings.end(); ++it)
+    for(std::vector<BuildingType>::const_iterator it = wareDistribution.client_buildings.begin();
+        it != wareDistribution.client_buildings.end(); ++it)
     {
         // BLD_HEADQUARTERS sind Baustellen!!, da HQs ja sowieso nicht gebaut werden können
         if(*it == BLD_HEADQUARTERS)
@@ -1006,7 +1009,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                 if(!points)
                     continue;
 
-                points += distribution[gt].percent_buildings[BLD_HEADQUARTERS] * 30;
+                points += wareDistribution.percent_buildings[BLD_HEADQUARTERS] * 30;
                 unsigned distance = gwg->CalcDistance(start->GetPos(), (*i)->GetPos()) / 2;
                 possibleClients.push_back(ClientForWare(*i, points > distance ? points - distance : 0, points));
             }
@@ -1019,9 +1022,9 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
                 if(!points)
                     continue; // Ware not needed
 
-                if(!distribution[gt].goals.empty())
+                if(!wareDistribution.goals.empty())
                 {
-                    if((*i)->GetBuildingType() == static_cast<BuildingType>(distribution[gt].goals[distribution[gt].selected_goal]))
+                    if((*i)->GetBuildingType() == static_cast<BuildingType>(wareDistribution.goals[wareDistribution.selected_goal]))
                         points += 300;
                     else if(points >= 300) // avoid overflows (async!)
                         points -= 300;
@@ -1076,8 +1079,8 @@ noBaseBuilding* GamePlayer::FindClientForWare(Ware* ware)
         }
     }
 
-    if(bestBld && !distribution[gt].goals.empty())
-        distribution[gt].selected_goal = (distribution[gt].selected_goal + 907) % unsigned(distribution[gt].goals.size());
+    if(bestBld && !wareDistribution.goals.empty())
+        wareDistribution.selected_goal = (wareDistribution.selected_goal + 907) % unsigned(wareDistribution.goals.size());
 
     // Wenn kein Abnehmer gefunden wurde, muss es halt in ein Lagerhaus
     if(!bestBld)
