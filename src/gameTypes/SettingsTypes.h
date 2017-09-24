@@ -25,8 +25,8 @@
 
 // TODO: Make this structs so meanings are obvious
 
-/// 1 mapping of a required good to its building
-typedef std::pair<GoodType, BuildingType> DistributionMapping;
+/// 1 mapping of a required good to its building and default setting
+typedef boost::tuple<GoodType, BuildingType, uint8_t> DistributionMapping;
 /// List of all possible distribution mappings ordered by GoodType
 typedef boost::array<DistributionMapping, 23> DistributionMap;
 extern const DistributionMap SUPPRESS_UNUSED distributionMap;
