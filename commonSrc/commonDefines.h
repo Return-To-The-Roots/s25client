@@ -77,6 +77,8 @@ typedef int socklen_t;
 
 // Include to use e.g. boost macros like BOOST_CONSTEXPR
 #include <boost/config.hpp>
+// Fixed width types like uint32_t shall be treated like build-in types
+#include <stdint.h>
 
 // IWYU pragma: end_exports
 
