@@ -193,13 +193,13 @@ void iwDistribution::CreateGroups()
     BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
     {
         // New group?
-        if(lastGood != mapping.first)
+        if(lastGood != mapping.get<0>())
         {
-            lastGood = mapping.first;
+            lastGood = mapping.get<0>();
             // Fish = all foodstuff
-            std::string name = mapping.first == GD_FISH ? gettext_noop("Foodstuff") : WARE_NAMES[mapping.first];
+            std::string name = lastGood == GD_FISH ? gettext_noop("Foodstuff") : WARE_NAMES[lastGood];
             glArchivItem_Bitmap* img = NULL;
-            switch(mapping.first)
+            switch(lastGood)
             {
                 case GD_FISH: img = LOADER.GetImageN("io", 80); break;
                 case GD_GRAIN: img = LOADER.GetImageN("io", 90); break;
@@ -215,7 +215,7 @@ void iwDistribution::CreateGroups()
             groups.push_back(DistributionGroup(_(name), img));
         }
         // HQ = Construction
-        std::string name = mapping.second == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[mapping.second];
+        std::string name = mapping.get<1>() == BLD_HEADQUARTERS ? gettext_noop("Construction") : BUILDING_NAMES[mapping.get<1>()];
         groups.back().entries.push_back(_(name));
     }
 }

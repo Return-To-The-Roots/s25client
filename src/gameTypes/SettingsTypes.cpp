@@ -19,23 +19,23 @@
 #include "SettingsTypes.h"
 
 const DistributionMap SUPPRESS_UNUSED distributionMap = {{
-  DistributionMapping(GD_FISH, BLD_GRANITEMINE),    DistributionMapping(GD_FISH, BLD_COALMINE),
-  DistributionMapping(GD_FISH, BLD_IRONMINE),       DistributionMapping(GD_FISH, BLD_GOLDMINE),
+  DistributionMapping(GD_FISH, BLD_GRANITEMINE, 3),     DistributionMapping(GD_FISH, BLD_COALMINE, 5),
+  DistributionMapping(GD_FISH, BLD_IRONMINE, 7),        DistributionMapping(GD_FISH, BLD_GOLDMINE, 10),
 
-  DistributionMapping(GD_GRAIN, BLD_MILL),          DistributionMapping(GD_GRAIN, BLD_PIGFARM),
-  DistributionMapping(GD_GRAIN, BLD_DONKEYBREEDER), DistributionMapping(GD_GRAIN, BLD_BREWERY),
-  DistributionMapping(GD_GRAIN, BLD_CHARBURNER),
+  DistributionMapping(GD_GRAIN, BLD_MILL, 5),           DistributionMapping(GD_GRAIN, BLD_PIGFARM, 3),
+  DistributionMapping(GD_GRAIN, BLD_DONKEYBREEDER, 2),  DistributionMapping(GD_GRAIN, BLD_BREWERY, 3),
+  DistributionMapping(GD_GRAIN, BLD_CHARBURNER, 3),
 
-  DistributionMapping(GD_IRON, BLD_ARMORY),         DistributionMapping(GD_IRON, BLD_METALWORKS),
+  DistributionMapping(GD_IRON, BLD_ARMORY, 8),          DistributionMapping(GD_IRON, BLD_METALWORKS, 4),
 
-  DistributionMapping(GD_COAL, BLD_ARMORY),         DistributionMapping(GD_COAL, BLD_IRONSMELTER),
-  DistributionMapping(GD_COAL, BLD_MINT),
+  DistributionMapping(GD_COAL, BLD_ARMORY, 8),          DistributionMapping(GD_COAL, BLD_IRONSMELTER, 7),
+  DistributionMapping(GD_COAL, BLD_MINT, 10),
 
-  DistributionMapping(GD_WOOD, BLD_SAWMILL),        DistributionMapping(GD_WOOD, BLD_CHARBURNER),
+  DistributionMapping(GD_WOOD, BLD_SAWMILL, 8),         DistributionMapping(GD_WOOD, BLD_CHARBURNER, 3),
 
-  DistributionMapping(GD_BOARDS, BLD_HEADQUARTERS), DistributionMapping(GD_BOARDS, BLD_METALWORKS),
-  DistributionMapping(GD_BOARDS, BLD_SHIPYARD),
+  DistributionMapping(GD_BOARDS, BLD_HEADQUARTERS, 10), DistributionMapping(GD_BOARDS, BLD_METALWORKS, 4),
+  DistributionMapping(GD_BOARDS, BLD_SHIPYARD, 2),
 
-  DistributionMapping(GD_WATER, BLD_BAKERY),        DistributionMapping(GD_WATER, BLD_BREWERY),
-  DistributionMapping(GD_WATER, BLD_PIGFARM),       DistributionMapping(GD_WATER, BLD_DONKEYBREEDER),
+  DistributionMapping(GD_WATER, BLD_BAKERY, 6),         DistributionMapping(GD_WATER, BLD_BREWERY, 3),
+  DistributionMapping(GD_WATER, BLD_PIGFARM, 2),        DistributionMapping(GD_WATER, BLD_DONKEYBREEDER, 2),
 }};

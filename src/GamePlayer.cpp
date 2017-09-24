@@ -162,36 +162,10 @@ void GamePlayer::LoadStandardDistribution()
     }
 
     // Standardverteilung der Waren
-    // TODO: Put into settings
-    distribution[GD_FISH].percent_buildings[BLD_GRANITEMINE] = 3;
-    distribution[GD_FISH].percent_buildings[BLD_COALMINE] = 5;
-    distribution[GD_FISH].percent_buildings[BLD_IRONMINE] = 7;
-    distribution[GD_FISH].percent_buildings[BLD_GOLDMINE] = 10;
-
-    distribution[GD_GRAIN].percent_buildings[BLD_MILL] = 5;
-    distribution[GD_GRAIN].percent_buildings[BLD_PIGFARM] = 3;
-    distribution[GD_GRAIN].percent_buildings[BLD_DONKEYBREEDER] = 2;
-    distribution[GD_GRAIN].percent_buildings[BLD_BREWERY] = 3;
-    distribution[GD_GRAIN].percent_buildings[BLD_CHARBURNER] = 3;
-
-    distribution[GD_IRON].percent_buildings[BLD_ARMORY] = 8;
-    distribution[GD_IRON].percent_buildings[BLD_METALWORKS] = 4;
-
-    distribution[GD_COAL].percent_buildings[BLD_ARMORY] = 8;
-    distribution[GD_COAL].percent_buildings[BLD_IRONSMELTER] = 7;
-    distribution[GD_COAL].percent_buildings[BLD_MINT] = 10;
-
-    distribution[GD_WOOD].percent_buildings[BLD_SAWMILL] = 8;
-    distribution[GD_WOOD].percent_buildings[BLD_CHARBURNER] = 3;
-
-    distribution[GD_BOARDS].percent_buildings[BLD_HEADQUARTERS] = 10;
-    distribution[GD_BOARDS].percent_buildings[BLD_METALWORKS] = 4;
-    distribution[GD_BOARDS].percent_buildings[BLD_SHIPYARD] = 2;
-
-    distribution[GD_WATER].percent_buildings[BLD_BAKERY] = 6;
-    distribution[GD_WATER].percent_buildings[BLD_BREWERY] = 3;
-    distribution[GD_WATER].percent_buildings[BLD_PIGFARM] = 2;
-    distribution[GD_WATER].percent_buildings[BLD_DONKEYBREEDER] = 3;
+    BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
+    {
+        distribution[mapping.get<0>()].percent_buildings[mapping.get<1>()] = mapping.get<2>();
+    }
 }
 
 GamePlayer::~GamePlayer()
@@ -649,10 +623,10 @@ void GamePlayer::RecalcDistribution()
     GoodType lastWare = GD_NOTHING;
     BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
     {
-        if(lastWare == mapping.first)
+        if(lastWare == mapping.get<0>())
             continue;
-        lastWare = mapping.first;
-        RecalcDistributionOfWare(mapping.first);
+        lastWare = mapping.get<0>();
+        RecalcDistributionOfWare(mapping.get<0>());
     }
 }
 
@@ -1458,7 +1432,7 @@ void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
     unsigned idx = 0;
     BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
     {
-        distribution[mapping.first].percent_buildings[mapping.second] = distribution_settings[idx++];
+        distribution[mapping.get<0>()].percent_buildings[mapping.get<1>()] = distribution_settings[idx++];
     }
 
     RecalcDistribution();
@@ -2338,7 +2312,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     unsigned visIdx = 0;
     BOOST_FOREACH(const DistributionMapping& mapping, distributionMap)
     {
-        visDistribution[visIdx++] = distribution[mapping.first].percent_buildings[mapping.second];
+        visDistribution[visIdx++] = distribution[mapping.get<0>()].percent_buildings[mapping.get<1>()];
     }
 
     visualSettings.useCustomBuildOrder = useCustomBuildOrder_;
