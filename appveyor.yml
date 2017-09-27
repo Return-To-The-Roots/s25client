@@ -29,8 +29,8 @@ install:
 
 before_build:
   - cd build
-  - if "%platform%"=="Win32" cmake -G "Visual Studio 14 2015" -DENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR_32%" ..
-  - if "%platform%"=="x64" cmake -G "Visual Studio 14 2015 Win64" -DENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR_64%" ..
+  - if "%platform%"=="Win32" cmake -G "Visual Studio 14 2015" -DRTTR_ENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR_32%" ..
+  - if "%platform%"=="x64" cmake -G "Visual Studio 14 2015 Win64" -DRTTR_ENABLE_WERROR=ON -DBOOST_LIBRARYDIR="%BOOST_ROOT%\%BOOST_LIBDIR_64%" ..
   - cd ..
     
 build:

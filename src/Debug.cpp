@@ -19,11 +19,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Debug.h"
-#include "RTTR_Version.h"
-
 #include "GameClient.h"
+#include "RTTR_Version.h"
 #include "Settings.h"
 #include "helpers/Deleter.h"
+#include "libutil/src/Log.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <bzlib.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -37,10 +39,6 @@
 #else
 #include <execinfo.h>
 #endif
-
-#include "libutil/src/Log.h"
-#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
-#include <bzlib.h>
 
 #ifdef _WIN32
 

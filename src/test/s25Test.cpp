@@ -16,8 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-
-#include "ProgramInitHelpers.h"
+#include "LocaleHelper.h"
 #include "files.h"
 #include "ogl/glAllocator.h"
 // Test helpers. Header only
@@ -42,7 +41,7 @@ struct TestSetup
 {
     TestSetup()
     {
-        if(!InitLocale())
+        if(!LocaleHelper::init())
             throw std::runtime_error("Could not init locale");
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
@@ -77,12 +76,6 @@ BOOST_GLOBAL_FIXTURE(TestSetup);
 // Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
 BOOST_GLOBAL_FIXTURE(TestSetup)
 #endif
-
-BOOST_AUTO_TEST_CASE(Basic)
-{
-    // Check if tests work
-    BOOST_CHECK(true);
-}
 
 BOOST_AUTO_TEST_CASE(LocaleFormatTest)
 {

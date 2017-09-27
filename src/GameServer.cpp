@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,41 +17,35 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameServer.h"
-#include "RTTR_Version.h"
-
-#include "libutil/src/SocketSet.h"
-
-#include "GameClient.h"
-#include "GameMessage.h"
-#include "GameMessages.h"
-#include "Loader.h"
-#include "drivers/VideoDriverWrapper.h"
-
-#include "GlobalGameSettings.h"
-#include "ingameWindows/iwDirectIPCreate.h"
-#include "liblobby/src/LobbyClient.h"
-
 #include "Debug.h"
+#include "GameClient.h"
 #include "GameManager.h"
+#include "GameMessage.h"
 #include "GameMessage_GameCommand.h"
+#include "GameMessages.h"
 #include "GameServerPlayer.h"
+#include "GlobalGameSettings.h"
+#include "Loader.h"
+#include "RTTR_Version.h"
 #include "Savegame.h"
 #include "Settings.h"
 #include "ai/AIBase.h"
+#include "drivers/VideoDriverWrapper.h"
+#include "files.h"
+#include "helpers/Deleter.h"
+#include "ingameWindows/iwDirectIPCreate.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "gameTypes/LanGameInfo.h"
 #include "gameData/GameConsts.h"
 #include "gameData/LanDiscoveryCfg.h"
-#include "libutil/src/fileFuncs.h"
-
-#include "helpers/Deleter.h"
+#include "liblobby/src/LobbyClient.h"
 #include "libsiedler2/src/ArchivItem_Map_Header.h"
 #include "libsiedler2/src/prototypen.h"
+#include "libutil/src/SocketSet.h"
 #include "libutil/src/colors.h"
+#include "libutil/src/fileFuncs.h"
 #include "libutil/src/ucString.h"
-
-#include "files.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
@@ -1391,10 +1385,12 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
     if(SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
-       || (MessageBoxA(NULL,
-                       _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
-                         "the future? Thank you very much!"),
-                       _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+       || (MessageBoxW(NULL,
+                       cvUTF8ToWideString(
+                         _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
+                           "the future? Thank you very much!"))
+                         .c_str(),
+                       cvUTF8ToWideString(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
            == IDYES)
 #endif
     )

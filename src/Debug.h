@@ -19,7 +19,11 @@
 
 #include "Random.h"
 #include "libutil/src/Socket.h"
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
 
+// This is for catching crashes and reporting bugs, it does not slow down anything.
 class DebugInfo
 {
     Socket sock;

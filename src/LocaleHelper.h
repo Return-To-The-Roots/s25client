@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,14 +17,23 @@
 
 #pragma once
 
-#ifndef ProgramInitHelpers_h__
-#define ProgramInitHelpers_h__
+#ifndef Locale_h__
+#define Locale_h__
 
-#include <boost/filesystem/path.hpp>
-#include <string>
+#include <locale>
 
-/// Return the prefix path for the installation
-bfs::path GetPrefixPath(const std::string& argv0);
-bool InitWorkingDirectory(const std::string& argv0);
+class LocaleHelper
+{
+    // Static class
+    LocaleHelper();
+    static std::locale bfsDefaultLocale;
 
-#endif // ProgramInitHelpers_h__
+public:
+    /// Init classic locale with UTF8 encoding for the global locale and boost::filesystem
+    /// Return true on success, false on error with an error message in stderr
+    static bool init();
+    /// Available after successful call to init. Returns the default locale as found in boost::filesystem
+    static const std::locale& getBfsDefaultLocale() { return bfsDefaultLocale; }
+};
+
+#endif // Locale_h__

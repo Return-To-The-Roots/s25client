@@ -17,18 +17,15 @@
 
 #include "driverDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
-#ifndef RTTR_Assert
-#define RTTR_Assert assert
-#endif
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
-
 #include <SDL.h>
 #include <algorithm>
 
 #ifdef _WIN32
 #include "../../../../win32/resource.h"
+#include "libutil/src/ucString.h"
 #include <SDL_syswm.h>
 #endif // _WIN32
 
@@ -174,7 +171,7 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
     SDL_WM_SetCaption(title.c_str(), 0);
 
 #ifdef _WIN32
-    SetWindowTextA(GetConsoleWindow(), title.c_str());
+    SetWindowTextW(GetConsoleWindow(), cvUTF8ToWideString(title).c_str());
 #endif
 
     std::fill(keyboard.begin(), keyboard.end(), false);

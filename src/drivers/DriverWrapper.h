@@ -21,6 +21,7 @@
 #undef DriverType
 #endif
 
+#include <boost/filesystem/path.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -42,12 +43,13 @@ public:
     class DriverItem
     {
     public:
-        DriverItem(const std::string& file, const std::string& name) : file(file), name(name) {}
-        const std::string& GetFile() { return file; }
+        DriverItem(const bfs::path& file, const std::string& name) : file(file), name(name) {}
+        const bfs::path& GetFile() { return file; }
         const std::string& GetName() { return name; }
 
     private:
-        std::string file, name;
+        bfs::path file;
+        std::string name;
     };
 
 public:
@@ -68,7 +70,7 @@ private:
     /// Handle auf die DLL
     HINSTANCE dll;
     /// Checks if the library is valid. Puts either the name or the error message into nameOrError
-    static bool CheckLibrary(const std::string& path, DriverType dt, std::string& nameOrError);
+    static bool CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
 };
 
 #endif // DRIVERWRAPPER_H_INCLUDED

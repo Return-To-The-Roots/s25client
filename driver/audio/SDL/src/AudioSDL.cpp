@@ -17,14 +17,14 @@
 
 #include "driverDefines.h" // IWYU pragma: keep
 #include "AudioSDL.h"
+#include "AudioInterface.h"
+#include "IAudioDriverCallback.h"
 #include "SoundSDL_Effect.h"
 #include "SoundSDL_Music.h"
-#include "IAudioDriverCallback.h"
-#include "AudioInterface.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 static AudioSDL* nthis = NULL;
 
@@ -33,7 +33,7 @@ static AudioSDL* nthis = NULL;
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* adli, void*  /*device_dependent*/)
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* adli, void* /*device_dependent*/)
 {
     nthis = new AudioSDL(adli);
     return nthis;
@@ -55,7 +55,8 @@ DRIVERDLLAPI const char* GetDriverName(void)
  */
 
 AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255)
-{}
+{
+}
 
 AudioSDL::~AudioSDL()
 {
@@ -79,7 +80,7 @@ const char* AudioSDL::GetName() const
  */
 bool AudioSDL::Initialize()
 {
-    if( SDL_InitSubSystem( SDL_INIT_AUDIO ) < 0 )
+    if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         initialized = false;
@@ -170,7 +171,7 @@ EffectPlayId AudioSDL::PlayEffect(const SoundHandle& sound, uint8_t volume, bool
     int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect&>(*sound.getDescriptor()).sound, (loop) ? -1 : 0);
     if(channel < 0)
     {
-        //fprintf(stderr, "%s\n", Mix_GetError());
+        // fprintf(stderr, "%s\n", Mix_GetError());
         return -1;
     }
     Mix_Volume(channel, CalcEffectVolume(volume));
@@ -260,8 +261,7 @@ void AudioSDL::DoUnloadSound(SoundDesc& sound)
         SoundSDL_Effect& effect = static_cast<SoundSDL_Effect&>(sound);
         Mix_FreeChunk(effect.sound);
         effect.setInvalid();
-    }
-    else if(sound.type_ == SD_MUSIC)
+    } else if(sound.type_ == SD_MUSIC)
     {
         SoundSDL_Music& music = static_cast<SoundSDL_Music&>(sound);
         Mix_FreeMusic(music.music);

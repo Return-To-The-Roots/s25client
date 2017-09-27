@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,34 +16,29 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "commonSrc/RTTR_AssertError.h"
-
-#include "ProgramInitHelpers.h"
-#include "SignalHandler.h"
-
-#include "GameManager.h"
-
-#include "Settings.h"
-#include "files.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/error.h"
-
-// This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
-
+#include "GameManager.h"
 #include "GlobalVars.h"
+#include "LocaleHelper.h"
+#include "ProgramInitHelpers.h"
 #include "QuickStartGame.h"
-#include "libutil/src/System.h"
-#include "libutil/src/fileFuncs.h"
-
+#include "Settings.h"
+#include "SignalHandler.h"
+#include "commonSrc/RTTR_AssertError.h"
+#include "files.h"
 #include "mygettext/src/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/src/libsiedler2.h"
+#include "libutil/src/Log.h"
+#include "libutil/src/System.h"
+#include "libutil/src/error.h"
+#include "libutil/src/fileFuncs.h"
 
 #ifdef _WIN32
 #include "../win32/resource.h"
 #include "WindowsCmdLine.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "libutil/src/ucString.h"
 #endif
 
 #include <boost/array.hpp>
@@ -106,17 +101,11 @@ void ExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_po
 
 #ifdef _WIN32
 #ifdef _MSC_VER
-LONG WINAPI
+#define ExceptionHandlerFunc(name) LONG WINAPI name(LPEXCEPTION_POINTERS info)
 #else
-void
+#define ExceptionHandlerFunc(name) void name(int sig)
 #endif
-WinExceptionHandler(
-#ifdef _MSC_VER
-  LPEXCEPTION_POINTERS info
-#else
-    int sig
-#endif
-)
+ExceptionHandlerFunc(WinExceptionHandler)
 {
     if(GLOBALVARS.isTest)
     {
@@ -129,10 +118,12 @@ WinExceptionHandler(
     }
 
     if((SETTINGS.global.submit_debug_data == 1)
-       || MessageBoxA(NULL,
-                      _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? "
-                        "Thank you very much!"),
-                      _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+       || MessageBoxW(NULL,
+                      cvUTF8ToWideString(
+                        _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? "
+                          "Thank you very much!"))
+                        .c_str(),
+                      cvUTF8ToWideString(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
             == IDYES)
     {
         VIDEODRIVER.DestroyScreen();
@@ -148,8 +139,10 @@ WinExceptionHandler(
     }
 
     if(SETTINGS.global.submit_debug_data == 0)
-        MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"),
-                    MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
+    {
+        MessageBoxW(NULL, cvUTF8ToWideString(_("RttR crashed. Please restart the application!")).c_str(),
+                    cvUTF8ToWideString(_("Error")).c_str(), MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
+    }
 
     _exit(1);
 
@@ -351,7 +344,7 @@ bool InitGame()
 
 int RunProgram(const std::string& argv0, po::variables_map& options)
 {
-    if(!InitLocale())
+    if(!LocaleHelper::init())
         return 1;
     if(!InitWorkingDirectory(argv0))
         return 1;

@@ -79,7 +79,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         if(it->GetName() == preference)
         {
             // Dann den gleich nehmen
-            dll = LoadLibraryA(it->GetFile().c_str());
+            dll = LoadLibraryW(it->GetFile().c_str());
             break;
         }
     }
@@ -87,7 +87,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     // ersten Treiber laden
     if(!dll)
     {
-        dll = LoadLibraryA(drivers.begin()->GetFile().c_str());
+        dll = LoadLibraryW(drivers.begin()->GetFile().c_str());
 
         // Standardwert zuweisen
         preference = drivers.begin()->GetName();
@@ -124,9 +124,9 @@ void* DriverWrapper::GetDLLFunction(const std::string& name)
     return GetDLLFunction2(dll, name);
 }
 
-bool DriverWrapper::CheckLibrary(const std::string& path, DriverType dt, std::string& nameOrError)
+bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
 {
-    boost::interprocess::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryA(path.c_str()));
+    boost::interprocess::unique_ptr<HINSTANCE, DeleterFreeLib> dll(LoadLibraryW(path.c_str()));
 
     if(!dll)
     {
