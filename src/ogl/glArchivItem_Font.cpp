@@ -26,8 +26,8 @@
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/IAllocator.h"
 #include "libsiedler2/libsiedler2.h"
-#include "libutil/Log.h"
 #include "libutf8/utf8.h"
+#include "libutil/Log.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <cmath>

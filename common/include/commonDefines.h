@@ -119,11 +119,11 @@ inline void deletePtr(T*& ptr)
 
 // Fwd decl
 namespace boost {
-    namespace filesystem {
-    }
+namespace filesystem {
+}
 } // namespace boost
 
-  /// Shortcut for boost::filesystem
+/// Shortcut for boost::filesystem
 namespace bfs = boost::filesystem;
 
 #endif // commonDefines_h__

@@ -18,10 +18,10 @@
 #include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "RTTR_AssertError.h"
 #include "TerrainRenderer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
-#include "RTTR_AssertError.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
 #include "ingameWindows/iwHelp.h"
