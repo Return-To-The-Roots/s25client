@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Random.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 #include <boost/filesystem/fstream.hpp>
 
 template<class T_PRNG>

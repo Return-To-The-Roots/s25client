@@ -31,7 +31,7 @@
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include "test/PointOutput.h"
-#include "libutil/src/tmpFile.h"
+#include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>

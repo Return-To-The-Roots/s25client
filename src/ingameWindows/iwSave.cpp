@@ -34,9 +34,9 @@
 #include "helpers/converters.h"
 #include "iwPleaseWait.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/src/LobbyClient.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/fileFuncs.h"
+#include "liblobby/LobbyClient.h"
+#include "libutil/Log.h"
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;

@@ -27,7 +27,7 @@
 #include "world/TradeRoute.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
     : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)

@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "WindowsCmdLine.h"
-#include "libutil/src/ucString.h"
+#include "libutil/ucString.h"
 #include <string>
 
 #ifdef _WIN32

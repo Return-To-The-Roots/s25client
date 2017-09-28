@@ -19,7 +19,6 @@
 // Header
 #include "driverDefines.h" // IWYU pragma: keep
 #include "GLFW.h"
-#include "RTTR_Version.h"
 #include "VideoInterface.h"
 
 ///////////////////////////////////////////////////////////////////////////////

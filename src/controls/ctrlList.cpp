@@ -19,7 +19,7 @@
 #include "ctrlList.h"
 #include "CollisionDetection.h"
 #include "ctrlScrollBar.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 
 ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)

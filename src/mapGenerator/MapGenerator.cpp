@@ -19,7 +19,7 @@
 #include "mapGenerator/MapGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/RandomMapGenerator.h"
-#include "libsiedler2/src/libsiedler2.h"
+#include "libsiedler2/libsiedler2.h"
 #include <stdexcept>
 
 void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)

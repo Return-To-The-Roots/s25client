@@ -23,11 +23,11 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "glArchivItem_Bitmap.h"
 #include "helpers/containerUtils.h"
-#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
-#include "libsiedler2/src/IAllocator.h"
-#include "libsiedler2/src/libsiedler2.h"
-#include "libutil/src/Log.h"
-#include "libutil/utf8/utf8.h"
+#include "libsiedler2/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/IAllocator.h"
+#include "libsiedler2/libsiedler2.h"
+#include "libutil/Log.h"
+#include "libutf8/utf8.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <cmath>

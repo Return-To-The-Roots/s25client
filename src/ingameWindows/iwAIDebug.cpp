@@ -25,7 +25,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais)
     : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(300, 515), _("AI Debug"), LOADER.GetImageN("resource", 41)), gwv(gwv)

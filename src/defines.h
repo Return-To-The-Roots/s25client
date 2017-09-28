@@ -21,7 +21,7 @@
 
 // IWYU pragma: begin_exports
 
-#include "commonSrc/commonDefines.h"
+#include "commonDefines.h"
 #include "macros.h"
 
 // IWYU pragma: end_exports

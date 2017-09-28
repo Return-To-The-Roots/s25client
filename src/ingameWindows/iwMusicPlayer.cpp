@@ -31,8 +31,8 @@
 #include "files.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
-#include "libutil/src/fileFuncs.h"
+#include "libutil/colors.h"
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <cstdio>
 

@@ -25,7 +25,7 @@
 #include "controls/ctrlScrollBar.h"
 #include "helpers/containerUtils.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy, const std::vector<AddonId>& addonIds)
     : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"), LOADER.GetImageN("resource", 41), true,

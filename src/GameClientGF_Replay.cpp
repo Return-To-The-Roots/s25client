@@ -23,8 +23,8 @@
 #include "GameMessage_GameCommand.h"
 #include "GlobalVars.h"
 #include "Random.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Log.h"
+#include "libutil/Serializer.h"
 
 void GameClient::ExecuteGameFrame_Replay()
 {

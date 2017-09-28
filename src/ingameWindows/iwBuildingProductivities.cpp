@@ -22,7 +22,7 @@
 #include "files.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 /// Anzahl der angezeigten Gebäude
 const unsigned BUILDINGS_COUNT = 24;

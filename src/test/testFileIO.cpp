@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ListDir.h"
-#include "libutil/src/ucString.h"
+#include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>

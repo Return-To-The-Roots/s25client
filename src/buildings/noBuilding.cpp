@@ -23,7 +23,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFire.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 class noFigure;
 
 noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation /*nation*/)

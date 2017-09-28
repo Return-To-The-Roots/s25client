@@ -1,9 +1,9 @@
 
-ADD_SUBDIRECTORY( src )
+set(DRIVER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/driver)
+INCLUDE_DIRECTORIES(${DRIVER_INCLUDE_DIR})
 
-#################################################################################
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
-ADD_SUBDIRECTORY( video ) 
-ADD_SUBDIRECTORY( audio ) 
+ADD_SUBDIRECTORY(src)
 
-#################################################################################
+include_directories(src)
+ADD_SUBDIRECTORY(video) 
+ADD_SUBDIRECTORY(audio) 

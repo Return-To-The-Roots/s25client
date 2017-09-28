@@ -33,7 +33,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
-#include "liblobby/src/LobbyClient.h"
+#include "liblobby/LobbyClient.h"
 
 /**
  *  Konstruktor von @p dskGameLoader.

@@ -20,9 +20,9 @@
 #pragma once
 
 #include "JoinPlayerInfo.h"
-#include "libutil/src/MessageQueue.h"
-#include "libutil/src/MyTime.h"
-#include "libutil/src/Socket.h"
+#include "libutil/MessageQueue.h"
+#include "libutil/MyTime.h"
+#include "libutil/Socket.h"
 #include <vector>
 
 class GameMessage_GameCommand;

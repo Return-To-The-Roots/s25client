@@ -20,7 +20,7 @@
 #pragma once
 
 #include "IngameWindow.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 
 class iwLobbyConnect : public IngameWindow, public LobbyInterface
 {

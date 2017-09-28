@@ -19,7 +19,7 @@
 #include "glArchivItem_Bitmap_Direct.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/oglIncludes.h"
-#include "libsiedler2/src/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include <stdexcept>
 
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct() : isUpdating_(false)

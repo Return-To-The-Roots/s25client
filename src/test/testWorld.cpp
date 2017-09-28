@@ -30,8 +30,8 @@
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/WorldFixture.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "libutil/src/tmpFile.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libutil/tmpFile.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>

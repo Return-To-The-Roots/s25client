@@ -20,7 +20,7 @@
 #pragma once
 
 #include "SoundEffectItem.h"
-#include "libsiedler2/src/ArchivItem_Sound_Wave.h"
+#include "libsiedler2/ArchivItem_Sound_Wave.h"
 
 class glArchivItem_Sound_Wave : public libsiedler2::ArchivItem_Sound_Wave, public SoundEffectItem
 {

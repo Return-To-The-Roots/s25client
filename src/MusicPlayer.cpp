@@ -21,10 +21,10 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/MusicItem.h"
-#include "libsiedler2/src/Archiv.h"
-#include "libsiedler2/src/ArchivItem.h"
-#include "libsiedler2/src/prototypen.h"
-#include "libutil/src/Log.h"
+#include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem.h"
+#include "libsiedler2/prototypen.h"
+#include "libutil/Log.h"
 #include <algorithm>
 #include <fstream>
 #include <sstream>

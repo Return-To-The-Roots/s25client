@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "ctrlButton.h"
 #include "ctrlList.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
 

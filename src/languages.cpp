@@ -22,9 +22,9 @@
 
 #include "Settings.h"
 #include "files.h"
-#include "mygettext/src/mygettext.h"
-#include "libsiedler2/src/ArchivItem_Ini.h"
-#include "libsiedler2/src/ArchivItem_Text.h"
+#include "mygettext/mygettext.h"
+#include "libsiedler2/ArchivItem_Ini.h"
+#include "libsiedler2/ArchivItem_Text.h"
 
 #include <algorithm>
 

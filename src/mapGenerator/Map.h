@@ -19,7 +19,7 @@
 #define Map_h__
 
 #include "gameTypes/MapCoordinates.h"
-#include "libsiedler2/src/archives.h"
+#include "libsiedler2/archives.h"
 #include <string>
 #include <vector>
 

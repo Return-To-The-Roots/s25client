@@ -28,7 +28,7 @@
 #include "world/MapSerializer.h"
 
 #include "luaIncludes.h"
-#include "libsiedler2/src/prototypen.h"
+#include "libsiedler2/prototypen.h"
 #include <boost/filesystem.hpp>
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em)

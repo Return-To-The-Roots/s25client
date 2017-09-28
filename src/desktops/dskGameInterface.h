@@ -31,7 +31,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/RoadBuildState.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 #include <boost/array.hpp>
 
 class GameClient;

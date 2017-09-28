@@ -36,7 +36,7 @@
 #include "postSystem/ShipPostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 
 const unsigned ship_count = 55;
 

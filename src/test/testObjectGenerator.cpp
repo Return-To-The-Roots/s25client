@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
-#include "libsiedler2/src/enumTypes.h"
+#include "libsiedler2/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 
 namespace {

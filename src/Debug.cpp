@@ -23,7 +23,7 @@
 #include "RTTR_Version.h"
 #include "Settings.h"
 #include "helpers/Deleter.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 

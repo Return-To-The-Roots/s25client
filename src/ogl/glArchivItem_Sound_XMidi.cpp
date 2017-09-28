@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "glArchivItem_Sound_XMidi.h"
 #include "drivers/AudioDriverWrapper.h"
-#include "libsiedler2/src/ArchivItem_Sound_Midi.h"
+#include "libsiedler2/ArchivItem_Sound_Midi.h"
 
 SoundHandle glArchivItem_Sound_XMidi::Load()
 {

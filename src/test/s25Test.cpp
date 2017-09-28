@@ -21,9 +21,9 @@
 #include "ogl/glAllocator.h"
 // Test helpers. Header only
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
-#include "libsiedler2/src/libsiedler2.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/StringStreamWriter.h"
+#include "libsiedler2/libsiedler2.h"
+#include "libutil/Log.h"
+#include "libutil/StringStreamWriter.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
 #include <boost/filesystem.hpp>

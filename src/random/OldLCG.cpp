@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "OldLCG.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 #include <iostream>
 
 void OldLCG::discard(uint64_t j)

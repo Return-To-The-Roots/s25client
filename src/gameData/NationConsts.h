@@ -20,7 +20,7 @@
 #ifndef NationConsts_h__
 #define NationConsts_h__
 
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 #include "gameTypes/Nation.h"
 #include <boost/array.hpp>
 

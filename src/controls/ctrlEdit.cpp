@@ -19,7 +19,7 @@
 #include "ctrlEdit.h"
 
 #include "CollisionDetection.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"

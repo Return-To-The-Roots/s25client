@@ -20,9 +20,9 @@
 #include "CollisionDetection.h"
 #include "FileChecksum.h"
 #include "ctrlScrollBar.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 
 /// Breite der Scrollbar
 static const unsigned short SCROLLBAR_WIDTH = 20;

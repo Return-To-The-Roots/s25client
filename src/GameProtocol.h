@@ -19,7 +19,7 @@
 #define GAMEPROTOCOL_H_INCLUDED
 
 #include "gameTypes/ServerType.h"
-#include "libutil/src/Protocol.h"
+#include "libutil/Protocol.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Netzwerk Messages                       // client> | <server

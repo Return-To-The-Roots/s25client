@@ -21,8 +21,8 @@
 #include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "mygettext/src/mygettext.h"
-#include "libutil/src/Log.h"
+#include "mygettext/mygettext.h"
+#include "libutil/Log.h"
 #include <fstream>
 #include <utility>
 

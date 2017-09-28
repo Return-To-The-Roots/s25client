@@ -22,10 +22,10 @@
 #include "RTTR_Version.h"
 #include "Settings.h"
 #include "WindowManager.h"
-#include "driver/src/VideoInterface.h"
+#include "driver/VideoInterface.h"
 #include "helpers/roundToNextPow2.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/error.h"
+#include "libutil/Log.h"
+#include "libutil/error.h"
 #include <algorithm>
 #include <ctime>
 #include <sstream>

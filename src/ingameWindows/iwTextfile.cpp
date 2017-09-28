@@ -25,7 +25,7 @@
 #include "files.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/fileFuncs.h"
+#include "libutil/fileFuncs.h"
 
 #include <boost/filesystem/fstream.hpp>
 

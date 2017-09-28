@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "commonSrc/RTTR_AssertError.h"
+#include "RTTR_AssertError.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>

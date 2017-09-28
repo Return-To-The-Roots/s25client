@@ -20,9 +20,9 @@
 #include "MusicPlayer.h"
 #include "Settings.h"
 #include "VideoDriverWrapper.h"
-#include "driver/src/AudioInterface.h"
-#include "libsiedler2/src/ArchivItem_Sound.h"
-#include "libutil/src/tmpFile.h"
+#include "driver/AudioInterface.h"
+#include "libsiedler2/ArchivItem_Sound.h"
+#include "libutil/tmpFile.h"
 #include <ostream>
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false)

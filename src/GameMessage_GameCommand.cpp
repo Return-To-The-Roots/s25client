@@ -20,7 +20,7 @@
 #include "GameMessageInterface.h"
 #include "GameObject.h"
 #include "GameProtocol.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 
 AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0)
 {

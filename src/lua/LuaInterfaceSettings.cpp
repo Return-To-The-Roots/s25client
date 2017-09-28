@@ -24,7 +24,7 @@
 #include "addons/const_addons.h"
 #include "lua/LuaHelpers.h"
 #include "gameTypes/GameSettingTypes.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 
 LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer) : gameServer_(gameServer)
 {

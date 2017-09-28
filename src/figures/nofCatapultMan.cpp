@@ -30,7 +30,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 const DrawPointInit STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
 

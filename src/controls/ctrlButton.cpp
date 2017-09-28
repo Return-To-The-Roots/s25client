@@ -20,7 +20,7 @@
 #include "CollisionDetection.h"
 #include "ExtensionList.h"
 #include "Loader.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 

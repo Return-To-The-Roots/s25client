@@ -50,7 +50,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <boost/foreach.hpp>
 #include <limits>
 

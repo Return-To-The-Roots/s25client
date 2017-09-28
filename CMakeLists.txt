@@ -10,7 +10,7 @@ IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libsiedler2/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libutil/cmake/Modules")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib")
 
 INCLUDE(CMakeMacroSetCCache)
@@ -377,7 +377,6 @@ file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
 # add build directory to compiler search path for configured includes
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 enable_testing()
 
@@ -395,27 +394,30 @@ ADD_CUSTOM_TARGET(updateversion ALL
 ################################################################################
 # Then add all other dependencies
 
-set(COMMON_SRC
-    ${PROJECT_SOURCE_DIR}/commonSrc/commonDefines.h
-    ${PROJECT_SOURCE_DIR}/commonSrc/RTTR_Assert.cpp
-    ${PROJECT_SOURCE_DIR}/commonSrc/RTTR_Assert.h
-    ${PROJECT_SOURCE_DIR}/commonSrc/RTTR_AssertError.h)
-
-ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)
 ADD_SUBDIRECTORY(libsiedler2)
 ADD_SUBDIRECTORY(libutil)
 # Build lobby client
-SET(LOBBY_C TRUE)
+SET(RTTR_BUILD_LOBBY_CLIENT TRUE)
 ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
 ADD_SUBDIRECTORY(s25update)
+
+set(commonSrcDir ${PROJECT_SOURCE_DIR}/common)
+set(COMMON_SRC
+    ${commonSrcDir}/include/commonDefines.h
+    ${commonSrcDir}/RTTR_Assert.cpp
+    ${commonSrcDir}/include/RTTR_Assert.h
+    ${commonSrcDir}/include/RTTR_AssertError.h)
+include_directories(${commonSrcDir}/include)
+ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(src)
 
 if(ClangFormat_FOUND)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
+    add_ClangFormat_files(${COMMON_SRC})
     add_ClangFormat_target("file")
 endif()
 

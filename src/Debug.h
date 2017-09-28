@@ -18,7 +18,7 @@
 #define DEBUG_H_
 
 #include "Random.h"
-#include "libutil/src/Socket.h"
+#include "libutil/Socket.h"
 #ifdef _MSC_VER
 #include <windows.h>
 #endif

@@ -20,7 +20,7 @@
 #ifndef MockupVideoDriver_h__
 #define MockupVideoDriver_h__
 
-#include "driver/src/VideoDriver.h"
+#include "driver/VideoDriver.h"
 
 class MockupVideoDriver : public VideoDriver
 {

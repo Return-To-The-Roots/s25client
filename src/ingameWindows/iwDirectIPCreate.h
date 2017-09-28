@@ -21,7 +21,7 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/ServerType.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 
 /// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
 struct CreateServerInfo

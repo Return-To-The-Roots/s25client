@@ -26,7 +26,7 @@
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <stdexcept>
 
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,

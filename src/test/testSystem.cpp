@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
 #include "WindowsCmdLine.h"
-#include "libutil/src/System.h"
-#include "libutil/src/ucString.h"
+#include "libutil/System.h"
+#include "libutil/ucString.h"
 #include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
 

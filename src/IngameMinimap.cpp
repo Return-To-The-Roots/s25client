@@ -23,7 +23,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"
-#include "libsiedler2/src/ColorARGB.h"
+#include "libsiedler2/ColorARGB.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv)
     : Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),

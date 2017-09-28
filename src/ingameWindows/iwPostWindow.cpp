@@ -24,7 +24,7 @@
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "controls/ctrlText.h"
-#include "driver/src/KeyEvent.h"
+#include "driver/KeyEvent.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "iwHelp.h"
 #include "macros.h"

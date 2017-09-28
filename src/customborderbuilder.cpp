@@ -41,7 +41,7 @@ Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette 
 #include "defines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
-#include "libsiedler2/src/Archiv.h"
+#include "libsiedler2/Archiv.h"
 
 CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& palette) : palette(palette)
 {

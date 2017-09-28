@@ -22,7 +22,7 @@
 #include "Loader.h"
 #include "RescaleWindowProp.h"
 #include "controls/controls.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include <boost/foreach.hpp>

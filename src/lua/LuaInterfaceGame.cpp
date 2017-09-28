@@ -29,8 +29,8 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Log.h"
+#include "libutil/Serializer.h"
 #include <fstream>
 
 LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)

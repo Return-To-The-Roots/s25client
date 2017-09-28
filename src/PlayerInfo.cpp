@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "PlayerInfo.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 
 PlayerInfo::PlayerInfo() : isHost(false), ping(0)
 {

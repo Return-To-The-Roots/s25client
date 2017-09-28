@@ -33,10 +33,9 @@ AddDirectory(random)
 AddDirectory(world)
 
 INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
+ADD_FILE_DEPENDENCIES(${CMAKE_CURRENT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 SET(s25Main_SRCS
-	${PROJECT_SOURCE_DIR}/RTTR_Version.cpp
 	${SOURCES_OTHER}
 	${SOURCES_SUBDIRS}
 )
@@ -61,11 +60,13 @@ ENDIF()
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 ADD_DEPENDENCIES(s25Main updateversion)
+target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 TARGET_LINK_LIBRARIES(s25Main
 	siedler2
 	lobby_c
 	s25util
 	mygettext
+    utf8
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIBRARY}

@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "BasePlayerInfo.h"
-#include "libutil/src/Serializer.h"
-#include "libutil/src/colors.h"
+#include "libutil/Serializer.h"
+#include "libutil/colors.h"
 
 BasePlayerInfo::BasePlayerInfo() : ps(PS_FREE), nation(NAT_ROMANS), color(PLAYER_COLORS[0]), team(TM_NOTEAM)
 {

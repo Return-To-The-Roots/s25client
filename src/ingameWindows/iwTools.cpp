@@ -34,7 +34,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameData/ToolConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 #include <boost/lambda/lambda.hpp>
 
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)

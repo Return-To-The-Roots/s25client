@@ -19,7 +19,7 @@
 #include "ctrlMultiline.h"
 #include "CollisionDetection.h"
 #include "ctrlScrollBar.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 #include <boost/foreach.hpp>
 #include <algorithm>

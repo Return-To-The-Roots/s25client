@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "CompressedData.h"
 #include "FileChecksum.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <boost/filesystem/fstream.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <bzlib.h>

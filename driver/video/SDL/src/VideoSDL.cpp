@@ -25,7 +25,7 @@
 
 #ifdef _WIN32
 #include "../../../../win32/resource.h"
-#include "libutil/src/ucString.h"
+#include "libutil/ucString.h"
 #include <SDL_syswm.h>
 #endif // _WIN32
 

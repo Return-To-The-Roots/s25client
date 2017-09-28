@@ -24,21 +24,21 @@
 #include "QuickStartGame.h"
 #include "Settings.h"
 #include "SignalHandler.h"
-#include "commonSrc/RTTR_AssertError.h"
+#include "RTTR_AssertError.h"
 #include "files.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
-#include "libsiedler2/src/libsiedler2.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/System.h"
-#include "libutil/src/error.h"
-#include "libutil/src/fileFuncs.h"
+#include "libsiedler2/libsiedler2.h"
+#include "libutil/Log.h"
+#include "libutil/System.h"
+#include "libutil/error.h"
+#include "libutil/fileFuncs.h"
 
 #ifdef _WIN32
 #include "../win32/resource.h"
 #include "WindowsCmdLine.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "libutil/src/ucString.h"
+#include "libutil/ucString.h"
 #endif
 
 #include <boost/array.hpp>

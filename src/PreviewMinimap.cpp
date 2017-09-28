@@ -21,7 +21,7 @@
 #include "world/MapGeometry.h"
 #include "gameData/MinimapConsts.h"
 #include "gameData/TerrainData.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
 
 PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 {

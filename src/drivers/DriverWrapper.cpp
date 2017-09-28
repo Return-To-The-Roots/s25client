@@ -18,13 +18,13 @@
 #include "defines.h" // IWYU pragma: keep
 #include "DriverWrapper.h"
 #include "ListDir.h"
-#include "driver/src/DriverInterfaceVersion.h"
-#include "driver/src/Interface.h"
+#include "driver/DriverInterfaceVersion.h"
+#include "driver/Interface.h"
 #include "files.h"
-#include "mygettext/src/mygettext.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/error.h"
-#include "libutil/src/fileFuncs.h"
+#include "mygettext/mygettext.h"
+#include "libutil/Log.h"
+#include "libutil/error.h"
+#include "libutil/fileFuncs.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 #ifndef _WIN32

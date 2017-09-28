@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon allows users to adjust the percentage of trees that have the recurring spawn animal event

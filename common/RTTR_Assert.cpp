@@ -18,7 +18,7 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
-#include "libutil/src/System.h"
+#include "libutil/System.h"
 #include <iostream>
 #include <sstream>
 #ifdef _WIN32

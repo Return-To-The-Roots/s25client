@@ -24,8 +24,8 @@
 
 #include "helpers/containerUtils.h"
 #include "gameData/MilitaryConsts.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Log.h"
+#include "libutil/Serializer.h"
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>

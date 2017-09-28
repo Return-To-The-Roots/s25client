@@ -29,7 +29,7 @@
 #include "iwMsgbox.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/src/LobbyClient.h"
+#include "liblobby/LobbyClient.h"
 
 namespace {
 enum

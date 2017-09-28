@@ -20,7 +20,7 @@
 #include "GameMessages.h"
 #include "GamePlayer.h"
 #include "buildings/nobBaseMilitary.h"
-#include "commonSrc/RTTR_AssertError.h"
+#include "RTTR_AssertError.h"
 #include "desktops/dskGameInterface.h"
 #include "initTestHelpers.h"
 #include "world/GameWorldViewer.h"

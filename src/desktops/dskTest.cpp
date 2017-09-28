@@ -25,7 +25,7 @@
 #include "controls/ctrlButton.h"
 #include "desktops/dskMainMenu.h"
 #include "ogl/glArchivItem_Font.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 #include <boost/foreach.hpp>
 
 namespace {

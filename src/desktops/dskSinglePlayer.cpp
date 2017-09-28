@@ -32,7 +32,7 @@
 #include "ingameWindows/iwPlayReplay.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
-#include "libutil/src/fileFuncs.h"
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 /** @class dskSinglePlayer

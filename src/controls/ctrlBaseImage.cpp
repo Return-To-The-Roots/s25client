@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlBaseImage.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 #include <algorithm>
 
 ctrlBaseImage::ctrlBaseImage(glArchivItem_Bitmap* img /*= NULL*/) : img_(img), modulationColor_(COLOR_WHITE)

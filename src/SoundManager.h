@@ -18,8 +18,8 @@
 #ifndef SOUNDMANAGER_H_
 #define SOUNDMANAGER_H_
 
-#include "driver/src/EffectPlayId.h"
-#include "libutil/src/Singleton.h"
+#include "driver/EffectPlayId.h"
+#include "libutil/Singleton.h"
 #include <list>
 
 class noBase;

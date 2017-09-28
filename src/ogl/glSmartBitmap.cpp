@@ -21,9 +21,9 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glBitmapItem.h"
 #include "oglIncludes.h"
-#include "libsiedler2/src/ArchivItem_Bitmap.h"
-#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
-#include "libutil/src/colors.h"
+#include "libsiedler2/ArchivItem_Bitmap.h"
+#include "libsiedler2/ArchivItem_Bitmap_Player.h"
+#include "libutil/colors.h"
 #include <boost/foreach.hpp>
 #include <climits>
 #include <limits>

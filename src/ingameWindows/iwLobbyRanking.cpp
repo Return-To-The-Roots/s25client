@@ -20,7 +20,7 @@
 #include "Loader.h"
 #include "controls/ctrlTable.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/src/LobbyClient.h"
+#include "liblobby/LobbyClient.h"
 #include <boost/lexical_cast.hpp>
 
 /**

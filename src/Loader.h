@@ -27,8 +27,8 @@
 #include "gameTypes/MapTypes.h"
 #include "gameData/AnimalConsts.h"
 #include "gameData/NationConsts.h"
-#include "libsiedler2/src/Archiv.h"
-#include "libutil/src/Singleton.h"
+#include "libsiedler2/Archiv.h"
+#include "libutil/Singleton.h"
 #include <boost/array.hpp>
 #include <map>
 #include <stdint.h>

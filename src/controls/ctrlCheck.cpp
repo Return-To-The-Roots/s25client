@@ -19,7 +19,7 @@
 #include "ctrlCheck.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 

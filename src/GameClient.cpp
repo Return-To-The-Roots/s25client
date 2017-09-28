@@ -50,10 +50,10 @@
 #include "world/GameWorldView.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GameConsts.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "libsiedler2/src/prototypen.h"
-#include "libutil/src/SocketSet.h"
-#include "libutil/src/fileFuncs.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/prototypen.h"
+#include "libutil/SocketSet.h"
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>

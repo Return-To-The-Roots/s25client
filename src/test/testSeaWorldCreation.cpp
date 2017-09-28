@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "SeaWorldWithGCExecution.h"
-#include "commonSrc/RTTR_AssertError.h"
+#include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
 
 std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)

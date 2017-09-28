@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "JoinPlayerInfo.h"
-#include "mygettext/src/mygettext.h"
-#include "libutil/src/Serializer.h"
+#include "mygettext/mygettext.h"
+#include "libutil/Serializer.h"
 #include <cstdio>
 
 JoinPlayerInfo::JoinPlayerInfo() : rating(0), isReady(false)

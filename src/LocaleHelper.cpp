@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "LocaleHelper.h"
-#include "libutil/src/System.h"
+#include "libutil/System.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
 #include <iostream>
