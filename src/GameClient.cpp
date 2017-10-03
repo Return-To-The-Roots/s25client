@@ -58,7 +58,6 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
-#include <fstream>
 #include <iostream>
 
 void GameClient::ClientConfig::Clear()

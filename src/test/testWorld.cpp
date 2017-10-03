@@ -32,7 +32,6 @@
 #include "test/WorldFixture.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
-#include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -46,13 +45,13 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
 {
     // Check that loading and saving a map does not alter it
     glArchivItem_Map map;
-    bfs::ifstream mapFile(testMapPath, std::ios::binary);
+    bnw::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     TmpFile outMap(".swd");
-    BOOST_REQUIRE(outMap.IsValid());
-    BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
+    BOOST_REQUIRE(outMap.isValid());
+    BOOST_REQUIRE_EQUAL(map.write(outMap.getStream()), 0);
     mapFile.close();
-    outMap.GetStream().close();
+    outMap.close();
     BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
 }
 
@@ -72,7 +71,7 @@ struct LoadWorldFromFileCreator
     LoadWorldFromFileCreator(const MapExtent& size, unsigned numPlayers) : numPlayers_(numPlayers) {}
     bool operator()(GameWorldBase& world)
     {
-        bfs::ifstream mapFile(testMapPath, std::ios::binary);
+        bnw::ifstream mapFile(testMapPath, std::ios::binary);
         BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
         std::vector<Nation> nations;
         for(unsigned i = 0; i < numPlayers_; i++)
@@ -98,7 +97,7 @@ struct WorldLoaded1PFixture : public WorldFixture<LoadWorldFromFileCreator, 1>
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 {
     glArchivItem_Map map;
-    bfs::ifstream mapFile(testMapPath, std::ios::binary);
+    bnw::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
     BOOST_CHECK_EQUAL(header.getWidth(), 176);

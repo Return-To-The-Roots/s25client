@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "Random.h"
 #include "libutil/Serializer.h"
-#include <boost/filesystem/fstream.hpp>
+#include <boost/nowide/fstream.hpp>
 
 template<class T_PRNG>
 Random<T_PRNG>::Random()
@@ -106,7 +106,7 @@ template<class T_PRNG>
 void Random<T_PRNG>::SaveLog(const std::string& filename)
 {
     const std::vector<RandomEntry> log = GetAsyncLog();
-    bfs::ofstream file(filename);
+    bnw::ofstream file(filename);
 
     for(typename std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
         file << *it;

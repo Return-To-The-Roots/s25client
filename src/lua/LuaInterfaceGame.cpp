@@ -31,7 +31,7 @@
 #include "gameTypes/Resource.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
-#include <fstream>
+#include <boost/nowide/fstream.hpp>
 
 LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
 {

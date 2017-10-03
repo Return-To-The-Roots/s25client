@@ -26,8 +26,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/fileFuncs.h"
-
-#include <boost/filesystem/fstream.hpp>
+#include <boost/nowide/fstream.hpp>
 
 /**
  *  Konstruktor von @p iwTextfile.
@@ -44,7 +43,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     // Pfad mit gewählter Sprache auswählen
     std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;
 
-    bfs::ifstream file(path);
+    bnw::ifstream file(path);
     if(!file)
     {
         // lokalisierte Vresion nicht gefunden, Standard öffnen

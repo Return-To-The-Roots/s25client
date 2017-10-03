@@ -23,7 +23,6 @@
 #include "SoundSDL_Music.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <fstream>
 #include <iostream>
 
 static AudioSDL* nthis = NULL;
@@ -82,7 +81,7 @@ bool AudioSDL::Initialize()
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        std::cerr << SDL_GetError() << std::endl;
         initialized = false;
         return false;
     }
@@ -91,7 +90,7 @@ bool AudioSDL::Initialize()
     // stereo audio, using 1024 byte chunks
     if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         initialized = false;
         return false;
     }
@@ -133,7 +132,7 @@ SoundHandle AudioSDL::LoadEffect(const std::string& filepath)
 
     if(sound == NULL)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
     }
 
@@ -152,7 +151,7 @@ SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
 
     if(music == NULL)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
     }
 
@@ -170,10 +169,7 @@ EffectPlayId AudioSDL::PlayEffect(const SoundHandle& sound, uint8_t volume, bool
 
     int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect&>(*sound.getDescriptor()).sound, (loop) ? -1 : 0);
     if(channel < 0)
-    {
-        // fprintf(stderr, "%s\n", Mix_GetError());
         return -1;
-    }
     Mix_Volume(channel, CalcEffectVolume(volume));
     return AddPlayedEffect(channel);
 }

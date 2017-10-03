@@ -19,7 +19,6 @@
 #include "Debug.h"
 #include "GameManager.h"
 #include "GlobalVars.h"
-#include "LocaleHelper.h"
 #include "ProgramInitHelpers.h"
 #include "QuickStartGame.h"
 #include "RTTR_AssertError.h"
@@ -29,6 +28,7 @@
 #include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
+#include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
@@ -36,7 +36,6 @@
 
 #ifdef _WIN32
 #include "../win32/resource.h"
-#include "WindowsCmdLine.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "libutil/ucString.h"
 #endif
@@ -44,6 +43,7 @@
 #include <boost/array.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
+#include <boost/nowide/args.hpp>
 #include <boost/program_options.hpp>
 
 #ifdef __APPLE__
@@ -404,11 +404,8 @@ int RunProgram(const std::string& argv0, po::variables_map& options)
  */
 int main(int argc, char** argv)
 {
-#ifdef _WIN32
-    // Replace arguments by UTF8 versions
-    WindowsCmdLine winCmdLine;
-    argv = winCmdLine.getArgv();
-#endif // _WIN32
+    bnw::args(argc, argv);
+
     po::options_description desc("Allowed options");
     desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),
                                               "Map to load")("test", "Run in test mode (shows errors during run)");

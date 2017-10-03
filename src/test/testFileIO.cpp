@@ -19,10 +19,10 @@
 #include "ListDir.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(FileIOSuite)
@@ -49,9 +49,9 @@ struct FileOpenFixture
         BOOST_TEST_CHECKPOINT("Creating tmp path" << tmpPath);
         bfs::create_directories(tmpPath);
         BOOST_TEST_CHECKPOINT("Creating files");
-        bfs::ofstream fNormal(tmpPath / fileNormal);
-        bfs::ofstream fUmlaut(tmpPath / fileUmlaut);
-        bfs::ofstream fSpecial(tmpPath / fileSpecial);
+        bnw::ofstream fNormal(tmpPath / fileNormal);
+        bnw::ofstream fUmlaut(tmpPath / fileUmlaut);
+        bnw::ofstream fSpecial(tmpPath / fileSpecial);
         BOOST_TEST_CHECKPOINT("Filling files");
         fNormal << "OK";
         fUmlaut << "OK";
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
         // Scopes for auto-close
         {
             // path input
-            bfs::ifstream sFile(filePath);
+            bnw::ifstream sFile(filePath);
             BOOST_REQUIRE(sFile);
             std::string content;
             BOOST_REQUIRE(sFile >> content);
@@ -89,7 +89,7 @@ BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
 
         {
             // string input
-            bfs::ifstream sFile(file);
+            bnw::ifstream sFile(file);
             BOOST_REQUIRE(sFile);
             std::string content;
             BOOST_REQUIRE(sFile >> content);

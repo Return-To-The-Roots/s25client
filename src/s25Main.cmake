@@ -40,24 +40,7 @@ SET(s25Main_SRCS
 	${SOURCES_SUBDIRS}
 )
 
-# bzip linkerbug-fix
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
-    set(bzip2ContribDir "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.6")
-	IF(IS_DIRECTORY "${bzip2ContribDir}" )
-		SET(SOURCES_BZIP
-			${bzip2ContribDir}/blocksort.c
-			${bzip2ContribDir}/bzlib.c
-			${bzip2ContribDir}/compress.c
-			${bzip2ContribDir}/crctable.c
-			${bzip2ContribDir}/decompress.c
-			${bzip2ContribDir}/huffman.c
-			${bzip2ContribDir}/randtable.c
-		)
-        add_library(bzip2 STATIC ${SOURCES_BZIP})
-        set(BZIP2_LIBRARIES bzip2)
-	ENDIF()
-ENDIF()
-
+include_directories(${UTF8_INCLUDE_DIR})
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 ADD_DEPENDENCIES(s25Main updateversion)
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -66,7 +49,6 @@ TARGET_LINK_LIBRARIES(s25Main
 	lobby_c
 	s25util
 	mygettext
-    utf8
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
 	${LUA_LIBRARY}

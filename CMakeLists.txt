@@ -1,12 +1,10 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
-# CMake 2.8.9 required for POSITION_INDEPENDENT_CODE target property
-CMAKE_POLICY(SET CMP0003 NEW)
-CMAKE_POLICY(SET CMP0015 NEW)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
 	# RPath enabled by default. Rpath only supported in CMake >2.8.12
 	CMAKE_POLICY(SET CMP0042 OLD)
 ENDIF()
 IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
+    # Simplified variable expansion. No change for usual variable references so use faster one
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
@@ -129,8 +127,7 @@ IF(NOT Boost_FOUND)
     "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
     "since cmake was unable to find boost!")
 ELSEIF("${BOOST_LIBRARYDIR}" STREQUAL "")
-	SET(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIR}/stage/lib/${CMAKE_LIBRARY_ARCHITECTURE}")
-	MESSAGE(STATUS "Set boost library directory hint to: ${BOOST_LIBRARY_DIR}")
+	SET(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIR}/stage/lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Hint for boost libraries")
 ENDIF()
 
 SET(TMP_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
@@ -152,6 +149,26 @@ UNSET(TMP_BOOST_VERSION)
 
 find_package(ClangFormat 5.0.0)
 
+# Special BZip2
+if(WIN32)
+    set(bzip2ContribDir "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.6")
+	IF(IS_DIRECTORY "${bzip2ContribDir}" )
+		SET(SOURCES_BZIP
+			${bzip2ContribDir}/blocksort.c
+			${bzip2ContribDir}/bzlib.c
+			${bzip2ContribDir}/compress.c
+			${bzip2ContribDir}/crctable.c
+			${bzip2ContribDir}/decompress.c
+			${bzip2ContribDir}/huffman.c
+			${bzip2ContribDir}/randtable.c
+		)
+        add_library(bzip2 STATIC ${SOURCES_BZIP})
+        set(BZIP2_FOUND TRUE)
+        set(BZIP2_LIBRARIES bzip2)
+        set(BZIP2_INCLUDE_DIR ${bzip2ContribDir})
+	ENDIF()
+ENDIF()
+
 ################################################################################
 # Set paths
 # All paths are relative to the install-prefix.
@@ -160,7 +177,7 @@ IF(NOT "${RTTR_PREFIX}" STREQUAL "")
 	MESSAGE(FATAL_ERROR "Using RTTR_PREFIX was removed and the meaning of the paths have changed. Clear RTTR_PREFIX to disable this warning")
 ENDIF()
 
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (WIN32)
 	# Windows uses one directory only
 	SET(RTTR_BINDIR "." CACHE INTERNAL "")
 	SET(RTTR_DATADIR "." CACHE INTERNAL "")
@@ -169,6 +186,7 @@ IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
 	SET(RTTR_DOCDIR "." CACHE INTERNAL "")
 	SET(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
 ELSE()
+    message(FATAL_ERROR "D")
 	include(GNUInstallDirs)
 	SET(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
 	SET(RTTR_DATADIR "${CMAKE_INSTALL_DATAROOTDIR}/s25rttr" CACHE STRING "Data directory")
@@ -237,36 +255,37 @@ IF (MSVC)
 	IF(RTTR_ENABLE_WERROR)
 		ADD_DEFINITIONS(/WX) # warning = error
 	ENDIF()
-ELSE (MSVC)
+ELSE ()
 	CheckAndAddFlag("-Wall")
 	IF(RTTR_ENABLE_WERROR)
 		CheckAndAddFlag("-Werror")
 	ENDIF()
+    CheckAndAddFlag("-pedantic")
+    CheckAndAddFlag("-Wpedantic")
+    CheckAndAddFlag("-Wparentheses")
+    CheckAndAddFlag("-Wno-error=type-limits")
+    CheckAndAddFlag("-Wfloat-conversion")
+    CheckAndAddFlag("-Wno-long-long")
+    CheckAndAddFlag("-Wno-deprecated-register")
+    CheckAndAddFlag("-Wno-unknown-pragmas")
+    CheckAndAddFlag("-Wno-c++11-extensions")
+    CheckAndAddFlag("-fno-strict-aliasing")
+    CheckAndAddFlag("-Qunused-arguments")
+
+    CHECK_CXX_SOURCE_COMPILES("
+        #if __cplusplus >= 201103L
+        int main() {}
+        #endif" COMPILER_IN_CXX11_MODE)
+    IF(COMPILER_IN_CXX11_MODE)
+        CheckAndAddFlag("-Wsuggest-override")
+        CheckAndAddFlag("-Wno-error=suggest-override")
+    ENDIF(COMPILER_IN_CXX11_MODE)
+    
+    # Variadic macros are part of C99 but supported by all big compilers in C++03
+    CheckAndAddFlag("-Wno-variadic-macros")
+    CheckAndAddFlag("-Wno-c99-extensions")
 ENDIF (MSVC)
-CheckAndAddFlag("-pedantic")
-CheckAndAddFlag("-Wpedantic")
-CheckAndAddFlag("-Wparentheses")
-CheckAndAddFlag("-Wno-error=type-limits")
-CheckAndAddFlag("-Wfloat-conversion")
-CheckAndAddFlag("-Wno-long-long")
-CheckAndAddFlag("-Wno-deprecated-register")
-CheckAndAddFlag("-Wno-unknown-pragmas")
-CheckAndAddFlag("-Wno-c++11-extensions")
-CheckAndAddFlag("-fno-strict-aliasing")
-CheckAndAddFlag("-Qunused-arguments")
 
-CHECK_CXX_SOURCE_COMPILES("
-	#if __cplusplus >= 201103L
-	int main() {}
-	#endif" COMPILER_IN_CXX11_MODE)
-IF(COMPILER_IN_CXX11_MODE)
-	CheckAndAddFlag("-Wsuggest-override")
-	CheckAndAddFlag("-Wno-error=suggest-override")
-ENDIF(COMPILER_IN_CXX11_MODE)
-
-# Variadic macros are part of C99 but supported by all big compilers in C++03
-CheckAndAddFlag("-Wno-variadic-macros")
-CheckAndAddFlag("-Wno-c99-extensions")
 ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
 # VS does not support coverage analysis
@@ -289,7 +308,7 @@ if(NOT MSVC)
 	endif()
 endif()
 
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (WIN32)
 	# Enforce unicode
 	ADD_DEFINITIONS(-DUNICODE)
 	ADD_DEFINITIONS(-D_UNICODE)
@@ -364,7 +383,7 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/prepareRelease.sh
 	DESTINATION "."
 	FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 	GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (NOT WIN32)
 	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake"
 			   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh @ONLY)
 	file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh
@@ -396,8 +415,8 @@ ADD_CUSTOM_TARGET(updateversion ALL
 
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)
-ADD_SUBDIRECTORY(libsiedler2)
 ADD_SUBDIRECTORY(libutil)
+ADD_SUBDIRECTORY(libsiedler2)
 # Build lobby client
 SET(RTTR_BUILD_LOBBY_CLIENT TRUE)
 ADD_SUBDIRECTORY(liblobby)
@@ -425,7 +444,7 @@ endif()
 # Install
 
 # Start script
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (WIN32)
 	install(PROGRAMS "release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
 ELSEIF("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux" OR "${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
 	install(PROGRAMS "release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
@@ -441,7 +460,7 @@ install(DIRECTORY "RTTR" DESTINATION "${RTTR_DATADIR}"
 )
 
 # Documentation. TODO: Avoid recursive entries?
-IF (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+IF (NOT WIN32)
 	install(DIRECTORY "RTTR/texte/" DESTINATION "${RTTR_DOCDIR}"
 			FILES_MATCHING PATTERN "*.txt"
 	)

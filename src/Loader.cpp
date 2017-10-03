@@ -22,7 +22,6 @@
 #include "ListDir.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
-#include "boost/interprocess/smart_ptr/unique_ptr.hpp"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
@@ -50,6 +49,7 @@
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <algorithm>
 #include <cstdio>
 #include <iomanip>

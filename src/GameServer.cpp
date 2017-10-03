@@ -47,9 +47,8 @@
 #include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
-#include <fstream>
+#include <boost/nowide/fstream.hpp>
 
 GameServer::ServerConfig::ServerConfig()
 {
@@ -1405,7 +1404,7 @@ void GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
-    bfs::ofstream file(fileName);
+    bnw::ofstream file(fileName);
 
     if(file)
     {

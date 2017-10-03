@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "LocaleHelper.h"
 #include "files.h"
 #include "ogl/glAllocator.h"
+#include "libutil/LocaleHelper.h"
 // Test helpers. Header only
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
 #include "libsiedler2/libsiedler2.h"

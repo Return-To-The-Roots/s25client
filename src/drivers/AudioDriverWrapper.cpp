@@ -146,15 +146,13 @@ SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
 
 SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
-    std::ofstream fs;
-    std::string filePath = createTempFile(fs, extension);
-    if(!fs)
+    TmpFile tmp(extension);
+    if(!tmp.isValid())
         return SoundHandle();
-    if(soundArchiv.write(fs) != 0)
+    if(soundArchiv.write(tmp.getStream()) != 0)
         return SoundHandle();
-    fs.close();
-    SoundHandle sound = LoadMusic(filePath);
-    unlinkFile(filePath);
+    tmp.close();
+    SoundHandle sound = LoadMusic(tmp.filePath);
     return sound;
 }
 
@@ -168,15 +166,13 @@ SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
 
 SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension)
 {
-    std::ofstream fs;
-    std::string filePath = createTempFile(fs, extension);
-    if(!fs)
+    TmpFile tmp(extension);
+    if(!tmp.isValid())
         return SoundHandle();
-    if(soundArchiv.write(fs) != 0)
+    if(soundArchiv.write(tmp.getStream()) != 0)
         return SoundHandle();
-    fs.close();
-    SoundHandle sound = LoadEffect(filePath);
-    unlinkFile(filePath);
+    tmp.close();
+    SoundHandle sound = LoadEffect(tmp.filePath);
     return sound;
 }
 

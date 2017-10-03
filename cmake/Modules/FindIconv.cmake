@@ -21,7 +21,7 @@ FIND_LIBRARY(ICONV_LIBRARY NAMES iconv libiconv2 c
   /usr/local/${LIB_DESTINATION}) 
  
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(IConv DEFAULT_MSG ICONV_INCLUDE_DIR ICONV_LIBRARY)
+find_package_handle_standard_args(Iconv DEFAULT_MSG ICONV_INCLUDE_DIR ICONV_LIBRARY)
 
 MARK_AS_ADVANCED(
   ICONV_INCLUDE_DIR
