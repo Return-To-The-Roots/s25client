@@ -1,17 +1,29 @@
-FORCE_ADD_FLAGS(CMAKE_C_FLAGS -DNOMINMAX)
-FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -DNOMINMAX)
+ADD_DEFINITIONS(-DNOMINMAX)
 SET(Boost_USE_STATIC_LIBS TRUE)
 
 IF(NOT MSVC)
+    include(CheckCXXSourceCompiles)
 	# set compiler flags
-	FORCE_ADD_FLAGS(CMAKE_C_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -fomit-frame-pointer -ggdb)
-	FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -ffast-math -mmmx -msse -mfpmath=sse -fomit-frame-pointer -ggdb)
+    set(ADDITIONAL_FLAGS -ffast-math -mmmx -msse -fomit-frame-pointer -ggdb)
+    # Bug in MinGW with mfpmath=sse
+    set(CMAKE_REQUIRED_FLAGS "-msse -mfpmath=sse")
+    check_cxx_source_compiles("
+        #include <cmath>
+        int main() {}" FPMATH_SUPPORTED)
+    set(CMAKE_REQUIRED_FLAGS )
+    if(FPMATH_SUPPORTED)
+        list(APPEND ADDITIONAL_FLAGS -mfpmath=sse)
+    endif()
+	FORCE_ADD_FLAGS(CMAKE_C_FLAGS ${ADDITIONAL_FLAGS})
+	FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS ${ADDITIONAL_FLAGS})
 
-	# bugfix for cygwin
-	#ADD_DEFINITIONS(-D_WIN32 -D__USE_W32_SOCKETS)
-
-	FORCE_ADD_FLAGS(CMAKE_C_FLAGS -D_WIN32 -D__USE_W32_SOCKETS)
-	FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS -D_WIN32 -D__USE_W32_SOCKETS)
+	ADD_DEFINITIONS(-D__USE_W32_SOCKETS)
+    # If using MinGW under windows we detect this and add it to the CMAKE_PREFIX_PATH
+    if(${CMAKE_CXX_COMPILER} MATCHES "MinGW/bin/")
+        get_filename_component(MINGW_BIN_PATH ${CMAKE_CXX_COMPILER} DIRECTORY)
+        get_filename_component(MINGW_PATH ${MINGW_BIN_PATH} DIRECTORY)
+        list(APPEND CMAKE_PREFIX_PATH ${MINGW_PATH})
+    endif()
 ELSE(NOT MSVC)
 	# disable MSVC "use secure function"
 	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
