@@ -26,25 +26,20 @@
 #include "libutil/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
+#include <vector>
 
 #ifdef _WIN32
+#ifdef HAVE_DBGHELP_H
 #include <windows.h>
-
-// Disable warning for faulty nameless enum typdef (check sfImage.../hdBase...)
+// Disable warning for faulty nameless enum typedef (check sfImage.../hdBase...)
 #pragma warning(push)
 #pragma warning(disable : 4091)
 #include <dbghelp.h>
-
 #pragma warning(pop)
+
+#ifdef _MSC_VER
+#pragma comment(lib, "dbgHelp.lib")
 #else
-#include <execinfo.h>
-#endif
-
-#ifdef _WIN32
-
-typedef USHORT(WINAPI* CaptureStackBackTraceType)(ULONG, ULONG, PVOID*, PULONG);
-
-#ifndef _MSC_VER
 typedef WINBOOL(WINAPI* SymInitializeType)(HANDLE hProcess, PSTR UserSearchPath, WINBOOL fInvadeProcess);
 typedef WINBOOL(WINAPI* SymCleanupType)(HANDLE hProcess);
 typedef VOID(WINAPI* RtlCaptureContextType)(PCONTEXT ContextRecord);
@@ -52,10 +47,101 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
                                        PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
                                        PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
                                        PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine, PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
+#endif // _MSC_VER
+#endif // HAVE_DBGHELP_H
+
 #else
-#undef CaptureStackBackTrace
-#pragma comment(lib, "dbgHelp.lib")
+#include <execinfo.h>
 #endif
+
+#ifdef _WIN32
+#ifdef HAVE_DBGHELP_H
+bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
+{
+    CONTEXT context;
+#ifndef _MSC_VER
+
+    HMODULE kernel32 = LoadLibraryA("kernel32.dll");
+    HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
+
+    if(!kernel32 || !dbghelp)
+        return false;
+
+    RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
+
+    SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
+    SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
+    StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
+    PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 =
+      (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
+    PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
+
+    if(!SymInitialize || !StackWalk64 || !SymFunctionTableAccess64 || !SymGetModuleBase64 || !RtlCaptureContext)
+        return false;
+#endif
+
+    const HANDLE process = GetCurrentProcess();
+    if(!SymInitialize(process, NULL, true))
+        return false;
+
+    if(!ctx)
+    {
+        context.ContextFlags = CONTEXT_FULL;
+        RtlCaptureContext(&context);
+        ctx = &context;
+    }
+
+    STACKFRAME64 frame;
+    memset(&frame, 0, sizeof(frame));
+
+#ifdef _WIN64
+    frame.AddrPC.Offset = ctx->Rip;
+    frame.AddrStack.Offset = ctx->Rsp;
+    frame.AddrFrame.Offset = ctx->Rbp;
+#else
+    frame.AddrPC.Offset = ctx->Eip;
+    frame.AddrStack.Offset = ctx->Esp;
+    frame.AddrFrame.Offset = ctx->Ebp;
+#endif
+
+    frame.AddrPC.Mode = AddrModeFlat;
+    frame.AddrStack.Mode = AddrModeFlat;
+    frame.AddrFrame.Mode = AddrModeFlat;
+
+    HANDLE thread = GetCurrentThread();
+#ifdef _WIN64
+    DWORD machineType = IMAGE_FILE_MACHINE_AMD64;
+#else
+    DWORD machineType = IMAGE_FILE_MACHINE_I386;
+#endif
+
+    for(unsigned i = 0; i < stacktrace.size(); i++)
+    {
+        if(!StackWalk64(machineType, process, thread, &frame, ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
+        {
+            stacktrace.resize(i);
+            break;
+        }
+        LOG.write("Reading stack frame %1%\n") % i;
+        stacktrace[i] = (void*)frame.AddrPC.Offset;
+    }
+
+    SymCleanup(process);
+    return true;
+}
+#else  // HAVE_DBGHELP_H
+bool captureBacktrace(std::vector<void*>&, void* = NULL)
+{
+    return false;
+}
+#endif // HAVE_DBGHELP_H
+
+#else
+void captureBacktrace(std::vector<void*>& stacktrace)
+{
+    unsigned num_frames = backtrace(stacktrace, stacktrace.size());
+    stacktrace.resize(num_frames);
+}
 #endif
 
 DebugInfo::DebugInfo()
@@ -68,7 +154,7 @@ DebugInfo::DebugInfo()
     SendUnsigned(0x00000001);
 
 // OS
-#ifdef _WIN32
+#if defined _WIN32 || defined __CYGWIN__
     SendString("WIN");
 // TODO: These should be based on uname(3) output.
 #elif defined __APPLE__
@@ -142,125 +228,29 @@ bool DebugInfo::SendString(const std::string& str)
     return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
 }
 
-#ifdef _WIN32
-void* CALLBACK FunctionTableAccess(HANDLE hProcess, DWORD64 AddrBase)
-{
-    return NULL;
-}
-#endif
-
 #ifdef _MSC_VER
 bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
 #else
 bool DebugInfo::SendStackTrace()
 #endif
 {
-    const unsigned maxTrace = 256;
-    void* stacktrace[maxTrace];
-
-#ifdef _WIN32
-
-#ifndef _MSC_VER
-    CONTEXT context;
-    LPCONTEXT ctx = NULL;
-
-    HMODULE kernel32 = LoadLibraryA("kernel32.dll");
-    HMODULE dbghelp = LoadLibraryA("dbghelp.dll");
-
-    if((!kernel32) || (!dbghelp))
-    {
-        return (false);
-    }
-
-    RtlCaptureContextType RtlCaptureContext = (RtlCaptureContextType)(GetProcAddress(kernel32, "RtlCaptureContext"));
-
-    SymInitializeType SymInitialize = (SymInitializeType)(GetProcAddress(dbghelp, "SymInitialize"));
-    SymCleanupType SymCleanup = (SymCleanupType)(GetProcAddress(dbghelp, "SymCleanup"));
-
-    StackWalkType StackWalk64 = (StackWalkType)(GetProcAddress(dbghelp, "StackWalk64"));
-    PFUNCTION_TABLE_ACCESS_ROUTINE64 SymFunctionTableAccess64 =
-      (PFUNCTION_TABLE_ACCESS_ROUTINE64)(GetProcAddress(dbghelp, "SymFunctionTableAccess64"));
-    PGET_MODULE_BASE_ROUTINE64 SymGetModuleBase64 = (PGET_MODULE_BASE_ROUTINE64)(GetProcAddress(dbghelp, "SymGetModuleBase64"));
-
-    if((!SymInitialize) || (!StackWalk64) || (!SymFunctionTableAccess64) || (!SymGetModuleBase64) || (!RtlCaptureContext))
-    {
-        return (false);
-    }
-#endif
-
-    if(!SymInitialize(GetCurrentProcess(), NULL, true))
-    {
-        return (false);
-    }
-
-#ifndef _MSC_VER
-    if(!ctx)
-    {
-        context.ContextFlags = CONTEXT_FULL;
-        RtlCaptureContext(&context);
-        ctx = &context;
-    }
-#endif
-
-    STACKFRAME64 frame;
-    memset(&frame, 0, sizeof(frame));
-
-#ifdef _WIN64
-    frame.AddrPC.Offset = ctx->Rip;
-    frame.AddrStack.Offset = ctx->Rsp;
-    frame.AddrFrame.Offset = ctx->Rbp;
+    std::vector<void*> stacktrace(256);
+#ifdef _MSC_VER
+    if(!captureBacktrace(stacktrace, ctx))
+        return false;
 #else
-    frame.AddrPC.Offset = ctx->Eip;
-    frame.AddrStack.Offset = ctx->Esp;
-    frame.AddrFrame.Offset = ctx->Ebp;
+    captureBacktrace(stacktrace);
 #endif
+    if(stacktrace.empty())
+        return false;
 
-    frame.AddrPC.Mode = AddrModeFlat;
-    frame.AddrStack.Mode = AddrModeFlat;
-    frame.AddrFrame.Mode = AddrModeFlat;
-
-    HANDLE process = GetCurrentProcess();
-    HANDLE thread = GetCurrentThread();
-
-    unsigned num_frames = 0;
-    while(StackWalk64(
-#ifdef _WIN64
-            IMAGE_FILE_MACHINE_AMD64,
-#else
-            IMAGE_FILE_MACHINE_I386,
-#endif
-            process, thread, &frame, ctx, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL)
-          && (num_frames < maxTrace))
-    {
-        LOG.write("Reading stack frame %d\n") % num_frames;
-        stacktrace[num_frames++] = (void*)frame.AddrPC.Offset;
-    }
-
-    SymCleanup(GetCurrentProcess());
-
-/*CaptureStackBackTraceType CaptureStackBackTrace = (CaptureStackBackTraceType)(GetProcAddress(LoadLibraryA("kernel32.dll"),
-"RtlCaptureStackBackTrace"));
-
-if (!CaptureStackBackTrace)
-{
-    return(false);
-}
-
-unsigned num_frames = CaptureStackBackTrace(0, maxTrace, stacktrace, NULL);
-LOG.write("Read Frames %d\n") % num_frames;
-*/
-#else
-    unsigned num_frames = backtrace(stacktrace, maxTrace);
-#endif
-
-    LOG.write("Will now send %d stack frames\n") % num_frames;
+    LOG.write("Will now send %1% stack frames\n") % stacktrace.size();
 
     if(!SendString("StackTrace"))
-        return (false);
+        return false;
 
-    num_frames *= sizeof(void*);
-
-    return (SendString((char*)&stacktrace, num_frames));
+    unsigned stacktraceLen = sizeof(void*) * stacktrace.size();
+    return SendString(reinterpret_cast<char*>(&stacktrace[0]), stacktraceLen);
 }
 
 bool DebugInfo::SendReplay()

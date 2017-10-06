@@ -19,52 +19,31 @@
 #include "helpers/win32_nanosleep.h"
 
 #ifdef _WIN32
-
-#include <cstdio>
-#include <ctime>
-#include <winsock2.h>
-
-/**
- *  Sleep at least some number of microseconds
- */
-int usleep(useconds_t microseconds)
-{
-    int err = 0;
-
-    if(microseconds)
-    {
-        static const useconds_t one_second = 1000000;
-        static SOCKET sock = INVALID_SOCKET;
-
-        timeval tv_delay;
-        fd_set set;
-
-        if(sock == INVALID_SOCKET)
-            sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-        FD_ZERO(&set);
-        FD_SET(sock, &set);
-
-        tv_delay.tv_sec = microseconds / one_second;
-        tv_delay.tv_usec = microseconds % one_second;
-
-        err = select(0, NULL, NULL, &set, &tv_delay);
-    }
-    return err;
-}
+#include <windows.h>
+#include <stdint.h>
 
 /**
  *  nanosleep replacement for windows.
  */
 int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay)
 {
-    const useconds_t one_second = 1000000;
-    const useconds_t nano_per_micro = 1000;
-    useconds_t micro_delay;
+    const int64_t usPerSecond = 1000 * 1000;
+    const int64_t nsPerus = 1000;
+    int64_t micro_delay =
+      static_cast<int64_t>(requested_delay->tv_sec) * usPerSecond + (requested_delay->tv_nsec + nsPerus - 1) / nsPerus; // Round
 
-    micro_delay = useconds_t(requested_delay->tv_sec) * one_second + (requested_delay->tv_nsec + nano_per_micro - 1) / nano_per_micro;
-
-    return usleep(micro_delay);
+    HANDLE timer = CreateWaitableTimer(NULL, TRUE, NULL);
+    if(timer == NULL)
+        return -1;
+    LARGE_INTEGER ft;
+    ft.QuadPart = -(10 * micro_delay); // 100ns intervalls, negative to be relative
+    int result;
+    if(SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0) && WaitForSingleObject(timer, INFINITE) == WAIT_OBJECT_0)
+        result = 0;
+    else
+        result = -1;
+    CloseHandle(timer);
+    return result;
 }
 
 #endif // !_WIN32

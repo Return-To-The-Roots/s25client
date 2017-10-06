@@ -1,10 +1,4 @@
-IF ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )
-	# bug: cmake cross detection's not implemented, so he never finds anything!
-	#FIND_LIBRARY(GDI32_LIBRARY    gdi32)
-	#FIND_LIBRARY(OPENGL32_LIBRARY opengl32)
-	#FIND_LIBRARY(USER32_LIBRARY   user32)
-
-	
+IF (WIN32)
 	FIND_PACKAGE(Boost 1.55.0 REQUIRED)
 	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 

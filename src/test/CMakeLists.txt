@@ -14,7 +14,7 @@ unset(RTTR_BASE_DIR)
 unset(RTTR_LIBSIEDLER2_TEST_FILES_DIR)
 
 file(GLOB TEST_SOURCES *.cpp *.h)
-add_executable(Test ${TEST_SOURCES})# ${CMAKE_SOURCE_DIR}/driver/src/AudioDriver.cpp ${CMAKE_SOURCE_DIR}/driver/src/VideoDriver.cpp)
+add_executable(Test ${TEST_SOURCES})
 target_link_libraries(Test
 						s25Main
                         audiodrv
@@ -42,4 +42,9 @@ else()
 		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/${RTTR_BINDIR}"
 		RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/${RTTR_BINDIR}"
 	)
+endif()
+
+if(WIN32)
+    include(GatherDll)
+    gather_dll_copy(Test)
 endif()

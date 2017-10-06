@@ -16,10 +16,13 @@ ELSE()
 						${Boost_INCLUDE_DIR}
 					   )
 	
-	SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
-	IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	IF (WIN32)
 		ADD_DEFINITIONS(-DBUILD_DLL)
-		SET(SL_PREFIX "")
+        include(GatherDll)
+        gather_dll(SDLMIXER)
+        gather_dll_by_name(VORBIS libvorbis-0.dll)
+        gather_dll_by_name(VORBISFILE libvorbisfile-3.dll)
+        gather_dll_by_name(OGG libogg-0.dll)
 	ENDIF ()
 		
     FILE(GLOB LIB_SRC *.cpp *.h)

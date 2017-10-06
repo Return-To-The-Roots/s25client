@@ -73,8 +73,6 @@ void ctrlComboBox::Resize(const Extent& newSize)
 
             // Höhe um eins erniedrigen, damits wieder kleiner ist als die maximale
             listSize.y -= font->getHeight();
-            ;
-
             break;
         }
     }

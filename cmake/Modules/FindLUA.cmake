@@ -3,7 +3,7 @@
 # For MSVC it also sets LUA_DLL
 # Requires LUA_VERSION to be set to MAJORMINOR (e.g. 52)
 
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+if(WIN32)
 	if("${PLATFORM_ARCH}" STREQUAL "i386")
 		SET(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win32")
 	ELSE()

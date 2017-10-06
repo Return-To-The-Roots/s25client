@@ -8,8 +8,10 @@ IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
+set(RTTR_CONTRIB_DIR ${CMAKE_SOURCE_DIR}/contrib)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libutil/cmake/Modules")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib")
+list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR}")
 
 INCLUDE(CMakeMacroSetCCache)
 INCLUDE(CMakeMacroAddFlags)
@@ -34,12 +36,14 @@ STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
 SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE INTERNAL "Do not change")
 
 # Set PLATFORM_ARCH
-IF(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+IF(WIN32)
 	IF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 		SET(PLATFORM_ARCH "x86_64")
-	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+	ELSE ("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
 		SET(PLATFORM_ARCH "i386")
-	ENDIF ("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+    ELSE()
+		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")    
+	ENDIF ()
 ELSE()
 	IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
 		SET(PLATFORM_ARCH "i386")
@@ -71,8 +75,8 @@ MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
 INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 
 ################################################################################
-# Default boost libs are static on self-build msvc versions and dynamic in the linux package repos
-IF(MSVC)
+# Default boost libs are static on self-build windows versions and dynamic in the linux package repos
+IF(WIN32)
 	SET(RTTR_USE_STATIC_BOOST_DEFAULT ON)
 ELSE()
 	SET(RTTR_USE_STATIC_BOOST_DEFAULT OFF)
@@ -99,14 +103,14 @@ endforeach()
 UNSET(TMP_VERSIONS)
 
 IF (MSVC)
-	SET(RTTR_CONTRIB_DIR "${CMAKE_SOURCE_DIR}/contrib/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
-	IF(NOT EXISTS ${RTTR_CONTRIB_DIR} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR} first!")
+	SET(RTTR_CONTRIB_DIR_VS "${RTTR_CONTRIB_DIR}/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
+	IF(NOT EXISTS ${RTTR_CONTRIB_DIR_VS} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR_VS})
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR_VS} first!")
 	ENDIF()
 	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
-		list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR}/VS2015")
+		list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR_VS}/VS2015")
 	ENDIF()
-	list(APPEND CMAKE_PREFIX_PATH ${RTTR_CONTRIB_DIR} ${RTTR_CONTRIB_DIR}/buildTools)
+	list(APPEND CMAKE_PREFIX_PATH ${RTTR_CONTRIB_DIR_VS} ${RTTR_CONTRIB_DIR_VS}/buildTools)
 
 	IF("${PLATFORM_ARCH}" STREQUAL "i386")
 		SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "")
@@ -116,8 +120,8 @@ IF (MSVC)
 	MESSAGE(STATUS "Building for MSVC: ${CMAKE_LIBRARY_ARCHITECTURE}")
 ENDIF()
 
-IF(EXISTS "${CMAKE_SOURCE_DIR}/contrib/boost" AND IS_DIRECTORY "${CMAKE_SOURCE_DIR}/contrib/boost")
-	SET(BOOST_ROOT ${CMAKE_SOURCE_DIR}/contrib/boost CACHE PATH "Path to find boost at")
+IF(EXISTS "${RTTR_CONTRIB_DIR}/boost" AND IS_DIRECTORY "${RTTR_CONTRIB_DIR}/boost")
+	SET(BOOST_ROOT ${RTTR_CONTRIB_DIR}/boost CACHE PATH "Path to find boost at")
 ENDIF()
 
 FIND_PACKAGE(Boost 1.55.0)
@@ -137,11 +141,11 @@ IF(TMP_BOOST_VERSION VERSION_LESS 1.56)
 		MESSAGE(FATAL_ERROR "Boost 1.55 contains a bug so that it does not work with MSVC 2013. Use a newer boost version or a different Visual Studio")
 	ENDIF()
 	MESSAGE(STATUS "Boost version smaller than 1.56 detected. Using backport 1.55-1.56")
-	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.55-1.56")
+	INCLUDE_DIRECTORIES("${RTTR_CONTRIB_DIR}/backport/boost_1.55-1.56")
 ENDIF()
 IF(TMP_BOOST_VERSION VERSION_LESS 1.58)
 	MESSAGE(STATUS "Boost version smaller than 1.58 detected. Using backport 1.56-1.58")
-	INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/contrib/backport/boost_1.56-1.58")
+	INCLUDE_DIRECTORIES("${RTTR_CONTRIB_DIR}/backport/boost_1.56-1.58")
 ELSE()
 	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
 ENDIF()
@@ -151,7 +155,7 @@ find_package(ClangFormat 5.0.0)
 
 # Special BZip2
 if(WIN32)
-    set(bzip2ContribDir "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.6")
+    set(bzip2ContribDir "${RTTR_CONTRIB_DIR}/bzip2-1.0.6")
 	IF(IS_DIRECTORY "${bzip2ContribDir}" )
 		SET(SOURCES_BZIP
 			${bzip2ContribDir}/blocksort.c
@@ -223,6 +227,11 @@ ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Ple
 
 ################################################################################
 # Definitions and flags
+
+include(CheckStructHasMember)
+
+# Do this before adding -Werror!
+check_struct_has_member("struct timespec" tv_sec time.h HAVE_STRUCT_TIMESPEC)
 
 INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(CheckCCompilerFlag)
@@ -374,8 +383,6 @@ ENDIF()
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
 			   build_paths.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_version_defines.h.cmake"
-			   build_version_defines.h @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
 		   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/prepareRelease.sh @ONLY)
 file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/prepareRelease.sh
@@ -397,6 +404,18 @@ file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 enable_testing()
+if(WIN32)
+    if(MSVC)
+        SET(CONTRIB_DLL_DIR "${RTTR_CONTRIB_DIR_VS}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
+        if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
+            MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
+        else()
+            FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
+            include(GatherDll)
+            gather_dll_add(${CONTRIB_DLLS})
+        ENDIF()
+    endif()
+endif()
 
 ################################################################################
 # Add version generater first

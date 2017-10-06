@@ -344,8 +344,8 @@ bool InitGame()
 
 int RunProgram(const std::string& argv0, po::variables_map& options)
 {
-    if(!LocaleHelper::init())
-        return 1;
+    // if(!LocaleHelper::init())
+    //    return 1;
     if(!InitWorkingDirectory(argv0))
         return 1;
     SetAppSymbol();

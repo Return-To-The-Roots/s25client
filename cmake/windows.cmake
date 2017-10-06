@@ -22,7 +22,8 @@ IF(NOT MSVC)
     if(${CMAKE_CXX_COMPILER} MATCHES "MinGW/bin/")
         get_filename_component(MINGW_BIN_PATH ${CMAKE_CXX_COMPILER} DIRECTORY)
         get_filename_component(MINGW_PATH ${MINGW_BIN_PATH} DIRECTORY)
-        list(APPEND CMAKE_PREFIX_PATH ${MINGW_PATH})
+        # Note: Do not add the main MinGW path (e.g. C:\MinGW) as adding C:\MinGW\include to the system include dirs causes GCC failures
+        list(APPEND CMAKE_PREFIX_PATH ${MINGW_PATH}/mingw32)
     endif()
 ELSE(NOT MSVC)
 	# disable MSVC "use secure function"
@@ -35,10 +36,9 @@ ELSE(NOT MSVC)
 	ADD_DEFINITIONS(/wd"4100")
 	# assignment operator could not be created
 	ADD_DEFINITIONS(/wd"4512")
-	# disable MSVC posix functions
-	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE)
-	ADD_DEFINITIONS(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	ADD_DEFINITIONS(/w34062) # Enum not handled in switch
+	# disable MSVC posix functions
+	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
 	# Strip unused symbols and us COMDAT folding
 	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")

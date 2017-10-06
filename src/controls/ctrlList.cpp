@@ -162,6 +162,9 @@ bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
  */
 void ctrlList::Draw_()
 {
+    if(lines.empty())
+        return;
+
     // Box malen
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
 

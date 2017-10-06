@@ -8,10 +8,10 @@ IF (SDL_FOUND)
 
 	INCLUDE_DIRECTORIES(${SDL_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 
-	SET(SL_PREFIX ${CMAKE_SHARED_LIBRARY_PREFIX})
-	IF ( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	IF (WIN32)
 		ADD_DEFINITIONS(-DBUILD_DLL)
-		SET(SL_PREFIX "")
+        include(GatherDll)
+        gather_dll_by_name(SDL SDL.dll)
 	ENDIF ()
 
 	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})

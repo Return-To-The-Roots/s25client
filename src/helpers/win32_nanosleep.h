@@ -21,19 +21,14 @@
 
 #ifdef _WIN32
 #include <ctime>
-typedef unsigned useconds_t;
 
-#if !defined(_TIMESPEC_DEFINED) && (!defined(_MSC_VER) || _MSC_VER < 1900)
-#define _TIMESPEC_DEFINED
+#ifndef HAVE_STRUCT_TIMESPEC
 struct timespec
 {
     time_t tv_sec; // Seconds.
     long tv_nsec;  // Nanoseconds.
 };
 #endif
-
-/// Sleep at least some number of microseconds.
-int usleep(useconds_t microseconds);
 
 /// nanosleep replacement for windows.
 int nanosleep(const struct timespec* requested_delay, struct timespec* remaining_delay);

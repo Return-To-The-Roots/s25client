@@ -1,3 +1,11 @@
+
+include(CheckIncludeFiles)
+check_include_files("windows.h;dbghelp.h" HAVE_DBGHELP_H)
+if(HAVE_DBGHELP_H)
+    add_definitions(-DHAVE_DBGHELP_H)
+endif()
+
+
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
 LIST(APPEND SOURCES_OTHER ${COMMON_SRC})
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
@@ -66,11 +74,6 @@ if(MSVC)
 						DEPENDS version
 						WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
-    if(RTTR_BINARIES_TO_COPY)
-        foreach(file_i ${RTTR_BINARIES_TO_COPY})
-            add_custom_command(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${CMAKE_BINARY_DIR})
-        endforeach()
-    endif()
 
 	ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")
 ENDIF()
