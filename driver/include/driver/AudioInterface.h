@@ -62,7 +62,7 @@ public:
 // Makros / Defines
 #undef DRIVERDLLAPI
 #ifdef _WIN32
-#if defined _USRDLL || defined _LIB || defined BUILD_DLL
+#ifdef BUILD_DLL
 #define DRIVERDLLAPI extern "C" __declspec(dllexport)
 #else
 #define DRIVERDLLAPI extern "C" __declspec(dllimport)

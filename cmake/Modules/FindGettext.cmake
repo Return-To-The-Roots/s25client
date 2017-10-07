@@ -18,8 +18,7 @@ FIND_PROGRAM(GETTEXT_MSGMERGE_EXECUTABLE msgmerge)
 
 FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt)
 
-MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
-
+function(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
    SET(_gmoFiles)
    GET_FILENAME_COMPONENT(_potBasename ${_potFile} NAME_WE)
    GET_FILENAME_COMPONENT(_absPotFile ${_potFile} ABSOLUTE)
@@ -28,7 +27,7 @@ MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
    IF(${_firstPoFile} STREQUAL "ALL")
       SET(_addToAll "ALL")
       SET(_firstPoFile)
-   ENDIF(${_firstPoFile} STREQUAL "ALL")
+   ENDIF()
 
    FOREACH (_currentPoFile ${ARGN})
       GET_FILENAME_COMPONENT(_absFile ${_currentPoFile} ABSOLUTE)
@@ -49,7 +48,7 @@ MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
 
    ADD_CUSTOM_TARGET(translations ${_addToAll} DEPENDS ${_gmoFiles})
 
-ENDMACRO(GETTEXT_CREATE_TRANSLATIONS )
+endfunction()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Gettext DEFAULT_MSG GETTEXT_MSGMERGE_EXECUTABLE GETTEXT_MSGFMT_EXECUTABLE)

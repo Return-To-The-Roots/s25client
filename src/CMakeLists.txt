@@ -2,7 +2,7 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost 1.55.0 COMPONENTS filesystem iostreams system program_options locale REQUIRED)
+FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale)
 
 INCLUDE(CMakeMacroForceAddFlags)
 INCLUDE(CMakeMacroRemoveFlags)
@@ -27,7 +27,7 @@ GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
 
 ################################################################################
 
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+if(APPLE)
 	CORRECT_LIB(OPENGL_gl_LIBRARY OpenGL)
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
@@ -91,7 +91,7 @@ endif()
 
 if(MSVC)
 	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
-	ADD_DEFINITIONS(/wd4267)
+	add_compile_options(/wd4267)
     option(RTTR_EDITANDCONTINUE "Enable Edit-And-Continue" OFF)
     if(RTTR_EDITANDCONTINUE)
         # Enable edit-and-continue
@@ -113,3 +113,6 @@ ENDIF()
 include(s25Main.cmake)
 add_subdirectory(s25client)
 add_subdirectory(test)
+
+# Copy the RTTR folder with the updated translations to the directory of the client.
+ADD_CUSTOM_COMMAND(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/CMakeFiles/copyDepsToBuildDir.cmake -DCMAKE_BUILD_TYPE=$<CONFIGURATION>)

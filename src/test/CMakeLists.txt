@@ -1,4 +1,4 @@
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 if(NOT Boost_USE_STATIC_LIBS)
 	ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 endif()
@@ -35,13 +35,7 @@ source_group(other FILES ${OTHER_SRC})
 if(MSVC)
 	CMAKE_POLICY(SET CMP0026 OLD) # Required for use of LOCATION_*
 	INCLUDE(CreateLaunchers)
-	create_target_launcher(Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-else()
-	SET_TARGET_PROPERTIES(Test PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/${RTTR_BINDIR}"
-		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/${RTTR_BINDIR}"
-		RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/${RTTR_BINDIR}"
-	)
+	create_target_launcher(Test)
 endif()
 
 if(WIN32)

@@ -25,29 +25,31 @@ IF(NOT MSVC)
         # Note: Do not add the main MinGW path (e.g. C:\MinGW) as adding C:\MinGW\include to the system include dirs causes GCC failures
         list(APPEND CMAKE_PREFIX_PATH ${MINGW_PATH}/mingw32)
     endif()
-ELSE(NOT MSVC)
+ELSE()
 	# disable MSVC "use secure function"
 	ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS /wd"4250")
 	# 'class1' : inherits 'class2::member' via dominance (virtual inheritance related)
-	ADD_DEFINITIONS(/wd"4250")
+	add_compile_options(/wd"4250")
 	# conditional expr is constant
-	ADD_DEFINITIONS(/wd"4127")
+	add_compile_options(/wd"4127")
 	# unreferenced formal parameter
-	ADD_DEFINITIONS(/wd"4100")
+	add_compile_options(/wd"4100")
 	# assignment operator could not be created
-	ADD_DEFINITIONS(/wd"4512")
-	ADD_DEFINITIONS(/w34062) # Enum not handled in switch
+	add_compile_options(/wd"4512")
+	add_compile_options(/w34062) # Enum not handled in switch
 	# disable MSVC posix functions
 	ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_WINSOCK_DEPRECATED_NO_WARNINGS)
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /GL") # systemintern functions for faster code; Optimize whole program
+     # systemintern functions for faster code; Optimize whole program
+	add_flags(CMAKE_CXX_FLAGS_RELEASE /Oi /GL)
+	add_flags(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL /Oi /GL)
 	# Strip unused symbols and us COMDAT folding
-	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:REF /OPT:ICF")
-	SET(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /OPT:REF /OPT:ICF")
-	SET(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /OPT:REF /OPT:ICF") 
+	add_flags(CMAKE_EXE_LINKER_FLAGS_RELEASE /OPT:REF /OPT:ICF)
+	add_flags(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL /OPT:REF /OPT:ICF)
+	add_flags(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /OPT:REF /OPT:ICF) 
 	# Add optimized debugging features
 	IF (MSVC_VERSION GREATER 1800) #VS13
-		ADD_DEFINITIONS(/d2Zi+)
+		add_compile_options(/d2Zi+)
 	ELSEIF (NOT(MSVC_VERSION LESS 1800)) # VS12
-		ADD_DEFINITIONS(/Zo)
+		add_compile_options(/Zo)
 	ENDIF()
-ENDIF(NOT MSVC)
+ENDIF()

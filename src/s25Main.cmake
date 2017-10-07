@@ -1,8 +1,9 @@
-
-include(CheckIncludeFiles)
-check_include_files("windows.h;dbghelp.h" HAVE_DBGHELP_H)
-if(HAVE_DBGHELP_H)
-    add_definitions(-DHAVE_DBGHELP_H)
+if(WIN32)
+    include(CheckIncludeFiles)
+    check_include_files("windows.h;dbghelp.h" HAVE_DBGHELP_H)
+    if(HAVE_DBGHELP_H)
+        add_definitions(-DHAVE_DBGHELP_H)
+    endif()
 endif()
 
 
@@ -63,7 +64,7 @@ TARGET_LINK_LIBRARIES(s25Main
 	${Boost_LIBRARIES}
 )
 
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	TARGET_LINK_LIBRARIES(s25Main dl)
 ENDif()
 
@@ -74,6 +75,4 @@ if(MSVC)
 						DEPENDS version
 						WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
-
-	ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")
 ENDIF()

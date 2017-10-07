@@ -25,10 +25,11 @@
 #include "helpers/Deleter.h"
 #include "libutil/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/system/api_config.hpp>
 #include <bzlib.h>
 #include <vector>
 
-#ifdef _WIN32
+#ifdef BOOST_WINDOWS_API
 #ifdef HAVE_DBGHELP_H
 #include <windows.h>
 // Disable warning for faulty nameless enum typedef (check sfImage.../hdBase...)
@@ -54,7 +55,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 #include <execinfo.h>
 #endif
 
-#ifdef _WIN32
+#ifdef BOOST_WINDOWS_API
 #ifdef HAVE_DBGHELP_H
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
 {
@@ -139,7 +140,7 @@ bool captureBacktrace(std::vector<void*>&, void* = NULL)
 #else
 void captureBacktrace(std::vector<void*>& stacktrace)
 {
-    unsigned num_frames = backtrace(stacktrace, stacktrace.size());
+    unsigned num_frames = backtrace(&stacktrace[0], stacktrace.size());
     stacktrace.resize(num_frames);
 }
 #endif
