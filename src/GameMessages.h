@@ -28,8 +28,8 @@
 #include "gameTypes/Nation.h"
 #include "gameTypes/PlayerState.h"
 #include "gameTypes/TeamTypes.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Log.h"
+#include "libutil/Serializer.h"
 #include <boost/foreach.hpp>
 
 struct JoinPlayerInfo;

@@ -45,7 +45,7 @@
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ogl/glArchivItem_Font.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 /** @class dskOptions
  *

@@ -27,7 +27,7 @@
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/BuildingCount.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <stdexcept>
 
 const BasePlayerInfo& LuaPlayer::GetPlayer() const

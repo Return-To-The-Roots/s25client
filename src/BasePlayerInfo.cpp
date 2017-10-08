@@ -17,26 +17,22 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "BasePlayerInfo.h"
-#include "libutil/src/colors.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
+#include "libutil/colors.h"
 
-BasePlayerInfo::BasePlayerInfo():
-    ps(PS_FREE),
-    nation(NAT_ROMANS),
-    color(PLAYER_COLORS[0]),
-    team(TM_NOTEAM)
-{}
+BasePlayerInfo::BasePlayerInfo() : ps(PS_FREE), nation(NAT_ROMANS), color(PLAYER_COLORS[0]), team(TM_NOTEAM)
+{
+}
 
-BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData):
-    ps(static_cast<PlayerState>(ser.PopUnsignedChar())),
-    aiInfo(!lightData || ps == PS_AI ? ser : AI::Info())
+BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
+    : ps(static_cast<PlayerState>(ser.PopUnsignedChar())), aiInfo(!lightData || ps == PS_AI ? ser : AI::Info())
 {
     if(lightData && !isUsed())
     {
         nation = NAT_ROMANS;
         team = TM_NOTEAM;
         color = PLAYER_COLORS[0];
-    }else
+    } else
     {
         name = ser.PopString();
         nation = static_cast<Nation>(ser.PopUnsignedChar());

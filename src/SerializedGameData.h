@@ -24,7 +24,7 @@
 #include "helpers/ReserveElements.hpp"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 #include <boost/static_assert.hpp>
 #include <map>
 #include <set>

@@ -33,8 +33,8 @@
 #include "iwMsgbox.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/fileFuncs.h"
+#include "libutil/Log.h"
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 class SwitchOnStart : public ClientInterface

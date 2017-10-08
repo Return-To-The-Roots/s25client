@@ -27,16 +27,17 @@
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
+#include "gameTypes/Nation.h"
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/WorldFixture.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "libutil/src/tmpFile.h"
-#include <boost/filesystem/fstream.hpp>
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libutil/tmpFile.h"
 #include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
 
@@ -46,13 +47,13 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
 {
     // Check that loading and saving a map does not alter it
     glArchivItem_Map map;
-    bfs::ifstream mapFile(testMapPath, std::ios::binary);
+    bnw::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     TmpFile outMap(".swd");
-    BOOST_REQUIRE(outMap.IsValid());
-    BOOST_REQUIRE_EQUAL(map.write(outMap.GetStream()), 0);
+    BOOST_REQUIRE(outMap.isValid());
+    BOOST_REQUIRE_EQUAL(map.write(outMap.getStream()), 0);
     mapFile.close();
-    outMap.GetStream().close();
+    outMap.close();
     BOOST_REQUIRE_EQUAL(CalcChecksumOfFile(testMapPath), CalcChecksumOfFile(outMap.filePath));
 }
 
@@ -72,13 +73,15 @@ struct LoadWorldFromFileCreator
     LoadWorldFromFileCreator(const MapExtent& size, unsigned numPlayers) : numPlayers_(numPlayers) {}
     bool operator()(GameWorldBase& world)
     {
-        bfs::ifstream mapFile(testMapPath, std::ios::binary);
-        BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+        bnw::ifstream mapFile(testMapPath, std::ios::binary);
+        if(map.load(mapFile, false) != 0)
+            throw std::runtime_error("Could not load file " + testMapPath);
         std::vector<Nation> nations;
         for(unsigned i = 0; i < numPlayers_; i++)
             nations.push_back(world.GetPlayer(i).nation);
         MapLoader loader(world, nations);
-        BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
+        if(!loader.Load(map, false, EXP_FOGOFWAR))
+            throw std::runtime_error("Could not load map");
         for(unsigned i = 0; i < numPlayers_; i++)
             hqs.push_back(loader.GetHQPos(i));
         return true;
@@ -98,7 +101,7 @@ struct WorldLoaded1PFixture : public WorldFixture<LoadWorldFromFileCreator, 1>
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 {
     glArchivItem_Map map;
-    bfs::ifstream mapFile(testMapPath, std::ios::binary);
+    bnw::ifstream mapFile(testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
     BOOST_CHECK_EQUAL(header.getWidth(), 176);

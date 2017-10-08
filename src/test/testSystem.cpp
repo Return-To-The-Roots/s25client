@@ -17,10 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
-#include "WindowsCmdLine.h"
-#include "libutil/src/System.h"
-#include "libutil/src/ucString.h"
+#include "libutil/System.h"
+#include "libutil/ucString.h"
 #include <boost/filesystem/operations.hpp>
+#include <boost/nowide/args.hpp>
 #include <boost/test/unit_test.hpp>
 
 namespace std {
@@ -107,11 +107,10 @@ BOOST_AUTO_TEST_CASE(GetUsername)
 
 BOOST_AUTO_TEST_CASE(GetExePath)
 {
+    int argc = boost::unit_test::framework::master_test_suite().argc;
     char** argv = boost::unit_test::framework::master_test_suite().argv;
-#ifdef _WIN32
-    WindowsCmdLine cmdLine;
-    argv = cmdLine.getArgv();
-#endif // _WIN32
+    bnw::args(argc, argv);
+
     bfs::path exePath = System::getExecutablePath(argv[0]);
     BOOST_REQUIRE(!exePath.empty());
     BOOST_REQUIRE(bfs::exists(exePath));
@@ -129,11 +128,10 @@ public:
 
 BOOST_AUTO_TEST_CASE(PrefixPath)
 {
+    int argc = boost::unit_test::framework::master_test_suite().argc;
     char** argv = boost::unit_test::framework::master_test_suite().argv;
-#ifdef _WIN32
-    WindowsCmdLine cmdLine;
-    argv = cmdLine.getArgv();
-#endif // _WIN32
+    bnw::args(argc, argv);
+
     bfs::path prefixPath = GetPrefixPath(argv[0]);
     BOOST_REQUIRE(!prefixPath.empty());
     BOOST_REQUIRE(bfs::exists(prefixPath));

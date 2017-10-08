@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonList.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for limiting the count of catapults

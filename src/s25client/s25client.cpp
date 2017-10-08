@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -16,39 +16,35 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "commonSrc/RTTR_AssertError.h"
-
-#include "ProgramInitHelpers.h"
-#include "SignalHandler.h"
-
-#include "GameManager.h"
-
-#include "Settings.h"
-#include "files.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/error.h"
-
-// This is for catching crashes and reporting bugs, it does not slow down anything.
 #include "Debug.h"
-
+#include "GameManager.h"
 #include "GlobalVars.h"
+#include "ProgramInitHelpers.h"
 #include "QuickStartGame.h"
-#include "libutil/src/System.h"
-#include "libutil/src/fileFuncs.h"
-
-#include "mygettext/src/mygettext.h"
+#include "RTTR_AssertError.h"
+#include "Settings.h"
+#include "SignalHandler.h"
+#include "files.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
-#include "libsiedler2/src/libsiedler2.h"
+#include "libsiedler2/libsiedler2.h"
+#include "libutil/LocaleHelper.h"
+#include "libutil/Log.h"
+#include "libutil/System.h"
+#include "libutil/error.h"
+#include "libutil/fileFuncs.h"
 
 #ifdef _WIN32
 #include "../win32/resource.h"
-#include "WindowsCmdLine.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "libutil/ucString.h"
 #endif
 
 #include <boost/array.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
+#include <boost/nowide/args.hpp>
+#include <boost/nowide/iostream.hpp>
 #include <boost/program_options.hpp>
 
 #ifdef __APPLE__
@@ -75,16 +71,23 @@
 
 namespace po = boost::program_options;
 
+// Throw this to terminate gracefully
+struct RttrExitException : std::exception
+{
+    int code;
+    RttrExitException(int code) : code(code) {}
+};
+
 void WaitForEnter()
 {
     static bool waited = false;
     if(waited)
         return;
     waited = true;
-    std::cout << "\n\nPress ENTER to close this window . . ." << std::endl;
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
+    bnw::cout << "\n\nPress ENTER to close this window . . ." << std::endl;
+    bnw::cin.clear();
+    bnw::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    bnw::cin.get();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -98,120 +101,121 @@ void WaitForEnter()
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
  *  @param[in] exception_pointer Genaue Beschreibung der Exception (siehe GetExceptionInformation)
  */
-void ExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
+void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
     fatal_error("C-Exception caught\n");
 }
 #endif // _WIN32 && _DEBUG && !NOHWETRANS
 
+bool shouldSendDebugData()
+{
+    if(SETTINGS.global.submit_debug_data == 1)
+        return true;
 #ifdef _WIN32
-#ifdef _MSC_VER
-LONG WINAPI
-#else
-void
+    std::wstring title = cvUTF8ToWideString(_("Error"));
+    std::wstring text = cvUTF8ToWideString(_(
+      "RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? Thank you very much!"));
+    if(MessageBoxW(NULL, text.c_str(), title.c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND) == IDYES)
+        return true;
 #endif
-WinExceptionHandler(
-#ifdef _MSC_VER
-  LPEXCEPTION_POINTERS info
+    return false;
+}
+
+void showCrashMessage()
+{
+    std::string text = _("RttR crashed. Please restart the application!");
+#ifdef _WIN32
+    MessageBoxW(NULL, cvUTF8ToWideString(text).c_str(), cvUTF8ToWideString(_("Error")).c_str(),
+                MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
 #else
-    int sig
+    bnw::cerr << text << std::endl;
 #endif
-)
+}
+
+void terminateProgramm()
+{
+#ifdef _DEBUG
+    abort();
+#else
+    throw RttrExitException(1);
+#endif
+}
+
+void handleException(void* pCtx = NULL)
 {
     if(GLOBALVARS.isTest)
     {
-        std::cerr << std::endl << "ERROR: Test failed!" << std::endl;
-        _exit(1);
-
-#ifdef _MSC_VER
-        return (EXCEPTION_EXECUTE_HANDLER);
-#endif
+        bnw::cerr << std::endl << "ERROR: Test failed!" << std::endl;
+        terminateProgramm();
     }
 
-    if((SETTINGS.global.submit_debug_data == 1)
-       || MessageBoxA(NULL,
-                      _("RttR crashed. Would you like to send debug information to RttR to help us avoiding this crash in the future? "
-                        "Thank you very much!"),
-                      _("Error"), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
-            == IDYES)
+    if(shouldSendDebugData())
     {
+#ifdef _WIN32
+        // TODO: Why?
         VIDEODRIVER.DestroyScreen();
-
+#endif // _WIN32
         DebugInfo di;
 
         di.SendReplay();
-        di.SendStackTrace(
-#ifdef _MSC_VER
-          info->ContextRecord
-#endif
-        );
+        di.SendStackTrace(pCtx);
     }
 
     if(SETTINGS.global.submit_debug_data == 0)
-        MessageBoxA(NULL, _("RttR crashed. Please restart the application!"), _("Error"),
-                    MB_OK | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND);
+        showCrashMessage();
 
-    _exit(1);
+    terminateProgramm();
+}
 
 #ifdef _MSC_VER
-    return (EXCEPTION_EXECUTE_HANDLER);
-#endif
+LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
+{
+    handleException(info->ContextRecord);
+    return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
-void LinExceptionHandler(int /*sig*/)
+void ExceptionHandler(int /*sig*/)
 {
-    if(GLOBALVARS.isTest)
-    {
-        std::cerr << std::endl << "ERROR: Test failed!" << std::endl;
-        abort();
-    }
-
-    if(SETTINGS.global.submit_debug_data == 1)
-    {
-        DebugInfo di;
-
-        di.SendReplay();
-        di.SendStackTrace();
-    }
-
-    abort();
+    handleException();
 }
 #endif
 
 void InstallSignalHandlers()
 {
 #ifdef _WIN32
-    SetConsoleCtrlHandler(HandlerRoutine, TRUE);
-
-#ifndef _MSC_VER
-    signal(SIGSEGV, WinExceptionHandler);
-#else
-    SetUnhandledExceptionFilter(WinExceptionHandler);
-#endif
+    SetConsoleCtrlHandler(ConsoleSignalHandler, TRUE);
 #else
     struct sigaction sa;
-    sa.sa_handler = HandlerRoutine;
+    sa.sa_handler = ConsoleSignalHandler;
     sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGPIPE, &sa, NULL);
     sigaction(SIGALRM, &sa, NULL);
+#endif
 
-    signal(SIGSEGV, LinExceptionHandler);
-#endif // _WIN32
+#ifdef _MSC_VER
+    SetUnhandledExceptionFilter(ExceptionHandler);
+#ifdef _DEBUG
+#ifndef NOHWETRANS
+    _set_se_translator(CExceptionHandler);
+#endif // !NOHWETRANS
+#ifndef NOCRTDBG
+    // Enable Memory-Leak-Detection
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
+#endif //  !NOCRTDBG
+#endif // _DEBUG
+
+#else
+    signal(SIGSEGV, ExceptionHandler);
+#endif // _MSC_VER
 }
 
 void UninstallSignalHandlers()
 {
 #ifdef _WIN32
-    SetConsoleCtrlHandler(HandlerRoutine, FALSE);
-
-#ifndef _MSC_VER
-    signal(SIGSEGV, SIG_DFL);
-#else
-    SetUnhandledExceptionFilter(NULL);
-#endif
+    SetConsoleCtrlHandler(ConsoleSignalHandler, FALSE);
 #else
     struct sigaction sa;
     sa.sa_handler = SIG_DFL;
@@ -221,9 +225,13 @@ void UninstallSignalHandlers()
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGPIPE, &sa, NULL);
     sigaction(SIGALRM, &sa, NULL);
-
-    signal(SIGSEGV, SIG_DFL);
 #endif // _WIN32
+
+#ifdef _MSC_VER
+    SetUnhandledExceptionFilter(NULL);
+#else
+    signal(SIGSEGV, SIG_DFL);
+#endif
 }
 
 /**
@@ -242,16 +250,6 @@ void ExitHandler()
 void SetAppSymbol()
 {
 #ifdef _WIN32
-#if defined _DEBUG && defined _MSC_VER
-#ifndef NOHWETRANS
-    _set_se_translator(ExceptionHandler);
-#endif // !NOHWETRANS
-#ifndef NOCRTDBG
-    // Enable Memory-Leak-Detection
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
-#endif //  !NOCRTDBG
-#endif // _DEBUG && _MSC_VER
-
     // set console window icon
     SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
 #endif // _WIN32
@@ -351,21 +349,20 @@ bool InitGame()
 
 int RunProgram(const std::string& argv0, po::variables_map& options)
 {
-    if(!InitLocale())
+    if(!LocaleHelper::init())
         return 1;
     if(!InitWorkingDirectory(argv0))
         return 1;
     SetAppSymbol();
     InstallSignalHandlers();
+    // Exit-Handler initialisieren
+    atexit(&ExitHandler);
     if(!InitDirectories())
         return 1;
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere (spielentscheidende) wird unser
     // Generator verwendet)
     srand(static_cast<unsigned>(std::time(NULL)));
-
-    // Exit-Handler initialisieren
-    atexit(&ExitHandler);
 
     try
     {
@@ -379,7 +376,6 @@ int RunProgram(const std::string& argv0, po::variables_map& options)
         while(GAMEMANAGER.Run())
         {
 #ifndef _WIN32
-            extern bool killme;
             killme = false;
 #endif // !_WIN32
         }
@@ -411,11 +407,8 @@ int RunProgram(const std::string& argv0, po::variables_map& options)
  */
 int main(int argc, char** argv)
 {
-#ifdef _WIN32
-    // Replace arguments by UTF8 versions
-    WindowsCmdLine winCmdLine;
-    argv = winCmdLine.getArgv();
-#endif // _WIN32
+    bnw::args(argc, argv);
+
     po::options_description desc("Allowed options");
     desc.add_options()("help,h", "Show help")("map,m", po::value<std::string>(),
                                               "Map to load")("test", "Run in test mode (shows errors during run)");
@@ -428,23 +421,30 @@ int main(int argc, char** argv)
 
     if(options.count("help"))
     {
-        std::cout << desc << "\n";
+        bnw::cout << desc << "\n";
         return 1;
     }
 
     GLOBALVARS.isTest = options.count("test") > 0;
     GLOBALVARS.errorOccured = false;
 
-    int result = RunProgram(argv[0], options);
+    int result;
+    try
+    {
+        result = RunProgram(argv[0], options);
+    } catch(RttrExitException& e)
+    {
+        result = e.code;
+    }
     if(GLOBALVARS.isTest)
     {
         if(result || GLOBALVARS.errorOccured)
         {
-            std::cerr << std::endl << std::endl << "ERROR: Test failed!" << std::endl;
+            bnw::cerr << std::endl << std::endl << "ERROR: Test failed!" << std::endl;
             if(!result)
                 result = 1;
         } else
-            std::cout << std::endl << std::endl << "Test passed!" << std::endl;
+            bnw::cout << std::endl << std::endl << "Test passed!" << std::endl;
     }
     if(result)
         WaitForEnter();

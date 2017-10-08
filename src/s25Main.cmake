@@ -1,3 +1,12 @@
+if(WIN32)
+    include(CheckIncludeFiles)
+    check_include_files("windows.h;dbghelp.h" HAVE_DBGHELP_H)
+    if(HAVE_DBGHELP_H)
+        add_definitions(-DHAVE_DBGHELP_H)
+    endif()
+endif()
+
+
 FILE(GLOB SOURCES_OTHER *.cpp *.h)
 LIST(APPEND SOURCES_OTHER ${COMMON_SRC})
 SOURCE_GROUP(other FILES ${SOURCES_OTHER})
@@ -33,47 +42,30 @@ AddDirectory(random)
 AddDirectory(world)
 
 INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${PROJECT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
+ADD_FILE_DEPENDENCIES(${CMAKE_CURRENT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
 
 SET(s25Main_SRCS
-	${PROJECT_SOURCE_DIR}/RTTR_Version.cpp
 	${SOURCES_OTHER}
 	${SOURCES_SUBDIRS}
 )
 
-# bzip linkerbug-fix
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows" )
-    set(bzip2ContribDir "${CMAKE_SOURCE_DIR}/contrib/bzip2-1.0.6")
-	IF(IS_DIRECTORY "${bzip2ContribDir}" )
-		SET(SOURCES_BZIP
-			${bzip2ContribDir}/blocksort.c
-			${bzip2ContribDir}/bzlib.c
-			${bzip2ContribDir}/compress.c
-			${bzip2ContribDir}/crctable.c
-			${bzip2ContribDir}/decompress.c
-			${bzip2ContribDir}/huffman.c
-			${bzip2ContribDir}/randtable.c
-		)
-        add_library(bzip2 STATIC ${SOURCES_BZIP})
-        set(BZIP2_LIBRARIES bzip2)
-	ENDIF()
-ENDIF()
-
+include_directories(${UTF8_INCLUDE_DIR})
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 ADD_DEPENDENCIES(s25Main updateversion)
+target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 TARGET_LINK_LIBRARIES(s25Main
-	siedler2
-	lobby_c
-	s25util
-	mygettext
-	${BZIP2_LIBRARIES}
-	${OPENGL_gl_LIBRARY}
-	${LUA_LIBRARY}
-	${Boost_LIBRARIES}
+	PUBLIC siedler2
+	PUBLIC lobby_c
+	PUBLIC s25util
+	PUBLIC mygettext
+	PUBLIC ${BZIP2_LIBRARIES}
+	PUBLIC ${OPENGL_gl_LIBRARY}
+	PUBLIC ${LUA_LIBRARY}
+	PUBLIC ${Boost_LIBRARIES}
 )
 
-if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-	TARGET_LINK_LIBRARIES(s25Main dl)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	TARGET_LINK_LIBRARIES(s25Main PUBLIC dl)
 ENDif()
 
 if(MSVC)
@@ -83,11 +75,4 @@ if(MSVC)
 						DEPENDS version
 						WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
-    if(RTTR_BINARIES_TO_COPY)
-        foreach(file_i ${RTTR_BINARIES_TO_COPY})
-            add_custom_command(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} ARGS -E copy ${file_i} ${CMAKE_BINARY_DIR})
-        endforeach()
-    endif()
-
-	ADD_CUSTOM_COMMAND(TARGET s25Main POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/RTTR" "${CMAKE_BINARY_DIR}/RTTR")
 ENDIF()

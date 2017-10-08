@@ -25,7 +25,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 /// Länge des Wachs-Wartens
 const unsigned GROWING_WAITING_LENGTH = 1100;

@@ -24,11 +24,11 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "languages.h"
-#include "libsiedler2/src/ArchivItem_Ini.h"
-#include "libsiedler2/src/ArchivItem_Text.h"
-#include "libutil/src/System.h"
-#include "libutil/src/error.h"
-#include "libutil/src/fileFuncs.h"
+#include "libsiedler2/ArchivItem_Ini.h"
+#include "libsiedler2/ArchivItem_Text.h"
+#include "libutil/System.h"
+#include "libutil/error.h"
+#include "libutil/fileFuncs.h"
 #include <sstream>
 #ifndef _WIN32
 #include <cstring>

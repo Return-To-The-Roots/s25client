@@ -28,7 +28,7 @@
 
 #include "GameClient.h"
 #include "GameServer.h"
-#include "liblobby/src/LobbyClient.h"
+#include "liblobby/LobbyClient.h"
 
 #include "Loader.h"
 #include "MusicPlayer.h"
@@ -40,9 +40,9 @@
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/GameConsts.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/colors.h"
-#include "libutil/src/error.h"
+#include "libutil/Log.h"
+#include "libutil/colors.h"
+#include "libutil/error.h"
 
 #include <ctime>
 

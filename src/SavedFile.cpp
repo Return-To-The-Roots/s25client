@@ -19,8 +19,8 @@
 #include "SavedFile.h"
 #include "BasePlayerInfo.h"
 #include "RTTR_Version.h"
-#include "libutil/src/BinaryFile.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/BinaryFile.h"
+#include "libutil/Serializer.h"
 #include <boost/format.hpp>
 #include <algorithm>
 #include <stdexcept>

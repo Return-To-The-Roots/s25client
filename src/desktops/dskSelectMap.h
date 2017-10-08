@@ -24,7 +24,7 @@
 
 #include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 #include <string>
 #include <vector>
 

@@ -20,8 +20,8 @@
 #ifndef MockupAudioDriver_h__
 #define MockupAudioDriver_h__
 
-#include "driver/src/AudioDriver.h"
-#include "driver/src/IAudioDriverCallback.h"
+#include "driver/AudioDriver.h"
+#include "driver/IAudioDriverCallback.h"
 
 struct MockupSoundDesc : public SoundDesc
 {

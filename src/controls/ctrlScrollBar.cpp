@@ -20,7 +20,7 @@
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "ctrlButton.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 
 ctrlScrollBar::ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
                              TextureColor tc, unsigned short pagesize)

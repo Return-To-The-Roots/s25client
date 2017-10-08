@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "ctrlButton.h"
 #include "ctrlList.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
 
@@ -73,8 +73,6 @@ void ctrlComboBox::Resize(const Extent& newSize)
 
             // Höhe um eins erniedrigen, damits wieder kleiner ist als die maximale
             listSize.y -= font->getHeight();
-            ;
-
             break;
         }
     }

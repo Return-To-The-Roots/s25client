@@ -22,8 +22,8 @@
 #include "JoinPlayerInfo.h"
 #include "helpers/converters.h"
 #include "lua/LuaHelpers.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/colors.h"
+#include "libutil/Log.h"
+#include "libutil/colors.h"
 #include <stdexcept>
 
 const BasePlayerInfo& LuaServerPlayer::GetPlayer() const

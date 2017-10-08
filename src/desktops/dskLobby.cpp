@@ -22,7 +22,7 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "WindowManager.h"
-#include "liblobby/src/LobbyClient.h"
+#include "liblobby/LobbyClient.h"
 
 #include "controls/ctrlChat.h"
 #include "controls/ctrlEdit.h"
@@ -36,9 +36,9 @@
 #include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ogl/SoundEffectItem.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <boost/lexical_cast.hpp>
 #include <set>
 

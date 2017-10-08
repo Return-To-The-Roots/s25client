@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "PostMsg.h"
 #include "BasePlayerInfo.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 #include <boost/format.hpp>
 
 PostMsg::PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt, SoundEffect soundEffect)

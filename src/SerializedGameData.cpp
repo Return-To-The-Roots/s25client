@@ -90,7 +90,7 @@
 
 #include "helpers/containerUtils.h"
 #include "helpers/converters.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 class BinaryFile;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)

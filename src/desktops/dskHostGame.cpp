@@ -49,9 +49,9 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/src/LobbyClient.h"
-#include "libsiedler2/src/prototypen.h"
-#include "libutil/src/Log.h"
+#include "liblobby/LobbyClient.h"
+#include "libsiedler2/prototypen.h"
+#include "libutil/Log.h"
 #include <set>
 #include <sstream>
 

@@ -26,7 +26,7 @@
 #include "helpers/containerUtils.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 #include <boost/format.hpp>
 #include <string>

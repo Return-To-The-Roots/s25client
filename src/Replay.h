@@ -21,7 +21,7 @@
 
 #include "SavedFile.h"
 #include "gameTypes/MapCoordinates.h"
-#include "libutil/src/BinaryFile.h"
+#include "libutil/BinaryFile.h"
 #include <string>
 #include <vector>
 

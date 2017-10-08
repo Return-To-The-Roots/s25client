@@ -22,7 +22,7 @@
 #include "desktops/dskMenuBase.h"
 
 #include "ClientInterface.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 
 class iwLobbyServerInfo;
 class iwDirectIPCreate;

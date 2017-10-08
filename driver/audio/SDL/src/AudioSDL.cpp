@@ -17,14 +17,13 @@
 
 #include "driverDefines.h" // IWYU pragma: keep
 #include "AudioSDL.h"
+#include "AudioInterface.h"
+#include "IAudioDriverCallback.h"
 #include "SoundSDL_Effect.h"
 #include "SoundSDL_Music.h"
-#include "IAudioDriverCallback.h"
-#include "AudioInterface.h"
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <iostream>
-#include <fstream>
 
 static AudioSDL* nthis = NULL;
 
@@ -33,7 +32,7 @@ static AudioSDL* nthis = NULL;
  *
  *  @return liefert eine Instanz des jeweiligen Treibers
  */
-DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* adli, void*  /*device_dependent*/)
+DRIVERDLLAPI IAudioDriver* CreateAudioInstance(IAudioDriverCallback* adli, void* /*device_dependent*/)
 {
     nthis = new AudioSDL(adli);
     return nthis;
@@ -55,7 +54,8 @@ DRIVERDLLAPI const char* GetDriverName(void)
  */
 
 AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255)
-{}
+{
+}
 
 AudioSDL::~AudioSDL()
 {
@@ -79,9 +79,9 @@ const char* AudioSDL::GetName() const
  */
 bool AudioSDL::Initialize()
 {
-    if( SDL_InitSubSystem( SDL_INIT_AUDIO ) < 0 )
+    if(SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        std::cerr << SDL_GetError() << std::endl;
         initialized = false;
         return false;
     }
@@ -90,7 +90,7 @@ bool AudioSDL::Initialize()
     // stereo audio, using 1024 byte chunks
     if(Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 4096) < 0)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         initialized = false;
         return false;
     }
@@ -132,7 +132,7 @@ SoundHandle AudioSDL::LoadEffect(const std::string& filepath)
 
     if(sound == NULL)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
     }
 
@@ -151,7 +151,7 @@ SoundHandle AudioSDL::LoadMusic(const std::string& filepath)
 
     if(music == NULL)
     {
-        fprintf(stderr, "%s\n", Mix_GetError());
+        std::cerr << Mix_GetError() << std::endl;
         return SoundHandle();
     }
 
@@ -169,10 +169,7 @@ EffectPlayId AudioSDL::PlayEffect(const SoundHandle& sound, uint8_t volume, bool
 
     int channel = Mix_PlayChannel(-1, static_cast<SoundSDL_Effect&>(*sound.getDescriptor()).sound, (loop) ? -1 : 0);
     if(channel < 0)
-    {
-        //fprintf(stderr, "%s\n", Mix_GetError());
         return -1;
-    }
     Mix_Volume(channel, CalcEffectVolume(volume));
     return AddPlayedEffect(channel);
 }
@@ -260,8 +257,7 @@ void AudioSDL::DoUnloadSound(SoundDesc& sound)
         SoundSDL_Effect& effect = static_cast<SoundSDL_Effect&>(sound);
         Mix_FreeChunk(effect.sound);
         effect.setInvalid();
-    }
-    else if(sound.type_ == SD_MUSIC)
+    } else if(sound.type_ == SD_MUSIC)
     {
         SoundSDL_Music& music = static_cast<SoundSDL_Music&>(sound);
         Mix_FreeMusic(music.music);

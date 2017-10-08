@@ -23,7 +23,7 @@
 #include "Random.h"
 #include "SerializedGameData.h"
 #include "world/GameWorldGame.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 /**
  *  Konstruktor von @p noBase.

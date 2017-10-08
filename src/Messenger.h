@@ -20,7 +20,7 @@
 #pragma once
 
 #include "gameTypes/ChatDestination.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 #include <list>
 #include <string>
 

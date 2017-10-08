@@ -29,7 +29,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 #include <stdexcept>
 
 noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, const unsigned char player)

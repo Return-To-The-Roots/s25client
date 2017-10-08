@@ -21,7 +21,7 @@
 #define RANDOM_H_INCLUDED
 
 #include "random/OldLCG.h"
-#include "libutil/src/Singleton.h"
+#include "libutil/Singleton.h"
 #include <boost/array.hpp>
 #include <iosfwd>
 #include <limits>

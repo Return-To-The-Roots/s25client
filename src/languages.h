@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "libutil/src/Singleton.h"
+#include "libutil/Singleton.h"
 #include <string>
 #include <vector>
 

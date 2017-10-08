@@ -17,57 +17,10 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "ProgramInitHelpers.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/System.h"
-#include <build_paths.h>
-
+#include "libutil/Log.h"
+#include "libutil/System.h"
 #include <boost/filesystem.hpp>
-#include <boost/locale.hpp>
-#include <cstdlib>
-#include <iostream>
-#include <stdexcept>
-#ifdef _WIN32
-#include <windows.h>
-#include <shellapi.h>
-#endif // _WIN32
-
-bool InitLocale()
-{
-    // Check and set locale (avoids errors caused by invalid locales later like #420)
-    try
-    {
-// Check for errors and use classic locale to avoid e.g. thousand separator in int2string conversions via streams
-#ifdef _WIN32
-        // On windows we want to enforce the encoding (mostly UTF8). Also using "" would use the default which uses "wrong" separators
-        std::locale::global(boost::locale::generator().generate("C"));
-#else
-        // In linux / OSX this suffices
-        std::locale::global(std::locale::classic());
-#endif // _WIN32
-        // Use also the encoding (mostly UTF8) for bfs paths: http://stackoverflow.com/questions/23393870
-        bfs::path::imbue(std::locale());
-    } catch(std::exception& e)
-    {
-        std::cerr << "Error initializing your locale setting. ";
-#ifdef _WIN32
-        std::cerr << "Check your system language configuration!";
-#else
-        char* lcAll = getenv("LC_ALL");
-        char* lang = getenv("LANG");
-        std::cerr << "Check your environment for invalid settings (e.g. LC_ALL";
-        if(lcAll)
-            std::cerr << "=" << lcAll;
-        std::cerr << " or LANG";
-        if(lang)
-            std::cerr << "=" << lang;
-        std::cerr << ")";
-#endif
-        std::cerr << std::endl;
-        std::cerr << e.what() << std::endl;
-        return false;
-    }
-    return true;
-}
+#include <build_paths.h>
 
 bfs::path GetPrefixPath(const std::string& argv0)
 {
@@ -79,18 +32,16 @@ bfs::path GetPrefixPath(const std::string& argv0)
         LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
     }
 
-    // Complete the path as it would be done by the system
-    // This avoids problems if the program was not started from the working directory
-    // e.g. by putting its path in PATH
+    // Get path to current executable
     bfs::path fullExeFilepath = System::getExecutablePath(argv0);
-    if(!bfs::exists(fullExeFilepath) && !prefixPath.empty())
+    if(fullExeFilepath.empty())
     {
-        fullExeFilepath = prefixPath / RTTR_BINDIR / bfs::path(argv0).filename();
+        LOG.write("Could not get path to current executable\n", LogTarget::Stderr);
+        return "";
     }
-    if(!bfs::exists(fullExeFilepath))
+    if(!bfs::exists(fullExeFilepath) || !bfs::is_regular_file(fullExeFilepath))
     {
-        LOG.write("Executable not at '%1%'\nStarting file path: %2%\nCompleted file path: %3%\n", LogTarget::Stderr) % fullExeFilepath
-          % argv0 % System::getExecutablePath(argv0);
+        LOG.write("Executable not at '%1%'\n", LogTarget::Stderr) % fullExeFilepath;
         return "";
     }
 

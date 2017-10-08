@@ -22,7 +22,7 @@
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/BuildingConsts.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
 unsigned CalcPlayerFOWDrawColor(const unsigned color)

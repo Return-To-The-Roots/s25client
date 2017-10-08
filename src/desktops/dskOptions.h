@@ -21,7 +21,7 @@
 
 #include "Desktop.h"
 #include "GlobalGameSettings.h"
-#include "driver/src/VideoInterface.h"
+#include "driver/VideoInterface.h"
 
 /// Klasse des Optionen Desktops.
 class dskOptions : public Desktop

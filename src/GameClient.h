@@ -30,9 +30,9 @@
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
-#include "libutil/src/MessageQueue.h"
-#include "libutil/src/Singleton.h"
-#include "libutil/src/Socket.h"
+#include "libutil/MessageQueue.h"
+#include "libutil/Singleton.h"
+#include "libutil/Socket.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 namespace AI {

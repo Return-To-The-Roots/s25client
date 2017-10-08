@@ -34,8 +34,8 @@
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
 #include "mapGenerator/MapGenerator.h"
-#include "liblobby/src/LobbyClient.h"
-#include "libutil/src/fileFuncs.h"
+#include "liblobby/LobbyClient.h"
+#include "libutil/fileFuncs.h"
 
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
@@ -45,9 +45,9 @@
 
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "libsiedler2/src/prototypen.h"
-#include "libutil/src/ucString.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/prototypen.h"
+#include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 

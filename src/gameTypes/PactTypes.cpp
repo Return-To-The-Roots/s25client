@@ -17,6 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "gameTypes/PactTypes.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 const boost::array<const char*, PACTS_COUNT> PACT_NAMES = {{gettext_noop("Treaty of alliance"), gettext_noop("Non-aggression pact")}};

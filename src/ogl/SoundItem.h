@@ -20,7 +20,7 @@
 #ifndef SoundItem_h__
 #define SoundItem_h__
 
-#include "driver/src/SoundHandle.h"
+#include "driver/SoundHandle.h"
 
 /// Base class for all sound items
 class SoundItem

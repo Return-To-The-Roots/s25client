@@ -20,8 +20,8 @@
 #include "CollisionDetection.h"
 #include "ctrlButton.h"
 #include "ctrlScrollBar.h"
-#include "driver/src/KeyEvent.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/KeyEvent.h"
+#include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
 #include <cstdarg>
 #include <sstream>

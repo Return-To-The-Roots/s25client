@@ -19,7 +19,7 @@
 #include "Random.h"
 #include "random/XorShift.h"
 #include "test/initTestHelpers.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 #include <boost/random/seed_seq.hpp>

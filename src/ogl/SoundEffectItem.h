@@ -21,7 +21,7 @@
 #pragma once
 
 #include "SoundItem.h"
-#include "driver/src/EffectPlayId.h"
+#include "driver/EffectPlayId.h"
 
 /// Base class for sound effects
 class SoundEffectItem : public SoundItem

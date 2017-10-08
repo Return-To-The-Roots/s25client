@@ -18,8 +18,9 @@
 #define DEBUG_H_
 
 #include "Random.h"
-#include "libutil/src/Socket.h"
+#include "libutil/Socket.h"
 
+// This is for catching crashes and reporting bugs, it does not slow down anything.
 class DebugInfo
 {
     Socket sock;
@@ -34,11 +35,7 @@ public:
     bool SendString(const char* str, unsigned len = 0);
     bool SendString(const std::string& str);
 
-#ifdef _MSC_VER
-    bool SendStackTrace(LPCONTEXT ctx = NULL);
-#else
-    bool SendStackTrace();
-#endif
+    bool SendStackTrace(void* ctx = NULL);
     bool SendReplay();
     bool SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
                       const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical);

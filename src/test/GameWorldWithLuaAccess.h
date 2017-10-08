@@ -26,9 +26,9 @@
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "test/initTestHelpers.h"
-#include "libutil/src/Log.h"
-#include "libutil/src/StringStreamWriter.h"
-#include "libutil/src/colors.h"
+#include "libutil/Log.h"
+#include "libutil/StringStreamWriter.h"
+#include "libutil/colors.h"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 

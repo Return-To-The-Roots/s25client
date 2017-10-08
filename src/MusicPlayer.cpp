@@ -21,12 +21,12 @@
 #include "drivers/AudioDriverWrapper.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/MusicItem.h"
-#include "libsiedler2/src/Archiv.h"
-#include "libsiedler2/src/ArchivItem.h"
-#include "libsiedler2/src/prototypen.h"
-#include "libutil/src/Log.h"
+#include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem.h"
+#include "libsiedler2/prototypen.h"
+#include "libutil/Log.h"
+#include <boost/nowide/fstream.hpp>
 #include <algorithm>
-#include <fstream>
 #include <sstream>
 
 Playlist::Playlist() : repeats(1), random(false)
@@ -62,7 +62,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
 {
     if(!overwrite)
     {
-        std::ifstream in(filename.c_str());
+        bnw::ifstream in(filename.c_str());
         if(in.good())
         {
             // Datei existiert und wir sollen sie nicht überschreiben
@@ -71,7 +71,7 @@ bool Playlist::SaveAs(const std::string& filename, const bool overwrite)
         }
     }
 
-    std::ofstream out(filename.c_str());
+    bnw::ofstream out(filename.c_str());
     if(!out.good())
         return false;
 
@@ -97,7 +97,7 @@ bool Playlist::Load(const std::string& filename)
 
     LOG.write("lade \"%s\"\n") % filename;
 
-    std::ifstream in(filename.c_str());
+    bnw::ifstream in(filename.c_str());
 
     if(in.fail())
         return false;

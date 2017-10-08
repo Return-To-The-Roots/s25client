@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef includes_h__
-#define includes_h__
+#ifndef oglincludes_h__
+#define oglincludes_h__
 
 // IWYU pragma: begin_exports
 #ifdef __APPLE__
@@ -32,4 +32,4 @@
 #endif // !__APPLE__
 // IWYU pragma: end_exports
 
-#endif // includes_h__
+#endif // oglincludes_h__

@@ -21,8 +21,8 @@
 #include "controls/ctrlEdit.h"
 #include "helpers/converters.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/src/LobbyClient.h"
-#include "libutil/src/colors.h"
+#include "liblobby/LobbyClient.h"
+#include "libutil/colors.h"
 
 /**
  *  aktualisiert das Serverinfo.

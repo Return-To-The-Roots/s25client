@@ -16,9 +16,9 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "RTTR_AssertError.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
-#include "commonSrc/RTTR_AssertError.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>

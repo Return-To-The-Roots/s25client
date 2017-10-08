@@ -19,9 +19,9 @@
 
 #include "DriverWrapper.h"
 #include "Point.h"
-#include "driver/src/KeyEvent.h"
-#include "driver/src/VideoMode.h"
-#include "libutil/src/Singleton.h"
+#include "driver/KeyEvent.h"
+#include "driver/VideoMode.h"
+#include "libutil/Singleton.h"
 #include <boost/array.hpp>
 #include <string>
 

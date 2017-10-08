@@ -17,11 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "FileChecksum.h"
-#include <boost/filesystem/fstream.hpp>
+#include <boost/nowide/fstream.hpp>
 
 uint32_t CalcChecksumOfFile(const std::string& path)
 {
-    bfs::ifstream file(path);
+    bnw::ifstream file(path);
     if(!file)
         return 0;
 

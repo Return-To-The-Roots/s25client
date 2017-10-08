@@ -32,7 +32,7 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameData/ToolConsts.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)

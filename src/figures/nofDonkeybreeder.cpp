@@ -27,7 +27,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_DONKEYBREEDER, pos, player, workplace)

@@ -22,9 +22,11 @@
 
 #ifdef _WIN32
 #include <windows.h>
-BOOL WINAPI HandlerRoutine(DWORD dwCtrlType);
+BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType);
 #else
-void HandlerRoutine(int sig);
+/// Kill instantly on CTRL-C or just terminate
+extern bool killme;
+void ConsoleSignalHandler(int sig);
 #endif // _WIN32
 
 #endif // SIGNAL_H_INCLUDED

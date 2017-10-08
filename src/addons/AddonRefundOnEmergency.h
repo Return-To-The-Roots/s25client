@@ -20,7 +20,7 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  Addon for refunding materials soon as a building gets destroyed and

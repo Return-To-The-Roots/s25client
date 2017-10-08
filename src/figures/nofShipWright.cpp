@@ -30,7 +30,7 @@
 #include "nodeObjs/noShipBuildingSite.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_SHIPWRIGHT, pos, player, workplace), dest(MapPoint::Invalid())

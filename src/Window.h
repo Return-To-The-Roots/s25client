@@ -26,7 +26,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/NationConsts.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 #include <map>
 #include <vector>
 

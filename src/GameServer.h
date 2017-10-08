@@ -28,8 +28,8 @@
 #include "helpers/Deleter.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
-#include "libutil/src/LANDiscoveryService.h"
-#include "libutil/src/Singleton.h"
+#include "libutil/LANDiscoveryService.h"
+#include "libutil/Singleton.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 

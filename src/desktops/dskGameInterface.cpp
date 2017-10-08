@@ -38,7 +38,7 @@
 #include "buildings/nobUsual.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlText.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "ingameWindows/iwAction.h"
@@ -78,8 +78,8 @@
 #include "gameData/GuiConsts.h"
 #include "gameData/TerrainData.h"
 #include "gameData/const_gui_ids.h"
-#include "liblobby/src/LobbyClient.h"
-#include "libutil/src/Log.h"
+#include "liblobby/LobbyClient.h"
+#include "libutil/Log.h"
 #include <boost/bind.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>

@@ -19,7 +19,7 @@
 #include "Replay.h"
 #include "Savegame.h"
 #include "gameTypes/MapInfo.h"
-#include "libendian/src/ConvertEndianess.h"
+#include "libendian/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
 
 std::string Replay::GetSignature() const

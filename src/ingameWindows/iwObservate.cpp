@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "controls/ctrlImageButton.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
@@ -29,7 +29,7 @@
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GuiConsts.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <boost/foreach.hpp>
 #include <cmath>
 

@@ -23,7 +23,7 @@
 #include "GlobalGameSettings.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/ServerType.h"
-#include "liblobby/src/LobbyInterface.h"
+#include "liblobby/LobbyInterface.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 class ctrlChat;

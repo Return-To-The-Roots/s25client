@@ -21,7 +21,7 @@
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 110), _("Skip GameFrames"), LOADER.GetImageN("resource", 41)),

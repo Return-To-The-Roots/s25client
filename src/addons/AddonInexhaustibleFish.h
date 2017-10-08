@@ -4,7 +4,7 @@
 #pragma once
 
 #include "AddonBool.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 /**
  *  addon decativates reduction of fish population by fishing.

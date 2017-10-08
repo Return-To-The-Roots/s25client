@@ -19,7 +19,7 @@
 #include "EventManager.h"
 #include "GameEvent.h"
 #include "GameObject.h"
-#include "commonSrc/RTTR_AssertError.h"
+#include "RTTR_AssertError.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameEventsTestSuite)

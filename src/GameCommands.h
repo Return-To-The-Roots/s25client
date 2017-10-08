@@ -10,7 +10,7 @@
 #include "gameTypes/SettingsTypes.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ToolConsts.h"
-#include "libutil/src/Serializer.h"
+#include "libutil/Serializer.h"
 #include <vector>
 
 class GameWorldGame;

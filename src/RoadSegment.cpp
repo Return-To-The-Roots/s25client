@@ -26,7 +26,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 #include <stdexcept>
 
 RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route)

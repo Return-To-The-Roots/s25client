@@ -20,7 +20,7 @@
 #pragma once
 
 #include "MusicItem.h"
-#include "libsiedler2/src/ArchivItem_Sound_Other.h"
+#include "libsiedler2/ArchivItem_Sound_Other.h"
 
 class glArchivItem_Sound_Other : public libsiedler2::ArchivItem_Sound_Other, public MusicItem
 {

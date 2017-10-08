@@ -23,9 +23,9 @@
 #include "Rect.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
-#include "libsiedler2/src/ArchivItem_Font.h"
-#include "libutil/src/colors.h"
-#include "libutil/src/ucString.h"
+#include "libsiedler2/ArchivItem_Font.h"
+#include "libutil/colors.h"
+#include "libutil/ucString.h"
 #include <boost/array.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
 #include <map>

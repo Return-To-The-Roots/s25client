@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "libutil/src/MessageInterface.h"
+#include "libutil/MessageInterface.h"
 #include <boost/preprocessor.hpp>
 
 #define __GENERATE_FWD_DECL_SINGLE(s, data, expression) class expression;

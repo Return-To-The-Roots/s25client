@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlPreviewMinimap.h"
 #include "ogl/glArchivItem_Map.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
 
 ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0)
 {

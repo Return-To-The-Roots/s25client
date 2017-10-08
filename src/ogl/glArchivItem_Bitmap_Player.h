@@ -22,8 +22,8 @@
 #include "DrawPoint.h"
 #include "Rect.h"
 #include "glArchivItem_BitmapBase.h"
-#include "libsiedler2/src/ArchivItem_Bitmap_Player.h"
-#include "libutil/src/colors.h"
+#include "libsiedler2/ArchivItem_Bitmap_Player.h"
+#include "libutil/colors.h"
 
 /// Klasse für GL-Player-Bitmaps.
 class glArchivItem_Bitmap_Player : public libsiedler2::ArchivItem_Bitmap_Player, public glArchivItem_BitmapBase

@@ -17,7 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "gameData/JobConsts.h"
-#include "mygettext/src/mygettext.h"
+#include "mygettext/mygettext.h"
 
 const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES = {{gettext_noop("Helper"),
                                                                gettext_noop("Woodchopper"),

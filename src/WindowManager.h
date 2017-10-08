@@ -20,9 +20,9 @@
 #pragma once
 
 #include "Point.h"
-#include "driver/src/VideoDriverLoaderInterface.h"
+#include "driver/VideoDriverLoaderInterface.h"
 #include "helpers/Deleter.h"
-#include "libutil/src/Singleton.h"
+#include "libutil/Singleton.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <string>

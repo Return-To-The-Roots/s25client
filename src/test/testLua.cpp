@@ -31,7 +31,7 @@
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include "test/PointOutput.h"
-#include "libutil/src/tmpFile.h"
+#include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     // Load from file
     TmpFile luaFile(".lua");
     script += "assert(42==42)";
-    luaFile.GetStream() << script;
-    luaFile.GetStream().close();
+    luaFile.getStream() << script;
+    luaFile.close();
     BOOST_REQUIRE(lua.LoadScript(luaFile.filePath));
     BOOST_REQUIRE_EQUAL(lua.GetScript(), script);
 
@@ -68,8 +68,8 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     BOOST_REQUIRE(!lua.LoadScriptString(script));
     BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
     TmpFile luaFile2(".lua");
-    luaFile2.GetStream() << script;
-    luaFile2.GetStream().close();
+    luaFile2.getStream() << script;
+    luaFile2.close();
     BOOST_REQUIRE(!lua.LoadScript(luaFile2.filePath));
     BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
 

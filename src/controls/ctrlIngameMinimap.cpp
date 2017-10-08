@@ -20,7 +20,7 @@
 #include "CollisionDetection.h"
 #include "IngameMinimap.h"
 #include "Loader.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 #include "world/GameWorldView.h"
 #include "world/MapGeometry.h"
 class Window;

@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Savegame.h"
-#include "libendian/src/ConvertEndianess.h"
-#include "libutil/src/BinaryFile.h"
+#include "libendian/ConvertEndianess.h"
+#include "libutil/BinaryFile.h"
 
 std::string Savegame::GetSignature() const
 {

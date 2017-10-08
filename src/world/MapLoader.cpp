@@ -30,8 +30,8 @@
 #include "gameTypes/ShipDirection.h"
 #include "gameData/MaxPlayers.h"
 #include "gameData/TerrainData.h"
-#include "libsiedler2/src/ArchivItem_Map_Header.h"
-#include "libutil/src/Log.h"
+#include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libutil/Log.h"
 #include <algorithm>
 #include <queue>
 

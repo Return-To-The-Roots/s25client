@@ -33,7 +33,7 @@
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
-#include "libutil/src/Log.h"
+#include "libutil/Log.h"
 
 Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
     : next_dir(INVALID_DIR), state(STATE_WAITINWAREHOUSE), location(location),

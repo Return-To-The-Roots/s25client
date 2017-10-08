@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "ctrlImage.h"
 #include "CollisionDetection.h"
-#include "driver/src/MouseCoords.h"
+#include "driver/MouseCoords.h"
 
 ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
     : Window(parent, id, pos), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)

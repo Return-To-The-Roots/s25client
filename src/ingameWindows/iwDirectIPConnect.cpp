@@ -29,7 +29,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"), LOADER.GetImageN("resource", 41),

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "Window.h"
-#include "libutil/src/ucString.h"
+#include "libutil/ucString.h"
 class MouseCoords;
 class glArchivItem_Font;
 struct KeyEvent;

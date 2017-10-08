@@ -21,9 +21,9 @@
 #include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "mygettext/src/mygettext.h"
-#include "libutil/src/Log.h"
-#include <fstream>
+#include "mygettext/mygettext.h"
+#include "libutil/Log.h"
+#include <boost/nowide/fstream.hpp>
 #include <utility>
 
 namespace kaguya {
@@ -100,7 +100,7 @@ bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
         return false;
     } else
     {
-        std::ifstream scriptFile(scriptPath.c_str());
+        bnw::ifstream scriptFile(scriptPath.c_str());
         script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
         return true;
     }

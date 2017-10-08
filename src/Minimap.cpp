@@ -19,7 +19,7 @@
 #include "Minimap.h"
 #include "Loader.h"
 #include "ogl/oglIncludes.h"
-#include "libsiedler2/src/PixelBufferARGB.h"
+#include "libsiedler2/PixelBufferARGB.h"
 
 Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize)
 {

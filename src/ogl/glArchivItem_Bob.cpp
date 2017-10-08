@@ -19,7 +19,7 @@
 #include "glArchivItem_Bob.h"
 
 #include "glArchivItem_Bitmap_Player.h"
-#include "libutil/src/colors.h"
+#include "libutil/colors.h"
 
 /**
  *  Zeichnet einen Animationsstep.
