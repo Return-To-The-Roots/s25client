@@ -67,8 +67,6 @@ void ctrlTimer::Msg_PaintBefore()
         GetParent()->Msg_Timer(GetID());
 
         if(timer != 0)
-        {
-            timer = VIDEODRIVER.GetTickCount();
-        }
+            timer = VIDEODRIVER.GetTickCount() | 1;
     }
 }
