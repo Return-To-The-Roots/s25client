@@ -32,18 +32,16 @@ bfs::path GetPrefixPath(const std::string& argv0)
         LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
     }
 
-    // Complete the path as it would be done by the system
-    // This avoids problems if the program was not started from the working directory
-    // e.g. by putting its path in PATH
+    // Get path to current executable
     bfs::path fullExeFilepath = System::getExecutablePath(argv0);
-    if(!bfs::exists(fullExeFilepath) && !prefixPath.empty())
+    if(fullExeFilepath.empty())
     {
-        fullExeFilepath = prefixPath / RTTR_BINDIR / bfs::path(argv0).filename();
+        LOG.write("Could not get path to current executable\n", LogTarget::Stderr);
+        return "";
     }
-    if(!bfs::exists(fullExeFilepath))
+    if(!bfs::exists(fullExeFilepath) || !bfs::is_regular_file(fullExeFilepath))
     {
-        LOG.write("Executable not at '%1%'\nStarting file path: %2%\nCompleted file path: %3%\n", LogTarget::Stderr) % fullExeFilepath
-          % argv0 % System::getExecutablePath(argv0);
+        LOG.write("Executable not at '%1%'\n", LogTarget::Stderr) % fullExeFilepath;
         return "";
     }
 

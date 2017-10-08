@@ -1,9 +1,9 @@
 echo off
 
 set numVersions=0
-if exist src\Debug\s25client.exe set /a numVersions=numVersions+1 & set version=1
-if exist src\ReWithDebInfo\s25client.exe set /a numVersions=numVersions+1 & set version=2
-if exist src\Release\s25client.exe set /a numVersions=numVersions+1 & set version=3
+if exist Debug\s25client.exe set /a numVersions=numVersions+1 & set version=1
+if exist ReWithDebInfo\s25client.exe set /a numVersions=numVersions+1 & set version=2
+if exist Release\s25client.exe set /a numVersions=numVersions+1 & set version=3
 
 if %numVersions%==1 goto EXECUTE
 
@@ -26,7 +26,7 @@ if %version%==1 (
 
 :EXECUTE
 
-set cmd=src\%version%\s25client.exe --test ..\tests\maps\LuaFunctions.SWD
+set cmd=%version%\s25client.exe --test ..\tests\maps\LuaFunctions.SWD
 echo %cmd%
 %cmd%
 pause

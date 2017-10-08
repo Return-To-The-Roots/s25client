@@ -28,7 +28,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#ifndef _WIN32
+// Unix only, but cygwin does not have execinfo.h
+#if !defined(_WIN32) && !defined(__CYGWIN__)
 #include <csignal>
 #include <execinfo.h>
 

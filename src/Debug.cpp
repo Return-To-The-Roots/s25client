@@ -25,11 +25,14 @@
 #include "helpers/Deleter.h"
 #include "libutil/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
-#include <boost/system/api_config.hpp>
 #include <bzlib.h>
 #include <vector>
 
-#ifdef BOOST_WINDOWS_API
+#if defined(_WIN32) || defined(__CYGWIN__)
+#define RTTR_USE_WIN_API
+#endif
+
+#ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H
 #include <windows.h>
 // Disable warning for faulty nameless enum typedef (check sfImage.../hdBase...)
@@ -55,7 +58,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 #include <execinfo.h>
 #endif
 
-#ifdef BOOST_WINDOWS_API
+#ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H
 bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
 {
@@ -229,15 +232,11 @@ bool DebugInfo::SendString(const std::string& str)
     return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
 }
 
-#ifdef _MSC_VER
-bool DebugInfo::SendStackTrace(LPCONTEXT ctx)
-#else
-bool DebugInfo::SendStackTrace()
-#endif
+bool DebugInfo::SendStackTrace(void* ctx)
 {
     std::vector<void*> stacktrace(256);
 #ifdef _MSC_VER
-    if(!captureBacktrace(stacktrace, ctx))
+    if(!captureBacktrace(stacktrace, static_cast<LPCONTEXT>(ctx)))
         return false;
 #else
     captureBacktrace(stacktrace);

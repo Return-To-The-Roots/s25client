@@ -27,6 +27,7 @@
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noBase.h"
+#include "gameTypes/Nation.h"
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/WorldFixture.h"
@@ -36,6 +37,7 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(MapTestSuite)
 
@@ -72,12 +74,14 @@ struct LoadWorldFromFileCreator
     bool operator()(GameWorldBase& world)
     {
         bnw::ifstream mapFile(testMapPath, std::ios::binary);
-        BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
+        if(map.load(mapFile, false) != 0)
+            throw std::runtime_error("Could not load file " + testMapPath);
         std::vector<Nation> nations;
         for(unsigned i = 0; i < numPlayers_; i++)
             nations.push_back(world.GetPlayer(i).nation);
         MapLoader loader(world, nations);
-        BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
+        if(!loader.Load(map, false, EXP_FOGOFWAR))
+            throw std::runtime_error("Could not load map");
         for(unsigned i = 0; i < numPlayers_; i++)
             hqs.push_back(loader.GetHQPos(i));
         return true;

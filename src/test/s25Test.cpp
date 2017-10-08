@@ -16,12 +16,11 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "ProgramInitHelpers.h"
 #include "files.h"
 #include "ogl/glAllocator.h"
-#include "libutil/LocaleHelper.h"
-// Test helpers. Header only
-#include "helpers/helperTests.hpp" // IWYU pragma: keep
 #include "libsiedler2/libsiedler2.h"
+#include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 
@@ -32,8 +31,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
+
+// Test helpers. Header only
+#include "helpers/helperTests.hpp" // IWYU pragma: keep
 
 namespace bfs = boost::filesystem;
 
@@ -45,25 +48,10 @@ struct TestSetup
             throw std::runtime_error("Could not init locale");
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
-
-        // Make sure we have the RTTR folder in our current working directory
-        std::vector<bfs::path> possiblePaths;
-        possiblePaths.push_back(".");
-        // Might be test folder
-        possiblePaths.push_back("..");
-        // Linux cmake style build setup
-        possiblePaths.push_back("../../../build");
-        // VS style build setup (additional Debug sub folder)
-        possiblePaths.push_back("../../../../build");
-        for(std::vector<bfs::path>::const_iterator it = possiblePaths.begin(); it != possiblePaths.end(); ++it)
-        {
-            if(bfs::is_directory(*it / RTTRDIR))
-            {
-                std::cout << "Changing to " << *it << std::endl;
-                bfs::current_path(*it);
-                break;
-            }
-        }
+        if(!InitWorkingDirectory(""))
+            throw std::runtime_error("Could not init working directory. Misplaced binary?");
+        if(!bfs::is_directory(RTTRDIR))
+            throw std::runtime_error(std::string(RTTRDIR) + " not found. Binary misplaced or RTTR folder not copied?");
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
     }
