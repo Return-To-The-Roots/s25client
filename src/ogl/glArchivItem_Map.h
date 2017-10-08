@@ -54,6 +54,8 @@ public:
 
     /// lädt die Mapdaten aus einer Datei.
     int load(std::istream& file, bool only_header) override;
+    /// Resets the data to the given archiv
+    void load(const libsiedler2::ArchivItem_Map& map);
 
     /// liefert den Header der Map als konstantes Objekt zurück.
     const libsiedler2::ArchivItem_Map_Header& getHeader() const { return *header; }

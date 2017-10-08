@@ -28,13 +28,14 @@ class ctrlMinimap : public Window
 public:
     ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding, const Extent& mapSize);
 
-    Extent GetCurMapSize() const { return curMapSize; }
+    Extent GetCurMapSize() const { return drawnMapSize; }
 
     /// Get area the map covers (relative to control origin)
     Rect GetMapArea() const;
     Rect GetBoundaryRect() const override;
     Rect GetMapDrawArea() const;
 
+    void SetPadding(const Extent& padding);
     /// Größe ändern
     void Resize(const Extent& size) override;
     void SetMapSize(const Extent& newMapSize);
@@ -50,7 +51,7 @@ protected:
     void DrawMap(Minimap& map);
 
     /// Real size of the minimap (gets scaled with retained aspect ratio)
-    Extent curMapSize;
+    Extent drawnMapSize;
     /// Abstand der Minimap vom Rand des Controls
     Extent padding;
     /// Requested size of the drawn map

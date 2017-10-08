@@ -40,13 +40,21 @@ glArchivItem_Map::~glArchivItem_Map()
  */
 int glArchivItem_Map::load(std::istream& file, bool only_header)
 {
-    if(libsiedler2::ArchivItem_Map::load(file, only_header) != 0)
-        return 1;
+    if(int ec = libsiedler2::ArchivItem_Map::load(file, only_header) != 0)
+        return ec;
 
     header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
     RTTR_Assert(header);
 
     return 0;
+}
+
+void glArchivItem_Map::load(const libsiedler2::ArchivItem_Map& map)
+{
+    static_cast<libsiedler2::Archiv&>(*this) = map;
+    extraInfo = map.extraInfo;
+    header = dynamic_cast<const libsiedler2::ArchivItem_Map_Header*>(get(0));
+    RTTR_Assert(header);
 }
 
 /**
