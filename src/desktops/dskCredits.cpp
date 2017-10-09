@@ -192,7 +192,7 @@ void dskCredits::DrawCredit()
     // draw text
     LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, 0, SetAlpha(COLOR_RED, transparency));
 
-    boost::array<unsigned, 2> columnToY = { {150, 150} };
+    boost::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(std::vector<CreditsEntry::Line>::iterator line = itCurEntry->lines.begin(); line != itCurEntry->lines.end(); ++line)
     {
@@ -223,7 +223,8 @@ void dskCredits::DrawBobs()
         bob_spawnprosec = 2;
 
     // add new bob
-    if(bob_spawnprosec > 0 && msSinceLastBobSpawn > (1000 / bob_spawnprosec) && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
+    if(bob_spawnprosec > 0 && msSinceLastBobSpawn > (1000 / bob_spawnprosec)
+       && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
     {
         bobSpawnTime = VIDEODRIVER.GetTickCount();
 

@@ -21,7 +21,6 @@
 
 #include "IngameWindow.h"
 #include "gameTypes/ServerType.h"
-#include "liblobby/LobbyInterface.h"
 
 /// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
 struct CreateServerInfo
@@ -34,12 +33,12 @@ struct CreateServerInfo
     bool use_upnp;
 };
 
-class iwDirectIPCreate : public IngameWindow, public LobbyInterface
+class iwDirectIPCreate : public IngameWindow
 {
 public:
     iwDirectIPCreate(ServerType server_type);
 
-    void LC_Status_Error(const std::string& error) override;
+    void LC_Status_Error(const std::string& error);
 
 protected:
     void Msg_EditChange(const unsigned ctrl_id) override;

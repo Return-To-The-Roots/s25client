@@ -24,6 +24,7 @@
 #include "ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
 
+class iwLobbyRanking;
 class iwLobbyServerInfo;
 class iwDirectIPCreate;
 class LobbyServerList;
@@ -32,16 +33,17 @@ class LobbyPlayerList;
 class dskLobby : public dskMenuBase, public ClientInterface, public LobbyInterface
 {
 private:
-    const LobbyServerList* serverlist;
-    const LobbyPlayerList* playerlist;
     iwLobbyServerInfo* serverInfoWnd;
     iwDirectIPCreate* createServerWnd;
+    iwLobbyRanking* lobbyRankingWnd;
 
 public:
     dskLobby();
 
-    void UpdatePlayerList(bool first = false);
-    void UpdateServerList(bool first = false);
+    void UpdatePlayerList();
+    void UpdateServerList();
+
+    void Msg_WindowClosed(IngameWindow& wnd) override;
 
     void LC_Connected() override;
 
@@ -50,6 +52,10 @@ public:
     void LC_Status_Error(const std::string& error) override;
 
     void LC_Chat(const std::string& player, const std::string& text) override;
+    void LC_ServerList(const LobbyServerList& servers) override;
+    void LC_PlayerList(const LobbyPlayerList& players) override;
+    void LC_ServerInfo(const LobbyServerInfo& info) override;
+    void LC_RankingList(const LobbyPlayerList& players) override;
 
 protected:
     void Msg_Timer(const unsigned ctrl_id) override;
@@ -61,7 +67,7 @@ protected:
     void Msg_TableChooseItem(const unsigned ctrl_id, const unsigned selection) override;
 
     /**
-     * Connectes to the currently selected game and returns true on success
+     * Connects to the currently selected game and returns true on success
      */
     bool ConnectToSelectedGame();
 };

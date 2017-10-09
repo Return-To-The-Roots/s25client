@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+class IngameWindow;
 class glArchivItem_Bitmap;
 struct ScreenResizeEvent;
 
@@ -29,6 +30,8 @@ class Desktop : public Window
 public:
     Desktop(glArchivItem_Bitmap* background);
     void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
+    /// Callback when a window was closed
+    virtual void Msg_WindowClosed(IngameWindow& wnd){};
 
 protected:
     void Draw_() override;

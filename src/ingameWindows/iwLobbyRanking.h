@@ -21,13 +21,15 @@
 
 #include "IngameWindow.h"
 
+class LobbyPlayerList;
+
 class iwLobbyRanking : public IngameWindow
 {
 public:
     iwLobbyRanking();
 
+    void UpdateRankings(const LobbyPlayerList& rankinglist);
 protected:
-    void UpdateRankings(bool first = false);
 
     void Msg_Timer(const unsigned ctrl_id) override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;

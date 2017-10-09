@@ -789,10 +789,12 @@ void WindowManager::Close(const IngameWindow* window)
         }
     }
 
-    // Fenster löschen
-    delete window;
-    // und aus der Liste entfernen
+    // Remove from list and notify parent
     windows.erase(it);
+    curDesktop->Msg_WindowClosed(const_cast<IngameWindow&>(*window));
+
+    // Then delete
+    delete window;
 }
 
 /**
