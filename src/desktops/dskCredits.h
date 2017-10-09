@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -32,13 +32,15 @@ public:
     dskCredits();
     ~dskCredits() override;
 
-private:
     bool Msg_KeyDown(const KeyEvent& ke) override;
     void Msg_PaintAfter() override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
-
+    void SetActive(bool active) override;
     bool Close();
 
+private:
+    void DrawCredit();
+    void DrawBobs();
     static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
 
     struct CreditsEntry
