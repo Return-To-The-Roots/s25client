@@ -16,14 +16,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "dskLobby.h"
-#include "RTTR_Version.h"
-
 #include "GameClient.h"
 #include "Loader.h"
+#include "RTTR_Version.h"
 #include "Settings.h"
 #include "WindowManager.h"
-#include "liblobby/LobbyClient.h"
-
 #include "controls/ctrlChat.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
@@ -36,13 +33,14 @@
 #include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ogl/SoundEffectItem.h"
-#include "libutil/colors.h"
-
+#include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
+#include "libutil/colors.h"
+#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <set>
 
-dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL)
+dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(NULL), createServerWnd(NULL), lobbyRankingWnd(NULL)
 {
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
@@ -74,8 +72,8 @@ dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoW
     if(LOBBYCLIENT.IsIngame())
         LOBBYCLIENT.SendLeaveServer();
 
-    UpdateServerList(true);
-    UpdatePlayerList(true);
+    UpdateServerList();
+    UpdatePlayerList();
 
     LOBBYCLIENT.SetInterface(this);
     LOBBYCLIENT.SendServerListRequest();
@@ -120,7 +118,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
         case 5: // Ranking - Button
         {
             LOBBYCLIENT.SendRankingListRequest();
-            WINDOWMANAGER.Show(new iwLobbyRanking, true);
+            WINDOWMANAGER.Show(lobbyRankingWnd = new iwLobbyRanking, true);
         }
         break;
         case 6: // GameServer hinzufügen
@@ -187,125 +185,43 @@ void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned select
         ConnectToSelectedGame();
 }
 
-void dskLobby::UpdatePlayerList(bool first)
+void dskLobby::UpdatePlayerList()
 {
-    playerlist = &LOBBYCLIENT.GetPlayerList();
-    if(!playerlist)
+    if(LOBBYCLIENT.GetPlayerList().empty())
         return;
-
-    ctrlTable* playertable = GetCtrl<ctrlTable>(11);
-
-    if(!LOBBYCLIENT.receivedNewPlayerList)
-        return;
-
-    LOBBYCLIENT.receivedNewPlayerList = false;
-
-    if((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < playerlist->getCount()))
-    {
-        LOADER.GetSoundN("sound", 114)->Play(255, false);
-    }
-
-    unsigned selection = playertable->GetSelection();
-    if(selection == 0xFFFF)
-        selection = 0;
-    unsigned short column = playertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = playertable->GetSortDirection();
-    playertable->DeleteAllItems();
-
-    if(playerlist->getCount() > 0)
-    {
-        for(LobbyPlayerList::const_iterator it = playerlist->begin(); it != playerlist->end(); ++it)
-        {
-            if(it->getId() != 0xFFFFFFFF)
-            {
-                std::string punkte = boost::lexical_cast<std::string>(it->getPunkte());
-                std::string name = it->getName();
-                if(it->isIngame)
-                    name += _(" (playing)");
-                playertable->AddRow(0, name.c_str(), punkte.c_str(), it->getVersion().c_str());
-            }
-        }
-        if(first)
-            playertable->SortRows(0);
-        else
-            playertable->SortRows(column, &direction);
-        playertable->SetSelection(selection);
-    }
+    LC_PlayerList(LOBBYCLIENT.GetPlayerList());
 }
 
-void dskLobby::UpdateServerList(bool first)
+void dskLobby::UpdateServerList()
 {
-    serverlist = &LOBBYCLIENT.GetServerList();
-    if(!serverlist)
+    if(LOBBYCLIENT.GetServerList().empty())
         return;
+    LC_ServerList(LOBBYCLIENT.GetServerList());
+}
 
-    ctrlTable* servertable = GetCtrl<ctrlTable>(10);
-
-    if(!LOBBYCLIENT.receivedNewServerList)
-        return;
-
-    LOBBYCLIENT.receivedNewServerList = false;
-
-    unsigned selection = servertable->GetSelection();
-    if(selection == 0xFFFF)
-        selection = 0;
-    unsigned short column = servertable->GetSortColumn();
-    if(column == 0xFFFF)
-        column = 0;
-    bool direction = servertable->GetSortDirection();
-    servertable->DeleteAllItems();
-
-    if(serverlist->getCount() > 0)
-    {
-        std::set<unsigned> ids;
-        for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
-        {
-            if(it->getName().empty())
-                continue;
-
-            if(helpers::contains(ids, it->getId()))
-            {
-                LOG.write("Duplicate ID in serverlist detected: %u\n") % it->getId();
-                continue;
-            }
-            ids.insert(it->getId());
-            std::string id = boost::lexical_cast<std::string>(it->getId());
-            std::string name = (it->hasPassword() ? "(pwd) " : "") + it->getName();
-            std::string ping = boost::lexical_cast<std::string>(it->getPing());
-            std::string player =
-              boost::lexical_cast<std::string>(it->getCurPlayers()) + "/" + boost::lexical_cast<std::string>(it->getMaxPlayers());
-            servertable->AddRow(0, id.c_str(), name.c_str(), it->getMap().c_str(), player.c_str(), it->getVersion().c_str(), ping.c_str());
-        }
-        if(first)
-            servertable->SortRows(0);
-        else
-            servertable->SortRows(column, &direction);
-        servertable->SetSelection(selection);
-    }
+void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
+{
+    if(&wnd == serverInfoWnd)
+        serverInfoWnd = NULL;
+    else if(&wnd == createServerWnd)
+        createServerWnd = NULL;
+    else if(&wnd == lobbyRankingWnd)
+        lobbyRankingWnd = NULL;
 }
 
 bool dskLobby::ConnectToSelectedGame()
 {
-    if(!serverlist)
-        return false;
-
     ctrlTable* table = GetCtrl<ctrlTable>(10);
-    unsigned selection = table->GetSelection();
-    if(selection >= serverlist->getCount())
-        return false;
-
-    selection = atoi(table->GetItemText(selection, 0).c_str());
-    for(LobbyServerList::const_iterator it = serverlist->begin(); it != serverlist->end(); ++it)
+    unsigned selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
+    BOOST_FOREACH(const LobbyServerInfo& server, LOBBYCLIENT.GetServerList())
     {
-        if(it->getId() != selection)
+        if(server.getId() != selection)
             continue;
 
-        if(it->getVersion() == std::string(RTTR_Version::GetVersion()))
+        if(server.getVersion() == std::string(RTTR_Version::GetVersion()))
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
-            connect->Connect(it->getHost(), it->getPort(), false, it->hasPassword());
+            connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());
             WINDOWMANAGER.Show(connect);
             return true;
         } else
@@ -382,19 +298,92 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
     GetCtrl<ctrlChat>(20)->AddMessage(time, player, playerColor, text, COLOR_YELLOW);
 }
 
-/// TODO!!
+void dskLobby::LC_ServerList(const LobbyServerList& servers)
+{
+    ctrlTable* servertable = GetCtrl<ctrlTable>(10);
+    bool first = servertable->GetRowCount() == 0;
 
-// case MSG_CLOSE: // child notification
-//  {
-//      switch(ctrl_id)
-//      {
-//      case CGI_LOBBYSERVERINFO: // pointer expired ;)
-//          {
-//              serverinfo = NULL;
-//          } break;
-//      case CGI_DIRECTIPCREATE:
-//          {
-//              servercreate = NULL;
-//          } break;
-//      }
-//  } break;
+    unsigned selection = servertable->GetSelection();
+    if(selection == 0xFFFF)
+        selection = 0;
+    unsigned short column = servertable->GetSortColumn();
+    if(column == 0xFFFF)
+        column = 0;
+    bool direction = servertable->GetSortDirection();
+    servertable->DeleteAllItems();
+
+    std::set<unsigned> ids;
+    BOOST_FOREACH(const LobbyServerInfo& server, servers)
+    {
+        if(server.getName().empty())
+            continue;
+
+        if(helpers::contains(ids, server.getId()))
+        {
+            LOG.write("Duplicate ID in serverlist detected: %u\n") % server.getId();
+            continue;
+        }
+        ids.insert(server.getId());
+        std::string id = boost::lexical_cast<std::string>(server.getId());
+        std::string name = (server.hasPassword() ? "(pwd) " : "") + server.getName();
+        std::string ping = boost::lexical_cast<std::string>(server.getPing());
+        std::string player =
+          boost::lexical_cast<std::string>(server.getCurPlayers()) + "/" + boost::lexical_cast<std::string>(server.getMaxPlayers());
+        servertable->AddRow(0, id.c_str(), name.c_str(), server.getMap().c_str(), player.c_str(), server.getVersion().c_str(),
+                            ping.c_str());
+    }
+    if(first)
+        servertable->SortRows(0);
+    else
+        servertable->SortRows(column, &direction);
+    servertable->SetSelection(selection);
+}
+
+void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
+{
+    ctrlTable* playertable = GetCtrl<ctrlTable>(11);
+    bool first = playertable->GetRowCount() == 0;
+
+    if((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < players.getCount()))
+    {
+        LOADER.GetSoundN("sound", 114)->Play(255, false);
+    }
+
+    unsigned selection = playertable->GetSelection();
+    if(selection == 0xFFFF)
+        selection = 0;
+    unsigned short column = playertable->GetSortColumn();
+    if(column == 0xFFFF)
+        column = 0;
+    bool direction = playertable->GetSortDirection();
+    playertable->DeleteAllItems();
+
+    BOOST_FOREACH(const LobbyPlayerInfo& player, players)
+    {
+        if(player.getId() != 0xFFFFFFFF)
+        {
+            std::string punkte = boost::lexical_cast<std::string>(player.getPunkte());
+            std::string name = player.getName();
+            if(player.isIngame)
+                name += _(" (playing)");
+            playertable->AddRow(0, name.c_str(), punkte.c_str(), player.getVersion().c_str());
+        }
+    }
+    if(first)
+        playertable->SortRows(0);
+    else
+        playertable->SortRows(column, &direction);
+    playertable->SetSelection(selection);
+}
+
+void dskLobby::LC_ServerInfo(const LobbyServerInfo& info)
+{
+    if(serverInfoWnd)
+        serverInfoWnd->UpdateServerInfo();
+}
+
+void dskLobby::LC_RankingList(const LobbyPlayerList& players)
+{
+    if(lobbyRankingWnd)
+        lobbyRankingWnd->UpdateRankings(players);
+}

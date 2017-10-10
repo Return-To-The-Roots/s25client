@@ -25,7 +25,7 @@ ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0)
 }
 
 ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* s2map)
-    : ctrlMinimap(parent, id, pos, size, Extent(2, 2), size), minimap(NULL)
+    : ctrlMinimap(parent, id, pos, size, Extent(2, 2), Extent(0, 0)), minimap(NULL)
 {
     SetMap(s2map);
 }
@@ -62,7 +62,10 @@ Rect ctrlPreviewMinimap::GetBoundaryRect() const
 void ctrlPreviewMinimap::SetMap(const glArchivItem_Map* const s2map)
 {
     if(!s2map)
+    {
+        SetMapSize(Extent::all(0));
         return;
+    }
 
     unsigned short map_width = s2map->getHeader().getWidth();
     unsigned short map_height = s2map->getHeader().getHeight();

@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwLobbyConnect.h"
-
 #include "Loader.h"
+#include "RTTR_Version.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -88,6 +88,7 @@ iwLobbyConnect::iwLobbyConnect()
 
     AddText(ID_txtStatus, DrawPoint(250, 195), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
+    LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetVersion());
     LOBBYCLIENT.SetInterface(this);
 }
 

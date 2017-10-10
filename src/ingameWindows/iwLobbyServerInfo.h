@@ -33,9 +33,9 @@ public:
 
     void SetServerId(unsigned serverId);
     unsigned GetServerId() const { return serverId_; }
+    void UpdateServerInfo();
 
 protected:
-    void UpdateServerInfo();
 
     void Msg_Timer(const unsigned ctrl_id) override;
 };

@@ -29,19 +29,14 @@
  */
 void iwLobbyServerInfo::UpdateServerInfo()
 {
-    if(LOBBYCLIENT.receivedNewServerInfo)
-    {
-        LOBBYCLIENT.receivedNewServerInfo = false;
+    const LobbyServerInfo& serverinfo = LOBBYCLIENT.GetServerInfo();
 
-        const LobbyServerInfo& serverinfo = LOBBYCLIENT.GetServerInfo();
+    SetTitle(serverinfo.getName());
 
-        SetTitle(serverinfo.getName());
-
-        GetCtrl<ctrlEdit>(1)->SetText(serverinfo.getMap());
-        GetCtrl<ctrlEdit>(4)->SetText(serverinfo.getName());
-        GetCtrl<ctrlEdit>(6)->SetText(serverinfo.getHost() + ":" + helpers::toString(serverinfo.getPort()));
-        GetCtrl<ctrlEdit>(8)->SetText(serverinfo.getVersion());
-    }
+    GetCtrl<ctrlEdit>(1)->SetText(serverinfo.getMap());
+    GetCtrl<ctrlEdit>(4)->SetText(serverinfo.getName());
+    GetCtrl<ctrlEdit>(6)->SetText(serverinfo.getHost() + ":" + helpers::toString(serverinfo.getPort()));
+    GetCtrl<ctrlEdit>(8)->SetText(serverinfo.getVersion());
 }
 
 iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
@@ -60,7 +55,6 @@ iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
 
     LOBBYCLIENT.SendServerInfoRequest(serverId_);
     AddTimer(9, 5000);
-    AddTimer(10, 1000);
 }
 
 void iwLobbyServerInfo::Msg_Timer(const unsigned ctrl_id)
@@ -69,9 +63,6 @@ void iwLobbyServerInfo::Msg_Timer(const unsigned ctrl_id)
     {
         case 9: // alle 5 Sek
             LOBBYCLIENT.SendServerInfoRequest(serverId_);
-            break;
-        case 10: // alle Sek
-            UpdateServerInfo();
             break;
     }
 }

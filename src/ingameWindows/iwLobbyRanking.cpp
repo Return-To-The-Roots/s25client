@@ -26,16 +26,12 @@
 /**
  *  aktualisiert die Ranking-Tabelle.
  */
-void iwLobbyRanking::UpdateRankings(bool first)
+void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
 {
-    if(LOBBYCLIENT.receivedNewRankingList)
-    {
-        const LobbyPlayerList& rankinglist = LOBBYCLIENT.GetRankingList();
         ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
+        bool first = rankingtable->GetRowCount() == 0;
 
         rankingtable->DeleteAllItems();
-
-        LOBBYCLIENT.receivedNewRankingList = false;
 
         if(rankinglist.getCount() > 0)
         {
@@ -50,7 +46,6 @@ void iwLobbyRanking::UpdateRankings(bool first)
             if(first)
                 rankingtable->SetSelection(0);
         }
-    }
 }
 
 iwLobbyRanking::iwLobbyRanking()
@@ -60,7 +55,6 @@ iwLobbyRanking::iwLobbyRanking()
     AddTable(0, DrawPoint(20, 25), Extent(400, 340), TC_GREY, NormalFont, 4, _("Name"), 360, ctrlTable::SRT_STRING, _("Points"), 185,
              ctrlTable::SRT_NUMBER, _("Lost"), 215, ctrlTable::SRT_NUMBER, _("Won"), 240, ctrlTable::SRT_NUMBER);
     AddTimer(1, 60000);
-    AddTimer(2, 1000);
 
     // "Zurück"
     AddTextButton(3, DrawPoint(20, 370), Extent(400, 20), TC_RED1, _("Back"), NormalFont);
@@ -71,14 +65,7 @@ void iwLobbyRanking::Msg_Timer(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 1: // alle Minute
-        {
             LOBBYCLIENT.SendRankingListRequest();
-        }
-        break;
-        case 2: // alle Sek
-        {
-            UpdateRankings();
-        }
         break;
     }
 }

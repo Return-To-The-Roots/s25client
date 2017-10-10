@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2015 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -789,10 +789,12 @@ void WindowManager::Close(const IngameWindow* window)
         }
     }
 
-    // Fenster löschen
-    delete window;
-    // und aus der Liste entfernen
+    // Remove from list and notify parent
     windows.erase(it);
+    curDesktop->Msg_WindowClosed(const_cast<IngameWindow&>(*window));
+
+    // Then delete
+    delete window;
 }
 
 /**
