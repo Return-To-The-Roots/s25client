@@ -22,7 +22,6 @@
 #include "GlobalGameSettings.h"
 #include "gameData/NationConsts.h"
 #include "libutil/MyTime.h"
-#include <stdint.h>
 #include <string>
 
 struct BasePlayerInfo;

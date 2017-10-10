@@ -621,8 +621,7 @@ void nofCarrier::LooseWare()
     if(carried_ware)
     {
         carried_ware->WareLost(player);
-        carried_ware->Destroy();
-        deletePtr(carried_ware);
+        destroyAndDelete(carried_ware);
     }
 }
 

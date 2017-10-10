@@ -229,9 +229,6 @@ void nobMilitary::HandleEvent(const unsigned id)
 
                 soldier->ActAtFirst();
                 leave_house.pop_front();
-            } else
-            {
-                go_out = false;
             }
 
             // Wenn noch weitere drin sind, die müssen auch noch raus
@@ -785,8 +782,7 @@ nofAggressiveDefender* nobMilitary::SendAggressiveDefender(nofAttacker* attacker
         nofAggressiveDefender* defender = new nofAggressiveDefender(soldier, attacker);
         SoldierOnMission(soldier, defender);
         // alten passiven Soldaten vernichten
-        soldier->Destroy();
-        delete soldier;
+        destroyAndDelete(soldier);
 
         return defender;
     } else

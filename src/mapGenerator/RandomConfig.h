@@ -22,7 +22,6 @@
 #include "mapGenerator/MapStyle.h"
 #include "random/XorShift.h"
 #include "gameTypes/MapTypes.h"
-#include <stdint.h>
 #include <vector>
 
 /**

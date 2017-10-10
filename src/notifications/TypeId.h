@@ -18,8 +18,6 @@
 #ifndef TypeId_h__
 #define TypeId_h__
 
-#include <stdint.h>
-
 /** Class for getting a unique Id per type: TypeId::value<int>()
     Note: NOT constant over different program version and NOT thread safe */
 class TypeId

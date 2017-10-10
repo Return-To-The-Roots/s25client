@@ -21,7 +21,6 @@
 #pragma once
 
 #include "DrawPoint.h"
-#include <stdint.h>
 #include <vector>
 
 namespace libsiedler2 {

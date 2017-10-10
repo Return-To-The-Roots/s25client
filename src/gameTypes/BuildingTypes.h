@@ -23,7 +23,6 @@
 #include "JobTypes.h"
 #include "Point.h"
 #include <boost/array.hpp>
-#include <stdint.h>
 
 struct BuildingCost
 {

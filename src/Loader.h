@@ -32,7 +32,6 @@
 #include "libutil/Singleton.h"
 #include <boost/array.hpp>
 #include <map>
-#include <stdint.h>
 #include <string>
 #include <vector>
 

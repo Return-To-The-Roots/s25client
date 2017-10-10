@@ -95,4 +95,12 @@ private:
     static unsigned objCounter_;   /// Objekt-Counter
 };
 
+/// Calls destroy on a GameObject and then deletes it setting the ptr to NULL
+template<typename T>
+void destroyAndDelete(T*& obj)
+{
+    obj->Destroy();
+    deletePtr(obj);
+}
+
 #endif /// GAMEOBJECT_H_INCLUDED

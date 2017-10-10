@@ -18,8 +18,6 @@
 #ifndef roundToNextPow2_h__
 #define roundToNextPow2_h__
 
-#include <stdint.h>
-
 namespace helpers {
 /// compute the next highest power of 2 of 32-bit v
 /// Note: 0 will be rounded to 1 and maximum accepted value is 2^31 as maximum uint32_t value is 2^32-1

@@ -25,7 +25,6 @@
 #include "gameTypes/MapCoordinates.h"
 #include <boost/container/static_vector.hpp>
 #include <deque>
-#include <stdint.h>
 #include <vector>
 
 class AIInterface;
