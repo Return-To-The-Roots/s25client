@@ -25,14 +25,13 @@ class noFigure;
 
 class noBuilding : public noBaseBuilding
 {
-protected:
     /// How many people opened the door. positive: open, 0: closed, negative: error
     signed char opendoor;
 
+protected:
     noBuilding(const BuildingType type, const MapPoint pt, const unsigned char player, const Nation nation);
     noBuilding(SerializedGameData& sgd, const unsigned obj_id);
 
-protected:
     /// Called to destroy derived classes after building was replaced by fire and removed from players inventory
     virtual void DestroyBuilding() = 0;
 
@@ -52,6 +51,7 @@ public:
 
     void OpenDoor();
     void CloseDoor();
+    bool IsDoorOpen() const { return opendoor > 0; }
 
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
     virtual bool FreePlaceAtFlag() = 0;

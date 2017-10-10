@@ -60,6 +60,8 @@ protected:
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noMovable(sgd); }
+    /// Sets the position. Usually not required as all position changes are done by the walk functions
+    void SetPos(const MapPoint& pos) { this->pos = pos; }
 
     /// Returns the direction in which the object is moving/which it is facing
     Direction GetCurMoveDir() const { return curMoveDir; }

@@ -236,7 +236,8 @@ void noFighting::HandleEvent(const unsigned id)
                 // Wurde der eine getroffen?
                 if(defending_animation == 3)
                 {
-                    if(--soldiers[1 - turn]->hitpoints == 0)
+                    soldiers[1 - turn]->TakeHit();
+                    if(soldiers[1 - turn]->GetHitpoints() == 0)
                     {
                         // Besitzer merken für die Sichtbarkeiten am Ende dann
                         player_won = soldiers[turn]->GetPlayer();

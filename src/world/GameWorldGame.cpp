@@ -836,13 +836,15 @@ void GameWorldGame::Attack(const unsigned char player_attacker, const MapPoint p
     // Send the soldiers to attack
     unsigned short i = 0;
 
-    for(std::list<PotentialAttacker>::iterator it = soldiers.begin(); it != soldiers.end() && i < soldiers_count; ++i, ++it)
+    BOOST_FOREACH(PotentialAttacker& pa, soldiers)
     {
+        if(i >= soldiers_count)
+            break;
         // neuen Angreifer-Soldaten erzeugen
-        new nofAttacker(it->soldier, attacked_building);
+        new nofAttacker(pa.soldier, attacked_building);
         // passiven Soldaten entsorgen
-        it->soldier->Destroy();
-        delete it->soldier;
+        destroyAndDelete(pa.soldier);
+        i++;
     }
 }
 
@@ -887,8 +889,7 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
         // neuen Angreifer-Soldaten erzeugen
         new nofAttacker(pa.soldier, attacked_building, pa.harbor);
         // passiven Soldaten entsorgen
-        pa.soldier->Destroy();
-        delete pa.soldier;
+        destroyAndDelete(pa.soldier);
         counter++;
     }
 }

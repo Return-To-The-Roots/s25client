@@ -19,6 +19,7 @@
 #include "nofBuilder.h"
 #include "EventManager.h"
 #include "GameClient.h"
+#include "GameEvent.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "Random.h"
@@ -111,8 +112,9 @@ void nofBuilder::LostWork()
     }
 }
 
-void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
+void nofBuilder::HandleDerivedEvent(const unsigned id)
 {
+    RTTR_Assert(id == 1u && current_ev->id == id);
     switch(state)
     {
         case STATE_WAITINGFREEWALK:
@@ -142,6 +144,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
             } else if(building_site->IsBuildingComplete())
             {
                 // fertig mit Bauen!
+                current_ev = NULL;
 
                 // Baustelle abreißen und Gebäude hinsetzen
 

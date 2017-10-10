@@ -410,6 +410,12 @@ void nofActiveSoldier::InformTargetsAboutCancelling()
     }
 }
 
+void nofActiveSoldier::TakeHit()
+{
+    RTTR_Assert(hitpoints > 0u);
+    --hitpoints;
+}
+
 /// Determines if this soldier is ready for a spontaneous  fight
 bool nofActiveSoldier::IsReadyForFight() const
 {

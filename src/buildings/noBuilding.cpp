@@ -68,7 +68,7 @@ void noBuilding::DrawBaseBuilding(DrawPoint drawPt)
 
 void noBuilding::DrawDoor(DrawPoint drawPt)
 {
-    if(!opendoor)
+    if(!IsDoorOpen())
         return;
     glArchivItem_Bitmap* doorImg = GetDoorImage();
     if(doorImg)
@@ -82,7 +82,7 @@ void noBuilding::OpenDoor()
 
 void noBuilding::CloseDoor()
 {
-    RTTR_Assert(opendoor);
+    RTTR_Assert(IsDoorOpen());
     --opendoor;
 }
 

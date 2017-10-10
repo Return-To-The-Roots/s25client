@@ -25,7 +25,6 @@
 #include <boost/array.hpp>
 #include <iosfwd>
 #include <limits>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
