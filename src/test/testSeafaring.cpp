@@ -28,8 +28,8 @@
 #include "postSystem/ShipPostMsg.h"
 #include "nodeObjs/noShip.h"
 #include "test/initTestHelpers.h"
-#include <boost/test/unit_test.hpp>
 #include <boost/foreach.hpp>
+#include <boost/test/unit_test.hpp>
 #include <iostream>
 
 namespace {

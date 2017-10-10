@@ -18,8 +18,8 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GameEvent.h"
 #include "GameObject.h"
-#include "TestEventManager.h"
 #include "RTTR_AssertError.h"
+#include "TestEventManager.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameEventsTestSuite)

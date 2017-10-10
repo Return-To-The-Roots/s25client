@@ -171,12 +171,14 @@ private:
 // Implementation
 ////////////////////////////////////////////////////////////////////////////////
 
-template<> inline void Serializer::Push(bool val)
+template<>
+inline void Serializer::Push(bool val)
 {
     PushBool(val);
 }
 
-template<> inline bool Serializer::Pop<bool>()
+template<>
+inline bool Serializer::Pop<bool>()
 {
     return PopBool();
 }

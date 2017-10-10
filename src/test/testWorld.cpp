@@ -81,9 +81,9 @@ struct LoadWorldFromFileCreator
         for(unsigned i = 0; i < numPlayers_; i++)
             nations.push_back(world.GetPlayer(i).nation);
         MapLoader loader(world, nations);
-        if(!loader.Load(map, false, EXP_FOGOFWAR))
+        if(!loader.Load(map, EXP_FOGOFWAR))
             throw std::runtime_error("Could not load map");
-        if(!loader.PlaceHQs(world, false));
+        if(!loader.PlaceHQs(world, false))
             throw std::runtime_error("Could not place HQs");
         for(unsigned i = 0; i < numPlayers_; i++)
             hqs.push_back(loader.GetHQPos(i));

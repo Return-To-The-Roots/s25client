@@ -43,9 +43,9 @@
 const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
-    : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      mayBeHunted(true), canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL),
-      harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
+    : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal), mayBeHunted(true),
+      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
+      shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -54,9 +54,9 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 }
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
-    : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal),
-      mayBeHunted(true), canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL),
-      harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
+    : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal), mayBeHunted(true),
+      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
+      shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -702,7 +702,8 @@ void nofAttacker::OrderAggressiveDefender()
             continue;
         const unsigned bldOwnerId = bld->GetPlayer();
         if(canPlayerSendAggDefender[bldOwnerId] == 0)
-            continue;;
+            continue;
+        ;
         // We only send a defender if we are allied with the attacked player and can attack the attacker (no pact etc)
         GamePlayer& bldOwner = gwg->GetPlayer(bldOwnerId);
         if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))
