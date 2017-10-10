@@ -380,9 +380,8 @@ private:
     /// Liste mit Punkten, die schon von Schiffen entdeckt wurden
     std::vector<MapPoint> enemies_discovered_by_ships;
 
-    /// Liste, welchen nächsten 10 Angreifern Verteidiger entgegenlaufen sollen
-    boost::array<bool, 5> defenders;
-    unsigned short defenders_pos;
+    /// List which tells if a defender should be send to an attacker
+    std::vector<bool> shouldSendDefenderList;
 
     /// Inventur
     Inventory global_inventory;

@@ -68,10 +68,6 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
     LoadStandardMilitarySettings();
     LoadStandardToolSettings();
 
-    defenders_pos = 0;
-    for(unsigned i = 0; i < 5; ++i)
-        defenders[i] = true;
-
     // Inventur nullen
     global_inventory.clear();
 
@@ -198,10 +194,8 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
     sgd.PushObjectContainer(ware_list, true);
     sgd.PushObjectContainer(flagworkers, false);
     sgd.PushObjectContainer(ships, true);
-
-    for(unsigned i = 0; i < defenders.size(); ++i)
-        sgd.PushBool(defenders[i]);
-    sgd.PushUnsignedShort(defenders_pos);
+    
+    sgd.PushContainer(shouldSendDefenderList);
 
     sgd.PushMapPoint(hqPos);
 
@@ -303,9 +297,14 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
     sgd.PopObjectContainer(ships, GOT_SHIP);
 
-    for(unsigned i = 0; i < defenders.size(); ++i)
-        defenders[i] = sgd.PopBool();
-    defenders_pos = sgd.PopUnsignedShort();
+    if(sgd.GetGameDataVersion() < 1u)
+    {
+        // Reverse as we use pop_back
+        for(unsigned i = 0; i < 5; ++i)
+            shouldSendDefenderList.insert(shouldSendDefenderList.begin(), sgd.PopBool());
+        shouldSendDefenderList.resize(shouldSendDefenderList.size() - sgd.PopUnsignedShort());
+    } else
+        sgd.PopContainer(shouldSendDefenderList);
 
     hqPos = sgd.PopMapPoint();
 
@@ -1312,14 +1311,13 @@ void GamePlayer::FlagDestroyed(noFlag* flag)
 
 void GamePlayer::RefreshDefenderList()
 {
-    /// Die Verteidigungsliste muss erneuert werden
-    for(unsigned i = 0; i < defenders.size(); ++i)
-        defenders[i] = (i < militarySettings_[2] * 5u / MILITARY_SETTINGS_SCALE[2]);
+    shouldSendDefenderList.clear();
+    // Add as many true values as set in the settings, the rest will be false
+    for(unsigned i = 0; i < MILITARY_SETTINGS_SCALE[2]; ++i)
+        shouldSendDefenderList.push_back(i < militarySettings_[2]);
     // und ordentlich schütteln
     RANDOM_FUNCTOR(random);
-    std::random_shuffle(defenders.begin(), defenders.end(), random);
-
-    defenders_pos = 0;
+    std::random_shuffle(shouldSendDefenderList.begin(), shouldSendDefenderList.end(), random);
 }
 
 void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_settings)
@@ -1378,10 +1376,12 @@ void GamePlayer::ChangeBuildOrder(bool useCustomBuidOrder, const BuildOrders& od
 bool GamePlayer::ShouldSendDefender()
 {
     // Wenn wir schon am Ende sind, muss die Verteidgungsliste erneuert werden
-    if(defenders_pos == defenders.size())
+    if(shouldSendDefenderList.empty())
         RefreshDefenderList();
 
-    return defenders[defenders_pos++];
+    bool result = shouldSendDefenderList.back();
+    shouldSendDefenderList.pop_back();
+    return result;
 }
 
 void GamePlayer::TestDefeat()
