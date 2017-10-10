@@ -45,6 +45,16 @@
 //      - Fix the bug -> Test succeeds
 BOOST_AUTO_TEST_SUITE(RegressionsSuite)
 
+BOOST_AUTO_TEST_CASE(ProdOfComponents)
+{
+    Point<uint16_t> pt(256, 256);
+    BOOST_REQUIRE_EQUAL(prodOfComponents(pt), 256u * 256u);
+    Point<int16_t> ptI(256, 256);
+    BOOST_REQUIRE_EQUAL(prodOfComponents(ptI), 256 * 256);
+    Point<float> ptF(256.5, 256.5);
+    BOOST_REQUIRE_EQUAL(prodOfComponents(ptF), 256.5f * 256.5f);
+}
+
 BOOST_AUTO_TEST_CASE(DirectionCmp)
 {
     Direction east(Direction::EAST);

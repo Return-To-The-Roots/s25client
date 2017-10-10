@@ -18,14 +18,13 @@
 #ifndef Point_h__
 #define Point_h__
 
-// Next 3 includes for operations only
 #include <boost/type_traits/common_type.hpp>
 #include <boost/type_traits/conditional.hpp>
 #include <boost/type_traits/is_arithmetic.hpp>
+#include <boost/type_traits/is_float.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/make_signed.hpp>
 #include <algorithm>
-
 #include <limits>
 
 /// Type for describing a 2D value (position, size, offset...)
@@ -110,9 +109,25 @@ inline Point<T> elMax(const Point<T>& lhs, const Point<T>& rhs)
     return Point<T>(max(lhs.x, rhs.x), max(lhs.y, rhs.y));
 }
 
-/// Compute pt.x * pt.y
+template<typename T, bool T_isFloat = boost::is_float<T>::value>
+struct PointProductType
+{
+    typedef T type;
+};
+
 template<typename T>
-inline T prodOfComponents(const Point<T>& pt)
+struct PointProductType<T, false>
+{
+    BOOST_STATIC_CONSTANT(bool, is64Bit = sizeof(T) > 4u);
+    typedef typename boost::conditional<is64Bit, T,
+                                        typename boost::conditional<boost::is_signed<T>::value, int32_t, uint32_t>::type // 32 bit int type
+                                        >::type type;
+};
+
+/// Compute pt.x * pt.y
+/// The result type is T iff T is a floating point value, else a 32 bit integer type with the same signednes as T
+template<typename T>
+inline typename PointProductType<T>::type prodOfComponents(const Point<T>& pt)
 {
     return pt.x * pt.y;
 }

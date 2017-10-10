@@ -29,6 +29,10 @@ MapBase::~MapBase()
 
 void MapBase::Resize(const MapExtent& newSize)
 {
+    // Odd heights make the map impossible (map wraps around so start and end must match)
+    // For width it is technically possible to have odd sizes so we don't check this
+    if(newSize.y & 1)
+        throw std::invalid_argument("The map height must be even!");
     size_ = newSize;
 }
 
