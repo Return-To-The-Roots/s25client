@@ -16,14 +16,22 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "GameEvent.h"
+#include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
+#include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
+#include "figures/nofCarrier.h"
+#include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/containerUtils.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
+#include "gameTypes/Direction_Output.h"
+#include "gameData/GameConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
@@ -38,6 +46,36 @@ struct AttackDefaults
     BOOST_STATIC_CONSTEXPR unsigned width = 12;
     BOOST_STATIC_CONSTEXPR unsigned height = 20;
 };
+
+/// Reschedule the walk event of the obj to be executed in numGFs GFs
+void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
+{
+    std::vector<GameEvent*> evts = em.GetObjEvents(obj);
+    BOOST_FOREACH(GameEvent* ev, evts)
+    {
+        if(ev->id == 0)
+        {
+            em.RescheduleEvent(*ev, em.GetCurrentGF() + numGFs);
+            return;
+        }
+    }
+    BOOST_REQUIRE(false);
+}
+
+/// Move the object next to the given point. The next walk event will make it reach that point
+void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
+{
+    if(helpers::contains(world.GetFigures(obj.GetPos()), &obj))
+        world.RemoveFigure(&obj, obj.GetPos());
+    else if(helpers::contains(world.GetFigures(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u)), &obj))
+        world.RemoveFigure(&obj, world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u));
+    obj.SetPos(world.GetNeighbour(pos, Direction::WEST));
+    world.AddFigure(&obj, obj.GetPos());
+    if(obj.IsMoving())
+        obj.FaceDir(Direction::EAST);
+    else
+        obj.StartWalking(Direction::EAST);
+}
 
 template<unsigned T_numPlayers, unsigned T_width, unsigned T_height>
 struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_height>
@@ -148,16 +186,17 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
     }
 };
 
-struct AttackFixture : public AttackFixtureBase<2, AttackDefaults::width, AttackDefaults::height>
+template<unsigned T_numPlayers = 2, unsigned T_width = AttackDefaults::width, unsigned T_height = AttackDefaults::height>
+struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 {
     /// Tested positions for military buildings
     MapPoint milBld0Pos, milBld1Pos;
     /// Military buildings of players 0 and 1
-    const nobMilitary *milBld0, *milBld1;
+    nobMilitary *milBld0, *milBld1;
 
     AttackFixture()
     {
-        // Build some military buildings
+        // Build some military buildings far away enough for holding some area outside HQ
         milBld0Pos = world.MakeMapPoint(hqPos[0] + Position(6, 0));
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BQ_CASTLE);
         milBld0 = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_BABYLONIANS));
@@ -236,7 +275,7 @@ BOOST_FIXTURE_TEST_CASE(NumSoldiersForAttack, NumSoldierTestFixture)
     BOOST_REQUIRE_GT(milBld1Near->GetSoldiersStrength(), milBld1Far->GetSoldiersStrength());
 }
 
-BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
 {
     initGameRNG();
     GameWorldViewer gwv(curPlayer, world);
@@ -323,7 +362,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture)
     TestFailingAttack(gwv, milBld1Pos, attackSrc, 1u);
 }
 
-BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
+BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
 {
     initGameRNG();
 
@@ -390,6 +429,287 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture)
     {
         BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, curPlayer + 1u);
     }
+}
+
+typedef AttackFixture<4, 32> AttackFixture4P;
+BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
+{
+    initGameRNG();
+    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_NOTEAM;
+    world.GetPlayer(2).team = TM_TEAM1; // Allied to 0
+    world.GetPlayer(3).team = TM_TEAM2; // Hostile to 0
+    for(unsigned i = 0; i < 4; i++)
+        world.GetPlayer(i).MakeStartPacts();
+    MilitarySettings milSettings = MILITARY_SETTINGS_SCALE;
+    milSettings[2] = 0; // No aggressive defenders for attacker
+    this->ChangeMilitary(milSettings);
+
+    AddSoldiers(milBld0Pos, 0, 6);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SOUTHEAST);
+
+    // Scenario 1: Attack with one soldier.
+    // Once enemy is defeated we walk in with another soldier of the enemy who wants to occupy its building.
+    // The other soldier is faster -> we have to fight him
+    this->Attack(milBld1Pos, 1, true);
+    BOOST_REQUIRE_EQUAL(milBld0->GetLeavingFigures().size(), 1u);
+    nofAttacker* attacker = dynamic_cast<nofAttacker*>(milBld0->GetLeavingFigures().front());
+    BOOST_REQUIRE(attacker);
+    // Move him directly out
+    const_cast<std::list<noFigure*>&>(milBld0->GetLeavingFigures()).pop_front();
+    moveObjTo(world, *attacker, milBld1FlagPos);
+    BOOST_REQUIRE(!milBld1->IsDoorOpen());
+    const std::list<noBase*>& flagFigs = world.GetFigures(milBld1FlagPos);
+    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING);
+    BOOST_REQUIRE(!milBld1->IsDoorOpen());
+    // Speed up fight by reducing defenders HP to 1
+    nofDefender* defender = const_cast<nofDefender*>(milBld1->GetDefender());
+    while(defender->GetHitpoints() > 1u)
+        defender->TakeHit();
+    RTTR_EXEC_TILL(500, milBld1->GetDefender() == NULL);
+    // Defender defeated. Attacker moving in.
+    BOOST_REQUIRE(attacker->IsMoving());
+    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
+    // Door opened
+    BOOST_REQUIRE(milBld1->IsDoorOpen());
+    // New soldiers walked in
+    AddSoldiersWithRank(milBld1Pos, 4, 0);
+    // Let attacker walk in (try it at least)
+    RTTR_EXEC_TILL(20, attacker->GetPos() == milBld1Pos);
+    RTTR_EXEC_TILL(20, attacker->GetPos() == milBld1FlagPos);
+    // New fight and door closed
+    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING);
+    BOOST_REQUIRE(!milBld1->IsDoorOpen());
+
+    // Scenario 2: Attacker successful
+    // We want all possible troops:
+    // 1. Attackers from this building
+    // 2. Aggressive defenders from this building
+    // 3. Allied aggressor towards this bld
+    // 4. Hostile aggressor towards this bld
+    // 5. Occupying soldier of the player on the way in the building
+    // 1.
+    curPlayer = 1;
+    this->Attack(milBld0Pos, 1, false);
+    BOOST_REQUIRE_EQUAL(milBld1->GetLeavingFigures().size(), 1u);
+    nofAttacker* attackerFromPl0 = dynamic_cast<nofAttacker*>(milBld1->GetLeavingFigures().front());
+    // 2.
+    curPlayer = 0;
+    this->Attack(milBld1Pos, 1, true);
+    // Move him directly out
+    BOOST_REQUIRE_EQUAL(milBld0->GetLeavingFigures().size(), 1u);
+    nofAttacker* secAttacker = dynamic_cast<nofAttacker*>(milBld0->GetLeavingFigures().front());
+    const_cast<std::list<noFigure*>&>(milBld0->GetLeavingFigures()).pop_front();
+    moveObjTo(world, *secAttacker, world.MakeMapPoint(milBld1FlagPos - Position(15, 0)));
+    nofAggressiveDefender* aggDefender = milBld1->SendAggressiveDefender(secAttacker);
+    BOOST_REQUIRE(aggDefender);
+    secAttacker->LetsFight(aggDefender);
+    // 3.
+    curPlayer = 2;
+    MapPoint bldPos = hqPos[curPlayer] + MapPoint(3, 0);
+    nobMilitary* alliedBld =
+      static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_GUARDHOUSE, bldPos, curPlayer, NAT_AFRICANS));
+    AddSoldiersWithRank(bldPos, 2, 0);
+    this->Attack(milBld1Pos, 1, false);
+    BOOST_REQUIRE_EQUAL(alliedBld->GetLeavingFigures().size(), 1u);
+    nofAttacker* alliedAttacker = dynamic_cast<nofAttacker*>(alliedBld->GetLeavingFigures().front());
+    // 4.
+    curPlayer = 3;
+    bldPos = hqPos[curPlayer] + MapPoint(3, 0);
+    nobMilitary* hostileBld =
+      static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_GUARDHOUSE, bldPos, curPlayer, NAT_AFRICANS));
+    AddSoldiersWithRank(bldPos, 2, 0);
+    this->Attack(milBld1Pos, 1, false);
+    BOOST_REQUIRE_EQUAL(hostileBld->GetLeavingFigures().size(), 1u);
+    nofAttacker* hostileAttacker = dynamic_cast<nofAttacker*>(hostileBld->GetLeavingFigures().front());
+
+    // Make sure all other soldiers left their buildings (<=30GFs each + 20 for walking to flag and a bit further.
+    // We got 2 from milBld1):
+    RTTR_SKIP_GFS(2 * 30 + 20 + 10);
+    // And suspend them to inspect them later on
+    rescheduleWalkEvent(em, *attackerFromPl0, 10000);
+    rescheduleWalkEvent(em, *secAttacker, 10000);
+    rescheduleWalkEvent(em, *aggDefender, 10000);
+    rescheduleWalkEvent(em, *alliedAttacker, 10000);
+    rescheduleWalkEvent(em, *hostileAttacker, 10000);
+    // Let defenders (2!) die
+    defender = const_cast<nofDefender*>(milBld1->GetDefender());
+    while(defender->GetHitpoints() > 1u)
+        defender->TakeHit();
+    RTTR_EXEC_TILL(500, milBld1->GetTroopsCount() == 0u);
+    defender = const_cast<nofDefender*>(milBld1->GetDefender());
+    while(defender->GetHitpoints() > 1u)
+        defender->TakeHit();
+    RTTR_EXEC_TILL(500, milBld1->GetDefender() == NULL);
+    // Defender defeated. Attacker moving in.
+    BOOST_REQUIRE(attacker->IsMoving());
+    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
+    // Door opened
+    BOOST_REQUIRE(milBld1->IsDoorOpen());
+    // Give him a bit of a head start
+    RTTR_SKIP_GFS(1);
+    // 5. Create new soldier who walks in after the attacker
+    nofPassiveSoldier* newSld = new nofPassiveSoldier(milBld1FlagPos, 1, milBld1, milBld1, 0);
+    milBld1->GotWorker(newSld->GetJobType(), newSld);
+    world.AddFigure(newSld, milBld1FlagPos);
+    newSld->ActAtFirst();
+    // Attacker faster -> Bld taken
+    RTTR_EXEC_TILL(30, milBld1->GetPlayer() == 0u);
+    // New soldier should be wandering
+    RTTR_EXEC_TILL(10, newSld->IsWandering());
+    // And door should be closed (latest after wandering soldier left flag)
+    RTTR_EXEC_TILL(40, !milBld1->IsDoorOpen());
+
+    // 1. Attackers from this building
+    // No home -> Wander
+    BOOST_REQUIRE(attackerFromPl0->HasNoHome());
+    rescheduleWalkEvent(em, *attackerFromPl0, 1);
+    RTTR_EXEC_TILL(2, attackerFromPl0->IsWandering());
+    // 2. Aggressive defenders from this building
+    // No further attack (unless already fighting) and wander
+    // The attacker proceeds to the building and occupies it
+    rescheduleWalkEvent(em, *secAttacker, 1);
+    rescheduleWalkEvent(em, *aggDefender, 2);
+    RTTR_SKIP_GFS(2);
+    BOOST_REQUIRE(aggDefender->GetAttacker() == NULL);
+    BOOST_REQUIRE(secAttacker->GetHuntingDefender() == NULL);
+    BOOST_REQUIRE(aggDefender->IsWandering());
+    RTTR_EXEC_TILL(270, milBld1->GetTroopsCount() == 2u);
+    // 3. Allied aggressor towards this bld
+    // Abort attack and return home
+    rescheduleWalkEvent(em, *alliedAttacker, 1);
+    RTTR_EXEC_TILL(1, alliedAttacker->GetAttackedGoal() == NULL);
+    RTTR_EXEC_TILL(90, alliedBld->GetTroopsCount() == 2u);
+    // 4. Hostile aggressor towards this bld
+    // Continue attack and fight
+    rescheduleWalkEvent(em, *hostileAttacker, 1);
+    BOOST_REQUIRE(hostileAttacker->GetAttackedGoal() != NULL);
+    RTTR_EXEC_TILL(220, hostileAttacker->GetPos() == milBld1FlagPos);
+    RTTR_EXEC_TILL(50, world.GetFigures(milBld1FlagPos).front()->GetGOT() == GOT_FIGHTING);
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
+{
+    // 1. Carrier with coin walking in the building
+    // 2. Carrier with coin walking out of the building
+    AddSoldiers(milBld0Pos, 0, 6);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SOUTHEAST);
+
+    curPlayer = 1;
+    MapPoint flagPos = world.MakeMapPoint(milBld1FlagPos - Position(2, 0));
+    this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::WEST));
+    noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
+    BOOST_REQUIRE(flag);
+    RoadSegment* rs = flag->GetRoute(Direction::EAST);
+    BOOST_REQUIRE(rs);
+    nofCarrier* carrierIn = new nofCarrier(nofCarrier::CT_NORMAL, flagPos, curPlayer, rs, flag);
+    nofCarrier* carrierOut = new nofCarrier(nofCarrier::CT_DONKEY, flagPos, curPlayer, rs, flag);
+    world.AddFigure(carrierIn, flagPos);
+    world.AddFigure(carrierOut, flagPos);
+    rs->setCarrier(0, carrierIn);
+    rs->setCarrier(1, carrierOut);
+    // Add 2 coins for the bld
+    for(unsigned i = 0; i < 2; i++)
+    {
+        Ware* coin = new Ware(GD_COINS, milBld1, flag);
+        coin->WaitAtFlag(flag);
+        coin->RecalcRoute();
+        flag->AddWare(coin);
+    }
+    world.GetPlayer(1).IncreaseInventoryWare(GD_COINS, 2);
+    carrierIn->ActAtFirst();
+    carrierOut->ActAtFirst();
+    // Both picked up
+    BOOST_REQUIRE_EQUAL(flag->GetWareCount(), 0u);
+    // Move carriers to flag
+    for(unsigned i = 0; i < 2; i++)
+    {
+        rescheduleWalkEvent(em, *carrierIn, 1);
+        rescheduleWalkEvent(em, *carrierOut, 1);
+        RTTR_SKIP_GFS(1);
+    }
+    // And pause them
+    rescheduleWalkEvent(em, *carrierIn, 10000);
+    // After the out-walking was in
+    rescheduleWalkEvent(em, *carrierOut, 1);
+    RTTR_SKIP_GFS(1);
+    rescheduleWalkEvent(em, *carrierOut, 10000);
+    BOOST_REQUIRE_EQUAL(carrierIn->GetCurMoveDir(), Direction::NORTHWEST);
+    BOOST_REQUIRE_EQUAL(carrierOut->GetCurMoveDir(), Direction::SOUTHEAST);
+
+    // Add another for later
+    MapPoint flagPosE = world.MakeMapPoint(milBld1FlagPos + Position(2, 0));
+    this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::EAST));
+    noFlag* flagE = world.GetSpecObj<noFlag>(flagPosE);
+    BOOST_REQUIRE(flagE);
+    RoadSegment* rsE = flagE->GetRoute(Direction::WEST);
+    BOOST_REQUIRE(rsE);
+    nofCarrier* carrierInE = new nofCarrier(nofCarrier::CT_NORMAL, flagPosE, curPlayer, rsE, flagE);
+    world.AddFigure(carrierInE, flagPosE);
+    rsE->setCarrier(0, carrierInE);
+    // He also gets 1 coin
+    Ware* coin = new Ware(GD_COINS, milBld1, flagE);
+    coin->WaitAtFlag(flagE);
+    coin->RecalcRoute();
+    flagE->AddWare(coin);
+    world.GetPlayer(1).IncreaseInventoryWare(GD_COINS, 1);
+    carrierInE->ActAtFirst();
+    // Picked up
+    BOOST_REQUIRE_EQUAL(flagE->GetWareCount(), 0u);
+    // And pause him
+    rescheduleWalkEvent(em, *carrierInE, 10000);
+
+    curPlayer = 0;
+    this->Attack(milBld1Pos, 1, true);
+    BOOST_REQUIRE_EQUAL(milBld0->GetLeavingFigures().size(), 1u);
+    nofAttacker* attacker = dynamic_cast<nofAttacker*>(milBld0->GetLeavingFigures().front());
+    BOOST_REQUIRE(attacker);
+    // Move him directly out
+    const_cast<std::list<noFigure*>&>(milBld0->GetLeavingFigures()).pop_front();
+    moveObjTo(world, *attacker, milBld1FlagPos);
+    const std::list<noBase*>& flagFigs = world.GetFigures(milBld1FlagPos);
+    RTTR_EXEC_TILL(20, attacker->GetPos() == milBld1FlagPos);
+    // Carriers on pos or to pos get send away as soon as soldier arrives
+    rescheduleWalkEvent(em, *carrierIn, 1);
+    rescheduleWalkEvent(em, *carrierOut, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_REQUIRE(carrierIn->IsWandering());
+    BOOST_REQUIRE(carrierOut->IsWandering());
+
+    // Let east carrier walk
+    rescheduleWalkEvent(em, *carrierInE, 1);
+
+    // Start fight
+    RTTR_EXEC_TILL(50, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING);
+    // East carrier gets blocked
+    BOOST_REQUIRE(!carrierInE->IsMoving());
+
+    // Door closed latest after other carriers are gone
+    RTTR_EXEC_TILL(20, !milBld1->IsDoorOpen());
+
+    // Speed up fight by reducing defenders HP to 1
+    nofDefender* defender = const_cast<nofDefender*>(milBld1->GetDefender());
+    while(defender->GetHitpoints() > 1u)
+        defender->TakeHit();
+    RTTR_EXEC_TILL(500, milBld1->GetDefender() == NULL);
+    // Defender defeated. Attacker moving in.
+    BOOST_REQUIRE(attacker->IsMoving());
+    BOOST_REQUIRE_EQUAL(attacker->GetCurMoveDir(), Direction::NORTHWEST);
+
+    // Door opened
+    BOOST_REQUIRE(milBld1->IsDoorOpen());
+    // Blocked carrier can walk again
+    BOOST_REQUIRE(carrierInE->IsMoving());
+    // Capture
+    RTTR_EXEC_TILL(20, milBld1->GetPlayer() == 0u);
+    // East Carrier should be wandering at some point
+    RTTR_EXEC_TILL(20, carrierInE->IsWandering());
+    // Only 1 coin in the bld
+    BOOST_REQUIRE_EQUAL(milBld1->GetNumCoins(), 1u);
+    // Door closed after carrier left it
+    RTTR_EXEC_TILL(40, !milBld1->IsDoorOpen());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

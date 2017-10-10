@@ -29,6 +29,7 @@
 #include "nodeObjs/noShip.h"
 #include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/foreach.hpp>
 #include <iostream>
 
 namespace {
@@ -444,6 +445,25 @@ public:
     }
 };
 
+void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
+{
+    world.DestroyNO(pos);
+    // Remove fire
+    world.DestroyNO(pos);
+    // Remove burned wh if existing
+    BOOST_FOREACH(noBase* fig, world.GetFigures(pos))
+    {
+        if(fig->GetGOT() == GOT_BURNEDWAREHOUSE)
+        {
+            // Remove go-out event (not automatically done as the burned wh is never removed)
+            const GameEvent* ev = static_cast<TestEventManager&>(world.GetEvMgr()).GetObjEvents(*fig).front();
+            world.GetEvMgr().RemoveEvent(ev);
+            destroyAndDelete(fig);
+            break;
+        }
+    }
+}
+
 BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
 {
     const GamePlayer& player = world.GetPlayer(curPlayer);
@@ -458,9 +478,7 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
 
     // Destroy home before load -> Abort after ship reaches harbor
     RTTR_EXEC_TILL(90, ship.IsMoving());
-    world.DestroyNO(hb1Pos);
-    // Remove fire
-    world.DestroyNO(hb1Pos);
+    destroyBldAndFire(world, hb1Pos);
     RTTR_EXEC_TILL(10, !ship.IsMoving());
     BOOST_REQUIRE(ship.IsIdling());
 
@@ -468,9 +486,7 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     createHarbor(1);
     // Just wait for re-order event and instantly go to loading as ship does not need to move
     RTTR_EXEC_TILL(90, ship.IsLoading());
-    world.DestroyNO(hb1Pos);
-    // Remove fire
-    world.DestroyNO(hb1Pos);
+    destroyBldAndFire(world, hb1Pos);
     BOOST_REQUIRE(ship.IsLoading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 0u);
     RTTR_EXEC_TILL(300, ship.IsUnloading());
@@ -480,9 +496,7 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     // Destroy destination before load -> Abort after ship reaches harbor
     createHarbor(1);
     RTTR_EXEC_TILL(90, ship.IsMoving());
-    world.DestroyNO(hb2Pos);
-    // Remove fire
-    world.DestroyNO(hb2Pos);
+    destroyBldAndFire(world, hb2Pos);
     RTTR_EXEC_TILL(200, !ship.IsMoving());
     BOOST_REQUIRE(ship.IsIdling());
 
@@ -492,9 +506,7 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     SetInventorySetting(hb2Pos, GD_WOOD, EInventorySetting::COLLECT);
     SetInventorySetting(hb2Pos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
     RTTR_EXEC_TILL(300, ship.IsLoading());
-    world.DestroyNO(hb2Pos);
-    // Remove fire
-    world.DestroyNO(hb2Pos);
+    destroyBldAndFire(world, hb2Pos);
     BOOST_REQUIRE(ship.IsUnloading());
     RTTR_EXEC_TILL(200, ship.IsIdling());
 
@@ -507,9 +519,7 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     RTTR_EXEC_TILL(200, ship.IsMoving());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
-    world.DestroyNO(hb2Pos);
-    // Remove fire
-    world.DestroyNO(hb2Pos);
+    destroyBldAndFire(world, hb2Pos);
     RTTR_EXEC_TILL(10, ship.GetTargetHarbor() == 1u);
     RTTR_EXEC_TILL(20, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetPos(), world.GetCoastalPoint(1, 1));
@@ -523,9 +533,7 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     RTTR_EXEC_TILL(700, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
-    world.DestroyNO(hb2Pos);
-    // Remove fire
-    world.DestroyNO(hb2Pos);
+    destroyBldAndFire(world, hb2Pos);
     RTTR_EXEC_TILL(10, ship.GetTargetHarbor() == 1u);
     RTTR_EXEC_TILL(200, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetPos(), world.GetCoastalPoint(1, 1));
@@ -540,16 +548,11 @@ BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
     RTTR_EXEC_TILL(700, ship.IsUnloading());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 1u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 2u);
-    // Start first
-    world.DestroyNO(hb1Pos);
-    world.DestroyNO(hb2Pos);
-    // Remove fire
-    world.DestroyNO(hb1Pos);
-    world.DestroyNO(hb2Pos);
+    destroyBldAndFire(world, hb1Pos);
+    destroyBldAndFire(world, hb2Pos);
     RTTR_EXEC_TILL(10, ship.GetTargetHarbor() == 3u);
     // Destroy last ->
-    world.DestroyNO(hb3Pos);
-    world.DestroyNO(hb3Pos);
+    destroyBldAndFire(world, hb3Pos);
     RTTR_EXEC_TILL(10, ship.IsLost());
     BOOST_REQUIRE_EQUAL(ship.GetHomeHarbor(), 0u);
     BOOST_REQUIRE_EQUAL(ship.GetTargetHarbor(), 0u);
