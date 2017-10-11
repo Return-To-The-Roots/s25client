@@ -107,11 +107,7 @@ BOOST_AUTO_TEST_CASE(GetUsername)
 
 BOOST_AUTO_TEST_CASE(GetExePath)
 {
-    int argc = boost::unit_test::framework::master_test_suite().argc;
-    char** argv = boost::unit_test::framework::master_test_suite().argv;
-    bnw::args(argc, argv);
-
-    bfs::path exePath = System::getExecutablePath(argv[0]);
+    bfs::path exePath = System::getExecutablePath();
     BOOST_REQUIRE(!exePath.empty());
     BOOST_REQUIRE(bfs::exists(exePath));
     BOOST_REQUIRE(bfs::is_regular_file(exePath));
@@ -128,11 +124,7 @@ public:
 
 BOOST_AUTO_TEST_CASE(PrefixPath)
 {
-    int argc = boost::unit_test::framework::master_test_suite().argc;
-    char** argv = boost::unit_test::framework::master_test_suite().argv;
-    bnw::args(argc, argv);
-
-    bfs::path prefixPath = GetPrefixPath(argv[0]);
+    bfs::path prefixPath = GetPrefixPath();
     BOOST_REQUIRE(!prefixPath.empty());
     BOOST_REQUIRE(bfs::exists(prefixPath));
     BOOST_REQUIRE(bfs::is_directory(prefixPath));
@@ -147,12 +139,14 @@ BOOST_AUTO_TEST_CASE(PrefixPath)
     {
         bfs::path fakePrefixPath = bfs::current_path() / "testPrefixPath";
         BOOST_REQUIRE(System::setEnvVar("RTTR_PREFIX_DIR", fakePrefixPath.string()));
-        BOOST_REQUIRE_EQUAL(GetPrefixPath(argv[0]), fakePrefixPath);
+        BOOST_REQUIRE_EQUAL(GetPrefixPath(), fakePrefixPath);
         BOOST_REQUIRE(System::removeEnvVar("RTTR_PREFIX_DIR"));
     }
     {
         ResetWorkDir resetWorkDir;
-        BOOST_REQUIRE(InitWorkingDirectory(argv[0]));
+        // Just change it in case we would not change it back
+        bfs::current_path(bfs::current_path().parent_path());
+        BOOST_REQUIRE(InitWorkingDirectory());
         BOOST_REQUIRE_EQUAL(prefixPath, bfs::current_path());
     }
 }

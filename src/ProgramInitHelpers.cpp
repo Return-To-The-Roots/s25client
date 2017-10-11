@@ -22,18 +22,12 @@
 #include <boost/filesystem.hpp>
 #include <build_paths.h>
 
-bfs::path GetPrefixPath(const std::string& argv0)
+bfs::path GetPrefixPath()
 {
     // Determine install prefix
-    // Allow overwrite with RTTR_PREFIX_DIR
-    bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
-    if(!prefixPath.empty())
-    {
-        LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
-    }
-
-    // Get path to current executable
-    bfs::path fullExeFilepath = System::getExecutablePath(argv0);
+    // Get path to current executable (at least for checks)
+    bfs::path fullExeFilepath = System::getExecutablePath();
+    // This should always work unless we have some missing implementation or a bad error
     if(fullExeFilepath.empty())
     {
         LOG.write("Could not get path to current executable\n", LogTarget::Stderr);
@@ -45,36 +39,42 @@ bfs::path GetPrefixPath(const std::string& argv0)
         return "";
     }
 
-    // Determine install prefix
-    if(prefixPath.empty())
+    bfs::path rttrBinDir(RTTR_BINDIR);
+
+    // Allow overwrite with RTTR_PREFIX_DIR
+    bfs::path prefixPath = System::getPathFromEnvVar("RTTR_PREFIX_DIR");
+    if(!prefixPath.empty())
     {
-        const bfs::path curBinDir = fullExeFilepath.parent_path();
-        const bfs::path cfgBinDir = RTTR_BINDIR;
-        // Go up one level for each entry (folder) in cfgBinDir
-        prefixPath = curBinDir;
-        for(bfs::path::const_iterator it = cfgBinDir.begin(); it != cfgBinDir.end(); ++it)
+        LOG.write("Note: Prefix path manually set to %1%\n", LogTarget::Stdout) % prefixPath;
+    } else if(rttrBinDir.is_absolute())
+        prefixPath = RTTR_INSTALL_PREFIX;
+    else
+    {
+        // Go up one level for each entry (folder) in rttrBinDir
+        prefixPath = fullExeFilepath.parent_path();
+        for(bfs::path::const_iterator it = rttrBinDir.begin(); it != rttrBinDir.end(); ++it)
         {
             if(*it == ".")
                 continue;
             prefixPath = prefixPath.parent_path();
         }
-        if(!bfs::equivalent(curBinDir, prefixPath / cfgBinDir))
-        {
-            LOG.write("Could not find install prefix.\n"
-                      "Current binary dir: %1%\n"
-                      "Best guess for prefixed binary dir: %2%\n"
-                      "Configured binary dir: %3%\n",
+    }
+
+    if(!prefixPath.empty())
+    {
+        bfs::path exePath = (rttrBinDir.is_absolute() ? rttrBinDir : prefixPath / rttrBinDir) / fullExeFilepath.filename();
+        if(!bfs::is_regular_file(exePath))
+            LOG.write("Warning: Executable not found with prefix path %1%. Expected: %2%\n"
+                      "This may lead to file-not-found errors. Please report this!",
                       LogTarget::Stderr)
-              % curBinDir % (prefixPath / cfgBinDir) % cfgBinDir;
-            return "";
-        }
+              % prefixPath % exePath;
     }
     return prefixPath;
 }
 
-bool InitWorkingDirectory(const std::string& argv0)
+bool InitWorkingDirectory()
 {
-    bfs::path prefixPath = GetPrefixPath(argv0);
+    bfs::path prefixPath = GetPrefixPath();
     if(prefixPath.empty())
         return false;
     // Make the prefix path our working directory as all other paths are relative to that

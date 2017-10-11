@@ -36,7 +36,6 @@ public:
     void UpdateServerInfo();
 
 protected:
-
     void Msg_Timer(const unsigned ctrl_id) override;
 };
 

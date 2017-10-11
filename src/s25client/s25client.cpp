@@ -53,7 +53,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#if defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
+#if defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
 #include <eh.h>
 #endif
 #endif
@@ -92,10 +92,9 @@ void WaitForEnter()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOHWETRANS
+#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && defined RTTR_HWETRANS
 /**
- *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls
- *  dies in der build_paths.h mit deaktiviertem NOHWETRANS und
+ *  Exception-Handler, wird bei einer C-Exception ausgeführt, falls dies mit RTTR_HWETRANS und
  *  im Projekt mit den Compilerflags (/EHa) aktiviert ist.
  *
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
@@ -105,7 +104,7 @@ void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_p
 {
     fatal_error("C-Exception caught\n");
 }
-#endif // _WIN32 && _DEBUG && !NOHWETRANS
+#endif // _WIN32 && _DEBUG && RTTR_HWETRANS
 
 bool shouldSendDebugData()
 {
@@ -198,13 +197,13 @@ void InstallSignalHandlers()
 #ifdef _MSC_VER
     SetUnhandledExceptionFilter(ExceptionHandler);
 #ifdef _DEBUG
-#ifndef NOHWETRANS
+#ifdef RTTR_HWETRANS
     _set_se_translator(CExceptionHandler);
-#endif // !NOHWETRANS
-#ifndef NOCRTDBG
+#endif // RTTR_HWETRANS
+#ifdef RTTR_CRTDBG
     // Enable Memory-Leak-Detection
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF /*| _CRTDBG_CHECK_EVERY_1024_DF*/);
-#endif //  !NOCRTDBG
+#endif //  RTTR_CRTDBG
 #endif // _DEBUG
 
 #else
@@ -347,11 +346,11 @@ bool InitGame()
     return true;
 }
 
-int RunProgram(const std::string& argv0, po::variables_map& options)
+int RunProgram(po::variables_map& options)
 {
     if(!LocaleHelper::init())
         return 1;
-    if(!InitWorkingDirectory(argv0))
+    if(!InitWorkingDirectory())
         return 1;
     SetAppSymbol();
     InstallSignalHandlers();
@@ -431,7 +430,7 @@ int main(int argc, char** argv)
     int result;
     try
     {
-        result = RunProgram(argv[0], options);
+        result = RunProgram(options);
     } catch(RttrExitException& e)
     {
         result = e.code;

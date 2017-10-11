@@ -195,14 +195,13 @@ if(WIN32)
 ENDIF()
 
 ################################################################################
-# Set paths
-# All paths are relative to the install-prefix.
-# Example: BINDIR="bin", DATADIR="data" executed in "/foo/bar/bin/rttr.exe" -> FULL_DATADIR=/foo/bar/data
+# Set paths.
+# Note: Mixing relative and absolute paths is not recommended!
+# If RTTR_BINDIR is absolute then relative paths are relative to CMAKE_INSTALL_PREFIX
+# Else a prefix path is calculated based on RTTR_BINDIR and the current executable path so that we have <PrefixPath>/RTTR_BINDIR
+# In this case all relative paths are relative to that prefix path
+# Example: RTTR_BINDIR="bin", RTTR_DATADIR="data" executed in "/foo/bar/bin/rttr.exe" -> FULL_DATADIR=/foo/bar/data
 ################################################################################
-
-IF(NOT "${RTTR_PREFIX}" STREQUAL "")
-	MESSAGE(FATAL_ERROR "Using RTTR_PREFIX was removed and the meaning of the paths have changed. Clear RTTR_PREFIX to disable this warning")
-ENDIF()
 
 IF (WIN32)
 	# Windows uses one directory only
@@ -235,15 +234,10 @@ ELSE()
 	endif()
 	SET(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
 ENDIF()
-# Ensure relative paths
-foreach(curDirVar RTTR_BINDIR RTTR_DATADIR RTTR_GAMEDIR RTTR_LIBDIR RTTR_DOCDIR RTTR_DRIVERDIR)
-	if(IS_ABSOLUTE ${${curDirVar}})
-		message(FATAL_ERROR "All RTTR_*DIR variables must be relative paths. ${curDirVar} is absolute: ${${curDirVar}}")
-	endif()
-endforeach()
 
 SET(RTTR_SRCDIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Path to source files. Used for some shell scripts")
 set(RTTR_S2_PLACEHOLDER_PATH "${CMAKE_BINARY_DIR}/${RTTR_GAMEDIR}/put your S2-Installation in here")
+set(RTTR_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE INTERNAL "Used for configure scripts")
 
 # Output directories
 set(RTTR_OUTPUT_DIR ${CMAKE_BINARY_DIR})
