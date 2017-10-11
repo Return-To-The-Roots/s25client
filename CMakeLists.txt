@@ -428,6 +428,20 @@ if(MSVC)
     ENDIF()
 endif()
 
+################################################################################
+# Include projects
+################################################################################
+
+# Building the updater when using non-default paths (especially absolute paths)
+# is not recommended as it most likely won't work
+set(RTTR_BUILD_UPDATER_DEF ON)
+foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
+	if(IS_ABSOLUTE ${RTTR_${curDirVar}})
+		set(RTTR_BUILD_UPDATER_DEF OFF)
+	endif()
+endforeach()
+option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
+
 # Add this first at it defines dependencies for other projects (e.g. nowide and utf8)
 ADD_SUBDIRECTORY(libutil)
 
@@ -449,7 +463,9 @@ ADD_SUBDIRECTORY(libsiedler2)
 SET(RTTR_BUILD_LOBBY_CLIENT TRUE)
 ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
-ADD_SUBDIRECTORY(s25update)
+if(RTTR_BUILD_UPDATER)
+    ADD_SUBDIRECTORY(s25update)
+endif()
 
 set(commonSrcDir ${PROJECT_SOURCE_DIR}/common)
 set(COMMON_SRC
