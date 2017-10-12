@@ -158,6 +158,26 @@ bool contains(const T& container, const U& value)
     return find(container, value) != container.end();
 }
 
+/// Remove duplicate values from the given container without changing the order
+template<class T>
+void makeUnique(T& container)
+{
+    // Containers with less than 2 elements are always unique
+    if(container.size() < 2u)
+        return;
+    typename T::iterator itInsert = container.begin();
+    // We always begin inserting at 2nd pos so skip first
+    ++itInsert;
+    // And now start inserting all values starting from the 2nd
+    for(typename T::iterator it = itInsert; it != container.end(); ++it)
+    {
+        // If current element is not found in [begin, insertPos) then add it at insertPos and inc insertPos
+        if(std::find(container.begin(), itInsert, *it) == itInsert)
+            *(itInsert++) = *it;
+    }
+    container.erase(itInsert, container.end());
+}
+
 } // namespace helpers
 
 #endif // containerUtils_h__

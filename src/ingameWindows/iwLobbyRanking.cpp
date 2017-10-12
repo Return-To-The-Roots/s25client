@@ -28,24 +28,24 @@
  */
 void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
 {
-        ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
-        bool first = rankingtable->GetRowCount() == 0;
+    ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
+    bool first = rankingtable->GetRowCount() == 0;
 
-        rankingtable->DeleteAllItems();
+    rankingtable->DeleteAllItems();
 
-        if(rankinglist.getCount() > 0)
+    if(rankinglist.getCount() > 0)
+    {
+        for(unsigned i = 0; i < rankinglist.getCount() && i < 10; ++i)
         {
-            for(unsigned i = 0; i < rankinglist.getCount() && i < 10; ++i)
-            {
-                const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
-                std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
-                std::string numLost = boost::lexical_cast<std::string>(rankInfo.getVerloren());
-                std::string numWon = boost::lexical_cast<std::string>(rankInfo.getGewonnen());
-                rankingtable->AddRow(0, rankInfo.getName().c_str(), points.c_str(), numLost.c_str(), numWon.c_str());
-            }
-            if(first)
-                rankingtable->SetSelection(0);
+            const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
+            std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());
+            std::string numLost = boost::lexical_cast<std::string>(rankInfo.getVerloren());
+            std::string numWon = boost::lexical_cast<std::string>(rankInfo.getGewonnen());
+            rankingtable->AddRow(0, rankInfo.getName().c_str(), points.c_str(), numLost.c_str(), numWon.c_str());
         }
+        if(first)
+            rankingtable->SetSelection(0);
+    }
 }
 
 iwLobbyRanking::iwLobbyRanking()
@@ -66,7 +66,7 @@ void iwLobbyRanking::Msg_Timer(const unsigned ctrl_id)
     {
         case 1: // alle Minute
             LOBBYCLIENT.SendRankingListRequest();
-        break;
+            break;
     }
 }
 

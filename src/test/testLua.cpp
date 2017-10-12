@@ -31,6 +31,7 @@
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include "test/PointOutput.h"
+#include "test/initTestHelpers.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
@@ -38,7 +39,6 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::assign;
-#define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
 
 BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 

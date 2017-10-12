@@ -29,6 +29,8 @@ void doInitGameRNG(unsigned defaultValue = 1337, const char* fileName = "", unsi
 // Would work in C++11
 //#define initGameRNG(defaultValue) doInitGameRNG(__VA_ARGS__ + 0, __FILE__, __LINE__);
 
+#define RTTR_REQUIRE_EQUAL_COLLECTIONS(Col1, Col2) BOOST_REQUIRE_EQUAL_COLLECTIONS(Col1.begin(), Col1.end(), Col2.begin(), Col2.end())
+
 /// Initialize data required for GUI tests:
 /// Mockup VideoDriver loaded, Dummy files in LOADER, Dummy Desktop activated
 void initGUITests();
