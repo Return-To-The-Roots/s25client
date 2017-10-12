@@ -28,6 +28,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "helpers/containerUtils.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameTypes/BuildingQuality.h"
@@ -255,6 +256,24 @@ namespace {
 std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned short radius)
 {
     std::vector<const noFlag*> flags = aii.gwb.GetPointsInRadius<30>(pt, radius, Point2FlagAI(aii.gwb), IsValidFlag(aii.GetPlayerId()));
+    // When the radius is at least half the size of the map then we may have duplicates that need to be removed
+    if(radius >= std::min(aii.gwb.GetSize().x, aii.gwb.GetSize().y))
+    {
+        helpers::makeUnique(flags);
+        // If at this pos is a flag, then it might be included due to wrapping.
+        // This is wrong and needs to be removed
+        const noFlag* flag = aii.gwb.GetSpecObj<noFlag>(pt);
+        if(flag)
+        {
+            std::vector<const noFlag*>::iterator it = std::find(flags.begin(), flags.end(), flag);
+            if(it != flags.end())
+            {
+                // Rotate [it, end) so that ++it is at the front and it goes to the end
+                std::rotate(it, ++it, flags.end());
+                flags.pop_back();
+            }
+        }
+    }
 
     // TODO Performance Killer!
     /*
@@ -911,7 +930,7 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
         const noFlag& curFlag = *flags[i];
         // When the current flag is the end of the main route, we skip it as crossing the main route is dissallowed by crossmainpath check a
         // bit below
-        if(mainflag && curFlag.GetObjId() == mainflag->GetObjId())
+        if(mainflag && &curFlag == mainflag)
             continue;
 
         route.clear();
