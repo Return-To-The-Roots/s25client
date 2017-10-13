@@ -88,8 +88,6 @@ public:
     /// returns amount of good/people stored in warehouses right now
     unsigned AmountInStorage(unsigned char num, unsigned char page);
 
-    int UpgradeBldListNumber;
-
     void PlanNewBuildings(const unsigned gf);
 
     void SendAIEvent(AIEvent::Base* ev);
@@ -101,8 +99,9 @@ public:
     /// If front is true, then the job is enqueued at the front, else the back
     /// If searchPosition is true, then the point is searched for a good position (around that pt) otherwise the point is taken
     void AddBuildJob(BuildingType type, const MapPoint pt, bool front = false, bool searchPosition = true);
-    // adds buildjobs for a buildingtype around every warehouse or military building
-    void AddBuildJobAroundEvery(BuildingType bt, bool warehouse);
+    /// adds buildjobs for a buildingtype around every warehouse or military building
+    void AddBuildJobAroundEveryWarehouse(BuildingType bt);
+    void AddBuildJobAroundEveryMilBld(BuildingType bt);
     /// Checks the list of military buildingsites and puts the coordinates into the list of military buildings if building is finished
     void CheckNewMilitaryBuildings();
     /// blocks goods in each warehouse that has at least limit amount of that good - if all warehouses have enough they unblock
@@ -238,8 +237,9 @@ public:
         resourceMaps[boost::underlying_cast<unsigned>(res)][pt] = newvalue;
     }
 
-private:
     MapPoint UpgradeBldPos;
+
+private:
     /// The current job the AI is working on
     boost::interprocess::unique_ptr<Job, Deleter<Job> > currentJob;
     /// List of coordinates at which military buildings should be

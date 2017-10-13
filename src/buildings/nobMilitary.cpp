@@ -501,12 +501,12 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = false;
 }
 
-unsigned nobMilitary::CalcRequiredTroopsCount()
+unsigned nobMilitary::CalcRequiredTroopsCount() const
 {
     return CalcRequiredTroopsCount(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
 }
 
-unsigned nobMilitary::CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue)
+unsigned nobMilitary::CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue) const
 {
     return (GetMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + assumedFrontierDistance] + 1;
 }

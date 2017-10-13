@@ -53,8 +53,8 @@ AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
     : aii(aii), aijh(aijh), buildingsWanted(BUILDING_TYPES_COUNT), constructionorders(BUILDING_TYPES_COUNT)
 {
     InitMilitaryBldTypes();
-    RefreshBuildingCount();
     InitBuildingsWanted();
+    RefreshBuildingCount();
 }
 
 AIConstruction::~AIConstruction()
@@ -266,12 +266,7 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         if(flag)
         {
             std::vector<const noFlag*>::iterator it = std::find(flags.begin(), flags.end(), flag);
-            if(it != flags.end())
-            {
-                // Rotate [it, end) so that ++it is at the front and it goes to the end
-                std::rotate(it, ++it, flags.end());
-                flags.pop_back();
-            }
+            flags.erase(it);
         }
     }
 
@@ -281,12 +276,12 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
     {
         list<nobBaseMilitary*> military;
         gwb->LookForMilitaryBuildings(military, pt, 2);
-        for(list<nobBaseMilitary*>::iterator it = military.begin();it != military.end();++it)
+        BOOST_FOREACH(const nobBaseMilitary* milBld, military)
         {
-            unsigned distance = gwb->CalcDistance((*it)->GetPos(), pt);
-            if (distance < radius && (*it)->GetPlayer() == player->getPlayerId())
+            unsigned distance = gwb->CalcDistance(milBld->GetPos(), pt);
+            if (distance < radius && milBld->GetPlayer() == player->getPlayerId())
             {
-                FindFlags(flags, (*it)->GetPos(), 10, pt, radius, false);
+                FindFlags(flags, milBld->GetPos(), 10, pt, radius, false);
             }
         }
     }
@@ -294,16 +289,17 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
     return flags;
 }
 
-bool AIConstruction::MilitaryBuildingWantsRoad(nobMilitary* milbld, unsigned listpos)
+bool AIConstruction::MilitaryBuildingWantsRoad(const nobMilitary& milbld)
 {
-    if(milbld->GetFrontierDistance() > 0) // close to front or harbor? connect!
+    if(milbld.GetFrontierDistance() > 0) // close to front or harbor? connect!
         return true;
-    if(aijh.UpgradeBldListNumber < 0) // no upgrade bld on last update -> connect all that want to connect
+    if(!aijh.UpgradeBldPos.isValid()) // no upgrade bld on last update -> connect all that want to connect
         return true;
-    if(static_cast<unsigned>(aijh.UpgradeBldListNumber)
-       == listpos) // upgrade bld should have road already but just in case it doesnt -> get a road asap
+    if(aijh.UpgradeBldPos == milbld.GetPos()) // upgrade bld should have road already but just in case it doesnt -> get a road asap
         return true;
-    if(listpos > (aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds()))
+    // TODO: This probably does not do what is wanted...
+    int bldIdx = helpers::indexOf(aii.GetMilitaryBuildings(), &milbld);
+    if(bldIdx > static_cast<int>(aii.GetMilitaryBuildings().size() - aijh.GetNumPlannedConnectedInlandMilitaryBlds()))
         return true;
     return false;
 }
@@ -317,19 +313,10 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 
     // flag of a military building? -> check if we really want to connect this right now
     const MapPoint bldPos = aii.gwb.GetNeighbour(flag->GetPos(), Direction::NORTHWEST);
-    if(aii.gwb.IsMilitaryBuildingOnNode(bldPos, true))
+    if(const nobMilitary* milBld = aii.gwb.GetSpecObj<const nobMilitary>(bldPos))
     {
-        unsigned listpos = 0;
-        const std::list<nobMilitary*>& militaryBuildings = aii.GetMilitaryBuildings();
-        for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it, ++listpos)
-        {
-            if((*it)->GetPos() == bldPos)
-            {
-                if(!MilitaryBuildingWantsRoad(*it, listpos))
-                    return false;
-                break;
-            }
-        }
+        if(!MilitaryBuildingWantsRoad(*milBld))
+            return false;
     }
     // Ziel, das möglichst schnell erreichbar sein soll
     // noFlag *targetFlag = gwb->GetSpecObj<nobHQ>(player->hqPos)->GetFlag();
@@ -352,16 +339,15 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     bool found = false;
 
     // Jede Flagge testen...
-    for(std::vector<const noFlag*>::iterator flagIt = flags.begin(); flagIt != flags.end(); ++flagIt)
+    BOOST_FOREACH(const noFlag* curFlag, flags)
     {
-        const noFlag& curFlag = **flagIt;
         tmpRoute.clear();
         unsigned length;
         // the flag should not be at a military building!
-        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag.GetPos(), Direction::NORTHWEST), true))
+        if(aii.gwb.IsMilitaryBuildingOnNode(aii.gwb.GetNeighbour(curFlag->GetPos(), Direction::NORTHWEST), true))
             continue;
         // Gibts überhaupt einen Pfad zu dieser Flagge
-        if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag.GetPos(), &tmpRoute, &length))
+        if(!aii.FindFreePathForNewRoad(flag->GetPos(), curFlag->GetPos(), &tmpRoute, &length))
             continue;
 
         // Wenn ja, dann gucken ob dieser Pfad möglichst kurz zum "höheren" Ziel (allgemeines Lager im Moment) ist
@@ -386,14 +372,14 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 
         // Find path from current flag to target. If the current flag IS the target then we have already a path with distance=0
         unsigned distance = 0;
-        bool pathFound = curFlag.GetObjId() == targetFlag->GetObjId() || aii.FindPathOnRoads(curFlag, *targetFlag, &distance);
+        bool pathFound = curFlag == targetFlag || aii.FindPathOnRoads(*curFlag, *targetFlag, &distance);
 
         // Gewählte Fahne hat leider auch kein Anschluß an ein Lager, zu schade!
         if(!pathFound)
             continue;
 
         // Sind wir mit der Fahne schon verbunden? Einmal reicht!
-        if(aii.FindPathOnRoads(curFlag, *flag))
+        if(aii.FindPathOnRoads(*curFlag, *flag))
             continue;
 
         // Ansonsten haben wir einen Pfad!
@@ -403,7 +389,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
         if(2 * length + distance + 10 * maxNonFlagPts < shortestLength)
         {
-            shortest = &curFlag;
+            shortest = curFlag;
             shortestLength = 2 * length + distance + 10 * maxNonFlagPts;
             route = tmpRoute;
         }
@@ -580,40 +566,45 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 
     uint8_t playerId = aii.GetPlayerId();
     sortedMilitaryBlds military = aii.gwb.LookForMilitaryBuildings(pt, 3);
-    for(sortedMilitaryBlds::iterator it = military.begin(); it != military.end(); ++it)
+    BOOST_FOREACH(const nobBaseMilitary* milBld, military)
     {
-        unsigned distance = aii.gwb.CalcDistance((*it)->GetPos(), pt);
+        unsigned distance = aii.gwb.CalcDistance(milBld->GetPos(), pt);
 
         // Prüfen ob Feind in der Nähe
-        if((*it)->GetPlayer() != playerId && distance < 35)
+        if(milBld->GetPlayer() != playerId && distance < 35)
         {
             int randmil = rand();
-
+            bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult() && militaryBuildingCount > 5
+                                 && inventory.goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT));
             // another catapult within "min" radius? ->dont build here!
-            unsigned min = 16;
-            nobBaseWarehouse* wh = (*aii.GetStorehouses().begin());
-            if(aii.gwb.CalcDistance(pt, wh->GetPos()) < min)
-                min = 0;
-            for(std::list<nobUsual*>::const_iterator it = aii.GetBuildings(BLD_CATAPULT).begin();
-                min > 0 && it != aii.GetBuildings(BLD_CATAPULT).end(); ++it)
+            const unsigned min = 16;
+            if(buildCatapult && aii.gwb.CalcDistance(pt, aii.GetStorehouses().front()->GetPos()) < min)
+                buildCatapult = false;
+            if(buildCatapult)
             {
-                if(aii.gwb.CalcDistance(pt, (*it)->GetPos()) < min)
-                    min = 0;
-            }
-            for(std::list<noBuildingSite*>::const_iterator it = aii.GetBuildingSites().begin();
-                min > 0 && it != aii.GetBuildingSites().end(); ++it)
-            {
-                if((*it)->GetBuildingType() == bld)
+                BOOST_FOREACH(const nobUsual* catapult, aii.GetBuildings(BLD_CATAPULT))
                 {
-                    if(aii.gwb.CalcDistance(pt, (*it)->GetPos()) < min)
-                        min = 0;
+                    if(aii.gwb.CalcDistance(pt, catapult->GetPos()) < min)
+                    {
+                        buildCatapult = false;
+                        break;
+                    }
                 }
             }
-            if(min > 0 && randmil % 8 == 0 && aii.CanBuildCatapult() && militaryBuildingCount > 5
-               && inventory.goods[GD_STONES] > 50 + (4 * GetBuildingCount(BLD_CATAPULT)))
+            if(buildCatapult)
             {
+                BOOST_FOREACH(const noBuildingSite* bldSite, aii.GetBuildingSites())
+                {
+                    if(bldSite->GetBuildingType() == bld && aii.gwb.CalcDistance(pt, bldSite->GetPos()) < min)
+                    {
+                        buildCatapult = false;
+                        break;
+                    }
+                }
+            }
+            if(buildCatapult)
                 bld = BLD_CATAPULT;
-            } else
+            else
             {
                 if(randmil % 2 == 0)
                     bld = biggestBld;
@@ -1004,16 +995,16 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
 
 bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt)
 {
-    for(std::list<nobUsual*>::const_iterator it = aii.GetBuildings(bt).begin(); it != aii.GetBuildings(bt).end(); ++it)
+    BOOST_FOREACH(const nobUsual* bld, aii.GetBuildings(bt))
     {
-        if(aii.gwb.CalcDistance((*it)->GetPos(), pt) < radius)
+        if(aii.gwb.CalcDistance(bld->GetPos(), pt) < radius)
             return true;
     }
-    for(std::list<noBuildingSite*>::const_iterator it = aii.GetBuildingSites().begin(); it != aii.GetBuildingSites().end(); ++it)
+    BOOST_FOREACH(const noBuildingSite* bldSite, aii.GetBuildingSites())
     {
-        if((*it)->GetBuildingType() == bt)
+        if(bldSite->GetBuildingType() == bt)
         {
-            if(aii.gwb.CalcDistance((*it)->GetPos(), pt) < radius)
+            if(aii.gwb.CalcDistance(bldSite->GetPos(), pt) < radius)
                 return true;
         }
     }
@@ -1022,16 +1013,16 @@ bool AIConstruction::OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, Bu
 
 bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
 {
-    for(std::list<nobBaseWarehouse*>::const_iterator it = aii.GetStorehouses().begin(); it != aii.GetStorehouses().end(); ++it)
+    BOOST_FOREACH(const nobBaseWarehouse* wh, aii.GetStorehouses())
     {
-        if(aii.gwb.CalcDistance((*it)->GetPos(), pt) < radius)
+        if(aii.gwb.CalcDistance(wh->GetPos(), pt) < radius)
             return true;
     }
-    for(std::list<noBuildingSite*>::const_iterator it = aii.GetBuildingSites().begin(); it != aii.GetBuildingSites().end(); ++it)
+    BOOST_FOREACH(const noBuildingSite* bldSite, aii.GetBuildingSites())
     {
-        if(BuildingProperties::IsWareHouse((*it)->GetBuildingType()))
+        if(BuildingProperties::IsWareHouse(bldSite->GetBuildingType()))
         {
-            if(aii.gwb.CalcDistance((*it)->GetPos(), pt) < radius)
+            if(aii.gwb.CalcDistance(bldSite->GetPos(), pt) < radius)
                 return true;
         }
     }
@@ -1041,24 +1032,20 @@ bool AIConstruction::OtherStoreInRadius(MapPoint pt, unsigned radius)
 noFlag* AIConstruction::FindTargetStoreHouseFlag(const MapPoint pt) const
 {
     unsigned minDistance = std::numeric_limits<unsigned>::max();
-    nobBaseWarehouse* minTarget = NULL;
-    bool found = false;
-    for(std::list<nobBaseWarehouse*>::const_iterator it = aii.GetStorehouses().begin(); it != aii.GetStorehouses().end(); ++it)
+    const nobBaseWarehouse* minTarget = NULL;
+    BOOST_FOREACH(const nobBaseWarehouse* wh, aii.GetStorehouses())
     {
-        unsigned dist = aii.gwb.CalcDistance(pt, (*it)->GetPos());
+        unsigned dist = aii.gwb.CalcDistance(pt, wh->GetPos());
         if(dist < minDistance)
         {
             minDistance = dist;
-            minTarget = *it;
-            found = true;
+            minTarget = wh;
         }
     }
-    if(!found)
+    if(!minTarget)
         return NULL;
     else
-    {
         return minTarget->GetFlag();
-    }
 }
 
 } // namespace AIJH
