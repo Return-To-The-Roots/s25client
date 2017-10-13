@@ -55,4 +55,29 @@ BOOST_AUTO_TEST_CASE(MakeUnique)
     RTTR_REQUIRE_EQUAL_COLLECTIONS(vec, expectedVec);
 }
 
+BOOST_AUTO_TEST_CASE(IndexOf)
+{
+    std::vector<int> vec;
+    // Empty vector
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 1), -1);
+    // 1 el
+    vec.push_back(1);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 1), 0);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 2), -1);
+    // 2 els
+    vec.push_back(0);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 1), 0);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 0), 1);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(vec, 2), -1);
+
+    // Pointer vector
+    std::vector<int*> ptrVec;
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), -1);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), -1);
+    ptrVec.push_back((int*)1336);
+    ptrVec.push_back((int*)1337);
+    ptrVec.push_back((int*)1338);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), 1);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), 1);
+}
 BOOST_AUTO_TEST_SUITE_END()

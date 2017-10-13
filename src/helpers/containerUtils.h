@@ -21,6 +21,7 @@
 #define containerUtils_h__
 
 #include "traits.h"
+#include <boost/foreach.hpp>
 #include <algorithm>
 
 namespace helpers {
@@ -145,7 +146,7 @@ inline void pop_front(T& container)
 
 /// Effective implementation of find. Uses the containers find function if available
 template<typename T, typename U>
-typename GetIteratorType<T>::type find(T& container, const U& value)
+inline typename GetIteratorType<T>::type find(T& container, const U& value)
 {
     return detail::FindImpl<T, U>::find(container, value);
 }
@@ -153,14 +154,14 @@ typename GetIteratorType<T>::type find(T& container, const U& value)
 /// Returns true if the container contains the given value
 /// Uses the find member function if applicable otherwise uses the std::find method
 template<typename T, typename U>
-bool contains(const T& container, const U& value)
+inline bool contains(const T& container, const U& value)
 {
     return find(container, value) != container.end();
 }
 
 /// Remove duplicate values from the given container without changing the order
 template<class T>
-void makeUnique(T& container)
+inline void makeUnique(T& container)
 {
     // Containers with less than 2 elements are always unique
     if(container.size() < 2u)
@@ -176,6 +177,21 @@ void makeUnique(T& container)
             *(itInsert++) = *it;
     }
     container.erase(itInsert, container.end());
+}
+
+/// Returns the index of the given element in the container or -1 when not found
+/// Note: Only works for containers with less than 2^31 - 1 elements.
+template<class T_Container, class T_Element>
+inline int indexOf(const T_Container& container, const T_Element element)
+{
+    int index = 0;
+    BOOST_FOREACH(const typename T_Container::value_type& curEl, container)
+    {
+        if(curEl == element)
+            return index;
+        ++index;
+    }
+    return -1;
 }
 
 } // namespace helpers
