@@ -48,7 +48,7 @@ struct TestSetup
             throw std::runtime_error("Could not init locale");
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
-        if(!InitWorkingDirectory(""))
+        if(!InitWorkingDirectory())
             throw std::runtime_error("Could not init working directory. Misplaced binary?");
         if(!bfs::is_directory(RTTRDIR))
             throw std::runtime_error(std::string(RTTRDIR) + " not found. Binary misplaced or RTTR folder not copied?");

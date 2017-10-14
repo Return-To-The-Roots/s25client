@@ -24,7 +24,7 @@
 #include <string>
 
 /// Return the prefix path for the installation
-bfs::path GetPrefixPath(const std::string& argv0);
-bool InitWorkingDirectory(const std::string& argv0);
+bfs::path GetPrefixPath();
+bool InitWorkingDirectory();
 
 #endif // ProgramInitHelpers_h__

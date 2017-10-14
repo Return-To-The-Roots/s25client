@@ -29,6 +29,13 @@
 #endif
 
 #ifdef _WIN32
+
+// Enable Memory Leak Detection
+//#define RTTR_CRTDBG
+
+// Enable catching of exceptions
+//#define RTTR_HWETRANS
+
 #define WIN32_LEAN_AND_MEAN
 #ifdef _MSC_VER
 // Visual Studio
@@ -99,12 +106,12 @@ typedef int socklen_t;
 #define RTTR_FUNCTION_NAME "<Unknown Func>"
 #endif
 
-#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && !defined NOCRTDBG
+#if defined _WIN32 && defined _DEBUG && defined _MSC_VER && defined RTTR_CRTDBG
 // Check for heap corruption
 #define CHECK_HEAP_CORRUPTION _ASSERTE(_CrtCheckMemory());
 #else
 #define CHECK_HEAP_CORRUPTION
-#endif // _WIN32 && _DEBUG && !NOCRTDBG
+#endif // _WIN32 && _DEBUG && RTTR_CRTDBG
 
 /// Call a member function trough an object and a member function pointer
 #define CALL_MEMBER_FN(object, ptrToMember) ((object).*(ptrToMember))
