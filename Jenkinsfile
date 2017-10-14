@@ -41,7 +41,7 @@ def transformIntoStep(arch, wspwd) {
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_PREFIX= \$COMMANDS && make \$PARAMS"
+                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$COMMANDS && make \$PARAMS"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
