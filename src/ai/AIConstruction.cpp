@@ -66,7 +66,7 @@ void AIConstruction::AddBuildJob(AIJH::BuildJob* job, bool front)
         delete job;
         return;
     }
-    if(job->GetType() < BLD_FORTRESS) // non military buildings can only be added once to the contruction que for every location
+    if(job->GetType() <= BLD_FORTRESS) // non military buildings can only be added once to the contruction que for every location
     {
         if(front)
             buildJobs.push_front(job);
@@ -591,6 +591,16 @@ bool AIConstruction::MilitaryBuildingSitesLimit()
     unsigned inconstruction = buildingCounts.buildingSites[BLD_WATCHTOWER] + buildingCounts.buildingSites[BLD_FORTRESS]
                               + buildingCounts.buildingSites[BLD_GUARDHOUSE] + buildingCounts.buildingSites[BLD_BARRACKS];
     return complete + 3 > inconstruction;
+}
+
+bool AIConstruction::IncrementWanted(BuildingType type)
+{
+    if (GetBuildingCount(type) <= buildingsWanted[type])
+    {
+        buildingsWanted[type]++;
+        return true;
+    }
+    return false;
 }
 
 void AIConstruction::RefreshBuildingCount()
