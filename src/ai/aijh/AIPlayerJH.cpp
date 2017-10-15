@@ -1353,21 +1353,33 @@ void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
 {
     // Stop building ships if reached a maximum (TODO: make variable)
     const std::list<nobUsual*>& shipyards = aii.GetBuildings(BLD_SHIPYARD);
-    if(((aii.GetShipCount() > 6 || aii.GetShipCount() >= (3 * shipyards.size())) && GetCountofAIRelevantSeaIds() > 1)
-       || (GetCountofAIRelevantSeaIds() < 2 && aii.GetShipCount() > gwb.GetHarborPointCount()))
+    bool wantMoreShips;
+    unsigned numRelevantSeas = GetCountofAIRelevantSeaIds();
+    if(numRelevantSeas == 0)
+        wantMoreShips = false;
+    else if(numRelevantSeas == 1)
+        wantMoreShips = aii.GetShipCount() <= gwb.GetHarborPointCount();
+    else
     {
-        unsigned mindist = 255;
-        const nobUsual* shipyard = NULL;
+        unsigned wantedShipCt = std::min<unsigned>(7, 3 * shipyards.size());
+        wantMoreShips = aii.GetShipCount() < wantedShipCt;
+    }
+    if(!wantMoreShips)
+    {
+        // Find shipyard from this ship by getting the closest one. Max distance of <12 nodes
+        unsigned mindist = 12;
+        const nobUsual* creatingShipyard = NULL;
         BOOST_FOREACH(const nobUsual* shipyard, shipyards)
         {
-            if(gwb.CalcDistance(shipyard->GetPos(), pt) < mindist)
+            unsigned distance = gwb.CalcDistance(shipyard->GetPos(), pt);
+            if(distance < mindist)
             {
-                mindist = gwb.CalcDistance(shipyard->GetPos(), pt);
-                shipyard = shipyard;
+                mindist = distance;
+                creatingShipyard = shipyard;
             }
         }
-        if(shipyard && mindist < 12) // might have been destroyed by now and anything further away than 12 should be wrong anyways
-            aii.SetProductionEnabled(shipyard->GetPos(), false);
+        if(creatingShipyard) // might have been destroyed by now
+            aii.SetProductionEnabled(creatingShipyard->GetPos(), false);
     }
 }
 
@@ -2373,8 +2385,7 @@ unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
                     onetimeuseseaids.remove(seaId);
                     validseaids.push_back(seaId);
                 }
-            } else
-                continue;
+            }
         }
     }
     return validseaids.size();

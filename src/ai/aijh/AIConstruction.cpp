@@ -59,6 +59,10 @@ AIConstruction::AIConstruction(AIInterface& aii, AIPlayerJH& aijh)
 
 AIConstruction::~AIConstruction()
 {
+    BOOST_FOREACH(AIJH::BuildJob* job, buildJobs)
+        delete job;
+    BOOST_FOREACH(AIJH::ConnectJob* job, connectJobs)
+        delete job;
 }
 
 void AIConstruction::AddBuildJob(BuildJob* job, bool front)

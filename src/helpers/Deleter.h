@@ -18,25 +18,21 @@
 #ifndef Deleter_h__
 #define Deleter_h__
 
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/is_array.hpp>
+#include <boost/type_traits/remove_extent.hpp>
+
 template<typename T>
 struct Deleter
 {
-    template<typename U>
-    void operator()(U* ptr)
+    template<class U>
+    void operator()(U* ptr) const
     {
-        T* const p = static_cast<T*>(ptr);
-        delete p;
-    }
-};
-
-template<typename T>
-struct Deleter<T[]>
-{
-    template<typename U>
-    void operator()(U* ptr)
-    {
-        T* const p = static_cast<T*>(ptr);
-        delete[] p;
+        typedef typename boost::remove_extent<T>::type Type;
+        // complete type
+        BOOST_STATIC_ASSERT(sizeof(U) > 0);
+        Type* p = static_cast<Type*>(ptr);
+        boost::is_array<T>::value ? delete[] p : delete p;
     }
 };
 

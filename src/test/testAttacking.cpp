@@ -189,6 +189,12 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
 template<unsigned T_numPlayers = 2, unsigned T_width = AttackDefaults::width, unsigned T_height = AttackDefaults::height>
 struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 {
+    typedef AttackFixtureBase<T_numPlayers, T_width, T_height> Parent;
+    using Parent::hqPos;
+    using Parent::world;
+    using Parent::curPlayer;
+    using Parent::MakeVisible;
+
     /// Tested positions for military buildings
     MapPoint milBld0Pos, milBld1Pos;
     /// Military buildings of players 0 and 1

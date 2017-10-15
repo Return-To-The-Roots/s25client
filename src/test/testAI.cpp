@@ -25,7 +25,10 @@
 #include "nodeObjs/noTree.h"
 #include "gameData/BuildingProperties.h"
 #include <boost/foreach.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
+
+typedef boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > AIPointer;
 
 struct IsBldType
 {
@@ -66,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
             world.SetNO(pt, new noTree(pt, 0, 3));
     }
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    AIPlayer* ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
+    AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
     {
@@ -98,7 +101,7 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, WorldWithGCExecution<1>)
         if(world.GetBQ(pt, curPlayer) > BQ_HUT)
             world.GetNodeWriteable(pt).bq = BQ_HUT;
     }
-    AIPlayer* ai = AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world);
+    AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
     const std::list<noBuildingSite*>& bldSites = player.GetBuildingRegister().GetBuildingSites();
     // Can't build sawmill -> Expand anyway
     for(unsigned gf = 0; gf < 2000;)

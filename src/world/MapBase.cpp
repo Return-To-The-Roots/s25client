@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapBase.h"
 #include "world/MapGeometry.h"
+#include <stdexcept>
 
 MapBase::MapBase() : size_(MapExtent::all(0))
 {
