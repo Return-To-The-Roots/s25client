@@ -82,7 +82,7 @@ public:
     const Node& GetAINode(const MapPoint pt) const { return aiMap[pt]; }
     unsigned GetNumPlannedConnectedInlandMilitaryBlds() { return std::max<unsigned>(6u, aii.GetMilitaryBuildings().size() / 5u); }
     /// checks distance to all harborpositions
-    bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false);
+    bool HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty = false) const;
     /// returns the percentage*100 of possible normal building places
     unsigned BQsurroundcheck(const MapPoint pt, unsigned range, bool includeexisting, unsigned limit = 0);
     /// returns list entry of the building the ai uses for troop upgrades
@@ -139,7 +139,7 @@ public:
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
     MapPoint FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1,
-                              bool inTerritory = true);
+                              bool inTerritory = true) const;
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
     MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
@@ -152,7 +152,9 @@ public:
     MapPoint FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
                                                  bool inTerritory = true);
     /// Finds a position for the desired building size
-    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius = -1);
+    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius = -1) const;
+    /// Find a position for a specific building around a given point
+    MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
     /// Density in percent (0-100)
     unsigned GetDensity(MapPoint pt, AIResource res, int radius);
     /// Recalculate the Buildingquality around a certain point
@@ -198,7 +200,7 @@ public:
     void TrySeaAttack();
     /// checks if there is at least 1 sea id connected to the harbor spot with at least 2 harbor spots! when onlyempty=true there has to be
     /// at least 1 other free harborid
-    bool HarborPosRelevant(unsigned harborid, bool onlyempty = false);
+    bool HarborPosRelevant(unsigned harborid, bool onlyempty = false) const;
     /// returns true when a building of the given type is closer to the given position than min (ONLY NOBUSUAL (=no warehouse/military))
     bool BuildingNearby(const MapPoint pt, BuildingType bld, unsigned min);
     /// Update BQ and farming ground around new building site + road

@@ -113,7 +113,7 @@ void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
     aii.gwb.CheckPointsInRadius(pt, radius, ValueAdjuster(map, radius, value), true);
 }
 
-MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
+MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory) const
 {
     RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 
@@ -137,7 +137,7 @@ MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, Buil
     return MapPoint::Invalid();
 }
 
-MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
+MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory) const
 {
     RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 

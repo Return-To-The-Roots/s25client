@@ -44,6 +44,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noTree.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/TerrainData.h"
@@ -175,7 +176,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         isInitGfCompleted++;
         return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
     }
-    bldPlanner->RefreshBuildingCount();
+    bldPlanner->Update(gf, *this);
 
     if(gfisnwf) // nwf -> now the orders have been executed -> new constructions can be started
         construction->ConstructionsExecuted();
@@ -194,7 +195,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         // LOG.write(("ai doing stuff %i \n",playerId);
         if(gf % 100 == 0)
-            bldPlanner->UpdateBuildingsWanted();
+            bldPlanner->UpdateBuildingsWanted(*this);
         ExecuteAIJob();
     }
 
@@ -250,7 +251,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
 void AIPlayerJH::PlanNewBuildings(const unsigned gf)
 {
-    bldPlanner->UpdateBuildingsWanted();
+    bldPlanner->UpdateBuildingsWanted(*this);
 
     // pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
     boost::array<BuildingType, 24> bldToTest = {{BLD_HARBORBUILDING, BLD_SHIPYARD,       BLD_SAWMILL,    BLD_FORESTER,     BLD_FARM,
@@ -604,7 +605,8 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
         aiMap[curPt].farmed = set;
 }
 
-MapPoint AIPlayerJH::FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
+MapPoint AIPlayerJH::FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius,
+                                      bool inTerritory) const
 {
     return resourceMaps[boost::underlying_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
@@ -1017,7 +1019,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
         }
     }
 }
-MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius)
+MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius) const
 {
     RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
 
@@ -1043,6 +1045,86 @@ MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size
     return MapPoint::Invalid();
 }
 
+MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapPoint& around)
+{
+    MapPoint foundPos = MapPoint::Invalid();
+    switch(type)
+    {
+        case BLD_WOODCUTTER:
+        {
+            foundPos = FindBestPosition(around, AIResource::WOOD, BUILDING_SIZE[type], 20, 11);
+            break;
+        }
+        case BLD_FORESTER:
+            // ensure some distance to other foresters and an minimal amount of plantspace
+            if(!construction->OtherUsualBuildingInRadius(around, 12, BLD_FORESTER) && (GetDensity(around, AIResource::PLANTSPACE, 7) > 15))
+                foundPos = FindBestPosition(around, AIResource::WOOD, BUILDING_SIZE[type], 0, 11);
+            break;
+        case BLD_HUNTER:
+        {
+            // check if there are any animals in range
+            if(HuntablesinRange(around, (2 << GetBldPlanner().GetBuildingCount(BLD_HUNTER))))
+                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            break;
+        }
+        case BLD_QUARRY:
+        {
+            unsigned numQuarries = GetBldPlanner().GetBuildingCount(BLD_QUARRY);
+            foundPos = FindBestPosition(around, AIResource::STONES, BUILDING_SIZE[type], std::min(40u, 1 + numQuarries * 10), 11);
+            if(foundPos.isValid() && !ValidStoneinRange(foundPos))
+            {
+                SetResourceMap(AIResource::STONES, foundPos, 0);
+                foundPos = MapPoint::Invalid();
+            }
+            break;
+        }
+        case BLD_BARRACKS:
+        case BLD_GUARDHOUSE:
+        case BLD_WATCHTOWER:
+        case BLD_FORTRESS: foundPos = FindBestPosition(around, AIResource::BORDERLAND, BUILDING_SIZE[type], 1, 11, true); break;
+        case BLD_GOLDMINE: foundPos = FindBestPosition(around, AIResource::GOLD, BQ_MINE, 11, true); break;
+        case BLD_COALMINE: foundPos = FindBestPosition(around, AIResource::COAL, BQ_MINE, 11, true); break;
+        case BLD_IRONMINE: foundPos = FindBestPosition(around, AIResource::IRONORE, BQ_MINE, 11, true); break;
+        case BLD_GRANITEMINE:
+            if(!ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
+                foundPos = FindBestPosition(around, AIResource::GRANITE, BQ_MINE, 11, true);
+            else
+                foundPos = SimpleFindPosition(around, BQ_MINE, 11);
+            break;
+
+        case BLD_FISHERY:
+            foundPos = FindBestPosition(around, AIResource::FISH, BUILDING_SIZE[type], 11, true);
+            if(foundPos.isValid() && !ValidFishInRange(foundPos))
+            {
+                SetResourceMap(AIResource::FISH, foundPos, 0);
+                foundPos = MapPoint::Invalid();
+            }
+            break;
+        case BLD_STOREHOUSE:
+            if(!construction->OtherStoreInRadius(around, 15))
+                foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            break;
+        case BLD_HARBORBUILDING:
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            if(foundPos.isValid() && !HarborPosRelevant(GetWorld().GetHarborPointID(foundPos))) // bad harborspot detected DO NOT USE
+                foundPos = MapPoint::Invalid();
+            break;
+        case BLD_SHIPYARD:
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            if(foundPos.isValid() && IsInvalidShipyardPosition(foundPos))
+                foundPos = MapPoint::Invalid();
+            break;
+        case BLD_FARM: foundPos = FindBestPosition(around, AIResource::PLANTSPACE, BUILDING_SIZE[type], 85, 11, true); break;
+        case BLD_CATAPULT:
+            foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+            if(foundPos.isValid() && BuildingNearby(foundPos, BLD_CATAPULT, 8))
+                foundPos = MapPoint::Invalid();
+            break;
+        default: foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11); break;
+    }
+    return foundPos;
+}
+
 unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)
 {
     RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
@@ -1065,7 +1147,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
 {
     // kill bad flags we find
     RemoveAllUnusedRoads(pt);
-    bldPlanner->UpdateBuildingsWanted();
+    bldPlanner->UpdateBuildingsWanted(*this);
     const nobMilitary* mil = gwb.GetSpecObj<nobMilitary>(pt);
     if(!mil)
         return;
@@ -2214,7 +2296,7 @@ bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bldType, unsigne
     return false;
 }
 
-bool AIPlayerJH::HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty)
+bool AIPlayerJH::HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty) const
 {
     // skip harbordummy
     for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
@@ -2276,7 +2358,7 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
     return ((count * 100) / maxvalue);
 }
 
-bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty)
+bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
 {
     if(harborid < 1 || harborid > gwb.GetHarborPointCount()) // not a real harbor - shouldnt happen...
     {
