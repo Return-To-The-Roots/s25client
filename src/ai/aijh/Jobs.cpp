@@ -23,6 +23,7 @@
 #include "ai/AIInterface.h"
 #include "ai/aijh/AIConstruction.h"
 #include "ai/aijh/AIPlayerJH.h"
+#include "ai/aijh/BuildingPlanner.h"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"
@@ -38,7 +39,7 @@ Job::Job(AIPlayerJH& aijh) : aijh(aijh), status(JOB_WAITING)
 void BuildJob::ExecuteJob()
 {
     // are we allowed to plan construction work in the area in this nwf?
-    if(!aijh.GetConstruction()->CanStillConstructHere(around))
+    if(!aijh.GetConstruction().CanStillConstructHere(around))
         return;
 
     if(status == JOB_WAITING)
@@ -78,7 +79,7 @@ void BuildJob::ExecuteJob()
 void BuildJob::TryToBuild()
 {
     MapPoint bPos = around;
-    AIConstruction& aiConstruction = *aijh.GetConstruction();
+    AIConstruction& aiConstruction = aijh.GetConstruction();
 
     if(aijh.GetInterface().GetBuildingSites().size() > 40)
     {
@@ -126,15 +127,14 @@ void BuildJob::TryToBuild()
             case BLD_HUNTER:
             {
                 // check if there are any animals in range
-                if(aijh.HuntablesinRange(bPos, (2 << aiConstruction.GetBuildingCount(BLD_HUNTER))))
+                if(aijh.HuntablesinRange(bPos, (2 << aijh.GetBldPlanner().GetBuildingCount(BLD_HUNTER))))
                     foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
                 break;
             }
             case BLD_QUARRY:
             {
-                unsigned numQuarries = aiConstruction.GetBuildingCount(BLD_QUARRY);
-                foundPos = aijh.FindBestPosition(bPos, AIResource::STONES, BQ_HUT,
-                                                 (numQuarries > 4) ? 40 : 1 + aiConstruction.GetBuildingCount(BLD_QUARRY) * 10, 11);
+                unsigned numQuarries = aijh.GetBldPlanner().GetBuildingCount(BLD_QUARRY);
+                foundPos = aijh.FindBestPosition(bPos, AIResource::STONES, BQ_HUT, std::min(40u, 1 + numQuarries * 10), 11);
                 if(foundPos && !aijh.ValidStoneinRange(bPos))
                 {
                     foundPos = false;
@@ -272,7 +272,7 @@ void BuildJob::BuildMainRoad()
     }
     const noFlag* houseFlag = bld->GetFlag();
     // Gucken noch nicht ans Wegnetz angeschlossen
-    AIConstruction& aiConstruction = *aijh.GetConstruction();
+    AIConstruction& aiConstruction = aijh.GetConstruction();
     if(!aiConstruction.IsConnectedToRoadSystem(houseFlag))
     {
         // Bau unmöglich?
@@ -342,7 +342,7 @@ void BuildJob::TryToBuildSecondaryRoad()
         return;
     }
 
-    if(aijh.GetConstruction()->BuildAlternativeRoad(houseFlag, route))
+    if(aijh.GetConstruction().BuildAlternativeRoad(houseFlag, route))
     {
         status = JOB_EXECUTING_ROAD2_2;
     } else
@@ -473,7 +473,7 @@ void ConnectJob::ExecuteJob()
 #endif
 
     // can the ai still construct here? else return and try again later
-    AIConstruction& construction = *aijh.GetConstruction();
+    AIConstruction& construction = aijh.GetConstruction();
     if(!construction.CanStillConstructHere(flagPos))
         return;
 

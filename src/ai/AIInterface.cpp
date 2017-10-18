@@ -199,11 +199,6 @@ const nobHQ* AIInterface::GetHeadquarter() const
     return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
 }
 
-BuildingCount AIInterface::GetBuildingCount() const
-{
-    return player_.GetBuildingRegister().GetBuildingCount();
-}
-
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const
 {
     return IsExplorationDirectionPossible(pt, originHarbor->GetHarborPosID(), direction);

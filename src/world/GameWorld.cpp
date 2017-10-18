@@ -28,6 +28,7 @@
 #include "world/MapSerializer.h"
 
 #include "luaIncludes.h"
+#include "gameData/BuildingProperties.h"
 #include "libsiedler2/prototypen.h"
 #include <boost/filesystem.hpp>
 
@@ -47,6 +48,8 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
         return false;
 
     const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
+
+    BuildingProperties::Init();
 
     if(bfs::exists(luaFilePath))
     {
@@ -109,6 +112,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
 
     // Initialisierungen
     Init(size, lt);
+    BuildingProperties::Init();
 
     // Obj-ID-Counter setzen
     GameObject::SetObjIDCounter(sgd.PopUnsignedInt());

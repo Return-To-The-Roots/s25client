@@ -83,8 +83,8 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
     /// Positions of the players HQ
     boost::array<MapPoint, T_numPlayers> hqPos;
     typedef WorldWithGCExecution<T_numPlayers, T_width, T_height> Parent;
-    using Parent::world;
     using Parent::curPlayer;
+    using Parent::world;
 
     AttackFixtureBase()
     {
@@ -190,10 +190,10 @@ template<unsigned T_numPlayers = 2, unsigned T_width = AttackDefaults::width, un
 struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 {
     typedef AttackFixtureBase<T_numPlayers, T_width, T_height> Parent;
+    using Parent::MakeVisible;
+    using Parent::curPlayer;
     using Parent::hqPos;
     using Parent::world;
-    using Parent::curPlayer;
-    using Parent::MakeVisible;
 
     /// Tested positions for military buildings
     MapPoint milBld0Pos, milBld1Pos;

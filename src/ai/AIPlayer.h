@@ -31,7 +31,7 @@ class AIPlayer
 {
 public:
     AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-        : ggs(gwb.GetGGS()), playerId(playerId), gwb(gwb), player(gwb.GetPlayer(playerId)), level(level), aii(gwb, gcs, playerId)
+        : playerId(playerId), player(gwb.GetPlayer(playerId)),  gwb(gwb), ggs(gwb.GetGGS()),level(level), aii(gwb, gcs, playerId)
     {
     }
 
@@ -48,17 +48,17 @@ public:
     /// Markiert die GameCommands als abgearbeitet
     void FetchGameCommands() { gcs.clear(); }
 
+    /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
+    const unsigned char playerId;
+    /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
+    const GamePlayer& player;
+    /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
+    const GameWorldBase& gwb;
     /// Verweis auf die Globalen Spieleinstellungen, da diese auch die weiteren Entscheidungen beeinflussen können
     /// (beispielsweise Siegesbedingungen, FOW usw.)
     const GlobalGameSettings& ggs;
 
 protected:
-    /// Eigene PlayerId, die der KI-Spieler wissen sollte, z.B. wenn er die Karte untersucht
-    const unsigned char playerId;
-    /// Verweis auf die Spielwelt, um entsprechend Informationen daraus zu erhalten
-    const GameWorldBase& gwb;
-    /// Verweis auf den eigenen GameClientPlayer, d.h. die Wirtschaft, um daraus entsprechend Informationen zu gewinnen
-    const GamePlayer& player;
     /// Queue der GameCommands, die noch bearbeitet werden müssen
     std::vector<gc::GameCommandPtr> gcs;
     /// Stärke der KI

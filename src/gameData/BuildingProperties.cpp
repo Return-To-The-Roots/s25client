@@ -18,6 +18,19 @@
 #include "defines.h" // IWYU pragma: keep
 #include "BuildingProperties.h"
 
+boost::container::static_vector<BuildingType, BUILDING_TYPES_COUNT / 4u> BuildingProperties::militaryBldTypes;
+
+void BuildingProperties::Init()
+{
+    militaryBldTypes.clear();
+    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; i++)
+    {
+        BuildingType bld = BuildingType(i);
+        if(IsMilitary(bld))
+            militaryBldTypes.push_back(bld);
+    }
+}
+
 bool BuildingProperties::IsMilitary(BuildingType bld)
 {
     switch(bld)

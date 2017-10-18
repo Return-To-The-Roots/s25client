@@ -21,6 +21,7 @@
 #define BuildingProperties_h__
 
 #include "gameTypes/BuildingType.h"
+#include <boost/container/static_vector.hpp>
 
 /// Static class to query properties of buildings (building types)
 class BuildingProperties
@@ -29,6 +30,10 @@ class BuildingProperties
     BuildingProperties();
 
 public:
+    static void Init();
+    /// Stores the bld types that are military blds as a cache. Assumes that at most 1/4 of the blds are military
+    static boost::container::static_vector<BuildingType, BUILDING_TYPES_COUNT / 4u> militaryBldTypes;
+
     /// True iff the building type is used (not nothing)
     static bool IsValid(BuildingType bld);
     /// True iff this is a regular military building

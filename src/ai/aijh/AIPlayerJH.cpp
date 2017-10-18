@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "AIPlayerJH.h"
 #include "AIConstruction.h"
+#include "BuildingPlanner.h"
 #include "FindWhConditions.h"
 #include "GameMessages.h"
 #include "GamePlayer.h"
@@ -106,7 +107,8 @@ namespace AIJH {
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::Invalid()), isInitGfCompleted(false), defeated(false)
 {
-    construction = new AIConstruction(aii, *this);
+    bldPlanner = new BuildingPlanner(*this);
+    construction = new AIConstruction(*this);
     InitNodes();
     InitResourceMaps();
 #ifdef DEBUG_AI
@@ -149,6 +151,7 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
 AIPlayerJH::~AIPlayerJH()
 {
     delete construction;
+    delete bldPlanner;
 }
 
 /// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
@@ -169,6 +172,8 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         isInitGfCompleted++;
         return; //  1 init -> 2 test defeat -> 3 do other ai stuff -> goto 2
     }
+    bldPlanner->RefreshBuildingCount();
+
     if(gfisnwf) // nwf -> now the orders have been executed -> new constructions can be started
         construction->ConstructionsExecuted();
 
@@ -186,7 +191,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
     {
         // LOG.write(("ai doing stuff %i \n",playerId);
         if(gf % 100 == 0)
-            construction->RefreshBuildingCount();
+            bldPlanner->UpdateBuildingsWanted();
         ExecuteAIJob();
     }
 
@@ -242,7 +247,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
 void AIPlayerJH::PlanNewBuildings(const unsigned gf)
 {
-    construction->RefreshBuildingCount();
+    bldPlanner->UpdateBuildingsWanted();
 
     // pick a random storehouse and try to build one of these buildings around it (checks if we actually want more of the building type)
     boost::array<BuildingType, 24> bldToTest = {{BLD_HARBORBUILDING, BLD_SHIPYARD,       BLD_SAWMILL,    BLD_FORESTER,     BLD_FARM,
@@ -1066,7 +1071,7 @@ void AIPlayerJH::HandleNewMilitaryBuilingOccupied(const MapPoint pt)
 {
     // kill bad flags we find
     RemoveAllUnusedRoads(pt);
-    construction->RefreshBuildingCount();
+    bldPlanner->UpdateBuildingsWanted();
     const nobMilitary* mil = gwb.GetSpecObj<nobMilitary>(pt);
     if(!mil)
         return;
@@ -1527,7 +1532,7 @@ void AIPlayerJH::CheckForester()
 void AIPlayerJH::CheckGranitMine()
 {
     // stop production in granite mines when the ai has many stones (100+ and at least 15 for each warehouse)
-    bool enableProduction = AmountInStorage(GD_STONES, 0) < 100 || AmountInStorage(GD_STONES, 0) < 15 * aii.GetStorehouses().size();
+    bool enableProduction = AmountInStorage(GD_STONES) < 100 || AmountInStorage(GD_STONES) < 15 * aii.GetStorehouses().size();
     BOOST_FOREACH(const nobUsual* mine, aii.GetBuildings(BLD_GRANITEMINE))
     {
         // !productionDisabled != enableProduction
@@ -2324,16 +2329,19 @@ bool AIPlayerJH::IsInvalidShipyardPosition(const MapPoint pt)
     return BuildingNearby(pt, BLD_SHIPYARD, 20) || !HarborPosClose(pt, 8);
 }
 
-unsigned AIPlayerJH::AmountInStorage(unsigned char num, unsigned char page)
+unsigned AIPlayerJH::AmountInStorage(GoodType good) const
 {
     unsigned counter = 0;
     BOOST_FOREACH(const nobBaseWarehouse* wh, aii.GetStorehouses())
-    {
-        if(page == 0)
-            counter += wh->GetInventory().goods[num];
-        else
-            counter += wh->GetInventory().people[num];
-    }
+        counter += wh->GetInventory().goods[good];
+    return counter;
+}
+
+unsigned AIPlayerJH::AmountInStorage(::Job job) const
+{
+    unsigned counter = 0;
+    BOOST_FOREACH(const nobBaseWarehouse* wh, aii.GetStorehouses())
+        counter += wh->GetInventory().people[job];
     return counter;
 }
 
@@ -2363,7 +2371,7 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
     return false;
 }
 
-unsigned AIPlayerJH::GetCountofAIRelevantSeaIds()
+unsigned AIPlayerJH::GetCountofAIRelevantSeaIds() const
 {
     std::list<unsigned short> validseaids;
     std::list<unsigned short> onetimeuseseaids;
@@ -2404,14 +2412,14 @@ void AIPlayerJH::AdjustSettings()
     toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;
     // Crucible
     toolsettings[6] =
-      (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < construction->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;
+      (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < bldPlanner->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;
     // Scythe
     toolsettings[8] =
       (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SCYTHE] < 1)) ? 1 :
                                                                                                                                        0;
     // Rollingpin
     toolsettings[10] =
-      (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < construction->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;
+      (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < bldPlanner->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;
     // Shovel
     toolsettings[5] =
       (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SHOVEL] < 1)) ? 1 :

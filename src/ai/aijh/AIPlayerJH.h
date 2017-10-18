@@ -42,6 +42,7 @@ class Base;
 }
 
 namespace AIJH {
+class BuildingPlanner;
 class AIConstruction;
 class Job;
 
@@ -56,7 +57,8 @@ public:
     const AIInterface& GetInterface() const { return aii; }
     const GameWorldBase& GetWorld() const { return gwb; }
     // Required by the AIJobs:
-    AIConstruction* GetConstruction() { return construction; }
+    AIConstruction& GetConstruction() { return *construction; }
+    const BuildingPlanner& GetBldPlanner() const { return *bldPlanner; }
     const Job* GetCurrentJob() const { return currentJob.get(); }
     unsigned GetNumJobs() const;
 
@@ -70,7 +72,7 @@ public:
     /// military & tool production settings
     void AdjustSettings();
     /// return number of seaIds with at least 2 harbor spots
-    unsigned GetCountofAIRelevantSeaIds();
+    unsigned GetCountofAIRelevantSeaIds() const;
 
     bool IsInvalidShipyardPosition(const MapPoint pt);
 
@@ -86,7 +88,8 @@ public:
     /// returns list entry of the building the ai uses for troop upgrades
     int UpdateUpgradeBuilding();
     /// returns amount of good/people stored in warehouses right now
-    unsigned AmountInStorage(unsigned char num, unsigned char page);
+    unsigned AmountInStorage(GoodType good) const;
+    unsigned AmountInStorage(::Job job) const;
 
     void PlanNewBuildings(const unsigned gf);
 
@@ -257,6 +260,7 @@ private:
     /// resigned yes/no
     bool defeated;
     AIEventManager eventManager;
+    BuildingPlanner* bldPlanner;
     AIConstruction* construction;
 
     Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip;

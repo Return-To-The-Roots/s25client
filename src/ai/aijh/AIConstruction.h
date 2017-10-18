@@ -23,7 +23,6 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
-#include <boost/container/static_vector.hpp>
 #include <deque>
 #include <vector>
 
@@ -38,6 +37,7 @@ class array;
 
 namespace AIJH {
 class AIPlayerJH;
+class BuildingPlanner;
 class Job;
 class BuildJob;
 class ConnectJob;
@@ -45,7 +45,7 @@ class ConnectJob;
 class AIConstruction
 {
 public:
-    AIConstruction(AIInterface& aii, AIPlayerJH& aijh);
+    AIConstruction(AIPlayerJH& aijh);
     ~AIConstruction();
 
     /// Adds a build job to the queue
@@ -76,16 +76,8 @@ public:
     BuildingType GetBiggestAllowedMilBuilding() const;
     /// Randomly chooses a military building, preferring bigger buildings if enemy nearby
     BuildingType ChooseMilitaryBuilding(const MapPoint pt);
-    /// Returns the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetBuildingCount(BuildingType type) const;
-    /// Returns the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetBuildingSitesCount(BuildingType type) const;
-    /// Refreshes the number of buildings by asking the GameClientPlayer and recalcs some wanted buildings
-    void RefreshBuildingCount();
     /// Checks whether a building type is wanted atm
     bool Wanted(BuildingType type) const;
-    /// Checks whether the ai wants to construct more mil buildings atm
-    bool WantMoreMilitaryBlds() const;
     /// Tries to build a second road to a flag, which is in any way better than the first one
     bool BuildAlternativeRoad(const noFlag* flag, std::vector<Direction>& route);
 
@@ -106,20 +98,9 @@ public:
     void ConstructionsExecuted();
 
 private:
-    void InitMilitaryBldTypes();
-    /// Initializes the wanted-buildings-vector
-    void InitBuildingsWanted();
-    /// Get amount of (completed) military buildings
-    unsigned GetMilitaryBldCount() const;
-    /// Get amount of construction sites of military buildings
-    unsigned GetMilitaryBldSiteCount() const;
-
-    AIInterface& aii;
     AIPlayerJH& aijh;
-    /// Stores the bld types that are military blds as a cache. Assumes that at most 1/4 of the blds are military
-    boost::container::static_vector<BuildingType, BUILDING_TYPES_COUNT / 4u> militaryBldTypes;
-    /// Contains how many buildings of every type is wanted
-    std::vector<unsigned> buildingsWanted;
+    AIInterface& aii;
+    const BuildingPlanner& bldPlanner;
     /// Contains the build jobs the AI should try to execute
     std::deque<BuildJob*> buildJobs;
     std::deque<ConnectJob*> connectJobs;
@@ -128,8 +109,6 @@ private:
     std::deque<MapPoint> constructionlocations;
     // contains the type and amount of buildings ordered since the last nwf
     std::vector<uint8_t> constructionorders;
-    /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
-    BuildingCount buildingCounts;
 };
 
 } // namespace AIJH

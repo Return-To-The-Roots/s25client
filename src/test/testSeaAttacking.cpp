@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
 {
     typedef SeaWorldWithGCExecution<62, 64> Parent;
-    using Parent::world;
     using Parent::curPlayer;
     using Parent::ggs;
+    using Parent::world;
 
     /// Positions of the players HQ
     boost::array<MapPoint, 3> hqPos;

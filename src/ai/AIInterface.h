@@ -122,8 +122,6 @@ public:
     const std::list<nobHarborBuilding*>& GetHarbors() const { return player_.GetBuildingRegister().GetHarbors(); }
     /// Return a list containing all storehouses and harbors and the hq
     const std::list<nobBaseWarehouse*>& GetStorehouses() const { return player_.GetBuildingRegister().GetStorehouses(); }
-    /// Retrieves the current counts of all buildings
-    BuildingCount GetBuildingCount() const;
     /// Return the inventory of the AI player
     const Inventory& GetInventory() const { return player_.GetInventory(); }
     /// Return the number of ships

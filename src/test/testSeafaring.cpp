@@ -125,8 +125,8 @@ template<unsigned T_hbId = 1, unsigned T_width = SeaWorldDefault::width, unsigne
 struct ShipReadyFixture : public SeaWorldWithGCExecution<T_width, T_height>
 {
     typedef SeaWorldWithGCExecution<T_width, T_height> Parent;
-    using Parent::world;
     using Parent::curPlayer;
+    using Parent::world;
 
     PostBox* postBox;
     ShipReadyFixture()
