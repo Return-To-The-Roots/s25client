@@ -35,6 +35,7 @@
 #include "helpers/containerUtils.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
+#include "notifications/NodeNote.h"
 #include "notifications/ResourceNote.h"
 #include "notifications/RoadNote.h"
 #include "notifications/ShipNote.h"
@@ -53,7 +54,6 @@
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <stdexcept>
-#include "notifications/NodeNote.h"
 
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
@@ -146,9 +146,9 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     subRoad = notifications.subscribe<RoadNote>(
       bl::if_(bl::bind(&RoadNote::player, _1) == playerId)[bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)]);
     subShip = notifications.subscribe<ShipNote>(
-        bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[bl::bind(&HandleShipNote, boost::ref(eventManager), _1)]);
+      bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[bl::bind(&HandleShipNote, boost::ref(eventManager), _1)]);
     subBQ = notifications.subscribe<NodeNote>(
-        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&AIPlayerJH::UpdateNodeBQ, this, bl::bind(&NodeNote::pos, _1))]);
+      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&AIPlayerJH::UpdateNodeBQ, this, bl::bind(&NodeNote::pos, _1))]);
 }
 
 AIPlayerJH::~AIPlayerJH()
@@ -604,13 +604,13 @@ void AIPlayerJH::SetFarmedNodes(const MapPoint pt, bool set)
         aiMap[curPt].farmed = set;
 }
 
-bool AIPlayerJH::FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
+MapPoint AIPlayerJH::FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
     return resourceMaps[boost::underlying_cast<unsigned>(res)].FindGoodPosition(pt, threshold, size, radius, inTerritory);
 }
 
-bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius,
-                                                     bool inTerritory)
+MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius,
+                                                         bool inTerritory)
 {
     RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
     bool fixed = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
@@ -626,8 +626,8 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
     if(radius == -1)
         radius = 11;
 
-    MapPoint best(0, 0);
-    int best_value = -1;
+    MapPoint best = MapPoint::Invalid();
+    int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
     for(MapCoord tx = gwb.GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
     {
@@ -706,16 +706,11 @@ bool AIPlayerJH::FindBestPositionDiminishingResource(MapPoint& pt, AIResource re
         }
     }
 
-    if(best_value >= minimum)
-    {
-        pt = best;
-        return true;
-    }
-    return false;
+    return best;
 }
 
 // TODO: this totally ignores existing buildings of the same type. It should not. Re-introduce the resource maps?
-bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
+MapPoint AIPlayerJH::FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
     if(res == AIResource::IRONORE || res == AIResource::COAL || res == AIResource::GOLD || res == AIResource::GRANITE
        || res == AIResource::STONES || res == AIResource::FISH)
@@ -729,8 +724,8 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
     if(radius == -1)
         radius = 11;
 
-    MapPoint best(0, 0);
-    int best_value = -1;
+    MapPoint best = MapPoint::Invalid();
+    int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
     int temp = 0;
 
     for(MapCoord tx = gwb.GetXA(pt, Direction::WEST), r = 1; r <= radius; tx = gwb.GetXA(MapPoint(tx, pt.y), Direction::WEST), ++r)
@@ -776,12 +771,7 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
         }
     }
 
-    if(best_value >= minimum)
-    {
-        pt = best;
-        return true;
-    }
-    return false;
+    return best;
 }
 
 void AIPlayerJH::ExecuteAIJob()
@@ -1025,7 +1015,7 @@ void AIPlayerJH::DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWare
         }
     }
 }
-bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius)
+MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius)
 {
     RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
 
@@ -1044,13 +1034,10 @@ bool AIPlayerJH::SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radi
                 continue;
         }
         if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
-        {
-            pt = curPt;
-            return true;
-        }
+            return curPt;
     }
 
-    return false;
+    return MapPoint::Invalid();
 }
 
 unsigned AIPlayerJH::GetDensity(MapPoint pt, AIResource res, int radius)

@@ -18,18 +18,18 @@
 #include "defines.h" // IWYU pragma: keep
 #include "WorldWithGCExecution.h"
 #include "ai/AIPlayer.h"
+#include "ai/aijh/AIPlayerJH.h"
+#include "buildings/noBuilding.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
+#include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/BuildingProperties.h"
 #include <boost/foreach.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
-#include "ai/aijh/AIPlayerJH.h"
-#include "nodeObjs/noFlag.h"
-#include "buildings/noBuilding.h"
 
 typedef boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > AIPointer;
 

@@ -113,7 +113,7 @@ void AIResourceMap::Change(const MapPoint pt, unsigned radius, int value)
     aii.gwb.CheckPointsInRadius(pt, radius, ValueAdjuster(map, radius, value), true);
 }
 
-bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
+MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius, bool inTerritory)
 {
     RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 
@@ -130,16 +130,13 @@ bool AIResourceMap::FindGoodPosition(MapPoint& pt, int threshold, BuildingQualit
             if((inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
             if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
-            {
-                pt = curPt;
-                return true;
-            }
+                return curPt;
         }
     }
-    return false;
+    return MapPoint::Invalid();
 }
 
-bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
+MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius, bool inTerritory)
 {
     RTTR_Assert(pt.x < map.GetWidth() && pt.y < map.GetHeight());
 
@@ -147,8 +144,8 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
     if(radius == -1)
         radius = 30;
 
-    MapPoint best(0, 0);
-    int best_value = -1;
+    MapPoint best = MapPoint::Invalid();
+    int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
     std::vector<MapPoint> pts = aii.gwb.GetPointsInRadius(pt, radius);
     BOOST_FOREACH(const MapPoint& curPt, pts)
@@ -166,12 +163,7 @@ bool AIResourceMap::FindBestPosition(MapPoint& pt, BuildingQuality size, int min
         }
     }
 
-    if(best_value >= minimum)
-    {
-        pt = best;
-        return true;
-    }
-    return false;
+    return best;
 }
 
 } // namespace AIJH

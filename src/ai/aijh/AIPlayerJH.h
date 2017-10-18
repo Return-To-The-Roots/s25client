@@ -138,19 +138,21 @@ public:
                             std::vector<MapPoint> oldFlags);
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
-    bool FindGoodPosition(MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
+    MapPoint FindGoodPosition(const MapPoint& pt, AIResource res, int threshold, BuildingQuality size, int radius = -1,
+                              bool inTerritory = true);
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    bool FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-    bool FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
+    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
+                              bool inTerritory = true);
+    MapPoint FindBestPosition(const MapPoint& pt, AIResource res, BuildingQuality size, int radius = -1, bool inTerritory = true)
     {
         return FindBestPosition(pt, res, size, 1, radius, inTerritory);
     }
     /// finds the best position for a resource that cannot increase (fish,iron,coal,gold,granite,stones)
-    bool FindBestPositionDiminishingResource(MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
-                                             bool inTerritory = true);
+    MapPoint FindBestPositionDiminishingResource(const MapPoint& pt, AIResource res, BuildingQuality size, int minimum, int radius = -1,
+                                                 bool inTerritory = true);
     /// Finds a position for the desired building size
-    bool SimpleFindPosition(MapPoint& pt, BuildingQuality size, int radius = -1);
+    MapPoint SimpleFindPosition(const MapPoint& pt, BuildingQuality size, int radius = -1);
     /// Density in percent (0-100)
     unsigned GetDensity(MapPoint pt, AIResource res, int radius);
     /// Recalculate the Buildingquality around a certain point
@@ -264,7 +266,6 @@ private:
     Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
 
     void UpdateNodeBQ(const MapPoint& pt);
-
 };
 
 } // namespace AIJH

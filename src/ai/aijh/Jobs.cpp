@@ -78,7 +78,6 @@ void BuildJob::ExecuteJob()
 
 void BuildJob::TryToBuild()
 {
-    MapPoint bPos = around;
     AIConstruction& aiConstruction = aijh.GetConstruction();
 
     if(aijh.GetInterface().GetBuildingSites().size() > 40)
@@ -92,7 +91,6 @@ void BuildJob::TryToBuild()
         return;
     }
 
-    bool foundPos = false;
     if(searchMode == SEARCHMODE_GLOBAL)
     {
         // TODO: tmp solution for testing: only woodcutter
@@ -100,7 +98,7 @@ void BuildJob::TryToBuild()
         /*erstmal wieder rausgenommen weil kaputt - todo: fix positionsearch
         if (type == BLD_WOODCUTTER)
         {
-            PositionSearch *search = new PositionSearch(bPos, WOOD, 20, BLD_WOODCUTTER, true);
+            PositionSearch *search = new PositionSearch(around, WOOD, 20, BLD_WOODCUTTER, true);
             SearchJob *job = new SearchJob(aijh, search);
             aijh.AddJob(job, true);
             status = JOB_FINISHED;
@@ -109,36 +107,37 @@ void BuildJob::TryToBuild()
         searchMode = SEARCHMODE_RADIUS;
     }
 
+    MapPoint foundPos;
     if(searchMode == SEARCHMODE_RADIUS)
     {
         switch(type)
         {
             case BLD_WOODCUTTER:
             {
-                foundPos = aijh.FindBestPosition(bPos, AIResource::WOOD, BQ_HUT, 20, 11);
+                foundPos = aijh.FindBestPosition(around, AIResource::WOOD, BQ_HUT, 20, 11);
                 break;
             }
             case BLD_FORESTER:
                 // ensure some distance to other foresters and an minimal amount of plantspace
-                if(!aiConstruction.OtherUsualBuildingInRadius(bPos, 12, BLD_FORESTER)
-                   && (aijh.GetDensity(bPos, AIResource::PLANTSPACE, 7) > 15))
-                    foundPos = aijh.FindBestPosition(bPos, AIResource::WOOD, BQ_HUT, 0, 11);
+                if(!aiConstruction.OtherUsualBuildingInRadius(around, 12, BLD_FORESTER)
+                   && (aijh.GetDensity(around, AIResource::PLANTSPACE, 7) > 15))
+                    foundPos = aijh.FindBestPosition(around, AIResource::WOOD, BQ_HUT, 0, 11);
                 break;
             case BLD_HUNTER:
             {
                 // check if there are any animals in range
-                if(aijh.HuntablesinRange(bPos, (2 << aijh.GetBldPlanner().GetBuildingCount(BLD_HUNTER))))
-                    foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
+                if(aijh.HuntablesinRange(around, (2 << aijh.GetBldPlanner().GetBuildingCount(BLD_HUNTER))))
+                    foundPos = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 11);
                 break;
             }
             case BLD_QUARRY:
             {
                 unsigned numQuarries = aijh.GetBldPlanner().GetBuildingCount(BLD_QUARRY);
-                foundPos = aijh.FindBestPosition(bPos, AIResource::STONES, BQ_HUT, std::min(40u, 1 + numQuarries * 10), 11);
-                if(foundPos && !aijh.ValidStoneinRange(bPos))
+                foundPos = aijh.FindBestPosition(around, AIResource::STONES, BQ_HUT, std::min(40u, 1 + numQuarries * 10), 11);
+                if(foundPos.isValid() && !aijh.ValidStoneinRange(foundPos))
                 {
-                    foundPos = false;
-                    aijh.SetResourceMap(AIResource::STONES, bPos, 0);
+                    aijh.SetResourceMap(AIResource::STONES, foundPos, 0);
+                    foundPos = MapPoint::Invalid();
                 }
                 break;
             }
@@ -147,12 +146,12 @@ void BuildJob::TryToBuild()
             case BLD_WATCHTOWER:
             case BLD_FORTRESS:
             {
-                foundPos = aijh.FindBestPosition(bPos, AIResource::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
+                foundPos = aijh.FindBestPosition(around, AIResource::BORDERLAND, BUILDING_SIZE[type], 1, 11, true);
                 // could we build a bigger military building? check if the location is surrounded by terrain that does not allow normal
                 // buildings (probably important map part)
                 AIInterface& aiInterface = aijh.GetInterface();
-                if(type != BLD_FORTRESS && aiInterface.GetBuildingQuality(bPos) != BQ_MINE
-                   && aiInterface.GetBuildingQuality(bPos) > BUILDING_SIZE[type] && aijh.BQsurroundcheck(bPos, 6, true, 10) < 10)
+                if(type != BLD_FORTRESS && aiInterface.GetBuildingQuality(foundPos) != BQ_MINE
+                   && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type] && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
                 {
                     // more than 80% is unbuildable in range 7 -> upgrade
                     if(type == BLD_WATCHTOWER)
@@ -169,72 +168,76 @@ void BuildJob::TryToBuild()
                 }
             }
             break;
-            case BLD_GOLDMINE: foundPos = aijh.FindBestPosition(bPos, AIResource::GOLD, BQ_MINE, 11, true); break;
-            case BLD_COALMINE: foundPos = aijh.FindBestPosition(bPos, AIResource::COAL, BQ_MINE, 11, true); break;
-            case BLD_IRONMINE: foundPos = aijh.FindBestPosition(bPos, AIResource::IRONORE, BQ_MINE, 11, true); break;
+            case BLD_GOLDMINE: foundPos = aijh.FindBestPosition(around, AIResource::GOLD, BQ_MINE, 11, true); break;
+            case BLD_COALMINE: foundPos = aijh.FindBestPosition(around, AIResource::COAL, BQ_MINE, 11, true); break;
+            case BLD_IRONMINE: foundPos = aijh.FindBestPosition(around, AIResource::IRONORE, BQ_MINE, 11, true); break;
             case BLD_GRANITEMINE:
                 if(!aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES)) // inexhaustible granite mines do not require granite
-                    foundPos = aijh.FindBestPosition(bPos, AIResource::GRANITE, BQ_MINE, 11, true);
+                    foundPos = aijh.FindBestPosition(around, AIResource::GRANITE, BQ_MINE, 11, true);
                 else
-                    foundPos = aijh.SimpleFindPosition(bPos, BQ_MINE, 11);
+                    foundPos = aijh.SimpleFindPosition(around, BQ_MINE, 11);
                 break;
 
             case BLD_FISHERY:
-                foundPos = aijh.FindBestPosition(bPos, AIResource::FISH, BQ_HUT, 11, true);
-                if(foundPos && !aijh.ValidFishInRange(bPos))
+                foundPos = aijh.FindBestPosition(around, AIResource::FISH, BQ_HUT, 11, true);
+                if(foundPos.isValid() && !aijh.ValidFishInRange(foundPos))
                 {
-                    aijh.SetResourceMap(AIResource::FISH, bPos, 0);
-                    foundPos = false;
+                    aijh.SetResourceMap(AIResource::FISH, foundPos, 0);
+                    foundPos = MapPoint::Invalid();
                 }
                 break;
             case BLD_STOREHOUSE:
-                if(!aiConstruction.OtherStoreInRadius(bPos, 15))
-                    foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[BLD_STOREHOUSE], 11);
+                if(!aiConstruction.OtherStoreInRadius(around, 15))
+                    foundPos = aijh.SimpleFindPosition(around, BUILDING_SIZE[BLD_STOREHOUSE], 11);
                 break;
             case BLD_HARBORBUILDING:
-                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && !aijh.HarborPosRelevant(aijh.GetWorld().GetHarborPointID(bPos))) // bad harborspot detected DO NOT USE
-                    foundPos = false;
+                foundPos = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+                if(foundPos.isValid()
+                   && !aijh.HarborPosRelevant(aijh.GetWorld().GetHarborPointID(foundPos))) // bad harborspot detected DO NOT USE
+                    foundPos = MapPoint::Invalid();
                 break;
             case BLD_SHIPYARD:
-                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && aijh.IsInvalidShipyardPosition(bPos))
-                    foundPos = false;
+                foundPos = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+                if(foundPos.isValid() && aijh.IsInvalidShipyardPosition(foundPos))
+                    foundPos = MapPoint::Invalid();
                 break;
-            case BLD_FARM: foundPos = aijh.FindBestPosition(bPos, AIResource::PLANTSPACE, BQ_CASTLE, 85, 11, true); break;
+            case BLD_FARM: foundPos = aijh.FindBestPosition(around, AIResource::PLANTSPACE, BQ_CASTLE, 85, 11, true); break;
             case BLD_CATAPULT:
-                foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11);
-                if(foundPos && aijh.BuildingNearby(bPos, BLD_CATAPULT, 8))
-                    foundPos = false;
+                foundPos = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 11);
+                if(foundPos.isValid() && aijh.BuildingNearby(foundPos, BLD_CATAPULT, 8))
+                    foundPos = MapPoint::Invalid();
                 break;
-            default: foundPos = aijh.SimpleFindPosition(bPos, BUILDING_SIZE[type], 11); break;
+            default: foundPos = aijh.SimpleFindPosition(around, BUILDING_SIZE[type], 11); break;
         }
     }
 
     if(searchMode == SEARCHMODE_NONE)
     {
-        foundPos = true;
-        bPos = around;
+        foundPos = around;
     }
 
-    if(!foundPos)
+    if(!foundPos.isValid())
     {
         status = JOB_FAILED;
 #ifdef DEBUG_AI
         std::cout << "Player " << (unsigned)aijh.GetPlayerId() << ", Job failed: No Position found for " << BUILDING_NAMES[type]
-                  << " around " << bPos.x << "/" << bPos.y << "." << std::endl;
+                  << " around " << foundPos << "." << std::endl;
 #endif
         return;
     }
 
 #ifdef DEBUG_AI
     if(type == BLD_FARM)
-        std::cout << " Player " << (unsigned)aijh.GetPlayerId() << " built farm at " << bPos.x << "/" << bPos.y << " on value of "
-                  << aijh.resourceMaps[PLANTSPACE][bPos] << std::endl;
+        std::cout << " Player " << (unsigned)aijh.GetPlayerId() << " built farm at " << foundPos << " on value of "
+                  << aijh.resourceMaps[PLANTSPACE][foundPos] << std::endl;
 #endif
 
-    aijh.GetInterface().SetBuildingSite(bPos, type);
-    target = bPos;
+    if(!aijh.GetInterface().SetBuildingSite(foundPos, type))
+    {
+        status = JOB_FAILED;
+        return;
+    }
+    target = foundPos;
     status = JOB_EXECUTING_ROAD1;
     aiConstruction.ConstructionOrdered(*this);
 }
