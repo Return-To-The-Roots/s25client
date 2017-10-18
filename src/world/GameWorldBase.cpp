@@ -44,6 +44,7 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(players), gameSettings(gameSettings),
       em(em), gi(NULL)
 {
+    BuildingProperties::Init();
 }
 
 GameWorldBase::~GameWorldBase()
