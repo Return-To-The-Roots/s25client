@@ -53,7 +53,7 @@ void GameWorldViewer::InitVisualData()
     using bl::_1;
     evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1));
     evBQChanged = gwb.GetNotifications().subscribe<NodeNote>(
-      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pt, _1))]);
+      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pos, _1))]);
 }
 
 void GameWorldViewer::InitTerrainRenderer()
@@ -64,7 +64,7 @@ void GameWorldViewer::InitTerrainRenderer()
     // Notify renderer about altitude changes
     evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>(
       bl::if_(bl::bind(&NodeNote::type, _1)
-              == NodeNote::Altitude)[bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pt, _1), boost::cref(*this))]);
+              == NodeNote::Altitude)[bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pos, _1), boost::cref(*this))]);
     // And visibility changes
     evVisibilityChanged =
       gwb.GetNotifications().subscribe<PlayerNodeNote>(bl::if_(bl::bind(&PlayerNodeNote::type, _1) == PlayerNodeNote::Visibility)[bl::bind(

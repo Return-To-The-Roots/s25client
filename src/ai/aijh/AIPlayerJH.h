@@ -121,8 +121,6 @@ public:
     void SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
     /// Initializes the nodes on start of the game
     void InitNodes();
-    /// Updates all nodes (takes a while so dont call it too often)
-    void UpdateNodes();
     /// Updates the nodes around a position
     void UpdateNodesAround(const MapPoint pt, unsigned radius);
     /// Returns the resource on a specific point
@@ -207,8 +205,8 @@ public:
     void SaveResourceMapsToFile();
 
     void InitReachableNodes();
-    void UpdateReachableNodes(const MapPoint pt, unsigned radius);
-    void IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck);
+    void IterativeReachableNodeChecker(std::queue<MapPoint> toCheck);
+    void UpdateReachableNodes(const std::vector<MapPoint>& pts);
 
     /// disconnects 'inland' military buildings from road system(and sends out soldiers), sets stop gold, uses the upgrade building (order
     /// new private, kick out general)
@@ -263,7 +261,10 @@ private:
     BuildingPlanner* bldPlanner;
     AIConstruction* construction;
 
-    Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip;
+    Subscribtion subBuilding, subExpedition, subResource, subRoad, subShip, subBQ;
+
+    void UpdateNodeBQ(const MapPoint& pt);
+
 };
 
 } // namespace AIJH

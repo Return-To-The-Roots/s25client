@@ -31,10 +31,10 @@ struct NodeNote
         BQ        // Building quality
     };
 
-    NodeNote(Type type, const MapPoint& pt) : type(type), pt(pt) {}
+    NodeNote(Type type, const MapPoint& pt) : type(type), pos(pt) {}
 
     const Type type;
-    const MapPoint pt;
+    const MapPoint pos;
 };
 
 #endif // NodeNote_h__

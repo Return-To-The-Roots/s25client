@@ -27,6 +27,9 @@
 #include <boost/foreach.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
+#include "ai/aijh/AIPlayerJH.h"
+#include "nodeObjs/noFlag.h"
+#include "buildings/noBuilding.h"
 
 typedef boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > AIPointer;
 
@@ -59,6 +62,76 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
 // Run "Network Frame" then execute GCs from last NWF
 // Also use "HARD" AI for faster execution
 BOOST_AUTO_TEST_SUITE(AI)
+
+BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, WorldWithGCExecution<1>)
+{
+    AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
+    const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+
+    // Set flag
+    MapPoint flagPos = world.MakeMapPoint(world.GetNeighbour(hqPos, Direction::SOUTHEAST) + Position(4, 0));
+    this->SetFlag(flagPos);
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPos));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), true);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+
+    // Build road
+    this->BuildRoad(flagPos, false, std::vector<Direction>(4, Direction::WEST));
+    BOOST_REQUIRE(world.GetSpecObj<noFlag>(flagPos)->GetRoute(Direction::WEST));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), true);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+
+    // Destroy road and flag
+    this->DestroyFlag(flagPos);
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), true);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+
+    // Build building
+    MapPoint bldPos = world.MakeMapPoint(hqPos + Position(6, 0));
+    this->SetBuildingSite(bldPos, BLD_BARRACKS);
+    BOOST_REQUIRE(world.GetSpecObj<noBuildingSite>(bldPos));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), true);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SOUTHEAST), false, std::vector<Direction>(6, Direction::WEST));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), true);
+    RTTR_EXEC_TILL(2000, world.GetSpecObj<noBuilding>(bldPos));
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), false);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+    // Gain land
+    const nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
+    RTTR_EXEC_TILL(500, bld->GetTroopsCount() > 0);
+    em.ExecuteNextGF();
+    ai->RunGF(em.GetCurrentGF(), false);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
+    }
+}
 
 BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
 {

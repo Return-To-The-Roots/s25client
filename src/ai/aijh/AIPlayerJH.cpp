@@ -53,6 +53,7 @@
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <stdexcept>
+#include "notifications/NodeNote.h"
 
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
@@ -145,7 +146,9 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     subRoad = notifications.subscribe<RoadNote>(
       bl::if_(bl::bind(&RoadNote::player, _1) == playerId)[bl::bind(&HandleRoadNote, boost::ref(eventManager), _1)]);
     subShip = notifications.subscribe<ShipNote>(
-      bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[bl::bind(&HandleShipNote, boost::ref(eventManager), _1)]);
+        bl::if_(bl::bind(&ShipNote::player, _1) == playerId)[bl::bind(&HandleShipNote, boost::ref(eventManager), _1)]);
+    subBQ = notifications.subscribe<NodeNote>(
+        bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&AIPlayerJH::UpdateNodeBQ, this, bl::bind(&NodeNote::pos, _1))]);
 }
 
 AIPlayerJH::~AIPlayerJH()
@@ -300,7 +303,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     std::list<nobMilitary*>::const_iterator it2 = militaryBuildings.begin();
     std::advance(it2, randomMiliBld);
     MapPoint bldPos = (*it2)->GetPos();
-    UpdateReachableNodes(bldPos, 15);
+    UpdateNodesAround(bldPos, 15);
     // resource gathering buildings only around military; processing only close to warehouses
     for(unsigned i = 0; i < resGatherBldCount; i++)
     {
@@ -489,7 +492,7 @@ void AIPlayerJH::InitReachableNodes()
     IterativeReachableNodeChecker(toCheck);
 }
 
-void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
+void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint> toCheck)
 {
     // TODO auch mal bootswege bauen können
 
@@ -526,9 +529,8 @@ void AIPlayerJH::IterativeReachableNodeChecker(std::queue<MapPoint>& toCheck)
     }
 }
 
-void AIPlayerJH::UpdateReachableNodes(const MapPoint pt, unsigned radius)
+void AIPlayerJH::UpdateReachableNodes(const std::vector<MapPoint>& pts)
 {
-    std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, radius);
     std::queue<MapPoint> toCheck;
 
     BOOST_FOREACH(const MapPoint& curPt, pts)
@@ -553,25 +555,32 @@ void AIPlayerJH::InitNodes()
     RTTR_FOREACH_PT(MapPoint, aiMap.GetSize())
     {
         Node& node = aiMap[pt];
-        // if reachable, we'll calc bq
-        if(node.reachable)
-        {
-            node.owned = true;
-            node.bq = aii.GetBuildingQuality(pt);
-        } else
-        {
-            node.owned = false;
-            node.bq = BQ_NOTHING;
-        }
 
+        node.bq = aii.GetBuildingQuality(pt);
         node.res = CalcResource(pt);
+        node.owned = aii.IsOwnTerritory(pt);
         node.border = aii.IsBorder(pt);
         node.farmed = false;
     }
 }
 
-void AIPlayerJH::UpdateNodes()
+void AIPlayerJH::UpdateNodesAround(const MapPoint pt, unsigned radius)
 {
+    std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, radius);
+    UpdateReachableNodes(pts);
+    BOOST_FOREACH(const MapPoint& pt, pts)
+    {
+        Node& node = aiMap[pt];
+        // Change of ownership might change bq
+        node.bq = aii.GetBuildingQuality(pt);
+        node.owned = aii.IsOwnTerritory(pt);
+        node.border = aii.IsBorder(pt);
+    }
+}
+
+void AIPlayerJH::UpdateNodeBQ(const MapPoint& pt)
+{
+    aiMap[pt].bq = aii.GetBuildingQuality(pt);
 }
 
 void AIPlayerJH::InitResourceMaps()
@@ -773,11 +782,6 @@ bool AIPlayerJH::FindBestPosition(MapPoint& pt, AIResource res, BuildingQuality 
         return true;
     }
     return false;
-}
-
-void AIPlayerJH::UpdateNodesAround(const MapPoint pt, unsigned radius)
-{
-    UpdateReachableNodes(pt, radius);
 }
 
 void AIPlayerJH::ExecuteAIJob()
