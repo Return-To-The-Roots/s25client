@@ -20,6 +20,8 @@
 #include "AIPlayerJH.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
+#include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobMilitary.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameData/BuildingProperties.h"
@@ -27,16 +29,55 @@
 #include <algorithm>
 
 namespace AIJH {
-BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : aijh(aijh), buildingsWanted(BUILDING_TYPES_COUNT)
+BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(BUILDING_TYPES_COUNT), expansionRequired(false)
 {
-    RefreshBuildingCount();
-    InitBuildingsWanted();
-    UpdateBuildingsWanted();
+    RefreshBuildingCount(aijh);
+    InitBuildingsWanted(aijh);
+    UpdateBuildingsWanted(aijh);
 }
 
-void BuildingPlanner::RefreshBuildingCount()
+void BuildingPlanner::Update(unsigned gf, AIPlayerJH& aijh)
+{
+    RefreshBuildingCount(aijh);
+    expansionRequired = CalcIsExpansionRequired(aijh, gf > 500 && gf % 500 == 0);
+}
+
+void BuildingPlanner::RefreshBuildingCount(const AIPlayerJH& aijh)
 {
     buildingCounts = aijh.player.GetBuildingRegister().GetBuildingCount();
+}
+
+bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const
+{
+    if(!expansionRequired && !recalc)
+        return false;
+    if(GetMilitaryBldSiteCount() > 0 || GetMilitaryBldCount() > 4)
+        return false;
+    bool hasWood = GetBuildingCount(BLD_WOODCUTTER) > 0;
+    bool hasBoards = GetBuildingCount(BLD_SAWMILL) > 0;
+    bool hasStone = GetBuildingCount(BLD_QUARRY) > 0;
+    if(expansionRequired)
+    {
+        if(hasWood && hasBoards && hasStone)
+            return false;
+    } else
+    {
+        // Check if we could build the missing building around any military building or storehouse. If not, expand.
+        const BuildingRegister& buildingRegister = aijh.player.GetBuildingRegister();
+        std::vector<noBuilding*> blds(buildingRegister.GetMilitaryBuildings().begin(), buildingRegister.GetMilitaryBuildings().end());
+        blds.insert(blds.end(), buildingRegister.GetStorehouses().begin(), buildingRegister.GetStorehouses().end());
+        BOOST_FOREACH(const noBuilding* bld, blds)
+        {
+            if(!hasWood)
+                hasWood = aijh.FindPositionForBuildingAround(BLD_WOODCUTTER, bld->GetPos()).isValid();
+            if(!hasBoards)
+                hasBoards = aijh.FindPositionForBuildingAround(BLD_SAWMILL, bld->GetPos()).isValid();
+            if(!hasStone)
+                hasStone = aijh.FindPositionForBuildingAround(BLD_QUARRY, bld->GetPos()).isValid();
+        }
+        return !(hasWood && hasBoards && hasStone);
+    }
+    return expansionRequired;
 }
 
 unsigned BuildingPlanner::GetBuildingCount(BuildingType type) const
@@ -65,7 +106,7 @@ unsigned BuildingPlanner::GetMilitaryBldSiteCount() const
     return result;
 }
 
-void BuildingPlanner::InitBuildingsWanted()
+void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
 {
     std::fill(buildingsWanted.begin(), buildingsWanted.end(), 0u);
     buildingsWanted[BLD_FORESTER] = 1;
@@ -89,7 +130,7 @@ void BuildingPlanner::InitBuildingsWanted()
     }
 }
 
-void BuildingPlanner::UpdateBuildingsWanted()
+void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
 {
     // no military buildings -> usually start only
     const unsigned numMilitaryBlds = aijh.player.GetBuildingRegister().GetMilitaryBuildings().size();
@@ -282,6 +323,12 @@ void BuildingPlanner::UpdateBuildingsWanted()
             } else
                 buildingsWanted[BLD_GRANITEMINE] = 0;
         }
+
+        // Only build catapults if we have more than 5 military blds and 50 stones. Then reserve 4 stones per catapult but do not build more
+        // than 4 additions catapults Note: This is a max amount. A catapult is only placed if reasonable
+        buildingsWanted[BLD_CATAPULT] = numMilitaryBlds <= 5 || inventory.goods[GD_STONES] < 50 ?
+                                          0 :
+                                          std::min((inventory.goods[GD_STONES] - 50) / 4, GetBuildingCount(BLD_CATAPULT) + 4);
     }
     if(aijh.ggs.GetMaxMilitaryRank() == 0)
     {
@@ -294,11 +341,17 @@ int BuildingPlanner::GetNumAdditionalBuildingsWanted(BuildingType type) const
     return static_cast<int>(buildingsWanted[type]) - static_cast<int>(GetBuildingCount(type));
 }
 
-bool BuildingPlanner::WantMoreMilitaryBlds() const
+bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
 {
-    unsigned complete = GetMilitaryBldCount();
-    unsigned inconstruction = GetMilitaryBldSiteCount();
-    return complete + 3 > inconstruction;
+    if(GetMilitaryBldSiteCount() >= GetMilitaryBldCount() + 3)
+        return false;
+    if(expansionRequired)
+        return true;
+    if(GetBuildingCount(BLD_SAWMILL) > 0)
+        return true;
+    if(aijh.player.GetInventory().goods[GD_BOARDS] > 30 && GetBuildingSitesCount(BLD_SAWMILL) > 0)
+        return true;
+    return (GetMilitaryBldCount() + GetMilitaryBldSiteCount() > 0);
 }
 
 } // namespace AIJH

@@ -551,8 +551,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
         if(milBld->GetPlayer() != playerId && distance < 35)
         {
             int randmil = rand();
-            bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult() && militaryBuildingCount > 5
-                                 && inventory.goods[GD_STONES] > 50 + (4 * bldPlanner.GetBuildingCount(BLD_CATAPULT));
+            bool buildCatapult = randmil % 8 == 0 && aii.CanBuildCatapult() && bldPlanner.GetNumAdditionalBuildingsWanted(BLD_CATAPULT) > 0;
             // another catapult within "min" radius? ->dont build here!
             const unsigned min = 16;
             if(buildCatapult && aii.gwb.CalcDistance(pt, aii.GetStorehouses().front()->GetPos()) < min)
@@ -610,19 +609,10 @@ bool AIConstruction::Wanted(BuildingType type) const
 {
     if(!aii.CanBuildBuildingtype(type))
         return false;
-    if(type == BLD_CATAPULT)
-        return aii.CanBuildCatapult() && (aii.GetInventory().goods[GD_STONES] > 50 + (4 * bldPlanner.GetBuildingCount(BLD_CATAPULT)));
+    if(type == BLD_CATAPULT && !aii.CanBuildCatapult())
+        return false;
     if(BuildingProperties::IsMilitary(type) || type == BLD_STOREHOUSE)
-    {
-        if(!bldPlanner.WantMoreMilitaryBlds())
-            return false;
-        // todo: find a better way to determine that there is no risk in expanding than sawmill up and complete
-        if(bldPlanner.GetBuildingCount(BLD_SAWMILL) > 0)
-            return true;
-        if(aii.GetInventory().goods[GD_BOARDS] > 30 && bldPlanner.GetBuildingSitesCount(BLD_SAWMILL) > 0)
-            return true;
-        return (bldPlanner.GetMilitaryBldCount() + bldPlanner.GetMilitaryBldSiteCount() > 0);
-    }
+        return bldPlanner.WantMoreMilitaryBlds(aijh);
     if(type == BLD_SAWMILL && bldPlanner.GetBuildingCount(BLD_SAWMILL) > 1)
     {
         if(aijh.AmountInStorage(GD_WOOD) < 15 * (bldPlanner.GetBuildingSitesCount(BLD_SAWMILL) + 1))

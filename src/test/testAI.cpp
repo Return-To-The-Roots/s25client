@@ -32,6 +32,8 @@
 #include <boost/test/unit_test.hpp>
 
 typedef boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > AIPointer;
+// We need border land
+typedef WorldWithGCExecution<1, 24, 22> BiggerWorldWithGCExecution;
 
 struct IsBldType
 {
@@ -63,7 +65,7 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
 // Also use "HARD" AI for faster execution
 BOOST_AUTO_TEST_SUITE(AI)
 
-BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, WorldWithGCExecution<1>)
+BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
     AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
     const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
@@ -165,14 +167,18 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
     BOOST_REQUIRE(playerHasBld(player, BLD_FORESTER));
 }
 
-BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, WorldWithGCExecution<1>)
+BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
 {
     const GamePlayer& player = world.GetPlayer(curPlayer);
-    // No space for saw mill
+    // No space for saw mill due to altitude diff of 3 in range 2 -> Huts only
+    for(unsigned y = 0; y < world.GetHeight(); y += 2)
+    {
+        for(unsigned x = 0; x < world.GetWidth(); x += 2)
+            world.ChangeAltitude(MapPoint(x, y), 13);
+    }
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
-        if(world.GetBQ(pt, curPlayer) > BQ_HUT)
-            world.GetNodeWriteable(pt).bq = BQ_HUT;
+        BOOST_REQUIRE_LE(world.GetBQ(pt, curPlayer), BQ_HUT);
     }
     AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
     const std::list<noBuildingSite*>& bldSites = player.GetBuildingRegister().GetBuildingSites();

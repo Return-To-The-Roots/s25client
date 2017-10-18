@@ -24,6 +24,7 @@
 #include "ai/aijh/AIConstruction.h"
 #include "ai/aijh/AIPlayerJH.h"
 #include "ai/aijh/BuildingPlanner.h"
+#include "boost/foreach.hpp"
 #include "buildings/noBuildingSite.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noFlag.h"
@@ -123,16 +124,24 @@ void BuildJob::TryToBuild()
                    && aiInterface.GetBuildingQuality(foundPos) > BUILDING_SIZE[type] && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
                 {
                     // more than 80% is unbuildable in range 7 -> upgrade
-                    if(type == BLD_WATCHTOWER)
+                    BOOST_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
                     {
-                        if(aiInterface.CanBuildBuildingtype(BLD_FORTRESS))
-                            type = BLD_FORTRESS;
-                    } else
+                        if(BUILDING_SIZE[bld] > BUILDING_SIZE[type] && aiInterface.CanBuildBuildingtype(bld))
+                        {
+                            type = bld;
+                            break;
+                        }
+                    }
+                }
+            } else if(aijh.GetBldPlanner().IsExpansionRequired() && BUILDING_SIZE[type] != BQ_HUT)
+            {
+                // Downgrade to the next smaller building
+                BOOST_REVERSE_FOREACH(BuildingType bld, BuildingProperties::militaryBldTypes)
+                {
+                    if(BUILDING_SIZE[bld] < BUILDING_SIZE[type] && aijh.GetInterface().CanBuildBuildingtype(bld))
                     {
-                        if(aiInterface.CanBuildBuildingtype(BLD_WATCHTOWER))
-                            type = BLD_WATCHTOWER;
-                        else if(aiInterface.CanBuildBuildingtype(BLD_FORTRESS))
-                            type = BLD_FORTRESS;
+                        aijh.AddBuildJob(bld, around);
+                        break;
                     }
                 }
             }
