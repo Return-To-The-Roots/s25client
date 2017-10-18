@@ -538,9 +538,6 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
         }
     }
 
-    // avoid to build catapults in the beginning (no expansion)
-    const unsigned militaryBuildingCount = bldPlanner.GetMilitaryBldCount() + bldPlanner.GetMilitaryBldSiteCount();
-
     uint8_t playerId = aii.GetPlayerId();
     sortedMilitaryBlds military = aii.gwb.LookForMilitaryBuildings(pt, 3);
     BOOST_FOREACH(const nobBaseMilitary* milBld, military)

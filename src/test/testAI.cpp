@@ -126,9 +126,14 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     }
     // Gain land
     const nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
-    RTTR_EXEC_TILL(500, bld->GetTroopsCount() > 0);
-    em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), false);
+    for(unsigned i = 0; i < 500; i++)
+    {
+        em.ExecuteNextGF();
+        ai->RunGF(em.GetCurrentGF(), false);
+        if(bld->GetTroopsCount() > 0)
+            break;
+    }
+    BOOST_REQUIRE(bld->GetTroopsCount() > 0);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
