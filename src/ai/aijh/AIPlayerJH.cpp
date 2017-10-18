@@ -695,6 +695,7 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                     // dont build next to harborspots
                     if(HarborPosClose(curPt, 3, true))
                         continue;
+                    RTTR_Assert(aii.GetBuildingQuality(curPt) == GetAINode(curPt).bq);
                     if(canUseBq(aii.GetBuildingQuality(curPt), size))
                     {
                         best = curPt;
@@ -757,6 +758,7 @@ MapPoint AIPlayerJH::FindBestPosition(const MapPoint& pt, AIResource res, Buildi
                         continue;
                     if(HarborPosClose(curPt, 3, true))
                         continue;
+                    RTTR_Assert(aii.GetBuildingQuality(curPt) == GetAINode(curPt).bq);
                     if(canUseBq(aii.GetBuildingQuality(curPt), size)
                        && (res != AIResource::BORDERLAND || !gwb.IsOnRoad(gwb.GetNeighbour(curPt, Direction::SOUTHEAST))))
                     // special: military buildings cannot be build next to an existing road as that would have them connected to 2 roads
@@ -1033,6 +1035,7 @@ MapPoint AIPlayerJH::SimpleFindPosition(const MapPoint& pt, BuildingQuality size
             if(size != BQ_HARBOR)
                 continue;
         }
+        RTTR_Assert(aii.GetBuildingQuality(curPt) == GetAINode(curPt).bq);
         if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             return curPt;
     }
@@ -2213,7 +2216,7 @@ bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bldType, unsigne
 
 bool AIPlayerJH::HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty)
 {
-    // skip harbordummy ... ask oliver why there has to be a dummy
+    // skip harbordummy
     for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
     {
         if(gwb.CalcDistance(pt, gwb.GetHarborPoint(i)) < range
@@ -2231,6 +2234,7 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
 {
     unsigned maxvalue = 6 * (2 << (range - 1)) - 5; // 1,7,19,43,91,... = 6*2^range -5
     unsigned count = 0;
+    RTTR_Assert(aii.GetBuildingQuality(pt) == GetAINode(pt).bq);
     if((aii.GetBuildingQuality(pt) >= BQ_HUT && aii.GetBuildingQuality(pt) <= BQ_CASTLE) || aii.GetBuildingQuality(pt) == BQ_HARBOR)
     {
         count++;

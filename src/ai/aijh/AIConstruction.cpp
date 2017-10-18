@@ -333,6 +333,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         for(unsigned j = 0; j < tmpRoute.size(); ++j)
         {
             tmpPos = aii.gwb.GetNeighbour(tmpPos, tmpRoute[j]);
+            RTTR_Assert(aii.GetBuildingQuality(tmpPos) == aijh.GetAINode(tmpPos).bq);
             if(aii.GetBuildingQuality(tmpPos) == BQ_NOTHING)
                 curNonFlagPts++;
             else
@@ -701,7 +702,8 @@ bool AIConstruction::BuildAlternativeRoad(const noFlag* flag, std::vector<Direct
                     break;
                 }
             }
-            if(aii.GetBuildingQuality(t) < 1)
+            RTTR_Assert(aii.GetBuildingQuality(t) == aijh.GetAINode(t).bq);
+            if(aii.GetBuildingQuality(t) == BQ_NOTHING)
                 temp++;
             else
             {

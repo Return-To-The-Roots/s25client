@@ -129,6 +129,7 @@ MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, Buil
         {
             if((inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
+            RTTR_Assert(aii.GetBuildingQuality(curPt) == aiMap[curPt].bq);
             if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
                 return curPt;
         }
@@ -155,6 +156,7 @@ MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality siz
         {
             if(!aiMap[idx].reachable || (inTerritory && !aiMap[idx].owned) || aiMap[idx].farmed)
                 continue;
+            RTTR_Assert(aii.GetBuildingQuality(curPt) == aiMap[curPt].bq);
             if(canUseBq(aii.GetBuildingQuality(curPt), size)) //(*nodes)[idx].bq; TODO: Update nodes BQ and use that
             {
                 best = curPt;
