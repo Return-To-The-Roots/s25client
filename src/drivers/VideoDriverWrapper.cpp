@@ -270,6 +270,9 @@ void VideoDriverWrapper::CleanUp()
 
 unsigned VideoDriverWrapper::GenerateTexture()
 {
+    if(!isOglEnabled_)
+        return 42;
+
     if(texture_pos >= texture_list.size())
     {
         s25Util::fatal_error("texture-limit reached!!!!\n");
