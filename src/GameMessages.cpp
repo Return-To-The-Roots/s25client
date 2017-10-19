@@ -47,7 +47,7 @@ void GameMessage_Player_List::Deserialize(Serializer& ser)
         playerInfos.push_back(JoinPlayerInfo(ser));
 }
 
-void GameMessage_Player_List::Run(MessageInterface* callback)
+bool GameMessage_Player_List::Run(MessageInterface* callback)
 {
     LOG.writeToFile("<<< NMS_PLAYER_LIST(%d)\n") % playerInfos.size();
     for(unsigned i = 0; i < playerInfos.size(); ++i)
@@ -56,5 +56,5 @@ void GameMessage_Player_List::Run(MessageInterface* callback)
         LOG.writeToFile("    %d: %s %d %d %d %d %d %d %s\n") % i % playerInfo.name % playerInfo.ps % playerInfo.rating % playerInfo.ping
           % playerInfo.nation % playerInfo.color % playerInfo.team % (playerInfo.isReady ? "true" : "false");
     }
-    GetInterface(callback)->OnGameMessage(*this);
+    return GetInterface(callback)->OnGameMessage(*this);
 }

@@ -38,39 +38,22 @@ GameMessage_GameCommand::GameMessage_GameCommand() : GameMessage(NMS_GAMECOMMAND
 
 GameMessage_GameCommand::GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum,
                                                  const std::vector<gc::GameCommandPtr>& gcs)
-    : GameMessage(NMS_GAMECOMMANDS, player), checksum(checksum), gcs(gcs)
+    : GameMessage(NMS_GAMECOMMANDS, player), gcs(checksum, gcs)
 {}
 
 void GameMessage_GameCommand::Serialize(Serializer& ser) const
 {
     GameMessage::Serialize(ser);
-    ser.PushUnsignedInt(checksum.randChecksum);
-    ser.PushUnsignedInt(checksum.objCt);
-    ser.PushUnsignedInt(checksum.objIdCt);
-    ser.PushUnsignedInt(gcs.size());
-
-    for(unsigned i = 0; i < gcs.size(); ++i)
-    {
-        ser.PushUnsignedChar(gcs[i]->GetType());
-        gcs[i]->Serialize(ser);
-    }
+    gcs.Serialize(ser);
 }
 
 void GameMessage_GameCommand::Deserialize(Serializer& ser)
 {
     GameMessage::Deserialize(ser);
-    checksum.randChecksum = ser.PopUnsignedInt();
-    checksum.objCt = ser.PopUnsignedInt();
-    checksum.objIdCt = ser.PopUnsignedInt();
-    gcs.resize(ser.PopUnsignedInt());
-    for(unsigned i = 0; i < gcs.size(); ++i)
-    {
-        gc::Type type = gc::Type(ser.PopUnsignedChar());
-        gcs[i] = gc::GameCommand::Deserialize(type, ser);
-    }
+    gcs.Deserialize(ser);
 }
 
-void GameMessage_GameCommand::Run(MessageInterface* callback)
+bool GameMessage_GameCommand::Run(MessageInterface* callback)
 {
-    GetInterface(callback)->OnGameMessage(*this);
+    return GetInterface(callback)->OnGameMessage(*this);
 }

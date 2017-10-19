@@ -41,7 +41,6 @@ struct Info;
 
 class AIPlayer;
 class ClientInterface;
-class GameMessage_GameCommand;
 class SavedFile;
 class GamePlayer;
 class GameEvent;
@@ -49,6 +48,7 @@ class GameLobby;
 class GameWorldView;
 class GameWorld;
 class EventManager;
+struct PlayerGameCommands;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
 {
@@ -75,7 +75,6 @@ public:
             this->ci = NULL;
     }
     bool IsHost() const { return clientconfig.isHost; }
-    bool IsSavegame() const { return mapinfo.type == MAPTYPE_SAVEGAME; }
     std::string GetGameName() const { return clientconfig.gameName; }
 
     unsigned GetPlayerId() const { return playerId_; }
@@ -187,7 +186,7 @@ private:
     void ExecuteNWF();
     /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
-    void ExecuteAllGCs(const GameMessage_GameCommand& gcs);
+    void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
     void SendNothingNC(int checksum = -1);
     /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
@@ -202,42 +201,42 @@ private:
     void StatisticStep();
 
     //  Netzwerknachrichten
-    void OnGameMessage(const GameMessage_Ping& msg) override;
+    bool OnGameMessage(const GameMessage_Ping& msg) override;
 
-    void OnGameMessage(const GameMessage_Server_TypeOK& msg) override;
-    void OnGameMessage(const GameMessage_Server_Password& msg) override;
-    void OnGameMessage(const GameMessage_Server_Name& msg) override;
-    void OnGameMessage(const GameMessage_Server_Start& msg) override;
-    void OnGameMessage(const GameMessage_Server_Chat& msg) override;
-    void OnGameMessage(const GameMessage_System_Chat& msg) override;
-    void OnGameMessage(const GameMessage_Server_Async& msg) override;
-    void OnGameMessage(const GameMessage_Server_Countdown& msg) override;
-    void OnGameMessage(const GameMessage_Server_CancelCountdown& msg) override;
+    bool OnGameMessage(const GameMessage_Server_TypeOK& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Password& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Name& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Start& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_System_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Async& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Countdown& msg) override;
+    bool OnGameMessage(const GameMessage_Server_CancelCountdown& msg) override;
 
-    void OnGameMessage(const GameMessage_Player_Id& msg) override;
-    void OnGameMessage(const GameMessage_Player_List& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_State& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_Nation& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_Team& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
-    void OnGameMessage(const GameMessage_Player_Kicked& msg) override;
-    void OnGameMessage(const GameMessage_Player_Ping& msg) override;
-    void OnGameMessage(const GameMessage_Player_New& msg) override;
-    void OnGameMessage(const GameMessage_Player_Ready& msg) override;
-    void OnGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Id& msg) override;
+    bool OnGameMessage(const GameMessage_Player_List& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_State& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_Nation& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_Team& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Kicked& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Ping& msg) override;
+    bool OnGameMessage(const GameMessage_Player_New& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
 
-    void OnGameMessage(const GameMessage_Map_Info& msg) override;
-    void OnGameMessage(const GameMessage_Map_Data& msg) override;
-    void OnGameMessage(const GameMessage_Map_ChecksumOK& msg) override;
+    bool OnGameMessage(const GameMessage_Map_Info& msg) override;
+    bool OnGameMessage(const GameMessage_Map_Data& msg) override;
+    bool OnGameMessage(const GameMessage_Map_ChecksumOK& msg) override;
 
-    void OnGameMessage(const GameMessage_Pause& msg) override;
-    void OnGameMessage(const GameMessage_Server_NWFDone& msg) override;
-    void OnGameMessage(const GameMessage_GameCommand& msg) override;
+    bool OnGameMessage(const GameMessage_Pause& msg) override;
+    bool OnGameMessage(const GameMessage_Server_NWFDone& msg) override;
+    bool OnGameMessage(const GameMessage_GameCommand& msg) override;
 
-    void OnGameMessage(const GameMessage_GGSChange& msg) override;
-    void OnGameMessage(const GameMessage_RemoveLua& msg) override;
+    bool OnGameMessage(const GameMessage_GGSChange& msg) override;
+    bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
 
-    void OnGameMessage(const GameMessage_GetAsyncLog& msg) override;
+    bool OnGameMessage(const GameMessage_GetAsyncLog& msg) override;
 
     /// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungültige Nachricht etc.)
     void ServerLost();

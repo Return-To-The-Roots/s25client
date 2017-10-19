@@ -15,28 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameMessage_GameCommand_h__
-#define GameMessage_GameCommand_h__
+#pragma once
+
+#ifndef PlayerGameCommands_h__
+#define PlayerGameCommands_h__
 
 #include "AsyncChecksum.h"
-#include "GameCommand.h"
-#include "GameMessage.h"
-#include "PlayerGameCommands.h"
 #include <vector>
+#include "GameCommand.h"
 
-class Serializer;
-
-class GameMessage_GameCommand : public GameMessage
+/// GameCommands for 1 player
+struct PlayerGameCommands
 {
-public:
-    PlayerGameCommands gcs;
+    /// Checksumme, die der Spieler übermittelt
+    AsyncChecksum checksum;
+    /// Die einzelnen GameCommands
+    std::vector<gc::GameCommandPtr> gcs;
 
-    GameMessage_GameCommand(); //-V730
-    GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
-
-    void Serialize(Serializer& ser) const override;
-    void Deserialize(Serializer& ser) override;
-    bool Run(MessageInterface* callback) override;
+    PlayerGameCommands() {}
+    PlayerGameCommands(const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs): checksum(checksum), gcs(gcs)
+    {}
+    void Serialize(Serializer& ser) const;
+    void Deserialize(Serializer& ser);
 };
 
-#endif // GameMessage_GameCommand_h__
+#endif // PlayerGameCommands_h__

@@ -26,7 +26,7 @@
 #define __GENERATE_FWD_DECL(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_FWD_DECL_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 #define __GENERATE_CALLBACK_SINGLE(s, data, expression) \
-    virtual void OnGameMessage(const expression& /*msg*/) {}
+    virtual bool OnGameMessage(const expression& /*msg*/) { return false; }
 #define __GENERATE_CALLBACKS(...) BOOST_PP_SEQ_FOR_EACH(__GENERATE_CALLBACK_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 /// Generates the class "GameMessageInterface" with one virtual method "OnGameMessage" for each parameter
@@ -34,8 +34,8 @@
 /// Example: GENERATE_GAME_MESSAGE_INTERFACE(GM_Foo, GM_Bar) -->
 ///     class GM_Foo; class GM_Bar;
 ///     class GameMessageInterface (...)
-///         virtual void OnGameMessage(const GM_Foo& /*msg*/){}
-///         virtual void OnGameMessage(const GM_Bar& /*msg*/){}
+///         virtual bool OnGameMessage(const GM_Foo& /*msg*/){}
+///         virtual bool OnGameMessage(const GM_Bar& /*msg*/){}
 ///     };
 ///
 #define GENERATE_GAME_MESSAGE_INTERFACE(...)             \

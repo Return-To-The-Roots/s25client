@@ -20,7 +20,6 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GameInterface.h"
-#include "GameMessage_GameCommand.h"
 #include "GlobalGameSettings.h"
 #include "Random.h"
 #include "RoadSegment.h"

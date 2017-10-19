@@ -14,29 +14,33 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#pragma once
 
-#ifndef GameMessage_GameCommand_h__
-#define GameMessage_GameCommand_h__
+#ifndef AsyncChecksum_h__
+#define AsyncChecksum_h__
 
-#include "AsyncChecksum.h"
-#include "GameCommand.h"
-#include "GameMessage.h"
-#include "PlayerGameCommands.h"
-#include <vector>
-
-class Serializer;
-
-class GameMessage_GameCommand : public GameMessage
+struct AsyncChecksum
 {
-public:
-    PlayerGameCommands gcs;
+    unsigned randChecksum;
+    unsigned objCt;
+    unsigned objIdCt;
+    AsyncChecksum();
+    explicit AsyncChecksum(unsigned randChecksum);
+    AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt);
 
-    GameMessage_GameCommand(); //-V730
-    GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
-
-    void Serialize(Serializer& ser) const override;
-    void Deserialize(Serializer& ser) override;
-    bool Run(MessageInterface* callback) override;
+    bool operator==(const AsyncChecksum& rhs) const;
+    bool operator!=(const AsyncChecksum& rhs) const;
 };
 
-#endif // GameMessage_GameCommand_h__
+
+inline bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const
+{
+    return randChecksum == rhs.randChecksum && objCt == rhs.objCt && objIdCt == rhs.objIdCt;
+}
+
+inline bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const
+{
+    return !(*this == rhs);
+}
+
+#endif // AsyncChecksum_h__

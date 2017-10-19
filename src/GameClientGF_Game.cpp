@@ -35,7 +35,7 @@ void GameClient::ExecuteNWF()
         GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
         {
-            GameMessage_GameCommand& msg = player.gc_queue.front();
+            PlayerGameCommands& msg = player.gc_queue.front();
 
             // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
             // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
@@ -44,12 +44,13 @@ void GameClient::ExecuteNWF()
                 // Aktuelle Checksumme reinschreiben
                 msg.checksum = checksum;
                 Serializer ser;
+                ser.PushUnsignedChar(i);
                 msg.Serialize(ser);
                 replayinfo.replay.AddGameCommand(curGF, ser.GetLength(), ser.GetData());
             }
 
             // Das ganze Zeug soll die andere Funktion ausführen
-            ExecuteAllGCs(msg);
+            ExecuteAllGCs(i, msg);
 
             // Nachricht abwerfen :)
             player.gc_queue.pop();
