@@ -236,7 +236,7 @@ void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 
         case CS_FINISHED: // Wir wurden verbunden
         {
-            WINDOWMANAGER.Switch(new dskHostGame(server_type));
+            WINDOWMANAGER.Switch(new dskHostGame(server_type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
         }
         break;
         default: break;

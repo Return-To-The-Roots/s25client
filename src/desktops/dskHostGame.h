@@ -35,7 +35,7 @@ class LuaInterfaceSettings;
 class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(const ServerType serverType);
+    dskHostGame(ServerType serverType, GameLobby& gameLobby, unsigned playerId);
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
     void Resize(const Extent& newSize) override;
@@ -97,6 +97,7 @@ private:
 private:
     const ServerType serverType;
     GameLobby& gameLobby;
+    unsigned playerId;
     bool hasCountdown_;
     boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
     bool wasActivated, allowAddonChange;

@@ -262,7 +262,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  */
 void dskLobby::LC_Connected()
 {
-    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
+    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
 }
 
 /**

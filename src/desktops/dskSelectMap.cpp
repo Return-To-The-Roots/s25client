@@ -333,7 +333,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_FINISHED: { WINDOWMANAGER.Switch(new dskHostGame(csi.type));
+        case CS_FINISHED: { WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
         }
         break;
         default: break;

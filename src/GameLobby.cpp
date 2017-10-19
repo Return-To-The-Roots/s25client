@@ -19,20 +19,20 @@
 #include "GameLobby.h"
 #include "JoinPlayerInfo.h"
 
-GameLobby::GameLobby(unsigned numPlayers) : players(numPlayers) {}
+GameLobby::GameLobby(bool isSavegame, bool isHost, unsigned numPlayers) : isSavegame_(isSavegame), isHost_(isHost), players_(numPlayers) {}
 GameLobby::~GameLobby() {}
 
-JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId)
+JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId)
 {
-    return players[playerId];
+    return players_[playerId];
 }
 
-const JoinPlayerInfo& GameLobby::GetPlayer(unsigned playerId) const
+const JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId) const
 {
-    return players[playerId];
+    return players_[playerId];
 }
 
-unsigned GameLobby::GetPlayerCount() const
+unsigned GameLobby::getNumPlayers() const
 {
-    return players.size();
+    return players_.size();
 }
