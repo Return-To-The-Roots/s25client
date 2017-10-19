@@ -41,7 +41,7 @@ private:
     /// Explodiert der Stein schon? (false = fliegt)
     bool explode;
     /// Flieg-/Explodier-Event
-    GameEvent* event;
+    const GameEvent* event;
 
 public:
     CatapultStone(const MapPoint dest_building, const MapPoint dest_map, const DrawPoint start, const DrawPoint dest,

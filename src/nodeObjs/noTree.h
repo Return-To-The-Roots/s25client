@@ -59,9 +59,9 @@ class noTree : public noCoordBase
     } state;
 
     /// Wachsevent
-    GameEvent* event;
+    const GameEvent* event;
     /// Tier-Produier-Event
-    GameEvent* produce_animal_event;
+    const GameEvent* produce_animal_event;
 
     /// Produziert dieser Baum Tiere?
     bool produce_animals;

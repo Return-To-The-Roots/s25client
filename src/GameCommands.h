@@ -2,9 +2,10 @@
 #define GAME_COMMANDS_H_
 
 #include "GameCommand.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/InventorySetting.h"
+#include "gameTypes/JobTypes.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"

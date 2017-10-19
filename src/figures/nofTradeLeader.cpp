@@ -22,6 +22,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "nofTradeDonkey.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
@@ -67,7 +68,7 @@ void nofTradeLeader::Walked()
     noBase* nob = gwg->GetNO(goalPos);
 
     // Does target still exist?
-    if(nob->GetType() != NOP_BUILDING || !static_cast<noBuilding*>(nob)->IsWarehouse())
+    if(nob->GetType() != NOP_BUILDING || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
     {
         if(TryToGoHome())
             Walked();
@@ -127,11 +128,11 @@ bool nofTradeLeader::TryToGoHome()
 
     noBase* homeWh = gwg->GetNO(goalPos);
     // Does target still exist?
-    if(homeWh->GetType() != NOP_BUILDING || !static_cast<noBuilding*>(homeWh)->IsWarehouse())
+    if(homeWh->GetType() != NOP_BUILDING || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(homeWh)->GetBuildingType()))
         return false;
 
     // Find a way back home
-    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, 4);
+    MapPoint homeFlagPos = gwg->GetNeighbour(homePos, Direction::SOUTHEAST);
     tr.AssignNewGoal(this->GetPos(), homeFlagPos);
     return tr.IsValid();
 }

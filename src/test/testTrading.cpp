@@ -75,9 +75,7 @@ struct TradeFixture : public WorldWithGCExecution3P
     void testAfterLeaving(unsigned numTradeItems)
     {
         // Run enough GFs so all trade caravans are out (~numTradeItems + 1 people need to leave taking 30GFs max each)
-        for(unsigned gf = 0; gf < 30 * (numTradeItems + 1); gf++)
-            em.ExecuteNextGF();
-        BOOST_REQUIRE_EQUAL(curWh->GetLeavingFigures().size(), 0u);
+        RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().size() == 0u);
         // Real count should not be changed
         // But helpers can be produced in the meantime
         BOOST_REQUIRE_GE(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
@@ -135,8 +133,7 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
 
     // Let caravan arrive (20GFs per node)
     unsigned distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
-    for(unsigned gf = 0; gf < 20 * distance; gf++)
-        em.ExecuteNextGF();
+    RTTR_SKIP_GFS(20 * distance);
     // Some were recruited
     numHelpers -= numSwords;
     // And some were produced (at least every 170 GFs)
@@ -178,8 +175,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
 
     // Let caravan arrive (20GFs per node)
     unsigned distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
-    for(unsigned gf = 0; gf < 20 * distance; gf++)
-        em.ExecuteNextGF();
+    RTTR_SKIP_GFS(20 * distance);
     // Some were recruited
     numHelpers -= numSwords;
     // And some were produced (at least every 170 GFs)
@@ -238,8 +234,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     testAfterLeaving(2);
 
     // Make sure all of them are a bit outside
-    for(unsigned gf = 0; gf < 40; gf++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(40);
 
     // Start a trade that will fail once they leave the bld
     this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_WOODCUTTER, 2);
@@ -259,8 +254,7 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     testExpectedWares();
 
     // Let them come in again (walk same way back, assume at most 8 nodes away + same as above)
-    for(unsigned gf = 0; gf < 40 + 20 * 8; gf++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(40 + 20 * 8);
     // Recruited soldiers
     numHelpers -= numSwords;
     // Our stuff is back

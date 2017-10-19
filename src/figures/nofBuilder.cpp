@@ -19,6 +19,7 @@
 #include "nofBuilder.h"
 #include "EventManager.h"
 #include "GameClient.h"
+#include "GameEvent.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "Random.h"
@@ -31,6 +32,8 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 
 nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noRoadNode* building_site)
     : noFigure(JOB_BUILDER, pos, player, building_site), state(STATE_FIGUREWORK),
@@ -109,8 +112,9 @@ void nofBuilder::LostWork()
     }
 }
 
-void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
+void nofBuilder::HandleDerivedEvent(const unsigned id)
 {
+    RTTR_Assert(id == 1u && current_ev->id == id);
     switch(state)
     {
         case STATE_WAITINGFREEWALK:
@@ -140,6 +144,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
             } else if(building_site->IsBuildingComplete())
             {
                 // fertig mit Bauen!
+                current_ev = NULL;
 
                 // Baustelle abreißen und Gebäude hinsetzen
 
@@ -152,6 +157,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
                 // Baustelle abmelden
                 GamePlayer& owner = gwg->GetPlayer(player);
                 owner.RemoveBuildingSite(building_site);
+                if(gwg->IsHarborBuildingSiteFromSea(building_site))
+                    gwg->RemoveHarborBuildingSiteFromSea(building_site);
 
                 // Remove buildingsite, but don't destroy!
                 gwg->SetNO(building_site->GetPos(), NULL);
@@ -160,8 +167,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
                 noBuilding* bld = BuildingFactory::CreateBuilding(*gwg, building_type, pos, player, building_nation);
                 gwg->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
 
-                // Special handling for storehouses and harbours
-                if(building_type == BLD_STOREHOUSE || building_type == BLD_HARBORBUILDING)
+                // Special handling for warehouses
+                if(BuildingProperties::IsWareHouse(building_type))
                 {
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
@@ -172,9 +179,8 @@ void nofBuilder::HandleDerivedEvent(const unsigned /*id*/)
                     owner.FindWarehouseForAllRoads();
                     owner.FindWarehouseForAllJobs(JOB_HELPER);
 
-                    // Evtl gabs verlorene Waren, die jetzt in das HQ wieder reinkönnen
+                    // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen
                     owner.FindClientForLostWares();
-
                     return;
                 }
 
@@ -349,8 +355,8 @@ void nofBuilder::Draw(DrawPoint drawPt)
 bool nofBuilder::ChooseWare()
 {
     // Brauch ich ein Brett(Rohbau und wenn kein Stein benötigt wird) oder Stein?
-    if(building_site->GetBuildProgress(false) < BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()].boards * 8
-       || !BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()].stones)
+    const BuildingCost costs = BUILDING_COSTS[building_site->GetNation()][building_site->GetBuildingType()];
+    if(building_site->GetBuildProgress(false) < costs.boards * 8 || !costs.stones)
     {
         // Brett
         if(building_site->boards)

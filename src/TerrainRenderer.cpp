@@ -91,21 +91,16 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt
 void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 {
     // Terrain generieren
-    for(MapCoord y = 0; y < size_.y; ++y)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
-        for(MapCoord x = 0; x < size_.x; ++x)
-        {
-            MapPoint pt(x, y);
-            UpdateVertexPos(pt, gwv);
-            UpdateVertexColor(pt, gwv);
-            UpdateVertexTerrain(pt, gwv);
-        }
+        UpdateVertexPos(pt, gwv);
+        UpdateVertexColor(pt, gwv);
+        UpdateVertexTerrain(pt, gwv);
     }
 
     // Ränder generieren
-    for(MapCoord y = 0; y < size_.y; ++y)
-        for(MapCoord x = 0; x < size_.x; ++x)
-            UpdateBorderVertex(MapPoint(x, y));
+    RTTR_FOREACH_PT(MapPoint, size_)
+        UpdateBorderVertex(pt);
 }
 
 void TerrainRenderer::UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv)
@@ -1072,21 +1067,17 @@ void TerrainRenderer::VisibilityChanged(const MapPoint pt, const GameWorldViewer
 
 void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 {
-    for(MapCoord y = 0; y < size_.y; ++y)
-        for(MapCoord x = 0; x < size_.x; ++x)
-            UpdateVertexColor(MapPoint(x, y), gwv);
+    RTTR_FOREACH_PT(MapPoint, size_)
+        UpdateVertexColor(pt, gwv);
 
-    for(MapCoord y = 0; y < size_.y; ++y)
-        for(MapCoord x = 0; x < size_.x; ++x)
-            UpdateBorderVertex(MapPoint(x, y));
+    RTTR_FOREACH_PT(MapPoint, size_)
+        UpdateBorderVertex(pt);
 
-    for(MapCoord y = 0; y < size_.y; ++y)
-        for(MapCoord x = 0; x < size_.x; ++x)
-            UpdateTriangleColor(MapPoint(x, y), false);
+    RTTR_FOREACH_PT(MapPoint, size_)
+        UpdateTriangleColor(pt, false);
 
-    for(MapCoord y = 0; y < size_.y; ++y)
-        for(MapCoord x = 0; x < size_.x; ++x)
-            UpdateBorderTriangleColor(MapPoint(x, y), false);
+    RTTR_FOREACH_PT(MapPoint, size_)
+        UpdateBorderTriangleColor(pt, false);
 
     if(vboBuffersUsed)
     {

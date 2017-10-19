@@ -41,6 +41,9 @@ noFire::~noFire()
 
 void noFire::Destroy_noFire()
 {
+    // Just in case
+    GetEvMgr().RemoveEvent(dead_event);
+
     // nix mehr hier
     gwg->SetNO(pos, NULL);
     // Bauplätze drumrum neu berechnen

@@ -14,20 +14,24 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwSTOREHOUSE_H_INCLUDED
-#define iwSTOREHOUSE_H_INCLUDED
 
 #pragma once
 
-#include "iwBaseWarehouse.h"
+#ifndef AIFactory_h__
+#define AIFactory_h__
 
-class nobStorehouse;
-class GameWorldView;
+class GameWorldBase;
+class AIPlayer;
+namespace AI {
+struct Info;
+}
 
-class iwStorehouse : public iwBaseWarehouse
+class AIFactory
 {
+    AIFactory();
+
 public:
-    iwStorehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobStorehouse* sh);
+    static AIPlayer* Create(const AI::Info& info, unsigned playerId, const GameWorldBase& world);
 };
 
-#endif // !iwHQ_H_INCLUDED
+#endif // AIFactory_h__

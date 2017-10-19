@@ -34,9 +34,11 @@
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
+#include "gameData/BuildingConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include <boost/foreach.hpp>
 #include <set>
+#include <sstream>
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
     : IngameWindow(building->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194), _(BUILDING_NAMES[building->GetBuildingType()]),
@@ -195,11 +197,12 @@ void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 9: // go to next of same type
         {
-            const std::list<nobMilitary*>& militaryBuildings = gwv.GetWorld().GetPlayer(building->GetPlayer()).GetMilitaryBuildings();
+            const std::list<nobMilitary*>& militaryBuildings =
+              gwv.GetWorld().GetPlayer(building->GetPlayer()).GetBuildingRegister().GetMilitaryBuildings();
             // go through list once we get to current building -> open window for the next one and go to next location
             for(std::list<nobMilitary*>::const_iterator it = militaryBuildings.begin(); it != militaryBuildings.end(); ++it)
             {
-                if((*it)->GetX() == building->GetX() && (*it)->GetY() == building->GetY()) // got to current building in the list?
+                if((*it)->GetPos() == building->GetPos()) // got to current building in the list?
                 {
                     // close old window, open new window (todo: only open if it isnt already open), move to location of next building
                     Close();

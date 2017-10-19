@@ -28,31 +28,16 @@ std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
 BOOST_AUTO_TEST_SUITE(SeaWorldCreationSuite)
 
 namespace {
-/// Create a world, that has just default initialized nodes
-struct CreateDummyWorld
-{
-    CreateDummyWorld(const MapExtent& size, unsigned numPlayers) : size_(size) {}
-    bool operator()(GameWorldGame& world) const
-    {
-        world.Init(size_, LT_GREENLAND);
-        return true;
-    }
-
-private:
-    MapExtent size_;
-};
-// Width must be > 100*2 and Height > 174 * 2 to avoid wrapping errors (see testShipDir)
-typedef WorldFixture<CreateDummyWorld, 0, 202, 350> DummyWorldFixture;
 
 /// Return the ship dir from a point to an other point given by their difference
-ShipDirection getShipDir(const World& world, MapPoint fromPt, const Point<int>& diff)
+ShipDirection getShipDir(const MapBase& world, MapPoint fromPt, const Point<int>& diff)
 {
     MapPoint toPt = world.MakeMapPoint(Point<int>(fromPt) + diff);
     return world.GetShipDir(fromPt, toPt);
 }
 
 /// Test getting the ship dir for the various cases coming from a single point
-void testShipDir(const World& world, const MapPoint fromPt)
+void testShipDir(const MapBase& world, const MapPoint fromPt)
 {
     typedef Point<int> DiffPt;
     // General cases
@@ -86,19 +71,22 @@ void testShipDir(const World& world, const MapPoint fromPt)
 }
 } // namespace
 
-BOOST_FIXTURE_TEST_CASE(GetShipDir, DummyWorldFixture)
+BOOST_AUTO_TEST_CASE(GetShipDir)
 {
+    // Width must be > 100*2 and Height > 174 * 2 to avoid wrapping errors (see testShipDir)
+    MapBase world;
+    world.Resize(MapExtent(202, 350));
     // Basic case
-    testShipDir(this->world, MapPoint(world.GetWidth() / 2, world.GetHeight() / 2));
+    testShipDir(world, MapPoint(world.GetWidth() / 2, world.GetHeight() / 2));
     // Left/Right border
-    testShipDir(this->world, MapPoint(0, world.GetHeight() / 2));
-    testShipDir(this->world, MapPoint(world.GetWidth() - 1, world.GetHeight() / 2));
+    testShipDir(world, MapPoint(0, world.GetHeight() / 2));
+    testShipDir(world, MapPoint(world.GetWidth() - 1, world.GetHeight() / 2));
     // Top/Bottom border
-    testShipDir(this->world, MapPoint(world.GetWidth() / 2, 0));
-    testShipDir(this->world, MapPoint(world.GetWidth() / 2, world.GetHeight() - 1));
+    testShipDir(world, MapPoint(world.GetWidth() / 2, 0));
+    testShipDir(world, MapPoint(world.GetWidth() / 2, world.GetHeight() - 1));
     // Diagonal ends
-    testShipDir(this->world, MapPoint(0, 0));
-    testShipDir(this->world, MapPoint(world.GetWidth() - 1, world.GetHeight() - 1));
+    testShipDir(world, MapPoint(0, 0));
+    testShipDir(world, MapPoint(world.GetWidth() - 1, world.GetHeight() - 1));
 }
 
 BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)

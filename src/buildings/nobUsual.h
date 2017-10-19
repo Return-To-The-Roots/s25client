@@ -19,6 +19,7 @@
 #define NOB_USUAL_H_
 
 #include "noBuilding.h"
+#include "gameTypes/GoodTypes.h"
 #include <boost/array.hpp>
 #include <list>
 #include <vector>
@@ -42,13 +43,13 @@ class nobUsual : public noBuilding
     /// Warentyp, den er zuletzt bestellt hatte (bei >1 Waren)
     unsigned char last_ordered_ware;
     /// Rohstoffe, die zur Produktion benötigt werden
-    boost::array<unsigned char, 3> wares;
+    boost::array<unsigned char, 3> numWares;
     /// Bestellte Waren
     std::vector<std::list<Ware*> > ordered_wares;
     /// Bestell-Ware-Event
-    GameEvent* orderware_ev;
+    const GameEvent* orderware_ev;
     /// Rechne-Produktivität-aus-Event
-    GameEvent* productivity_ev;
+    const GameEvent* productivity_ev;
     /// Letzte Produktivitäten (Durschnitt = Gesamtproduktivität), vorne das neuste !
     static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
     boost::array<unsigned short, LAST_PRODUCTIVITIES_COUNT> last_productivities;
@@ -65,21 +66,15 @@ public:
 
     ~nobUsual() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobUsual();
-
-public:
-    void Destroy() override { Destroy_nobUsual(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobUsual(SerializedGameData& sgd) const;
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nobUsual(sgd); }
 
     GO_Type GetGOT() const override { return GOT_NOB_USUAL; }
+    unsigned GetMilitaryRadius() const override { return 0; }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -101,7 +96,7 @@ public:
     void WorkerLost();
 
     /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
-    unsigned char GetWares(const unsigned id) const { return wares[id]; }
+    unsigned char GetNumWares(unsigned id) const { return numWares[id]; }
     /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
     bool WaresAvailable();
     /// Verbraucht Waren
@@ -114,7 +109,7 @@ public:
     void TakeWare(Ware* ware) override;
 
     /// Bestellte Waren
-    inline bool AreThereAnyOrderedWares() const
+    bool AreThereAnyOrderedWares() const
     {
         for(std::vector<std::list<Ware*> >::const_iterator it = ordered_wares.begin(); it != ordered_wares.end(); ++it)
             if(!it->empty())
@@ -126,9 +121,6 @@ public:
     const unsigned short* GetProductivityPointer() const { return &productivity; }
     const unsigned short GetProductivity() const { return productivity; }
     const nofBuildingWorker* GetWorker() const { return worker; }
-
-    /// Ermittelt, ob es sich bei diesem Gebäude um ein Bergwerk handelt
-    bool IsMine() const { return type_ >= BLD_GRANITEMINE && type_ <= BLD_GOLDMINE; }
 
     /// Stoppt/Erlaubt Produktion (visuell)
     void ToggleProductionVirtual() { disable_production_virtual = !disable_production_virtual; }

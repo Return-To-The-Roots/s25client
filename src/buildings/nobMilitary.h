@@ -19,7 +19,6 @@
 #define NOB_MILITARYBUILDING_H_
 
 #include "figures/nofSoldier.h"
-#include "helpers/containerUtils.h"
 #include "nobBaseMilitary.h"
 #include <list>
 #include <vector>
@@ -42,7 +41,7 @@ class nobMilitary : public nobBaseMilitary
     /// This building was captured by its current owner. This flag is set once and never to be changed again
     bool captured_not_built;
     /// Anzahl der Goldmünzen im Gebäude
-    unsigned char coins;
+    unsigned char numCoins;
     /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
     bool coinsDisabled, coinsDisabledVirtual;
     /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
@@ -61,9 +60,9 @@ class nobMilitary : public nobBaseMilitary
     /// but who are still quite far away (didn't stand around the building)
     std::list<nofAttacker*> far_away_capturers;
     /// Gold-Bestell-Event
-    GameEvent* goldorder_event;
+    const GameEvent* goldorder_event;
     /// Beförderung-Event
-    GameEvent* upgrade_event;
+    const GameEvent* upgrade_event;
     /// Is the military building regulating its troops at the moment? (then block furthere RegulateTroop calls)
     bool is_regulating_troops;
     /// Soldatenbesatzung
@@ -77,7 +76,7 @@ private:
     /// Stellt Verteidiger zur Verfügung
     nofDefender* ProvideDefender(nofAttacker* const attacker) override;
     /// Will/kann das Gebäude noch Münzen bekommen?
-    bool WantCoins();
+    bool WantCoins() const;
     /// Prüft, ob Goldmünzen und Soldaten, die befördert werden können, vorhanden sind und meldet ggf. ein
     /// Beförderungsevent an
     void PrepareUpgrading();
@@ -94,15 +93,8 @@ private:
 public:
     ~nobMilitary() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobMilitary();
-
-public:
-    void Destroy() override { Destroy_nobMilitary(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobMilitary(SerializedGameData& sgd) const;
 
 public:
@@ -129,12 +121,14 @@ public:
     /// setzt frontier_distance neu falls möglich und sendet ggf. Verstärkung
     void NewEnemyMilitaryBuilding(const unsigned short distance);
     bool IsUseless() const;
-    bool IsAttackable(int playerIdx) const override;
+    bool IsAttackable(unsigned playerIdx) const override;
     /// Gibt Distanz zurück
     unsigned char GetFrontierDistance() const { return frontier_distance; }
 
     /// Berechnet die gewünschte Besatzung je nach Grenznähe
-    int CalcRequiredTroopsCount();
+    unsigned CalcRequiredTroopsCount() const;
+    /// Calculate the required troop count for the given setting
+    unsigned CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue) const;
     /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
     void RegulateTroops();
     /// Gibt aktuelle Besetzung zurück
@@ -151,7 +145,7 @@ public:
     bool FreePlaceAtFlag() override;
 
     /// Berechnet, wie dringend eine Goldmünze gebraucht wird, in Punkten, je höher desto dringender
-    unsigned CalcCoinsPoints();
+    unsigned CalcCoinsPoints() const;
 
     /// Wird aufgerufen, wenn ein Soldat kommt
     void GotWorker(Job job, noFigure* worker) override;
@@ -203,7 +197,7 @@ public:
     /// A far-away capturer arrived around the building and starts waiting
     void FarAwayCapturerReachedGoal(nofAttacker* attacker);
 
-    bool IsFarAwayCapturer(nofAttacker* attacker) { return helpers::contains(far_away_capturers, attacker); }
+    bool IsFarAwayCapturer(nofAttacker* attacker);
 
     /// Stoppt/Erlaubt Goldzufuhr (visuell)
     void ToggleCoinsVirtual() { coinsDisabledVirtual = !coinsDisabledVirtual; }
@@ -213,7 +207,7 @@ public:
     bool IsGoldDisabledVirtual() const { return coinsDisabledVirtual; }
     /// Fragt ab, ob Goldzufuhr ausgeschaltet ist (real)
     bool IsGoldDisabled() const { return coinsDisabled; }
-    unsigned char GetNumCoins() const { return coins; }
+    unsigned char GetNumCoins() const { return numCoins; }
     /// is there a max rank soldier in the building?
     bool HasMaxRankSoldier() const;
 

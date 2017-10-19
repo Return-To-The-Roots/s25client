@@ -22,6 +22,7 @@
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
 #include "test/PointOutput.h"
+#include "test/initTestHelpers.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
@@ -35,8 +36,8 @@ using namespace boost::assign;
 // differently colored start/end points if multiple tests are performed on the same landscape
 BOOST_AUTO_TEST_SUITE(PathfindingSuite)
 
-typedef WorldFixture<CreateEmptyWorld, 0, 10, 8> WorldFixtureEmpty0P;
-typedef WorldFixture<CreateEmptyWorld, 1, 10, 8> WorldFixtureEmpty1P;
+typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
+typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
 
 /// Sets all terrain to the given terrain
 void clearWorld(GameWorldGame& world, TerrainType terrain)
@@ -147,7 +148,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     std::vector<Direction> expectedRoute;
     expectedRoute += Direction::NORTHEAST, Direction::SOUTHEAST, Direction::SOUTHEAST, Direction::NORTHEAST, Direction::EAST,
       Direction::EAST;
-    BOOST_REQUIRE_EQUAL_COLLECTIONS(route.begin(), route.end(), expectedRoute.begin(), expectedRoute.end());
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(route, expectedRoute);
     // Inverse route
     BOOST_REQUIRE_NE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route), INVALID_DIR);
     BOOST_REQUIRE_EQUAL(length, 6u);
@@ -157,7 +158,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     {
         expectedRevRoute.push_back(dir + 3u);
     }
-    BOOST_REQUIRE_EQUAL_COLLECTIONS(route.begin(), route.end(), expectedRevRoute.begin(), expectedRevRoute.end());
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(route, expectedRevRoute);
 }
 
 BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)

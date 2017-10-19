@@ -14,11 +14,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef DUMMYAI_H_INCLUDED
+#define DUMMYAI_H_INCLUDED
 
-#include "defines.h" // IWYU pragma: keep
-#include "iwStorehouse.h"
-#include "buildings/nobStorehouse.h"
+#pragma once
 
-iwStorehouse::iwStorehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobStorehouse* sh) : iwBaseWarehouse(gwv, gcFactory, sh)
+#include "AIPlayer.h"
+class GameWorldBase;
+class GlobalGameSettings;
+
+/// Dummy AI that does nothing
+class DummyAI : public AIPlayer
 {
-}
+public:
+    DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
+
+    void RunGF(const unsigned gf, bool gfisnwf) override {}
+};
+
+#endif //! DUMMYAI_H_INCLUDED

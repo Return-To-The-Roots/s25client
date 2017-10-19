@@ -34,10 +34,9 @@
 #include "iwHQ.h"
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
-#include "iwStorehouse.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
-
+#include "gameData/BuildingConsts.h"
 #include <stdexcept>
 
 namespace {
@@ -59,8 +58,8 @@ enum
 }
 
 iwBaseWarehouse::iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
-    : iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _("Storehouse"), true, NormalFont, wh->GetInventory(),
-              gwv.GetWorld().GetPlayer(wh->GetPlayer())),
+    : iwWares(wh->CreateGUIID(), IngameWindow::posAtMouse, Extent(167, 416), _(BUILDING_NAMES[wh->GetBuildingType()]), true, NormalFont,
+              wh->GetInventory(), gwv.GetWorld().GetPlayer(wh->GetPlayer())),
       gwv(gwv), gcFactory(gcFactory), wh(wh)
 {
     wh->AddListener(this);
@@ -217,7 +216,8 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_GOTO_NEXT: // go to next of same type
         {
             // is there at least 1 other building of the same type?
-            const std::list<nobBaseWarehouse*>& storehouses = gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetStorehouses();
+            const std::list<nobBaseWarehouse*>& storehouses =
+              gwv.GetWorld().GetPlayer(wh->GetPlayer()).GetBuildingRegister().GetStorehouses();
             // go through list once we get to current building -> open window for the next one and go to next location
             for(std::list<nobBaseWarehouse*>::const_iterator it = storehouses.begin(); it != storehouses.end(); ++it)
             {
@@ -226,7 +226,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                     // close old window, open new window (todo: only open if it isnt already open), move to location of next building
                     Close();
                     ++it;
-                    if(it == storehouses.end()) // was last entry in list -> goto first												{
+                    if(it == storehouses.end()) // was last entry in list -> goto first
                         it = storehouses.begin();
                     gwv.MoveToMapPt((*it)->GetPos());
                     if((*it)->GetBuildingType() == BLD_HEADQUARTERS)
@@ -241,7 +241,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                         WINDOWMANAGER.Show(nextscrn);
                     } else if((*it)->GetBuildingType() == BLD_STOREHOUSE)
                     {
-                        iwStorehouse* nextscrn = new iwStorehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
+                        iwBaseWarehouse* nextscrn = new iwBaseWarehouse(gwv, gcFactory, dynamic_cast<nobStorehouse*>(*it));
                         nextscrn->SetPos(GetPos());
                         WINDOWMANAGER.Show(nextscrn);
                     }

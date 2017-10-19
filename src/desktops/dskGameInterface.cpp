@@ -42,6 +42,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "ingameWindows/iwAction.h"
+#include "ingameWindows/iwBaseWarehouse.h"
 #include "ingameWindows/iwBuilding.h"
 #include "ingameWindows/iwBuildingSite.h"
 #include "ingameWindows/iwChat.h"
@@ -60,7 +61,6 @@
 #include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwShip.h"
 #include "ingameWindows/iwSkipGFs.h"
-#include "ingameWindows/iwStorehouse.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
 #include "notifications/BuildingNote.h"
@@ -74,6 +74,7 @@
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/TerrainData.h"
@@ -470,13 +471,13 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 WINDOWMANAGER.Show(new iwHQ(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwStorehouse(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(new iwBaseWarehouse(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
                 WINDOWMANAGER.Show(
                   new iwHarborBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
-            else if(bt <= BLD_FORTRESS)
+            else if(BuildingProperties::IsMilitary(bt))
                 WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else
                 WINDOWMANAGER.Show(new iwBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
@@ -542,8 +543,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(worldViewer.GetPlayer().IsAlly(building->GetPlayer())
-                       && (bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING || bt == BLD_STOREHOUSE))
+                    if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
                     {
                         WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, gameClient));
                         return true;
@@ -551,7 +551,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                 }
 
                 // Ist es ein gewöhnliches Militärgebäude?
-                if(bt >= BLD_BARRACKS && bt <= BLD_FORTRESS)
+                if(BuildingProperties::IsMilitary(bt))
                 {
                     // Dann darf es nicht neu gebaut sein!
                     if(!static_cast<const nobMilitary*>(building)->IsNewBuilt())
@@ -956,7 +956,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
     if(action_tabs.flag)
     {
-        if(world.GetNO(world.GetNeighbour(cSel, 1))->GetGOT() == GOT_NOB_HQ)
+        if(world.GetNO(world.GetNeighbour(cSel, Direction::NORTHWEST))->GetGOT() == GOT_NOB_HQ)
             params = iwAction::AWFT_HQ;
         else if(world.GetNO(cSel)->GetType() == NOP_FLAG)
         {

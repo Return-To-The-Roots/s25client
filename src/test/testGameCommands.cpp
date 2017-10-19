@@ -34,6 +34,7 @@
 #include "gameData/ShieldConsts.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
+#include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>
@@ -79,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
     // Place flag at neighbour
     for(unsigned dir = 0; dir < Direction::COUNT; dir++)
     {
-        MapPoint curPt = world.GetNeighbour(flagPt, dir);
+        MapPoint curPt = world.GetNeighbour(flagPt, Direction::fromInt(dir));
         this->SetFlag(curPt);
         // Should not work
         BOOST_REQUIRE(!world.GetSpecObj<noRoadNode>(curPt));
@@ -98,7 +99,7 @@ BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 
 BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
 {
-    MapPoint flagPt = hqPos + MapPoint(4, 0);
+    MapPoint flagPt = hqPos + MapPoint(-5, 4);
     // 2 flags outside range of HQ
     this->SetFlag(flagPt);
     this->SetFlag(flagPt + MapPoint(4, 0));
@@ -160,7 +161,7 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
         BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt + MapPoint(i, 0), Direction::EAST), 0);
     this->DestroyFlag(flagPt + MapPoint(3, 0));
     // g2) Building to close
-    this->SetBuildingSite(flagPt + MapPoint(3, 0), BLD_FORTRESS);
+    this->SetBuildingSite(flagPt + MapPoint(3, 0), BLD_FARM);
     this->BuildRoad(flagPt, false, std::vector<Direction>(2, Direction::EAST));
     BOOST_REQUIRE_NE(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
     for(unsigned i = 0; i < 2; i++)
@@ -388,9 +389,7 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
 
     // Check if bld is build
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
-    for(unsigned i = 0; i < 1200; i++)
-        this->em.ExecuteNextGF();
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDING);
+    RTTR_EXEC_TILL(1200, world.GetNO(closePt)->GetType() == NOP_BUILDING);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetGOT(), GOT_NOB_USUAL);
     BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(closePt)->GetBuildingType(), BLD_WOODCUTTER);
 
@@ -409,7 +408,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    const MapPoint milPt = hqPos + MapPoint(6, 0);
+    const MapPoint milPt = hqPos + MapPoint(4, 0);
     // Setup: Give player 3 generals
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
@@ -433,8 +432,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     // Now run some GFs so the bld is occupied (<=30GFs/per Soldier for leaving HQ, 20GFs per node walked (distance + to and from flag),
     // 30GFs for leaving carrier)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
-    for(unsigned i = 0; i < numGFtillAllArrive; i++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(numGFtillAllArrive);
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
     SortedTroops::const_iterator itTroops = bld->GetTroops().begin();
@@ -462,8 +460,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 1u);
 
     // Wait till new soldiers have arrived
-    for(unsigned i = 0; i < numGFtillAllArrive; i++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(numGFtillAllArrive);
 
     // 6 low ranks
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
@@ -476,23 +473,20 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 1u);
 
     // Wait till one left so new ones get ordered
-    for(unsigned i = 0; i < 40; i++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(40);
 
     // All higher rank soldiers should have been ordered and hence removed from the real inventory
     for(unsigned i = 1; i < SOLDIER_JOBS.size(); i++)
         BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(SOLDIER_JOBS[i]), 0u);
 
     // Allow one of them to leave the HQ
-    for(unsigned i = 0; i < 40; i++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(40);
 
     // Now cancel orders for generals and replace with low rank ones
     this->OrderNewSoldiers(milPt);
 
     // Wait till new soldiers have arrived
-    for(unsigned i = 0; i < numGFtillAllArrive; i++)
-        this->em.ExecuteNextGF();
+    RTTR_SKIP_GFS(numGFtillAllArrive);
 
     // 3 low ranks and 1 each of other ranks except general
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
@@ -507,7 +501,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    const MapPoint milPt = hqPos + MapPoint(6, 0);
+    const MapPoint milPt = hqPos + MapPoint(4, 0);
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
@@ -516,30 +510,28 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     GlobalGameSettings& ggs = const_cast<GlobalGameSettings&>(world.GetGGS());
     ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
     // Build a watchtower and connect it
-    nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
-    BOOST_REQUIRE(bld);
+    nobMilitary* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
-    // Let carrier out
-    for(unsigned gf = 0; gf < 30; gf++)
-        this->em.ExecuteNextGF();
-    // Let soldier out and walk a bit
-    for(unsigned gf = 0; gf < 30 + 30; gf++)
-        this->em.ExecuteNextGF();
-    std::vector<noBase*> figs = world.GetDynamicObjectsFrom(hqPos + MapPoint(1, 1));
-    if(figs.empty())
-        figs = world.GetDynamicObjectsFrom(hqPos + MapPoint(2, 1));
-    BOOST_REQUIRE_EQUAL(figs.size(), 1u);
-    nofPassiveSoldier* soldier = dynamic_cast<nofPassiveSoldier*>(figs[0]);
+    nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+    const std::list<noFigure*>& leavings = hq->GetLeavingFigures();
+    nofPassiveSoldier* soldier;
+    BOOST_FOREACH(noFigure* fig, leavings)
+    {
+        soldier = dynamic_cast<nofPassiveSoldier*>(fig);
+        if(soldier)
+            break;
+    }
     BOOST_REQUIRE(soldier);
+    // Let soldiers out and walk a bit
+    MapPoint sldTestPos = world.GetNeighbour(world.GetNeighbour(hqPos, Direction::SOUTHEAST), Direction::EAST);
+    RTTR_EXEC_TILL(30 * 2 + 20 * 2 + 10, soldier->GetPos() == sldTestPos);
     BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
     this->OrderNewSoldiers(milPt);
     // Soldier must still have this goal!
     BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
     // Now run some GFs so the bld is occupied (20GFs per node walked (distance + to and from flag))
     unsigned numGFtillAllArrive = 20 * (milPt.x - hqPos.x + 2);
-    for(unsigned gf = 0; gf < numGFtillAllArrive; gf++)
-        this->em.ExecuteNextGF();
-    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 2u);
+    RTTR_EXEC_TILL(numGFtillAllArrive, bld->GetTroopsCount() == 2u);
     this->OrderNewSoldiers(milPt);
     // No one leaves!
     BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 2u);

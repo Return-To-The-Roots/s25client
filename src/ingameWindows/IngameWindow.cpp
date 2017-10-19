@@ -338,7 +338,7 @@ void IngameWindow::MoveToCenter()
 void IngameWindow::MoveNextToMouse()
 {
     // Center vertically and move slightly right
-    DrawPoint newPos = VIDEODRIVER.GetMousePos() + DrawPoint(20, GetSize().y / 2);
+    DrawPoint newPos = VIDEODRIVER.GetMousePos() - DrawPoint(-20, GetSize().y / 2);
     // To far right?
     if(newPos.x + GetSize().x > VIDEODRIVER.GetScreenWidth())
         newPos.x = VIDEODRIVER.GetScreenWidth() - GetSize().x;

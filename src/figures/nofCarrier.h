@@ -64,7 +64,7 @@ private:
     /// Ware, die er gerade trägt (0 = nichts)
     Ware* carried_ware;
     /// Rechne-Produktivität-aus-Event
-    GameEvent* productivity_ev;
+    const GameEvent* productivity_ev;
     // Letzte errechnete Produktivität
     unsigned productivity;
     /// Wieviel GF von einer bestimmten Anzahl in diesem Event-Zeitraum gearbeitet wurde

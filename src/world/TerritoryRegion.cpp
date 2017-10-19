@@ -17,12 +17,9 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/TerritoryRegion.h"
-
 #include "GamePlayer.h"
-#include "buildings/nobBaseMilitary.h"
 #include "buildings/nobMilitary.h"
 #include "world/GameWorldBase.h"
-#include "gameData/MilitaryConsts.h"
 
 TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb)
     : startPt(startPt), endPt(endPt), size(endPt - startPt), world(gwb)
@@ -81,8 +78,31 @@ bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<M
             || IsPointInPolygon(polygonInt, pt3) || IsPointInPolygon(polygonInt, pt4));
 }
 
-void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const unsigned char radius, const bool check_barriers)
+void TerritoryRegion::AdjustNode(MapPoint pt, unsigned char player, unsigned char radius, const std::vector<MapPoint>* allowedArea)
 {
+    TRNode* node = TryGetNode(pt);
+    // Not in our region -> Out
+    if(!node)
+        return;
+
+    // check whether this node is within the area we may have territory in
+    if(allowedArea && !IsPointValid(world, *allowedArea, pt))
+        return;
+
+    /// If the new distance is less then the old, then we claim this point.
+    /// If the node did not had an owner, we still claim it
+    if(radius < node->radius || !node->owner)
+    {
+        node->owner = player + 1;
+        node->radius = radius;
+    }
+}
+
+TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
+{
+    // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
+    // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is
+    // at most the world size
     PointI realPt(pt);
 
     // Check if this point is inside this region
@@ -93,7 +113,7 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
         realPt.x -= world.GetWidth();
     // Check the (possibly) adjusted point
     if(realPt.x < startPt.x || realPt.x >= endPt.x)
-        return;
+        return NULL;
 
     // Apply wrap-around if on either side
     if(realPt.y < startPt.y)
@@ -102,21 +122,9 @@ void TerritoryRegion::AdjustNode(MapPoint pt, const unsigned char player, const 
         realPt.y -= world.GetHeight();
     // Check the (possibly) adjusted point
     if(realPt.y < startPt.y || realPt.y >= endPt.y)
-        return;
+        return NULL;
 
-    // check whether this node is within the area we may have territory in
-    if(check_barriers && !IsPointValid(world, world.GetPlayer(player).GetRestrictedArea(), pt))
-        return;
-
-    /// Wenn das Militargebäude jetzt näher dran ist, dann geht dieser Punkt in den Besitz vom jeweiligen Spieler
-    /// oder wenn es halt gar nicht besetzt ist
-    TRNode& node = GetNode(realPt);
-
-    if(radius < node.radius || !node.owner)
-    {
-        node.owner = player + 1;
-        node.radius = radius;
-    }
+    return &GetNode(realPt);
 }
 
 namespace {
@@ -130,25 +138,26 @@ struct GetMapPointWithRadius
 
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {
-    bool check_barriers = true;
-    unsigned short radius;
+    unsigned radius = building.GetMilitaryRadius();
+    // Does not hold territory? -> Out
+    if(radius == 0u)
+        return;
 
-    if(building.GetBuildingType() == BLD_HARBORBUILDING)
-        radius = HARBOR_RADIUS;
-    else
-        radius = static_cast<const nobBaseMilitary&>(building).GetMilitaryRadius();
-
-    if(building.GetGOT() == GOT_NOB_MILITARY)
+    const std::vector<MapPoint>* allowedArea;
+    if(building.GetGOT() == GOT_NOB_MILITARY && static_cast<const nobMilitary&>(building).WasCapturedOnce())
     {
-        // we don't check barriers for captured buildings
-        check_barriers = !static_cast<const nobMilitary&>(building).WasCapturedOnce();
-    }
+        // Don't restrict area for captured buildings
+        // TODO: Maybe just say: If the building itself is on disallowed area, then we allow all area hold by it?
+        // This will remove the case where the enemy captures one of our buildings, we recapture it can suddenly have more allowed area
+        allowedArea = NULL;
+    } else
+        allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
 
     // Punkt, auf dem das Militärgebäude steht
-    MapPoint pt = building.GetPos();
-    AdjustNode(pt, building.GetPlayer(), 0, false); // no need to check barriers here. this point is on our territory.
+    MapPoint bldPos = building.GetPos();
+    AdjustNode(bldPos, building.GetPlayer(), 0, NULL); // no need to check barriers here. this point is on our territory.
 
-    std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(pt, radius, GetMapPointWithRadius());
+    std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
     for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
-        AdjustNode(it->first, building.GetPlayer(), it->second, check_barriers);
+        AdjustNode(it->first, building.GetPlayer(), it->second, allowedArea);
 }

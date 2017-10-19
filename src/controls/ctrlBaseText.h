@@ -33,6 +33,7 @@ public:
     void SetText(const std::string& text);
     const std::string& GetText() const { return text; }
     void SetFont(glArchivItem_Font* font);
+    glArchivItem_Font* GetFont() const { return font; }
     void SetTextColor(unsigned color) { this->color_ = color; }
     unsigned GetTextColor(unsigned color) const { return color_; }
 

@@ -22,7 +22,7 @@
 #include "helpers/containerUtils.h"
 #include "helpers/mapTraits.h"
 #include "libutil/Log.h"
-#include <vector>
+#include <boost/foreach.hpp>
 
 EventManager::EventManager(unsigned startGF) : currentGF(startGF), curActiveEvent(NULL)
 {
@@ -32,8 +32,8 @@ EventManager::~EventManager()
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
-        for(EventList::iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
-            delete *e_it;
+        BOOST_FOREACH(GameEvent* ev, it->second)
+            delete ev;
     }
     events.clear();
 
@@ -46,7 +46,7 @@ EventManager::~EventManager()
     killList.clear();
 }
 
-GameEvent* EventManager::AddEvent(GameEvent* event)
+GameEvent* EventManager::AddEventToQueue(GameEvent* event)
 {
     // Should be in the future!
     RTTR_Assert(event->GetTargetGF() > currentGF);
@@ -56,56 +56,32 @@ GameEvent* EventManager::AddEvent(GameEvent* event)
     return event;
 }
 
-GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned gf_length, const unsigned id)
+const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, unsigned id)
 {
     RTTR_Assert(obj);
     RTTR_Assert(gf_length);
 
-    return AddEvent(new GameEvent(obj, currentGF, gf_length, id));
+    return AddEventToQueue(new GameEvent(obj, currentGF, gf_length, id));
 }
 
-GameEvent* EventManager::AddEvent(SerializedGameData& sgd, const unsigned obj_id)
-{
-    return AddEvent(new GameEvent(sgd, obj_id));
-}
-
-GameEvent* EventManager::AddEvent(GameObject* obj, const unsigned gf_length, const unsigned id, const unsigned gf_elapsed)
+const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, unsigned id, unsigned gf_elapsed)
 {
     RTTR_Assert(gf_length > gf_elapsed);
     // Anfang des Events in die Vergangenheit zurückverlegen
     RTTR_Assert(currentGF >= gf_elapsed);
-    return AddEvent(new GameEvent(obj, currentGF - gf_elapsed, gf_length, id));
+    return AddEventToQueue(new GameEvent(obj, currentGF - gf_elapsed, gf_length, id));
 }
 
 void EventManager::ExecuteNextGF()
 {
     currentGF++;
 
-    RTTR_Assert(events.empty() || events.begin()->first >= currentGF);
+    ExecuteCurrentEvents();
+    DestroyCurrentObjects();
+}
 
-    // Get list of events for current GF
-    EventMap::iterator itCurEvents = events.find(currentGF);
-    if(itCurEvents != events.end())
-    {
-        EventList& curEvents = itCurEvents->second;
-        // We have to allow 2 cases:
-        // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
-        // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
-        for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
-        {
-            GameEvent* ev = (*e_it);
-            RTTR_Assert(ev->obj);
-            RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
-
-            curActiveEvent = ev;
-            ev->obj->HandleEvent(ev->id);
-
-            delete ev;
-        }
-        curActiveEvent = NULL;
-        events.erase(itCurEvents);
-    }
-
+void EventManager::DestroyCurrentObjects()
+{
     // Remove all objects
     for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
@@ -119,6 +95,37 @@ void EventManager::ExecuteNextGF()
     killList.clear();
 }
 
+void EventManager::ExecuteCurrentEvents()
+{
+    RTTR_Assert(events.empty() || events.begin()->first >= currentGF);
+
+    // Get list of events for current GF
+    EventMap::iterator itCurEvents = events.find(currentGF);
+    if(itCurEvents != events.end())
+        ExecuteEvents(itCurEvents);
+}
+
+void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
+{
+    EventList& curEvents = itEvents->second;
+    // We have to allow 2 cases:
+    // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
+    // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
+    for(EventList::iterator e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
+    {
+        GameEvent* ev = (*e_it);
+        RTTR_Assert(ev->obj);
+        RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
+
+        curActiveEvent = ev;
+        ev->obj->HandleEvent(ev->id);
+
+        delete ev;
+    }
+    curActiveEvent = NULL;
+    events.erase(itEvents);
+}
+
 void EventManager::Serialize(SerializedGameData& sgd) const
 {
     // Kill list must be empty (do not store to-be-killed objects)
@@ -128,10 +135,10 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     std::vector<const GameEvent*> save_events;
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
-        for(EventList::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
+        BOOST_FOREACH(const GameEvent* ev, it->second)
         {
-            if(!sgd.IsObjectSerialized((*e_it)->GetObjId()))
-                save_events.push_back(*e_it);
+            if(!sgd.IsObjectSerialized(ev->GetObjId()))
+                save_events.push_back(ev);
         }
     }
 
@@ -146,42 +153,30 @@ void EventManager::Deserialize(SerializedGameData& sgd)
         sgd.PopEvent();
 }
 
-bool EventManager::IsEventActive(const GameObject* const obj, const unsigned id) const
+GameEvent* EventManager::AddEvent(SerializedGameData& sgd, unsigned obj_id)
 {
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
-    {
-        for(EventList::const_iterator e_it = it->second.begin(); e_it != it->second.end(); ++e_it)
-        {
-            if((*e_it)->id == id && (*e_it)->obj == obj)
-            {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return AddEventToQueue(new GameEvent(sgd, obj_id));
 }
 
-bool EventManager::ObjectHasEvents(GameObject* obj)
+bool EventManager::ObjectHasEvents(const GameObject& obj)
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
-        EventList& curEvents = it->second;
-        for(std::list<GameEvent*>::iterator e_it = curEvents.begin(); e_it != curEvents.end(); ++e_it)
+        BOOST_FOREACH(GameEvent* ev, it->second)
         {
-            if((*e_it)->obj == obj)
+            if(ev->obj == &obj)
                 return true;
         }
     }
     return false;
 }
 
-bool EventManager::ObjectIsInKillList(GameObject* obj)
+bool EventManager::IsObjectInKillList(const GameObject& obj)
 {
-    return helpers::contains(killList, obj);
+    return helpers::contains(killList, &obj);
 }
 
-void EventManager::RemoveEvent(GameEvent*& ep)
+void EventManager::RemoveEvent(const GameEvent*& ep)
 {
     if(!ep)
         return;
@@ -193,16 +188,22 @@ void EventManager::RemoveEvent(GameEvent*& ep)
         ep = NULL;
         return;
     }
+    RemoveEventFromQueue(*ep);
+    deletePtr(ep);
+}
 
-    EventMap::iterator itEventsAtTime = events.find(ep->GetTargetGF());
+void EventManager::RemoveEventFromQueue(const GameEvent& event)
+{
+    RTTR_Assert(curActiveEvent != &event);
+    EventMap::iterator itEventsAtTime = events.find(event.GetTargetGF());
     if(itEventsAtTime != events.end())
     {
         EventList& eventsAtTime = itEventsAtTime->second;
-        EventList::iterator e_it = std::find(eventsAtTime.begin(), eventsAtTime.end(), ep);
+        EventList::iterator e_it = helpers::find(eventsAtTime, &event);
         if(e_it != eventsAtTime.end())
         {
             eventsAtTime.erase(e_it);
-            RTTR_Assert(!helpers::contains(eventsAtTime, ep)); // Event existed multiple times?
+            RTTR_Assert(!helpers::contains(eventsAtTime, &event)); // Event existed multiple times?
         } else
         {
             RTTR_Assert(false);
@@ -218,13 +219,11 @@ void EventManager::RemoveEvent(GameEvent*& ep)
         RTTR_Assert(false);
         LOG.write("Bug detected: GF of event to be removed did not exist");
     }
-
-    deletePtr(ep);
 }
 
 void EventManager::AddToKillList(GameObject* obj)
 {
     RTTR_Assert(obj);
-    RTTR_Assert(!helpers::contains(killList, obj));
+    RTTR_Assert(!IsObjectInKillList(*obj));
     killList.push_back(obj);
 }

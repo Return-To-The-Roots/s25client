@@ -19,7 +19,7 @@
 #include "world/MapGeometry.h"
 #include <stdexcept>
 
-Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
+Position GetNeighbour(const Position& p, const Direction dir)
 {
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs:
@@ -33,16 +33,16 @@ Point<int> GetNeighbour(const Point<int>& p, const Direction dir)
     */
     switch(Direction::Type(dir))
     {
-        case Direction::WEST: return Point<int>(p.x - 1, p.y);
-        case Direction::NORTHWEST: return Point<int>(p.x - !(p.y & 1), p.y - 1);
-        case Direction::NORTHEAST: return Point<int>(p.x + (p.y & 1), p.y - 1);
-        case Direction::EAST: return Point<int>(p.x + 1, p.y);
-        case Direction::SOUTHEAST: return Point<int>(p.x + (p.y & 1), p.y + 1);
-        default: RTTR_Assert(dir == Direction::SOUTHWEST); return Point<int>(p.x - !(p.y & 1), p.y + 1);
+        case Direction::WEST: return Position(p.x - 1, p.y);
+        case Direction::NORTHWEST: return Position(p.x - !(p.y & 1), p.y - 1);
+        case Direction::NORTHEAST: return Position(p.x + (p.y & 1), p.y - 1);
+        case Direction::EAST: return Position(p.x + 1, p.y);
+        case Direction::SOUTHEAST: return Position(p.x + (p.y & 1), p.y + 1);
+        default: RTTR_Assert(dir == Direction::SOUTHWEST); return Position(p.x - !(p.y & 1), p.y + 1);
     }
 }
 
-Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
+Position GetNeighbour2(Position pt, unsigned dir)
 {
     if(dir >= 12)
         throw std::logic_error("Invalid direction!");
@@ -71,7 +71,7 @@ Point<int> GetNeighbour2(Point<int> pt, unsigned dir)
     return pt;
 }
 
-MapPoint MakeMapPoint(Point<int> pt, const MapExtent& size)
+MapPoint MakeMapPoint(Position pt, const MapExtent& size)
 {
     // Shift into range
     pt.x %= size.x;
@@ -83,5 +83,5 @@ MapPoint MakeMapPoint(Point<int> pt, const MapExtent& size)
         pt.y += size.y;
     RTTR_Assert(pt.x >= 0 && pt.y >= 0);
     RTTR_Assert(static_cast<unsigned>(pt.x) < size.x && static_cast<unsigned>(pt.y) < size.y);
-    return Point<unsigned short>(pt);
+    return MapPoint(pt);
 }

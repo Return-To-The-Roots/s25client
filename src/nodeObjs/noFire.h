@@ -29,7 +29,7 @@ class noFire : public noCoordBase
     /// Größe des Feuers: klein (0) oder groß (1)
     unsigned char size;
     /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
-    GameEvent* dead_event;
+    const GameEvent* dead_event;
     /// Wurden Feuersounds abgespielt
     bool was_sounding;
     /// Letzter Feuersound-Zeitpunkt

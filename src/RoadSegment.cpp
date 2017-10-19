@@ -26,6 +26,7 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
+#include "gameData/BuildingProperties.h"
 #include "libutil/Log.h"
 #include <stdexcept>
 
@@ -46,8 +47,15 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
         route[i] = Direction(sgd.PopUnsignedChar());
 
     // tell the noRoadNodes about our existance
-    f1->SetRoute(route[0], this);
+    f1->SetRoute(route.front(), this);
     f2->SetRoute(route.back() + 3u, this);
+}
+
+bool RoadSegment::GetNodeID(const noRoadNode& rn) const
+{
+    RTTR_Assert(&rn == f1 || &rn == f2);
+    // Return true if it is the 2nd node
+    return (&rn == f2);
 }
 
 void RoadSegment::Destroy_RoadSegment()
@@ -253,9 +261,7 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     {
         if(f2->GetType() == NOP_BUILDING)
         {
-            if(static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HEADQUARTERS
-               || static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_STOREHOUSE
-               || static_cast<noBuilding*>(f2)->GetBuildingType() == BLD_HARBORBUILDING)
+            if(BuildingProperties::IsWareHouse(static_cast<noBuilding*>(f2)->GetBuildingType()))
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
                 LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n") % f2->GetPos().x
@@ -351,28 +357,20 @@ void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 /**
  * Return flag at the other end of the road
  */
-noFlag* RoadSegment::GetOtherFlag(const noFlag* flag)
+const noFlag& RoadSegment::GetOtherFlag(const noFlag& flag) const
 {
-    // is it a valid flag?
-    RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
-    if(flag->GetPos() == f1->GetPos())
-        return gwg->GetSpecObj<noFlag>(f2->GetPos());
-    if(flag->GetPos() == f2->GetPos())
-        return gwg->GetSpecObj<noFlag>(f1->GetPos());
-    // shouldnt get here or at least catch the assertion fail
-    return NULL;
+    if(GetNodeID(flag))
+        return dynamic_cast<noFlag&>(*f1);
+    else
+        return dynamic_cast<noFlag&>(*f2);
 }
 /**
  * Return last road direction to flag at the other end of the road
  */
-Direction RoadSegment::GetOtherFlagDir(const noFlag* flag)
+Direction RoadSegment::GetOtherFlagDir(const noFlag& flag) const
 {
-    // is it a valid flag?
-    RTTR_Assert((flag->GetPos() == f1->GetPos()) || (flag->GetPos() == f2->GetPos()));
-    if(flag->GetPos() == f1->GetPos())
-        return route[route.size() - 1];
-    if(flag->GetPos() == f2->GetPos())
-        return (route[0] + 3u);
-    LOG.write("BUG detected. Please report this with savegame and replay. No other flag direction found!");
-    throw std::runtime_error("Invalid road!");
+    if(GetNodeID(flag))
+        return (route.front() + 3u);
+    else
+        return route.back();
 }

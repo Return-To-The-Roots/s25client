@@ -39,7 +39,7 @@ protected:
     /// Liste von Figuren, die das Gebäude verlassen wollen (damit nicht alle auf einmal rauskommen)
     std::list<noFigure*> leave_house;
     /// Event, damit nicht alle auf einmal rauskommen
-    GameEvent* leaving_event;
+    const GameEvent* leaving_event;
     /// Geht gerade jemand raus? (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser
     bool go_out;
     /// Truppen, die zwar gerade nicht im Haus sind, aber eigentlich dazu gehören und grade auf Mission sind, wo sie evtl
@@ -57,24 +57,14 @@ public:
     nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id);
     ~nobBaseMilitary() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobBaseMilitary();
-
-public:
-    void Destroy() override { Destroy_nobBaseMilitary(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobBaseMilitary(SerializedGameData& sgd) const;
 
 public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_nobBaseMilitary(sgd); }
 
     const std::list<noFigure*>& GetLeavingFigures() const { return leave_house; }
-
-    /// Liefert Militärradius des Gebäudes
-    virtual unsigned GetMilitaryRadius() const = 0;
 
     /// Gibt Verteidiger zurück
     const nofDefender* GetDefender() const { return defender_; }
@@ -139,8 +129,8 @@ public:
     virtual bool DefendersAvailable() const = 0;
 
     bool IsUnderAttack() const { return !aggressors.empty(); };
-    /// Return whether this building can be attacked by the given player. For -1 player alliances are not checked
-    virtual bool IsAttackable(int playerIdx) const;
+    /// Return whether this building can be attacked by the given player.
+    virtual bool IsAttackable(unsigned playerIdx) const;
 
     /// Debugging
     bool IsAggressor(nofAttacker* attacker) const;

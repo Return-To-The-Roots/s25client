@@ -43,7 +43,7 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            MapPoint nb = gwg->GetNeighbour(pos, i);
+            MapPoint nb = gwg->GetNeighbour(pos, Direction::fromInt(i));
             gwg->DestroyNO(nb, false);
             gwg->SetNO(nb, new noExtension(this));
         }
@@ -116,7 +116,7 @@ void noStaticObject::Destroy_noStaticObject()
     if(GetSize() == 2)
     {
         for(unsigned i = 0; i < 3; ++i)
-            gwg->DestroyNO(gwg->GetNeighbour(pos, i));
+            gwg->DestroyNO(gwg->GetNeighbour(pos, Direction::fromInt(i)));
     }
 
     Destroy_noBase();

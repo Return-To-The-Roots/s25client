@@ -24,6 +24,7 @@
 #include "Ware.h"
 #include "figures/nofBuilder.h"
 #include "figures/nofPlaner.h"
+#include "helpers/containerUtils.h"
 #include "helpers/converters.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
@@ -123,8 +124,9 @@ void noBuildingSite::Destroy_noBuildingSite()
     // Hafenbaustelle?
     if(expeditionharbor)
     {
+        gwg->RemoveHarborBuildingSiteFromSea(this);
         // Land neu berechnen nach zerstören weil da schon straßen etc entfernt werden
-        gwg->RecalcTerritory(*this, true, false);
+        gwg->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
     }
     gwg->RecalcBQAroundPointBig(pos);
 }
@@ -162,7 +164,7 @@ void noBuildingSite::OrderConstructionMaterial()
 
     // Bretter
     GamePlayer& owner = gwg->GetPlayer(player);
-    for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][type_].boards; ++i)
+    for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[owner.nation][bldType_].boards; ++i)
     {
         Ware* w = owner.OrderWare(GD_BOARDS, this);
         if(!w)
@@ -170,13 +172,20 @@ void noBuildingSite::OrderConstructionMaterial()
         RTTR_Assert(helpers::contains(ordered_boards, w));
     }
     // Steine
-    for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][type_].stones; ++i)
+    for(int i = used_stones + stones + ordered_stones.size(); i < BUILDING_COSTS[owner.nation][bldType_].stones; ++i)
     {
         Ware* w = owner.OrderWare(GD_STONES, this);
         if(!w)
             break;
         RTTR_Assert(helpers::contains(ordered_stones, w));
     }
+}
+
+unsigned noBuildingSite::GetMilitaryRadius() const
+{
+    /// Note: This actually only applies to harbor buildings made from expeditions. We rely on the calling functions to only take those into
+    /// account
+    return bldType_ == BLD_HARBORBUILDING ? HARBOR_RADIUS : 0;
 }
 
 void noBuildingSite::Draw(DrawPoint drawPt)
@@ -221,7 +230,7 @@ void noBuildingSite::Draw(DrawPoint drawPt)
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 
-        LOADER.building_cache[nation][type_][1].drawPercent(drawPt, p1 * 100 / p2);
+        LOADER.building_cache[nation][bldType_][1].drawPercent(drawPt, p1 * 100 / p2);
 
         // Das richtige Haus
         if(BUILDING_COSTS[nation][GetBuildingType()].stones)
@@ -240,7 +249,7 @@ void noBuildingSite::Draw(DrawPoint drawPt)
             p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
         }
 
-        LOADER.building_cache[nation][type_][0].drawPercent(drawPt, p1 * 100 / p2);
+        LOADER.building_cache[nation][bldType_][0].drawPercent(drawPt, p1 * 100 / p2);
     }
 
     // char number[256];
@@ -251,7 +260,7 @@ void noBuildingSite::Draw(DrawPoint drawPt)
 /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
 FOWObject* noBuildingSite::CreateFOWObject() const
 {
-    return new fowBuildingSite(state == STATE_PLANING, type_, nation, build_progress);
+    return new fowBuildingSite(state == STATE_PLANING, bldType_, nation, build_progress);
 }
 
 void noBuildingSite::GotWorker(Job /*job*/, noFigure* worker)
@@ -288,12 +297,12 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
 
     const unsigned curBoards = ordered_boards.size() + boards + used_boards;
     const unsigned curStones = ordered_stones.size() + stones + used_stones;
-    RTTR_Assert(curBoards <= BUILDING_COSTS[nation][this->type_].boards);
-    RTTR_Assert(curStones <= BUILDING_COSTS[nation][this->type_].stones);
+    RTTR_Assert(curBoards <= BUILDING_COSTS[nation][this->bldType_].boards);
+    RTTR_Assert(curStones <= BUILDING_COSTS[nation][this->bldType_].stones);
 
     // Wenn wir schon genug Baumaterial haben, brauchen wir nichts mehr
-    if((goodtype == GD_BOARDS && curBoards == BUILDING_COSTS[nation][this->type_].boards)
-       || (goodtype == GD_STONES && curStones == BUILDING_COSTS[nation][this->type_].stones))
+    if((goodtype == GD_BOARDS && curBoards == BUILDING_COSTS[nation][this->bldType_].boards)
+       || (goodtype == GD_STONES && curStones == BUILDING_COSTS[nation][this->bldType_].stones))
         return 0;
 
     // 10000 als Basis wählen, damit man auch noch was abziehen kann
@@ -302,8 +311,8 @@ unsigned noBuildingSite::CalcDistributionPoints(noRoadNode* /*start*/, const Goo
 
     // Baumaterial mit einberechnen (wer noch am wenigsten braucht, soll mehr Punkte kriegen, da ja möglichst
     // zuerst Gebäude fertiggestellt werden sollten)
-    points -= (BUILDING_COSTS[nation][type_].boards - curBoards) * 20;
-    points -= (BUILDING_COSTS[nation][type_].stones - curStones) * 20;
+    points -= (BUILDING_COSTS[nation][bldType_].boards - curBoards) * 20;
+    points -= (BUILDING_COSTS[nation][bldType_].stones - curStones) * 20;
 
     // Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
     const unsigned buildingSitePrio = gwg->GetPlayer(player).GetBuidingSitePriority(this) * 30;
@@ -378,7 +387,7 @@ void noBuildingSite::TakeWare(Ware* ware)
 
 bool noBuildingSite::IsBuildingComplete()
 {
-    return (build_progress == BUILDING_COSTS[nation][type_].boards * 8 + BUILDING_COSTS[nation][type_].stones * 8);
+    return (build_progress == BUILDING_COSTS[nation][bldType_].boards * 8 + BUILDING_COSTS[nation][bldType_].stones * 8);
 }
 
 unsigned char noBuildingSite::GetBuildProgress(bool percent) const
@@ -386,7 +395,7 @@ unsigned char noBuildingSite::GetBuildProgress(bool percent) const
     if(!percent)
         return build_progress;
 
-    unsigned costs = BUILDING_COSTS[nation][type_].boards * 8 + BUILDING_COSTS[nation][type_].stones * 8;
+    unsigned costs = BUILDING_COSTS[nation][bldType_].boards * 8 + BUILDING_COSTS[nation][bldType_].stones * 8;
     unsigned progress = (((unsigned)build_progress) * 100) / costs;
 
     return (unsigned char)progress;
@@ -409,7 +418,7 @@ void noBuildingSite::PlaningFinished()
 /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
 bool noBuildingSite::IsHarborBuildingSiteFromSea() const
 {
-    if(this->type_ == BLD_HARBORBUILDING)
+    if(this->bldType_ == BLD_HARBORBUILDING)
         return gwg->IsHarborBuildingSiteFromSea(this);
     else
         return false;

@@ -47,7 +47,7 @@ private:
     /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)
     bool disappearing;
     /// Event, das bestimmt wie lange es noch lebt
-    GameEvent* dead_event;
+    const GameEvent* dead_event;
 };
 
 #endif

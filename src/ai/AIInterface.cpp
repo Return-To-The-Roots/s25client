@@ -17,8 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "AIInterface.h"
-#include "ai/AIJHHelper.h"
-
 #include "buildings/noBuilding.h"
 #include "buildings/nobHQ.h"
 #include "buildings/nobHarborBuilding.h"
@@ -29,6 +27,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameTypes/BuildingCount.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/TerrainData.h"
 #include <limits>
 class noRoadNode;
@@ -37,25 +36,25 @@ class noRoadNode;
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
 bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param);
 
-AIJH::Resource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
+AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
     unsigned char subres = gwb.GetNode(pt).resources;
 
     if(subres > 0x40 + 0 * 8 && subres < 0x48 + 0 * 8)
-        return AIJH::COAL;
+        return AIResource::COAL;
     else if(subres > 0x40 + 1 * 8 && subres < 0x48 + 1 * 8)
-        return AIJH::IRONORE;
+        return AIResource::IRONORE;
     else if(subres > 0x40 + 2 * 8 && subres < 0x48 + 2 * 8)
-        return AIJH::GOLD;
+        return AIResource::GOLD;
     else if(subres > 0x40 + 3 * 8 && subres < 0x48 + 3 * 8)
-        return AIJH::GRANITE;
+        return AIResource::GRANITE;
     else if(subres > 0x80 && subres < 0x90)
-        return AIJH::FISH;
+        return AIResource::FISH;
     else
-        return AIJH::NOTHING;
+        return AIResource::NOTHING;
 }
 
-AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
+AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
 {
     NodalObjectType no = gwb.GetNO(pt)->GetType();
     TerrainType t1 = gwb.GetNode(pt).t1;
@@ -66,54 +65,54 @@ AIJH::Resource AIInterface::GetSurfaceResource(const MapPoint pt) const
         {
             // exclude pineapple because it's not a real tree
             if(gwb.GetSpecObj<noTree>(pt)->ProducesWood())
-                return AIJH::WOOD;
+                return AIResource::WOOD;
             else
-                return AIJH::BLOCKED;
+                return AIResource::BLOCKED;
         } else if(no == NOP_GRANITE)
-            return AIJH::STONES;
+            return AIResource::STONES;
         else if(no == NOP_NOTHING || no == NOP_ENVIRONMENT)
-            return AIJH::NOTHING;
+            return AIResource::NOTHING;
         else
-            return AIJH::BLOCKED;
+            return AIResource::BLOCKED;
     } else
-        return AIJH::BLOCKED;
+        return AIResource::BLOCKED;
 }
 
-int AIInterface::GetResourceRating(const MapPoint pt, AIJH::Resource res) const
+int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
 {
     // surface resource?
-    if(res == AIJH::PLANTSPACE || res == AIJH::BORDERLAND || res == AIJH::WOOD || res == AIJH::STONES)
+    if(res == AIResource::PLANTSPACE || res == AIResource::BORDERLAND || res == AIResource::WOOD || res == AIResource::STONES)
     {
-        AIJH::Resource surfaceRes = GetSurfaceResource(pt);
+        AIResource surfaceRes = GetSurfaceResource(pt);
         TerrainType t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
-        if(surfaceRes == res || (res == AIJH::PLANTSPACE && surfaceRes == AIJH::NOTHING && TerrainData::IsVital(t1))
-           || (res == AIJH::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
+        if(surfaceRes == res || (res == AIResource::PLANTSPACE && surfaceRes == AIResource::NOTHING && TerrainData::IsVital(t1))
+           || (res == AIResource::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
                && (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))))
         {
-            return AIJH::RES_RADIUS[res];
+            return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
         }
         // another building using our "resource"? reduce rating!
-        if(res == AIJH::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER))
+        if(res == AIResource::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER))
             return -40;
-        if(res == AIJH::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER))
+        if(res == AIResource::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER))
             return -40;
     }
     // so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
     else
     {
         if(GetSubsurfaceResource(pt) == res)
-            return AIJH::RES_RADIUS[res];
+            return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
     }
     return 0;
 }
 
-int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char direction, int lastval) const
+int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direction, int lastval) const
 {
     int returnVal;
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
         returnVal = 0;
-        std::vector<MapPoint> pts = GetPointsInRadius(pt, AIJH::RES_RADIUS[res]);
+        std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, RES_RADIUS[boost::underlying_cast<unsigned>(res)]);
         for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
             returnVal += GetResourceRating(*it, res);
         // add the center point value
@@ -124,54 +123,44 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIJH::Resource res, char d
         // add new points
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
-        for(unsigned i = 0; i < AIJH::RES_RADIUS[res]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, (direction + 5) % 6);
+        for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
+            tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 5));
         // then clockwise around at radius distance to get all new points
         for(int i = direction + 1; i < (direction + 3); ++i)
         {
-            int resRadius = AIJH::RES_RADIUS[res];
+            int resRadius = RES_RADIUS[boost::underlying_cast<unsigned>(res)];
             // add 1 extra step on the second side we check to complete the side
             if(i == direction + 2)
                 ++resRadius;
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
                 returnVal += GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, i % 6);
+                tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
             }
         }
         // now substract old points not in range of new point
         // go to old center point:
         tmpPt = pt;
-        tmpPt = gwb.GetNeighbour(tmpPt, (direction + 3) % 6);
+        tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 3));
         // next: go to the first old point we have to substract
-        for(unsigned i = 0; i < AIJH::RES_RADIUS[res]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, (direction + 2) % 6);
+        for(unsigned i = 0; i < RES_RADIUS[boost::underlying_cast<unsigned>(res)]; i++)
+            tmpPt = gwb.GetNeighbour(tmpPt, Direction(direction + 2));
         // now clockwise around at radius distance to remove all old points
         for(int i = direction + 4; i < (direction + 6); ++i)
         {
-            int resRadius = AIJH::RES_RADIUS[res];
+            int resRadius = RES_RADIUS[boost::underlying_cast<unsigned>(res)];
             if(i == direction + 5)
                 ++resRadius;
             for(MapCoord r2 = 0; r2 < resRadius; ++r2)
             {
                 returnVal -= GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, i % 6);
+                tmpPt = gwb.GetNeighbour(tmpPt, Direction(i));
             }
         }
     }
-    // if(returnval<0&&lastval>=0&&res==AIJH::BORDERLAND)
+    // if(returnval<0&&lastval>=0&&res==AIResource::BORDERLAND)
     // LOG.write(("AIInterface::CalcResourceValue - warning: negative returnvalue direction %i oldval %i\n", direction, lastval);
     return returnVal;
-}
-
-bool AIInterface::IsRoadPoint(const MapPoint pt) const
-{
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
-    {
-        if(gwb.GetPointRoad(pt, Direction::fromInt(dir)))
-            return true;
-    }
-    return false;
 }
 
 bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= NULL*/,
@@ -184,7 +173,7 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2)
 {
-    return gwb.GetBQ(pt2, playerID_) < gwb.GetBQ(pt1, playerID_);
+    return GetBuildingQuality(pt2) < GetBuildingQuality(pt1);
 }
 
 BuildingQuality AIInterface::GetBuildingQuality(const MapPoint pt) const
@@ -208,11 +197,6 @@ bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& tar
 const nobHQ* AIInterface::GetHeadquarter() const
 {
     return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
-}
-
-BuildingCount AIInterface::GetBuildingCount() const
-{
-    return player_.GetBuildingCount();
 }
 
 bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor, ShipDirection direction) const

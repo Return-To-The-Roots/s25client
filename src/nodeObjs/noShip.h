@@ -59,7 +59,6 @@ class noShip : public noMovable
         STATE_SEAATTACK_DRIVINGTODESTINATION, /// Fährt mit den Soldaten zum Zielhafenpunkt
         STATE_SEAATTACK_WAITING,              /// wartet an der Küste, während die Soldaten was schönes machen
         STATE_SEAATTACK_RETURN_DRIVING        /// fährt mit den Soldaten wieder zurück zum Heimathafen
-
     } state;
 
     /// Das Meer, auf dem dieses Schiff fährt
@@ -161,6 +160,7 @@ public:
     const std::string& GetName() const { return name; }
     /// Hat das Schiff gerade nichts zu tun
     bool IsIdling() const { return (state == STATE_IDLE); }
+    bool IsLost() const { return lost; }
     /// Führt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?
     bool IsWaitingForExpeditionInstructions() const { return (state == STATE_EXPEDITION_WAITING); }
     /// Ist das Schiff gerade irgendwie am Expeditionieren und hat entsprechenden Kram an Bord?
@@ -179,6 +179,8 @@ public:
         return (state == STATE_SEAATTACK_LOADING || state == STATE_SEAATTACK_UNLOADING || state == STATE_SEAATTACK_DRIVINGTODESTINATION
                 || state == STATE_SEAATTACK_WAITING || state == STATE_SEAATTACK_RETURN_DRIVING);
     }
+    bool IsLoading() const;
+    bool IsUnloading() const;
     /// Gibt Liste der Waren an Bord zurück
     const std::list<Ware*>& GetWares() const { return wares; }
     /// Gibt Liste der Menschen an Bord zurück

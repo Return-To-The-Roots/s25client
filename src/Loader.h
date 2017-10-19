@@ -22,7 +22,8 @@
 #include "Rect.h"
 #include "helpers/multiArray.h"
 #include "ogl/glSmartBitmap.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/AnimalConsts.h"
@@ -31,7 +32,6 @@
 #include "libutil/Singleton.h"
 #include <boost/array.hpp>
 #include <map>
-#include <stdint.h>
 #include <string>
 #include <vector>
 

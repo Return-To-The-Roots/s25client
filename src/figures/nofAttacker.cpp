@@ -25,6 +25,7 @@
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
+#include "helpers/containerUtils.h"
 #include "nofAggressiveDefender.h"
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"
@@ -33,6 +34,8 @@
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
+#include "gameData/BuildingProperties.h"
+#include <boost/foreach.hpp>
 
 /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
 /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
@@ -40,9 +43,9 @@
 const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
-    : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal),
-      should_haunted(gwg->GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
-      harborPos(MapPoint::Invalid()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
+    : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal), mayBeHunted(true),
+      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
+      shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -51,9 +54,9 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 }
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
-    : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal),
-      should_haunted(gwg->GetPlayer(attacked_goal->GetPlayer()).ShouldSendDefender()), huntingDefender(NULL), blocking_event(NULL),
-      harborPos(harbor->GetPos()), shipPos(MapPoint::Invalid()), ship_obj_id(0)
+    : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal), mayBeHunted(true),
+      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
+      shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
     static_cast<nobMilitary*>(building)->SoldierOnMission(other, this);
@@ -85,7 +88,8 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
         sgd.PushObject(attacked_goal, false);
-        sgd.PushBool(should_haunted);
+        sgd.PushBool(mayBeHunted);
+        sgd.PushContainer(canPlayerSendAggDefender);
         sgd.PushObject(huntingDefender, true);
         sgd.PushUnsignedShort(radius);
 
@@ -108,7 +112,11 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     if(state != STATE_WALKINGHOME && state != STATE_FIGUREWORK)
     {
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
-        should_haunted = sgd.PopBool();
+        mayBeHunted = sgd.PopBool();
+        if(sgd.GetGameDataVersion() < 1)
+            canPlayerSendAggDefender.resize(gwg->GetPlayerCount(), 2);
+        else
+            sgd.PopContainer(canPlayerSendAggDefender);
         huntingDefender = sgd.PopObject<nofAggressiveDefender>(GOT_NOF_AGGRESSIVEDEFENDER);
 
         radius = sgd.PopUnsignedShort();
@@ -124,7 +132,8 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     } else
     {
         attacked_goal = NULL;
-        should_haunted = false;
+        mayBeHunted = false;
+        canPlayerSendAggDefender.resize(gwg->GetPlayerCount(), 2);
         huntingDefender = NULL;
         radius = 0;
         blocking_event = NULL;
@@ -231,7 +240,7 @@ void nofAttacker::Walked()
             } else
             {
                 // Ist das Gebäude ein "normales Militärgebäude", das wir da erobert haben?
-                if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+                if(BuildingProperties::IsMilitary(attacked_goal->GetBuildingType()))
                 {
                     RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
                     // Meinem Heimatgebäude Bescheid sagen, dass ich nicht mehr komme (falls es noch eins gibt)
@@ -669,33 +678,55 @@ void nofAttacker::TryToOrderAggressiveDefender()
     RTTR_Assert(state == STATE_ATTACKING_WALKINGTOGOAL);
     // Haben wir noch keinen Gegner?
     // Könnte mir noch ein neuer Verteidiger entgegenlaufen?
-    if(!should_haunted)
+    if(!mayBeHunted)
         return;
 
     // 20%ige Chance, dass wirklich jemand angreift
     if(RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10) >= 2)
         return;
 
+    OrderAggressiveDefender();
+}
+
+void nofAttacker::OrderAggressiveDefender()
+{
     // Militärgebäude in der Nähe abgrasen
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 2);
-    for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
+    BOOST_FOREACH(nobBaseMilitary* bld, buildings)
     {
         // darf kein HQ sein, außer, das HQ wird selbst angegriffen,
-        if((*it)->GetBuildingType() == BLD_HEADQUARTERS && (*it) != attacked_goal)
+        if(bld->GetBuildingType() == BLD_HEADQUARTERS && bld != attacked_goal)
             continue;
         // darf nicht weiter weg als 15 sein
-        if(gwg->CalcDistance(pos, (*it)->GetPos()) >= 15)
+        if(gwg->CalcDistance(pos, bld->GetPos()) >= 15)
             continue;
-        // und es muss natürlich auch der entsprechende Feind sein, aber es darf auch nicht derselbe Spieler
-        // wie man selbst sein, da das Gebäude ja z.B. schon erobert worden sein kann
-        if(gwg->GetPlayer(attacked_goal->GetPlayer()).IsAlly((*it)->GetPlayer()) && gwg->GetPlayer(player).IsAttackable((*it)->GetPlayer()))
+        const unsigned bldOwnerId = bld->GetPlayer();
+        if(canPlayerSendAggDefender[bldOwnerId] == 0)
+            continue;
+        ;
+        // We only send a defender if we are allied with the attacked player and can attack the attacker (no pact etc)
+        GamePlayer& bldOwner = gwg->GetPlayer(bldOwnerId);
+        if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))
         {
+            // If player did not decide on sending do it now.
+            // Doing this as late as here reduces chance, that the player changed the setting when the defender is asked for
+            if(canPlayerSendAggDefender[bldOwnerId] == 2)
+            {
+                bool sendDefender = bldOwner.ShouldSendDefender();
+                if(sendDefender)
+                    canPlayerSendAggDefender[bldOwnerId] = 1;
+                else
+                {
+                    canPlayerSendAggDefender[bldOwnerId] = 0;
+                    continue;
+                }
+            }
             // ggf. Verteidiger rufen
-            huntingDefender = (*it)->SendAggressiveDefender(this);
+            huntingDefender = bld->SendAggressiveDefender(this);
             if(huntingDefender)
             {
                 // nun brauchen wir keinen Verteidiger mehr
-                should_haunted = false;
+                mayBeHunted = false;
                 break;
             }
         }
@@ -809,7 +840,7 @@ void nofAttacker::CapturingWalking()
         attacked_goal->AddActiveSoldier(this);
 
         // Ein erobernder Soldat weniger
-        if(attacked_goal->GetBuildingType() >= BLD_BARRACKS && attacked_goal->GetBuildingType() <= BLD_FORTRESS)
+        if(BuildingProperties::IsMilitary(attacked_goal->GetBuildingType()))
         {
             RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
             nobMilitary* goal = static_cast<nobMilitary*>(attacked_goal);
@@ -933,7 +964,7 @@ void nofAttacker::LetsFight(nofAggressiveDefender* other)
 {
     RTTR_Assert(!huntingDefender);
     // wir werden jetzt "gejagt"
-    should_haunted = false;
+    mayBeHunted = false;
     huntingDefender = other;
 }
 

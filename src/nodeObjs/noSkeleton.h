@@ -54,7 +54,7 @@ private:
     /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)
     unsigned char type;
     /// GameEvent*, damit der dann gelöscht werden kann, falls das Skelett von außerhalb gelöscht wird
-    GameEvent* current_event;
+    const GameEvent* current_event;
 };
 
 #endif // !NOSKELETON_H_INCLUDED

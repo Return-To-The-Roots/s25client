@@ -21,15 +21,18 @@
 #include "IngameWindow.h"
 #include <vector>
 
-class AIBase;
-class AIPlayerJH;
+class AIPlayer;
 class ctrlText;
 class GameWorldView;
+namespace AIJH {
+class AIPlayerJH;
+}
 
 class iwAIDebug : public IngameWindow
 {
 public:
-    iwAIDebug(GameWorldView& gwv, const std::vector<AIBase*>& ais);
+    iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais);
+    ~iwAIDebug() override;
 
 private:
     void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
@@ -37,12 +40,12 @@ private:
     // void Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position);
     void Msg_PaintBefore() override;
 
-private:
+    class DebugPrinter;
+
     GameWorldView& gwv;
-    std::vector<AIPlayerJH*> ais_;
-    unsigned player_;
-    unsigned overlay_;
+    std::vector<const AIJH::AIPlayerJH*> ais_;
     ctrlText* text;
+    DebugPrinter* printer;
 };
 
 #endif

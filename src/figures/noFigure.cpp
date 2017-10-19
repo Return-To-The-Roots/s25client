@@ -27,6 +27,7 @@
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "helpers/containerUtils.h"
 #include "nofCarrier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -221,7 +222,7 @@ DrawPoint noFigure::CalcFigurRelative() const
 
     Point<int> result;
 
-    const MapPoint nb = gwg->GetNeighbour(pos, 1);
+    const MapPoint nb = gwg->GetNeighbour(pos, Direction::NORTHWEST);
     if(GetCurMoveDir() == Direction::NORTHWEST
        && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
     {
@@ -260,7 +261,7 @@ void noFigure::StartWalking(const Direction dir)
 
     // Gehen wir in ein Gebäude?
     if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, 1))->OpenDoor(); // Dann die Tür aufmachen
+        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
     if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
@@ -928,8 +929,8 @@ void noFigure::NodeFreed(const MapPoint pt)
         return;
 
     // Gehen wir in ein Gebäude? Dann wieder ausgleichen, weil wir die Türen sonst doppelt aufmachen!
-    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(this->pos, 1))->GetType() == NOP_BUILDING)
-        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, 1))->CloseDoor();
+    if(GetCurMoveDir() == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
+        gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(this->pos, Direction::NORTHWEST))->CloseDoor();
     // oder aus einem raus?
     if(GetCurMoveDir() == Direction::SOUTHEAST && gwg->GetNO(this->pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(this->pos)->CloseDoor();

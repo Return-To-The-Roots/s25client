@@ -34,7 +34,7 @@ class noFighting : public noBase
     /// Verteidigungsanimation (3 = keine Verteidigung,  Treffer)
     unsigned char defending_animation;
     /// Event
-    GameEvent* current_ev;
+    const GameEvent* current_ev;
     /// Spieler des Soldaten, der gewonnen hat
     unsigned char player_won;
 

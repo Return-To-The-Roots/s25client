@@ -57,6 +57,8 @@ public:
     /// Reads the snapshot from the internal buffer
     void ReadSnapshot(GameWorld& gw);
 
+    unsigned GetGameDataVersion() const { return gameDataVersion; }
+
     //////////////////////////////////////////////////////////////////////////
     // Write methods
     //////////////////////////////////////////////////////////////////////////
@@ -102,7 +104,7 @@ public:
         return static_cast<T*>(PopObject_(got));
     }
 
-    GameEvent* PopEvent();
+    const GameEvent* PopEvent();
 
     /// FoW-Objekt
     FOWObject* PopFOWObject();
@@ -131,6 +133,9 @@ public:
 
 private:
     static unsigned short GetSafetyCode(const GameObject& go);
+
+    // Version of the game data that is read. Gets set to the current version for writing
+    unsigned gameDataVersion;
 
     /// Stores the ids of all written objects (-> only valid during writing)
     std::set<unsigned> writtenObjIds;
@@ -166,6 +171,18 @@ private:
 // Implementation
 ////////////////////////////////////////////////////////////////////////////////
 
+template<>
+inline void Serializer::Push(bool val)
+{
+    PushBool(val);
+}
+
+template<>
+inline bool Serializer::Pop<bool>()
+{
+    return PopBool();
+}
+
 template<typename T>
 void SerializedGameData::PushObjectContainer(const T& gos, const bool known)
 {
@@ -194,22 +211,11 @@ void SerializedGameData::PushContainer(const T& container)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
-    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value || boost::is_same<Type, unsigned char>::value
-                             || boost::is_same<Type, int>::value || boost::is_same<Type, unsigned>::value),
-                            "Unimplemented type for PushContainer");
     PushUnsignedInt(container.size());
     for(typename T::const_iterator it = container.begin(); it != container.end(); ++it)
     {
-        if(boost::is_same<Type, signed char>::value)
-            PushSignedChar(*it);
-        else if(boost::is_same<Type, unsigned char>::value)
-            PushUnsignedChar(*it);
-        else if(boost::is_same<Type, int>::value)
-            PushSignedInt(*it);
-        else if(boost::is_same<Type, unsigned>::value)
-            PushUnsignedInt(*it);
-        else
-            throw Error("Unsupported type for container");
+        // Explicit template argument required for bool vector -.-
+        Push<Type>(*it);
     }
 }
 
@@ -218,9 +224,6 @@ T SerializedGameData::PopContainer(const T&)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
-    BOOST_STATIC_ASSERT_MSG((boost::is_same<Type, signed char>::value || boost::is_same<Type, unsigned char>::value
-                             || boost::is_same<Type, int>::value || boost::is_same<Type, unsigned>::value),
-                            "Unimplemented type for PushContainer");
 
     T result;
     unsigned size = PopUnsignedInt();
@@ -228,16 +231,7 @@ T SerializedGameData::PopContainer(const T&)
     typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(result);
     for(unsigned i = 0; i < size; ++i)
     {
-        if(boost::is_same<Type, signed char>::value)
-            *it = PopSignedChar();
-        else if(boost::is_same<Type, unsigned char>::value)
-            *it = PopUnsignedChar();
-        else if(boost::is_same<Type, int>::value)
-            *it = PopSignedInt();
-        else if(boost::is_same<Type, unsigned>::value)
-            *it = PopUnsignedInt();
-        else
-            throw Error("Unsupported type for container");
+        *it = Pop<Type>();
     }
     return result;
 }

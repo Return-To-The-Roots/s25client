@@ -18,6 +18,7 @@
 #define NOF_ATTACKER_H_
 
 #include "nofActiveSoldier.h"
+#include <vector>
 
 class nofDefender;
 class nofAggressiveDefender;
@@ -34,16 +35,17 @@ class nofAttacker : public nofActiveSoldier
 {
     /// Building which is attacked by the soldier
     nobBaseMilitary* attacked_goal;
-    /// Soll er von nem Verteidiger gejagt werden? (wenn nicht wurde er schon gejagt oder er soll
-    /// wegen den Militäreinstellungen nicht gejagt werden
-    bool should_haunted;
+    /// Did we got hunted by an aggressive defender?
+    bool mayBeHunted;
+    /// 0: Will not send, 1: Asked and will send eventually, 2: Not decided
+    std::vector<uint8_t> canPlayerSendAggDefender;
     /// Defender who is currently chasing after this soldier
     nofAggressiveDefender* huntingDefender;
     /// In welchem Radius steht der Soldat, wenn er um eine Fahne herum wartet?
     unsigned short radius;
     /// Nach einer bestimmten Zeit, in der der Angreifer an der Flagge des Gebäudes steht, blockt er den Weg
     /// nur benutzt bei STATE_ATTACKING_WAITINGFORDEFENDER
-    GameEvent* blocking_event;
+    const GameEvent* blocking_event;
 
     /// Für Seeangreifer: Stelle, wo sich der Hafen befindet, von wo aus sie losfahren sollen
     MapPoint harborPos;
@@ -62,6 +64,9 @@ class nofAttacker : public nofActiveSoldier
     void ReachedDestination();
     /// Versucht, eine aggressiven Verteidiger für uns zu bestellen
     void TryToOrderAggressiveDefender();
+    /// Actually do order an aggressive defender
+    void OrderAggressiveDefender();
+
     /// Doesn't find a defender at the flag -> Send defenders or capture it
     void ContinueAtFlag();
 

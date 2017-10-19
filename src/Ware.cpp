@@ -30,7 +30,8 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "libutil/Log.h"
@@ -286,8 +287,7 @@ void Ware::RemoveWareJobForDir(const unsigned char last_next_dir)
     if(location->GetRoute(lastDir)->GetF2()->GetType() == NOP_BUILDING)
     {
         noBuilding* bld = static_cast<noBuilding*>(location->GetRoute(Direction::NORTHWEST)->GetF2());
-        if(bld->GetBuildingType() == BLD_HEADQUARTERS || bld->GetBuildingType() == BLD_STOREHOUSE
-           || bld->GetBuildingType() == BLD_HARBORBUILDING)
+        if(BuildingProperties::IsWareHouse(bld->GetBuildingType()))
             static_cast<nobBaseWarehouse*>(bld)->DontFetchNextWare();
     }
 }

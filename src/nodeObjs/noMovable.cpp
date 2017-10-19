@@ -253,7 +253,7 @@ MapPoint noMovable::GetDestinationForCurrentMove() const
     // Bewegt sich das Ding gerade?
     if(IsMoving())
         // Dann unsere Zielrichtung zur Berechnung verwenden
-        return MapPoint(gwg->GetNeighbour(pos, curMoveDir));
+        return gwg->GetNeighbour(pos, curMoveDir);
 
     return pos;
 }

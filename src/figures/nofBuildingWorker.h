@@ -106,7 +106,7 @@ private:
     virtual void WorkplaceReached();
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
-    virtual void DrawReturnStates(DrawPoint drawPt);
+    virtual void DrawWalkingWithWare(DrawPoint drawPt);
     /// Zeichnen der Figur in sonstigen Arbeitslagen
     virtual void DrawOtherStates(DrawPoint drawPt);
 

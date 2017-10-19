@@ -45,6 +45,16 @@
 //      - Fix the bug -> Test succeeds
 BOOST_AUTO_TEST_SUITE(RegressionsSuite)
 
+BOOST_AUTO_TEST_CASE(ProdOfComponents)
+{
+    Point<uint16_t> pt(256, 256);
+    BOOST_REQUIRE_EQUAL(prodOfComponents(pt), 256u * 256u);
+    Point<int16_t> ptI(256, 256);
+    BOOST_REQUIRE_EQUAL(prodOfComponents(ptI), 256 * 256);
+    Point<float> ptF(256.5, 256.5);
+    BOOST_REQUIRE_EQUAL(prodOfComponents(ptF), 256.5f * 256.5f);
+}
+
 BOOST_AUTO_TEST_CASE(DirectionCmp)
 {
     Direction east(Direction::EAST);
@@ -117,7 +127,7 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_REQUIRE_EQUAL(wnd.GetSize(), oldSize);
 }
 
-struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1, 10, 10>
+struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>
 {
     boost::array<unsigned, JOB_TYPES_COUNT> numPeople, numPeoplePlayer;
     boost::array<unsigned, WARE_TYPES_COUNT> numGoods, numGoodsPlayer;
@@ -224,7 +234,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 #endif
 }
 
-struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1, 20, 20>
+struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
 {
     MapPoint farmPt;
     nobUsual* farm;
@@ -235,13 +245,7 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1, 20, 20>
         farm = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FARM, farmPt, 0, NAT_ROMANS));
         BOOST_REQUIRE(farm);
         world.BuildRoad(0, false, world.GetNeighbour(farmPt, Direction::SOUTHEAST), std::vector<Direction>(5, Direction::WEST));
-        for(unsigned gf = 0; gf < 7 * 20 + 60; gf++)
-        {
-            em.ExecuteNextGF();
-            if(farm->HasWorker())
-                break;
-        }
-        BOOST_REQUIRE(farm->HasWorker());
+        RTTR_EXEC_TILL(7 * 20 + 60, farm->HasWorker());
         farmer = dynamic_cast<const nofFarmhand*>(farm->GetWorker());
         BOOST_REQUIRE(farmer);
     }
@@ -293,13 +297,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     for(unsigned i = 0; i < 2; i++)
     {
         // Let the farmer pick a field
-        for(unsigned gf = 0; gf < 150; gf++)
-        {
-            em.ExecuteNextGF();
-            if(farm->is_working)
-                break;
-        }
-        BOOST_REQUIRE(farm->is_working);
+        RTTR_EXEC_TILL(150, farm->is_working);
         MapPoint newField = MapPoint::Invalid();
         // Find field, only these 3 remaining
         for(unsigned dir = 8; dir < 11; dir++)
@@ -312,29 +310,16 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
         }
         BOOST_REQUIRE(newField.isValid());
         // Let him get there
-        for(unsigned gf = 0; gf < 60; gf++)
-        {
-            em.ExecuteNextGF();
-            if(farmer->GetPos() == newField)
-                break;
-        }
-        BOOST_REQUIRE_EQUAL(farmer->GetPos(), newField);
+        RTTR_EXEC_TILL(60, farmer->GetPos() == newField);
         // Start sawing
-        for(unsigned gf = 0; gf < 50; gf++)
-            em.ExecuteNextGF();
+        RTTR_SKIP_GFS(50);
         BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
         if(i == 0)
             world.SetBuildingSite(BLD_WOODCUTTER, newField, 0);
         else
             world.SetBuildingSite(BLD_WOODCUTTER, world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
         // Let farmer return
-        for(unsigned gf = 0; gf < 150; gf++)
-        {
-            em.ExecuteNextGF();
-            if(!farm->is_working)
-                break;
-        }
-        BOOST_REQUIRE(!farm->is_working);
+        RTTR_EXEC_TILL(150, !farm->is_working);
         // Aborted work
         BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(newField));
         // And remove
@@ -344,44 +329,20 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
             world.DestroyBuilding(world.GetNeighbour(newField, Direction::SOUTHEAST), 0);
     }
 
-    for(unsigned gf = 0; gf < 3000; gf++)
-    {
-        em.ExecuteNextGF();
-        if(grainField->IsHarvestable())
-            break;
-    }
-    BOOST_REQUIRE(grainField->IsHarvestable());
+    RTTR_EXEC_TILL(3000, grainField->IsHarvestable());
     // Wait till farmer stopped working
-    for(unsigned gf = 0; gf < 150; gf++)
-    {
-        if(!farm->is_working)
-            break;
-        em.ExecuteNextGF();
-    }
-    BOOST_REQUIRE(!farm->is_working);
+    RTTR_EXEC_TILL(150, !farm->is_working);
     // And started again
-    for(unsigned gf = 0; gf < 150; gf++)
-    {
-        if(farm->is_working)
-            break;
-        em.ExecuteNextGF();
-    }
-    BOOST_REQUIRE(farm->is_working);
+    RTTR_EXEC_TILL(150, farm->is_working);
     // Should pick this
     BOOST_REQUIRE(world.GetNode(grainFieldPos).reserved);
     // Wait till farmer stopped working
-    for(unsigned gf = 0; gf < 270; gf++)
-    {
-        if(!farm->is_working)
-            break;
-        em.ExecuteNextGF();
-    }
-    BOOST_REQUIRE(!farm->is_working);
+    RTTR_EXEC_TILL(270, !farm->is_working);
     // Grainfield is gone
     BOOST_REQUIRE(!world.GetSpecObj<noGrainfield>(grainFieldPos));
 }
 
-typedef WorldFixture<CreateEmptyWorld, 0, 10, 10> WorldFixtureEmpty0P;
+typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
 {
     world.RecalcBorderStones(Point<int>(0, 0), Point<int>(world.GetWidth() - 1, world.GetHeight() - 1));

@@ -30,6 +30,7 @@
 #include "gameTypes/Nation.h"
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
+#include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
@@ -80,8 +81,10 @@ struct LoadWorldFromFileCreator
         for(unsigned i = 0; i < numPlayers_; i++)
             nations.push_back(world.GetPlayer(i).nation);
         MapLoader loader(world, nations);
-        if(!loader.Load(map, false, EXP_FOGOFWAR))
+        if(!loader.Load(map, EXP_FOGOFWAR))
             throw std::runtime_error("Could not load map");
+        if(!loader.PlaceHQs(world, false))
+            throw std::runtime_error("Could not place HQs");
         for(unsigned i = 0; i < numPlayers_; i++)
             hqs.push_back(loader.GetHQPos(i));
         return true;
@@ -110,7 +113,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 
     std::vector<Nation> nations(0);
     MapLoader loader(world, nations);
-    BOOST_REQUIRE(loader.Load(map, false, EXP_FOGOFWAR));
+    BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
 }
@@ -131,7 +134,7 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedFixture)
     {
         BuildingQuality s2BQ = BuildingQuality(worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y) & 0x7);
         BuildingQuality bq = world.GetNode(pt).bq;
-        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt.x << "," << pt.y
+        BOOST_REQUIRE_MESSAGE(bq == s2BQ, bqNames[bq] << "!=" << bqNames[s2BQ] << " at " << pt
                                                       << " original:" << worldCreator.map.GetMapDataAt(MAP_BQ, pt.x, pt.y));
     }
 }

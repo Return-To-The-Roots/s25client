@@ -138,19 +138,14 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     // increase current_visit_on_roads, so we don't have to clear the visited-states at every run
     currentVisit++;
 
-    // if the counter reaches its maxium, tidy up
+    // if the counter reaches its maximum, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
     {
-        int w = gwb_.GetWidth();
-        int h = gwb_.GetHeight();
-        for(int y = 0; y < h; y++)
+        RTTR_FOREACH_PT(MapPoint, gwb_.GetSize())
         {
-            for(int x = 0; x < w; x++)
-            {
-                noRoadNode* const node = gwb_.GetSpecObj<noRoadNode>(MapPoint(x, y));
-                if(node)
-                    node->last_visit = 0;
-            }
+            noRoadNode* const node = gwb_.GetSpecObj<noRoadNode>(pt);
+            if(node)
+                node->last_visit = 0;
         }
         currentVisit = 1;
     }

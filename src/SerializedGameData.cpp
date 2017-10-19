@@ -17,14 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "SerializedGameData.h"
-
-#include "GameObject.h"
-#include "GamePlayer.h"
-
 #include "CatapultStone.h"
 #include "EventManager.h"
 #include "FOWObjects.h"
 #include "GameEvent.h"
+#include "GameObject.h"
+#include "GamePlayer.h"
 #include "RoadSegment.h"
 #include "Ware.h"
 #include "buildings/BurnedWarehouse.h"
@@ -70,6 +68,8 @@
 #include "figures/nofWarehouseWorker.h"
 #include "figures/nofWellguy.h"
 #include "figures/nofWoodcutter.h"
+#include "helpers/containerUtils.h"
+#include "helpers/converters.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noCharburnerPile.h"
@@ -87,11 +87,14 @@
 #include "nodeObjs/noSkeleton.h"
 #include "nodeObjs/noStaticObject.h"
 #include "nodeObjs/noTree.h"
-
-#include "helpers/containerUtils.h"
-#include "helpers/converters.h"
 #include "libutil/Log.h"
-class BinaryFile;
+
+/// Version of the current game data
+/// Usage: Always save for the most current version but include loading code that can cope with file format changes
+/// If a format change occurred that can still be handled increase this version and handle it in the loading code.
+/// If the change is to big to handle increase the version in Savegame.cpp  and remove all code referencing GetGameDataVersion. Then reset
+/// this number to 1.
+static const unsigned currentGameDataVersion = 1;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {
@@ -186,8 +189,24 @@ SerializedGameData::SerializedGameData() : debugMode(false), objectsCount(0), ex
 
 void SerializedGameData::Prepare(bool reading)
 {
-    if(!reading)
+    static const boost::array<char, 4> versionID = {"VER"};
+    if(reading)
+    {
+        gameDataVersion = 0;
+        // This check can go on next savegame version (> 36)
+        if(GetBytesLeft() >= versionID.size() && std::equal(versionID.begin(), versionID.end(), GetData()))
+        {
+            boost::array<char, 4> versionIDRead;
+            PopRawData(&versionIDRead.front(), versionIDRead.size());
+            gameDataVersion = PopUnsignedInt();
+        }
+    } else
+    {
         Clear();
+        PushRawData(&versionID.front(), versionID.size());
+        PushUnsignedInt(currentGameDataVersion);
+        gameDataVersion = currentGameDataVersion;
+    }
     writtenObjIds.clear();
     readObjects.clear();
     objectsCount = 0;
@@ -321,9 +340,9 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
     fowobj->Serialize(*this);
 }
 
-GameEvent* SerializedGameData::PopEvent()
+const GameEvent* SerializedGameData::PopEvent()
 {
-    return PopObject<GameEvent>(GOT_EVENT);
+    return PopObject<const GameEvent>(GOT_EVENT);
 }
 
 FOWObject* SerializedGameData::PopFOWObject()

@@ -168,7 +168,7 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
         for(unsigned char i = 0; i < 6; ++i)
         {
             // Nicht direkt neben andere Getreidefelder und Gebäude setzen!
-            noType = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetType();
+            noType = gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(i)))->GetType();
             if(noType == NOP_GRAINFIELD || noType == NOP_BUILDING || noType == NOP_BUILDINGSITE)
                 return PQ_NOTPOSSIBLE;
         }

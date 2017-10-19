@@ -30,12 +30,12 @@
 #include "gameData/const_gui_ids.h"
 #include <boost/format.hpp>
 
-class iwMapDebug::DebugPrinter : public IDebugNodePrinter
+class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {
 public:
     DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont) {}
 
-    void print(const MapPoint& pt, const DrawPoint& displayPt) override
+    void onDraw(const MapPoint& pt, const DrawPoint& displayPt) override
     {
         std::string data;
         unsigned coordsColor = 0xFFFFFF00;
@@ -87,7 +87,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 110), _("Map Debug"), LOADER.GetImageN("resource", 41)),
       gwv(gwv), printer(new DebugPrinter(gwv.GetWorld()))
 {
-    gwv.SetDebugNodePrinter(printer);
+    gwv.AddDrawNodeCallback(printer);
 
     ctrlCheck* cbShowCoords = AddCheckBox(0, DrawPoint(15, 25), Extent(200, 20), TC_GREY, _("Show coordinates"), NormalFont);
     cbShowCoords->SetCheck(true);
@@ -128,7 +128,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
 
 iwMapDebug::~iwMapDebug()
 {
-    gwv.SetDebugNodePrinter(NULL);
+    gwv.RemoveDrawNodeCallback(printer);
     delete printer;
 }
 

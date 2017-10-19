@@ -31,10 +31,8 @@
 #include "gameData/TerrainData.h"
 #include <set>
 
-World::World() : size_(MapExtent::all(0)), lt(LT_GREENLAND), noNodeObj(NULL)
+World::World() : lt(LT_GREENLAND), noNodeObj(NULL)
 {
-    noTree::ResetInstanceCounter();
-    GameObject::ResetCounter();
 }
 
 World::~World()
@@ -44,13 +42,12 @@ World::~World()
 
 void World::Init(const MapExtent& mapSize, LandscapeType lt)
 {
-    RTTR_Assert(size_ == MapExtent::all(0));     // Already init
+    RTTR_Assert(GetSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
-    size_ = mapSize;
+    Resize(mapSize);
     this->lt = lt;
-    // Map-Knoten erzeugen
-    nodes.resize(size_.x * size_.y);
-    militarySquares.Init(size_);
+    noTree::ResetInstanceCounter();
+    GameObject::ResetCounter();
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());
@@ -99,147 +96,21 @@ void World::Unload()
     }
 
     catapult_stones.clear();
-
-    size_ = MapExtent::all(0);
-
-    nodes.clear();
-    militarySquares.Clear();
     harbor_pos.clear();
     noNodeObj.reset();
+    Resize(MapExtent::all(0));
 }
 
-MapPoint World::GetNeighbour(const MapPoint pt, const Direction dir) const
+void World::Resize(const MapExtent& newSize)
 {
-    /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
-    Modifications for the dirs:
-    current row:    Even    Odd
-                 W  -1|0   -1|0
-    D           NW  -1|-1   0|-1
-    I           NE   0|-1   1|-1
-    R            E   1|0    1|0
-                SE   0|1    1|1
-                SW  -1|1    0|1
-    */
-
-    MapPoint res;
-    switch(static_cast<Direction::Type>(dir))
+    MapBase::Resize(newSize);
+    nodes.clear();
+    militarySquares.Clear();
+    if(GetSize().x > 0)
     {
-        case Direction::WEST: // -1|0   -1|0
-            res.x = ((pt.x == 0) ? size_.x : pt.x) - 1;
-            res.y = pt.y;
-            break;
-        case Direction::NORTHWEST: // -1|-1   0|-1
-            res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1);
-            res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
-            break;
-        case Direction::NORTHEAST: // 0|-1  -1|-1
-            res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
-            res.y = ((pt.y == 0) ? size_.y : pt.y) - 1;
-            break;
-        case Direction::EAST: // 1|0    1|0
-            res.x = pt.x + 1;
-            if(res.x == size_.x)
-                res.x = 0;
-            res.y = pt.y;
-            break;
-        case Direction::SOUTHEAST: // 1|1    0|1
-            res.x = (!(pt.y & 1)) ? pt.x : ((pt.x == size_.x - 1) ? 0 : pt.x + 1);
-            res.y = pt.y + 1;
-            if(res.y == size_.y)
-                res.y = 0;
-            break;
-        default:
-            RTTR_Assert(dir == Direction::SOUTHWEST);                         // 0|1   -1|1
-            res.x = (pt.y & 1) ? pt.x : (((pt.x == 0) ? size_.x : pt.x) - 1); //-V537
-            res.y = pt.y + 1;
-            if(res.y == size_.y)
-                res.y = 0;
-            break;
+        nodes.resize(prodOfComponents(GetSize()));
+        militarySquares.Init(GetSize());
     }
-
-    // This should be the same, but faster
-    // RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Point<int>(pt), dir)));
-    return res;
-}
-
-MapPoint World::GetNeighbour2(const MapPoint pt, unsigned dir) const
-{
-    return MakeMapPoint(::GetNeighbour2(Point<int>(pt), dir));
-}
-
-unsigned World::CalcDistance(Point<int> p1, Point<int> p2) const
-{
-    int dx = ((p1.x - p2.x) * 2) + (p1.y & 1) - (p2.y & 1);
-    int dy = ((p1.y > p2.y) ? (p1.y - p2.y) : (p2.y - p1.y)) * 2;
-
-    if(dx < 0)
-        dx = -dx;
-
-    if(dy > size_.y)
-    {
-        dy = (size_.y * 2) - dy;
-    }
-
-    if(dx > size_.x)
-    {
-        dx = (size_.x * 2) - dx;
-    }
-
-    dx -= dy / 2;
-
-    return ((dy + (dx > 0 ? dx : 0)) / 2);
-}
-
-ShipDirection World::GetShipDir(MapPoint fromPt, MapPoint toPt) const
-{
-    // First divide into NORTH/SOUTH by only looking at the y-Difference. On equal we choose SOUTH
-    // Then choose between main dir (S/N) or partial E/W:
-    //     6 directions -> 60deg covered per direction, mainDir +- 30deg
-    //     -> Switching at an angle of 60deg compared to x-axis
-    //     hence: |dy/dx| > tan(60deg) -> main dir, else add E or W
-
-    unsigned dy = SafeDiff(fromPt.y, toPt.y);
-    unsigned dx = SafeDiff(fromPt.x, toPt.x);
-    // Handle wrapping. Also swap coordinates when wrapping (we reverse the direction)
-    if(dy > size_.y / 2u)
-    {
-        dy = size_.y - dy;
-        using std::swap;
-        swap(fromPt.y, toPt.y);
-    }
-    if(dx > size_.x / 2u)
-    {
-        dx = size_.x - dx;
-        using std::swap;
-        swap(fromPt.x, toPt.x);
-    }
-    // tan(60deg) ~= 1.73205080757. Divider at |dy| > |dx| * 1.732 using fixed point math
-    // (floating point math may lead to different results among configurations/platforms)
-    bool isMainDir = dy * 1000 > dx * 1732;
-    if(toPt.y < fromPt.y)
-    {
-        // North
-        if(isMainDir)
-            return ShipDirection::NORTH;
-        else if(toPt.x < fromPt.x)
-            return ShipDirection::NORTHWEST;
-        else
-            return ShipDirection::NORTHEAST;
-    } else
-    {
-        // South
-        if(isMainDir)
-            return ShipDirection::SOUTH;
-        else if(toPt.x < fromPt.x)
-            return ShipDirection::SOUTHWEST;
-        else
-            return ShipDirection::SOUTHEAST;
-    }
-}
-
-MapPoint World::MakeMapPoint(Point<int> pt) const
-{
-    return ::MakeMapPoint(pt, size_);
 }
 
 void World::AddFigure(noBase* fig, const MapPoint pt)
@@ -254,7 +125,7 @@ void World::AddFigure(noBase* fig, const MapPoint pt)
 #if RTTR_ENABLE_ASSERTS
     for(unsigned char i = 0; i < 6; ++i)
     {
-        MapPoint nb = GetNeighbour(pt, i);
+        MapPoint nb = GetNeighbour(pt, Direction::fromInt(i));
         RTTR_Assert(!helpers::contains(GetNode(nb).figures, fig)); // Added figure that is in surrounding?
     }
 #endif
@@ -348,7 +219,7 @@ void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
     RecalcShadow(pt);
     for(unsigned i = 0; i < 6; ++i)
-        RecalcShadow(GetNeighbour(pt, i));
+        RecalcShadow(GetNeighbour(pt, Direction::fromInt(i)));
 
     // Abgeleiteter Klasse Bescheid sagen
     AltitudeChanged(pt);

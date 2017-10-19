@@ -32,6 +32,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
+#include <sstream>
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     : IngameWindow(CGI_STATISTICS, IngameWindow::posAtMouse, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)), gwv(gwv)

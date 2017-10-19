@@ -72,7 +72,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
             else
             {
                 // Wege müssen immer von der Flagge aus berechnet werden
-                MapPoint flagPos = gwg->GetNeighbour(pos, 4);
+                MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
                 std::vector<MapPoint> possiblePts =
                   gwg->GetPointsInRadius<0>(flagPos, SHIPWRIGHT_RADIUS, Identity<MapPoint>(), IsNotReserved(*gwg));
 
@@ -242,7 +242,7 @@ void nofShipWright::StartWalkingHome()
 {
     state = STATE_WALKINGHOME;
     // Fahne vor dem Gebäude anpeilen
-    dest = gwg->GetNeighbour(workplace->GetPos(), 4);
+    dest = gwg->GetNeighbour(workplace->GetPos(), Direction::SOUTHEAST);
 
     // Zu Laufen anfangen
     WalkHome();

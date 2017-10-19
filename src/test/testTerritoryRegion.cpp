@@ -16,8 +16,11 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "helpers/containerUtils.h"
+#include "helpers/setTraits.h"
 #include "world/TerritoryRegion.h"
 #include "test/CreateEmptyWorld.h"
+#include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include <boost/assign/std/set.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -29,7 +32,8 @@
 #include <string>
 #include <vector>
 
-typedef WorldFixture<CreateEmptyWorld, 0, 32, 32> EmptyWorldFixture0P;
+// Max tested point is (20, 20) -> size > 20
+typedef WorldFixture<CreateUninitWorld, 0, 24, 22> EmptyWorldFixture0P;
 
 using namespace boost::assign;
 
@@ -106,14 +110,11 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
     for(int i = 0; i < 8; ++i)
     {
         // check the whole area
-        for(int x = 0; x < 30; ++x)
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
-            for(int y = 0; y < 30; ++y)
-            {
-                // Result for this particular point
-                bool result = results.find(MapPoint(x, y)) != results.end();
-                BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, polygon[i], MapPoint(x, y)), result);
-            }
+            // Result for this particular point
+            bool result = helpers::contains(results, pt);
+            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, polygon[i], pt), result);
         }
     }
 
@@ -192,8 +193,8 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
     }
 
     std::vector<MapPoint> fullMapArea;
-    fullMapArea += MapPoint(0, 0), MapPoint(0, world.GetHeight() - 1), MapPoint(world.GetWidth() - 1, world.GetHeight() - 1),
-      MapPoint(world.GetWidth() - 1, 0), MapPoint(0, 0);
+    // Note the usage of width and height to include the border points
+    fullMapArea += MapPoint(0, 0), MapPoint(0, world.GetHeight()), MapPoint(world.GetSize()), MapPoint(world.GetWidth(), 0), MapPoint(0, 0);
     std::vector<MapPoint> fullMapAreaReversed(fullMapArea.size());
     std::reverse_copy(fullMapArea.begin(), fullMapArea.end(), fullMapAreaReversed.begin());
 
@@ -213,14 +214,12 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
         fullArea += MapPoint(0, 0);
 
         // check the whole area
-        for(int x = 1; x < 30; ++x)
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
-            for(int y = 1; y < 30; ++y)
-            {
-                // If the point is in the set, it is in the small rect and should not be in the big rect with this as a hole
-                const bool result = results.find(MapPoint(x, y)) == results.end();
-                BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, fullArea, MapPoint(x, y)), result);
-            }
+            // If the point is in the set, it is in the small rect and should not be in the big rect with this as a hole
+            const bool result = !helpers::contains(results, pt);
+            const bool isValid = TerritoryRegion::IsPointValid(world, fullArea, pt);
+            BOOST_REQUIRE_MESSAGE(isValid == result, isValid << "!=" << result << " at " << pt << " (iteration " << i << ")");
         }
     }
 }

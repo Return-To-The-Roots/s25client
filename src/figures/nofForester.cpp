@@ -129,7 +129,7 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
     // es dürfen außerdem keine Gebäude rund um den Baum stehen
     for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        if(gwg->GetNO(gwg->GetNeighbour(pt, dir))->GetType() == NOP_BUILDING)
+        if(gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(dir)))->GetType() == NOP_BUILDING)
             return PQ_NOTPOSSIBLE;
     }
 

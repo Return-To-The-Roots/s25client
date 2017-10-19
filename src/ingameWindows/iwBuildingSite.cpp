@@ -26,6 +26,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
+#include "gameData/BuildingConsts.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
     : IngameWindow(buildingsite->CreateGUIID(), IngameWindow::posAtMouse, Extent(226, 194),

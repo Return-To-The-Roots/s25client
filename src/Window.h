@@ -23,7 +23,7 @@
 #include "Msgbox.h"
 #include "Rect.h"
 #include "animation/AnimationManager.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/TextureColor.h"
 #include "gameData/NationConsts.h"
 #include "libutil/colors.h"

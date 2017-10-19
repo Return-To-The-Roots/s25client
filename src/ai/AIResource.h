@@ -18,23 +18,24 @@
 #ifndef AIResource_h__
 #define AIResource_h__
 
-namespace AIJH {
-enum Resource
-{
-    WOOD,
-    STONES,
-    GOLD,
-    IRONORE,
-    COAL,
-    GRANITE,
-    PLANTSPACE,
-    BORDERLAND,
-    FISH,
-    MULTIPLE,
-    // special:
-    BLOCKED = 254,
-    NOTHING = 255
-};
-}
+#include <boost/array.hpp>
+#include <boost/core/scoped_enum.hpp>
+
+BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(AIResource, unsigned){WOOD, STONES, GOLD, IRONORE, COAL, GRANITE, PLANTSPACE, BORDERLAND, FISH, MULTIPLE,
+                                                         // special:
+                                                         BLOCKED = 254, NOTHING = 255} BOOST_SCOPED_ENUM_DECLARE_END(AIResource)
+
+  const unsigned NUM_AIRESOURCES = 9;
+const boost::array<unsigned, NUM_AIRESOURCES> SUPPRESS_UNUSED RES_RADIUS = {{
+  8, // Wood
+  8, // Stones
+  2, // Gold
+  2, // Ironore
+  2, // Coal
+  2, // Granite
+  3, // Plantspace
+  5, // Borderland
+  5  // Fish
+}};
 
 #endif // AIResource_h__

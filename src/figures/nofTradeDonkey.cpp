@@ -25,6 +25,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "libutil/colors.h"
@@ -81,7 +82,7 @@ void nofTradeDonkey::Walked()
     {
         // Does target still exist?
         noBase* nob = gwg->GetNO(pos);
-        if(nob->GetType() == NOP_BUILDING && static_cast<noBuilding*>(nob)->IsWarehouse())
+        if(nob->GetType() == NOP_BUILDING && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
             GoalReached();
         else
         {

@@ -24,8 +24,10 @@
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
+#include "helpers/containerUtils.h"
 #include "nobMilitary.h"
 #include "world/GameWorldGame.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include <limits>
 
@@ -40,7 +42,7 @@ nobBaseMilitary::~nobBaseMilitary()
         delete *it;
 }
 
-void nobBaseMilitary::Destroy_nobBaseMilitary()
+void nobBaseMilitary::DestroyBuilding()
 {
     // Soldaten Bescheid sagen, die evtl auf Mission sind
     // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
@@ -93,14 +95,12 @@ void nobBaseMilitary::Destroy_nobBaseMilitary()
 
     // Umgebung nach feindlichen Militärgebäuden absuchen und die ihre Grenzflaggen neu berechnen lassen
     // da, wir ja nicht mehr existieren
-    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 4);
+    sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, Direction::SOUTHEAST);
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
-        if((*it)->GetPlayer() != player && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() != player && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             static_cast<nobMilitary*>(*it)->LookForEnemyBuildings(this);
     }
-
-    Destroy_noBuilding();
 }
 
 void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
@@ -163,10 +163,10 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
             return (*it);
         }
         // Check roughly the distance
-        if(gwg->CalcDistance((*it)->GetPos(), defender->GetPos()) <= 5)
+        if(gwg->CalcDistance(attackerPos, defenderPos) <= 5)
         {
             // Check it further (e.g. if they have to walk around a river...)
-            if(gwg->FindHumanPath((*it)->GetPos(), defender->GetPos(), 5) != 0xFF)
+            if(gwg->FindHumanPath(attackerPos, defenderPos, 5) != 0xFF)
             {
                 (*it)->LetsFight(defender);
                 return (*it);
@@ -186,11 +186,11 @@ struct GetMapPointWithRadius
 
 MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, nofAttacker* soldier)
 {
-    const MapPoint flagPos = gwg->GetNeighbour(pos, 4);
+    const MapPoint flagPos = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
 
     // Diesen Flaggenplatz nur nehmen, wenn es auch nich gerade eingenommen wird, sonst gibts Deserteure!
     // Eigenommen werden können natürlich nur richtige Militärgebäude
-    bool capturing = (type_ >= BLD_BARRACKS && type_ <= BLD_FORTRESS) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
+    bool capturing = (BuildingProperties::IsMilitary(bldType_)) ? (static_cast<nobMilitary*>(this)->IsBeingCaptured()) : false;
 
     if(!capturing && gwg->ValidPointForFighting(flagPos, false))
     {
@@ -307,7 +307,7 @@ void nobBaseMilitary::CheckArrestedAttackers()
         {
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die
             // vor ihm ihn den Weg versperren)?
-            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, 4), 5, false) != 0xFF)
+            if(gwg->FindHumanPath((*it)->GetPos(), gwg->GetNeighbour(pos, Direction::SOUTHEAST), 5, false) != 0xFF)
             {
                 // dann kann der zur Flagge gehen
                 (*it)->AttackFlag();
@@ -342,12 +342,13 @@ bool nobBaseMilitary::SendSuccessor(const MapPoint pt, const unsigned short radi
     return false;
 }
 
-bool nobBaseMilitary::IsAttackable(int playerIdx) const
+bool nobBaseMilitary::IsAttackable(unsigned playerIdx) const
 {
-    if(playerIdx < 0)
-        return true; // Nothing prevents this in general
-    else
-        return gwg->GetPlayer(player).IsAttackable(static_cast<unsigned>(playerIdx));
+    // If we cannot be seen by the player -> not attackable
+    if(gwg->CalcVisiblityWithAllies(pos, playerIdx) != VIS_VISIBLE)
+        return false;
+    // Else it depends on the team settings
+    return gwg->GetPlayer(player).IsAttackable(playerIdx);
 }
 
 bool nobBaseMilitary::IsAggressor(nofAttacker* attacker) const

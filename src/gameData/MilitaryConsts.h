@@ -51,7 +51,7 @@ const int TROOPS_COUNT[NAT_COUNT][4] = {{2, 3, 6, 9}, {2, 3, 6, 9}, {2, 3, 6, 9}
 const unsigned short GOLD_COUNT[NAT_COUNT][4] = {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}};
 
 /// Radien der Militärgebäude
-const boost::array<unsigned, 6> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
+const boost::array<unsigned, 4> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
 // Radius für einzelne Hafen(baustellen)
 const unsigned HARBOR_RADIUS = 8;
 const unsigned HQ_RADIUS = 9;

@@ -21,6 +21,7 @@
 #define containerUtils_h__
 
 #include "traits.h"
+#include <boost/foreach.hpp>
 #include <algorithm>
 
 namespace helpers {
@@ -93,6 +94,7 @@ namespace detail {
             value = boost::is_convertible<T_Type, typename T_Container::key_type>::value
         };
     };
+
     template<class T_Container, class T_Type>
     struct HasCorrectFindMember<T_Container, T_Type, false>
     {
@@ -105,13 +107,13 @@ namespace detail {
     template<class T, class U, bool T_useFind = HasCorrectFindMember<T, U>::value>
     struct FindImpl
     {
-        static typename T::const_iterator find(const T& container, const U& value) { return container.find(value); }
+        static typename GetIteratorType<T>::type find(T& container, const U& value) { return container.find(value); }
     };
 
     template<class T, class U>
     struct FindImpl<T, U, false>
     {
-        static typename T::const_iterator find(const T& container, const U& value)
+        static typename GetIteratorType<T>::type find(T& container, const U& value)
         {
             return std::find(container.begin(), container.end(), value);
         }
@@ -142,12 +144,54 @@ inline void pop_front(T& container)
     detail::PopFrontImpl<T>::pop(container);
 }
 
+/// Effective implementation of find. Uses the containers find function if available
+template<typename T, typename U>
+inline typename GetIteratorType<T>::type find(T& container, const U& value)
+{
+    return detail::FindImpl<T, U>::find(container, value);
+}
+
 /// Returns true if the container contains the given value
 /// Uses the find member function if applicable otherwise uses the std::find method
 template<typename T, typename U>
-bool contains(const T& container, const U& value)
+inline bool contains(const T& container, const U& value)
 {
-    return detail::FindImpl<T, U>::find(container, value) != container.end();
+    return find(container, value) != container.end();
+}
+
+/// Remove duplicate values from the given container without changing the order
+template<class T>
+inline void makeUnique(T& container)
+{
+    // Containers with less than 2 elements are always unique
+    if(container.size() < 2u)
+        return;
+    typename T::iterator itInsert = container.begin();
+    // We always begin inserting at 2nd pos so skip first
+    ++itInsert;
+    // And now start inserting all values starting from the 2nd
+    for(typename T::iterator it = itInsert; it != container.end(); ++it)
+    {
+        // If current element is not found in [begin, insertPos) then add it at insertPos and inc insertPos
+        if(std::find(container.begin(), itInsert, *it) == itInsert)
+            *(itInsert++) = *it;
+    }
+    container.erase(itInsert, container.end());
+}
+
+/// Returns the index of the given element in the container or -1 when not found
+/// Note: Only works for containers with less than 2^31 - 1 elements.
+template<class T_Container, class T_Element>
+inline int indexOf(const T_Container& container, const T_Element element)
+{
+    int index = 0;
+    BOOST_FOREACH(const typename T_Container::value_type& curEl, container)
+    {
+        if(curEl == element)
+            return index;
+        ++index;
+    }
+    return -1;
 }
 
 } // namespace helpers

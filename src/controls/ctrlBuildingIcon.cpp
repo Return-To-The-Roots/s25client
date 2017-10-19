@@ -20,7 +20,7 @@
 #include "Loader.h"
 #include "files.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameData/NationConsts.h"
 #include <string>
 

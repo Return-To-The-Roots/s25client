@@ -74,18 +74,8 @@ nobBaseWarehouse::~nobBaseWarehouse()
         delete(*it);
 }
 
-void nobBaseWarehouse::Destroy_nobBaseWarehouse()
+void nobBaseWarehouse::DestroyBuilding()
 {
-    if(GetBuildingType() != BLD_HARBORBUILDING)
-    {
-        // Aus der Warenhausliste entfernen
-        gwg->GetPlayer(player).RemoveWarehouse(this);
-    } else
-    {
-        // Harbors should also remove the warehouse
-        RTTR_Assert(!helpers::contains(gwg->GetPlayer(player).GetStorehouses(), this));
-    }
-
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
     for(std::list<noFigure*>::iterator it = dependent_figures.begin(); it != dependent_figures.end(); ++it)
         (*it)->GoHome();
@@ -115,7 +105,7 @@ void nobBaseWarehouse::Destroy_nobBaseWarehouse()
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
     gwg->AddFigure(new BurnedWarehouse(pos, player, inventory.real.people), pos);
 
-    Destroy_nobBaseMilitary();
+    nobBaseMilitary::DestroyBuilding();
 }
 
 void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData& sgd) const
@@ -371,7 +361,7 @@ void nobBaseWarehouse::HandleCollectEvent()
 void nobBaseWarehouse::HandleSendoutEvent()
 {
     // Fight or something in front of the house? Try again later!
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4)))
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SOUTHEAST)))
     {
         empty_event = GetEvMgr().AddEvent(this, empty_INTERVAL, 3);
         return;
@@ -564,8 +554,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
                     should.Add((*it)->GetJobType());
             }
         }
-        for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
-            RTTR_Assert(should.people[i] == inventory.visual.people[i]);
+        RTTR_Assert(should.people == inventory.visual.people);
     }
 #endif
 
@@ -577,7 +566,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     }
 
     // Fight or something in front of the house and we are not defending?
-    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, 4)))
+    if(!gwg->IsRoadNodeForFigures(gwg->GetNeighbour(pos, Direction::SOUTHEAST)))
     {
         // there's a fight
         bool found = false;
@@ -1295,6 +1284,11 @@ void nobBaseWarehouse::SetAllInventorySettings(const bool isJob, const std::vect
         store_event = GetEvMgr().AddEvent(this, STORE_INTERVAL, 4);
 }
 
+bool nobBaseWarehouse::IsWareDependent(Ware* ware)
+{
+    return helpers::contains(dependent_wares, ware);
+}
+
 bool nobBaseWarehouse::AreWaresToEmpty() const
 {
     // Prüfen, ob Warentyp ausgelagert werden soll und ob noch Waren davon vorhanden sind
@@ -1407,7 +1401,7 @@ void nobBaseWarehouse::CheckOuthousing(const bool isJob, unsigned job_ware_id)
 }
 
 /// For debug only
-bool nobBaseWarehouse::IsDependentFigure(noFigure* fig)
+bool nobBaseWarehouse::IsDependentFigure(noFigure* fig) const
 {
     return helpers::contains(dependent_figures, fig);
 }

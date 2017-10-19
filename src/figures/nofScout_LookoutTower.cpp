@@ -66,7 +66,7 @@ void nofScout_LookoutTower::WorkAborted()
 void nofScout_LookoutTower::WorkplaceReached()
 {
     // Im enstprechenden Radius alles sichtbar machen
-    gwg->SetVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
+    gwg->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
     SendPostMessage(player,

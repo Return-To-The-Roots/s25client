@@ -28,48 +28,46 @@
 
 BOOST_AUTO_TEST_SUITE(WorldCreationSuite)
 
-typedef WorldFixture<CreateEmptyWorld, 0, 20, 20> WorldFixtureEmpty0P;
-typedef WorldFixture<CreateEmptyWorld, 1, 20, 20> WorldFixtureEmpty1P;
-
-BOOST_FIXTURE_TEST_CASE(NeighbourPts, WorldFixtureEmpty0P)
+BOOST_AUTO_TEST_CASE(NeighbourPts)
 {
     using namespace boost::assign;
+    MapBase world;
+    world.Resize(MapExtent(20, 30));
 
-    typedef Point<int> PointI;
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs: */
-    std::vector<PointI> evenPtMod(6);
-    std::vector<PointI> oddPtMod(6);
+    std::vector<Position> evenPtMod(6);
+    std::vector<Position> oddPtMod(6);
     // In x dir there is no difference
-    evenPtMod[Direction::WEST] = PointI(-1, 0);
-    oddPtMod[Direction::WEST] = PointI(-1, 0);
-    evenPtMod[Direction::EAST] = PointI(1, 0);
-    oddPtMod[Direction::EAST] = PointI(1, 0);
+    evenPtMod[Direction::WEST] = Position(-1, 0);
+    oddPtMod[Direction::WEST] = Position(-1, 0);
+    evenPtMod[Direction::EAST] = Position(1, 0);
+    oddPtMod[Direction::EAST] = Position(1, 0);
     // To north we decrease y and may change x. x changed in NW <=> not changed in NE
-    evenPtMod[Direction::NORTHWEST] = PointI(-1, -1);
-    oddPtMod[Direction::NORTHWEST] = PointI(0, -1);
-    evenPtMod[Direction::NORTHEAST] = PointI(0, -1);
-    oddPtMod[Direction::NORTHEAST] = PointI(1, -1);
+    evenPtMod[Direction::NORTHWEST] = Position(-1, -1);
+    oddPtMod[Direction::NORTHWEST] = Position(0, -1);
+    evenPtMod[Direction::NORTHEAST] = Position(0, -1);
+    oddPtMod[Direction::NORTHEAST] = Position(1, -1);
     // And similar for south. X offsets stay the same!
-    evenPtMod[Direction::SOUTHWEST] = PointI(-1, 1);
-    oddPtMod[Direction::SOUTHWEST] = PointI(0, 1);
-    evenPtMod[Direction::SOUTHEAST] = PointI(0, 1);
-    oddPtMod[Direction::SOUTHEAST] = PointI(1, 1);
-    std::vector<PointI> testPoints;
+    evenPtMod[Direction::SOUTHWEST] = Position(-1, 1);
+    oddPtMod[Direction::SOUTHWEST] = Position(0, 1);
+    evenPtMod[Direction::SOUTHEAST] = Position(0, 1);
+    oddPtMod[Direction::SOUTHEAST] = Position(1, 1);
+    std::vector<Position> testPoints;
     // Test a simple even and odd point
-    testPoints += PointI(10, 10), PointI(10, 9);
+    testPoints += Position(10, 10), Position(10, 9);
     // Test border points
-    testPoints += PointI(0, 0), PointI(0, world.GetHeight() - 1), PointI(world.GetWidth() - 1, 0),
-      PointI(world.GetWidth() - 1, world.GetHeight() - 1);
+    testPoints += Position(0, 0), Position(0, world.GetHeight() - 1), Position(world.GetWidth() - 1, 0),
+      Position(world.GetWidth() - 1, world.GetHeight() - 1);
     // Test border points with 1 offset in Y
-    testPoints += PointI(0, 1), PointI(0, world.GetHeight() - 2), PointI(world.GetWidth() - 1, 1),
-      PointI(world.GetWidth() - 1, world.GetHeight() - 2);
-    BOOST_FOREACH(const PointI& pt, testPoints)
+    testPoints += Position(0, 1), Position(0, world.GetHeight() - 2), Position(world.GetWidth() - 1, 1),
+      Position(world.GetWidth() - 1, world.GetHeight() - 2);
+    BOOST_FOREACH(const Position& pt, testPoints)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
             const bool isEvenRow = pt.y % 2 == 0;
-            const PointI targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];
+            const Position targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];
             const MapPoint targetPoint((targetPointRaw.x + world.GetWidth()) % world.GetWidth(),
                                        (targetPointRaw.y + world.GetHeight()) % world.GetHeight());
             BOOST_REQUIRE_EQUAL(world.CalcDistance(MapPoint(pt), targetPoint), 1u);
@@ -78,8 +76,8 @@ BOOST_FIXTURE_TEST_CASE(NeighbourPts, WorldFixtureEmpty0P)
             // Consistency check: The inverse must also match
             BOOST_REQUIRE_EQUAL(world.GetNeighbour(targetPoint, Direction(dir + 3)), MapPoint(pt));
             // Also the global function must return the same:
-            BOOST_REQUIRE_EQUAL(::GetNeighbour(PointI(pt), Direction::fromInt(dir)), targetPointRaw);
-            BOOST_REQUIRE_EQUAL(world.MakeMapPoint(::GetNeighbour(PointI(pt), Direction::fromInt(dir))), targetPoint);
+            BOOST_REQUIRE_EQUAL(::GetNeighbour(Position(pt), Direction::fromInt(dir)), targetPointRaw);
+            BOOST_REQUIRE_EQUAL(world.MakeMapPoint(::GetNeighbour(Position(pt), Direction::fromInt(dir))), targetPoint);
         }
 
         // Neighbour 2 -> Radius 2, right circle
@@ -113,6 +111,28 @@ BOOST_FIXTURE_TEST_CASE(NeighbourPts, WorldFixtureEmpty0P)
     }
 }
 
+BOOST_AUTO_TEST_CASE(GetIdx)
+{
+    MapBase world;
+    // Small world
+    world.Resize(MapExtent(100, 50));
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 0)), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(99, 0)), 99u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), 100u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), 101u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(99, 49)), 50u * 100u - 1u);
+    // Big world. Index will exceed uint16_t
+    world.Resize(MapExtent(0xFF00, 0xEEEE));
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 0)), 0u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00u - 1, 0)), 0xFF00u - 1);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0, 1)), 0xFF00u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(1, 1)), 0xFF01u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0x100, 1)), 0x10000u);
+    BOOST_REQUIRE_EQUAL(world.GetIdx(MapPoint(0xFF00 - 1, 0xEEEE - 1)), 0xFF00u * 0xEEEEu - 1u);
+}
+
+/// HQ radius is 9 -> min size is 20
+typedef WorldFixture<CreateEmptyWorld, 1, 20, 20> WorldFixtureEmpty1P;
 BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
 {
     GamePlayer& player = world.GetPlayer(0);

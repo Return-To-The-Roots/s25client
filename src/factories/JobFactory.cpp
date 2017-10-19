@@ -137,6 +137,7 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
         case JOB_SERGEANT:
         case JOB_OFFICER:
         case JOB_GENERAL:
+            // TODO: Is this ever called? If yes, then why is the home here set to NULL?
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(goal));
             return new nofPassiveSoldier(pt, player, static_cast<nobBaseMilitary*>(goal), NULL, job_id - JOB_PRIVATE);
         case JOB_PACKDONKEY: return new nofCarrier(nofCarrier::CT_DONKEY, pt, player, 0, goal);

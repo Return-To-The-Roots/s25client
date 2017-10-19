@@ -33,14 +33,11 @@
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
-class AIBase;
+class AIPlayer;
 struct CreateServerInfo;
 class GameMessage;
 class GameMessage_GameCommand;
 class GameServerPlayer;
-namespace AIEvent {
-class Base;
-}
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, private GameServerInterface
 {
@@ -188,7 +185,7 @@ private:
     } countdown;
 
     /// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
-    std::vector<AIBase*> ai_players;
+    std::vector<AIPlayer*> ai_players;
 
     /// AsyncLogs of two async players
     int async_player1, async_player2;
@@ -198,7 +195,7 @@ private:
     LANDiscoveryService lanAnnouncer;
 
 public:
-    AIBase* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
+    AIPlayer* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
     unsigned skiptogf;
 };
 

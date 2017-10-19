@@ -18,11 +18,13 @@
 #define iwBUILDINGS_H_
 
 #include "IngameWindow.h"
+#include "gameTypes/BuildingType.h"
+#include <list>
 
 class GameCommandFactory;
 class GameWorldView;
 
-/// Fenster, welches die Anzahl aller Gebäude und der Baustellena auflistet
+/// Fenster, welches die Anzahl aller Gebäude und der Baustellen auflistet
 class iwBuildings : public IngameWindow
 {
     GameWorldView& gwv;
@@ -36,6 +38,8 @@ private:
     void Msg_PaintAfter() override;
 
     void Msg_ButtonClick(const unsigned ctrl_id) override;
+    template<class T_Window, class T_Building>
+    void GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
 };
 
 #endif

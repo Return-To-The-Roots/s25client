@@ -28,15 +28,15 @@
 #include "nodeObjs/noRoadNode.h"
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, Ware* ware, const bool task)
-    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 4))), carried_ware(ware),
+    : noFigure(JOB_HELPER, pos, player, gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))), carried_ware(ware),
       shouldBringWareIn(task), fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2)) != 0)
 {
     // Zur Inventur hinzufügen, sind ja sonst nicht registriert
     gwg->GetPlayer(player).IncreaseInventoryJob(JOB_HELPER, 1);
 
     /// Straße (also die 1-er-Straße vor dem Lagerhaus) setzen
-    RTTR_Assert(gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))->GetRoute(Direction::NORTHWEST)->GetLength() == 1);
-    cur_rs = gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST))->GetRoute(Direction::NORTHWEST);
+    RTTR_Assert(dynamic_cast<noFlag*>(GetGoal())->GetRoute(Direction::NORTHWEST)->GetLength() == 1);
+    cur_rs = dynamic_cast<noFlag*>(GetGoal())->GetRoute(Direction::NORTHWEST);
     rs_dir = true;
 }
 
@@ -78,7 +78,7 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, 1));
+    const nobBaseWarehouse* wh = gwg->GetSpecObj<nobBaseWarehouse>(gwg->GetNeighbour(pos, Direction::NORTHWEST));
     if(!shouldBringWareIn)
     {
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
@@ -99,7 +99,7 @@ void nofWarehouseWorker::GoalReached()
             carried_ware = NULL;
         } else
             // ansonsten Ware wieder mit reinnehmen
-            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, 1)));
+            carried_ware->Carry(gwg->GetSpecObj<noRoadNode>(gwg->GetNeighbour(pos, Direction::NORTHWEST)));
     } else
     {
         // Ware aufnehmen

@@ -64,7 +64,7 @@ unsigned char TradeRoute::GetNextDir()
     RTTR_Assert(nextDir < 6);
     RTTR_Assert(nextDir == path.route[curRouteIdx].toUInt());
     curRouteIdx++;
-    curPos = gwg.GetNeighbour(curPos, nextDir);
+    curPos = gwg.GetNeighbour(curPos, Direction::fromInt(nextDir));
     return nextDir;
 }
 

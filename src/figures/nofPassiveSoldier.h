@@ -28,7 +28,7 @@ class nofPassiveSoldier : public nofSoldier
 {
 private:
     /// "Heilungs-Event"
-    GameEvent* healing_event;
+    const GameEvent* healing_event;
 
 private:
     /// Eventhandling

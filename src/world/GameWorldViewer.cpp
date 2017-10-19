@@ -28,6 +28,7 @@
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noShip.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameData/BuildingProperties.h"
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
@@ -40,22 +41,19 @@ GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : player
 void GameWorldViewer::InitVisualData()
 {
     visualNodes.resize(gwb.GetWidth() * gwb.GetHeight());
-    for(MapPoint pt(0, 0); pt.y < gwb.GetHeight(); ++pt.y)
+    RTTR_FOREACH_PT(MapPoint, gwb.GetSize())
     {
-        for(pt.x = 0; pt.x < gwb.GetWidth(); ++pt.x)
-        {
-            VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
-            const MapNode& node = gwb.GetNode(pt);
-            vNode.bq = node.bq;
-            // Roads are only overlays. At first we don't have any -> 0=use real road
-            std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
-        }
+        VisualMapNode& vNode = visualNodes[gwb.GetIdx(pt)];
+        const MapNode& node = gwb.GetNode(pt);
+        vNode.bq = node.bq;
+        // Roads are only overlays. At first we don't have any -> 0=use real road
+        std::fill(vNode.roads.begin(), vNode.roads.end(), 0);
     }
     namespace bl = boost::lambda;
     using bl::_1;
     evRoadConstruction = gwb.GetNotifications().subscribe<RoadNote>(bl::bind(&GameWorldViewer::RoadConstructionEnded, this, _1));
     evBQChanged = gwb.GetNotifications().subscribe<NodeNote>(
-      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pt, _1))]);
+      bl::if_(bl::bind(&NodeNote::type, _1) == NodeNote::BQ)[bl::bind(&GameWorldViewer::RecalcBQ, this, bl::bind(&NodeNote::pos, _1))]);
 }
 
 void GameWorldViewer::InitTerrainRenderer()
@@ -66,7 +64,7 @@ void GameWorldViewer::InitTerrainRenderer()
     // Notify renderer about altitude changes
     evAltitudeChanged = gwb.GetNotifications().subscribe<NodeNote>(
       bl::if_(bl::bind(&NodeNote::type, _1)
-              == NodeNote::Altitude)[bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pt, _1), boost::cref(*this))]);
+              == NodeNote::Altitude)[bl::bind(&TerrainRenderer::AltitudeChanged, &tr, bl::bind(&NodeNote::pos, _1), boost::cref(*this))]);
     // And visibility changes
     evVisibilityChanged =
       gwb.GetNotifications().subscribe<PlayerNodeNote>(bl::if_(bl::bind(&PlayerNodeNote::type, _1) == PlayerNodeNote::Visibility)[bl::bind(
@@ -97,7 +95,7 @@ unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if((*it)->GetPlayer() == playerId_ && (*it)->GetBuildingType() >= BLD_BARRACKS && (*it)->GetBuildingType() <= BLD_FORTRESS)
+        if((*it)->GetPlayer() == playerId_ && BuildingProperties::IsMilitary((*it)->GetBuildingType()))
             total_count += static_cast<nobMilitary*>(*it)->GetNumSoldiersForAttack(pt);
     }
 
@@ -210,7 +208,7 @@ noShip* GameWorldViewer::GetShip(const MapPoint pt) const
         if(i == 6)
             curPt = pt;
         else
-            curPt = GetWorld().GetNeighbour(pt, i);
+            curPt = GetWorld().GetNeighbour(pt, Direction::fromInt(i));
 
         const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
         for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)

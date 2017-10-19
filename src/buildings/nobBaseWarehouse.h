@@ -20,7 +20,6 @@
 #pragma once
 
 #include "DataChangedObservable.h"
-#include "helpers/containerUtils.h"
 #include "nobBaseMilitary.h"
 #include "gameTypes/InventorySetting.h"
 #include "gameTypes/VirtualInventory.h"
@@ -71,13 +70,13 @@ protected:
     /// Liste von Waren, die auf dem Weg zum Lagerhaus sind
     std::list<Ware*> dependent_wares;
     /// Produzier-Träger-Event
-    GameEvent* producinghelpers_event;
+    const GameEvent* producinghelpers_event;
     /// Rekrutierungsevent für Soldaten
-    GameEvent* recruiting_event;
+    const GameEvent* recruiting_event;
     /// Auslagerevent für Waren und Figuren
-    GameEvent* empty_event;
+    const GameEvent* empty_event;
     /// Einlagerevent für Waren und Figuren
-    GameEvent* store_event;
+    const GameEvent* store_event;
 
 protected:
     /// Soldaten-Reserve-Einstellung
@@ -144,15 +143,8 @@ public:
 
     ~nobBaseWarehouse() override;
 
-    /// Aufräummethoden
 protected:
-    void Destroy_nobBaseWarehouse();
-
-public:
-    void Destroy() override { Destroy_nobBaseWarehouse(); }
-
-    /// Serialisierungsfunktionen
-protected:
+    void DestroyBuilding() override;
     void Serialize_nobBaseWarehouse(SerializedGameData& sgd) const;
 
 public:
@@ -253,7 +245,7 @@ public:
         dependent_wares.remove(ware);
     }
     /// Überprüft, ob Ware abhängig ist
-    bool IsWareDependent(Ware* ware) { return helpers::contains(dependent_wares, ware); }
+    bool IsWareDependent(Ware* ware);
     /// Prüft, ob es Waren zum Auslagern gibt
     bool AreWaresToEmpty() const;
 
@@ -297,7 +289,7 @@ public:
     void StartTradeCaravane(const GoodType gt, Job job, const unsigned count, const TradeRoute& tr, nobBaseWarehouse* goal);
 
     /// For debug only
-    bool IsDependentFigure(noFigure* fig);
+    bool IsDependentFigure(noFigure* fig) const;
 };
 
 #endif

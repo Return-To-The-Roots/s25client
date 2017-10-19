@@ -20,28 +20,33 @@
 #include "CatapultStone.h"
 #include "FOWObjects.h"
 #include "GameClient.h"
+#include "GamePlayer.h"
 #include "GameServer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
-#include "ai/AIPlayerJH.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
 #include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
+#include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
+#include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <stdexcept>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size)
-    : selPt(0, 0), debugNodePrinter(NULL), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0),
-      gwv(gwv), d_what(0), d_player(0), d_active(false), pos(pos), size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), pos(pos),
+      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
 }
@@ -184,11 +189,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
                     fowobj->Draw(curPos);
             }
 
-            if(debugNodePrinter)
-                debugNodePrinter->print(curPt, curPos);
-
-            if(d_active)
-                DrawAIDebug(curPt, curPos);
+            BOOST_FOREACH(IDrawNodeCallback* callback, drawNodeCallbacks)
+                callback->onDraw(curPt, curPos);
         }
 
         // Figuren zwischen den Zeilen zeichnen
@@ -229,7 +231,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
     if(rb.mode != RM_DISABLED)
     {
         for(unsigned i = 0; i < 6; ++i)
-            road_points[i] = GetWorld().GetNeighbour(rb.point, i);
+            road_points[i] = GetWorld().GetNeighbour(rb.point, Direction::fromInt(i));
 
         const unsigned index = GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
@@ -460,40 +462,10 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
         return;
 
     BuildingType bt = building->GetBuildingType();
-    if((bt >= BLD_BARRACKS && bt <= BLD_FORTRESS) || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) // is it a military building?
+    if(BuildingProperties::IsMilitary(bt) || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) // is it a military building?
     {
         if(gwv.GetNumSoldiersForAttack(building->GetPos())) // soldiers available for attack?
             LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
-    }
-}
-
-void GameWorldView::DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos)
-{
-    AIPlayerJH* ai = dynamic_cast<AIPlayerJH*>(GAMESERVER.GetAIPlayer(d_player));
-    if(!ai)
-        return;
-
-    if(d_what == 1)
-    {
-        if(ai->GetAINode(pt).bq && ai->GetAINode(pt).bq < 7) //-V807
-            LOADER.GetMapImageN(49 + ai->GetAINode(pt).bq)->DrawFull(curPos);
-    } else if(d_what == 2)
-    {
-        if(ai->GetAINode(pt).reachable)
-            LOADER.GetImageN("io", 32)->DrawFull(curPos);
-        else
-            LOADER.GetImageN("io", 40)->DrawFull(curPos);
-    } else if(d_what == 3)
-    {
-        if(ai->GetAINode(pt).farmed)
-            LOADER.GetImageN("io", 32)->DrawFull(curPos);
-        else
-            LOADER.GetImageN("io", 40)->DrawFull(curPos);
-    } else if(d_what > 3 && d_what < 13)
-    {
-        std::stringstream ss;
-        ss << ai->GetResMapValue(pt, AIJH::Resource(d_what - 4));
-        NormalFont->Draw(curPos, ss.str(), 0, 0xFFFFFF00);
     }
 }
 
@@ -587,6 +559,19 @@ void GameWorldView::MoveToLastPosition()
     MoveTo(lastOffset.x, lastOffset.y, true);
 
     lastOffset = newLastOffset;
+}
+
+void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
+{
+    RTTR_Assert(newCallback);
+    drawNodeCallbacks.push_back(newCallback);
+}
+
+void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
+{
+    std::vector<IDrawNodeCallback*>::iterator itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
+    RTTR_Assert(itPos != drawNodeCallbacks.end());
+    drawNodeCallbacks.erase(itPos);
 }
 
 void GameWorldView::CalcFxLx()

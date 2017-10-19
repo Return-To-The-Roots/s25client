@@ -16,13 +16,17 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "AIPlayer.h"
+#include "AIFactory.h"
+#include "ai/DummyAI.h"
+#include "ai/aijh/AIPlayerJH.h"
+#include "gameTypes/AIInfo.h"
 
-AIPlayer::AIPlayer(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIBase(playerId, gwb, level)
+AIPlayer* AIFactory::Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world)
 {
-}
-
-/// Wird jeden GF aufgerufen und die KI kann hier entsprechende Handlungen vollziehen
-void AIPlayer::RunGF(const unsigned /*gf*/, bool /*gfisnwf*/)
-{
+    switch(aiInfo.type)
+    {
+        case AI::DUMMY: return new DummyAI(playerId, world, aiInfo.level); break;
+        case AI::DEFAULT:
+        default: return new AIJH::AIPlayerJH(playerId, world, aiInfo.level); break;
+    }
 }

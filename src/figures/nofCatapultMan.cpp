@@ -250,7 +250,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
                 unsigned d = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
 
-                destMap = gwg->GetNeighbour(target.pos, d);
+                destMap = gwg->GetNeighbour(target.pos, Direction::fromInt(d));
             }
 
             unsigned char shooting_dir = (7 + wheel_steps) % 6;

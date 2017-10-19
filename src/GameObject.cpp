@@ -63,8 +63,8 @@ void GameObject::Serialize(SerializedGameData& /*sgd*/) const
 
 GameObject::~GameObject()
 {
-    // RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(this));
-    RTTR_Assert(!gwg || !GetEvMgr().ObjectIsInKillList(this));
+    // RTTR_Assert(!gwg || !GetEvMgr().ObjectHasEvents(*this));
+    RTTR_Assert(!gwg || !GetEvMgr().IsObjectInKillList(*this));
     // ein Objekt weniger
     --objCounter_;
 }

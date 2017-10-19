@@ -19,51 +19,53 @@
 
 #pragma once
 
-#include "ai/AIInterface.h"
 #include "ai/AIResource.h"
+#include "world/NodeMapBase.h"
+#include "gameTypes/BuildingQuality.h"
+#include "gameTypes/BuildingType.h"
 #include <vector>
+
+class AIInterface;
 namespace AIJH {
-struct Node;
-}
+class AIMap;
 
 class AIResourceMap
 {
 public:
-    AIResourceMap() : res(AIJH::NOTHING), aii(NULL), nodes(NULL), resRadius(0) {} // Default ctor to allow storage in arrays
-    AIResourceMap(const AIJH::Resource res, const AIInterface& aii, const std::vector<AIJH::Node>& nodes);
+    AIResourceMap(const AIResource res, const AIInterface& aii, const AIMap& aiMap);
     ~AIResourceMap();
 
     /// Initialize the resource map
     void Init();
     void Recalc();
-
-    /// Changes a single resource map around point pt in radius; to every point around pt distanceFromCenter * value is added
+    /// Changes every point around pt in radius; to every point around pt distanceFromCenter * value is added
     void Change(const MapPoint pt, unsigned radius, int value);
     void Change(const MapPoint pt, int value) { Change(pt, resRadius, value); }
-
     /// Finds a good position for a specific resource in an area using the resource maps,
     /// first position satisfying threshold is returned, returns false if no such position found
-    bool FindGoodPosition(MapPoint& pt, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true);
-
+    MapPoint FindGoodPosition(const MapPoint& pt, int threshold, BuildingQuality size, int radius = -1, bool inTerritory = true) const;
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
-    bool FindBestPosition(MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true);
-    bool FindBestPosition(MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true)
+    MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int minimum, int radius = -1, bool inTerritory = true) const;
+    MapPoint FindBestPosition(const MapPoint& pt, BuildingQuality size, int radius = -1, bool inTerritory = true) const
     {
         return FindBestPosition(pt, size, 1, radius, inTerritory);
     }
 
-    int& operator[](const MapPoint& pt) { return map[aii->GetIdx(pt)]; }
-    int operator[](const MapPoint& pt) const { return map[aii->GetIdx(pt)]; }
+    int& operator[](const MapPoint& pt) { return map[pt]; }
+    int operator[](const MapPoint& pt) const { return map[pt]; }
 
 private:
     void AdjustRatingForBlds(BuildingType bld, unsigned radius, int value);
+    /// Which resource is stored in the map and radius of affected nodes
+    const AIResource res;
+    const unsigned resRadius;
 
-    std::vector<int> map;
-    AIJH::Resource res; // Do not change! const ommited to to able to store this in a vector
-    const AIInterface* aii;
-    const std::vector<AIJH::Node>* nodes;
-    unsigned resRadius; // Do not change! const ommited to to able to store this in a vector
+    NodeMapBase<int> map;
+    const AIInterface& aii;
+    const AIMap& aiMap;
 };
+
+} // namespace AIJH
 
 #endif //! AIRESOURCEMAP_H_INCLUDED

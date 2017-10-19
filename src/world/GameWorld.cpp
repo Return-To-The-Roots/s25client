@@ -23,11 +23,11 @@
 #include "SerializedGameData.h"
 #include "buildings/noBuildingSite.h"
 #include "lua/LuaInterfaceGame.h"
+#include "luaIncludes.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-
-#include "luaIncludes.h"
+#include "gameData/BuildingProperties.h"
 #include "libsiedler2/prototypen.h"
 #include <boost/filesystem.hpp>
 
@@ -48,6 +48,8 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
 
+    BuildingProperties::Init();
+
     if(bfs::exists(luaFilePath))
     {
         lua.reset(new LuaInterfaceGame(*this));
@@ -66,7 +68,9 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     MapLoader loader(*this, players);
-    if(!loader.Load(map, GetGGS().randomStartPosition, GetGGS().exploration))
+    if(!loader.Load(map, GetGGS().exploration))
+        return false;
+    if(!loader.PlaceHQs(*this, GetGGS().randomStartPosition))
         return false;
 
     CreateTradeGraphs();
@@ -107,6 +111,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
 
     // Initialisierungen
     Init(size, lt);
+    BuildingProperties::Init();
 
     // Obj-ID-Counter setzen
     GameObject::SetObjIDCounter(sgd.PopUnsignedInt());

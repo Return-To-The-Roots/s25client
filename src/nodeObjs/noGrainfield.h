@@ -42,7 +42,7 @@ private:
     unsigned char size;
 
     /// Wachs-Event
-    GameEvent* event;
+    const GameEvent* event;
 
 public:
     noGrainfield(const MapPoint pt);

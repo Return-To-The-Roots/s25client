@@ -17,8 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GameClient.h"
-#include "RTTR_Version.h"
-
 #include "ClientInterface.h"
 #include "EventManager.h"
 #include "GameEvent.h"
@@ -27,19 +25,21 @@
 #include "GameManager.h"
 #include "GameMessages.h"
 #include "GameObject.h"
+#include "GamePlayer.h"
 #include "GameServer.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
+#include "RTTR_Version.h"
 #include "Random.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
 #include "ai/AIPlayer.h"
-#include "ai/AIPlayerJH.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "factories/AIFactory.h"
 #include "files.h"
 #include "helpers/Deleter.h"
 #include "lua/LuaInterfaceGame.h"
@@ -272,8 +272,6 @@ void GameClient::StartGame(const unsigned random_init)
     // Store settings (only reference stored in World)
     ggs = gameLobby->GetSettings();
     gw.reset(new GameWorld(std::vector<PlayerInfo>(gameLobby->GetPlayers().begin(), gameLobby->GetPlayers().end()), ggs, *em));
-    // Init data
-    GameObject::SetPointers(gw.get());
     gw->GetPostMgr().AddPostBox(playerId_);
     // Release lobby
     gameLobby.reset();
@@ -362,7 +360,6 @@ void GameClient::RealStart()
 void GameClient::ExitGame()
 {
     RTTR_Assert(state == CS_GAME || state == CS_LOADING);
-    GameObject::SetPointers(NULL);
     // Spielwelt zerstören
     human_ai.reset();
     gw.reset();
@@ -1561,7 +1558,7 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
-unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
+unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
@@ -1572,7 +1569,7 @@ unsigned GameClient::Interpolate(unsigned max_val, GameEvent* ev)
     return result;
 }
 
-int GameClient::Interpolate(int x1, int x2, GameEvent* ev)
+int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
@@ -1734,13 +1731,9 @@ bool GameClient::IsSinglePlayer() const
     return gw->IsSinglePlayer();
 }
 
-/// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss (zusätzlich noch mit den GameServer)
-AIBase* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
+AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 {
-    if(aiInfo.type == AI::DEFAULT)
-        return new AIPlayerJH(playerId, *gw, aiInfo.level);
-    else
-        return new AIPlayer(playerId, *gw, aiInfo.level);
+    return AIFactory::Create(aiInfo, playerId, *gw);
 }
 
 const GlobalGameSettings& GameClient::GetGGS() const

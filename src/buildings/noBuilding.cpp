@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "noBuilding.h"
+#include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -31,12 +32,15 @@ noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsign
 {
 }
 
-void noBuilding::Destroy_noBuilding()
+void noBuilding::Destroy()
 {
-    // Feuer erzeugen (bei Hütten und Bergwerken kleine Feuer, bei allen anderen große!)
-    // Feuer setzen
+    // First we have to remove the building from the map and the player
+    // Replace by fire (huts and mines become small fire, rest big)
     gwg->SetNO(pos, new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), true);
-
+    gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
+    // Destroy derived buildings
+    DestroyBuilding();
+    // Then go further down the chain
     Destroy_noBaseBuilding();
 }
 
@@ -58,24 +62,31 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id) : noBaseB
 
 void noBuilding::DrawBaseBuilding(DrawPoint drawPt)
 {
-    LOADER.building_cache[nation][type_][0].draw(drawPt);
+    LOADER.building_cache[nation][bldType_][0].draw(drawPt);
     DrawDoor(drawPt);
 }
 
 void noBuilding::DrawDoor(DrawPoint drawPt)
 {
-    if(!opendoor)
+    if(!IsDoorOpen())
         return;
     glArchivItem_Bitmap* doorImg = GetDoorImage();
     if(doorImg)
         doorImg->DrawFull(drawPt);
 }
 
-void noBuilding::GotWorker(Job /*job*/, noFigure* /*worker*/)
+void noBuilding::OpenDoor()
 {
+    ++opendoor;
+}
+
+void noBuilding::CloseDoor()
+{
+    RTTR_Assert(IsDoorOpen());
+    --opendoor;
 }
 
 FOWObject* noBuilding::CreateFOWObject() const
 {
-    return new fowBuilding(type_, nation);
+    return new fowBuilding(bldType_, nation);
 }

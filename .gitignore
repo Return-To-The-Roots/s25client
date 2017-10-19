@@ -51,6 +51,8 @@
 /build/S2
 /build/Debug
 /build/Release
+/build/RelWithDebInfo
+/build/MinSizeRel
 /build/Win32
 /build/x64
 /build/DATA

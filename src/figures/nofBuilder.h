@@ -44,7 +44,7 @@ private:
     /// Baustelle des Bauarbeiters
     noBuildingSite* building_site;
 
-    // GameEvent* current_ev;
+    // const GameEvent* current_ev;
 
     /// X,Y relativ zur Baustelle in Pixeln
     /// next ist der angesteuerte Punkt

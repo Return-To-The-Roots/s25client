@@ -21,6 +21,7 @@
 #include "Identity.h"
 #include "ReturnConst.h"
 #include "helpers/Deleter.h"
+#include "world/MapBase.h"
 #include "world/MilitarySquares.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GO_Type.h"
@@ -38,11 +39,8 @@ class CatapultStone;
 class FOWObject;
 class noBase;
 struct ShipDirection;
-template<typename T>
-struct Point;
-
 /// Base class representing the world itself, no algorithms, handlers etc!
-class World
+class World : public MapBase
 {
     /// Informationen über die Weltmeere
     struct Sea
@@ -57,8 +55,6 @@ class World
     friend class MapLoader;
     friend class MapSerializer;
 
-    /// Size of the map in nodes
-    MapExtent size_;
     /// Landschafts-Typ
     LandscapeType lt;
 
@@ -71,6 +67,7 @@ class World
     std::vector<HarborPos> harbor_pos;
 
     boost::interprocess::unique_ptr<noBase, Deleter<noBase> > noNodeObj;
+    void Resize(const MapExtent& newSize) override;
 
 protected:
     /// Internal method for access to nodes with write access
@@ -90,65 +87,8 @@ public:
     /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 
-    /// Return the size of the world
-    unsigned short GetWidth() const { return GetSize().x; }
-    unsigned short GetHeight() const { return GetSize().y; }
-    MapExtent GetSize() const { return size_; }
-
     /// Return the type of the landscape
     LandscapeType GetLandscapeType() const { return lt; }
-
-    /// Get coordinates of neighbor in the given direction
-    MapPoint GetNeighbour(const MapPoint pt, const Direction dir) const;
-    /// Return neighboring point (2nd layer: dir 0-11)
-    MapPoint GetNeighbour2(const MapPoint, unsigned dir) const;
-    // Convenience functions for the above function
-    MapCoord GetXA(const MapCoord x, const MapCoord y, unsigned dir) const;
-    MapCoord GetXA(const MapPoint pt, unsigned dir) const;
-    MapCoord GetYA(const MapCoord x, const MapCoord y, unsigned dir) const;
-    MapPoint GetNeighbour(const MapPoint pt, const unsigned dir) const;
-
-    /// Return all points in a radius around pt (excluding pt) that satisfy a given condition.
-    /// Points can be transformed (e.g. to flags at those points) by the functor taking a map point and a radius
-    /// Number of results is constrained to maxResults (if > 0)
-    /// Overloads are used due to missing template default args until C++11
-    template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
-    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt,
-                                                                       T_IsValidPt isValid, bool includePt = false) const;
-
-    template<class T_TransformPt>
-    std::vector<typename T_TransformPt::result_type> GetPointsInRadius(const MapPoint pt, const unsigned radius,
-                                                                       T_TransformPt transformPt) const
-    {
-        return GetPointsInRadius<0>(pt, radius, transformPt, ReturnConst<bool, true>());
-    }
-
-    std::vector<MapPoint> GetPointsInRadius(const MapPoint pt, const unsigned radius) const
-    {
-        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>());
-    }
-
-    std::vector<MapPoint> GetPointsInRadiusWithCenter(const MapPoint pt, const unsigned radius) const
-    {
-        return GetPointsInRadius<0>(pt, radius, Identity<MapPoint>(), ReturnConst<bool, true>(), true);
-    }
-
-    /// Returns true, if the IsValid functor returns true for any point in the given radius
-    /// If includePt is true, then the point itself is also checked
-    template<class T_IsValidPt>
-    bool CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
-
-    /// Return the distance between 2 points on the map (includes wrapping around map borders)
-    unsigned CalcDistance(const Point<int> p1, const Point<int> p2) const;
-    unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(Point<int>(p1), Point<int>(p2)); }
-    /// Return the direction for ships for going from one point to another
-    ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
-
-    /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
-    MapPoint MakeMapPoint(Point<int> pt) const;
-
-    /// Returns the linear index for a map point
-    unsigned GetIdx(const MapPoint pt) const;
 
     /// Return the node at that point
     const MapNode& GetNode(const MapPoint pt) const;
@@ -257,30 +197,6 @@ protected:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-// Convenience functions
-inline MapCoord World::GetXA(const MapCoord x, const MapCoord y, unsigned dir) const
-{
-    return GetXA(MapPoint(x, y), dir);
-}
-inline MapCoord World::GetXA(const MapPoint pt, unsigned dir) const
-{
-    return GetNeighbour(pt, dir).x;
-}
-inline MapCoord World::GetYA(const MapCoord x, const MapCoord y, unsigned dir) const
-{
-    return GetNeighbour(MapPoint(x, y), dir).y;
-}
-inline MapPoint World::GetNeighbour(const MapPoint pt, const unsigned dir) const
-{
-    return GetNeighbour(pt, Direction::fromInt(dir));
-}
-
-inline unsigned World::GetIdx(const MapPoint pt) const
-{
-    RTTR_Assert(pt.x < size_.x && pt.y < size_.y);
-    return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x);
-}
-
 inline const MapNode& World::GetNode(const MapPoint pt) const
 {
     return nodes[GetIdx(pt)];
@@ -299,72 +215,6 @@ inline const MapNode& World::GetNeighbourNode(const MapPoint pt, Direction dir) 
 inline MapNode& World::GetNeighbourNodeInt(const MapPoint pt, Direction dir)
 {
     return GetNodeInt(GetNeighbour(pt, dir));
-}
-
-template<unsigned T_maxResults, class T_TransformPt, class T_IsValidPt>
-inline std::vector<typename T_TransformPt::result_type>
-World::GetPointsInRadius(const MapPoint pt, const unsigned radius, T_TransformPt transformPt, T_IsValidPt isValid, bool includePt) const
-{
-    typedef typename T_TransformPt::result_type Element;
-    std::vector<Element> result;
-    if(includePt)
-    {
-        Element el = transformPt(pt, 0);
-        if(isValid(el))
-        {
-            result.push_back(el);
-            if(T_maxResults == 1u)
-                return result;
-        }
-    }
-    MapPoint curStartPt = pt;
-    for(unsigned r = 1; r <= radius; ++r)
-    {
-        // Go one level/hull to the left
-        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
-        // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
-        MapPoint curPt = curStartPt;
-        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
-        {
-            for(unsigned step = 0; step < r; ++step)
-            {
-                Element el = transformPt(curPt, r);
-                if(isValid(el))
-                {
-                    result.push_back(el);
-                    if(T_maxResults && result.size() >= T_maxResults)
-                        return result;
-                }
-                curPt = GetNeighbour(curPt, Direction(i).toUInt());
-            }
-        }
-    }
-    return result;
-}
-
-template<class T_IsValidPt>
-inline bool World::CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const
-{
-    if(includePt && isValid(pt))
-        return true;
-    MapPoint curStartPt = pt;
-    for(unsigned r = 1; r <= radius; ++r)
-    {
-        // Go one level/hull to the left
-        curStartPt = GetNeighbour(curStartPt, Direction::WEST);
-        // Now iterate over the "circle" of radius r by going r steps in one direction, turn right and repeat
-        MapPoint curPt = curStartPt;
-        for(unsigned i = Direction::NORTHEAST; i < Direction::NORTHEAST + Direction::COUNT; ++i)
-        {
-            for(unsigned step = 0; step < r; ++step)
-            {
-                if(isValid(curPt))
-                    return true;
-                curPt = GetNeighbour(curPt, Direction(i).toUInt());
-            }
-        }
-    }
-    return false;
 }
 
 #endif // World_h__

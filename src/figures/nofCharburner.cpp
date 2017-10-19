@@ -160,13 +160,13 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
     for(unsigned char i = 0; i < 6; ++i)
     {
         // Don't set it next to buildings and other charburner piles and grain fields
-        BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, i))->GetBM();
+        BlockingManner bm = gwg->GetNO(gwg->GetNeighbour(pt, Direction::fromInt(i)))->GetBM();
         if(bm != BlockingManner::None)
             return PQ_NOTPOSSIBLE;
         // darf außerdem nicht neben einer Straße liegen
         for(unsigned char j = 0; j < 6; ++j)
         {
-            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, i), Direction::fromInt(j)))
+            if(gwg->GetPointRoad(gwg->GetNeighbour(pt, Direction::fromInt(i)), Direction::fromInt(j)))
                 return PQ_NOTPOSSIBLE;
         }
     }
@@ -217,14 +217,9 @@ void nofCharburner::WalkingStarted()
 }
 
 /// Draws the figure while returning home / entering the building (often carrying wares)
-void nofCharburner::DrawReturnStates(DrawPoint drawPt)
+void nofCharburner::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    // Carry coal?
-    if(ware == GD_COAL)
-        DrawWalking(drawPt, "charburner_bobs", 200);
-    else
-        // Draw normal walking otherwise
-        DrawWalking(drawPt);
+    DrawWalking(drawPt, "charburner_bobs", 200);
 }
 
 /// Draws the charburner while walking

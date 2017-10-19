@@ -19,6 +19,7 @@
 #include "world/MapLoader.h"
 #include "Random.h"
 #include "buildings/nobHQ.h"
+#include "factories/BuildingFactory.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
 #include "world/World.h"
@@ -42,7 +43,7 @@ MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : w
 {
 }
 
-bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Exploration exploration)
+bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
     world.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
@@ -58,10 +59,12 @@ bool MapLoader::Load(const glArchivItem_Map& map, bool randomStartPos, Explorati
     if(exploration == EXP_FOGOFWARE_EXPLORED)
         SetMapExplored(world, playerNations.size());
 
-    if(!PlaceHQs(world, hqPositions, playerNations, randomStartPos))
-        return false;
-
     return true;
+}
+
+bool MapLoader::PlaceHQs(GameWorldBase& world, bool randomStartPos)
+{
+    return PlaceHQs(world, hqPositions, playerNations, randomStartPos);
 }
 
 void MapLoader::InitShadows(World& world)
@@ -370,7 +373,8 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
     }
 }
 
-bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations, bool randomStartPos)
+bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations,
+                         bool randomStartPos)
 {
     // random locations? -> randomize them :)
     if(randomStartPos)
@@ -391,8 +395,8 @@ bool MapLoader::PlaceHQs(World& world, std::vector<MapPoint> hqPositions, const 
             LOG.write(_("Player %u does not have a valid start position!")) % i;
             return false;
         }
-        nobHQ* hq = new nobHQ(hqPositions[i], i, playerNations[i]);
-        world.SetNO(hqPositions[i], hq);
+
+        BuildingFactory::CreateBuilding(world, BLD_HEADQUARTERS, hqPositions[i], i, playerNations[i]);
     }
     return true;
 }
@@ -427,7 +431,7 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         bool foundCoast = false;
         for(unsigned z = 0; z < 6; ++z)
         {
-            const unsigned short seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, z));
+            const unsigned short seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, Direction::fromInt(z)));
             it->cps[z].seaId = seaId;
             if(seaId)
                 foundCoast = true;
@@ -526,7 +530,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
             {
                 if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
                     continue;
-                MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
+                MapPoint curPt = world.GetNeighbour(curNode.pos, Direction::fromInt(dir));
                 unsigned idx = world.GetIdx(curPt);
 
                 if((ptToVisitOrHb[idx] > 1) && !hbFound[ptToVisitOrHb[idx]]) // found harbor we haven't already found
@@ -575,7 +579,7 @@ unsigned MapLoader::MeasureSea(World& world, const MapPoint start, unsigned shor
 
         for(unsigned i = 0; i < 6; ++i)
         {
-            MapPoint neighbourPt = world.GetNeighbour(p, i);
+            MapPoint neighbourPt = world.GetNeighbour(p, Direction::fromInt(i));
             if(visited[world.GetIdx(neighbourPt)])
                 continue;
             visited[world.GetIdx(neighbourPt)] = true;

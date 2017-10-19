@@ -214,7 +214,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(unsigned i = 0; i < 3; ++i)
         {
-            if(isOnRoad(world.GetNeighbour(pt, i)))
+            if(isOnRoad(world.GetNeighbour(pt, Direction::fromInt(i))))
             {
                 curBQ = BQ_HOUSE;
                 break;
@@ -250,7 +250,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         return curBQ;
 
     // If we can build the house flag -> OK
-    if((*this)(world.GetNeighbour(pt, 4), isOnRoad, true) != BQ_NOTHING)
+    if((*this)(world.GetNeighbour(pt, Direction::SOUTHEAST), isOnRoad, true) != BQ_NOTHING)
         return curBQ;
 
     // If not, we could still build a flag, unless there is another one around

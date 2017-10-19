@@ -18,14 +18,14 @@
 #ifndef BuildingCount_h__
 #define BuildingCount_h__
 
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include <boost/array.hpp>
 
 /// Number of buildings and building sites per type
 struct BuildingCount
 {
-    boost::array<unsigned, BLD_COUNT> buildings;
-    boost::array<unsigned, BLD_COUNT> buildingSites;
+    boost::array<unsigned, BUILDING_TYPES_COUNT> buildings;
+    boost::array<unsigned, BUILDING_TYPES_COUNT> buildingSites;
 };
 
 #endif // BuildingCount_h__

@@ -52,7 +52,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
                    Extent(2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x, (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1))
                      + bldProdContentOffset,
                    _("Productivity"), LOADER.GetImageN("resource", 41)),
-      player(player), percents(BLD_COUNT, 0)
+      player(player), percents(BUILDING_TYPES_COUNT, 0)
 {
     const Nation playerNation = player.nation;
     for(unsigned y = 0; y < BUILDINGS_COUNT / 2 + BUILDINGS_COUNT % 2; ++y)
@@ -93,7 +93,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 /// Aktualisieren der Prozente
 void iwBuildingProductivities::UpdatePercents()
 {
-    player.CalcProductivities(percents);
+    player.GetBuildingRegister().CalcProductivities(percents);
 }
 
 /// Produktivitäts-percentbars aktualisieren

@@ -27,8 +27,6 @@ class nobBaseMilitary;
 class nofActiveSoldier : public nofSoldier
 {
 public:
-    friend class noFighting;
-
     /// State of each soldier
     enum SoldierState
     {
@@ -56,12 +54,11 @@ public:
         STATE_DEFENDING_WAITING,    // Waiting at the flag for further attackers
         STATE_DEFENDING_WALKINGTO,  // Goes to the flag before the fight
         STATE_DEFENDING_WALKINGFROM // Goes into the building after the fight
-
     };
 
 protected:
     /// State of the soldier, always has to be a valid value
-    enum SoldierState state;
+    SoldierState state;
 
 private:
     /// Current enemy when fighting in the nofActiveSoldier modes (and only in this case!)
@@ -139,6 +136,8 @@ public:
     virtual void HomeDestroyed() = 0;
     /// When the soldier is still hanging in the going-out waiting queue in the home military building
     virtual void HomeDestroyedAtBegin() = 0;
+    /// Takes a hit from another soldier. Reduces hitpoints by one
+    void TakeHit();
     /// When a fight was won
     virtual void WonFighting() = 0;
     /// When a fight was lost

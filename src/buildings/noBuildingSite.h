@@ -19,13 +19,8 @@
 #define NO_BUILDINGSITE_H_
 
 #include "noBaseBuilding.h"
+#include "gameTypes/GoodTypes.h"
 #include <list>
-
-// Enumforwarddeklaration bei VC nutzen
-#ifdef _MSC_VER
-enum BuildingType;
-#else
-#endif
 
 class nofBuilder;
 class nofPlaner;
@@ -87,6 +82,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override { Serialize_noBuildingSite(sgd); }
 
     GO_Type GetGOT() const override { return GOT_BUILDINGSITE; }
+    unsigned GetMilitaryRadius() const override;
 
     void Draw(DrawPoint drawPt) override;
 

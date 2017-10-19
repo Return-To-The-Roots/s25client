@@ -107,18 +107,19 @@ void nofFisher::WorkStarted()
 {
     unsigned char doffset = RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 6);
     // Punkt mit Fisch suchen (mit zufälliger Richtung beginnen)
-    fishing_dir = 0xFF;
+    Direction tmpFishingDir;
     for(unsigned char i = 0; i < 6; ++i)
     {
-        fishing_dir = (i + doffset) % 6;
-        unsigned char neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources;
+        tmpFishingDir = Direction(i + doffset);
+        unsigned char neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources;
         if(neighbourRes > 0x80 && neighbourRes < 0x90)
             break;
     }
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, fishing_dir)).resources - 0x80) * 10;
+    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources - 0x80) * 10;
     successful = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 100) < probability);
+    fishing_dir = tmpFishingDir.toUInt();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
@@ -128,7 +129,7 @@ void nofFisher::WorkFinished()
     if(successful)
     {
         if(!gwg->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-            gwg->ReduceResource(gwg->GetNeighbour(pos, fishing_dir));
+            gwg->ReduceResource(gwg->GetNeighbour(pos, Direction::fromInt(fishing_dir)));
         ware = GD_FISH;
     } else
         ware = GD_NOTHING;
@@ -144,7 +145,8 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
     // irgendwo drumherum muss es Fisch geben
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, i)).resources > 0x80 && gwg->GetNode(gwg->GetNeighbour(pt, i)).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources > 0x80
+           && gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources < 0x90)
             return PQ_CLASS1;
     }
 

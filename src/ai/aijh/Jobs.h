@@ -21,41 +21,19 @@
 
 //#define DEBUG_AI
 
-#include "AIEvents.h"
-#include "ai/AIResource.h"
-#include "gameTypes/BuildingTypes.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
-
 #include <vector>
 
-class AIPlayerJH;
-struct PositionSearch;
+namespace AIEvent {
+class Base;
+}
 
 namespace AIJH {
-const unsigned RES_TYPE_COUNT = 9;
-const unsigned RES_RADIUS[RES_TYPE_COUNT] = {
-  8, // Wood
-  8, // Stones
-  2, // Gold
-  2, // Ironore
-  2, // Coal
-  2, // Granite
-  3, // Plantspace
-  5, // Borderland
-  5  // Fish
-};
 
-struct Node
-{
-    BuildingQuality bq;
-    Resource res;
-    bool owned;
-    bool reachable;
-    char failed_penalty; // when a node was marked reachable, but building failed, this field is >0
-    bool border;
-    bool farmed;
-};
+class AIPlayerJH;
+class PositionSearch;
 
 enum JobStatus
 {
@@ -77,13 +55,11 @@ enum SearchMode
 
 class Job
 {
-    friend class iwAIDebug;
-
 public:
     Job(AIPlayerJH& aijh);
     virtual ~Job() {}
-    virtual void ExecuteJob() { return; }
-    JobStatus GetStatus() { return status; }
+    virtual void ExecuteJob() = 0;
+    JobStatus GetStatus() const { return status; }
     void SetStatus(JobStatus s) { status = s; }
 
 protected:
@@ -94,10 +70,8 @@ protected:
 class JobWithTarget
 {
 public:
-    JobWithTarget() : target(0xFFFF, 0xFFFF) {}
+    JobWithTarget() : target(MapPoint::Invalid()) {}
     inline MapPoint GetTarget() const { return target; }
-    void SetTargetX(MapCoord x) { target.x = x; }
-    void SetTargetY(MapCoord y) { target.y = y; }
     void SetTarget(MapPoint newTarget) { target = newTarget; }
 
 protected:
@@ -106,8 +80,6 @@ protected:
 
 class BuildJob : public Job, public JobWithTarget
 {
-    friend class iwAIDebug;
-
 public:
     BuildJob(AIPlayerJH& aijh, BuildingType type, MapPoint around, SearchMode searchMode = SEARCHMODE_RADIUS)
         : Job(aijh), type(type), around(around), searchMode(searchMode)
@@ -133,8 +105,6 @@ private:
 
 class ConnectJob : public Job, public JobWithTarget
 {
-    friend class iwAIDebug;
-
 public:
     ConnectJob(AIPlayerJH& aijh, MapPoint flagPos) : Job(aijh), flagPos(flagPos) {}
     ~ConnectJob() override {}
@@ -148,13 +118,11 @@ private:
 
 class EventJob : public Job
 {
-    friend class iwAIDebug;
-
 public:
     EventJob(AIPlayerJH& aijh, AIEvent::Base* ev) : Job(aijh), ev(ev) {}
-    ~EventJob() override { delete ev; }
+    ~EventJob() override;
     void ExecuteJob() override;
-    inline AIEvent::Base* GetEvent() const { return ev; }
+    AIEvent::Base* GetEvent() const { return ev; }
 
 private:
     AIEvent::Base* ev;
@@ -162,8 +130,6 @@ private:
 
 class SearchJob : public Job
 {
-    friend class iwAIDebug;
-
 public:
     SearchJob(AIPlayerJH& aijh, PositionSearch* search) : Job(aijh), search(search) {}
     ~SearchJob() override;

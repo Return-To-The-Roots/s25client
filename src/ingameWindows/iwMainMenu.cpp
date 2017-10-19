@@ -76,8 +76,13 @@ iwMainMenu::iwMainMenu(GameWorldView& gwv, GameCommandFactory& gcFactory)
     // Diplomatie (todo: besseres Bild suchen)
     AddImageButton(11, DrawPoint(68, 166), Extent(53, 44), TC_GREY, LOADER.GetImageN("io", 190), _("Diplomacy"));
 
-    // AI-Debug
-    if(gwv.GetViewer().GetPlayer().isHost && gwv.GetWorld().GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW))
+// AI-Debug
+#ifdef _NDEBUG
+    bool enableAIDebug = gwv.GetWorld().GetGGS().isEnabled(AddonId::AI_DEBUG_WINDOW);
+#else
+    bool enableAIDebug = true;
+#endif
+    if(gwv.GetViewer().GetPlayer().isHost && enableAIDebug)
         AddImageButton(13, DrawPoint(80, 210), Extent(20, 20), TC_GREY, NULL, _("AI Debug Window"));
 
     // Optionen
@@ -155,10 +160,10 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(gwv.GetViewer().GetPlayer().isHost)
             {
-                std::vector<AIBase*> ais;
+                std::vector<const AIPlayer*> ais;
                 for(unsigned i = 0; i < gwv.GetViewer().GetPlayerCount(); ++i)
                 {
-                    AIBase* ai = GAMESERVER.GetAIPlayer(i);
+                    const AIPlayer* ai = GAMESERVER.GetAIPlayer(i);
                     if(ai)
                         ais.push_back(ai);
                 }
