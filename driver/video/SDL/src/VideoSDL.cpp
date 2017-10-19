@@ -71,9 +71,7 @@ DRIVERDLLAPI const char* GetDriverName()
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
-{
-}
+VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL) {}
 
 VideoSDL::~VideoSDL()
 {

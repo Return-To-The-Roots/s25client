@@ -32,12 +32,9 @@
 
 nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_PIGBREEDER, pos, player, workplace)
-{
-}
+{}
 
-nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofPigbreeder::DrawWorking(DrawPoint drawPt)
 {

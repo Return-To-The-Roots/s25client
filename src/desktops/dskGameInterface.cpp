@@ -179,9 +179,7 @@ void dskGameInterface::SetActive(bool activate)
     }
 }
 
-void dskGameInterface::SettingsChanged()
-{
-}
+void dskGameInterface::SettingsChanged() {}
 
 void dskGameInterface::Resize(const Extent& newSize)
 {

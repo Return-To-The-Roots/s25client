@@ -70,9 +70,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *
  *  @author FloSoft
  */
-VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), libGL(NULL)
-{
-}
+VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), mouse_l(false), mouse_r(false), libGL(NULL) {}
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
@@ -80,9 +78,7 @@ VideoGLFW::VideoGLFW(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBac
  *
  *  @author FloSoft
  */
-VideoGLFW::~VideoGLFW(void)
-{
-}
+VideoGLFW::~VideoGLFW(void) {}
 
 const char* VideoGLFW::GetName(void) const
 {

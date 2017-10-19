@@ -33,13 +33,11 @@ nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char playe
                                    const SoldierState init_state)
     : nofSoldier(pos, player, home, rank), state(init_state), enemy(NULL)
 
-{
-}
+{}
 
 nofActiveSoldier::nofActiveSoldier(const nofSoldier& other, const SoldierState init_state)
     : nofSoldier(other), state(init_state), enemy(NULL)
-{
-}
+{}
 
 void nofActiveSoldier::Serialize_nofActiveSoldier(SerializedGameData& sgd) const
 {

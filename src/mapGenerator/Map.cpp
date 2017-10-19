@@ -17,9 +17,7 @@
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
 
-Map::Map() : size(0, 0)
-{
-}
+Map::Map() : size(0, 0) {}
 
 Map::Map(const MapExtent& size, const std::string& name, const std::string& author)
     : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))

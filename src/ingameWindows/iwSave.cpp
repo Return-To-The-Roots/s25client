@@ -115,9 +115,7 @@ void iwSaveLoad::RefreshTable()
     loadedOnce = true;
 }
 
-void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param)
-{
-}
+void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param) {}
 
 void iwSave::SaveLoad()
 {

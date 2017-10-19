@@ -31,13 +31,11 @@
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
-{
-}
+{}
 
 nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
     : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(WareType(sgd.PopUnsignedChar()))
-{
-}
+{}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofCharburner::DrawWorking(DrawPoint drawPt)
@@ -72,9 +70,7 @@ unsigned short nofCharburner::GetCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofCharburner::WorkStarted()
-{
-}
+void nofCharburner::WorkStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofCharburner::WorkFinished()

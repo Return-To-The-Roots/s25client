@@ -23,8 +23,7 @@
 ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                const std::string& text, glArchivItem_Font* font, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
-{
-}
+{}
 
 void ctrlTextButton::DrawContent() const
 {

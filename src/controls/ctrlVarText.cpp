@@ -36,12 +36,9 @@
 ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color, unsigned format,
                          glArchivItem_Font* font, unsigned count, va_list fmtArgs)
     : Window(parent, id, pos), ctrlBaseVarText(formatstr, color, font, count, fmtArgs), format_(format)
-{
-}
+{}
 
-ctrlVarText::~ctrlVarText()
-{
-}
+ctrlVarText::~ctrlVarText() {}
 
 Rect ctrlVarText::GetBoundaryRect() const
 {

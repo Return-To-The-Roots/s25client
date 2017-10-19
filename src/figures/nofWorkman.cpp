@@ -27,22 +27,18 @@ class nobBaseWarehouse;
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)
-{
-}
+{}
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
     : nofBuildingWorker(job, pos, player, goalWh)
-{
-}
+{}
 
 void nofWorkman::Serialize_nofWorkman(SerializedGameData& sgd) const
 {
     Serialize_nofBuildingWorker(sgd);
 }
 
-nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id)
-{
-}
+nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id) {}
 
 void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 {
@@ -109,10 +105,6 @@ void nofWorkman::HandleStateWork()
     }
 }
 
-void nofWorkman::WalkedDerived()
-{
-}
+void nofWorkman::WalkedDerived() {}
 
-void nofWorkman::WorkFinished()
-{
-}
+void nofWorkman::WorkFinished() {}

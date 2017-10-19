@@ -33,9 +33,7 @@ LuaInterfaceSettings::LuaInterfaceSettings(GameServerInterface& gameServer) : ga
     lua["rttr"] = this;
 }
 
-LuaInterfaceSettings::~LuaInterfaceSettings()
-{
-}
+LuaInterfaceSettings::~LuaInterfaceSettings() {}
 
 void LuaInterfaceSettings::Register(kaguya::State& state)
 {

@@ -22,31 +22,24 @@
 #include "GameProtocol.h"
 #include "libutil/Serializer.h"
 
-AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0)
-{
-}
+AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0) {}
 
 AsyncChecksum::AsyncChecksum(unsigned randChecksum)
     : randChecksum(randChecksum), objCt(GameObject::GetObjCount()), objIdCt(GameObject::GetObjIDCounter())
-{
-}
+{}
 
 AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt)
     : randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt)
-{
-}
+{}
 
 //////////////////////////////////////////////////////////////////////////
 
-GameMessage_GameCommand::GameMessage_GameCommand() : GameMessage(NMS_GAMECOMMANDS)
-{
-}
+GameMessage_GameCommand::GameMessage_GameCommand() : GameMessage(NMS_GAMECOMMANDS) {}
 
 GameMessage_GameCommand::GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum,
                                                  const std::vector<gc::GameCommandPtr>& gcs)
     : GameMessage(NMS_GAMECOMMANDS, player), checksum(checksum), gcs(gcs)
-{
-}
+{}
 
 void GameMessage_GameCommand::Serialize(Serializer& ser) const
 {

@@ -57,8 +57,7 @@ public:
 
         Tabs()
             : build(false), setflag(false), watch(false), flag(false), cutroad(false), attack(false), sea_attack(false), build_tabs(BT_HUT)
-        {
-        }
+        {}
     };
 
 private:

@@ -34,8 +34,7 @@
 
 nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_SHIPWRIGHT, pos, player, workplace), dest(MapPoint::Invalid())
-{
-}
+{}
 
 const unsigned SHIPWRIGHT_RADIUS = 8;
 const unsigned SHIPWRIGHT_WALKING_DISTANCE = 15;
@@ -170,9 +169,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
     }
 }
 
-nofShipWright::nofShipWright(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), dest(sgd.PopMapPoint())
-{
-}
+nofShipWright::nofShipWright(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), dest(sgd.PopMapPoint()) {}
 
 void nofShipWright::Serialize(SerializedGameData& sgd) const
 {

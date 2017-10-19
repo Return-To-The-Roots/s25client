@@ -30,9 +30,7 @@ const std::string CD_STRINGS[4] = {"", "(All) ", "(Team) ", "(Enemies) "};
 /// Farbe für die einzelnen CDs
 const unsigned CD_COLORS[4] = {0, COLOR_WHITE, COLOR_GREEN, COLOR_RED};
 
-Messenger::~Messenger()
-{
-}
+Messenger::~Messenger() {}
 
 /// Zeit, die
 void Messenger::Draw()

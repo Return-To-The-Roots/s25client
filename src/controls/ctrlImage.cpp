@@ -22,12 +22,9 @@
 
 ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
     : Window(parent, id, pos), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
-{
-}
+{}
 
-ctrlImage::~ctrlImage()
-{
-}
+ctrlImage::~ctrlImage() {}
 
 /**
  *  zeichnet das Fenster.

@@ -35,8 +35,7 @@
 noAnimal::noAnimal(const Species species, const MapPoint pos)
     : noMovable(NOP_ANIMAL, pos), species(species), state(STATE_WALKING), pause_way(5 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 15)),
       hunter(NULL), sound_moment(0)
-{
-}
+{}
 
 void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
 {
@@ -51,8 +50,7 @@ void noAnimal::Serialize_noAnimal(SerializedGameData& sgd) const
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), species(Species(sgd.PopUnsignedChar())), state(State(sgd.PopUnsignedChar())),
       pause_way(sgd.PopUnsignedShort()), hunter(sgd.PopObject<nofHunter>(GOT_NOF_HUNTER)), sound_moment(0)
-{
-}
+{}
 
 void noAnimal::StartLiving()
 {

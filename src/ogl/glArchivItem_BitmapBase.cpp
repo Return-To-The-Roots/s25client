@@ -31,14 +31,11 @@
  *  OpenGL-Textur des Bildes.
  */
 
-glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), filter(GL_NEAREST)
-{
-}
+glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), filter(GL_NEAREST) {}
 
 glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item)
     : ArchivItem_BitmapBase(item), texture(0), textureSize_(item.textureSize_), filter(item.filter)
-{
-}
+{}
 
 glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
 {

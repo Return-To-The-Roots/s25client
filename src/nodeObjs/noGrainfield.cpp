@@ -38,9 +38,7 @@ noGrainfield::noGrainfield(const MapPoint pos)
     event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
-noGrainfield::~noGrainfield()
-{
-}
+noGrainfield::~noGrainfield() {}
 
 void noGrainfield::Destroy_noGrainfield()
 {
@@ -65,8 +63,7 @@ void noGrainfield::Serialize_noGrainfield(SerializedGameData& sgd) const
 noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())), size(sgd.PopUnsignedChar()),
       event(sgd.PopEvent())
-{
-}
+{}
 
 void noGrainfield::Draw(DrawPoint drawPt)
 {

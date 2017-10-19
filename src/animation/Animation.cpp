@@ -28,9 +28,7 @@ Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, Re
     RTTR_Assert(frameRate_ > 0);
 }
 
-Animation::~Animation()
-{
-}
+Animation::~Animation() {}
 
 void Animation::setFrameRate(unsigned frameRate)
 {

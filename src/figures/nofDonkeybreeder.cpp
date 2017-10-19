@@ -31,12 +31,9 @@
 
 nofDonkeybreeder::nofDonkeybreeder(const MapPoint pos, unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_DONKEYBREEDER, pos, player, workplace)
-{
-}
+{}
 
-nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 /**
  *  Zeichnet ihn beim Arbeiten.

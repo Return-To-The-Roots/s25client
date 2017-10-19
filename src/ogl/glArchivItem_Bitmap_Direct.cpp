@@ -22,14 +22,11 @@
 #include "libsiedler2/PixelBufferARGB.h"
 #include <stdexcept>
 
-glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct() : isUpdating_(false)
-{
-}
+glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct() : isUpdating_(false) {}
 
 glArchivItem_Bitmap_Direct::glArchivItem_Bitmap_Direct(const glArchivItem_Bitmap_Direct& item)
     : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_Bitmap(item), isUpdating_(false)
-{
-}
+{}
 
 void glArchivItem_Bitmap_Direct::beginUpdate()
 {

@@ -27,17 +27,14 @@
 #include "world/GameWorldGame.h"
 
 nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINTER, pos, player, workplace)
-{
-}
+{}
 
 void nofMinter::Serialize_nofMinter(SerializedGameData& sgd) const
 {
     Serialize_nofWorkman(sgd);
 }
 
-nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMinter::DrawWorking(DrawPoint drawPt)
 {

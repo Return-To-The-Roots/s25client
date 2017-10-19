@@ -86,8 +86,7 @@ private:
 
         PreparedRoad(unsigned char type, PointI pos, PointI pos2, float color1, float color2, unsigned char dir)
             : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir)
-        {
-        }
+        {}
 
         bool operator<(const PreparedRoad& b) const { return (type < b.type); }
     };

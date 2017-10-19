@@ -20,13 +20,9 @@
 #include "world/MapGeometry.h"
 #include <stdexcept>
 
-MapBase::MapBase() : size_(MapExtent::all(0))
-{
-}
+MapBase::MapBase() : size_(MapExtent::all(0)) {}
 
-MapBase::~MapBase()
-{
-}
+MapBase::~MapBase() {}
 
 void MapBase::Resize(const MapExtent& newSize)
 {

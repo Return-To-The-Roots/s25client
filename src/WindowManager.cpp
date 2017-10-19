@@ -35,8 +35,7 @@
 
 WindowManager::WindowManager()
     : disable_mouse(false), lastMousePos(Point<int>::Invalid()), screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
-{
-}
+{}
 
 WindowManager::~WindowManager()
 {

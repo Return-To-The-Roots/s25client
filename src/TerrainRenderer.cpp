@@ -52,9 +52,7 @@
  * providing an index and a count into the above arrays.
  */
 
-TerrainRenderer::TerrainRenderer() : size_(0, 0), vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false)
-{
-}
+TerrainRenderer::TerrainRenderer() : size_(0, 0), vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false) {}
 
 TerrainRenderer::~TerrainRenderer()
 {

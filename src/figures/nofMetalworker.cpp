@@ -36,8 +36,7 @@
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
-{
-}
+{}
 
 nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
     : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))

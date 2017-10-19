@@ -60,8 +60,7 @@ private:
         CreditsEntry(const std::string& title, const std::string& lastLine = "") : title(title), lastLine(lastLine), pic(NULL) {}
         CreditsEntry(const std::string& title, glArchivItem_Bitmap* pic, const std::string& lastLine = "")
             : title(title), lastLine(lastLine), pic(pic)
-        {
-        }
+        {}
     };
 
     std::vector<CreditsEntry> entries;

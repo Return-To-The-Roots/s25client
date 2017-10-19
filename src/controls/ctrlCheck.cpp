@@ -26,8 +26,7 @@
 ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& text,
                      glArchivItem_Font* font, bool readonly)
     : Window(parent, id, pos, size), tc(tc), text(text), font(font), check(false), readonly(readonly)
-{
-}
+{}
 
 /**
  *  der Messagehandler.

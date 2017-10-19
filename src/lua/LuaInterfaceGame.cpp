@@ -169,9 +169,7 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
     lua["rttr"] = this;
 }
 
-LuaInterfaceGame::~LuaInterfaceGame()
-{
-}
+LuaInterfaceGame::~LuaInterfaceGame() {}
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
 

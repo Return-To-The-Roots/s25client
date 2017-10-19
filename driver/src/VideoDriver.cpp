@@ -21,9 +21,7 @@
 
 // Do not inline! That would break DLL compatibility:
 // http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
-IVideoDriver::~IVideoDriver()
-{
-}
+IVideoDriver::~IVideoDriver() {}
 
 /** @var typedef void (*VideoDriverLoaderInterface *)(unsigned msg, void *param)
  *

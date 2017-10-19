@@ -52,8 +52,7 @@ namespace AIJH {
 
 AIConstruction::AIConstruction(AIPlayerJH& aijh)
     : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(BUILDING_TYPES_COUNT)
-{
-}
+{}
 
 AIConstruction::~AIConstruction()
 {

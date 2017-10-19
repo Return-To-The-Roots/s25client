@@ -35,9 +35,7 @@ noFire::noFire(const MapPoint pos, const unsigned char size)
     const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
     dead_event = GetEvMgr().AddEvent(this, FIREDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)]);
 }
-noFire::~noFire()
-{
-}
+noFire::~noFire() {}
 
 void noFire::Destroy_noFire()
 {
@@ -66,8 +64,7 @@ void noFire::Serialize_noFire(SerializedGameData& sgd) const
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), size(sgd.PopUnsignedChar()), dead_event(sgd.PopEvent()), was_sounding(false), last_sound(0),
       next_interval(0)
-{
-}
+{}
 
 void noFire::Draw(DrawPoint drawPt)
 {

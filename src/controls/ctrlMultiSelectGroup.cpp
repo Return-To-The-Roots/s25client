@@ -21,8 +21,7 @@ class MouseCoords;
 
 ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, int select_type)
     : ctrlGroup(parent, id), selectedItems_(std::set<unsigned short>()), select_type(select_type)
-{
-}
+{}
 
 /**
  *  Zeichenmethode.

@@ -33,9 +33,7 @@
 
 namespace AIJH {
 
-Job::Job(AIPlayerJH& aijh) : aijh(aijh), status(JOB_WAITING)
-{
-}
+Job::Job(AIPlayerJH& aijh) : aijh(aijh), status(JOB_WAITING) {}
 
 void BuildJob::ExecuteJob()
 {

@@ -32,14 +32,12 @@
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, const GoodType gt, const Job job)
     : noFigure((job != JOB_NOTHING) ? job : JOB_PACKDONKEY, pos, player), successor(NULL), gt(gt)
-{
-}
+{}
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(GoodType(sgd.PopUnsignedChar())),
       next_dirs(sgd.PopContainer(next_dirs))
-{
-}
+{}
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {
@@ -98,12 +96,8 @@ void nofTradeDonkey::Walked()
     }
 }
 
-void nofTradeDonkey::HandleDerivedEvent(const unsigned /*id*/)
-{
-}
-void nofTradeDonkey::AbrogateWorkplace()
-{
-}
+void nofTradeDonkey::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofTradeDonkey::AbrogateWorkplace() {}
 
 void nofTradeDonkey::Draw(DrawPoint drawPt)
 {
@@ -129,9 +123,7 @@ void nofTradeDonkey::Draw(DrawPoint drawPt)
         DrawWalking(drawPt);
 }
 
-void nofTradeDonkey::LostWork()
-{
-}
+void nofTradeDonkey::LostWork() {}
 
 void nofTradeDonkey::CancelTradeCaravane()
 {

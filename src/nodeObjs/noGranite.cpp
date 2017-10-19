@@ -24,9 +24,7 @@
 
 #include "ogl/glSmartBitmap.h"
 
-noGranite::noGranite(const GraniteType type, const unsigned char state) : noBase(NOP_GRANITE), type(type), state(state)
-{
-}
+noGranite::noGranite(const GraniteType type, const unsigned char state) : noBase(NOP_GRANITE), type(type), state(state) {}
 
 void noGranite::Serialize_noGranite(SerializedGameData& sgd) const
 {
@@ -38,8 +36,7 @@ void noGranite::Serialize_noGranite(SerializedGameData& sgd) const
 
 noGranite::noGranite(SerializedGameData& sgd, const unsigned obj_id)
     : noBase(sgd, obj_id), type(GraniteType(sgd.PopUnsignedChar())), state(sgd.PopUnsignedChar())
-{
-}
+{}
 
 void noGranite::Draw(DrawPoint drawPt)
 {

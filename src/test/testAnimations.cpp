@@ -65,8 +65,7 @@ struct TestAnimation : public Animation
 {
     TestAnimation(WindowFixture& parent, Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
         : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false)
-    {
-    }
+    {}
     WindowFixture& parent;
     bool updateCalled;
     double lastNextFramepartTime;

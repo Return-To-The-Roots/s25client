@@ -28,12 +28,9 @@
 
 nofIronfounder::nofIronfounder(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_IRONFOUNDER, pos, player, workplace)
-{
-}
+{}
 
-nofIronfounder::nofIronfounder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofIronfounder::nofIronfounder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofIronfounder::DrawWorking(DrawPoint drawPt)
 {

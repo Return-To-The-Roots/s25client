@@ -28,9 +28,7 @@
 #include <climits>
 #include <limits>
 
-glSmartBitmap::glSmartBitmap() : origin_(0, 0), size_(0, 0), sharedTexture(false), texture(0), hasPlayer(false)
-{
-}
+glSmartBitmap::glSmartBitmap() : origin_(0, 0), size_(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}
 
 glSmartBitmap::~glSmartBitmap()
 {

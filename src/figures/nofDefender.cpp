@@ -32,13 +32,11 @@
 nofDefender::nofDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
                          nofAttacker* const attacker)
     : nofActiveSoldier(pos, player, home, rank, STATE_DEFENDING_WALKINGTO), attacker(attacker)
-{
-}
+{}
 
 nofDefender::nofDefender(nofPassiveSoldier* other, nofAttacker* const attacker)
     : nofActiveSoldier(*other, STATE_DEFENDING_WALKINGTO), attacker(attacker)
-{
-}
+{}
 
 void nofDefender::Serialize_nofDefender(SerializedGameData& sgd) const
 {

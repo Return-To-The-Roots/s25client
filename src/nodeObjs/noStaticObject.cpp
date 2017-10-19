@@ -61,8 +61,7 @@ void noStaticObject::Serialize_noStaticObject(SerializedGameData& sgd) const
 
 noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
-{
-}
+{}
 
 BlockingManner noStaticObject::GetBM() const
 {

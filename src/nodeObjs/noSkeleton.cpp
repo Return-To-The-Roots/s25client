@@ -29,9 +29,7 @@ noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NOP_ENVIRONMENT, pos), 
     current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 10000));
 }
 
-noSkeleton::~noSkeleton()
-{
-}
+noSkeleton::~noSkeleton() {}
 
 void noSkeleton::Destroy_noSkeleton()
 {
@@ -54,8 +52,7 @@ void noSkeleton::Serialize_noSkeleton(SerializedGameData& sgd) const
 
 noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), current_event(sgd.PopEvent())
-{
-}
+{}
 
 void noSkeleton::Draw(DrawPoint drawPt)
 {

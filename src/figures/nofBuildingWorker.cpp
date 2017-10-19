@@ -46,8 +46,7 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
 nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const unsigned char player, nobBaseWarehouse* goalWh)
     : noFigure(job, pos, player, goalWh), state(STATE_FIGUREWORK), workplace(NULL), ware(GD_NOTHING), not_working(0),
       since_not_working(0xFFFFFFFF), was_sounding(false), outOfRessourcesMsgSent(false)
-{
-}
+{}
 
 void nofBuildingWorker::Serialize_nofBuildingWorker(SerializedGameData& sgd) const
 {
@@ -449,18 +448,12 @@ void nofBuildingWorker::ProductionStopped()
     }
 }
 
-void nofBuildingWorker::WorkAborted()
-{
-}
+void nofBuildingWorker::WorkAborted() {}
 
-void nofBuildingWorker::WorkplaceReached()
-{
-}
+void nofBuildingWorker::WorkplaceReached() {}
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofBuildingWorker::DrawOtherStates(DrawPoint)
-{
-}
+void nofBuildingWorker::DrawOtherStates(DrawPoint) {}
 
 /// Zeichnet Figur beim Hereinlaufen/nach Hause laufen mit evtl. getragenen Waren
 void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)

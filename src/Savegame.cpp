@@ -33,13 +33,9 @@ uint16_t Savegame::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Savegame::Savegame() : SavedFile(), start_gf(0)
-{
-}
+Savegame::Savegame() : SavedFile(), start_gf(0) {}
 
-Savegame::~Savegame()
-{
-}
+Savegame::~Savegame() {}
 
 bool Savegame::Save(const std::string& filename)
 {

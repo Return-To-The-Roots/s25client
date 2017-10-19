@@ -175,9 +175,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         minValue->SetVisible(false);
 }
 
-iwStatistics::~iwStatistics()
-{
-}
+iwStatistics::~iwStatistics() {}
 
 void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {

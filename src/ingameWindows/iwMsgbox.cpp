@@ -104,9 +104,7 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
         VIDEODRIVER.SetMousePos(defBt->GetDrawPos() + DrawPoint(defBt->GetSize()) / 2);
 }
 
-iwMsgbox::~iwMsgbox()
-{
-}
+iwMsgbox::~iwMsgbox() {}
 
 void iwMsgbox::MoveIcon(const DrawPoint& pos)
 {

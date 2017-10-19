@@ -21,9 +21,7 @@
 #include "libutil/colors.h"
 #include <algorithm>
 
-ctrlBaseImage::ctrlBaseImage(glArchivItem_Bitmap* img /*= NULL*/) : img_(img), modulationColor_(COLOR_WHITE)
-{
-}
+ctrlBaseImage::ctrlBaseImage(glArchivItem_Bitmap* img /*= NULL*/) : img_(img), modulationColor_(COLOR_WHITE) {}
 
 void ctrlBaseImage::SwapImage(ctrlBaseImage& other)
 {

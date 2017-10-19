@@ -65,8 +65,7 @@ void nofBuilder::Serialize_nofBuilder(SerializedGameData& sgd) const
 nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), state(BuilderState(sgd.PopUnsignedChar())), building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
       offsetSite(sgd.PopPoint<short>()), nextOffsetSite(sgd.PopPoint<short>()), building_steps_available(sgd.PopUnsignedChar())
-{
-}
+{}
 
 void nofBuilder::GoalReached()
 {
@@ -81,9 +80,7 @@ void nofBuilder::GoalReached()
     StartFreewalk();
 }
 
-void nofBuilder::Walked()
-{
-}
+void nofBuilder::Walked() {}
 
 void nofBuilder::AbrogateWorkplace()
 {

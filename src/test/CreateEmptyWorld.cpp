@@ -22,9 +22,7 @@
 #include "test/initTestHelpers.h"
 #include <stdexcept>
 
-CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS)
-{
-}
+CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS) {}
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 {

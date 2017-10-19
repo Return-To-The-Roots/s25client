@@ -94,8 +94,7 @@ class GameCommand
 
 public:
     GameCommand(const GameCommand& obj) : gst(obj.gst), refCounter_(0) // Do not copy refCounter!
-    {
-    }
+    {}
     virtual ~GameCommand() {}
 
     GameCommand& operator=(const GameCommand& obj)

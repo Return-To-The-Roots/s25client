@@ -83,9 +83,7 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
     owner.DecreaseInventoryWare(GD_STONES, stones);
 }
 
-noBuildingSite::~noBuildingSite()
-{
-}
+noBuildingSite::~noBuildingSite() {}
 
 void noBuildingSite::Destroy_noBuildingSite()
 {

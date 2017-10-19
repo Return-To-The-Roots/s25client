@@ -47,9 +47,7 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
     BuildingProperties::Init();
 }
 
-GameWorldBase::~GameWorldBase()
-{
-}
+GameWorldBase::~GameWorldBase() {}
 
 void GameWorldBase::Init(const MapExtent& mapSize, LandscapeType lt)
 {

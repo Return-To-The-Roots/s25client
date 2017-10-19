@@ -44,8 +44,7 @@ struct EraseIt
     iterator erase(const_iterator);
 };
 struct EraseItInherited : public EraseIt
-{
-};
+{};
 
 BOOST_STATIC_ASSERT(!helpers::detail::EraseReturnsIterator<EraseVoid>::value);
 BOOST_STATIC_ASSERT(helpers::detail::EraseReturnsIterator<EraseIt>::value);

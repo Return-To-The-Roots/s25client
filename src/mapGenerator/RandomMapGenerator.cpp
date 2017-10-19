@@ -28,9 +28,7 @@
 #define MIN_HARBOR_DISTANCE 35.0
 #define MIN_HARBOR_WATER 200
 
-RandomMapGenerator::RandomMapGenerator(RandomConfig& config) : config(config)
-{
-}
+RandomMapGenerator::RandomMapGenerator(RandomConfig& config) : config(config) {}
 
 unsigned RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
 {

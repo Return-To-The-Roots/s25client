@@ -45,8 +45,7 @@ class AIInterface : public GameCommandFactory
 public:
     AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, const unsigned char playerID)
         : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
-    {
-    }
+    {}
 
     TerrainType GetTerrain(MapPoint pt) const { return gwb.GetNode(pt).t1; }
 

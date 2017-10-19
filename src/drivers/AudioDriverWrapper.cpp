@@ -25,9 +25,7 @@
 #include "libutil/tmpFile.h"
 #include <ostream>
 
-AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false)
-{
-}
+AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false) {}
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {

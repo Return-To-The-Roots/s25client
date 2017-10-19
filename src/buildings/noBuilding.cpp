@@ -29,8 +29,7 @@ class noFigure;
 
 noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation /*nation*/)
     : noBaseBuilding(NOP_BUILDING, type, pos, player), opendoor(0)
-{
-}
+{}
 
 void noBuilding::Destroy()
 {

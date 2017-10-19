@@ -92,9 +92,7 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
         sgd.PushUnsignedShort(last_productivities[i]);
 }
 
-nobUsual::~nobUsual()
-{
-}
+nobUsual::~nobUsual() {}
 
 void nobUsual::DestroyBuilding()
 {

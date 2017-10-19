@@ -32,9 +32,7 @@ TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, con
     nodes.resize(size.x * size.y);
 }
 
-TerritoryRegion::~TerritoryRegion()
-{
-}
+TerritoryRegion::~TerritoryRegion() {}
 
 bool TerritoryRegion::IsPointInPolygon(const std::vector<Point<int> >& polygon, const Point<int> pt)
 {

@@ -25,8 +25,7 @@ class MouseCoords;
 
 ctrlTab::ctrlTab(Window* parent, unsigned id, const DrawPoint& pos, unsigned short width)
     : Window(parent, id, pos, Extent(width, 45)), tab_count(0), tab_selection(0)
-{
-}
+{}
 
 void ctrlTab::Msg_ButtonClick(const unsigned ctrl_id)
 {

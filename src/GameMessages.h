@@ -198,8 +198,7 @@ public:
     GameMessage_Server_Start() : GameMessage(NMS_SERVER_START) {} //-V730
     GameMessage_Server_Start(const unsigned random_init, const unsigned nwf_length)
         : GameMessage(NMS_SERVER_START, 0xFF), random_init(random_init), nwf_length(nwf_length)
-    {
-    }
+    {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -578,8 +577,7 @@ public:
     GameMessage_Player_Kicked() : GameMessage(NMS_PLAYER_KICKED) {} //-V730
     GameMessage_Player_Kicked(const unsigned char player, const unsigned char cause, const unsigned short param)
         : GameMessage(NMS_PLAYER_KICKED, player), cause(cause), param(param)
-    {
-    }
+    {}
 
     void Serialize(Serializer& ser) const override
     {

@@ -53,9 +53,7 @@ ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Exte
     bracket2_size = font->getWidth("> ");
 }
 
-ctrlChat::~ctrlChat()
-{
-}
+ctrlChat::~ctrlChat() {}
 
 /**
  *  Größe ändern

@@ -51,9 +51,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView()
-{
-}
+GameWorldView::~GameWorldView() {}
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {

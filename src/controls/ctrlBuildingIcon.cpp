@@ -27,8 +27,7 @@
 ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, const DrawPoint& pos, const BuildingType type,
                                    const Nation nation, const unsigned short size, const std::string& tooltip)
     : ctrlButton(parent, id, pos, Extent(size, size), TC_GREY, tooltip), type(type), nation(nation)
-{
-}
+{}
 
 /**
  *  zeichnet das Fenster.
@@ -49,6 +48,4 @@ void ctrlBuildingIcon::Draw_()
         image->DrawFull(GetDrawPos() + GetSize() / 2, (state == BUTTON_PRESSED ? COLOR_YELLOW : COLOR_WHITE));
 }
 
-void ctrlBuildingIcon::DrawContent() const
-{
-}
+void ctrlBuildingIcon::DrawContent() const {}

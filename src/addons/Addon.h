@@ -33,8 +33,7 @@ class Addon
 public:
     Addon(const AddonId id, const unsigned groups, const std::string& name, const std::string& description, const unsigned default_status)
         : id_(id), groups_(groups), name_(name), description_(description), defaultStatus_(default_status)
-    {
-    }
+    {}
     virtual ~Addon() {}
 
     virtual void hideGui(Window* window, unsigned id) const;

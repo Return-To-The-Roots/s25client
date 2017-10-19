@@ -99,13 +99,11 @@ struct And : private T_Func1, private T_Func2
 
     template<typename T>
     And(const T& p1) : Func1(p1), Func2()
-    {
-    }
+    {}
 
     template<typename T, typename U>
     And(const T& p1, const U& p2) : Func1(p1), Func2(p2)
-    {
-    }
+    {}
 
     And(const Func2& f2) : Func1(), Func2(f2) {}
 

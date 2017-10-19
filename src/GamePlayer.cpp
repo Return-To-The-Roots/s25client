@@ -165,9 +165,7 @@ void GamePlayer::LoadStandardDistribution()
     }
 }
 
-GamePlayer::~GamePlayer()
-{
-}
+GamePlayer::~GamePlayer() {}
 
 void GamePlayer::Serialize(SerializedGameData& sgd)
 {
@@ -1533,8 +1531,7 @@ void GamePlayer::StatisticStep()
 
 GamePlayer::Pact::Pact(SerializedGameData& sgd)
     : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel(sgd.PopBool())
-{
-}
+{}
 
 void GamePlayer::Pact::Serialize(SerializedGameData& sgd)
 {

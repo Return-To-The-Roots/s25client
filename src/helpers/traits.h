@@ -33,8 +33,7 @@ template<typename T> class HasAnyMemberCalled_##X                \
             int X;                                               \
         };                                                       \
         struct Derived : T, Fallback                             \
-        {                                                        \
-        };                                                       \
+        {};                                                      \
                                                                  \
         template<typename U, U>                                  \
         struct Check;                                            \

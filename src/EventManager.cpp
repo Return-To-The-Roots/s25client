@@ -24,9 +24,7 @@
 #include "libutil/Log.h"
 #include <boost/foreach.hpp>
 
-EventManager::EventManager(unsigned startGF) : currentGF(startGF), curActiveEvent(NULL)
-{
-}
+EventManager::EventManager(unsigned startGF) : currentGF(startGF), curActiveEvent(NULL) {}
 
 EventManager::~EventManager()
 {

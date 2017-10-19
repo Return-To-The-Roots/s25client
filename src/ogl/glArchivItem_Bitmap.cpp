@@ -22,14 +22,11 @@
 #include "ogl/oglIncludes.h"
 #include <vector>
 
-glArchivItem_Bitmap::glArchivItem_Bitmap()
-{
-}
+glArchivItem_Bitmap::glArchivItem_Bitmap() {}
 
 glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
     : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), glArchivItem_BitmapBase(item)
-{
-}
+{}
 
 /**
  *  Zeichnet die Textur.

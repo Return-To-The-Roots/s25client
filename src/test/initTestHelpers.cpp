@@ -61,9 +61,7 @@ void installSegFaultHandler()
     sigaction(SIGSEGV, &newAction, NULL);
 }
 #else
-void installSegFaultHandler()
-{
-}
+void installSegFaultHandler() {}
 #endif
 
 void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)

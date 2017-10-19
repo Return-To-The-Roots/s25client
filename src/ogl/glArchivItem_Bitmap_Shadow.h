@@ -30,8 +30,7 @@ public:
 
     glArchivItem_Bitmap_Shadow(const glArchivItem_Bitmap_Shadow& item)
         : ArchivItem_BitmapBase(item), baseArchivItem_Bitmap(item), baseArchivItem_Bitmap_Shadow(item), glArchivItem_Bitmap(item)
-    {
-    }
+    {}
     RTTR_CLONEABLE(glArchivItem_Bitmap_Shadow)
 };
 

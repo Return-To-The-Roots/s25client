@@ -55,9 +55,7 @@ CustomBorderBuilder::CustomBorderBuilder(const libsiedler2::ArchivItem_Palette& 
     std::fill(fillersLeft.begin(), fillersLeft.end(), BdrBitmap());
     std::fill(fillersRight.begin(), fillersRight.end(), BdrBitmap());
 }
-CustomBorderBuilder::~CustomBorderBuilder()
-{
-}
+CustomBorderBuilder::~CustomBorderBuilder() {}
 
 int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
 {

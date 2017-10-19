@@ -829,13 +829,9 @@ void AIPlayerJH::ExecuteAIJob()
         */
 }
 
-void AIPlayerJH::RecalcBQAround(const MapPoint /*pt*/)
-{
-}
+void AIPlayerJH::RecalcBQAround(const MapPoint /*pt*/) {}
 
-void AIPlayerJH::CheckNewMilitaryBuildings()
-{
-}
+void AIPlayerJH::CheckNewMilitaryBuildings() {}
 
 void AIPlayerJH::DistributeGoodsByBlocking(const GoodType good, unsigned limit)
 {

@@ -31,8 +31,7 @@ class noRoadNode;
 
 nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_SCOUT, pos, player, goal), nextPos(pos), rest_way(0)
-{
-}
+{}
 
 void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const
 {
@@ -43,8 +42,7 @@ void nofScout_Free::Serialize_nofScout_Free(SerializedGameData& sgd) const
 
 nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id)
     : nofFlagWorker(sgd, obj_id), nextPos(sgd.PopMapPoint()), rest_way(sgd.PopUnsignedInt())
-{
-}
+{}
 
 void nofScout_Free::Draw(DrawPoint drawPt)
 {
@@ -77,9 +75,7 @@ void nofScout_Free::Walked()
     }
 }
 
-void nofScout_Free::HandleDerivedEvent(const unsigned /*id*/)
-{
-}
+void nofScout_Free::HandleDerivedEvent(const unsigned /*id*/) {}
 
 void nofScout_Free::LostWork()
 {

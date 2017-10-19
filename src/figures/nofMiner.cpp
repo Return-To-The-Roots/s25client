@@ -25,13 +25,9 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 class SerializedGameData;
 
-nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace)
-{
-}
+nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace) {}
 
-nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofMiner::DrawWorking(DrawPoint drawPt)
 {

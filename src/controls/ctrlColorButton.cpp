@@ -21,8 +21,7 @@
 ctrlColorButton::ctrlColorButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                  unsigned fillColor, const std::string& tooltip)
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseColor(fillColor)
-{
-}
+{}
 
 void ctrlColorButton::DrawContent() const
 {

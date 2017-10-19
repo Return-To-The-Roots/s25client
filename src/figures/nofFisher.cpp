@@ -31,8 +31,7 @@
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FISHER, pos, player, workplace), fishing_dir(0), successful(false)
-{
-}
+{}
 
 void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
 {
@@ -44,8 +43,7 @@ void nofFisher::Serialize_nofFisher(SerializedGameData& sgd) const
 
 nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
     : nofFarmhand(sgd, obj_id), fishing_dir(sgd.PopUnsignedChar()), successful(sgd.PopBool())
-{
-}
+{}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofFisher::DrawWorking(DrawPoint drawPt)

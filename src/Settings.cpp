@@ -45,8 +45,7 @@ const unsigned char Settings::SCREEN_REFRESH_RATES_COUNT = 14;
 const unsigned short Settings::SCREEN_REFRESH_RATES[] = {0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240};
 
 Settings::Settings() //-V730
-{
-}
+{}
 
 bool Settings::LoadDefaults()
 {

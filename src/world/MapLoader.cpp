@@ -39,9 +39,7 @@
 class noBase;
 class nobBaseWarehouse;
 
-MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world(world), playerNations(playerNations)
-{
-}
+MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world(world), playerNations(playerNations) {}
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {

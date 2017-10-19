@@ -32,8 +32,7 @@
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
     : parent_(parent), id_(id), pos_(pos), size_(size), active_(false), visible_(true), scale_(false), isInMouseRelay(false),
       animations_(this)
-{
-}
+{}
 
 Window::~Window()
 {

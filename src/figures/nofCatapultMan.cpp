@@ -34,9 +34,7 @@
 
 const DrawPointInit STONE_STARTS[6] = {{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}};
 
-nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
-{
-}
+nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd) : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt()) {}
 
 void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData& sgd) const
 {
@@ -46,13 +44,11 @@ void nofCatapultMan::PossibleTarget::Serialize_PossibleTarget(SerializedGameData
 
 nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(JOB_HELPER, pos, player, workplace), wheel_steps(0)
-{
-}
+{}
 
 nofCatapultMan::nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.PopSignedInt()), target(sgd)
-{
-}
+{}
 
 void nofCatapultMan::Serialize_nofCatapultMan(SerializedGameData& sgd) const
 {
@@ -62,9 +58,7 @@ void nofCatapultMan::Serialize_nofCatapultMan(SerializedGameData& sgd) const
     target.Serialize_PossibleTarget(sgd);
 }
 
-void nofCatapultMan::WalkedDerived()
-{
-}
+void nofCatapultMan::WalkedDerived() {}
 
 void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 {
@@ -305,6 +299,4 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
     }
 }
 
-void nofCatapultMan::WorkAborted()
-{
-}
+void nofCatapultMan::WorkAborted() {}

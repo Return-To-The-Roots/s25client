@@ -101,9 +101,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
                        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
 }
 
-iwMerchandiseStatistics::~iwMerchandiseStatistics()
-{
-}
+iwMerchandiseStatistics::~iwMerchandiseStatistics() {}
 
 void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {

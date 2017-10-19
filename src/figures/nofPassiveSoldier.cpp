@@ -38,12 +38,9 @@ nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(sol
 nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const goal,
                                      nobBaseMilitary* const home, const unsigned char rank)
     : nofSoldier(pos, player, goal, home, rank), healing_event(NULL)
-{
-}
+{}
 
-nofPassiveSoldier::~nofPassiveSoldier()
-{
-}
+nofPassiveSoldier::~nofPassiveSoldier() {}
 
 void nofPassiveSoldier::Destroy_nofPassiveSoldier()
 {
@@ -60,8 +57,7 @@ void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) con
 
 nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
     : nofSoldier(sgd, obj_id), healing_event(sgd.PopEvent())
-{
-}
+{}
 
 void nofPassiveSoldier::Draw(DrawPoint drawPt)
 {

@@ -44,12 +44,9 @@ const unsigned short HARVEST_WORK_STEPS = 1;
 
 noCharburnerPile::noCharburnerPile(const MapPoint pos)
     : noCoordBase(NOP_CHARBURNERPILE, pos), state(STATE_WOOD), step(0), sub_step(1), event(NULL)
-{
-}
+{}
 
-noCharburnerPile::~noCharburnerPile()
-{
-}
+noCharburnerPile::~noCharburnerPile() {}
 
 void noCharburnerPile::Destroy_noCharburnerPile()
 {
@@ -74,8 +71,7 @@ void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
 noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), state(State(sgd.PopUnsignedChar())), step(sgd.PopUnsignedShort()), sub_step(sgd.PopUnsignedShort()),
       event(sgd.PopEvent())
-{
-}
+{}
 
 void noCharburnerPile::Draw(DrawPoint drawPt)
 {

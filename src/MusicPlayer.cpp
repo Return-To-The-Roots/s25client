@@ -29,9 +29,7 @@
 #include <algorithm>
 #include <sstream>
 
-Playlist::Playlist() : repeats(1), random(false)
-{
-}
+Playlist::Playlist() : repeats(1), random(false) {}
 
 /**
  *  startet das Abspielen der Playlist.
@@ -189,9 +187,7 @@ void Playlist::SetStartSong(const unsigned id)
     }
 }
 
-MusicPlayer::MusicPlayer() : playing(false)
-{
-}
+MusicPlayer::MusicPlayer() : playing(false) {}
 
 /**
  *  Startet Abspielvorgang

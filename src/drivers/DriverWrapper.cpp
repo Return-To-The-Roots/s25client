@@ -39,9 +39,7 @@ struct DeleterFreeLib
 };
 } // namespace
 
-DriverWrapper::DriverWrapper() : dll(0)
-{
-}
+DriverWrapper::DriverWrapper() : dll(0) {}
 
 DriverWrapper::~DriverWrapper()
 {

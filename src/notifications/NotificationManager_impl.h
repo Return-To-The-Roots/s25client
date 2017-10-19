@@ -60,9 +60,7 @@ struct NotificationManager::NoteCallback : NoteCallbackBase
     const Callback execute;
 };
 
-NotificationManager::NotificationManager() : isPublishing(false)
-{
-}
+NotificationManager::NotificationManager() : isPublishing(false) {}
 
 NotificationManager::~NotificationManager()
 {

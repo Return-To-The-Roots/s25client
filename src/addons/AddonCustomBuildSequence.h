@@ -33,8 +33,7 @@ public:
                     _("Allows every player to control whether building sites should be supplied "
                       "in sequence of given order or in a definable sequence based on the building type."),
                     0)
-    {
-    }
+    {}
 };
 
 #endif // !ADDONCUSTOMBUILDSEQUENCE_H_INCLUDED

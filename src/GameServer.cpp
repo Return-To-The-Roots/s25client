@@ -66,9 +66,7 @@ void GameServer::ServerConfig::Clear()
     use_upnp = false;
 }
 
-GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0), lasttime(0)
-{
-}
+GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0), lasttime(0) {}
 
 void GameServer::CountDown::Start(unsigned timeInSec, unsigned curTime)
 {

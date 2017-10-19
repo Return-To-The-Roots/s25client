@@ -281,9 +281,7 @@ unsigned GlobalGameSettings::GetNumScoutsExedition() const
     return selection + 1;
 }
 
-GlobalGameSettings::AddonWithState::AddonWithState(Addon* addon) : addon(addon), status(addon->getDefaultStatus())
-{
-}
+GlobalGameSettings::AddonWithState::AddonWithState(Addon* addon) : addon(addon), status(addon->getDefaultStatus()) {}
 
 bool GlobalGameSettings::AddonWithState::operator<(const AddonWithState& rhs) const
 {

@@ -33,8 +33,7 @@
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGameSettings& gameSettings, EventManager& em)
     : GameWorldGame(playerInfos, gameSettings, em)
-{
-}
+{}
 
 /// Lädt eine Karte
 bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)

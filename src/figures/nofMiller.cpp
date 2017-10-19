@@ -31,17 +31,14 @@
 
 nofMiller::nofMiller(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_MILLER, pos, player, workplace), last_sound(0), next_interval(0)
-{
-}
+{}
 
 void nofMiller::Serialize_nofMiller(SerializedGameData& sgd) const
 {
     Serialize_nofWorkman(sgd);
 }
 
-nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), last_sound(0), next_interval(0)
-{
-}
+nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), last_sound(0), next_interval(0) {}
 
 void nofMiller::DrawWorking(DrawPoint drawPt)
 {

@@ -22,13 +22,9 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 
-glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(NULL)
-{
-}
+glArchivItem_Map::glArchivItem_Map() : ArchivItem_Map(), header(NULL) {}
 
-glArchivItem_Map::~glArchivItem_Map()
-{
-}
+glArchivItem_Map::~glArchivItem_Map() {}
 
 /**
  *  lädt die Mapdaten aus einer Datei.
