@@ -70,8 +70,8 @@ enum CtrlIds
 }
 
 dskHostGame::dskHostGame(ServerType serverType, GameLobby& gameLobby, unsigned playerId)
-    : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(gameLobby), playerId(playerId), hasCountdown_(false),
-      wasActivated(false), gameChat(NULL), lobbyChat(NULL), lobbyChatTabAnimId(0), localChatTabAnimId(0)
+    : Desktop(LOADER.GetImageN("setup015", 0)), serverType(serverType), gameLobby(gameLobby), localPlayerId_(playerId),
+      hasCountdown_(false), wasActivated(false), gameChat(NULL), lobbyChat(NULL), lobbyChatTabAnimId(0), localChatTabAnimId(0)
 {
     if(!GAMECLIENT.GetLuaFilePath().empty())
     {
@@ -272,6 +272,12 @@ dskHostGame::dskHostGame(ServerType serverType, GameLobby& gameLobby, unsigned p
     GAMECLIENT.SetInterface(this);
 }
 
+dskHostGame::~dskHostGame()
+{
+    LOBBYCLIENT.RemoveInterface(this);
+    GAMECLIENT.RemoveInterface(this);
+}
+
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  */
@@ -367,13 +373,13 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
                                &player.rating); //-V111
 
         // If not in savegame -> Player can change own row and host can change AIs
-        const bool allowPlayerChange = ((gameLobby.isHost() && player.ps == PS_AI) || playerId == row) && !gameLobby.isSavegame();
+        const bool allowPlayerChange = ((gameLobby.isHost() && player.ps == PS_AI) || localPlayerId_ == row) && !gameLobby.isSavegame();
         bool allowNationChange = allowPlayerChange;
         bool allowColorChange = allowPlayerChange;
         bool allowTeamChange = allowPlayerChange;
         if(lua)
         {
-            if(playerId == row)
+            if(localPlayerId_ == row)
             {
                 allowNationChange &= lua->IsChangeAllowed("ownNation", true);
                 allowColorChange &= lua->IsChangeAllowed("ownColor", true);
@@ -403,7 +409,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
         // Bereit (nicht bei KIs und Host)
         if(player.ps == PS_OCCUPIED && !player.isHost)
-            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, EMPTY_STRING, NULL, (playerId != row));
+            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, EMPTY_STRING, NULL, (localPlayerId_ != row));
 
         // Ping ( "%d" )
         ctrlVarDeepening* ping =
@@ -471,7 +477,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
 
             if(gameLobby.isHost())
                 GAMESERVER.ToggleAINation(playerId);
-            if(playerId == playerId)
+            if(playerId == localPlayerId_)
             {
                 JoinPlayerInfo& localPlayer = gameLobby.getPlayer(playerId);
                 localPlayer.nation = Nation((unsigned(localPlayer.nation) + 1) % NAT_COUNT);
@@ -486,7 +492,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
         {
             TogglePlayerReady(playerId, false);
 
-            if(playerId == playerId)
+            if(playerId == localPlayerId_)
             {
                 // Get colors used by other players
                 std::set<unsigned> takenColors;
@@ -525,7 +531,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
 
             if(gameLobby.isHost())
                 GAMESERVER.ToggleAITeam(playerId);
-            if(playerId == playerId)
+            if(playerId == localPlayerId_)
             {
                 JoinPlayerInfo& player = gameLobby.getPlayer(playerId);
                 if(player.team >= TM_TEAM1 && player.team < Team(TEAM_COUNT)) // team: 1->2->3->4->0 //-V807
@@ -633,7 +639,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             if(gameLobby.isHost())
             {
                 if(lua)
-                    lua->EventPlayerReady(playerId);
+                    lua->EventPlayerReady(localPlayerId_);
                 if(ready->GetText() == _("Start game"))
                 {
                     if(GAMESERVER.StartCountdown())
@@ -649,9 +655,9 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             } else
             {
                 if(ready->GetText() == _("Ready"))
-                    TogglePlayerReady(playerId, true);
+                    TogglePlayerReady(localPlayerId_, true);
                 else
-                    TogglePlayerReady(playerId, false);
+                    TogglePlayerReady(localPlayerId_, false);
             }
         }
         break;
@@ -717,7 +723,7 @@ void dskHostGame::CI_CancelCountdown()
     hasCountdown_ = false;
 
     if(gameLobby.isHost())
-        TogglePlayerReady(playerId, false);
+        TogglePlayerReady(localPlayerId_, false);
 }
 
 void dskHostGame::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
@@ -831,7 +837,7 @@ void dskHostGame::ChangeReady(const unsigned player, const bool ready)
         check->SetCheck(ready);
 
     ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
-    if(player == playerId)
+    if(player == localPlayerId_)
     {
         if(gameLobby.isHost())
             start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
@@ -870,7 +876,7 @@ void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
 
 void dskHostGame::TogglePlayerReady(unsigned char player, bool ready)
 {
-    if(player != playerId)
+    if(player != localPlayerId_)
         return;
     if(gameLobby.isHost())
         ready = true;
@@ -947,7 +953,7 @@ void dskHostGame::CI_ReadyChanged(const unsigned playerId, const bool ready)
     ChangeReady(playerId, ready);
     // Event only called for other players (host ready is done in start game)
     // Also only for host and non-savegames
-    if(ready && lua && gameLobby.isHost() && playerId != playerId)
+    if(ready && lua && gameLobby.isHost() && playerId != localPlayerId_)
         lua->EventPlayerReady(playerId);
 }
 
@@ -977,7 +983,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
     // random location
     GetCtrl<ctrlCheck>(23)->SetCheck(ggs.randomStartPosition);
 
-    TogglePlayerReady(playerId, false);
+    TogglePlayerReady(localPlayerId_, false);
 }
 
 void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/, const std::string& msg)

@@ -167,6 +167,8 @@ dskGameInterface::~dskGameInterface()
 {
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
+    gameClient.RemoveInterface(this);
+    LOBBYCLIENT.RemoveInterface(this);
 }
 
 void dskGameInterface::SetActive(bool activate)

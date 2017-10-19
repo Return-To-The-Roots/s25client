@@ -32,7 +32,6 @@ struct AsyncChecksum
     bool operator!=(const AsyncChecksum& rhs) const;
 };
 
-
 inline bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const
 {
     return randChecksum == rhs.randChecksum && objCt == rhs.objCt && objIdCt == rhs.objIdCt;

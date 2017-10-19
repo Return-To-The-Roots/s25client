@@ -140,7 +140,11 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi) : Desktop(LOADER.GetImag
     GAMECLIENT.SetInterface(this);
 }
 
-dskSelectMap::~dskSelectMap() {}
+dskSelectMap::~dskSelectMap()
+{
+    LOBBYCLIENT.RemoveInterface(this);
+    GAMECLIENT.RemoveInterface(this);
+}
 
 void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int selection)
 {

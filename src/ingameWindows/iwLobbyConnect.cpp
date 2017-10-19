@@ -98,11 +98,9 @@ iwLobbyConnect::~iwLobbyConnect()
     std::string user, pass, email;
     ReadFromEditAndSaveLobbyData(user, pass, email);
 
+    LOBBYCLIENT.RemoveInterface(this);
     if(!LOBBYCLIENT.IsLoggedIn())
-    {
         LOBBYCLIENT.Stop();
-        LOBBYCLIENT.SetInterface(NULL);
-    }
 }
 
 /**

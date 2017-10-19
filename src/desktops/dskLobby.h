@@ -39,6 +39,7 @@ private:
 
 public:
     dskLobby();
+    ~dskLobby();
 
     void UpdatePlayerList();
     void UpdateServerList();

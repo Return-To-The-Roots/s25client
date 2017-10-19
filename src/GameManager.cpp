@@ -297,8 +297,6 @@ bool GameManager::ShowMenu()
     GAMESERVER.Stop();
     SOUNDMANAGER.StopAll();
 
-    GAMECLIENT.SetInterface(NULL);
-
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
         WINDOWMANAGER.Switch(new dskLobby);

@@ -271,7 +271,7 @@ void VideoDriverWrapper::CleanUp()
 unsigned VideoDriverWrapper::GenerateTexture()
 {
     if(!isOglEnabled_)
-        return 42;
+        return 0;
 
     if(texture_pos >= texture_list.size())
     {

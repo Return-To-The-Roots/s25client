@@ -22,6 +22,7 @@
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
+#include "libutil/Socket.h"
 #include "libutil/StringStreamWriter.h"
 
 #define BOOST_TEST_MODULE RTTR_Test
@@ -54,8 +55,13 @@ struct TestSetup
             throw std::runtime_error(std::string(RTTRDIR) + " not found. Binary misplaced or RTTR folder not copied?");
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
+        Socket::Initialize();
     }
-    ~TestSetup() { libsiedler2::setAllocator(NULL); }
+    ~TestSetup()
+    {
+        libsiedler2::setAllocator(NULL);
+        Socket::Shutdown();
+    }
 };
 
 #if BOOST_VERSION >= 105900

@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,25 +17,32 @@
 
 #pragma once
 
-#ifndef PlayerGameCommands_h__
-#define PlayerGameCommands_h__
+#ifndef TestServer_h__
+#define TestServer_h__
 
-#include "AsyncChecksum.h"
-#include "GameCommand.h"
+#include "libutil/MessageQueue.h"
+#include "libutil/Socket.h"
 #include <vector>
 
-/// GameCommands for 1 player
-struct PlayerGameCommands
+struct Connection
 {
-    /// Checksumme, die der Spieler übermittelt
-    AsyncChecksum checksum;
-    /// Die einzelnen GameCommands
-    std::vector<gc::GameCommandPtr> gcs;
-
-    PlayerGameCommands() {}
-    PlayerGameCommands(const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs) : checksum(checksum), gcs(gcs) {}
-    void Serialize(Serializer& ser) const;
-    void Deserialize(Serializer& ser);
+    Socket so;
+    MessageQueue sendQueue, recvQueue;
+    Connection(CreateMsgFunction createMsg, Socket socket = Socket()) : so(socket), sendQueue(createMsg), recvQueue(createMsg) {}
 };
 
-#endif // PlayerGameCommands_h__
+class TestServer
+{
+public:
+    virtual ~TestServer(){};
+    bool listen(int16_t port);
+    bool run();
+    bool stop();
+    virtual void handleMessages() {}
+    virtual Connection acceptConnection(unsigned id, const Socket& so);
+
+    Socket socket;
+    std::vector<Connection> connections;
+};
+
+#endif // TestServer_h__

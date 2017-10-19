@@ -82,6 +82,12 @@ dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoW
     GAMECLIENT.SetInterface(this);
 }
 
+dskLobby::~dskLobby()
+{
+    LOBBYCLIENT.RemoveInterface(this);
+    GAMECLIENT.RemoveInterface(this);
+}
+
 void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     LOBBYCLIENT.SendServerListRequest();
