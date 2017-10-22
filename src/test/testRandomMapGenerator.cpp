@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
 {
     RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
-    settings.size = MapExtent(32, 8);
-    settings.players = 2;
+    settings.size = MapExtent(38, 30);
+    settings.players = 1;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 {
     RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
-    settings.size = MapExtent(16u, 32u);
+    settings.size = MapExtent(30u, 32u);
     settings.players = 2;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;

@@ -311,7 +311,8 @@ void RandomConfig::CreateRandom()
 
 int RandomConfig::Rand(const int max)
 {
-    return static_cast<int>(rng_(max + 1));
+    RTTR_Assert(max > 0);
+    return static_cast<int>(rng_(max - 1));
 }
 
 int RandomConfig::Rand(const int min, const int max)

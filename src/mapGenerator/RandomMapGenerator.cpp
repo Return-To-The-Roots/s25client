@@ -127,8 +127,10 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
 
                     if(maxZ > 0 && rnd <= pr)
                     {
-                        const unsigned z = (unsigned)config.Rand(minZ, maxZ + 1);
-                        helper.SetHill(map, tile, z == GetMinTerrainHeight(TT_MOUNTAINMEADOW, textures) ? z - 1 : z);
+                        unsigned z = (unsigned)config.Rand(minZ, maxZ + 1);
+                        if(z > 0 && z == GetMinTerrainHeight(TT_MOUNTAINMEADOW, textures))
+                            z--;
+                        helper.SetHill(map, tile, z);
                     }
                 }
             }
