@@ -19,11 +19,15 @@
 #include "WinAPI.h"
 
 #include "../../../../win32/resource.h"
+#include "../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
+#include "libutil/ucString.h"
 #include <GL/gl.h>
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
+#include <limits>
 
 /**
  *  Zeiger auf die aktuelle Instanz.
@@ -86,8 +90,6 @@ VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
     : VideoDriver(CallBack), mouse_l(false), mouse_r(false), mouse_z(0), screen(NULL), screen_dc(NULL), screen_rc(NULL),
       isWindowResizable(false), isMinimized(true)
 {
-    memset(&dm_prev, 0, sizeof(DEVMODE));
-    dm_prev.dmSize = sizeof(DEVMODE);
     pVideoWinAPI = this;
 }
 
@@ -113,9 +115,6 @@ const char* VideoWinAPI::GetName() const
  */
 bool VideoWinAPI::Initialize()
 {
-    memset(&dm_prev, 0, sizeof(DEVMODE));
-    dm_prev.dmSize = sizeof(DEVMODE);
-
     screen = NULL;
     screen_dc = NULL;
     screen_rc = NULL;
@@ -134,24 +133,8 @@ void VideoWinAPI::CleanUp()
     // Fenster zerstören
     DestroyScreen();
 
-    memset(&dm_prev, 0, sizeof(DEVMODE));
-    dm_prev.dmSize = sizeof(DEVMODE);
-
     // nun sind wir nicht mehr initalisiert
     initialized = false;
-}
-
-std::wstring Utf8ToWidestring(LPCSTR tSource, int nLength = -1)
-{
-    int nConvertedLength = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, NULL, 0);
-    if(!nConvertedLength)
-        return std::wstring();
-    std::vector<wchar_t> wTarget(nConvertedLength);
-    int nResult = MultiByteToWideChar(CP_UTF8, 0, tSource, nLength, &wTarget[0], nConvertedLength);
-    if(nResult != nConvertedLength)
-        wTarget.clear();
-
-    return &wTarget[0];
 }
 
 /**
@@ -166,139 +149,26 @@ std::wstring Utf8ToWidestring(LPCSTR tSource, int nLength = -1)
  *  @bug Hardwarecursor ist bei Fenstermodus sichtbar,
  *       Cursor deaktivieren ist fehlerhaft
  */
-bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized)
         return false;
 
-    std::wstring wTitle = Utf8ToWidestring(title.c_str());
-    windowClassName = wTitle.substr(0, wTitle.find(' '));
-
-    WNDCLASSW wc;
-    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc = WindowProc;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hInstance = GetModuleHandle(NULL);
-    wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
-    wc.hCursor = NULL;
-    wc.hbrBackground = NULL;
-    wc.lpszMenuName = NULL;
-    wc.lpszClassName = windowClassName.c_str();
-
-    // Fensterklasse registrieren
-    if(!RegisterClassW(&wc))
+    if(!RegisterAndCreateWindow(title, newSize, fullscreen))
         return false;
 
-    DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-    DWORD dwStyle = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX;
+    if(fullscreen && !MakeFullscreen(screenSize_))
+        return false;
+    isFullscreen_ = fullscreen;
 
-    if(fullscreen)
-    {
-        dwExStyle = WS_EX_APPWINDOW;
-        dwStyle = WS_POPUP;
-
-        EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &dm_prev);
-    } else
-    {
-        // Bei Fensteranwendung die Breiten und Hoehen der Fensterrahmen, Titelleiste draufaddieren
-        width += 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
-        height += 2 * GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CYCAPTION);
-    }
-
-    // Fenster erstellen
-    screen = CreateWindowExW(dwExStyle, windowClassName.c_str(), wTitle.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL,
-                             NULL, GetModuleHandle(NULL), NULL);
-
-    if(screen == NULL)
+    if(!InitOGL())
         return false;
 
-    SetClipboardViewer(screen);
+    // Hide mouse cursor by resetting the texture. This way we still have the resize mouse cursor etc.
+    SetCursor(NULL);
 
-    SetWindowTextW(screen, wTitle.c_str());
-    SetWindowTextW(GetConsoleWindow(), wTitle.c_str());
-
-    // Pixelformat zuweisen
-    GLuint PixelFormat;
-    static PIXELFORMATDESCRIPTOR pfd = {sizeof(PIXELFORMATDESCRIPTOR),
-                                        1,
-                                        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-                                        PFD_TYPE_RGBA,
-                                        8, // 8 Bit
-                                        8, // red
-                                        0,
-                                        8, // green
-                                        0,
-                                        8, // blue
-                                        0,
-                                        8, // alpha
-                                        0,
-                                        0,
-                                        0,
-                                        0,
-                                        0,
-                                        0,
-                                        32, // 32 Bit
-                                        0,
-                                        0,
-                                        PFD_MAIN_PLANE,
-                                        0,
-                                        0,
-                                        0,
-                                        0};
-
-    screen_dc = GetDC(screen);
-    if(screen_dc == NULL)
-        return false;
-
-    // Pixelformat auswaehlen
-    PixelFormat = ChoosePixelFormat(screen_dc, &pfd);
-    if(PixelFormat == 0)
-        return false;
-
-    // Pixelformat zuweisen
-    if(!SetPixelFormat(screen_dc, PixelFormat, &pfd))
-        return false;
-
-    // Renderingkontext erstellen
-    screen_rc = wglCreateContext(screen_dc);
-    if(screen_rc == NULL)
-        return false;
-
-    // Renderingkontext aktivieren
-    if(!wglMakeCurrent(screen_dc, screen_rc))
-        return false;
-
-    // Mauscursor ausblenden
-    ShowCursor(FALSE);
-
-    // Bei Fullscreen Aufloesung umstellen
-    if(fullscreen)
-    {
-        // Aktuelle Framerate holen und die spaeter dann benutzen
-        DEVMODE prev;
-        EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &prev);
-
-        DEVMODE dm;
-        memset(&dm, 0, sizeof(dm));
-        dm.dmSize = sizeof(dm);
-        dm.dmFields = DM_DISPLAYFREQUENCY | DM_PELSWIDTH | DM_PELSHEIGHT;
-        dm.dmDisplayFrequency = prev.dmDisplayFrequency;
-        dm.dmPelsWidth = width;
-        dm.dmPelsHeight = height;
-
-        ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
-    }
-
-    this->screenWidth = width;
-    this->screenHeight = height;
-    this->isFullscreen_ = fullscreen;
-
-    // Das Fenster anzeigen
     ShowWindow(screen, SW_SHOW);
-    // Das Fenster in den Vordergrund rcken
     SetForegroundWindow(screen);
-    // Dem Fenster den Eingabefokus geben
     SetFocus(screen);
 
     return true;
@@ -315,24 +185,58 @@ bool VideoWinAPI::CreateScreen(const std::string& title, unsigned short width, u
  *
  *  @todo Vollbildmodus ggf. wechseln
  */
-bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoWinAPI::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized || !isWindowResizable)
         return false;
 
-    if(this->isFullscreen_ && !fullscreen)
-        ChangeDisplaySettings(NULL, 0);
+    if(isFullscreen_ == fullscreen && newSize == screenSize_)
+        return true;
 
     ShowWindow(screen, SW_HIDE);
 
-    // Fensterstyle ggf. ändern
-    DWORD wStyle =
-      fullscreen ? WS_POPUP : (WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION);
-    DWORD wExStyle = fullscreen ? WS_EX_APPWINDOW : (WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
-    SetWindowLongPtr(screen, GWL_STYLE, wStyle);
-    SetWindowLongPtr(screen, GWL_EXSTYLE, wExStyle);
-    // SetWindowPos(screen, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    VideoMode adjScreenSize = fullscreen ? FindClosestVideoMode(newSize) : newSize;
+    // Try to switch full screen first
+    if(isFullscreen_ && !fullscreen)
+    {
+        if(ChangeDisplaySettings(NULL, 0) != DISP_CHANGE_SUCCESSFUL)
+            return false;
+    } else if(isFullscreen_ || fullscreen)
+    {
+        if(!MakeFullscreen(adjScreenSize))
+            return false;
+    }
 
+    // Fensterstyle ggf. ändern
+    std::pair<DWORD, DWORD> style = GetStyleFlags(isFullscreen_);
+    SetWindowLongPtr(screen, GWL_STYLE, style.first);
+    SetWindowLongPtr(screen, GWL_EXSTYLE, style.second);
+
+    screenSize_ = adjScreenSize;
+    RECT wRect = CalculateWindowRect(isFullscreen_, screenSize_);
+
+    // Fenstergröße ändern
+    UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
+    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, flags);
+
+    ShowWindow(screen, SW_SHOW);
+    SetForegroundWindow(screen);
+    SetFocus(screen);
+
+    return true;
+}
+
+std::pair<DWORD, DWORD> VideoWinAPI::GetStyleFlags(bool fullscreen) const
+{
+    if(fullscreen)
+        return std::make_pair(WS_POPUP, WS_EX_APPWINDOW);
+    else
+        return std::make_pair(WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION,
+                              WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+}
+
+RECT VideoWinAPI::CalculateWindowRect(bool fullscreen, VideoMode& size) const
+{
     RECT wRect;
     if(fullscreen)
     {
@@ -342,47 +246,135 @@ bool VideoWinAPI::ResizeScreen(unsigned short width, unsigned short height, cons
     {
         RECT workArea;
         SystemParametersInfo(SPI_GETWORKAREA, 0, &workArea, 0);
-        unsigned short waWidth = static_cast<unsigned short>(workArea.right - workArea.left);
-        unsigned short waHeight = static_cast<unsigned short>(workArea.bottom - workArea.top);
-        width = std::min(width, waWidth);
-        height = std::min(height, waHeight);
-        wRect.left = (waWidth - width) / 2;
-        wRect.top = (waHeight - height) / 2;
+        unsigned waWidth = workArea.right - workArea.left;
+        unsigned waHeight = workArea.bottom - workArea.top;
+        size.width = std::min<uint16_t>(size.width, waWidth);
+        size.height = std::min<uint16_t>(size.height, waHeight);
+        wRect.left = (waWidth - size.width) / 2;
+        wRect.top = (waHeight - size.height) / 2;
     }
-    wRect.right = wRect.left + width;
-    wRect.bottom = wRect.top + height;
+    wRect.right = wRect.left + size.width;
+    wRect.bottom = wRect.top + size.height;
+
+    std::pair<DWORD, DWORD> style = GetStyleFlags(fullscreen);
     // Calculate real right/bottom based on the window style
-    AdjustWindowRectEx(&wRect, wStyle, false, wExStyle);
+    AdjustWindowRectEx(&wRect, style.first, false, style.second);
 
-    // Fenstergröße ändern
-    UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
+    return wRect;
+}
 
-    this->screenWidth = width;
-    this->screenHeight = height;
-    this->isFullscreen_ = fullscreen;
+bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, bool fullscreen)
+{
+    std::wstring wTitle = cvUTF8ToWideString(title);
+    windowClassName = wTitle.substr(0, wTitle.find(' '));
 
-    SetWindowPos(screen, HWND_TOP, wRect.left, wRect.top, wRect.right - wRect.left, wRect.bottom - wRect.top, flags);
+    // Register window class
+    WNDCLASSW wc;
+    wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.lpfnWndProc = WindowProc;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
+    wc.hCursor = NULL;
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = windowClassName.c_str();
 
-    // Bei Vollbild Auflösung umstellen
-    if(fullscreen)
+    if(!RegisterClassW(&wc))
+        return false;
+
+    // Create window
+    screenSize_ = fullscreen ? FindClosestVideoMode(wndSize) : wndSize;
+    RECT wRect = CalculateWindowRect(fullscreen, screenSize_);
+
+    std::pair<DWORD, DWORD> style = GetStyleFlags(fullscreen);
+    screen = CreateWindowExW(style.second, windowClassName.c_str(), wTitle.c_str(), style.first, wRect.left, wRect.top,
+                             wRect.right - wRect.left, wRect.bottom - wRect.top, NULL, NULL, GetModuleHandle(NULL), NULL);
+
+    if(screen == NULL)
+        return false;
+
+    SetClipboardViewer(screen);
+
+    SetWindowTextW(screen, wTitle.c_str());
+    SetWindowTextW(GetConsoleWindow(), wTitle.c_str());
+    return true;
+}
+
+bool VideoWinAPI::InitOGL()
+{
+    RTTR_Assert(!screen_dc && !screen_rc);
+    // Pixelformat zuweisen
+    static PIXELFORMATDESCRIPTOR pfd = {sizeof(PIXELFORMATDESCRIPTOR),
+                                        1,
+                                        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+                                        PFD_TYPE_RGBA,
+                                        8, // 8 Bit
+                                        8,
+                                        0,
+                                        8,
+                                        0,
+                                        8,
+                                        0,
+                                        8,
+                                        0, // RGBA 8 bits, 0 bits shift
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,  // No accum bits
+                                        32, // 32 Bit depth
+                                        0,
+                                        0, // no stencil or aux buffers
+                                        PFD_MAIN_PLANE,
+                                        0,
+                                        0,
+                                        0,
+                                        0}; // reserved and masks 0
+
+    screen_dc = GetDC(screen);
+    if(screen_dc == NULL)
+        return false;
+
+    // Pixelformat auswaehlen
+    GLuint PixelFormat = ChoosePixelFormat(screen_dc, &pfd);
+    if(PixelFormat == 0)
+        return false;
+
+    // Pixelformat zuweisen
+    if(!SetPixelFormat(screen_dc, PixelFormat, &pfd))
+        return false;
+
+    // Renderingkontext erstellen
+    screen_rc = wglCreateContext(screen_dc);
+    if(screen_rc == NULL)
+        return false;
+
+    // Renderingkontext aktivieren
+    if(!wglMakeCurrent(screen_dc, screen_rc))
+        return false;
+
+    return true;
+}
+
+bool VideoWinAPI::MakeFullscreen(const VideoMode& resolution)
+{
+    DEVMODE dm;
+    memset(&dm, 0, sizeof(dm));
+    dm.dmSize = sizeof(dm);
+
+    EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &dm);
+    dm.dmPelsWidth = resolution.width;
+    dm.dmPelsHeight = resolution.height;
+    dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+
+    LONG result = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+    if(result != DISP_CHANGE_SUCCESSFUL)
     {
-        DEVMODE dm;
-        memset(&dm, 0, sizeof(dm));
-        dm.dmSize = sizeof(dm);
-        dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-        dm.dmPelsWidth = width;
-        dm.dmPelsHeight = height;
-
-        ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+        std::cerr << "Changing display mode failed with " << result << std::endl;
+        return false;
     }
-
-    // Das Fenster anzeigen
-    ShowWindow(screen, SW_SHOW);
-    // Das Fenster in den Vordergrund rcken
-    SetForegroundWindow(screen);
-    // Dem Fenster den Eingabefokus geben
-    SetFocus(screen);
-
     return true;
 }
 
@@ -394,8 +386,8 @@ void VideoWinAPI::DestroyScreen()
     // Fenster schliessen
     EndDialog(screen, 0);
 
-    if(dm_prev.dmBitsPerPel != 0)
-        ChangeDisplaySettings(&dm_prev, CDS_RESET);
+    // Reset display settings to defaults
+    ChangeDisplaySettings(NULL, 0);
 
     if(screen_rc)
     {
@@ -490,26 +482,14 @@ void* VideoWinAPI::GetFunction(const char* function) const
 void VideoWinAPI::ListVideoModes(std::vector<VideoMode>& video_modes) const
 {
     DEVMODE dm;
+    memset(&dm, 0, sizeof(dm));
+    dm.dmSize = sizeof(dm);
     unsigned m = 0;
     while(EnumDisplaySettings(NULL, m++, &dm))
     {
-        // Prüfen, ob es die Auflösung nicht schonmal gab (kann es noch mit unterschiedlichen Bit-Tiefen geben
-        bool already_in_vector = false;
-        for(size_t i = 0; i < video_modes.size(); ++i)
-        {
-            if(dm.dmPelsWidth == video_modes[i].width && dm.dmPelsHeight == video_modes[i].height)
-            {
-                already_in_vector = true;
-                break;
-            }
-        }
-
-        if(already_in_vector)
-            continue;
-
-        // Es gibt die Auflösung noch nicht --> hinzufügen
         VideoMode vm(static_cast<unsigned short>(dm.dmPelsWidth), static_cast<unsigned short>(dm.dmPelsHeight));
-        video_modes.push_back(vm);
+        if(!helpers::contains(video_modes, vm))
+            video_modes.push_back(vm);
     }
 }
 
@@ -643,35 +623,23 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
         }
         break;
         case WM_SIZE:
+        {
             if(wParam == SIZE_MINIMIZED)
                 pVideoWinAPI->isMinimized = true;
             if(wParam != SIZE_MAXIMIZED && wParam != SIZE_RESTORED)
                 break;
-            if(pVideoWinAPI->screenWidth != LOWORD(lParam) || pVideoWinAPI->screenHeight != HIWORD(lParam) || pVideoWinAPI->isMinimized)
+            VideoMode newSize(LOWORD(lParam), HIWORD(lParam));
+            if(pVideoWinAPI->screenSize_ != newSize || pVideoWinAPI->isMinimized)
             {
-                pVideoWinAPI->screenWidth = LOWORD(lParam);
-                pVideoWinAPI->screenHeight = HIWORD(lParam);
+                pVideoWinAPI->screenSize_ = newSize;
 
                 pVideoWinAPI->isWindowResizable = false;
-                pVideoWinAPI->CallBack->ScreenResized(pVideoWinAPI->screenWidth, pVideoWinAPI->screenHeight);
+                pVideoWinAPI->CallBack->ScreenResized(pVideoWinAPI->screenSize_.width, pVideoWinAPI->screenSize_.height);
                 pVideoWinAPI->isWindowResizable = true;
             }
             pVideoWinAPI->isMinimized = false;
             break;
-        case WM_ACTIVATE:
-        {
-            switch(wParam)
-            {
-                default:
-                case WA_ACTIVE: { ShowCursor(0);
-                }
-                break;
-                case WA_INACTIVE: { ShowCursor(1);
-                }
-                break;
-            }
         }
-        break;
         case WM_SYSCOMMAND:
         {
             switch(wParam)
@@ -684,6 +652,10 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             }
         }
         break;
+        case WM_SETCURSOR:
+            // Set no cursor again
+            SetCursor(NULL);
+            break;
         case WM_MOUSEMOVE:
         {
             pVideoWinAPI->mouse_xy.x = LOWORD(lParam);

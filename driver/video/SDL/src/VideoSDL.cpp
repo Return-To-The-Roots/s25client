@@ -137,7 +137,7 @@ void VideoSDL::CleanUp()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized)
         return false;
@@ -151,20 +151,14 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-#ifdef _WIN32
-    // das spinnt ja total unter windows ...
-    this->isFullscreen_ = false;
-#else
-    this->isFullscreen_ = fullscreen;
-#endif
-
-    // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32,
-                                   SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
-    {
-        fprintf(stderr, "%s\n", SDL_GetError());
+    // putenv needs a char* not a const char* -.-
+    static char CENTER_ENV[] = "SDL_VIDEO_CENTERED=center";
+    static char UNCENTER_ENV[] = "SDL_VIDEO_CENTERED=";
+    SDL_putenv(CENTER_ENV);
+    // For SDL creation and resize is the same
+    if(!ResizeScreen(newSize, fullscreen))
         return false;
-    }
+    SDL_putenv(UNCENTER_ENV);
 
     SDL_WM_SetCaption(title.c_str(), 0);
 
@@ -173,9 +167,6 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
 #endif
 
     std::fill(keyboard.begin(), keyboard.end(), false);
-
-    this->screenWidth = width;
-    this->screenHeight = height;
 
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -193,24 +184,19 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
  *
  *  @todo Vollbildmodus ggf. wechseln
  */
-bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized)
         return false;
 
-    this->screenWidth = width;
-    this->screenHeight = height;
-
-#ifdef _WIN32
-    // das spinnt ja total unter windows ...
-    this->isFullscreen_ = false;
-#else
     this->isFullscreen_ = fullscreen;
-#endif
 
+    screenSize_ = (isFullscreen_) ? FindClosestVideoMode(newSize) : newSize;
+
+    screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32,
+                              SDL_HWSURFACE | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE));
     // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32,
-                                   SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    if(!screen)
     {
         fprintf(stderr, "%s\n", SDL_GetError());
         return false;
@@ -262,18 +248,22 @@ bool VideoSDL::MessageLoop()
             case SDL_QUIT: return false;
 
             case SDL_ACTIVEEVENT:
-                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain)
+                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain && !isFullscreen_)
                 {
                     // Window was restored. We need a resize to avoid a black screen
-                    ResizeScreen(screenWidth, screenHeight, isFullscreen_);
-                    CallBack->ScreenResized(screenWidth, screenHeight);
+                    ResizeScreen(VideoMode(screenSize_.width, screenSize_.height), isFullscreen_);
+                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
                 }
                 break;
 
             case SDL_VIDEORESIZE:
             {
-                ResizeScreen(ev.resize.w, ev.resize.h, isFullscreen_);
-                CallBack->ScreenResized(screenWidth, screenHeight);
+                VideoMode newSize(ev.resize.w, ev.resize.h);
+                if(newSize != screenSize_)
+                {
+                    ResizeScreen(newSize, isFullscreen_);
+                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
+                }
             }
             break;
 

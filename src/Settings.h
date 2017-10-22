@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "Point.h"
 #include "libutil/Singleton.h"
 #include <map>
 #include <string>
@@ -51,10 +52,7 @@ public:
 
     struct
     {
-        unsigned short fullscreen_width;
-        unsigned short fullscreen_height;
-        unsigned short windowed_width;
-        unsigned short windowed_height;
+        Extent fullscreenSize, windowedSize;
         bool fullscreen;
         unsigned short vsync;
         bool vbo;

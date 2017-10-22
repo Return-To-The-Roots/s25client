@@ -338,9 +338,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
     DrawPoint adjPos = GetPos();
     DrawPoint outerPt = GetPos() + GetSize();
-    if(outerPt.x > VIDEODRIVER.GetScreenWidth())
+    if(outerPt.x > static_cast<int>(VIDEODRIVER.GetScreenSize().x))
         adjPos.x = mousePos.x - GetSize().x - 40;
-    if(outerPt.y > VIDEODRIVER.GetScreenHeight())
+    if(outerPt.y > static_cast<int>(VIDEODRIVER.GetScreenSize().y))
         adjPos.y = mousePos.y - GetSize().y - 40;
     if(adjPos != GetPos())
         SetPos(adjPos);

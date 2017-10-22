@@ -117,31 +117,12 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     std::stringstream title;
     title << RTTR_Version::GetTitle() << " - v" << RTTR_Version::GetVersion() << "-" << RTTR_Version::GetShortRevision();
 
-// Fenster erstellen
-// On Windows it is necessary to open a windowed mode window at first and then resize it
-#ifdef _WIN32
-    // We need this doubled up here
-    // - With WinAPI in the windowed case, otherwise the GL Viewport is set wrong (or something related, seems to be a bug in our WinAPI
-    // implementation) - With SDL in the fullscreen case
-    if(!videodriver->CreateScreen(title.str(), screen_width, screen_height, false))
+    // Fenster erstellen
+    if(!videodriver->CreateScreen(title.str(), VideoMode(screen_width, screen_height), fullscreen))
     {
         s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
         return false;
     }
-    if(!videodriver->ResizeScreen(screen_width, screen_height, fullscreen))
-    {
-        s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
-        return false;
-    }
-    // Set this, as there is no message sent for the resize by the driver
-    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
-#else
-    if(!videodriver->CreateScreen(title.str(), screen_width, screen_height, fullscreen))
-    {
-        s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
-        return false;
-    }
-#endif
 
     // DriverWrapper Initialisieren
     if(!Initialize())
@@ -177,7 +158,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
         return false;
     }
 
-    const bool result = videodriver->ResizeScreen(screenWidth, screenHeight, fullscreen);
+    const bool result = videodriver->ResizeScreen(VideoMode(screenWidth, screenHeight), fullscreen);
 #ifdef _WIN32
     if(!videodriver->IsFullscreen())
     {
@@ -408,19 +389,18 @@ void VideoDriverWrapper::RenewViewport()
     if(!videodriver->IsOpenGL())
         return;
 
-    const unsigned short width = videodriver->GetScreenWidth();
-    const unsigned short height = videodriver->GetScreenHeight();
+    const VideoMode screenSize = videodriver->GetScreenSize();
 
     // Viewport mit widthxheight setzen
-    glViewport(0, 0, width, height);
-    glScissor(0, 0, width, height);
+    glViewport(0, 0, screenSize.width, screenSize.height);
+    glScissor(0, 0, screenSize.width, screenSize.height);
 
     // Orthogonale Matrix erstellen
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
     // 0,0 should be top left corner
-    glOrtho(0, width, height, 0, -100, 100);
+    glOrtho(0, screenSize.width, screenSize.height, 0, -100, 100);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -578,19 +558,10 @@ void* VideoDriverWrapper::GetMapPointer() const
     return videodriver->GetMapPointer();
 }
 
-unsigned short VideoDriverWrapper::GetScreenWidth() const
-{
-    return std::max<unsigned>(800u, videodriver->GetScreenWidth());
-}
-
-unsigned short VideoDriverWrapper::GetScreenHeight() const
-{
-    return std::max<unsigned>(600u, videodriver->GetScreenHeight());
-}
-
 Extent VideoDriverWrapper::GetScreenSize() const
 {
-    return Extent(GetScreenWidth(), GetScreenHeight());
+    VideoMode screenSize = videodriver->GetScreenSize();
+    return elMax(Extent(screenSize.width, screenSize.height), Extent(800, 600));
 }
 
 bool VideoDriverWrapper::IsFullscreen() const

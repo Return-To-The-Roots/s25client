@@ -201,7 +201,7 @@ void dskCredits::DrawCredit()
     LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, 0, SetAlpha(COLOR_RED, transparency));
 
     if(itCurEntry->pic)
-        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetScreenWidth() - 300, 70), SetAlpha(COLOR_WHITE, transparency));
+        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetScreenSize().x - 300, 70), SetAlpha(COLOR_WHITE, transparency));
 }
 
 void dskCredits::DrawBobs()
@@ -222,7 +222,7 @@ void dskCredits::DrawBobs()
 
     // add new bob
     if(bob_spawnprosec > 0 && msSinceLastBobSpawn > (1000 / bob_spawnprosec)
-       && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenWidth() / 2))
+       && (int)bobs.size() < (int)(50 + VIDEODRIVER.GetScreenSize().x / 2))
     {
         bobSpawnTime = VIDEODRIVER.GetTickCount();
 
@@ -237,7 +237,7 @@ void dskCredits::DrawBobs()
             b.direction = 3;
         } else
         {
-            b.pos.x = VIDEODRIVER.GetScreenWidth();
+            b.pos.x = VIDEODRIVER.GetScreenSize().x;
             b.direction = 6;
         }
 
@@ -283,7 +283,7 @@ void dskCredits::DrawBobs()
             if(bob->direction == 3)
             {
                 bob->pos.x += bob->speed;
-                if(bob->pos.x > VIDEODRIVER.GetScreenWidth())
+                if(bob->pos.x > static_cast<int>(VIDEODRIVER.GetScreenSize().x))
                     bob->direction = 6;
             } else if(bob->direction == 6)
             {

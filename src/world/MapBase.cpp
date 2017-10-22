@@ -123,8 +123,8 @@ ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
     //     -> Switching at an angle of 60deg compared to x-axis
     //     hence: |dy/dx| > tan(60deg) -> main dir, else add E or W
 
-    unsigned dy = SafeDiff(fromPt.y, toPt.y);
-    unsigned dx = SafeDiff(fromPt.x, toPt.x);
+    unsigned dy = safeDiff(fromPt.y, toPt.y);
+    unsigned dx = safeDiff(fromPt.x, toPt.x);
     // Handle wrapping. Also swap coordinates when wrapping (we reverse the direction)
     if(dy > size_.y / 2u)
     {

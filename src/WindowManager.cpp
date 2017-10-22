@@ -670,14 +670,10 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 {
     if(ke.alt && (ke.kt == KT_RETURN))
     {
-// Switch Fullscreen/Windowed
-#ifdef _WIN32
-        VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height, !VIDEODRIVER.IsFullscreen());
-#else
-        VIDEODRIVER.ResizeScreen(VIDEODRIVER.IsFullscreen() ? SETTINGS.video.windowed_width : SETTINGS.video.fullscreen_width,
-                                 VIDEODRIVER.IsFullscreen() ? SETTINGS.video.windowed_height : SETTINGS.video.fullscreen_height,
-                                 !VIDEODRIVER.IsFullscreen());
-#endif
+        // Switch Fullscreen/Windowed
+        Extent screenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+        VIDEODRIVER.ResizeScreen(screenSize.x, screenSize.y, !SETTINGS.video.fullscreen);
+        SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
 }
@@ -695,8 +691,6 @@ void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHei
 {
     VIDEODRIVER.RenewViewport();
     Msg_ScreenResize(VIDEODRIVER.GetScreenSize());
-    LOG.writeToFile("Resized screen. Requested %ux%u, got %ux%u\n") % newWidth % newHeight % VIDEODRIVER.GetScreenWidth()
-      % VIDEODRIVER.GetScreenHeight();
 }
 
 /**
@@ -713,18 +707,11 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     if(newSize == screenSize)
         return;
 
-    ScreenResizeEvent sr(screenSize, Extent(std::max(800u, newSize.x), std::max(600u, newSize.y)));
+    ScreenResizeEvent sr(screenSize, elMax(Extent(800, 600), newSize));
     screenSize = sr.newSize;
 
-    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen(); //-V807
-
     if(!SETTINGS.video.fullscreen)
-    {
-        if(newSize.x >= 800)
-            SETTINGS.video.windowed_width = newSize.x;
-        if(newSize.y >= 600)
-            SETTINGS.video.windowed_height = newSize.y;
-    }
+        SETTINGS.video.windowedSize = sr.newSize;
 
     // ist unser Desktop gültig?
     if(!curDesktop)
@@ -891,7 +878,7 @@ void WindowManager::DrawToolTip()
         unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > VIDEODRIVER.GetScreenWidth())
+        if(right_edge > VIDEODRIVER.GetScreenSize().y)
             ttPos.x = lastMousePos.x - spacing - text_width;
 
         unsigned numLines = 1;

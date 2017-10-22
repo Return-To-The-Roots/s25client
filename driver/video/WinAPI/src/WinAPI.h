@@ -23,6 +23,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <string>
+#include <utility>
 
 /// Klasse für den WinAPI Videotreiber.
 class VideoWinAPI : public VideoDriver
@@ -42,10 +43,10 @@ public:
     void CleanUp() override;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) override;
+    bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
 
     /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-    bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
+    bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
 
     /// Schliesst das Fenster.
     void DestroyScreen() override;
@@ -75,6 +76,13 @@ public:
     void* GetMapPointer() const override;
 
 private:
+    std::pair<DWORD, DWORD> GetStyleFlags(bool fullscreen) const;
+    /// Calculate the rect for the window and adjusts the (usable) size if required
+    RECT CalculateWindowRect(bool fullscreen, VideoMode& size) const;
+    bool RegisterAndCreateWindow(const std::string& title, const VideoMode& wndSize, bool fullscreen);
+    bool InitOGL();
+    static bool MakeFullscreen(const VideoMode& resolution);
+
     /// Funktion zum Senden einer gedrückten Taste.
     void OnWMChar(unsigned c, bool disablepaste = false, LPARAM lParam = 0);
     void OnWMKeyDown(unsigned c, LPARAM lParam = 0);
@@ -89,7 +97,6 @@ private:
     bool mouse_l;    /// Status der Linken Maustaste.
     bool mouse_r;    /// Status der Rechten Maustaste.
     int mouse_z;     /// Scrolling position for mousewheel.
-    DEVMODE dm_prev; /// Bildschirmmodus.
     HWND screen;     /// Fensterhandle.
     HDC screen_dc;   /// Zeichenkontext des Fensters.
     HGLRC screen_rc; /// OpenGL-Kontext des Fensters.

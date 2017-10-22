@@ -296,7 +296,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Replaydateianzeige in der linken unteren Ecke
     if(gameClient.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenHeight()), gameClient.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), gameClient.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
                          0xFFFFFF00);
 
     // Mauszeiger
@@ -312,7 +312,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Laggende Spieler anzeigen in Form von Schnecken
-    DrawPoint snailPos(VIDEODRIVER.GetScreenWidth() - 70, 35);
+    DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
     for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
         const GamePlayer& player = world.GetPlayer(i);
@@ -322,7 +322,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Show icons in the upper right corner of the game interface
-    DrawPoint iconPos(VIDEODRIVER.GetScreenWidth() - 56, 32);
+    DrawPoint iconPos(VIDEODRIVER.GetScreenSize().x - 56, 32);
 
     /*
     // Draw cheating indicator icon (WINTER) - Single Player only!
@@ -372,8 +372,8 @@ void dskGameInterface::Msg_PaintAfter()
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    DrawPoint btOrig(VIDEODRIVER.GetScreenSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetScreenSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
     if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
         return false;

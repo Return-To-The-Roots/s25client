@@ -56,11 +56,4 @@ inline T max(T a, T b)
     return (a < b) ? b : a;
 }
 
-/// Berechnet Differenz von 2 (unsigned!) Werten
-template<typename T>
-inline T SafeDiff(T a, T b)
-{
-    return (a > b) ? a - b : b - a;
-}
-
 #endif // defines_h__

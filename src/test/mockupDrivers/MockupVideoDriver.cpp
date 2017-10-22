@@ -17,8 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MockupVideoDriver.h"
-#include <SDL.h>
 #include <boost/nowide/iostream.hpp>
+#include <SDL.h>
 
 MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1)
 {
@@ -55,9 +55,9 @@ void MockupVideoDriver::CleanUp()
     initialized = false;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
-    ResizeScreen(width, height, fullscreen);
+    ResizeScreen(newSize, fullscreen);
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -74,10 +74,9 @@ bool MockupVideoDriver::CreateScreen(const std::string& title, unsigned short wi
     return true;
 }
 
-bool MockupVideoDriver::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 {
-    screenWidth = width;
-    screenHeight = height;
+    screenSize_ = newSize;
     isFullscreen_ = fullscreen;
     return true;
 }

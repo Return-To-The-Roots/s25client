@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Loader.h"
-#include "mockupDrivers/MockupVideoDriver.h"
 #include "PointOutput.h"
 #include "Window.h"
 #include "WindowManager.h"
@@ -30,6 +29,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
+#include "mockupDrivers/MockupVideoDriver.h"
 #include <boost/test/unit_test.hpp>
 
 namespace {
