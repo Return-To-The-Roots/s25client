@@ -45,7 +45,7 @@ public:
      * @param settings settings used for the map generation
      * @param config configuration for the random map generator
      */
-    Map* Create(const MapSettings& settings);
+    Map* Create(MapSettings settings);
 
 private:
     /**

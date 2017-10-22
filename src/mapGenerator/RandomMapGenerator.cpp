@@ -59,22 +59,19 @@ unsigned RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain, cons
 
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
 {
-    const int length = std::min(map.size.x / 2, map.size.y / 2);
+    const int length = std::min(map.size.x, map.size.y) / 2;
 
     // compute center of the map
     Position center(map.size / 2);
 
     // radius for player distribution
-    const int rMin = (int)(settings.minPlayerRadius * length);
-    ;
-    const int rMax = (int)(settings.maxPlayerRadius * length);
-    const int rnd = config.Rand(rMin, rMax);
+    const double rnd = config.DRand(settings.minPlayerRadius * length, settings.maxPlayerRadius * length);
 
     // player headquarters for the players
     for(unsigned i = 0; i < settings.players; i++)
     {
         // compute headquarter position
-        Position position = helper.ComputePointOnCircle(i, settings.players, center, (double)(rMin + rnd));
+        Position position = helper.ComputePointOnCircle(i, settings.players, center, rnd);
 
         // store headquarter position
         map.positions[i] = MapPoint(position);
@@ -242,9 +239,10 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
     }
 }
 
-Map* RandomMapGenerator::Create(const MapSettings& settings)
+Map* RandomMapGenerator::Create(MapSettings settings)
 {
-    Map* map = new Map(settings.size, "Random", "auto");
+    settings.Validate();
+    Map* map = new Map(settings.size, settings.name, settings.author);
 
     // configuration of the map settings
     map->type = settings.type;

@@ -80,6 +80,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString(_("Medium"));
     combo->AddString(_("Far"));
     combo->AddString(_("Very Far"));
+    combo->AddString(_("Furthest apart"));
 
     AddText(3, DrawPoint(20, 170), _("Landscape"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 190), Extent(210, 20), TC_GREY, NormalFont, 100);
@@ -168,6 +169,10 @@ void iwMapGenerator::Apply()
             mapSettings.minPlayerRadius = 0.71;
             mapSettings.maxPlayerRadius = 0.72;
             break;
+        case 5:
+            mapSettings.minPlayerRadius = 0.5;
+            mapSettings.maxPlayerRadius = 0.5;
+            break;
         default: break;
     }
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection())
@@ -218,7 +223,9 @@ void iwMapGenerator::Reset()
     }
 
     combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS);
-    if(mapSettings.minPlayerRadius <= 0.2)
+    if(mapSettings.minPlayerRadius == 0.5)
+        combo->SetSelection(5);
+    else if(mapSettings.minPlayerRadius <= 0.2)
         combo->SetSelection(0);
     else if(mapSettings.minPlayerRadius <= 0.3)
         combo->SetSelection(1);
