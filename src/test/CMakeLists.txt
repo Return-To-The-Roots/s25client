@@ -34,12 +34,6 @@ foreach(curFile ${TEST_CASES})
 endforeach()
 source_group(other FILES ${OTHER_SRC})
 
-if(MSVC)
-	CMAKE_POLICY(SET CMP0026 OLD) # Required for use of LOCATION_*
-	INCLUDE(CreateLaunchers)
-	create_target_launcher(Test)
-endif()
-
 if(WIN32)
     include(GatherDll)
     gather_dll_copy(Test)
