@@ -75,6 +75,9 @@ public:
     void* GetMapPointer() const override;
 
 private:
+    bool SetVideoMode(const VideoMode& newSize, bool fullscreen);
+    void PrintError(const std::string& msg);
+
     SDL_Surface* screen; /// Das Fenster-SDL-Surface.
 };
 

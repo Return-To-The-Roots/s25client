@@ -335,45 +335,11 @@ bool VideoDriverWrapper::Initialize()
     if(!isOglEnabled_)
         return true;
 
-    RenewViewport();
-
-    // Depthbuffer und Colorbuffer einstellen
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-
-    // Smooth - Shading aktivieren
-    glShadeModel(GL_SMOOTH);
-
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0.0f);
-
-    // Alphablending an
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-
-    // Depthbuffer abschalten
-    glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
-
-    // Texturen anstellen
-    glEnable(GL_TEXTURE_2D);
-
-    // Dither abstellen
-    glDisable(GL_DITHER);
-
-    // Scissoring aktivieren
-    glEnable(GL_SCISSOR_TEST);
-
-    // Nur obere Seite von Dreiecke rendern --> Performance
-    glEnable(GL_CULL_FACE);
-
     // Extensions laden
     if(!LoadAllExtensions())
         return false;
 
-    ClearScreen();
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    RenewViewport();
 
     // Buffer swappen um den leeren Buffer darzustellen
     SwapBuffers();
@@ -404,6 +370,38 @@ void VideoDriverWrapper::RenewViewport()
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    // Depthbuffer und Colorbuffer einstellen
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+
+    // Smooth - Shading aktivieren
+    glShadeModel(GL_SMOOTH);
+
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+
+    // Alphablending an
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
+    // Depthbuffer abschalten
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+    // Texturen anstellen
+    glEnable(GL_TEXTURE_2D);
+
+    // Dither abstellen
+    glDisable(GL_DITHER);
+
+    // Scissoring aktivieren
+    glEnable(GL_SCISSOR_TEST);
+
+    // Nur obere Seite von Dreiecke rendern --> Performance
+    glEnable(GL_CULL_FACE);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     ClearScreen();
 }

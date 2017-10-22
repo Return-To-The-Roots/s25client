@@ -20,6 +20,7 @@
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
+#include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
 
@@ -155,8 +156,8 @@ bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, 
     static char CENTER_ENV[] = "SDL_VIDEO_CENTERED=center";
     static char UNCENTER_ENV[] = "SDL_VIDEO_CENTERED=";
     SDL_putenv(CENTER_ENV);
-    // For SDL creation and resize is the same
-    if(!ResizeScreen(newSize, fullscreen))
+    // Set the video mode
+    if(!SetVideoMode(newSize, fullscreen))
         return false;
     SDL_putenv(UNCENTER_ENV);
 
@@ -189,6 +190,71 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     if(!initialized)
         return false;
 
+        // On windows the current ogl context gets destroyed. Hence we have to save it to avoid having to reinitialize all resources
+        // Taken from http://www.bytehazard.com/articles/sdlres.html
+#ifdef _WIN32
+    SDL_SysWMinfo info;
+    // get window handle from SDL
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) != 1)
+    {
+        PrintError("SDL_GetWMInfo #1 failed");
+        return false;
+    }
+
+    // get device context handle
+    HDC tempDC = GetDC(info.window);
+
+    // create temporary context
+    HGLRC tempRC = wglCreateContext(tempDC);
+    if(tempRC == NULL)
+    {
+        PrintError("wglCreateContext failed");
+        return false;
+    }
+
+    // share resources to temporary context
+    SetLastError(0);
+    if(!wglShareLists(info.hglrc, tempRC))
+    {
+        PrintError("wglShareLists #1 failed");
+        return false;
+    }
+
+    // set video mode
+    if(!SetVideoMode(newSize, fullscreen))
+        return false;
+
+    // previously used structure may possibly be invalid, to be sure we get it again
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) != 1)
+    {
+        PrintError("SDL_GetWMInfo #2 failed\n");
+        return false;
+    }
+
+    // share resources to new SDL-created context
+    if(!wglShareLists(tempRC, info.hglrc))
+    {
+        PrintError("wglShareLists #2 failed\n");
+        return false;
+    }
+
+    // we no longer need our temporary context
+    if(!wglDeleteContext(tempRC))
+    {
+        PrintError("wglDeleteContext failed\n");
+        return false;
+    }
+    // success
+    return true;
+#else
+    return SetVideoMode(newSize, fullscreen);
+#endif // _WIN32
+}
+
+bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
+{
     this->isFullscreen_ = fullscreen;
 
     screenSize_ = (isFullscreen_) ? FindClosestVideoMode(newSize) : newSize;
@@ -198,11 +264,16 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     // Videomodus setzen
     if(!screen)
     {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        PrintError(SDL_GetError());
         return false;
     }
 
     return true;
+}
+
+void VideoSDL::PrintError(const std::string& msg)
+{
+    bnw::cerr << msg << std::endl;
 }
 
 /**
