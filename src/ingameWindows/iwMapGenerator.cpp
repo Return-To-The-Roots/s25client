@@ -47,7 +47,7 @@ enum
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
     : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 400), _("Map Generator"), LOADER.GetImageN("resource", 41),
-                   true, false),
+                   true),
       mapSettings(settings)
 {
     AddTextButton(0, DrawPoint(20, 360), Extent(100, 20), TC_RED2, _("Back"), NormalFont);
@@ -55,9 +55,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TC_GREY, NormalFont, 100);
     for(unsigned n = 2; n < MAX_PLAYERS; n++)
-    {
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
-    }
 
     combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Islands"));
@@ -110,16 +108,12 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
         default: break;
 
         case 0: // back
-        {
             Close();
-        }
         break;
 
         case 1: // apply
-        {
             Apply();
             Close();
-        }
         break;
     }
 }
