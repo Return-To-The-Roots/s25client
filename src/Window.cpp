@@ -392,6 +392,12 @@ ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& 
     return AddCtrl(new ctrlText(this, id, ScaleIf(pos), text, color, format, font));
 }
 
+TextFormatSetter Window::AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+                                          glArchivItem_Font* font)
+{
+    return AddText(id, pos, text, color, format, font);
+}
+
 ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                           const std::string& formatstr, glArchivItem_Font* font, unsigned color, unsigned parameters, ...)
 {

@@ -22,6 +22,7 @@
 #include "DrawPoint.h"
 #include "Msgbox.h"
 #include "Rect.h"
+#include "TextFormatSetter.h"
 #include "animation/AnimationManager.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/TextureColor.h"
@@ -170,6 +171,8 @@ public:
     ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font, unsigned columns,
                         ...);
     ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format, glArchivItem_Font* font);
+    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
+                                      glArchivItem_Font* font);
     ctrlTimer* AddTimer(unsigned id, unsigned timeout);
     /// fügt ein vertieftes variables TextCtrl hinzu.
     /// var parameters are pointers to int, unsigned or const char and must be valid for the lifetime of the var text!

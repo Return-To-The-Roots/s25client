@@ -17,20 +17,24 @@
 
 #pragma once
 
-#ifndef RTTR_Version_h__
-#define RTTR_Version_h__
+#ifndef TextFormatSetter_h__
+#define TextFormatSetter_h__
 
-#include <string>
+#include "controls/ctrlBaseText.h"
+#include <boost/format.hpp>
 
-class RTTR_Version
+struct TextFormatSetter
 {
-public:
-    static std::string GetTitle();
-    static std::string GetVersionDate();
-    static std::string GetRevision();
-    static std::string GetShortRevision();
-    static std::string GetYear();
-    static std::string GetReadableVersion();
+    ctrlBaseText* ctrl;
+    boost::format fmt;
+    TextFormatSetter(ctrlBaseText* ctrl) : ctrl(ctrl), fmt(ctrl->GetText()) {}
+    ~TextFormatSetter() { ctrl->SetText(fmt.str()); }
+    template<typename T>
+    TextFormatSetter& operator%(const T& val)
+    {
+        fmt % val;
+        return *this;
+    }
 };
 
-#endif // RTTR_Version_h__
+#endif // TextFormatSetter_h__

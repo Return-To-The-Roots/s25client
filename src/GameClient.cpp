@@ -402,7 +402,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     this->playerId_ = msg.playerId;
 
     // Server-Typ senden
-    send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, RTTR_Version::GetVersion()));
+    send_queue.push(new GameMessage_Server_Type(clientconfig.servertyp, RTTR_Version::GetRevision()));
     return true;
 }
 

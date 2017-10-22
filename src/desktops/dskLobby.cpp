@@ -224,7 +224,10 @@ bool dskLobby::ConnectToSelectedGame()
         if(server.getId() != selection)
             continue;
 
-        if(server.getVersion() == std::string(RTTR_Version::GetVersion()))
+        std::string serverRevision = server.getVersion();
+        if(!serverRevision.empty() && serverRevision[0] == 'v')
+            serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
+        if(serverRevision == RTTR_Version::GetShortRevision())
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
             connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());

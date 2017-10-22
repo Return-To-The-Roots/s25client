@@ -77,32 +77,32 @@ class GameMessage_Server_Type : public GameMessage
 {
 public:
     ServerType type;
-    std::string version;
+    std::string revision;
 
     GameMessage_Server_Type() : GameMessage(NMS_SERVER_TYPE) {}
-    GameMessage_Server_Type(const ServerType type, const std::string& version)
-        : GameMessage(NMS_SERVER_TYPE, 0xFF), type(type), version(version)
+    GameMessage_Server_Type(const ServerType type, const std::string& revision)
+        : GameMessage(NMS_SERVER_TYPE, 0xFF), type(type), revision(revision)
     {
-        LOG.writeToFile(">>> NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % version;
+        LOG.writeToFile(">>> NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % revision;
     }
 
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
         ser.PushUnsignedShort(boost::underlying_cast<unsigned short>(type));
-        ser.PushString(version);
+        ser.PushString(revision);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
         type = static_cast<ServerType>(ser.PopUnsignedShort());
-        version = ser.PopString();
+        revision = ser.PopString();
     }
 
     bool Run(MessageInterface* callback) override
     {
-        LOG.writeToFile("<<< NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % version;
+        LOG.writeToFile("<<< NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % revision;
         return GetInterface(callback)->OnGameMessage(*this);
     }
 };

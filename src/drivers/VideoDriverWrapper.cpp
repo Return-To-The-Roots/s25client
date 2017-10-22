@@ -115,7 +115,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     }
 
     std::stringstream title;
-    title << RTTR_Version::GetTitle() << " - v" << RTTR_Version::GetVersion() << "-" << RTTR_Version::GetShortRevision();
+    title << RTTR_Version::GetTitle() << " - " << RTTR_Version::GetReadableVersion();
 
     // Fenster erstellen
     if(!videodriver->CreateScreen(title.str(), VideoMode(screen_width, screen_height), fullscreen))
