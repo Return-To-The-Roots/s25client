@@ -28,7 +28,7 @@ public:
     MockupVideoDriver(VideoDriverLoaderInterface* CallBack);
     const char* GetName() const override;
     bool Initialize() override;
-    void CleanUp() override {}
+    void CleanUp() override;
     bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) override;
     bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
     void DestroyScreen() override {}

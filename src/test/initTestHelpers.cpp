@@ -22,7 +22,7 @@
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "test/MockupVideoDriver.h"
+#include "mockupDrivers/MockupVideoDriver.h"
 #include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
