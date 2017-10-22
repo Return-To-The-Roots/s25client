@@ -28,7 +28,7 @@ Map::Map(const MapExtent& size, const std::string& name, const std::string& auth
     textureRsu.resize(numNodes, 0x08);
     textureLsd.resize(numNodes, 0x08);
     build.resize(numNodes, 0x04);
-    shading.resize(numNodes, 0x80);
+    shading.resize(numNodes, 0x40);
     resource.resize(numNodes, 0x21);
     road.resize(numNodes, 0x00);
     objectType.resize(numNodes, 0x00);
@@ -73,7 +73,7 @@ libsiedler2::Archiv* Map::CreateArchiv()
     map->push(new libsiedler2::ArchivItem_Raw(unknown2));
     map->push(new libsiedler2::ArchivItem_Raw(unknown3));
     map->push(new libsiedler2::ArchivItem_Raw(resource));
-    map->push(new libsiedler2::ArchivItem_Raw(shading));
+    map->push(NULL); // No shading
     map->push(new libsiedler2::ArchivItem_Raw(unknown5));
 
     info->push(map);

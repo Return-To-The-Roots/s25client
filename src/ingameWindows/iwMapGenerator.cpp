@@ -109,12 +109,12 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 
         case 0: // back
             Close();
-        break;
+            break;
 
         case 1: // apply
             Apply();
             Close();
-        break;
+            break;
     }
 }
 

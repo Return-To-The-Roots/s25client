@@ -80,9 +80,9 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePosition, VertexUtility)
 }
 
 /**
-* Tests the VertexUtility::GetIndexOf method for a position inside of the bounds given by
-* width and height. The resulting index must match the scheme: index = y * width + x.
-*/
+ * Tests the VertexUtility::GetIndexOf method for a position inside of the bounds given by
+ * width and height. The resulting index must match the scheme: index = y * width + x.
+ */
 BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 {
     const MapExtent size(64, 60);
