@@ -27,6 +27,7 @@ addons:
             - george-edison55-trusty-backports # cmake 3.2.3
         packages:
             - libboost-filesystem1.55-dev
+            - libboost-thread1.55-dev
             - libboost-iostreams1.55-dev
             - libboost-program-options1.55-dev
             - libboost-system1.55-dev

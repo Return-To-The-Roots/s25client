@@ -43,7 +43,7 @@ unsigned RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain, cons
 
 unsigned RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
 {
-    return std::find(textures.begin(), textures.end(), terrain) - textures.begin();
+    return static_cast<unsigned>(std::find(textures.begin(), textures.end(), terrain) - textures.begin());
 }
 
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
