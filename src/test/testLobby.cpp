@@ -93,8 +93,12 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
 {
     initGUITests();
     BOOST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
-    for(unsigned i = 0; i < 10; i++)
+    for(unsigned i = 0; i < 50; i++)
+    {
         run();
+        if(LOBBYCLIENT.IsLoggedIn())
+            break;
+    }
     BOOST_REQUIRE(LOBBYCLIENT.IsLoggedIn());
     GameLobby gameLobby(false, true, 2);
     JoinPlayerInfo& player = gameLobby.getPlayer(0);
