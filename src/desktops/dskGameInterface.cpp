@@ -102,7 +102,7 @@ enum
 dskGameInterface::dskGameInterface(GameWorldBase& world)
     : Desktop(NULL), gameClient(GAMECLIENT), worldViewer(gameClient.GetPlayerId(), world),
       gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
-      roadwindow(NULL), selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
+      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -566,8 +566,6 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         VIDEODRIVER.SetMousePos(mc.GetPos());
 
         ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
-
-        selected = cSel;
     }
 
     return true;
@@ -837,7 +835,9 @@ void dskGameInterface::Run()
     noTree::ResetDrawCounter();
 
     unsigned water_percent;
-    gwv.Draw(road, actionwindow != NULL, selected, &water_percent);
+    // Draw mouse only if not on window
+    bool drawMouse = WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()) == NULL;
+    gwv.Draw(road, actionwindow != NULL ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse, &water_percent);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
@@ -852,22 +852,25 @@ void dskGameInterface::Run()
     messenger.Draw();
 }
 
-void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
+void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad)
 {
     // Im Replay und in der Pause keine Straßen bauen
     if(gameClient.IsReplayModeOn() || gameClient.IsPaused())
         return;
 
-    road.mode = rm;
-    if(rm == RM_DISABLED)
-        worldViewer.RemoveVisualRoad(road.start, road.route);
-    else
-    {
-        road.route.clear();
-        RTTR_Assert(selected.x < GetSize().x && selected.y < GetSize().y);
-        road.start = road.point = selected;
-        GAMEMANAGER.SetCursor(CURSOR_RM);
-    }
+    road.mode = waterRoad ? RM_BOAT : RM_NORMAL;
+    road.route.clear();
+    road.start = road.point = startPt;
+    GAMEMANAGER.SetCursor(CURSOR_RM);
+}
+
+void dskGameInterface::GI_CancelRoadBuilding()
+{
+    if(road.mode == RM_DISABLED)
+        return;
+    road.mode = RM_DISABLED;
+    worldViewer.RemoveVisualRoad(road.start, road.route);
+    GAMEMANAGER.SetCursor(isScrolling ? CURSOR_SCROLL : CURSOR_RM);
 }
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
@@ -974,11 +977,6 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     WINDOWMANAGER.Show(actionwindow, true);
 }
 
-void dskGameInterface::SetSelectedMapPoint(const MapPoint pt)
-{
-    selected = pt;
-}
-
 void dskGameInterface::GI_BuildRoad()
 {
     gameClient.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
@@ -1002,8 +1000,7 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     // Im Wegbaumodus und haben wir von hier eine Flagge gebaut?
     if(road.mode != RM_DISABLED && road.start == pt)
     {
-        // Wegbau abbrechen
-        GI_SetRoadBuildMode(RM_DISABLED);
+        GI_CancelRoadBuilding();
     }
 
     // Evtl Actionfenster schließen, da sich das ja auch auf diese Flagge bezieht
@@ -1066,16 +1063,13 @@ void dskGameInterface::CI_GamePaused()
     /// Straßenbau ggf. abbrechen, wenn aktiviert
     if(road.mode != RM_DISABLED)
     {
-        road.mode = RM_DISABLED;
         // Fenster schließen
         if(roadwindow)
         {
-            // WINDOWMANAGER.Close(roadwindow);
             roadwindow->Close();
-            roadwindow = 0;
+            roadwindow = NULL;
         }
-        // Weg zurückbauen
-        this->DemolishRoad(1);
+        GI_CancelRoadBuilding();
     }
 }
 

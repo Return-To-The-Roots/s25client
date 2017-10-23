@@ -184,7 +184,7 @@ void iwObservate::Draw_()
         RoadBuildState road;
         road.mode = RM_DISABLED;
 
-        view->Draw(road, true, parentView.GetSelectedPt());
+        view->Draw(road, parentView.GetSelectedPt(), false);
         // Draw indicator for center point
         if(followMovableId == GameObject::INVALID_ID)
             LOADER.GetMapImageN(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);

@@ -127,7 +127,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     BOOST_REVERSE_FOREACH(Window* wnd, childIdToWnd_ | boost::adaptors::map_values)
     {
-        if(!lockedAreas_.empty() && TestWindowInRegion(wnd, mc))
+        if(!lockedAreas_.empty() && TestWindowInRegion(wnd, mc.GetPos()))
             continue;
 
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
@@ -629,14 +629,14 @@ void Window::DrawControls()
  *  @return @p true falls Mausposition innerhalb der gesperrten Region,
  *          @p false falls außerhalb
  */
-bool Window::TestWindowInRegion(Window* window, const MouseCoords& mc) const
+bool Window::TestWindowInRegion(Window* window, const Position& pos) const
 {
     for(std::map<Window*, Rect>::const_iterator it = lockedAreas_.begin(); it != lockedAreas_.end(); ++it)
     {
         if(it->first == window)
             continue; // Locking window can always access its locked regions
         // All others cannot:
-        if(IsPointInRect(mc.GetPos(), it->second))
+        if(IsPointInRect(pos, it->second))
             return true;
     }
     return false;

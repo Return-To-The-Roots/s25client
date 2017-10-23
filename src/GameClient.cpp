@@ -1646,7 +1646,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             road.mode = RM_DISABLED;
 
             // spiel aktualisieren
-            gwv.Draw(road);
+            gwv.Draw(road, MapPoint::Invalid(), false);
 
             // text oben noch hinschreiben
             char nwf_string[256];

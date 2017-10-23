@@ -608,13 +608,13 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
     {
         case 1: // Straße bauen
         {
-            gi.GI_SetRoadBuildMode(RM_NORMAL);
+            gi.GI_StartRoadBuilding(selectedPt, false);
             Close();
         }
         break;
         case 2: // Wasserstraße bauen
         {
-            gi.GI_SetRoadBuildMode(RM_BOAT);
+            gi.GI_StartRoadBuilding(selectedPt, true);
             Close();
         }
         break;

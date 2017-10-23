@@ -102,8 +102,7 @@ public:
     /// Schaltet Produktivitäten/Namen komplett aus oder an
     void ToggleShowNamesAndProductivity();
 
-    void Draw(const RoadBuildState& rb, const bool draw_selected = false, const MapPoint selected = MapPoint::Invalid(),
-              unsigned* water = NULL);
+    void Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water = NULL);
 
     /// Bewegt sich zu einer bestimmten Position in Pixeln auf der Karte
     void MoveTo(int x, int y, bool absolute = false);
@@ -140,7 +139,7 @@ private:
     void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines);
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
-    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected, const MapPoint& selectedPt);
+    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse);
 };
 
 #endif // GameWorldView_h__

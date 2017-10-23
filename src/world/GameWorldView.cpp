@@ -117,7 +117,7 @@ struct ObjectBetweenLines
     ObjectBetweenLines(noBase* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
 };
 
-void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, const MapPoint selected, unsigned* water)
+void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
 {
     SetNextZoomFactor();
 
@@ -159,7 +159,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
             const MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
             DrawPoint curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
-            const Point<int> mouseDist = mousePos - curPos;
+            Point<int> mouseDist = mousePos - curPos;
+            mouseDist *= mouseDist;
             if(std::abs(mouseDist.x) + std::abs(mouseDist.y) < shortestDistToMouse)
             {
                 selPt = curPt;
@@ -199,7 +200,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    DrawGUI(rb, terrainRenderer, draw_selected, selected);
+    DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Umherfliegende Katapultsteine zeichnen
     for(std::list<CatapultStone*>::const_iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
@@ -219,8 +220,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     glScissor(0, 0, VIDEODRIVER.GetScreenSize().x, VIDEODRIVER.GetScreenSize().y);
 }
 
-void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected,
-                            const MapPoint& selectedPt)
+void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
     MapPoint road_points[6];
@@ -246,7 +246,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             Point<int> curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
             /// Current point indicated by Mouse
-            if(selPt == curPt)
+            if(drawMouse && selPt == curPt)
             {
                 // Mauszeiger am boden
                 unsigned mid = 22;
@@ -268,7 +268,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // Currently selected point
-            if(draw_selected && selectedPt == curPt)
+            if(selectedPt == curPt)
                 LOADER.GetMapImageN(20)->DrawFull(curPos);
 
             // Wegbauzeug

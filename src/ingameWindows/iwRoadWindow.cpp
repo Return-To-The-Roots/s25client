@@ -60,7 +60,7 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 1: // Bau abbrechen
         {
-            gi.GI_SetRoadBuildMode(RM_DISABLED);
+            gi.GI_CancelRoadBuilding();
         }
         break;
     }

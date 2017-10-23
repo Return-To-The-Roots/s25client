@@ -272,8 +272,8 @@ protected:
     void SetScale(bool scale = true) { this->scale_ = scale; }
     /// zeichnet die Steuerelemente.
     void DrawControls();
-    /// prüft ob Mauskoordinaten in einer gesperrten Region liegt.
-    bool TestWindowInRegion(Window* window, const MouseCoords& mc) const;
+    /// prüft ob koordinaten in einer gesperrten Region liegt.
+    bool TestWindowInRegion(Window* window, const Position& pos) const;
     /// zeichnet das Fenster. (virtuelle Memberfunktion)
     virtual void Draw_() = 0;
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?

@@ -94,10 +94,10 @@ public:
 
     /// Return the window currently on the top (probably active)
     const Window* GetTopMostWindow() const;
+    IngameWindow* FindWindowAtPos(const Position& pos) const;
 
 protected:
     void DrawToolTip();
-    IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
 
 private:
     typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp

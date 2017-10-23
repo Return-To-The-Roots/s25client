@@ -65,8 +65,6 @@ private:
     iwRoadWindow* roadwindow;
     // Messenger für die Nachrichten
     Messenger messenger;
-    // Aktuell selektierter Punkt auf der Karte
-    MapPoint selected;
     /// Minimap-Instanz
     IngameMinimap minimap;
 
@@ -112,7 +110,8 @@ public:
     void GI_TreatyOfAllianceChanged(unsigned playerId) override;
     void GI_Winner(const unsigned playerId) override;
     void GI_TeamWinner(const unsigned playerId) override;
-    void GI_SetRoadBuildMode(RoadBuildMode mode) override;
+    void GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad) override;
+    void GI_CancelRoadBuilding() override;
     /// Baut die gewünschte bis jetzt noch visuelle Straße (schickt Anfrage an Server)
     void GI_BuildRoad() override;
     void GI_WindowClosed(Window* wnd) override;
@@ -135,7 +134,6 @@ public:
                           const bool enable_military_buildings);
 
     const GameWorldViewer& GetViewer() const { return worldViewer; }
-    void SetSelectedMapPoint(const MapPoint pt);
 
 private:
     /// Initializes player specific stuff after start or player swap

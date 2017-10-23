@@ -253,7 +253,7 @@ void WindowManager::Switch(Desktop* desktop)
     disable_mouse = true;
 }
 
-IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const
+IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
 {
     // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
     for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
@@ -262,12 +262,12 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const
         Rect window_rect = (*it)->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(IsPointInRect(mc.GetPos(), window_rect))
+        if(IsPointInRect(pos, window_rect))
         {
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if((*it)->TestWindowInRegion(NULL, mc))
+        if((*it)->TestWindowInRegion(NULL, pos))
             return *it;
     }
     return NULL;
@@ -331,7 +331,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         return;
     }
 
-    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
 
     // aktives Fenster deaktivieren
     lastActiveWnd.SetActive(false);
@@ -445,7 +445,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     // Sind Fenster vorhanden && ist das aktive Fenster ok
     if(!windows.empty())
     {
-        IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+        IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
         if(windows.back()->IsModal())
         {
             // We have a modal window -> Activate it
@@ -552,7 +552,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
         return;
     }
 
-    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
     // ja, also aktives Fenster deaktivieren
     activeWnd.SetActive(false);
 
@@ -610,7 +610,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         activeWnd.RelayMouseMessage(&Window::Msg_WheelDown, mc);
         return;
     }
-    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
     activeWnd.SetActive(false);
 
     if(foundWindow)
