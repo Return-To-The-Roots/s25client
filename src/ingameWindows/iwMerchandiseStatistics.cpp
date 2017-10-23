@@ -47,7 +47,7 @@ const unsigned iwMerchandiseStatistics::BarColors[14] = {
 };
 
 iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
-    : IngameWindow(CGI_MERCHANDISE_STATISTICS, IngameWindow::posAtMouse, Extent(252, 310), _("Merchandise"),
+    : IngameWindow(CGI_MERCHANDISE_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 310), _("Merchandise"),
                    LOADER.GetImageN("resource", 41)),
       player(player), currentTime(STAT_1H)
 {

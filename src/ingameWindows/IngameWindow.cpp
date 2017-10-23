@@ -31,6 +31,8 @@
 std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
                                               std::numeric_limits<DrawPoint::ElementType>::max());
+const DrawPoint IngameWindow::posCenter(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
+                                        std::numeric_limits<DrawPoint::ElementType>::max());
 const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
                                          std::numeric_limits<DrawPoint::ElementType>::max() - 1);
 
@@ -57,7 +59,9 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
             SetPos(last_pos[id]);
         else
             MoveToCenter();
-    } else if(pos == posAtMouse)
+    } else if(pos == posCenter)
+        MoveToCenter();
+    else if(pos == posAtMouse)
         MoveNextToMouse();
 }
 

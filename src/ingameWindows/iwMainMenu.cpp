@@ -143,7 +143,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 9: // Schiffe
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, gcFactory, gwv.GetViewer().GetPlayer().GetShipByID(0)));
+            WINDOWMANAGER.Show(new iwShip(gwv, gcFactory, gwv.GetViewer().GetPlayer().GetShipByID(0), IngameWindow::posCenter));
         }
         break;
         case 10: // Baureihenfolge

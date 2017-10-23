@@ -48,7 +48,7 @@ const unsigned short distance_y = 35;
 const Extent percentSize(100, 18);
 
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
-    : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posAtMouse,
+    : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posLastOrCenter,
                    Extent(2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x, (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1))
                      + bldProdContentOffset,
                    _("Productivity"), LOADER.GetImageN("resource", 41)),

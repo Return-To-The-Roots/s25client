@@ -35,7 +35,8 @@
 #include <sstream>
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
-    : IngameWindow(CGI_STATISTICS, IngameWindow::posAtMouse, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)), gwv(gwv)
+    : IngameWindow(CGI_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 336), _("Statistics"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv)
 {
     activePlayers = std::vector<bool>(MAX_PLAYERS);
 

@@ -35,10 +35,10 @@ class IngameWindow : public Window
 
 public:
     /// Special position that gets translated to the last know position or screen center when passed to the ctor
-    /// Used to be -1 or 0xFFFF
     static const DrawPoint posLastOrCenter;
+    /// Special position that gets translated to the screen center when passed to the ctor
+    static const DrawPoint posCenter;
     /// Special position that gets translated to the mouse position when passed to the ctor
-    /// Used to be -2 or 0xFFFE
     static const DrawPoint posAtMouse;
 
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, glArchivItem_Bitmap* background,
