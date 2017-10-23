@@ -20,6 +20,7 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/VertexUtility.h"
+#include "world/MapGeometry.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -235,9 +236,30 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
             if(TerrainData::IsWater(tRsu) && TerrainData::IsWater(tLsd))
                 res = libsiedler2::R_Fish;
         } else if(TerrainData::IsVital(tRsu) && TerrainData::IsVital(tLsd))
-            res = libsiedler2::R_Water;
-        else if(TerrainData::IsMineable(tRsu) && TerrainData::IsMineable(tLsd))
-            res = objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal, settings.ratioGranite);
+        {
+            int nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::NORTHWEST), map.size);
+            TerrainType t1 = TerrainData::MapIdx2Terrain(map.textureRsu[nb]);
+            TerrainType t2 = TerrainData::MapIdx2Terrain(map.textureLsd[nb]);
+            nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::NORTHEAST), map.size);
+            TerrainType t3 = TerrainData::MapIdx2Terrain(map.textureLsd[nb]);
+            nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::EAST), map.size);
+            TerrainType t4 = TerrainData::MapIdx2Terrain(map.textureRsu[nb]);
+            // Less strict check: Include all terrain that can also be used by animals
+            if(TerrainData::IsUsableByAnimals(t1) && TerrainData::IsUsableByAnimals(t2) && TerrainData::IsUsableByAnimals(t3)
+               && TerrainData::IsUsableByAnimals(t4))
+                res = libsiedler2::R_Water;
+        } else if(TerrainData::IsMineable(tRsu) && TerrainData::IsMineable(tLsd))
+        {
+            int nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::NORTHWEST), map.size);
+            TerrainType t1 = TerrainData::MapIdx2Terrain(map.textureRsu[nb]);
+            TerrainType t2 = TerrainData::MapIdx2Terrain(map.textureLsd[nb]);
+            nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::NORTHEAST), map.size);
+            TerrainType t3 = TerrainData::MapIdx2Terrain(map.textureLsd[nb]);
+            nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::EAST), map.size);
+            TerrainType t4 = TerrainData::MapIdx2Terrain(map.textureRsu[nb]);
+            if(TerrainData::IsMineable(t1) && TerrainData::IsMineable(t2) && TerrainData::IsMineable(t3) && TerrainData::IsMineable(t4))
+                res = objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal, settings.ratioGranite);
+        }
 
         map.resource[index] = res;
     }
