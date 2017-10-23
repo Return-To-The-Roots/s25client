@@ -94,11 +94,7 @@ void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
     switch(ctrl_id)
     {
         case 3:
-            switch(selection)
-            {
-                case 1: SETTINGS.video.fullscreen = true; break;
-                case 2: SETTINGS.video.fullscreen = false; break;
-            }
+            SETTINGS.video.fullscreen = (selection == 1);
             break;
     }
 }
@@ -111,8 +107,6 @@ void iwSettings::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
         {
             SETTINGS.ingame.scale_statistics = checked;
             break;
-        }
-        case 5: { break;
         }
     }
 }

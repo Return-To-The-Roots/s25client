@@ -152,14 +152,9 @@ bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-    // putenv needs a char* not a const char* -.-
-    static char CENTER_ENV[] = "SDL_VIDEO_CENTERED=center";
-    static char UNCENTER_ENV[] = "SDL_VIDEO_CENTERED=";
-    SDL_putenv(CENTER_ENV);
     // Set the video mode
     if(!SetVideoMode(newSize, fullscreen))
         return false;
-    SDL_putenv(UNCENTER_ENV);
 
     SDL_WM_SetCaption(title.c_str(), 0);
 
@@ -255,12 +250,23 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 
 bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
 {
+    // putenv needs a char* not a const char* -.-
+    static char CENTER_ENV[] = "SDL_VIDEO_CENTERED=center";
+    static char UNCENTER_ENV[] = "SDL_VIDEO_CENTERED=";
+
+    bool enteredWndMode = !screen || (isFullscreen_ && !fullscreen);
+
     this->isFullscreen_ = fullscreen;
 
     screenSize_ = (isFullscreen_) ? FindClosestVideoMode(newSize) : newSize;
 
+    if(enteredWndMode)
+        SDL_putenv(CENTER_ENV);
     screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32,
                               SDL_HWSURFACE | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE));
+    if(enteredWndMode)
+        SDL_putenv(UNCENTER_ENV);
+
     // Videomodus setzen
     if(!screen)
     {
