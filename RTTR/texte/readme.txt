@@ -236,6 +236,13 @@ D. Crash and bugs
 
 E. Summary: Updates and changelog
 
+  * 0.8.3 - TBD
+  ------------------------------------------------------------------------------
+  - Fullscreen mode on all drivers and OSs
+  - Random map generator
+  - Allow special chars in user name
+  - Fix some bugs and crashes
+
   * 0.8.2 - 22.08.2017
   ------------------------------------------------------------------------------
   - Many async fixes

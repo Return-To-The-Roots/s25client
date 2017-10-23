@@ -243,6 +243,13 @@ D. Abstürze und Fehler
 
 E. Übersicht: Updates und Änderungen
 
+  * 0.8.3 - TBD
+  ------------------------------------------------------------------------------
+  - Vollbild Modus für alle Treiber und Betriebssystem
+  - Random map generator
+  - Sonderzeichen im Benutzernamen werden unterstüzt
+  - Einige Fehler und Abstürze behoben
+
   * 0.8.2 - 22.08.2017
   --------------------------------------------------------------------------
   - Viele Async Fixes
