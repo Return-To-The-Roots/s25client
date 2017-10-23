@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
-
 #include "GameClient.h"
 #include "GameServer.h"
 #include "ListDir.h"
@@ -36,20 +35,20 @@
 #include "mapGenerator/MapGenerator.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/fileFuncs.h"
-
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
-
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 #include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
 /** @class dskSelectMap
  *
@@ -78,7 +77,7 @@
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
  */
-dskSelectMap::dskSelectMap(const CreateServerInfo& csi) : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi)
+dskSelectMap::dskSelectMap(const CreateServerInfo& csi) : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(NULL), waitWnd(NULL)
 {
     // Die Tabelle für die Maps
     AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216,
@@ -142,6 +141,8 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi) : Desktop(LOADER.GetImag
 
 dskSelectMap::~dskSelectMap()
 {
+    if(mapGenThread)
+        mapGenThread->join();
     LOBBYCLIENT.RemoveInterface(this);
     GAMECLIENT.RemoveInterface(this);
 }
@@ -248,7 +249,13 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 6: // random map
         {
-            CreateRandomMap();
+            if(!mapGenThread)
+            {
+                newRandMapPath.clear();
+                mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
+                waitWnd = new iwPleaseWait;
+                WINDOWMANAGER.Show(waitWnd);
+            }
         }
         break;
         case 7: // random map generator settings
@@ -274,6 +281,16 @@ void dskSelectMap::CreateRandomMap()
     // create a random map and save filepath
     MapGenerator::Create(mapPath, rndMapSettings);
 
+    newRandMapPath = mapPath;
+}
+
+void dskSelectMap::OnMapCreated(std::string mapPath)
+{
+    if(waitWnd)
+    {
+        waitWnd->Close();
+        waitWnd = NULL;
+    }
     // select the "played maps" entry
     ctrlOptionGroup* optionGroup = GetCtrl<ctrlOptionGroup>(10);
     optionGroup->SetSelection(8, true);
@@ -369,6 +386,18 @@ void dskSelectMap::LC_Created()
 {
     // ggf. im nächstes Stadium weiter
     GAMESERVER.Start();
+}
+
+void dskSelectMap::Draw_()
+{
+    if(!newRandMapPath.empty())
+    {
+        mapGenThread->join();
+        mapGenThread = NULL;
+        OnMapCreated(newRandMapPath);
+        newRandMapPath.clear();
+    }
+    Desktop::Draw_();
 }
 
 void dskSelectMap::FillTable(const std::vector<std::string>& files)

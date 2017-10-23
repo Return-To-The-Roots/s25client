@@ -189,7 +189,8 @@ case "$SYSTEM_NAME" in
 		fi
 
 		# copy libs
-		for LIB in /usr/lib/libminiupnpc.5.dylib /usr/lib/libboost_system.dylib /usr/lib/libboost_filesystem.dylib /usr/lib/libboost_iostreams.dylib ; do
+		for LIBSUFFIX in miniupnpc.5 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
+			LIB=/usr/lib/lib${LIBSUFFIX}.dylib
 			if [ -f $SDK$LIB ] ; then
 				cp -rv $SDK$LIB ${DESTDIR}s25client.app/Contents/MacOS || exit 1
 			else

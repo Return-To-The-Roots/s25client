@@ -28,6 +28,11 @@
 #include <string>
 #include <vector>
 
+namespace boost
+{
+    class thread;
+}
+
 class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
@@ -35,6 +40,8 @@ public:
     ~dskSelectMap() override;
 
 private:
+    void Draw_() override;
+
     void FillTable(const std::vector<std::string>& files);
 
     void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
@@ -64,9 +71,13 @@ private:
      */
     void CreateRandomMap();
 
-private:
+    void OnMapCreated(std::string mapPath);
+
     CreateServerInfo csi;
     MapSettings rndMapSettings;
+    boost::thread* mapGenThread;
+    std::string newRandMapPath;
+    IngameWindow* waitWnd;
 };
 
 #endif //! dskSELECTMAP_H_INCLUDED
