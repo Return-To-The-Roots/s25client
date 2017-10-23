@@ -25,41 +25,6 @@
 // http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
 IVideoDriver::~IVideoDriver() {}
 
-/** @var typedef void (*VideoDriverLoaderInterface *)(unsigned msg, void *param)
- *
- *  Definition des DriverCallback-Zeigertyps.
- */
-
-/** @class VideoDriver
- *
- *  Basisklasse für einen Videotreiber.
- */
-
-/** @var VideoGLFW::CallBack
- *
- *  Das DriverCallback für Rückmeldungen.
- */
-
-/** @var VideoGLFW::initialized
- *
- *  Initialisierungsstatus.
- */
-
-/** @var VideoGLFW::mouse_xy
- *
- *  Status der Maus.
- */
-
-/** @var VideoGLFW::keyboard
- *
- *  Status der Tastatur;
- */
-
-/** @var VideoGLFW::fullscreen
- *
- *  Vollbild an/aus?
- */
-
 /**
  *  Konstruktor von @p VideoDriver.
  *
