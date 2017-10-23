@@ -173,12 +173,20 @@ dskGameInterface::~dskGameInterface()
 
 void dskGameInterface::SetActive(bool activate)
 {
+    if(activate == IsActive())
+        return;
     Desktop::SetActive(activate);
     if(activate && gameClient.GetState() == GameClient::CS_LOADING)
     {
         // Wir sind nun ingame
         gameClient.RealStart();
     }
+    if(!activate)
+    {
+        isScrolling = false;
+        GAMEMANAGER.SetCursor(CURSOR_HAND);
+    } else if(road.mode != RM_DISABLED)
+        GAMEMANAGER.SetCursor(CURSOR_RM);
 }
 
 void dskGameInterface::SettingsChanged() {}
@@ -298,18 +306,6 @@ void dskGameInterface::Msg_PaintAfter()
     if(gameClient.IsReplayModeOn())
         NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), gameClient.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
                          0xFFFFFF00);
-
-    // Mauszeiger
-    if(road.mode != RM_DISABLED)
-    {
-        if(VIDEODRIVER.IsLeftDown())
-            GAMEMANAGER.SetCursor(CURSOR_RM_PRESSED, /*once*/ true);
-        else
-            GAMEMANAGER.SetCursor(CURSOR_RM, /*once*/ true);
-    } else if(VIDEODRIVER.IsRightDown())
-    {
-        GAMEMANAGER.SetCursor(CURSOR_SCROLL, /*once*/ true);
-    }
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
@@ -605,12 +601,14 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
     startScrollPt = Point<int>(mc.x, mc.y);
     isScrolling = true;
+    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
     return false;
 }
 
 bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
 {
     isScrolling = false;
+    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
     return false;
 }
 
@@ -868,6 +866,7 @@ void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
         road.route.clear();
         RTTR_Assert(selected.x < GetSize().x && selected.y < GetSize().y);
         road.start = road.point = selected;
+        GAMEMANAGER.SetCursor(CURSOR_RM);
     }
 }
 
@@ -984,6 +983,7 @@ void dskGameInterface::GI_BuildRoad()
 {
     gameClient.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
     road.mode = RM_DISABLED;
+    GAMEMANAGER.SetCursor(CURSOR_HAND);
 }
 
 void dskGameInterface::GI_WindowClosed(Window* wnd)

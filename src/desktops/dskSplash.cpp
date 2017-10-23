@@ -46,7 +46,7 @@ void dskSplash::Msg_Timer(const unsigned /*ctrl_id*/)
 bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 {
     // Hauptmenü zeigen
-    WINDOWMANAGER.Switch(new dskMainMenu, true);
+    WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;
 }

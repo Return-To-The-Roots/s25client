@@ -60,7 +60,7 @@ void WindowManager::Draw()
 {
     // ist ein neuer Desktop eingetragen? Wenn ja, wechseln
     if(nextdesktop)
-        Switch();
+        DoDesktopSwitch();
 
     // haben wir einen gültigen Desktop?
     if(!curDesktop)
@@ -245,12 +245,12 @@ void WindowManager::ShowAfterSwitch(IngameWindow* window)
  *
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
- *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
  */
-void WindowManager::Switch(Desktop* desktop, bool mouse)
+void WindowManager::Switch(Desktop* desktop)
 {
     nextdesktop.reset(desktop);
-    disable_mouse = mouse;
+    // Disable the mouse till the next desktop is shown to avoid e.g. double-switching
+    disable_mouse = true;
 }
 
 IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const
@@ -374,7 +374,6 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
             // und allen unten drunter auch Bescheid sagen
             curDesktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);
-            ;
         }
     }
 }
@@ -428,7 +427,8 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     }
 
     // Maus-Klick-Fix deaktivieren
-    disable_mouse = false;
+    if(disable_mouse && !nextdesktop)
+        disable_mouse = false;
 }
 
 /**
@@ -583,7 +583,6 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 
         // und allen unten drunter auch Bescheid sagen
         curDesktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-        ;
     }
 }
 
@@ -627,7 +626,6 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         curDesktop->SetActive(true);
         curDesktop->Msg_WheelDown(mc);
         curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-        ;
     }
 }
 
@@ -801,7 +799,7 @@ void WindowManager::Close(unsigned id)
 /**
  *  wechselt den Desktop in den neuen Desktop
  */
-void WindowManager::Switch()
+void WindowManager::DoDesktopSwitch()
 {
     RTTR_Assert(nextdesktop);
     VIDEODRIVER.ClearScreen();
@@ -824,6 +822,9 @@ void WindowManager::Switch()
     for(std::vector<IngameWindow*>::iterator it = nextWnds.begin(); it != nextWnds.end(); ++it)
         Show(*it);
     nextWnds.clear();
+
+    if(!VIDEODRIVER.IsLeftDown())
+        disable_mouse = false;
 
     // Dummy mouse move to init hovering etc
     Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), false, false, false));

@@ -703,7 +703,6 @@ void nofAttacker::OrderAggressiveDefender()
         const unsigned bldOwnerId = bld->GetPlayer();
         if(canPlayerSendAggDefender[bldOwnerId] == 0)
             continue;
-        ;
         // We only send a defender if we are allied with the attacked player and can attack the attacker (no pact etc)
         GamePlayer& bldOwner = gwg->GetPlayer(bldOwnerId);
         if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))

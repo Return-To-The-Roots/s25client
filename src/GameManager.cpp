@@ -294,7 +294,6 @@ void GameManager::SetCursor(CursorType cursor, bool once)
     cursor_next = cursor;
     if(!once)
         this->cursor_ = cursor;
-    return;
 }
 
 /**
@@ -302,28 +301,15 @@ void GameManager::SetCursor(CursorType cursor, bool once)
  */
 void GameManager::DrawCursor()
 {
-    // Mauszeiger zeichnen
+    unsigned resId;
     switch(cursor_next)
     {
-        case CURSOR_HAND:
-        {
-            if(VIDEODRIVER.IsLeftDown())
-                LOADER.GetImageN("resource", 31)->DrawFull(VIDEODRIVER.GetMousePos());
-            else
-                LOADER.GetImageN("resource", 30)->DrawFull(VIDEODRIVER.GetMousePos());
-        }
-        break;
-        case CURSOR_SCROLL:
-        case CURSOR_MOON:
-        case CURSOR_RM:
-        case CURSOR_RM_PRESSED: { LOADER.GetImageN("resource", cursor_next)->DrawFull(VIDEODRIVER.GetMousePos());
-        }
-        break;
-        case CURSOR_NONE:
-        default: {
-        }
+        case CURSOR_HAND: resId = VIDEODRIVER.IsLeftDown() ? 31 : 30; break;
+        case CURSOR_RM: resId = VIDEODRIVER.IsLeftDown() ? 35 : 34; break;
+        default: resId = cursor_next;
     }
+    if(resId)
+        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
 
     cursor_next = cursor_;
-    return;
 }

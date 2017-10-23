@@ -581,7 +581,14 @@ void AIPlayerJH::UpdateNodesAround(const MapPoint pt, unsigned radius)
 
 void AIPlayerJH::UpdateNodeBQ(const MapPoint& pt)
 {
-    aiMap[pt].bq = aii.GetBuildingQuality(pt);
+    BuildingQuality newBQ = aii.GetBuildingQuality(pt);
+    if(aiMap[pt].bq != newBQ)
+    {
+        aiMap[pt].bq = newBQ;
+        // Neighbour points might change to (flags at borders etc.)
+        BOOST_FOREACH(const MapPoint& curPt, gwb.GetPointsInRadius(pt, 1))
+            UpdateNodeBQ(curPt);
+    }
 }
 
 void AIPlayerJH::InitResourceMaps()
@@ -2220,7 +2227,6 @@ bool AIPlayerJH::ValidTreeinRange(const MapPoint pt)
                     {
                         if(gwb.FindHumanPath(pt, t2, 20) != 0xFF)
                             return true;
-                        ;
                     }
                 }
             }
