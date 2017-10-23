@@ -47,7 +47,7 @@ enum
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
     : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(250, 400), _("Map Generator"), LOADER.GetImageN("resource", 41),
-                   true, false),
+                   true),
       mapSettings(settings)
 {
     AddTextButton(0, DrawPoint(20, 360), Extent(100, 20), TC_RED2, _("Back"), NormalFont);
@@ -55,9 +55,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     ctrlComboBox* combo = AddComboBox(CTRL_PLAYER_NUMBER, DrawPoint(20, 30), Extent(210, 20), TC_GREY, NormalFont, 100);
     for(unsigned n = 2; n < MAX_PLAYERS; n++)
-    {
         combo->AddString(boost::str(boost::format(_("%1% players")) % n));
-    }
 
     combo = AddComboBox(CTRL_MAP_STYLE, DrawPoint(20, 60), Extent(210, 20), TC_GREY, NormalFont, 100);
     combo->AddString(_("Islands"));
@@ -82,6 +80,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     combo->AddString(_("Medium"));
     combo->AddString(_("Far"));
     combo->AddString(_("Very Far"));
+    combo->AddString(_("Furthest apart"));
 
     AddText(3, DrawPoint(20, 170), _("Landscape"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 190), Extent(210, 20), TC_GREY, NormalFont, 100);
@@ -101,9 +100,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     Reset();
 }
 
-iwMapGenerator::~iwMapGenerator()
-{
-}
+iwMapGenerator::~iwMapGenerator() {}
 
 void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -112,17 +109,13 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
         default: break;
 
         case 0: // back
-        {
             Close();
-        }
-        break;
+            break;
 
         case 1: // apply
-        {
             Apply();
             Close();
-        }
-        break;
+            break;
     }
 }
 
@@ -176,6 +169,10 @@ void iwMapGenerator::Apply()
             mapSettings.minPlayerRadius = 0.71;
             mapSettings.maxPlayerRadius = 0.72;
             break;
+        case 5:
+            mapSettings.minPlayerRadius = 0.5;
+            mapSettings.maxPlayerRadius = 0.5;
+            break;
         default: break;
     }
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection())
@@ -226,7 +223,9 @@ void iwMapGenerator::Reset()
     }
 
     combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS);
-    if(mapSettings.minPlayerRadius <= 0.2)
+    if(mapSettings.minPlayerRadius == 0.5)
+        combo->SetSelection(5);
+    else if(mapSettings.minPlayerRadius <= 0.2)
         combo->SetSelection(0);
     else if(mapSettings.minPlayerRadius <= 0.3)
         combo->SetSelection(1);

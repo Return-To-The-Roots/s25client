@@ -29,12 +29,9 @@
 
 nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_STONEMASON, pos, player, workplace)
-{
-}
+{}
 
-nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
-{
-}
+nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofStonemason::DrawWorking(DrawPoint drawPt)
@@ -59,9 +56,7 @@ unsigned short nofStonemason::GetCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofStonemason::WorkStarted()
-{
-}
+void nofStonemason::WorkStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofStonemason::WorkFinished()

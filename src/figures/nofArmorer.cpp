@@ -32,8 +32,7 @@
 
 nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_ARMORER, pos, player, workplace), sword_shield(false)
-{
-}
+{}
 
 void nofArmorer::Serialize_nofArmorer(SerializedGameData& sgd) const
 {
@@ -42,9 +41,7 @@ void nofArmorer::Serialize_nofArmorer(SerializedGameData& sgd) const
     sgd.PushBool(sword_shield);
 }
 
-nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool())
-{
-}
+nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool()) {}
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {

@@ -35,8 +35,7 @@ public:
                       "Pressing this button will send all soldiers of the highest available rank to a warehouse (at least 1 Soldier will "
                       "remain in the building)"),
                     0)
-    {
-    }
+    {}
 };
 
 #endif

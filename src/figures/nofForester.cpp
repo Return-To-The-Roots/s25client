@@ -31,12 +31,9 @@
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
-{
-}
+{}
 
-nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
-{
-}
+nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofForester::DrawWorking(DrawPoint drawPt)
@@ -66,9 +63,7 @@ unsigned short nofForester::GetCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofForester::WorkStarted()
-{
-}
+void nofForester::WorkStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
 void nofForester::WorkFinished()

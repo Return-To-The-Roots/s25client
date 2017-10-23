@@ -30,6 +30,7 @@ struct LanGameInfo
     uint16_t port;
     bool isIPv6;
     std::string version;
+    std::string revision;
 
     bool Serialize(Serializer& serializer);
     bool Deserialize(Serializer& serializer);

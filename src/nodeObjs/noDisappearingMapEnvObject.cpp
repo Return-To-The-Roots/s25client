@@ -31,8 +31,7 @@
  */
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const unsigned short map_id)
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
-{
-}
+{}
 
 void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(SerializedGameData& sgd) const
 {
@@ -43,8 +42,7 @@ void noDisappearingMapEnvObject::Serialize_noDisappearingMapEnvObject(Serialized
 
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id)
     : noDisappearingEnvObject(sgd, obj_id), map_id(sgd.PopUnsignedShort())
-{
-}
+{}
 
 /**
  *  An x,y zeichnen.

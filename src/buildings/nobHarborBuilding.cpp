@@ -44,8 +44,7 @@
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd)
     : boards(sgd.PopUnsignedInt()), stones(sgd.PopUnsignedInt()), active(sgd.PopBool()), builder(sgd.PopBool())
-{
-}
+{}
 
 void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData& sgd) const
 {
@@ -57,8 +56,7 @@ void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData& sgd) const
 
 nobHarborBuilding::ExplorationExpeditionInfo::ExplorationExpeditionInfo(SerializedGameData& sgd)
     : active(sgd.PopBool()), scouts(sgd.PopUnsignedInt())
-{
-}
+{}
 
 void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData& sgd) const
 {

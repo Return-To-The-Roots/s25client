@@ -42,8 +42,7 @@ public:
     /// Funktion zum Auslesen ob die Rechte Maustaste gedrückt ist.
     bool GetMouseStateR() const override;
 
-    unsigned short GetScreenWidth() const override { return screenWidth; }
-    unsigned short GetScreenHeight() const override { return screenHeight; }
+    VideoMode GetScreenSize() const override { return screenSize_; }
     bool IsFullscreen() const override { return isFullscreen_; }
 
     /// prüft auf Initialisierung.
@@ -51,12 +50,13 @@ public:
     bool IsOpenGL() override { return true; }
 
 protected:
+    VideoMode FindClosestVideoMode(const VideoMode& mode) const;
+
     VideoDriverLoaderInterface* CallBack; /// Das DriverCallback für Rückmeldungen.
     bool initialized;                     /// Initialisierungsstatus.
     MouseCoords mouse_xy;                 /// Status der Maus.
     boost::array<bool, 512> keyboard;     /// Status der Tastatur;
-    unsigned short screenWidth;           /// aktuelle Bildschirm-/Fensterbreite
-    unsigned short screenHeight;          /// aktuelle Bildschirm-/Fensterhöhe
-    bool isFullscreen_;                   /// Vollbild an/aus?
+    VideoMode screenSize_;
+    bool isFullscreen_; /// Vollbild an/aus?
 };
 #endif // !VIDEODRIVER_H_INCLUDED

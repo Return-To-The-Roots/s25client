@@ -152,7 +152,6 @@ protected:
 };
 
 class sortedMilitaryBlds : public boost::container::flat_set<nobBaseMilitary*, nobBaseMilitary::Comparer>
-{
-};
+{};
 
 #endif //! NOB_BASEMILITARY_H_

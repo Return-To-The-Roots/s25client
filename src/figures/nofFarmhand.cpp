@@ -30,8 +30,7 @@
 
 nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)
-{
-}
+{}
 
 void nofFarmhand::Serialize_nofFarmhand(SerializedGameData& sgd) const
 {
@@ -40,9 +39,7 @@ void nofFarmhand::Serialize_nofFarmhand(SerializedGameData& sgd) const
     sgd.PushMapPoint(dest);
 }
 
-nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint())
-{
-}
+nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint()) {}
 
 void nofFarmhand::WalkedDerived()
 {
@@ -302,6 +299,4 @@ void nofFarmhand::DrawOtherStates(DrawPoint drawPt)
 }
 
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
-void nofFarmhand::WalkingStarted()
-{
-}
+void nofFarmhand::WalkingStarted() {}

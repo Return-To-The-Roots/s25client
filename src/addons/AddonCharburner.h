@@ -27,8 +27,7 @@ class AddonCharburner : public AddonBool
 {
 public:
     AddonCharburner() : AddonBool(AddonId::CHARBURNER, ADDONGROUP_ECONOMY, _("Enable charburner"), _("Allows to build the charburner."), 0)
-    {
-    }
+    {}
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED

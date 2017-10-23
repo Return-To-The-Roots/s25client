@@ -39,6 +39,7 @@ public:
     bool GetEnabled() const { return isEnabled; }
     TextureColor GetTexture() const { return tc; }
     void SetTexture(TextureColor tc) { this->tc = tc; }
+    void SetActive(bool activate = true) override;
 
     void SetChecked(bool checked) { this->isChecked = checked; }
     bool GetCheck() { return isChecked; }
@@ -55,8 +56,6 @@ protected:
     void Draw_() override;
     /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
     virtual void DrawContent() const = 0;
-    // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
-    void TestMouseOver();
     bool IsMouseOver(const Point<int>& mousePos) const;
 
 protected:

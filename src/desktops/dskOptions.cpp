@@ -274,7 +274,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         cbVideoModes.AddString(str.str());
 
         // Ist das die aktuelle Auflösung? Dann selektieren
-        if(*it == VideoMode(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height)) //-V807
+        if(*it == VideoMode(SETTINGS.video.fullscreenSize.x, SETTINGS.video.fullscreenSize.y)) //-V807
             cbVideoModes.SetSelection(cbVideoModes.GetCount() - 1);
     }
 
@@ -412,8 +412,8 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
         break;
         case 41: // Auflösung
         {
-            SETTINGS.video.fullscreen_width = video_modes[selection].width;
-            SETTINGS.video.fullscreen_height = video_modes[selection].height;
+            SETTINGS.video.fullscreenSize.x = video_modes[selection].width;
+            SETTINGS.video.fullscreenSize.y = video_modes[selection].height;
         }
         break;
         case 51: // Limit Framerate
@@ -573,34 +573,17 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             SETTINGS.Save();
 
-// Auflösung/Vollbildmodus geändert?
-#ifdef _WIN32
-            if(SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth() || //-V807
-               SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight() || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
-            {
-                if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height, SETTINGS.video.fullscreen))
-                {
-                    WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
-                                                    MSB_OK, MSB_EXCLAMATIONGREEN, 1));
-                    return;
-                }
-            }
-#else
-            if((SETTINGS.video.fullscreen
-                && (SETTINGS.video.fullscreen_width != VIDEODRIVER.GetScreenWidth()
-                    || SETTINGS.video.fullscreen_height != VIDEODRIVER.GetScreenHeight()))
+            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize())
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
-                if(!VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
-                                             SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
-                                             SETTINGS.video.fullscreen))
+                Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+                if(!VIDEODRIVER.ResizeScreen(screenSize.x, screenSize.y, SETTINGS.video.fullscreen))
                 {
                     WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
                                                     MSB_OK, MSB_EXCLAMATIONGREEN, 1));
                     return;
                 }
             }
-#endif
             if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
             {
                 WINDOWMANAGER.Show(new iwMsgbox(_("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this,

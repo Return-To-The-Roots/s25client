@@ -641,17 +641,17 @@ void nofAttacker::ReachedDestination()
             dir = Direction::NORTHWEST;
         else /* (pos.x ==  attFlagPos.x)*/
         {
-            if(pos.y < attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1))
+            if(pos.y < attFlagPos.y && !(safeDiff(pos.y, attFlagPos.y) & 1))
                 dir = Direction::SOUTHEAST;
-            else if(pos.y < attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))
+            else if(pos.y < attFlagPos.y && (safeDiff(pos.y, attFlagPos.y) & 1))
             {
                 if(pos.y & 1)
                     dir = Direction::SOUTHWEST;
                 else
                     dir = Direction::SOUTHEAST;
-            } else if(pos.y > attFlagPos.y && !(SafeDiff(pos.y, attFlagPos.y) & 1))
+            } else if(pos.y > attFlagPos.y && !(safeDiff(pos.y, attFlagPos.y) & 1))
                 dir = Direction::NORTHEAST;
-            else /* (pos.y > attFlagPos.y && (SafeDiff(pos.y, attFlagPos.y) & 1))*/
+            else /* (pos.y > attFlagPos.y && (safeDiff(pos.y, attFlagPos.y) & 1))*/
             {
                 if(pos.y & 1)
                     dir = Direction::NORTHWEST;
@@ -703,7 +703,6 @@ void nofAttacker::OrderAggressiveDefender()
         const unsigned bldOwnerId = bld->GetPlayer();
         if(canPlayerSendAggDefender[bldOwnerId] == 0)
             continue;
-        ;
         // We only send a defender if we are allied with the attacked player and can attack the attacker (no pact etc)
         GamePlayer& bldOwner = gwg->GetPlayer(bldOwnerId);
         if(bldOwner.IsAlly(attacked_goal->GetPlayer()) && bldOwner.IsAttackable(player))

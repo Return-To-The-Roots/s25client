@@ -21,8 +21,7 @@ class MouseCoords;
 
 ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, int select_type)
     : ctrlGroup(parent, id), selection_(0xFFFF), select_type(select_type)
-{
-}
+{}
 
 /**
  *  Zeichenmethode.

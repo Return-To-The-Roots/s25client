@@ -28,8 +28,7 @@ enum CursorType
     CURSOR_HAND,
     CURSOR_SCROLL = 32,
     CURSOR_MOON = 33,
-    CURSOR_RM = 34,
-    CURSOR_RM_PRESSED = 35
+    CURSOR_RM = 34
 };
 
 /// "Die" GameManager-Klasse
@@ -48,24 +47,24 @@ public:
     bool ShowMenu();
 
     /// Average FPS Zähler zurücksetzen.
-    inline void ResetAverageFPS()
+    void ResetAverageFPS()
     {
         run_time = 0;
         frame_count = 0;
     }
 
-    inline unsigned GetRuntime() { return run_time; }
+    unsigned GetRuntime() { return run_time; }
 
-    inline unsigned GetFrameCount() { return frame_count; }
+    unsigned GetFrameCount() { return frame_count; }
 
-    inline unsigned GetAverageFPS()
+    unsigned GetAverageFPS()
     {
         if(run_time == 0)
             return 0;
         return (frame_count / run_time);
     }
 
-    inline unsigned GetFPS() { return framerate; }
+    unsigned GetFPS() { return framerate; }
 
     void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
 

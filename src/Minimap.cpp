@@ -21,9 +21,7 @@
 #include "ogl/oglIncludes.h"
 #include "libsiedler2/PixelBufferARGB.h"
 
-Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize)
-{
-}
+Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize) {}
 
 void Minimap::CreateMapTexture()
 {
@@ -54,9 +52,7 @@ void Minimap::Draw(const Rect& rect)
     map.DrawFull(rect);
 }
 
-void Minimap::BeforeDrawing()
-{
-}
+void Minimap::BeforeDrawing() {}
 
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit

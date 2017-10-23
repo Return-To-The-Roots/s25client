@@ -34,8 +34,7 @@ public:
                     _("Get building materials back when a building is destroyed "
                       "and your emergency program is active."),
                     0)
-    {
-    }
+    {}
 };
 
 #endif // !ADDONREFUNDONEMERGENCY_H_INCLUDED

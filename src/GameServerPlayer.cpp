@@ -26,12 +26,9 @@
 GameServerPlayer::GameServerPlayer()
     : connecttime(0), last_command_timeout(0), pinging(false), send_queue(&GameMessage::create_game), recv_queue(&GameMessage::create_game),
       lastping(0)
-{
-}
+{}
 
-GameServerPlayer::~GameServerPlayer()
-{
-}
+GameServerPlayer::~GameServerPlayer() {}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// pingt ggf den Spieler

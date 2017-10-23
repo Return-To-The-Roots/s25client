@@ -47,7 +47,7 @@ const unsigned iwMerchandiseStatistics::BarColors[14] = {
 };
 
 iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
-    : IngameWindow(CGI_MERCHANDISE_STATISTICS, IngameWindow::posAtMouse, Extent(252, 310), _("Merchandise"),
+    : IngameWindow(CGI_MERCHANDISE_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 310), _("Merchandise"),
                    LOADER.GetImageN("resource", 41)),
       player(player), currentTime(STAT_1H)
 {
@@ -101,9 +101,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
                        glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
 }
 
-iwMerchandiseStatistics::~iwMerchandiseStatistics()
-{
-}
+iwMerchandiseStatistics::~iwMerchandiseStatistics() {}
 
 void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
 {

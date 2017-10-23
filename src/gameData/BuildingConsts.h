@@ -348,7 +348,10 @@ const helpers::SimpleMultiArray<DrawPointInit, NAT_COUNT, BUILDING_TYPES_COUNT> 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
 const boost::array<DrawPointInit, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
-  {31, -18}, {34, -10}, {30, -11}, {32, -10},
+  {31, -18},
+  {34, -10},
+  {30, -11},
+  {32, -10},
 }};
 
 /// Hilfetexte für Gebäude

@@ -42,10 +42,10 @@ public:
     void CleanUp() override;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) override;
+    bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) override;
 
     /// Erstellt oder verändert das Fenster mit entsprechenden Werten.
-    bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) override;
+    bool ResizeScreen(const VideoMode& newSize, bool fullscreen) override;
 
     /// Schliesst das Fenster.
     void DestroyScreen() override;
@@ -75,6 +75,9 @@ public:
     void* GetMapPointer() const override;
 
 private:
+    bool SetVideoMode(const VideoMode& newSize, bool fullscreen);
+    void PrintError(const std::string& msg);
+
     SDL_Surface* screen; /// Das Fenster-SDL-Surface.
 };
 

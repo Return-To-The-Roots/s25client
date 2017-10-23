@@ -30,9 +30,7 @@ const std::string CD_STRINGS[4] = {"", "(All) ", "(Team) ", "(Enemies) "};
 /// Farbe für die einzelnen CDs
 const unsigned CD_COLORS[4] = {0, COLOR_WHITE, COLOR_GREEN, COLOR_RED};
 
-Messenger::~Messenger()
-{
-}
+Messenger::~Messenger() {}
 
 /// Zeit, die
 void Messenger::Draw()
@@ -74,9 +72,9 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
     glArchivItem_Font::WrapInfo wi = LargeFont->GetWrapInfo(msg,
-                                                            VIDEODRIVER.GetScreenWidth() - 60 - LargeFont->getWidth(author)
+                                                            VIDEODRIVER.GetScreenSize().x - 60 - LargeFont->getWidth(author)
                                                               - ((cd == CD_SYSTEM) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                                                            VIDEODRIVER.GetScreenWidth() - 60);
+                                                            VIDEODRIVER.GetScreenSize().x - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(msg);

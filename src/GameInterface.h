@@ -18,7 +18,6 @@
 #define GAMEINTERFACE_H_
 
 #include "gameTypes/MapCoordinates.h"
-#include "gameTypes/RoadBuildMode.h"
 
 class Window;
 
@@ -43,8 +42,10 @@ public:
 
     /// An important window was closed (currently iwAction, iwRoad)
     virtual void GI_WindowClosed(Window* wnd) = 0;
-    /// Changes the road building mode
-    virtual void GI_SetRoadBuildMode(RoadBuildMode mode) = 0;
+    /// Changes into road building mode
+    virtual void GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad) = 0;
+    /// Cancels the road building mode
+    virtual void GI_CancelRoadBuilding() = 0;
     /// Executes the construction of a road
     virtual void GI_BuildRoad() = 0;
 };

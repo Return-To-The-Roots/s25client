@@ -16,12 +16,11 @@
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "GameClient.h"
-
 #include "ClientInterface.h"
+#include "GameClient.h"
 #include "GameManager.h"
-#include "GameMessage_GameCommand.h"
 #include "GlobalVars.h"
+#include "PlayerGameCommands.h"
 #include "Random.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
@@ -52,14 +51,16 @@ void GameClient::ExecuteGameFrame_Replay()
         {
             std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
             Serializer ser(&gcData.front(), gcData.size());
-            GameMessage_GameCommand msg;
+            PlayerGameCommands msg;
+            uint8_t gcPlayer = ser.PopUnsignedChar();
             msg.Deserialize(ser);
 
             // Execute them
-            ExecuteAllGCs(msg);
+            ExecuteAllGCs(gcPlayer, msg);
+            AsyncChecksum& msgChecksum = msg.checksum;
 
             // Check for async if checksum data is valid
-            if(msg.checksum.randChecksum != 0 && msg.checksum != checksum)
+            if(msgChecksum.randChecksum != 0 && msgChecksum != checksum)
             {
                 // Show message if this is the first async GF
                 if(replayinfo.async == 0)
@@ -70,8 +71,8 @@ void GameClient::ExecuteGameFrame_Replay()
                     if(ci)
                         ci->CI_ReplayAsync(text);
 
-                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF % msg.checksum.randChecksum
-                      % checksum.randChecksum % msg.checksum.objCt % checksum.objCt % msg.checksum.objIdCt % checksum.objIdCt;
+                    LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF % msgChecksum.randChecksum
+                      % checksum.randChecksum % msgChecksum.objCt % checksum.objCt % msgChecksum.objIdCt % checksum.objIdCt;
 
                     // and pause the game for further investigation
                     framesinfo.isPaused = true;

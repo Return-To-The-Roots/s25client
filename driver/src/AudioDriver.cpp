@@ -27,14 +27,11 @@ class IAudioDriverCallback;
 
 // Do not inline! That would break DLL compatibility:
 // http://stackoverflow.com/questions/32444520/how-to-handle-destructors-in-dll-exported-interfaces
-IAudioDriver::~IAudioDriver()
-{
-}
+IAudioDriver::~IAudioDriver() {}
 
 AudioDriver::AudioDriver(IAudioDriverCallback* driverCallback)
     : driverCallback(driverCallback), initialized(false), nextPlayID_(0), numChannels_(0)
-{
-}
+{}
 
 AudioDriver::~AudioDriver()
 {

@@ -43,8 +43,7 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
 
 nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GOT_FLAG)), state(State(sgd.PopUnsignedChar()))
-{
-}
+{}
 
 void nofFlagWorker::Serialize_nofFlagWorker(SerializedGameData& sgd) const
 {

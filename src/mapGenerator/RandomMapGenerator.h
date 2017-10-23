@@ -45,7 +45,7 @@ public:
      * @param settings settings used for the map generation
      * @param config configuration for the random map generator
      */
-    Map* Create(const MapSettings& settings);
+    Map* Create(MapSettings settings);
 
 private:
     /**
@@ -98,6 +98,9 @@ private:
      * @param map map to modify
      */
     void FillRemainingTerrain(const MapSettings& settings, Map& map);
+
+    /// Set the resources (water, fish, coal...) for the map
+    void SetResources(const MapSettings& settings, Map& map);
 };
 
 #endif // RandomMapGenerator_h__

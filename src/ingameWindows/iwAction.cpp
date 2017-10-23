@@ -330,7 +330,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         group->AddImageButton(1, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 108), _("Observation window"));
         curPos.x += btSize.x;
         group->AddImageButton(2, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 179), _("House names"));
+        curPos.x += btSize.x;
         group->AddImageButton(3, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 180), _("Go to headquarters"));
+        curPos.x += btSize.x;
         group->AddImageButton(4, curPos, btSize, TC_GREY, LOADER.GetImageN("io", 107), _("Notify allies of this location"));
     }
 
@@ -338,9 +340,9 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
     DrawPoint adjPos = GetPos();
     DrawPoint outerPt = GetPos() + GetSize();
-    if(outerPt.x > VIDEODRIVER.GetScreenWidth())
+    if(outerPt.x > static_cast<int>(VIDEODRIVER.GetScreenSize().x))
         adjPos.x = mousePos.x - GetSize().x - 40;
-    if(outerPt.y > VIDEODRIVER.GetScreenHeight())
+    if(outerPt.y > static_cast<int>(VIDEODRIVER.GetScreenSize().y))
         adjPos.y = mousePos.y - GetSize().y - 40;
     if(adjPos != GetPos())
         SetPos(adjPos);
@@ -411,7 +413,8 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
 
 iwAction::~iwAction()
 {
-    VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
+    if(mousePosAtOpen_.isValid())
+        VIDEODRIVER.SetMousePos(mousePosAtOpen_.x, mousePosAtOpen_.y);
     gi.GI_WindowClosed(this);
 }
 
@@ -608,13 +611,13 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
     {
         case 1: // Straße bauen
         {
-            gi.GI_SetRoadBuildMode(RM_NORMAL);
+            gi.GI_StartRoadBuilding(selectedPt, false);
             Close();
         }
         break;
         case 2: // Wasserstraße bauen
         {
-            gi.GI_SetRoadBuildMode(RM_BOAT);
+            gi.GI_StartRoadBuilding(selectedPt, true);
             Close();
         }
         break;
@@ -723,12 +726,14 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
         case 1:
             // TODO: bestimen, was an der position selected ist
             WINDOWMANAGER.Show(new iwObservate(gwv, selectedPt));
+            mousePosAtOpen_ = DrawPoint::Invalid();
             break;
         case 2: // Häusernamen/Prozent anmachen
             gwv.ToggleShowNamesAndProductivity();
             break;
         case 3: // zum HQ
             gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().GetHQPos());
+            mousePosAtOpen_ = DrawPoint::Invalid();
             break;
         case 4: GAMECLIENT.NotifyAlliesOfLocation(selectedPt); break;
     }

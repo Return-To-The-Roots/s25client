@@ -17,6 +17,8 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "MockupVideoDriver.h"
+#include <boost/nowide/iostream.hpp>
+#include <SDL.h>
 
 MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), tickCount_(1)
 {
@@ -34,18 +36,47 @@ const char* MockupVideoDriver::GetName() const
 
 bool MockupVideoDriver::Initialize()
 {
+    if(initialized)
+        return true;
+    if(SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+    {
+        fprintf(stderr, "%s\n", SDL_GetError());
+        return false;
+    }
+    initialized = true;
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
+void MockupVideoDriver::CleanUp()
 {
-    return ResizeScreen(width, height, fullscreen);
+    if(!initialized)
+        return;
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    initialized = false;
 }
 
-bool MockupVideoDriver::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool MockupVideoDriver::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
-    screenWidth = width;
-    screenHeight = height;
+    ResizeScreen(newSize, fullscreen);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
+
+    SDL_Surface* screen;
+
+    if(!(screen = SDL_SetVideoMode(2, 2, 32, SDL_HWSURFACE | SDL_NOFRAME | SDL_OPENGL)))
+    {
+        bnw::cerr << SDL_GetError() << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool MockupVideoDriver::ResizeScreen(const VideoMode& newSize, bool fullscreen)
+{
+    screenSize_ = newSize;
     isFullscreen_ = fullscreen;
     return true;
 }
@@ -65,9 +96,7 @@ void* MockupVideoDriver::GetFunction(const char* function) const
     return NULL;
 }
 
-void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const
-{
-}
+void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const {}
 
 void MockupVideoDriver::SetMousePos(int x, int y)
 {

@@ -28,8 +28,7 @@
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(4), ascent(0), current_ev(0), pause_walked_gf(0), pause_event_length(0), moving(false)
-{
-}
+{}
 
 void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
 {
@@ -46,8 +45,7 @@ void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), curMoveDir(sgd.PopUnsignedChar()), ascent(sgd.PopUnsignedChar()), current_ev(sgd.PopEvent()),
       pause_walked_gf(sgd.PopUnsignedInt()), pause_event_length(sgd.PopUnsignedInt()), moving(sgd.PopBool())
-{
-}
+{}
 
 void noMovable::Walk()
 {

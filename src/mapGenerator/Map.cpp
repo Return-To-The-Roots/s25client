@@ -16,10 +16,9 @@
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
+#include "libsiedler2/enumTypes.h"
 
-Map::Map() : size(0, 0)
-{
-}
+Map::Map() : size(0, 0) {}
 
 Map::Map(const MapExtent& size, const std::string& name, const std::string& author)
     : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
@@ -30,8 +29,8 @@ Map::Map(const MapExtent& size, const std::string& name, const std::string& auth
     textureRsu.resize(numNodes, 0x08);
     textureLsd.resize(numNodes, 0x08);
     build.resize(numNodes, 0x04);
-    shading.resize(numNodes, 0x80);
-    resource.resize(numNodes, 0x21);
+    shading.resize(numNodes, 0x40);
+    resource.resize(numNodes, libsiedler2::R_Water);
     road.resize(numNodes, 0x00);
     objectType.resize(numNodes, 0x00);
     objectInfo.resize(numNodes, 0x00);
@@ -75,7 +74,7 @@ libsiedler2::Archiv* Map::CreateArchiv()
     map->push(new libsiedler2::ArchivItem_Raw(unknown2));
     map->push(new libsiedler2::ArchivItem_Raw(unknown3));
     map->push(new libsiedler2::ArchivItem_Raw(resource));
-    map->push(new libsiedler2::ArchivItem_Raw(shading));
+    map->push(NULL); // No shading
     map->push(new libsiedler2::ArchivItem_Raw(unknown5));
 
     info->push(map);

@@ -27,23 +27,23 @@ class GameMessage : public Message
 {
 public:
     /// Spieler-ID, von dem diese Nachricht stammt
-    unsigned char player;
+    uint8_t player;
 
-    GameMessage(const unsigned short id) : Message(id) {} //-V730
-    GameMessage(const unsigned short id, const unsigned char player) : Message(id), player(player) {}
+    GameMessage(uint16_t id) : Message(id) {} //-V730
+    GameMessage(uint16_t id, uint8_t player) : Message(id), player(player) {}
 
     void Serialize(Serializer& ser) const override;
 
     void Deserialize(Serializer& ser) override;
 
     /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
-    virtual void Run(MessageInterface* callback) = 0;
+    virtual bool Run(MessageInterface* callback) = 0;
 
-    void run(MessageInterface* callback, unsigned id) override
+    bool run(MessageInterface* callback, unsigned id) override
     {
         if(id != 0xFFFFFFFF)
-            player = static_cast<unsigned char>(id);
-        Run(callback);
+            player = static_cast<uint8_t>(id);
+        return Run(callback);
     }
 
     static Message* create_game(unsigned short id);

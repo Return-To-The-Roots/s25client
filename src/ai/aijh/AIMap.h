@@ -38,8 +38,7 @@ struct Node
 /// Map of AINodes.
 /// Note: Could be a typedef only but this allows fwd declarations
 class AIMap : public NodeMapBase<Node>
-{
-};
+{};
 
 } // namespace AIJH
 

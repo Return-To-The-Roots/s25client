@@ -25,9 +25,15 @@ Position VertexUtility::GetPosition(int index, const MapExtent& size)
     return Position(index % size.x, index / size.x);
 }
 
-int VertexUtility::GetIndexOf(const Position& p, const MapExtent& size)
+int VertexUtility::GetIndexOf(Position p, const MapExtent& size)
 {
-    return (p.x & (size.x - 1)) + (p.y & (size.y - 1)) * size.x;
+    p.x %= size.x;
+    p.y %= size.y;
+    if(p.x < 0)
+        p.x += size.x;
+    if(p.y < 0)
+        p.y += size.y;
+    return p.x + p.y * size.x;
 }
 
 std::vector<int> VertexUtility::GetNeighbors(const Position& p, const MapExtent& size, int radius)

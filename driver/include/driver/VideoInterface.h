@@ -37,9 +37,9 @@ public:
     virtual void CleanUp() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen) = 0;
+    virtual bool CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen) = 0;
 
-    virtual bool ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen) = 0;
+    virtual bool ResizeScreen(const VideoMode& newSize, bool fullscreen) = 0;
 
     /// Schliesst das Fenster.
     virtual void DestroyScreen() = 0;
@@ -70,8 +70,7 @@ public:
     /// Return true when right mouse button is pressed
     virtual bool GetMouseStateR() const = 0;
 
-    virtual unsigned short GetScreenWidth() const = 0;
-    virtual unsigned short GetScreenHeight() const = 0;
+    virtual VideoMode GetScreenSize() const = 0;
     virtual bool IsFullscreen() const = 0;
 
     /// Get state of the modifier keys

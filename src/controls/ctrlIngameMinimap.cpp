@@ -28,8 +28,7 @@ class Window;
 ctrlIngameMinimap::ctrlIngameMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, const Extent& padding,
                                      IngameMinimap& minimap, GameWorldView& gwv)
     : ctrlMinimap(parent, id, pos, size, padding, Extent(minimap.GetMapSize())), minimap(minimap), gwv(gwv)
-{
-}
+{}
 
 /**
  *  Zeichnet die MapPreview

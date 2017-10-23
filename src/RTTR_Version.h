@@ -20,14 +20,17 @@
 #ifndef RTTR_Version_h__
 #define RTTR_Version_h__
 
+#include <string>
+
 class RTTR_Version
 {
 public:
-    static const char* GetTitle();
-    static const char* GetVersion();
-    static const char* GetRevision();
-    static const char* GetShortRevision();
-    static const char* GetYear();
+    static std::string GetTitle();
+    static std::string GetVersionDate();
+    static std::string GetRevision();
+    static std::string GetShortRevision();
+    static std::string GetYear();
+    static std::string GetReadableVersion();
 };
 
 #endif // RTTR_Version_h__

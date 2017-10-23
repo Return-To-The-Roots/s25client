@@ -159,7 +159,7 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     GameInfo game = openGames[selection];
-    if(game.info.version == std::string(RTTR_Version::GetVersion()))
+    if(game.info.revision == RTTR_Version::GetRevision())
     {
         iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);

@@ -73,8 +73,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
     : noMovable(NOP_FIGURE, pos), fs(FS_JOB), job_(job), player(player), cur_rs(NULL), rs_pos(0), rs_dir(0), on_ship(false), goal_(NULL),
       waiting_for_free_node(false), wander_way(0), wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0),
       burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF)
-{
-}
+{}
 
 void noFigure::Destroy_noFigure()
 {
@@ -792,9 +791,7 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
 }
 
 /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-void noFigure::CorrectSplitData_Derived()
-{
-}
+void noFigure::CorrectSplitData_Derived() {}
 
 void noFigure::DrawWalkingBobCarrier(DrawPoint drawPt, unsigned ware, bool fat)
 {

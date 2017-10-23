@@ -27,17 +27,23 @@
 ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& tooltip)
     : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true), isChecked(false),
       isIlluminated(false), isEnabled(true)
-{
-}
+{}
 
-ctrlButton::~ctrlButton()
-{
-}
+ctrlButton::~ctrlButton() {}
 
 void ctrlButton::SetEnabled(bool enable /*= true*/)
 {
     isEnabled = enable;
     state = BUTTON_UP;
+}
+
+void ctrlButton::SetActive(bool activate)
+{
+    Window::SetActive(activate);
+    if(!activate)
+        state = BUTTON_UP;
+    else if(IsMouseOver(VIDEODRIVER.GetMousePos()))
+        state = BUTTON_HOVER;
 }
 
 bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
@@ -77,27 +83,16 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 {
     if(state == BUTTON_PRESSED)
     {
-        state = BUTTON_UP;
-
         if(isEnabled && IsMouseOver(mc.GetPos()))
         {
+            state = BUTTON_HOVER;
             GetParent()->Msg_ButtonClick(GetID());
             return true;
-        }
+        } else
+            state = BUTTON_UP;
     }
 
     return false;
-}
-
-// Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
-void ctrlButton::TestMouseOver()
-{
-    if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
-    {
-        if(!IsMouseOver(VIDEODRIVER.GetMousePos()))
-            // Nicht mehr drauf --> wieder normalen Zustand
-            state = BUTTON_UP;
-    }
 }
 
 /**
@@ -107,9 +102,6 @@ void ctrlButton::Draw_()
 {
     if(GetSize().x == 0 || GetSize().y == 0)
         return;
-
-    // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
-    TestMouseOver();
 
     if(tc != TC_INVISIBLE)
     {

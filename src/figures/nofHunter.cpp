@@ -40,8 +40,7 @@ const MapCoord MAX_HUNTING_DISTANCE = 50;
 
 nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(JOB_HUNTER, pos, player, workplace), animal(NULL), shootingPos(0, 0)
-{
-}
+{}
 
 void nofHunter::Serialize_nofHunter(SerializedGameData& sgd) const
 {

@@ -31,12 +31,9 @@
 
 noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char player)
     : noCoordBase(NOP_ENVIRONMENT, pos), player(player), progress(0)
-{
-}
+{}
 
-noShipBuildingSite::~noShipBuildingSite()
-{
-}
+noShipBuildingSite::~noShipBuildingSite() {}
 
 void noShipBuildingSite::Destroy()
 {
@@ -55,8 +52,7 @@ void noShipBuildingSite::Serialize(SerializedGameData& sgd) const
 
 noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), progress(sgd.PopUnsignedChar())
-{
-}
+{}
 
 /// Progress-Anteile für die 3 Baustufen
 const unsigned PROGRESS_PARTS[3] = {4, 2, 3};

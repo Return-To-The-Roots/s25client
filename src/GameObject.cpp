@@ -52,9 +52,7 @@ GameObject::GameObject(const GameObject& go) : objId(go.objId)
     ++objCounter_;
 }
 
-void GameObject::Destroy()
-{
-}
+void GameObject::Destroy() {}
 
 void GameObject::Serialize(SerializedGameData& /*sgd*/) const
 {

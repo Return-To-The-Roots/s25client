@@ -16,6 +16,9 @@ IF (SDL_FOUND)
 
 	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
 	TARGET_LINK_LIBRARIES(videoSDL videodrv s25util ${SDL_LIBRARY})
+	if(WIN32)
+		target_link_libraries(videoSDL opengl32)
+	endif()
 
 	SET_PROPERTY(TARGET videoSDL PROPERTY POSITION_INDEPENDENT_CODE ON)
 

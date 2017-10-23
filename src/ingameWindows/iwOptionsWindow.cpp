@@ -44,12 +44,13 @@ iwOptionsWindow::iwOptionsWindow()
     AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddVarText(2, DrawPoint(150, 76), _("Return To The Roots v%s-%s"), COLOR_YELLOW,
-               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 2, RTTR_Version::GetVersion(),
-               RTTR_Version::GetShortRevision());
+    AddFormattedText(2, DrawPoint(150, 76), _("Return To The Roots - %1%"), COLOR_YELLOW,
+                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont)
+      % RTTR_Version::GetReadableVersion();
     // Copyright
-    AddVarText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW,
-               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont, 1, RTTR_Version::GetYear());
+    AddFormattedText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW,
+                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont)
+      % RTTR_Version::GetYear();
 
     // "Tastaturbelegung"
     AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));

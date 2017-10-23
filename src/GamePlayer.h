@@ -19,8 +19,8 @@
 #define GAMECLIENTPLAYER_H_
 
 #include "BuildingRegister.h"
-#include "GameMessage_GameCommand.h"
 #include "GamePlayerInfo.h"
+#include "PlayerGameCommands.h"
 #include "helpers/multiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
@@ -348,7 +348,7 @@ public:
     /// Laggt der Spieler?
     bool is_lagging;
     /// Empfangene GC für diesen Spieler
-    std::queue<GameMessage_GameCommand> gc_queue;
+    std::queue<PlayerGameCommands> gc_queue;
 
     static BuildOrders GetStandardBuildOrder();
 

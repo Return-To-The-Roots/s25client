@@ -22,8 +22,7 @@
 
 ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship)
     : PostMsg(sendFrame, text, cat, ship.GetPos())
-{
-}
+{}
 
 glArchivItem_Bitmap* ShipPostMsg::GetImage_() const
 {

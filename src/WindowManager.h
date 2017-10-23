@@ -66,7 +66,7 @@ public:
     /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
     void Close(unsigned id);
     /// merkt einen Desktop zum Wechsel vor.
-    void Switch(Desktop* desktop, bool mouse = false);
+    void Switch(Desktop* desktop);
     /// Verarbeitung des Drückens der Linken Maustaste.
     void Msg_LeftDown(MouseCoords mc) override;
     /// Verarbeitung des Loslassens der Linken Maustaste.
@@ -94,17 +94,17 @@ public:
 
     /// Return the window currently on the top (probably active)
     const Window* GetTopMostWindow() const;
+    IngameWindow* FindWindowAtPos(const Position& pos) const;
 
 protected:
     void DrawToolTip();
-    IngameWindow* FindWindowUnderMouse(const MouseCoords& mc) const;
 
 private:
     typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
     typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
 
     /// wechselt einen Desktop
-    void Switch();
+    void DoDesktopSwitch();
     /// Actually close all ingame windows marked for closing
     void CloseMarkedIngameWnds();
 

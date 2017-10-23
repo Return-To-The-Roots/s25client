@@ -28,14 +28,12 @@
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
                                const MapPoint goalPos)
     : noFigure(JOB_HELPER, pos, player), tr(tr), successor(NULL), homePos(homePos), goalPos(goalPos)
-{
-}
+{}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), tr(sgd, *gwg, player), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)),
       homePos(sgd.PopMapPoint()), goalPos(sgd.PopMapPoint())
-{
-}
+{}
 
 void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 {
@@ -102,21 +100,15 @@ void nofTradeLeader::Walked()
     }
 }
 
-void nofTradeLeader::HandleDerivedEvent(const unsigned /*id*/)
-{
-}
-void nofTradeLeader::AbrogateWorkplace()
-{
-}
+void nofTradeLeader::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofTradeLeader::AbrogateWorkplace() {}
 
 void nofTradeLeader::Draw(DrawPoint drawPt)
 {
     DrawWalking(drawPt);
 }
 
-void nofTradeLeader::LostWork()
-{
-}
+void nofTradeLeader::LostWork() {}
 
 /// Tries to go to the home ware house, otherwise start wandering
 bool nofTradeLeader::TryToGoHome()

@@ -124,6 +124,13 @@ inline void deletePtr(T*& ptr)
     ptr = 0;
 }
 
+/// Berechnet Differenz von 2 (unsigned!) Werten
+template<typename T>
+inline T safeDiff(T a, T b)
+{
+    return (a > b) ? a - b : b - a;
+}
+
 // Fwd decl
 namespace boost {
 namespace filesystem {

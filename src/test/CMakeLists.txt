@@ -1,3 +1,4 @@
+add_subdirectory(mockupDrivers)
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 if(NOT Boost_USE_STATIC_LIBS)
@@ -18,8 +19,8 @@ file(GLOB TEST_SOURCES *.cpp *.h)
 add_executable(Test ${TEST_SOURCES})
 target_link_libraries(Test
 						s25Main
-                        audiodrv
-                        videodrv
+                        audioMockup
+                        videoMockup
 						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 					  )
 
@@ -32,12 +33,6 @@ foreach(curFile ${TEST_CASES})
     list(REMOVE_ITEM OTHER_SRC ${curFile})
 endforeach()
 source_group(other FILES ${OTHER_SRC})
-
-if(MSVC)
-	CMAKE_POLICY(SET CMP0026 OLD) # Required for use of LOCATION_*
-	INCLUDE(CreateLaunchers)
-	create_target_launcher(Test)
-endif()
 
 if(WIN32)
     include(GatherDll)

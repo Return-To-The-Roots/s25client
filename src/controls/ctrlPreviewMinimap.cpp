@@ -20,9 +20,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 
-ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0)
-{
-}
+ctrlPreviewMinimap::Player::Player() : pos(0, 0), color(0) {}
 
 ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* s2map)
     : ctrlMinimap(parent, id, pos, size, Extent(2, 2), Extent(0, 0)), minimap(NULL)

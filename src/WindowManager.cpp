@@ -35,8 +35,7 @@
 
 WindowManager::WindowManager()
     : disable_mouse(false), lastMousePos(Point<int>::Invalid()), screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
-{
-}
+{}
 
 WindowManager::~WindowManager()
 {
@@ -61,7 +60,7 @@ void WindowManager::Draw()
 {
     // ist ein neuer Desktop eingetragen? Wenn ja, wechseln
     if(nextdesktop)
-        Switch();
+        DoDesktopSwitch();
 
     // haben wir einen gültigen Desktop?
     if(!curDesktop)
@@ -246,15 +245,15 @@ void WindowManager::ShowAfterSwitch(IngameWindow* window)
  *
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
- *  @param[in] disable_mouse Bei true wird bis zum nächsten Release die Maus deaktiviert (Switch-Anschließend-Drück-Bug)
  */
-void WindowManager::Switch(Desktop* desktop, bool mouse)
+void WindowManager::Switch(Desktop* desktop)
 {
     nextdesktop.reset(desktop);
-    disable_mouse = mouse;
+    // Disable the mouse till the next desktop is shown to avoid e.g. double-switching
+    disable_mouse = true;
 }
 
-IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const
+IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
 {
     // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
     for(std::list<IngameWindow*>::const_reverse_iterator it = windows.rbegin(); it != windows.rend(); ++it)
@@ -263,12 +262,12 @@ IngameWindow* WindowManager::FindWindowUnderMouse(const MouseCoords& mc) const
         Rect window_rect = (*it)->GetDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(IsPointInRect(mc.GetPos(), window_rect))
+        if(IsPointInRect(pos, window_rect))
         {
             return *it;
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if((*it)->TestWindowInRegion(NULL, mc))
+        if((*it)->TestWindowInRegion(NULL, pos))
             return *it;
     }
     return NULL;
@@ -332,7 +331,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
         return;
     }
 
-    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
 
     // aktives Fenster deaktivieren
     lastActiveWnd.SetActive(false);
@@ -375,7 +374,6 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
             // und allen unten drunter auch Bescheid sagen
             curDesktop->RelayMouseMessage(&Window::Msg_LeftDown, mc);
-            ;
         }
     }
 }
@@ -429,7 +427,8 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
     }
 
     // Maus-Klick-Fix deaktivieren
-    disable_mouse = false;
+    if(disable_mouse && !nextdesktop)
+        disable_mouse = false;
 }
 
 /**
@@ -446,7 +445,7 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     // Sind Fenster vorhanden && ist das aktive Fenster ok
     if(!windows.empty())
     {
-        IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+        IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
         if(windows.back()->IsModal())
         {
             // We have a modal window -> Activate it
@@ -553,7 +552,7 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
         return;
     }
 
-    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
     // ja, also aktives Fenster deaktivieren
     activeWnd.SetActive(false);
 
@@ -584,7 +583,6 @@ void WindowManager::Msg_WheelUp(const MouseCoords& mc)
 
         // und allen unten drunter auch Bescheid sagen
         curDesktop->RelayMouseMessage(&Window::Msg_WheelUp, mc);
-        ;
     }
 }
 
@@ -612,7 +610,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         activeWnd.RelayMouseMessage(&Window::Msg_WheelDown, mc);
         return;
     }
-    IngameWindow* foundWindow = FindWindowUnderMouse(mc);
+    IngameWindow* foundWindow = FindWindowAtPos(mc.GetPos());
     activeWnd.SetActive(false);
 
     if(foundWindow)
@@ -628,7 +626,6 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
         curDesktop->SetActive(true);
         curDesktop->Msg_WheelDown(mc);
         curDesktop->RelayMouseMessage(&Window::Msg_WheelDown, mc);
-        ;
     }
 }
 
@@ -671,14 +668,10 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 {
     if(ke.alt && (ke.kt == KT_RETURN))
     {
-// Switch Fullscreen/Windowed
-#ifdef _WIN32
-        VIDEODRIVER.ResizeScreen(SETTINGS.video.fullscreen_width, SETTINGS.video.fullscreen_height, !VIDEODRIVER.IsFullscreen());
-#else
-        VIDEODRIVER.ResizeScreen(VIDEODRIVER.IsFullscreen() ? SETTINGS.video.windowed_width : SETTINGS.video.fullscreen_width,
-                                 VIDEODRIVER.IsFullscreen() ? SETTINGS.video.windowed_height : SETTINGS.video.fullscreen_height,
-                                 !VIDEODRIVER.IsFullscreen());
-#endif
+        // Switch Fullscreen/Windowed
+        Extent screenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+        VIDEODRIVER.ResizeScreen(screenSize.x, screenSize.y, !SETTINGS.video.fullscreen);
+        SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
 }
@@ -696,8 +689,6 @@ void WindowManager::ScreenResized(unsigned short newWidth, unsigned short newHei
 {
     VIDEODRIVER.RenewViewport();
     Msg_ScreenResize(VIDEODRIVER.GetScreenSize());
-    LOG.writeToFile("Resized screen. Requested %ux%u, got %ux%u\n") % newWidth % newHeight % VIDEODRIVER.GetScreenWidth()
-      % VIDEODRIVER.GetScreenHeight();
 }
 
 /**
@@ -714,18 +705,11 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     if(newSize == screenSize)
         return;
 
-    ScreenResizeEvent sr(screenSize, Extent(std::max(800u, newSize.x), std::max(600u, newSize.y)));
+    ScreenResizeEvent sr(screenSize, elMax(Extent(800, 600), newSize));
     screenSize = sr.newSize;
 
-    SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen(); //-V807
-
     if(!SETTINGS.video.fullscreen)
-    {
-        if(newSize.x >= 800)
-            SETTINGS.video.windowed_width = newSize.x;
-        if(newSize.y >= 600)
-            SETTINGS.video.windowed_height = newSize.y;
-    }
+        SETTINGS.video.windowedSize = sr.newSize;
 
     // ist unser Desktop gültig?
     if(!curDesktop)
@@ -815,7 +799,7 @@ void WindowManager::Close(unsigned id)
 /**
  *  wechselt den Desktop in den neuen Desktop
  */
-void WindowManager::Switch()
+void WindowManager::DoDesktopSwitch()
 {
     RTTR_Assert(nextdesktop);
     VIDEODRIVER.ClearScreen();
@@ -838,6 +822,9 @@ void WindowManager::Switch()
     for(std::vector<IngameWindow*>::iterator it = nextWnds.begin(); it != nextWnds.end(); ++it)
         Show(*it);
     nextWnds.clear();
+
+    if(!VIDEODRIVER.IsLeftDown())
+        disable_mouse = false;
 
     // Dummy mouse move to init hovering etc
     Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY(), false, false, false));
@@ -892,7 +879,7 @@ void WindowManager::DrawToolTip()
         unsigned right_edge = ttPos.x + text_width + 2;
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > VIDEODRIVER.GetScreenWidth())
+        if(right_edge > VIDEODRIVER.GetScreenSize().y)
             ttPos.x = lastMousePos.x - spacing - text_width;
 
         unsigned numLines = 1;

@@ -33,8 +33,7 @@ const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
 
 LuaServerPlayer::LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId)
     : gameServer_(gameServer), playerId(playerId), player(gameServer_.GetJoinPlayer(playerId))
-{
-}
+{}
 
 void LuaServerPlayer::Register(kaguya::State& state)
 {

@@ -113,8 +113,7 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char p
     : noFigure(JOB_TYPES[ct], pos, player, goal), ct(ct), state(CARRS_FIGUREWORK),
       fat((RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2) != 0)), workplace(workplace), carried_ware(NULL), productivity_ev(0),
       productivity(0), worked_gf(0), since_working_gf(0xFFFFFFFF), next_animation(0)
-{
-}
+{}
 
 nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     : noFigure(sgd, obj_id), ct(CarrierType(sgd.PopUnsignedChar())), state(CarrierState(sgd.PopUnsignedChar())), fat(sgd.PopBool()),

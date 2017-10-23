@@ -2,7 +2,7 @@
 FIND_PACKAGE(BZip2 REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
-FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale)
+FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale thread)
 
 INCLUDE(CMakeMacroForceAddFlags)
 INCLUDE(CMakeMacroRemoveFlags)

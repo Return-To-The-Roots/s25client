@@ -20,6 +20,7 @@
 #include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
+#include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
 
@@ -71,9 +72,7 @@ DRIVERDLLAPI const char* GetDriverName()
  *
  *  @param[in] CallBack DriverCallback für Rückmeldungen.
  */
-VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL)
-{
-}
+VideoSDL::VideoSDL(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBack), screen(NULL) {}
 
 VideoSDL::~VideoSDL()
 {
@@ -139,7 +138,7 @@ void VideoSDL::CleanUp()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::CreateScreen(const std::string& title, const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized)
         return false;
@@ -153,20 +152,9 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 
-#ifdef _WIN32
-    // das spinnt ja total unter windows ...
-    this->isFullscreen_ = false;
-#else
-    this->isFullscreen_ = fullscreen;
-#endif
-
-    // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32,
-                                   SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
-    {
-        fprintf(stderr, "%s\n", SDL_GetError());
+    // Set the video mode
+    if(!SetVideoMode(newSize, fullscreen))
         return false;
-    }
 
     SDL_WM_SetCaption(title.c_str(), 0);
 
@@ -175,9 +163,6 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
 #endif
 
     std::fill(keyboard.begin(), keyboard.end(), false);
-
-    this->screenWidth = width;
-    this->screenHeight = height;
 
     SDL_ShowCursor(SDL_DISABLE);
 
@@ -195,30 +180,106 @@ bool VideoSDL::CreateScreen(const std::string& title, unsigned short width, unsi
  *
  *  @todo Vollbildmodus ggf. wechseln
  */
-bool VideoSDL::ResizeScreen(unsigned short width, unsigned short height, const bool fullscreen)
+bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 {
     if(!initialized)
         return false;
 
-    this->screenWidth = width;
-    this->screenHeight = height;
-
+        // On windows the current ogl context gets destroyed. Hence we have to save it to avoid having to reinitialize all resources
+        // Taken from http://www.bytehazard.com/articles/sdlres.html
 #ifdef _WIN32
-    // das spinnt ja total unter windows ...
-    this->isFullscreen_ = false;
+    SDL_SysWMinfo info;
+    // get window handle from SDL
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) != 1)
+    {
+        PrintError("SDL_GetWMInfo #1 failed");
+        return false;
+    }
+
+    // get device context handle
+    HDC tempDC = GetDC(info.window);
+
+    // create temporary context
+    HGLRC tempRC = wglCreateContext(tempDC);
+    if(tempRC == NULL)
+    {
+        PrintError("wglCreateContext failed");
+        return false;
+    }
+
+    // share resources to temporary context
+    SetLastError(0);
+    if(!wglShareLists(info.hglrc, tempRC))
+    {
+        PrintError("wglShareLists #1 failed");
+        return false;
+    }
+
+    // set video mode
+    if(!SetVideoMode(newSize, fullscreen))
+        return false;
+
+    // previously used structure may possibly be invalid, to be sure we get it again
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) != 1)
+    {
+        PrintError("SDL_GetWMInfo #2 failed\n");
+        return false;
+    }
+
+    // share resources to new SDL-created context
+    if(!wglShareLists(tempRC, info.hglrc))
+    {
+        PrintError("wglShareLists #2 failed\n");
+        return false;
+    }
+
+    // we no longer need our temporary context
+    if(!wglDeleteContext(tempRC))
+    {
+        PrintError("wglDeleteContext failed\n");
+        return false;
+    }
+    // success
+    return true;
 #else
+    return SetVideoMode(newSize, fullscreen);
+#endif // _WIN32
+}
+
+bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
+{
+    // putenv needs a char* not a const char* -.-
+    static char CENTER_ENV[] = "SDL_VIDEO_CENTERED=center";
+    static char UNCENTER_ENV[] = "SDL_VIDEO_CENTERED=";
+
+    bool enteredWndMode = !screen || (isFullscreen_ && !fullscreen);
+
     this->isFullscreen_ = fullscreen;
-#endif
+
+    screenSize_ = (isFullscreen_) ? FindClosestVideoMode(newSize) : newSize;
+
+    if(enteredWndMode)
+        SDL_putenv(CENTER_ENV);
+    screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32,
+                              SDL_HWSURFACE | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE));
+    if(enteredWndMode)
+        SDL_putenv(UNCENTER_ENV);
 
     // Videomodus setzen
-    if(!(screen = SDL_SetVideoMode(width, height, 32,
-                                   SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE))))
+    if(!screen)
     {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        PrintError(SDL_GetError());
         return false;
     }
 
     return true;
+}
+
+void VideoSDL::PrintError(const std::string& msg)
+{
+    bnw::cerr << msg << std::endl;
 }
 
 /**
@@ -264,18 +325,22 @@ bool VideoSDL::MessageLoop()
             case SDL_QUIT: return false;
 
             case SDL_ACTIVEEVENT:
-                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain)
+                if((ev.active.state & SDL_APPACTIVE) && ev.active.gain && !isFullscreen_)
                 {
                     // Window was restored. We need a resize to avoid a black screen
-                    ResizeScreen(screenWidth, screenHeight, isFullscreen_);
-                    CallBack->ScreenResized(screenWidth, screenHeight);
+                    ResizeScreen(VideoMode(screenSize_.width, screenSize_.height), isFullscreen_);
+                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
                 }
                 break;
 
             case SDL_VIDEORESIZE:
             {
-                ResizeScreen(ev.resize.w, ev.resize.h, isFullscreen_);
-                CallBack->ScreenResized(screenWidth, screenHeight);
+                VideoMode newSize(ev.resize.w, ev.resize.h);
+                if(newSize != screenSize_)
+                {
+                    ResizeScreen(newSize, isFullscreen_);
+                    CallBack->ScreenResized(screenSize_.width, screenSize_.height);
+                }
             }
             break;
 

@@ -62,8 +62,8 @@ const DrawPoint iconSpacing(40, 48);
 const unsigned short font_distance_y = 20;
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_BUILDINGS, IngameWindow::posAtMouse, Extent(185, 480), _("Buildings"), LOADER.GetImageN("resource", 41)), gwv(gwv),
-      gcFactory(gcFactory)
+    : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"), LOADER.GetImageN("resource", 41)),
+      gwv(gwv), gcFactory(gcFactory)
 {
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen

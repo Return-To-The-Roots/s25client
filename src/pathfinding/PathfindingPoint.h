@@ -27,8 +27,7 @@ public:
 
     PathfindingPoint(const unsigned id, const unsigned distance, const unsigned curWay)
         : id_(id), distance_(distance), estimate_(curWay + distance_)
-    {
-    }
+    {}
 
     /// Operator für den Vergleich
     bool operator<(const PathfindingPoint& rhs) const

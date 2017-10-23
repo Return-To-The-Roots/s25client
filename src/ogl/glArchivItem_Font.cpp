@@ -310,6 +310,8 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
     // Get texture first as it might need to be created
     glArchivItem_Bitmap& usedFont = (format & DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
     unsigned texture = usedFont.GetTexture();
+    if(!texture)
+        return;
     const GlPoint texSize(usedFont.GetTexSize());
     RTTR_Assert(texList.texCoords.size() == texList.vertices.size());
     RTTR_Assert(texList.texCoords.size() % 4u == 0);

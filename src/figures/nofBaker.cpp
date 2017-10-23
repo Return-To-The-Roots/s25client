@@ -27,13 +27,9 @@
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"
 
-nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BAKER, pos, player, workplace)
-{
-}
+nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BAKER, pos, player, workplace) {}
 
-nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofBaker::DrawWorking(DrawPoint drawPt)
 {

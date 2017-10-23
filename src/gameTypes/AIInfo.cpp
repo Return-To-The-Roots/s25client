@@ -20,9 +20,7 @@
 #include "libutil/Serializer.h"
 
 namespace AI {
-Info::Info(Serializer& ser) : type(static_cast<Type>(ser.PopUnsignedChar())), level(static_cast<Level>(ser.PopUnsignedChar()))
-{
-}
+Info::Info(Serializer& ser) : type(static_cast<Type>(ser.PopUnsignedChar())), level(static_cast<Level>(ser.PopUnsignedChar())) {}
 
 void Info::serialize(Serializer& ser) const
 {

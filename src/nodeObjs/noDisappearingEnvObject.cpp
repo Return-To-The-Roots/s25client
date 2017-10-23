@@ -49,8 +49,7 @@ void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
 
 noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), disappearing(sgd.PopBool()), dead_event(sgd.PopEvent())
-{
-}
+{}
 
 /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
 unsigned noDisappearingEnvObject::GetDrawColor() const

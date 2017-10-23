@@ -39,20 +39,14 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color)
     return MakeColor(0xFF, red, green, blue);
 }
 
-FOWObject::~FOWObject()
-{
-}
+FOWObject::~FOWObject() {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // fowBuilding
 
-fowBuilding::fowBuilding(const BuildingType type, const Nation nation) : type(type), nation(nation)
-{
-}
+fowBuilding::fowBuilding(const BuildingType type, const Nation nation) : type(type), nation(nation) {}
 
-fowBuilding::fowBuilding(SerializedGameData& sgd) : type(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar()))
-{
-}
+fowBuilding::fowBuilding(SerializedGameData& sgd) : type(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())) {}
 
 void fowBuilding::Serialize(SerializedGameData& sgd) const
 {
@@ -79,14 +73,12 @@ void fowBuilding::Draw(DrawPoint drawPt) const
 
 fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, const Nation nation, const unsigned char build_progress)
     : planing(planing), type(type), nation(nation), build_progress(build_progress)
-{
-}
+{}
 
 fowBuildingSite::fowBuildingSite(SerializedGameData& sgd)
     : planing(sgd.PopBool()), type(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
       build_progress(sgd.PopUnsignedChar())
-{
-}
+{}
 
 void fowBuildingSite::Serialize(SerializedGameData& sgd) const
 {
@@ -154,13 +146,11 @@ void fowBuildingSite::Draw(DrawPoint drawPt) const
 
 fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type)
     : color(CalcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
-{
-}
+{}
 
 fowFlag::fowFlag(SerializedGameData& sgd)
     : color(sgd.PopUnsignedInt()), nation(Nation(sgd.PopUnsignedChar())), flag_type(FlagType(sgd.PopUnsignedChar()))
-{
-}
+{}
 
 void fowFlag::Serialize(SerializedGameData& sgd) const
 {
@@ -177,13 +167,9 @@ void fowFlag::Draw(DrawPoint drawPt) const
 ////////////////////////////////////////////////////////////////////////////////////
 // fowTree
 
-fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type), size(size)
-{
-}
+fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type), size(size) {}
 
-fowTree::fowTree(SerializedGameData& sgd) : type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar())
-{
-}
+fowTree::fowTree(SerializedGameData& sgd) : type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()) {}
 
 void fowTree::Serialize(SerializedGameData& sgd) const
 {
@@ -208,13 +194,9 @@ void fowTree::Draw(DrawPoint drawPt) const
 ////////////////////////////////////////////////////////////////////////////////////
 // fowGranite
 
-fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state)
-{
-}
+fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state) {}
 
-fowGranite::fowGranite(SerializedGameData& sgd) : type(GraniteType(sgd.PopUnsignedChar())), state(sgd.PopUnsignedChar())
-{
-}
+fowGranite::fowGranite(SerializedGameData& sgd) : type(GraniteType(sgd.PopUnsignedChar())), state(sgd.PopUnsignedChar()) {}
 
 void fowGranite::Serialize(SerializedGameData& sgd) const
 {

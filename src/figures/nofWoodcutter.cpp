@@ -29,12 +29,9 @@
 
 nofWoodcutter::nofWoodcutter(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_WOODCUTTER, pos, player, workplace)
-{
-}
+{}
 
-nofWoodcutter::nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id)
-{
-}
+nofWoodcutter::nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofWoodcutter::DrawWorking(DrawPoint drawPt)

@@ -59,9 +59,7 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
         produce_animal_event = GetEvMgr().AddEvent(this, 6000 + RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 2000), 3);
 }
 
-noTree::~noTree()
-{
-}
+noTree::~noTree() {}
 
 void noTree::Destroy_noTree()
 {
@@ -84,8 +82,7 @@ void noTree::Serialize_noTree(SerializedGameData& sgd) const
 noTree::noTree(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
       event(sgd.PopEvent()), produce_animal_event(sgd.PopEvent()), produce_animals(sgd.PopBool())
-{
-}
+{}
 
 void noTree::Draw(DrawPoint drawPt)
 {

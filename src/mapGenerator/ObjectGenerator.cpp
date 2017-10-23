@@ -117,11 +117,11 @@ uint8_t ObjectGenerator::CreateRandomResource(unsigned ratioGold, unsigned ratio
 {
     unsigned rnd = (unsigned)config.Rand(ratioGold + ratioIron + ratioCoal + ratioGranite);
 
-    if(rnd <= ratioGold)
+    if(rnd < ratioGold)
         return libsiedler2::R_Gold + config.Rand(8);
-    else if(rnd <= ratioGold + ratioIron)
+    else if(rnd < ratioGold + ratioIron)
         return libsiedler2::R_Iron + config.Rand(8);
-    else if(rnd <= ratioGold + ratioIron + ratioCoal)
+    else if(rnd < ratioGold + ratioIron + ratioCoal)
         return libsiedler2::R_Coal + config.Rand(8);
     else
         return libsiedler2::R_Granite + config.Rand(8);
@@ -136,16 +136,9 @@ void ObjectGenerator::CreateRandomTree(Map& map, int index)
 {
     switch(config.Rand(3))
     {
-        case 0:
-            map.objectType[index] = libsiedler2::OT_Tree1_Begin + config.Rand(libsiedler2::OT_Tree1_End - libsiedler2::OT_Tree1_Begin + 1);
-            break;
-        case 1:
-            map.objectType[index] = libsiedler2::OT_Tree2_Begin + config.Rand(libsiedler2::OT_Tree2_End - libsiedler2::OT_Tree2_Begin + 1);
-            break;
-        case 2:
-            map.objectType[index] =
-              libsiedler2::OT_TreeOrPalm_Begin + config.Rand(libsiedler2::OT_TreeOrPalm_End - libsiedler2::OT_TreeOrPalm_Begin + 1);
-            break;
+        case 0: map.objectType[index] = config.Rand(libsiedler2::OT_Tree1_Begin, libsiedler2::OT_Tree1_End + 1); break;
+        case 1: map.objectType[index] = config.Rand(libsiedler2::OT_Tree2_Begin, libsiedler2::OT_Tree2_End + 1); break;
+        case 2: map.objectType[index] = config.Rand(libsiedler2::OT_TreeOrPalm_Begin, libsiedler2::OT_TreeOrPalm_End + 1); break;
     }
     map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
 }
@@ -154,12 +147,11 @@ void ObjectGenerator::CreateRandomPalm(Map& map, int index)
 {
     if(config.Rand(2) == 0)
     {
-        map.objectType[index] =
-          libsiedler2::OT_TreeOrPalm_Begin + config.Rand(libsiedler2::OT_TreeOrPalm_End - libsiedler2::OT_TreeOrPalm_Begin + 1);
+        map.objectType[index] = config.Rand(libsiedler2::OT_TreeOrPalm_Begin, libsiedler2::OT_TreeOrPalm_End + 1);
         map.objectInfo[index] = libsiedler2::OI_Palm;
     } else
     {
-        map.objectType[index] = libsiedler2::OT_Palm_Begin + config.Rand(0, libsiedler2::OT_Palm_End - libsiedler2::OT_Palm_Begin + 1);
+        map.objectType[index] = config.Rand(libsiedler2::OT_Palm_Begin, libsiedler2::OT_Palm_End + 1);
         map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
     }
 }
@@ -177,6 +169,6 @@ void ObjectGenerator::CreateRandomMixedTree(Map& map, int index)
 
 void ObjectGenerator::CreateRandomStone(Map& map, int index)
 {
-    map.objectType[index] = libsiedler2::OT_Stone_Begin + config.Rand(libsiedler2::OT_Stone_End - libsiedler2::OT_Stone_Begin + 1);
+    map.objectType[index] = config.Rand(libsiedler2::OT_Stone_Begin, libsiedler2::OT_Stone_End + 1);
     map.objectInfo[index] = config.Rand(2) == 0 ? libsiedler2::OI_Stone1 : libsiedler2::OI_Stone2;
 }

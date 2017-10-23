@@ -34,8 +34,7 @@ public:
                     _("Enable AI Debugging Window\n"
                       "(possible cheating)"),
                     0)
-    {
-    }
+    {}
 };
 
 #endif // !ADDONAIDEBUGWINDOW_H_INCLUDED

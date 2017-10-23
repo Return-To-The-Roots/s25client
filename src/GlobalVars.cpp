@@ -18,6 +18,4 @@
 #include "defines.h" // IWYU pragma: keep
 #include "GlobalVars.h"
 
-GlobalVars::GlobalVars() : notdone(true), ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false)
-{
-}
+GlobalVars::GlobalVars() : notdone(true), ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false) {}

@@ -21,9 +21,7 @@
 #include "helpers/containerUtils.h"
 #include "gameData/MilitaryConsts.h"
 
-MilitarySquares::MilitarySquares() : size_(MapExtent::all(0))
-{
-}
+MilitarySquares::MilitarySquares() : size_(MapExtent::all(0)) {}
 
 void MilitarySquares::Init(const MapExtent& mapSize)
 {

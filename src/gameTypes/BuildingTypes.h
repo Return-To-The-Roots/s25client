@@ -65,8 +65,7 @@ struct BldWorkDescription
     BldWorkDescription(Job job = JOB_NOTHING, GoodType producedWare = GD_NOTHING, WaresNeeded waresNeeded = WaresNeeded(),
                        uint8_t numSpacesPerWare = 6, bool useOneWareEach = true)
         : job(job), producedWare(producedWare), waresNeeded(waresNeeded), numSpacesPerWare(numSpacesPerWare), useOneWareEach(useOneWareEach)
-    {
-    }
+    {}
     /// Worker belonging to the building
     Job job;
     /// Ware produced (maybe nothing or invalid)

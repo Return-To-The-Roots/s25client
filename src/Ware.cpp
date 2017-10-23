@@ -49,9 +49,7 @@ Ware::Ware(const GoodType type, noBaseBuilding* goal, noRoadNode* location)
         goal->TakeWare(this);
 }
 
-Ware::~Ware()
-{
-}
+Ware::~Ware() {}
 
 void Ware::Destroy()
 {
@@ -82,8 +80,7 @@ Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), next_dir(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())),
       location(sgd.PopObject<noRoadNode>(GOT_UNKNOWN)), type(GoodType(sgd.PopUnsignedChar())),
       goal(sgd.PopObject<noBaseBuilding>(GOT_UNKNOWN)), next_harbor(sgd.PopMapPoint())
-{
-}
+{}
 
 void Ware::SetGoal(noBaseBuilding* newGoal)
 {

@@ -514,7 +514,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     this->BuildRoad(world.GetNeighbour(hqPos, Direction::SOUTHEAST), false, std::vector<Direction>((milPt.x - hqPos.x), Direction::EAST));
     nobBaseWarehouse* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
     const std::list<noFigure*>& leavings = hq->GetLeavingFigures();
-    nofPassiveSoldier* soldier;
+    nofPassiveSoldier* soldier = NULL;
     BOOST_FOREACH(noFigure* fig, leavings)
     {
         soldier = dynamic_cast<nofPassiveSoldier*>(fig);

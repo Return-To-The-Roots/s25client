@@ -31,6 +31,8 @@
 std::vector<DrawPoint> IngameWindow::last_pos(CGI_NEXT + 1, DrawPoint::Invalid());
 const DrawPoint IngameWindow::posLastOrCenter(std::numeric_limits<DrawPoint::ElementType>::max(),
                                               std::numeric_limits<DrawPoint::ElementType>::max());
+const DrawPoint IngameWindow::posCenter(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
+                                        std::numeric_limits<DrawPoint::ElementType>::max());
 const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
                                          std::numeric_limits<DrawPoint::ElementType>::max() - 1);
 
@@ -57,7 +59,9 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
             SetPos(last_pos[id]);
         else
             MoveToCenter();
-    } else if(pos == posAtMouse)
+    } else if(pos == posCenter)
+        MoveToCenter();
+    else if(pos == posAtMouse)
         MoveNextToMouse();
 }
 
@@ -190,8 +194,10 @@ void IngameWindow::Draw_()
 {
     if(isModal_)
     {
-        SetActive(true);
-        Close(false);
+        if(!IsActive())
+            SetActive(true);
+        if(closeme)
+            Close(false);
     }
 
     // Linkes oberes Teil
@@ -340,14 +346,14 @@ void IngameWindow::MoveNextToMouse()
     // Center vertically and move slightly right
     DrawPoint newPos = VIDEODRIVER.GetMousePos() - DrawPoint(-20, GetSize().y / 2);
     // To far right?
-    if(newPos.x + GetSize().x > VIDEODRIVER.GetScreenWidth())
-        newPos.x = VIDEODRIVER.GetScreenWidth() - GetSize().x;
+    if(newPos.x + GetSize().x > VIDEODRIVER.GetScreenSize().x)
+        newPos.x = VIDEODRIVER.GetScreenSize().x - GetSize().x;
 
     // To high or low?
     if(newPos.y < 0)
         newPos.y = 0;
-    else if(newPos.y + GetSize().y > VIDEODRIVER.GetScreenHeight())
-        newPos.y = VIDEODRIVER.GetScreenHeight() - GetSize().y;
+    else if(newPos.y + GetSize().y > VIDEODRIVER.GetScreenSize().y)
+        newPos.y = VIDEODRIVER.GetScreenSize().y - GetSize().y;
     SetPos(newPos);
 }
 

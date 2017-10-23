@@ -17,7 +17,6 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Loader.h"
-#include "MockupVideoDriver.h"
 #include "PointOutput.h"
 #include "Window.h"
 #include "WindowManager.h"
@@ -30,6 +29,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
+#include "mockupDrivers/MockupVideoDriver.h"
 #include <boost/test/unit_test.hpp>
 
 namespace {
@@ -65,8 +65,7 @@ struct TestAnimation : public Animation
 {
     TestAnimation(WindowFixture& parent, Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
         : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false)
-    {
-    }
+    {}
     WindowFixture& parent;
     bool updateCalled;
     double lastNextFramepartTime;

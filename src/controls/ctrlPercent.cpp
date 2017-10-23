@@ -23,8 +23,7 @@
 ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                          glArchivItem_Font* font, const unsigned short* percentage)
     : Window(parent, id, pos, size), tc(tc), text_color(text_color), font(font), percentage_(percentage)
-{
-}
+{}
 
 /**
  *  Zeichenmethode.

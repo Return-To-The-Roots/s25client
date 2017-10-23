@@ -42,8 +42,7 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), dest_building(sgd.PopMapPoint()), dest_map(sgd.PopMapPoint()), startPos(sgd.PopPoint<int>()),
       destPos(sgd.PopPoint<int>()), explode(sgd.PopBool()), event(sgd.PopEvent())
-{
-}
+{}
 
 /// Serialisierungsfunktionen
 void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
@@ -56,9 +55,7 @@ void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
     sgd.PushObject(event, true);
 }
 
-void CatapultStone::Destroy()
-{
-}
+void CatapultStone::Destroy() {}
 
 void CatapultStone::Draw(DrawPoint drawOffset)
 {

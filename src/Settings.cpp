@@ -45,8 +45,7 @@ const unsigned char Settings::SCREEN_REFRESH_RATES_COUNT = 14;
 const unsigned short Settings::SCREEN_REFRESH_RATES[] = {0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240};
 
 Settings::Settings() //-V730
-{
-}
+{}
 
 bool Settings::LoadDefaults()
 {
@@ -66,17 +65,12 @@ bool Settings::LoadDefaults()
     // {
     if(VIDEODRIVER.IsLoaded())
     {
-        video.fullscreen_width = VIDEODRIVER.GetScreenWidth();
-        video.fullscreen_height = VIDEODRIVER.GetScreenHeight();
-        video.windowed_width = VIDEODRIVER.IsFullscreen() ? 800 : video.fullscreen_width;
-        video.windowed_height = VIDEODRIVER.IsFullscreen() ? 600 : video.fullscreen_height;
+        video.fullscreenSize = VIDEODRIVER.GetScreenSize();
+        video.windowedSize = VIDEODRIVER.IsFullscreen() ? Extent(800, 600) : video.fullscreenSize;
         video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else
     {
-        video.fullscreen_width = 800;
-        video.fullscreen_height = 600;
-        video.windowed_width = video.fullscreen_width;
-        video.windowed_height = video.fullscreen_height;
+        video.windowedSize = video.fullscreenSize = Extent(800, 600);
         video.fullscreen = false;
     }
     video.vsync = 0;
@@ -199,17 +193,17 @@ bool Settings::Load()
 
         // video
         // {
-        video.windowed_width = iniVideo->getValueI("windowed_width");
-        video.windowed_height = iniVideo->getValueI("windowed_height");
-        video.fullscreen_width = iniVideo->getValueI("fullscreen_width");
-        video.fullscreen_height = iniVideo->getValueI("fullscreen_height");
+        video.windowedSize.x = iniVideo->getValueI("windowed_width");
+        video.windowedSize.y = iniVideo->getValueI("windowed_height");
+        video.fullscreenSize.x = iniVideo->getValueI("fullscreen_width");
+        video.fullscreenSize.y = iniVideo->getValueI("fullscreen_height");
         video.fullscreen = (iniVideo->getValueI("fullscreen") != 0);
         video.vsync = iniVideo->getValueI("vsync");
         video.vbo = (iniVideo->getValueI("vbo") != 0);
         video.shared_textures = (iniVideo->getValueI("shared_textures") != 0);
         // };
 
-        if(video.fullscreen_width == 0 || video.fullscreen_height == 0 || video.windowed_width == 0 || video.windowed_height == 0)
+        if(video.fullscreenSize.x == 0 || video.fullscreenSize.y == 0 || video.windowedSize.x == 0 || video.windowedSize.y == 0)
         {
             s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
             return LoadDefaults();
@@ -345,10 +339,10 @@ void Settings::Save()
 
     // video
     // {
-    iniVideo->setValue("fullscreen_width", video.fullscreen_width);
-    iniVideo->setValue("fullscreen_height", video.fullscreen_height);
-    iniVideo->setValue("windowed_width", video.windowed_width);
-    iniVideo->setValue("windowed_height", video.windowed_height);
+    iniVideo->setValue("fullscreen_width", video.fullscreenSize.x);
+    iniVideo->setValue("fullscreen_height", video.fullscreenSize.y);
+    iniVideo->setValue("windowed_width", video.windowedSize.x);
+    iniVideo->setValue("windowed_height", video.windowedSize.y);
     iniVideo->setValue("fullscreen", (video.fullscreen ? 1 : 0));
     iniVideo->setValue("vsync", video.vsync);
     iniVideo->setValue("vbo", (video.vbo ? 1 : 0));

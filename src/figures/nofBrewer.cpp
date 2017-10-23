@@ -26,12 +26,9 @@
 #include "world/GameWorldGame.h"
 
 nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_BREWER, pos, player, workplace)
-{
-}
+{}
 
-nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
-{
-}
+nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {

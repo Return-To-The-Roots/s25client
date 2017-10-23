@@ -28,8 +28,7 @@ public:
     AddonBattlefieldPromotion()
         : AddonBool(AddonId::BATTLEFIELD_PROMOTION, ADDONGROUP_MILITARY, _("Enable battlefield promotions"),
                     _("Soldiers winning a fight increase in rank."), 0)
-    {
-    }
+    {}
 };
 
 #endif

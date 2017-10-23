@@ -46,9 +46,7 @@ BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
         *it = sgd.PopUnsignedInt();
 }
 
-BurnedWarehouse::~BurnedWarehouse()
-{
-}
+BurnedWarehouse::~BurnedWarehouse() {}
 
 void BurnedWarehouse::Destroy()
 {

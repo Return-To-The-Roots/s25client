@@ -16,10 +16,10 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "MockupAudioDriver.h"
 #include "Settings.h"
 #include "driver/SoundHandle.h"
 #include "drivers/AudioDriverWrapper.h"
+#include "mockupDrivers/MockupAudioDriver.h"
 #include "ogl/MusicItem.h"
 #include "ogl/SoundEffectItem.h"
 #include "test/testConfig.h"

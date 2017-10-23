@@ -172,8 +172,7 @@ public:
 
         PotentialSeaAttacker(nofPassiveSoldier* soldier, nobHarborBuilding* harbor, unsigned distance)
             : soldier(soldier), harbor(harbor), distance(distance)
-        {
-        }
+        {}
     };
 
     /// Liefert Hafenpunkte im Umkreis von einem bestimmten Milit�rgeb�ude

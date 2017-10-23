@@ -219,8 +219,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
         bq = gwv.GetBQ(pt);
         BOOST_REQUIRE_MESSAGE(bq == BQ_CASTLE, bq << "!=" << BQ_CASTLE << " at " << pt);
     }
-    gameDesktop.SetSelectedMapPoint(roadPt);
-    gameDesktop.GI_SetRoadBuildMode(RM_NORMAL);
+    gameDesktop.GI_StartRoadBuilding(roadPt, false);
     BOOST_REQUIRE_EQUAL(gameDesktop.GetRoadMode(), RM_NORMAL);
 
     std::vector<MapPoint> roadPts;
@@ -257,7 +256,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     for(unsigned i = 2; i < roadPts.size(); i++)
         BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[i]));
     // Remove rest
-    gameDesktop.GI_SetRoadBuildMode(RM_DISABLED);
+    gameDesktop.GI_CancelRoadBuilding();
     BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[0]));
     BOOST_REQUIRE(!gwv.IsOnRoad(roadPts[1]));
     // BQ should be restored
@@ -268,8 +267,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     }
 
     BOOST_REQUIRE_EQUAL(gameDesktop.GetRoadMode(), RM_DISABLED);
-    gameDesktop.SetSelectedMapPoint(roadPt);
-    gameDesktop.GI_SetRoadBuildMode(RM_NORMAL);
+    gameDesktop.GI_StartRoadBuilding(roadPt, false);
     BOOST_REQUIRE_EQUAL(gameDesktop.GetRoadMode(), RM_NORMAL);
     // Build horizontal road
     roadPts.clear();
@@ -300,7 +298,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     }
 
     // Destroy road
-    gameDesktop.GI_SetRoadBuildMode(RM_DISABLED);
+    gameDesktop.GI_CancelRoadBuilding();
     BOOST_FOREACH(MapPoint pt, roadPts)
         BOOST_REQUIRE(!gwv.IsOnRoad(pt));
     // BQ should be restored

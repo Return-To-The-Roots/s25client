@@ -30,8 +30,7 @@ class MouseCoords
 public:
     MouseCoords() : x(0), y(0), ldown(false), rdown(false), dbl_click(false) {}
     MouseCoords(int x, int y, bool ldown, bool rdown, const bool dbl_click) : x(x), y(y), ldown(ldown), rdown(rdown), dbl_click(dbl_click)
-    {
-    }
+    {}
 
     int x;          /// xKoordinate
     int y;          /// yKoordinate

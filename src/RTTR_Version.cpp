@@ -19,7 +19,7 @@
 #include "RTTR_Version.h"
 #include <cstring>
 
-const char* RTTR_Version::GetTitle()
+std::string RTTR_Version::GetTitle()
 {
     static char title[256];
     std::memset(title, 0, 256);
@@ -27,7 +27,7 @@ const char* RTTR_Version::GetTitle()
     return title;
 }
 
-const char* RTTR_Version::GetVersion()
+std::string RTTR_Version::GetVersionDate()
 {
     static char version[256];
     std::memset(version, 0, 256);
@@ -35,7 +35,7 @@ const char* RTTR_Version::GetVersion()
     return version;
 }
 
-const char* RTTR_Version::GetRevision()
+std::string RTTR_Version::GetRevision()
 {
     static char revision[256];
     std::memset(revision, 0, 256);
@@ -43,7 +43,7 @@ const char* RTTR_Version::GetRevision()
     return revision;
 }
 
-const char* RTTR_Version::GetShortRevision()
+std::string RTTR_Version::GetShortRevision()
 {
     static char revision[8];
     std::memset(revision, 0, 8);
@@ -51,11 +51,16 @@ const char* RTTR_Version::GetShortRevision()
     return revision;
 }
 
-const char* RTTR_Version::GetYear()
+std::string RTTR_Version::GetYear()
 {
     // nasty but works, if versioning principle changes, we should make it use date function
     static char year[5];
     std::memset(year, 0, 5);
     std::strncpy(year, WINDOW_VERSION, 4);
     return year;
+}
+
+std::string RTTR_Version::GetReadableVersion()
+{
+    return "v" + GetVersionDate() + " - " + GetShortRevision();
 }

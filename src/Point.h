@@ -40,8 +40,7 @@ struct Point
     BOOST_CONSTEXPR Point(const Point& other) : x(other.x), y(other.y) {}
     template<typename U>
     BOOST_CONSTEXPR explicit Point(const Point<U>& pt) : x(static_cast<T>(pt.x)), y(static_cast<T>(pt.y))
-    {
-    }
+    {}
 
     static BOOST_CONSTEXPR Point Invalid();
     /// Create a new point with all coordinates set to value

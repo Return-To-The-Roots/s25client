@@ -27,13 +27,11 @@
 
 SavedFile::SavedFile() : save_time(0)
 {
-    const char* rev = RTTR_Version::GetRevision();
-    std::copy(rev, rev + revision.size(), revision.begin());
+    const std::string rev = RTTR_Version::GetRevision();
+    std::copy(rev.begin(), rev.begin() + revision.size(), revision.begin());
 }
 
-SavedFile::~SavedFile()
-{
-}
+SavedFile::~SavedFile() {}
 
 void SavedFile::WriteFileHeader(BinaryFile& file)
 {

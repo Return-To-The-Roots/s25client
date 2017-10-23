@@ -21,6 +21,7 @@
 #include "mapGenerator/MapStyle.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapCoordinates.h"
+#include <string>
 
 /**
  * Settings used for map generation.
@@ -30,8 +31,11 @@ struct MapSettings
     MapSettings()
         : players(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), minPlayerRadius(0.31),
           maxPlayerRadius(0.51), type(LT_GREENLAND), style(MapStyle::Random)
-    {
-    }
+    {}
+
+    void Validate();
+
+    std::string name, author;
 
     /**
      * Number of players.

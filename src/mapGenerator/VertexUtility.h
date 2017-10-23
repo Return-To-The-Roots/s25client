@@ -40,7 +40,7 @@ public:
      * @param size of the map (MUST be of the power of 2)
      * @return the index of the vertex
      */
-    static int GetIndexOf(const Position& p, const MapExtent& size);
+    static int GetIndexOf(Position p, const MapExtent& size);
 
     /**
      * Computes indices of neighboring vertices within the specified radius around the position.

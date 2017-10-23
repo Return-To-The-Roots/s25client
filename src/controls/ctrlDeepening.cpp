@@ -20,8 +20,7 @@
 
 ctrlDeepening::ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc)
     : Window(parent, id, pos, size), tc(tc)
-{
-}
+{}
 
 /**
  *  zeichnet das Fenster.

@@ -35,8 +35,7 @@ struct RoadNote
 
     RoadNote(Type type, unsigned player, const MapPoint& pos, const std::vector<Direction>& route)
         : type(type), player(player), pos(pos), route(route)
-    {
-    }
+    {}
 
     const Type type;
     const unsigned player;

@@ -61,9 +61,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
     Register(lua);
 }
 
-LuaInterfaceBase::~LuaInterfaceBase()
-{
-}
+LuaInterfaceBase::~LuaInterfaceBase() {}
 
 void LuaInterfaceBase::Register(kaguya::State& state)
 {

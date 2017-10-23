@@ -73,8 +73,6 @@ public:
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
     void* GetMapPointer() const;
 
-    unsigned short GetScreenWidth() const;
-    unsigned short GetScreenHeight() const;
     Extent GetScreenSize() const;
     bool IsFullscreen() const;
 

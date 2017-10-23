@@ -53,9 +53,7 @@ DRIVERDLLAPI const char* GetDriverName(void)
  *  Klasse für den SDL-Audiotreiber.
  */
 
-AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255)
-{
-}
+AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effects_volume(255), master_music_volume(255) {}
 
 AudioSDL::~AudioSDL()
 {

@@ -64,8 +64,7 @@ void nofWarehouseWorker::Serialize_nofWarehouseWorker(SerializedGameData& sgd) c
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GOT_WARE)), shouldBringWareIn(sgd.PopBool()), fat(sgd.PopBool())
-{
-}
+{}
 
 void nofWarehouseWorker::Draw(DrawPoint drawPt)
 {
@@ -181,10 +180,6 @@ void nofWarehouseWorker::LooseWare()
     }
 }
 
-void nofWarehouseWorker::HandleDerivedEvent(const unsigned /*id*/)
-{
-}
+void nofWarehouseWorker::HandleDerivedEvent(const unsigned /*id*/) {}
 
-void nofWarehouseWorker::CarryWare(Ware* /*ware*/)
-{
-}
+void nofWarehouseWorker::CarryWare(Ware* /*ware*/) {}

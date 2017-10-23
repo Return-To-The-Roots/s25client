@@ -105,21 +105,21 @@ private:
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
     void AnnounceStatusChange() override;
 
-    void OnGameMessage(const GameMessage_Pong& msg) override;
-    void OnGameMessage(const GameMessage_Server_Type& msg) override;
-    void OnGameMessage(const GameMessage_Server_Password& msg) override;
-    void OnGameMessage(const GameMessage_Server_Chat& msg) override;
-    void OnGameMessage(const GameMessage_System_Chat& msg) override;
-    void OnGameMessage(const GameMessage_Player_Name& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_Nation& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_Team& msg) override;
-    void OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
-    void OnGameMessage(const GameMessage_Player_Ready& msg) override;
-    void OnGameMessage(const GameMessage_Player_Swap& msg) override;
-    void OnGameMessage(const GameMessage_Map_Checksum& msg) override;
-    void OnGameMessage(const GameMessage_GameCommand& msg) override;
-    void OnGameMessage(const GameMessage_Server_Speed& msg) override;
-    void OnGameMessage(const GameMessage_SendAsyncLog& msg) override;
+    bool OnGameMessage(const GameMessage_Pong& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Type& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Password& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_System_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Name& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_Nation& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_Team& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool OnGameMessage(const GameMessage_Map_Checksum& msg) override;
+    bool OnGameMessage(const GameMessage_GameCommand& msg) override;
+    bool OnGameMessage(const GameMessage_Server_Speed& msg) override;
+    bool OnGameMessage(const GameMessage_SendAsyncLog& msg) override;
 
     /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
     /// Sends a notification to all players if the color was changed

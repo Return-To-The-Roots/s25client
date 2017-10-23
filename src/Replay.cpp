@@ -36,9 +36,7 @@ uint16_t Replay::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : nwf_length(0), random_init(0), lastGF_(0), last_gf_file_pos(0), gf_file_pos(0)
-{
-}
+Replay::Replay() : nwf_length(0), random_init(0), lastGF_(0), last_gf_file_pos(0), gf_file_pos(0) {}
 
 Replay::~Replay()
 {

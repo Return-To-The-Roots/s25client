@@ -80,9 +80,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     }
 }
 
-noBaseBuilding::~noBaseBuilding()
-{
-}
+noBaseBuilding::~noBaseBuilding() {}
 
 void noBaseBuilding::Destroy_noBaseBuilding()
 {
@@ -166,8 +164,7 @@ void noBaseBuilding::Serialize_noBaseBuilding(SerializedGameData& sgd) const
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), bldType_(BuildingType(sgd.PopUnsignedChar())), nation(Nation(sgd.PopUnsignedChar())),
       door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
-{
-}
+{}
 
 int noBaseBuilding::GetDoorPointX()
 {

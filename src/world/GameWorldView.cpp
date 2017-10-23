@@ -51,9 +51,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, 
     MoveTo(0, 0);
 }
 
-GameWorldView::~GameWorldView()
-{
-}
+GameWorldView::~GameWorldView() {}
 
 const GameWorldBase& GameWorldView::GetWorld() const
 {
@@ -119,7 +117,7 @@ struct ObjectBetweenLines
     ObjectBetweenLines(noBase* obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
 };
 
-void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, const MapPoint selected, unsigned* water)
+void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
 {
     SetNextZoomFactor();
 
@@ -127,7 +125,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
     mousePos -= Point<int>(pos);
 
-    glScissor(pos.x, VIDEODRIVER.GetScreenHeight() - pos.y - size_.y, size_.x, size_.y);
+    glScissor(pos.x, VIDEODRIVER.GetScreenSize().y - pos.y - size_.y, size_.x, size_.y);
     if(zoomFactor_ != 1.f)
     {
         glMatrixMode(GL_PROJECTION);
@@ -161,7 +159,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
             const MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
             DrawPoint curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
-            const Point<int> mouseDist = mousePos - curPos;
+            Point<int> mouseDist = mousePos - curPos;
+            mouseDist *= mouseDist;
             if(std::abs(mouseDist.x) + std::abs(mouseDist.y) < shortestDistToMouse)
             {
                 selPt = curPt;
@@ -201,7 +200,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    DrawGUI(rb, terrainRenderer, draw_selected, selected);
+    DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Umherfliegende Katapultsteine zeichnen
     for(std::list<CatapultStone*>::const_iterator it = GetWorld().catapult_stones.begin(); it != GetWorld().catapult_stones.end(); ++it)
@@ -218,11 +217,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const bool draw_selected, con
     }
     glTranslatef(-static_cast<GLfloat>(pos.x) / zoomFactor_, -static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
 
-    glScissor(0, 0, VIDEODRIVER.GetScreenWidth(), VIDEODRIVER.GetScreenWidth());
+    glScissor(0, 0, VIDEODRIVER.GetScreenSize().x, VIDEODRIVER.GetScreenSize().y);
 }
 
-void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const bool draw_selected,
-                            const MapPoint& selectedPt)
+void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
     MapPoint road_points[6];
@@ -248,7 +246,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             Point<int> curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
             /// Current point indicated by Mouse
-            if(selPt == curPt)
+            if(drawMouse && selPt == curPt)
             {
                 // Mauszeiger am boden
                 unsigned mid = 22;
@@ -270,7 +268,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // Currently selected point
-            if(draw_selected && selectedPt == curPt)
+            if(selectedPt == curPt)
                 LOADER.GetMapImageN(20)->DrawFull(curPos);
 
             // Wegbauzeug

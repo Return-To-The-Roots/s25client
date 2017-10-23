@@ -15,8 +15,7 @@ public:
     AddonInexhaustibleFish()
         : AddonBool(AddonId::INEXHAUSTIBLE_FISH, ADDONGROUP_ECONOMY, _("Inexhaustible Fish"),
                     _("Deactivates reduction of fish population."), 0)
-    {
-    }
+    {}
 };
 
 #endif

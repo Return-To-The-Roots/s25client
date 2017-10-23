@@ -119,7 +119,10 @@ const boost::array<const char*, BUILDING_TYPES_COUNT> BUILDING_HELP_STRINGS = {{
                "not train and improve their "
                "skills."),
   // 4x Nothing
-  "", "", "", "",
+  "",
+  "",
+  "",
+  "",
   // Fortress
   gettext_noop("The defensive capabilities and "
                "size of the fortress are "

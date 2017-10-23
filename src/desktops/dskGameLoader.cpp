@@ -58,6 +58,8 @@ dskGameLoader::dskGameLoader(GameWorldBase& world)
 dskGameLoader::~dskGameLoader()
 {
     GAMEMANAGER.SetCursor();
+    LOBBYCLIENT.RemoveInterface(this);
+    GAMECLIENT.RemoveInterface(this);
 }
 
 void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)

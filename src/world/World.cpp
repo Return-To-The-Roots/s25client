@@ -31,9 +31,7 @@
 #include "gameData/TerrainData.h"
 #include <set>
 
-World::World() : lt(LT_GREENLAND), noNodeObj(NULL)
-{
-}
+World::World() : lt(LT_GREENLAND), noNodeObj(NULL) {}
 
 World::~World()
 {

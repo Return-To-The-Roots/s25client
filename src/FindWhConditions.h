@@ -45,8 +45,7 @@ struct HasWareAndFigure : protected HasMinWares, protected HasFigure
 {
     HasWareAndFigure(const GoodType good, const Job job, const bool recruitingAllowed)
         : HasMinWares(good, 1), HasFigure(job, recruitingAllowed)
-    {
-    }
+    {}
     bool operator()(const nobBaseWarehouse& wh) const;
 };
 

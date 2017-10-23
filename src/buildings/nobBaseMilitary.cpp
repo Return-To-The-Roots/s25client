@@ -33,8 +33,7 @@
 
 nobBaseMilitary::nobBaseMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
     : noBuilding(type, pos, player, nation), leaving_event(0), go_out(false), defender_(0)
-{
-}
+{}
 
 nobBaseMilitary::~nobBaseMilitary()
 {

@@ -49,8 +49,7 @@
 GameManager::GameManager()
     : frames(0), frame_count(0), framerate(0), frame_time(0), run_time(0), last_time(0), skipgf_last_time(0), skipgf_last_report_gf(0),
       cursor_(CURSOR_HAND), cursor_next(CURSOR_HAND)
-{
-}
+{}
 
 /**
  *  Spiel starten
@@ -68,32 +67,9 @@ bool GameManager::Start()
         return false;
     }
 
-    // Im Vollbildmodus überprüfen, ob Video-Mode überhaupt existiert
-    if(SETTINGS.video.fullscreen) //-V807
-    {
-        std::vector<VideoMode> available_video_modes;
-        VIDEODRIVER.ListVideoModes(available_video_modes);
-
-        bool found = false;
-        for(size_t i = 0; i < available_video_modes.size(); ++i)
-        {
-            if(available_video_modes[i].width == SETTINGS.video.fullscreen_width
-               && available_video_modes[i].height == SETTINGS.video.fullscreen_height)
-                found = true;
-        }
-
-        if(!found && !available_video_modes.empty())
-        {
-            // Nicht gefunden, erste gültige Auflösung nehmen
-            SETTINGS.video.fullscreen_width = available_video_modes[0].width;
-            SETTINGS.video.fullscreen_height = available_video_modes[0].height;
-        }
-    }
-
     // Fenster erstellen
-    if(!VIDEODRIVER.CreateScreen(SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_width : SETTINGS.video.windowed_width,
-                                 SETTINGS.video.fullscreen ? SETTINGS.video.fullscreen_height : SETTINGS.video.windowed_height,
-                                 SETTINGS.video.fullscreen))
+    Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+    if(!VIDEODRIVER.CreateScreen(screenSize.x, screenSize.y, SETTINGS.video.fullscreen))
         return false;
 
     /// Audiodriver laden
@@ -113,6 +89,7 @@ bool GameManager::Start()
     LOG.write("\nStarte das Spiel\n");
     if(!StartMenu())
         return false;
+    return true;
 
     std::string playlist = iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist);
     if(MUSICPLAYER.Load(playlist))
@@ -192,6 +169,7 @@ bool GameManager::Run()
             }
         }
 
+        VIDEODRIVER.ClearScreen();
         WINDOWMANAGER.Draw();
 
         DrawCursor();
@@ -250,7 +228,7 @@ bool GameManager::Run()
         char frame_str[64];
         sprintf(frame_str, "%u fps", framerate);
 
-        SmallFont->Draw(DrawPoint(VIDEODRIVER.GetScreenWidth(), 0), frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
+        SmallFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize().x, 0), frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
 
         // Zeichenpuffer wechseln
         VIDEODRIVER.SwapBuffers();
@@ -298,8 +276,6 @@ bool GameManager::ShowMenu()
     GAMESERVER.Stop();
     SOUNDMANAGER.StopAll();
 
-    GAMECLIENT.SetInterface(NULL);
-
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
         WINDOWMANAGER.Switch(new dskLobby);
@@ -318,7 +294,6 @@ void GameManager::SetCursor(CursorType cursor, bool once)
     cursor_next = cursor;
     if(!once)
         this->cursor_ = cursor;
-    return;
 }
 
 /**
@@ -326,28 +301,15 @@ void GameManager::SetCursor(CursorType cursor, bool once)
  */
 void GameManager::DrawCursor()
 {
-    // Mauszeiger zeichnen
+    unsigned resId;
     switch(cursor_next)
     {
-        case CURSOR_HAND:
-        {
-            if(VIDEODRIVER.IsLeftDown())
-                LOADER.GetImageN("resource", 31)->DrawFull(VIDEODRIVER.GetMousePos());
-            else
-                LOADER.GetImageN("resource", 30)->DrawFull(VIDEODRIVER.GetMousePos());
-        }
-        break;
-        case CURSOR_SCROLL:
-        case CURSOR_MOON:
-        case CURSOR_RM:
-        case CURSOR_RM_PRESSED: { LOADER.GetImageN("resource", cursor_next)->DrawFull(VIDEODRIVER.GetMousePos());
-        }
-        break;
-        case CURSOR_NONE:
-        default: {
-        }
+        case CURSOR_HAND: resId = VIDEODRIVER.IsLeftDown() ? 31 : 30; break;
+        case CURSOR_RM: resId = VIDEODRIVER.IsLeftDown() ? 35 : 34; break;
+        default: resId = cursor_next;
     }
+    if(resId)
+        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
 
     cursor_next = cursor_;
-    return;
 }

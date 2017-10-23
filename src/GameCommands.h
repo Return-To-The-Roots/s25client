@@ -87,8 +87,7 @@ class BuildRoad : public Coords
 protected:
     BuildRoad(const MapPoint pt, const bool boat_road, const std::vector<Direction>& route)
         : Coords(BUILDROAD, pt), boat_road(boat_road), route(route)
-    {
-    }
+    {}
     BuildRoad(Serializer& ser) : Coords(BUILDROAD, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
     {
         for(unsigned i = 0; i < route.size(); ++i)
@@ -193,8 +192,7 @@ class ChangeBuildOrder : public GameCommand
 protected:
     ChangeBuildOrder(const bool useCustomBuildOrder, const BuildOrders& data)
         : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(useCustomBuildOrder), data(data)
-    {
-    }
+    {}
     ChangeBuildOrder(Serializer& ser) : GameCommand(CHANGEBUILDORDER), useCustomBuildOrder(ser.PopBool())
     {
         for(unsigned i = 0; i < data.size(); ++i)
@@ -418,8 +416,7 @@ protected:
 protected:
     BaseAttack(const Type gst, const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
         : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers)
-    {
-    }
+    {}
     BaseAttack(const Type gst, Serializer& ser) : Coords(gst, ser), soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool()) {}
 
 public:
@@ -440,8 +437,7 @@ class Attack : public BaseAttack
 protected:
     Attack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
         : BaseAttack(ATTACK, pt, soldiers_count, strong_soldiers)
-    {
-    }
+    {}
     Attack(Serializer& ser) : BaseAttack(ATTACK, ser) {}
 
 public:
@@ -457,8 +453,7 @@ class SeaAttack : public BaseAttack
 protected:
     SeaAttack(const MapPoint pt, const unsigned soldiers_count, const bool strong_soldiers)
         : BaseAttack(SEAATTACK, pt, soldiers_count, strong_soldiers)
-    {
-    }
+    {}
     SeaAttack(Serializer& ser) : BaseAttack(SEAATTACK, ser) {}
 
 public:
@@ -532,13 +527,11 @@ class SetInventorySetting : public Coords
 protected:
     SetInventorySetting(const MapPoint pt, const bool isJob, const unsigned char type, const InventorySetting state)
         : Coords(SET_INVENTORY_SETTING, pt), isJob(isJob), type(type), state(state)
-    {
-    }
+    {}
     SetInventorySetting(Serializer& ser)
         : Coords(SET_INVENTORY_SETTING, ser), isJob(ser.PopBool()), type(ser.PopUnsignedChar()),
           state(static_cast<InventorySetting>(ser.PopUnsignedChar()))
-    {
-    }
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -565,8 +558,7 @@ class SetAllInventorySettings : public Coords
 protected:
     SetAllInventorySettings(const MapPoint pt, const bool isJob, const std::vector<InventorySetting>& states)
         : Coords(SET_ALL_INVENTORY_SETTINGS, pt), isJob(isJob), states(states)
-    {
-    }
+    {}
     SetAllInventorySettings(Serializer& ser) : Coords(SET_ALL_INVENTORY_SETTINGS, ser), isJob(ser.PopBool())
     {
         const unsigned numStates = (isJob ? JOB_TYPES_COUNT : WARE_TYPES_COUNT);
@@ -601,8 +593,7 @@ class ChangeReserve : public Coords
 
 protected:
     ChangeReserve(const MapPoint pt, const unsigned char rank, const unsigned count) : Coords(CHANGERESERVE, pt), rank(rank), count(count)
-    {
-    }
+    {}
     ChangeReserve(Serializer& ser) : Coords(CHANGERESERVE, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt()) {}
 
 public:
@@ -680,12 +671,10 @@ class SuggestPact : public GameCommand
 protected:
     SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration)
         : GameCommand(SUGGESTPACT), targetPlayer(targetPlayer), pt(pt), duration(duration)
-    {
-    }
+    {}
     SuggestPact(Serializer& ser)
         : GameCommand(SUGGESTPACT), targetPlayer(ser.PopUnsignedChar()), pt(PactType(ser.PopUnsignedChar())), duration(ser.PopUnsignedInt())
-    {
-    }
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -713,12 +702,10 @@ class AcceptPact : public GameCommand
 protected:
     AcceptPact(const unsigned id, const PactType pt, const unsigned char fromPlayer)
         : GameCommand(ACCEPTPACT), id(id), pt(pt), fromPlayer(fromPlayer)
-    {
-    }
+    {}
     AcceptPact(Serializer& ser)
         : GameCommand(ACCEPTPACT), id(ser.PopUnsignedInt()), pt(PactType(ser.PopUnsignedChar())), fromPlayer(ser.PopUnsignedChar())
-    {
-    }
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -821,8 +808,7 @@ protected:
 
     ExpeditionCommand(Serializer& ser)
         : GameCommand(EXPEDITION_COMMAND), action(Action(ser.PopUnsignedChar())), ship_id(ser.PopUnsignedInt())
-    {
-    }
+    {}
 
 public:
     void Serialize(Serializer& ser) const override
@@ -859,8 +845,7 @@ protected:
     }
     TradeOverLand(Serializer& ser)
         : Coords(TRADEOVERLAND, ser), gt(GoodType(ser.PopUnsignedChar())), job(Job(ser.PopUnsignedChar())), count(ser.PopUnsignedInt())
-    {
-    }
+    {}
 
 public:
     void Serialize(Serializer& ser) const override

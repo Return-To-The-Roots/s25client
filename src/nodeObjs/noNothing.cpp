@@ -18,13 +18,9 @@
 #include "defines.h" // IWYU pragma: keep
 #include "noNothing.h"
 
-noNothing::noNothing() : noBase(NOP_NOTHING)
-{
-}
+noNothing::noNothing() : noBase(NOP_NOTHING) {}
 
 /**
  *  An x,y zeichnen.
  */
-void noNothing::Draw(DrawPoint /*drawPt*/)
-{
-}
+void noNothing::Draw(DrawPoint /*drawPt*/) {}

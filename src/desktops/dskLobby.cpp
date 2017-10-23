@@ -82,6 +82,12 @@ dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoW
     GAMECLIENT.SetInterface(this);
 }
 
+dskLobby::~dskLobby()
+{
+    LOBBYCLIENT.RemoveInterface(this);
+    GAMECLIENT.RemoveInterface(this);
+}
+
 void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
 {
     LOBBYCLIENT.SendServerListRequest();
@@ -218,7 +224,10 @@ bool dskLobby::ConnectToSelectedGame()
         if(server.getId() != selection)
             continue;
 
-        if(server.getVersion() == std::string(RTTR_Version::GetVersion()))
+        std::string serverRevision = server.getVersion();
+        if(!serverRevision.empty() && serverRevision[0] == 'v')
+            serverRevision = serverRevision.substr(std::string("v20001011 - ").size());
+        if(serverRevision == RTTR_Version::GetShortRevision())
         {
             iwDirectIPConnect* connect = new iwDirectIPConnect(ServerType::LOBBY);
             connect->Connect(server.getHost(), server.getPort(), false, server.hasPassword());
@@ -262,7 +271,7 @@ void dskLobby::LC_Status_Error(const std::string& error)
  */
 void dskLobby::LC_Connected()
 {
-    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY));
+    WINDOWMANAGER.Switch(new dskHostGame(ServerType::LOBBY, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
 }
 
 /**

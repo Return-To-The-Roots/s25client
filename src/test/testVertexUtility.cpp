@@ -65,41 +65,18 @@ BOOST_FIXTURE_TEST_CASE(GetPosition_ZeroIndex, VertexUtility)
 }
 
 /**
- * Tests the VertexUtility::GetIndexOf method for a negative x-coordinate for the position.
- * The resulting index should be pointing to a valid entry inside of the bounds given by width
- * and height.
- */
-BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePositionX, VertexUtility)
-{
-    const MapExtent size(4, 5);
-    const int index = VertexUtility::GetIndexOf(Point<int>(-2 * size.x, 0), size);
-
-    BOOST_REQUIRE(index >= 0 && index < size.x * size.y);
-}
-
-/**
  * Tests the VertexUtility::GetIndexOf method for a negative y-coordinate for the position.
  * The resulting index should be pointing to a valid entry inside of the bounds given by width
  * and height.
  */
-BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePositionY, VertexUtility)
+BOOST_FIXTURE_TEST_CASE(GetIndexOf_NegativePosition, VertexUtility)
 {
-    const MapExtent size(4, 5);
-    const int index = VertexUtility::GetIndexOf(Point<int>(0, -2 * size.y), size);
+    const MapExtent size(64, 60);
 
-    BOOST_REQUIRE(index >= 0 && index < size.x * size.y);
-}
-
-/**
- * Tests the VertexUtility::GetIndexOf method for a position outside of the bounds given by
- * width and height.
- */
-BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
-{
-    const MapExtent size(4, 5);
-    const int index = VertexUtility::GetIndexOf(Point<int>(2 * size), size);
-
-    BOOST_REQUIRE(index >= 0 && index < size.x * size.y);
+    RTTR_FOREACH_PT(Position, size)
+    {
+        BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(pt - size, size), pt.y * size.x + pt.x);
+    }
 }
 
 /**
@@ -108,11 +85,24 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetIndexOf_InsideOfBounds, VertexUtility)
 {
-    const MapExtent size(64, 64);
+    const MapExtent size(64, 60);
 
     RTTR_FOREACH_PT(Position, size)
     {
         BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(pt, size), pt.y * size.x + pt.x);
+    }
+}
+
+/**
+ * Tests the VertexUtility::GetIndexOf method for a position outside of the bounds given by
+ * width and height.
+ */
+BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
+{
+    const MapExtent size(64, 60);
+    RTTR_FOREACH_PT(Position, size)
+    {
+        BOOST_REQUIRE_EQUAL(VertexUtility::GetIndexOf(pt + size, size), pt.y * size.x + pt.x);
     }
 }
 

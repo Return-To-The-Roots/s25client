@@ -20,8 +20,7 @@
 
 ctrlColorDeepening::ctrlColorDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc, unsigned fillColor)
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseColor(fillColor)
-{
-}
+{}
 
 void ctrlColorDeepening::DrawContent() const
 {

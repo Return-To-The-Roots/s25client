@@ -102,7 +102,7 @@ enum
 dskGameInterface::dskGameInterface(GameWorldBase& world)
     : Desktop(NULL), gameClient(GAMECLIENT), worldViewer(gameClient.GetPlayerId(), world),
       gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
-      roadwindow(NULL), selected(0, 0), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
+      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -167,21 +167,29 @@ dskGameInterface::~dskGameInterface()
 {
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
+    gameClient.RemoveInterface(this);
+    LOBBYCLIENT.RemoveInterface(this);
 }
 
 void dskGameInterface::SetActive(bool activate)
 {
+    if(activate == IsActive())
+        return;
     Desktop::SetActive(activate);
     if(activate && gameClient.GetState() == GameClient::CS_LOADING)
     {
         // Wir sind nun ingame
         gameClient.RealStart();
     }
+    if(!activate)
+    {
+        isScrolling = false;
+        GAMEMANAGER.SetCursor(CURSOR_HAND);
+    } else if(road.mode != RM_DISABLED)
+        GAMEMANAGER.SetCursor(CURSOR_RM);
 }
 
-void dskGameInterface::SettingsChanged()
-{
-}
+void dskGameInterface::SettingsChanged() {}
 
 void dskGameInterface::Resize(const Extent& newSize)
 {
@@ -296,23 +304,11 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Replaydateianzeige in der linken unteren Ecke
     if(gameClient.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenHeight()), gameClient.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), gameClient.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
                          0xFFFFFF00);
 
-    // Mauszeiger
-    if(road.mode != RM_DISABLED)
-    {
-        if(VIDEODRIVER.IsLeftDown())
-            GAMEMANAGER.SetCursor(CURSOR_RM_PRESSED, /*once*/ true);
-        else
-            GAMEMANAGER.SetCursor(CURSOR_RM, /*once*/ true);
-    } else if(VIDEODRIVER.IsRightDown())
-    {
-        GAMEMANAGER.SetCursor(CURSOR_SCROLL, /*once*/ true);
-    }
-
     // Laggende Spieler anzeigen in Form von Schnecken
-    DrawPoint snailPos(VIDEODRIVER.GetScreenWidth() - 70, 35);
+    DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
     for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
     {
         const GamePlayer& player = world.GetPlayer(i);
@@ -322,7 +318,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Show icons in the upper right corner of the game interface
-    DrawPoint iconPos(VIDEODRIVER.GetScreenWidth() - 56, 32);
+    DrawPoint iconPos(VIDEODRIVER.GetScreenSize().x - 56, 32);
 
     /*
     // Draw cheating indicator icon (WINTER) - Single Player only!
@@ -372,8 +368,8 @@ void dskGameInterface::Msg_PaintAfter()
 
 bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
 {
-    DrawPoint btOrig(VIDEODRIVER.GetScreenWidth() / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
-                     VIDEODRIVER.GetScreenHeight() - LOADER.GetImageN("resource", 29)->getHeight() + 4);
+    DrawPoint btOrig(VIDEODRIVER.GetScreenSize().x / 2 - LOADER.GetImageN("resource", 29)->getWidth() / 2 + 44,
+                     VIDEODRIVER.GetScreenSize().y - LOADER.GetImageN("resource", 29)->getHeight() + 4);
     Extent btSize = Extent(37, 32) * 4u;
     if(IsPointInRect(mc.GetPos(), Rect(btOrig, btSize)))
         return false;
@@ -570,8 +566,6 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         VIDEODRIVER.SetMousePos(mc.GetPos());
 
         ShowActionWindow(action_tabs, cSel, mc.GetPos(), enable_military_buildings);
-
-        selected = cSel;
     }
 
     return true;
@@ -605,12 +599,14 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
     startScrollPt = Point<int>(mc.x, mc.y);
     isScrolling = true;
+    GAMEMANAGER.SetCursor(CURSOR_SCROLL);
     return false;
 }
 
 bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
 {
     isScrolling = false;
+    GAMEMANAGER.SetCursor(road.mode == RM_DISABLED ? CURSOR_HAND : CURSOR_RM);
     return false;
 }
 
@@ -839,7 +835,9 @@ void dskGameInterface::Run()
     noTree::ResetDrawCounter();
 
     unsigned water_percent;
-    gwv.Draw(road, actionwindow != NULL, selected, &water_percent);
+    // Draw mouse only if not on window
+    bool drawMouse = WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()) == NULL;
+    gwv.Draw(road, actionwindow != NULL ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse, &water_percent);
 
     // Evtl Meeresrauschen-Sounds abspieln
     SOUNDMANAGER.PlayOceanBrawling(water_percent);
@@ -854,21 +852,25 @@ void dskGameInterface::Run()
     messenger.Draw();
 }
 
-void dskGameInterface::GI_SetRoadBuildMode(const RoadBuildMode rm)
+void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad)
 {
     // Im Replay und in der Pause keine Straßen bauen
     if(gameClient.IsReplayModeOn() || gameClient.IsPaused())
         return;
 
-    road.mode = rm;
-    if(rm == RM_DISABLED)
-        worldViewer.RemoveVisualRoad(road.start, road.route);
-    else
-    {
-        road.route.clear();
-        RTTR_Assert(selected.x < GetSize().x && selected.y < GetSize().y);
-        road.start = road.point = selected;
-    }
+    road.mode = waterRoad ? RM_BOAT : RM_NORMAL;
+    road.route.clear();
+    road.start = road.point = startPt;
+    GAMEMANAGER.SetCursor(CURSOR_RM);
+}
+
+void dskGameInterface::GI_CancelRoadBuilding()
+{
+    if(road.mode == RM_DISABLED)
+        return;
+    road.mode = RM_DISABLED;
+    worldViewer.RemoveVisualRoad(road.start, road.route);
+    GAMEMANAGER.SetCursor(isScrolling ? CURSOR_SCROLL : CURSOR_RM);
 }
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
@@ -975,15 +977,11 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     WINDOWMANAGER.Show(actionwindow, true);
 }
 
-void dskGameInterface::SetSelectedMapPoint(const MapPoint pt)
-{
-    selected = pt;
-}
-
 void dskGameInterface::GI_BuildRoad()
 {
     gameClient.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
     road.mode = RM_DISABLED;
+    GAMEMANAGER.SetCursor(CURSOR_HAND);
 }
 
 void dskGameInterface::GI_WindowClosed(Window* wnd)
@@ -1002,8 +1000,7 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     // Im Wegbaumodus und haben wir von hier eine Flagge gebaut?
     if(road.mode != RM_DISABLED && road.start == pt)
     {
-        // Wegbau abbrechen
-        GI_SetRoadBuildMode(RM_DISABLED);
+        GI_CancelRoadBuilding();
     }
 
     // Evtl Actionfenster schließen, da sich das ja auch auf diese Flagge bezieht
@@ -1066,16 +1063,13 @@ void dskGameInterface::CI_GamePaused()
     /// Straßenbau ggf. abbrechen, wenn aktiviert
     if(road.mode != RM_DISABLED)
     {
-        road.mode = RM_DISABLED;
         // Fenster schließen
         if(roadwindow)
         {
-            // WINDOWMANAGER.Close(roadwindow);
             roadwindow->Close();
-            roadwindow = 0;
+            roadwindow = NULL;
         }
-        // Weg zurückbauen
-        this->DemolishRoad(1);
+        GI_CancelRoadBuilding();
     }
 }
 

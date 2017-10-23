@@ -33,8 +33,7 @@ class RoadSegment;
 
 nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingSite* building_site)
     : noFigure(JOB_PLANER, pos, player, building_site), state(STATE_FIGUREWORK), building_site(building_site), pd(PD_NOTWORKING)
-{
-}
+{}
 
 void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
 {
@@ -48,8 +47,7 @@ void nofPlaner::Serialize_nofPlaner(SerializedGameData& sgd) const
 nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), state(PlanerState(sgd.PopUnsignedChar())), building_site(sgd.PopObject<noBuildingSite>(GOT_BUILDINGSITE)),
       pd(PlaningDir(sgd.PopUnsignedChar()))
-{
-}
+{}
 
 void nofPlaner::GoalReached()
 {

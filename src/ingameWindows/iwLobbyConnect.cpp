@@ -88,7 +88,7 @@ iwLobbyConnect::iwLobbyConnect()
 
     AddText(ID_txtStatus, DrawPoint(250, 195), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
-    LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetVersion());
+    LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetReadableVersion());
     LOBBYCLIENT.SetInterface(this);
 }
 
@@ -98,11 +98,9 @@ iwLobbyConnect::~iwLobbyConnect()
     std::string user, pass, email;
     ReadFromEditAndSaveLobbyData(user, pass, email);
 
+    LOBBYCLIENT.RemoveInterface(this);
     if(!LOBBYCLIENT.IsLoggedIn())
-    {
         LOBBYCLIENT.Stop();
-        LOBBYCLIENT.SetInterface(NULL);
-    }
 }
 
 /**
