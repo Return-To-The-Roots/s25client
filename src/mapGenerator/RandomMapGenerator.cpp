@@ -20,7 +20,7 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "mapGenerator/VertexUtility.h"
-
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
@@ -32,29 +32,17 @@ RandomMapGenerator::RandomMapGenerator(RandomConfig& config) : config(config) {}
 
 unsigned RandomMapGenerator::GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
 {
-    unsigned maxHeight = 0;
-    for(unsigned i = 0; i < textures.size(); i++)
+    for(int i = textures.size() - 1; i >= 0; --i)
     {
         if(textures[i] == terrain)
-        {
-            maxHeight = i;
-        }
+            return i;
     }
-
-    return maxHeight;
+    return textures.size();
 }
 
 unsigned RandomMapGenerator::GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures)
 {
-    for(unsigned i = 0; i < textures.size(); i++)
-    {
-        if(textures[i] == terrain)
-        {
-            return i;
-        }
-    }
-
-    return textures.size();
+    return std::find(textures.begin(), textures.end(), terrain) - textures.begin();
 }
 
 void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
@@ -143,52 +131,43 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
 
     ObjectGenerator objGen(config);
 
-    for(int x = 0; x < map.size.x; x++)
+    RTTR_FOREACH_PT(Position, map.size)
     {
-        for(int y = 0; y < map.size.y; y++)
+        const int index = VertexUtility::GetIndexOf(pt, map.size);
+        const int level = map.z[index];
+
+        // create texture for current height value
+        ObjectGenerator::CreateTexture(map, index, textures[level]);
+
+        // post-processing of texture (add animals, adapt height, ...)
+        switch(textures[level])
         {
-            const int index = VertexUtility::GetIndexOf(Position(x, y), map.size);
-            const int level = map.z[index];
+            case TT_WATER:
+                map.z[index] = GetMaxTerrainHeight(TT_WATER, textures);
+                map.animal[index] = objGen.CreateDuck(3);
+                break;
+            case TT_MEADOW1: map.animal[index] = objGen.CreateRandomForestAnimal(4); break;
+            case TT_MEADOW_FLOWERS: map.animal[index] = objGen.CreateSheep(4); break;
+            default: break;
+        }
 
-            // create texture for current height value
-            ObjectGenerator::CreateTexture(map, index, textures[level]);
+        double distanceToPlayer = (double)(map.size.x + map.size.y);
 
-            // post-processing of texture (add animals, adapt height, ...)
-            switch(textures[level])
+        for(int i = 0; i < players; i++)
+        {
+            distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.positions[i]), map.size));
+        }
+
+        for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
+        {
+            if(it->IsInArea(pt, distanceToPlayer, map.size))
             {
-                case TT_WATER:
-                    map.z[index] = GetMaxTerrainHeight(TT_WATER, textures);
-                    map.animal[index] = objGen.CreateDuck(3);
-                    map.resource[index] = libsiedler2::R_Fish;
-                    break;
-                case TT_MEADOW1: map.animal[index] = objGen.CreateRandomForestAnimal(4); break;
-                case TT_MEADOW_FLOWERS: map.animal[index] = objGen.CreateSheep(4); break;
-                case TT_MOUNTAIN1:
-                    map.resource[index] =
-                      objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal, settings.ratioGranite);
-                    break;
-                default: break;
-            }
-
-            double distanceToPlayer = (double)(map.size.x + map.size.y);
-            Position tile(x, y);
-
-            for(int i = 0; i < players; i++)
-            {
-                distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.positions[i]), map.size));
-            }
-
-            for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
-            {
-                if(it->IsInArea(tile, distanceToPlayer, map.size))
+                if(static_cast<unsigned>(config.Rand(0, 100)) < (*it).likelyhoodTree)
                 {
-                    if(static_cast<unsigned>(config.Rand(0, 100)) < (*it).likelyhoodTree)
-                    {
-                        helper.SetTree(map, objGen, tile);
-                    } else if(static_cast<unsigned>(config.Rand(0, 100)) < (*it).likelyhoodStone)
-                    {
-                        helper.SetStone(map, objGen, tile);
-                    }
+                    helper.SetTree(map, objGen, pt);
+                } else if(static_cast<unsigned>(config.Rand(0, 100)) < (*it).likelyhoodStone)
+                {
+                    helper.SetStone(map, objGen, pt);
                 }
             }
         }
@@ -239,6 +218,31 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
     }
 }
 
+void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
+{
+    ObjectGenerator objGen(config);
+
+    RTTR_FOREACH_PT(Position, map.size)
+    {
+        const int index = VertexUtility::GetIndexOf(pt, map.size);
+        TerrainType tRsu = TerrainData::MapIdx2Terrain(map.textureRsu[index]);
+        TerrainType tLsd = TerrainData::MapIdx2Terrain(map.textureLsd[index]);
+
+        uint8_t res = libsiedler2::R_None;
+
+        if(TerrainData::IsWater(tRsu) || TerrainData::IsWater(tLsd))
+        {
+            if(TerrainData::IsWater(tRsu) && TerrainData::IsWater(tLsd))
+                res = libsiedler2::R_Fish;
+        } else if(TerrainData::IsVital(tRsu) && TerrainData::IsVital(tLsd))
+            res = libsiedler2::R_Water;
+        else if(TerrainData::IsMineable(tRsu) && TerrainData::IsMineable(tLsd))
+            res = objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal, settings.ratioGranite);
+
+        map.resource[index] = res;
+    }
+}
+
 Map* RandomMapGenerator::Create(MapSettings settings)
 {
     settings.Validate();
@@ -253,9 +257,8 @@ Map* RandomMapGenerator::Create(MapSettings settings)
     PlacePlayerResources(settings, *map);
     CreateHills(settings, *map);
     FillRemainingTerrain(settings, *map);
-
-    // post-processing
     helper.Smooth(*map);
+    SetResources(settings, *map);
 
     return map;
 }

@@ -98,6 +98,9 @@ private:
      * @param map map to modify
      */
     void FillRemainingTerrain(const MapSettings& settings, Map& map);
+
+    /// Set the resources (water, fish, coal...) for the map
+    void SetResources(const MapSettings& settings, Map& map);
 };
 
 #endif // RandomMapGenerator_h__

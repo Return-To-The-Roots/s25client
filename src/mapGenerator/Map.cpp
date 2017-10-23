@@ -16,6 +16,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
+#include "libsiedler2/enumTypes.h"
 
 Map::Map() : size(0, 0) {}
 
@@ -29,7 +30,7 @@ Map::Map(const MapExtent& size, const std::string& name, const std::string& auth
     textureLsd.resize(numNodes, 0x08);
     build.resize(numNodes, 0x04);
     shading.resize(numNodes, 0x40);
-    resource.resize(numNodes, 0x21);
+    resource.resize(numNodes, libsiedler2::R_Water);
     road.resize(numNodes, 0x00);
     objectType.resize(numNodes, 0x00);
     objectInfo.resize(numNodes, 0x00);
