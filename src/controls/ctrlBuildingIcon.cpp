@@ -34,9 +34,6 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, cons
  */
 void ctrlBuildingIcon::Draw_()
 {
-    // Prüfen, ob bei gehighlighteten Button die Maus auch noch über dem Button ist
-    TestMouseOver();
-
     if(state == BUTTON_HOVER || state == BUTTON_PRESSED)
         LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
     glArchivItem_Bitmap* image;

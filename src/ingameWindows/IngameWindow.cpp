@@ -190,8 +190,10 @@ void IngameWindow::Draw_()
 {
     if(isModal_)
     {
-        SetActive(true);
-        Close(false);
+        if(!IsActive())
+            SetActive(true);
+        if(closeme)
+            Close(false);
     }
 
     // Linkes oberes Teil
