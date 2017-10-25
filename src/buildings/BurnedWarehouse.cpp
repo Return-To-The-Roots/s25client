@@ -50,7 +50,7 @@ BurnedWarehouse::~BurnedWarehouse() {}
 
 void BurnedWarehouse::Destroy()
 {
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     noCoordBase::Destroy();
 }
 
@@ -125,7 +125,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
                 // Job erzeugen
                 nofPassiveWorker* figure = new nofPassiveWorker(Job(iJob), pos, player, NULL);
                 // Auf die Map setzen
-                gwg->AddFigure(figure, pos);
+                gwg->AddFigure(pos, figure);
                 // Losrumirren in die jeweilige Richtung
                 figure->StartWandering(GetObjId());
                 figure->StartWalking(dir);

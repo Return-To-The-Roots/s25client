@@ -95,8 +95,8 @@ public:
     /// Return the neighboring node
     const MapNode& GetNeighbourNode(const MapPoint pt, Direction dir) const;
 
-    void AddFigure(noBase* fig, const MapPoint pt);
-    void RemoveFigure(noBase* fig, const MapPoint pt);
+    void AddFigure(const MapPoint pt, noBase* fig);
+    void RemoveFigure(const MapPoint pt, noBase* fig);
     /// Return the NO from that point or a "nothing"-object if there is none
     noBase* GetNO(const MapPoint pt);
     /// Return the NO from that point or a "nothing"-object if there is none

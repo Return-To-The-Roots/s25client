@@ -63,7 +63,7 @@ void nofDefender::Walked()
         case STATE_DEFENDING_WALKINGTO:
         {
             // Mit Angreifer den Kampf beginnen
-            gwg->AddFigure(new noFighting(attacker, this), pos);
+            gwg->AddFigure(pos, new noFighting(attacker, this));
             state = STATE_FIGHTING;
             attacker->FightVsDefenderStarted();
         }
@@ -91,7 +91,7 @@ void nofDefender::Walked()
             } else
             {
                 // mich von der Landkarte tilgen
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 nobBaseMilitary* bld = building;
                 // mich zum Gebäude wieder hinzufügen
                 RTTR_Assert(bld->GetDefender() == this); // I should be the defender

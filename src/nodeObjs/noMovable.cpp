@@ -50,9 +50,9 @@ noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
 void noMovable::Walk()
 {
     moving = false;
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     pos = gwg->GetNeighbour(pos, curMoveDir);
-    gwg->AddFigure(this, pos);
+    gwg->AddFigure(pos, this);
 }
 
 void noMovable::FaceDir(Direction newDir)

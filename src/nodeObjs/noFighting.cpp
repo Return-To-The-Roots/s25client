@@ -43,8 +43,8 @@ noFighting::noFighting(nofActiveSoldier* soldier1, nofActiveSoldier* soldier2) :
     player_won = 0xFF;
 
     // Die beiden Soldaten erstmal aus der Liste hauen
-    gwg->RemoveFigure(soldier1, soldier1->GetPos());
-    gwg->RemoveFigure(soldier2, soldier1->GetPos());
+    gwg->RemoveFigure(soldier1->GetPos(), soldier1);
+    gwg->RemoveFigure(soldier1->GetPos(), soldier2);
 
     // Beginn-Event Anmelden (Soldaten gehen auf ihre Seiten)
     current_ev = GetEvMgr().AddEvent(this, 15);
@@ -244,7 +244,7 @@ void noFighting::HandleEvent(const unsigned id)
                         // Soldat Bescheid sagen, dass er stirbt
                         soldiers[1 - turn]->LostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
-                        gwg->AddFigure(soldiers[turn], soldiers[turn]->GetPos());
+                        gwg->AddFigure(soldiers[turn]->GetPos(), soldiers[turn]);
                         soldiers[turn]->WonFighting();
                         soldiers[turn] = NULL;
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
@@ -275,7 +275,7 @@ void noFighting::HandleEvent(const unsigned id)
 
                 // Kampf ist endgültig beendet
                 GetEvMgr().AddToKillList(this);
-                gwg->RemoveFigure(this, pt);
+                gwg->RemoveFigure(pt, this);
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
                 NodalObjectType noType = gwg->GetNO(pt)->GetType();

@@ -122,7 +122,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
             shipPos = world.MakeMapPoint(Point<int>(shipPos) + (Point<int>(shipPos) - Point<int>(harborPos[i])) * 8);
             BOOST_REQUIRE(shipPos.isValid());
             noShip* ship = new noShip(shipPos, i);
-            world.AddFigure(ship, shipPos);
+            world.AddFigure(shipPos, ship);
             world.GetPlayer(i).RegisterShip(ship);
         }
 
@@ -201,7 +201,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
         {
             nofPassiveSoldier* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), bld, bld, rank);
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier->GetJobType(), 1);
-            world.AddFigure(soldier, bldPos);
+            world.AddFigure(bldPos, soldier);
             // Let him "walk" to goal -> Already reached -> Added
             soldier->WalkToGoal();
             BOOST_REQUIRE(soldier->HasNoGoal());

@@ -75,7 +75,7 @@ void nofActiveSoldier::GoalReached()
     building->AddActiveSoldier(this);
 
     // And remove myself from the map
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
 }
 
 void nofActiveSoldier::ReturnHome()
@@ -114,7 +114,7 @@ void nofActiveSoldier::WalkingHome()
         // We're there!
         building->AddActiveSoldier(this);
         // Remove myself from the map
-        gwg->RemoveFigure(this, pos);
+        gwg->RemoveFigure(pos, this);
         return;
     }
     unsigned char dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
@@ -345,7 +345,7 @@ void nofActiveSoldier::MeetingEnemy()
         if(enemy->GetPos() == fightSpot_ && enemy->GetState() == STATE_WAITINGFORFIGHT)
         {
             // Start fighting
-            gwg->AddFigure(new noFighting(enemy, this), pos);
+            gwg->AddFigure(pos, new noFighting(enemy, this));
 
             enemy->FightingStarted();
             FightingStarted();

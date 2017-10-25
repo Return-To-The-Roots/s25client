@@ -76,7 +76,7 @@ void nobBaseMilitary::DestroyBuilding()
     // Soldaten, die noch in der Warteschlange hängen, rausschicken
     for(std::list<noFigure*>::iterator it = leave_house.begin(); it != leave_house.end(); ++it)
     {
-        gwg->AddFigure((*it), pos);
+        gwg->AddFigure(pos, (*it));
 
         if((*it)->DoJobWorks() && dynamic_cast<nofActiveSoldier*>(*it))
             // Wenn er Job-Arbeiten verrichtet, ists ein ActiveSoldier oder TradeDonkey --> dem Soldat muss extra noch Bescheid gesagt

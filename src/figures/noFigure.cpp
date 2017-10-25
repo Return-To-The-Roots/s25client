@@ -162,7 +162,7 @@ void noFigure::ActAtFirst()
             // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst rausgehen!
             if(goal_->GetPos() == pos)
             {
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
                 nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
@@ -319,7 +319,7 @@ void noFigure::WalkToGoal()
             if(fs == FS_GOHOME)
             {
                 // Mann im Lagerhaus angekommen
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
             } else
             {
@@ -369,7 +369,7 @@ void noFigure::WalkToGoal()
                 {
                     // Uns in den Hafen einquartieren
                     cur_rs = NULL; // wir laufen nicht mehr auf einer Straße
-                    gwg->RemoveFigure(this, pos);
+                    gwg->RemoveFigure(pos, this);
                     static_cast<nobHarborBuilding*>(hb)->AddFigureForShip(this, next_harbor);
                 }
             } else
@@ -856,7 +856,7 @@ void noFigure::DrawWalking(DrawPoint drawPt)
 void noFigure::Die()
 {
     // Weg mit mir
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
@@ -882,7 +882,7 @@ void noFigure::RemoveFromInventory()
 void noFigure::DieFailedTrade()
 {
     // Weg mit mir
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))

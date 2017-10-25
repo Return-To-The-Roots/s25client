@@ -157,7 +157,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_width, T_height>
             shipPos.y += 6;
         BOOST_REQUIRE(world.IsSeaPoint(shipPos));
         noShip* ship = new noShip(shipPos, curPlayer);
-        world.AddFigure(ship, ship->GetPos());
+        world.AddFigure(ship->GetPos(), ship);
         player.RegisterShip(ship);
 
         BOOST_REQUIRE_EQUAL(player.GetShipCount(), 1u);
@@ -438,7 +438,7 @@ public:
         MapPoint shipPos = world.MakeMapPoint(hbPos - Position(2, 0));
         BOOST_REQUIRE(world.IsSeaPoint(shipPos));
         noShip* ship = new noShip(shipPos, curPlayer);
-        world.AddFigure(ship, ship->GetPos());
+        world.AddFigure(ship->GetPos(), ship);
         player.RegisterShip(ship);
 
         BOOST_REQUIRE_EQUAL(player.GetShipCount(), 1u);

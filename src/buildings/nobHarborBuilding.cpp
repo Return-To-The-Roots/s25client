@@ -134,7 +134,7 @@ void nobHarborBuilding::DestroyBuilding()
     for(std::list<FigureForShip>::iterator it = figures_for_ships.begin(); it != figures_for_ships.end(); ++it)
     {
         noFigure* figure = it->fig;
-        gwg->AddFigure(figure, pos);
+        gwg->AddFigure(pos, figure);
 
         figure->Abrogate();
         figure->StartWandering();
@@ -145,7 +145,7 @@ void nobHarborBuilding::DestroyBuilding()
     for(std::list<SoldierForShip>::iterator it = soldiers_for_ships.begin(); it != soldiers_for_ships.end(); ++it)
     {
         nofAttacker* soldier = it->attacker;
-        gwg->AddFigure(soldier, pos);
+        gwg->AddFigure(pos, soldier);
 
         soldier->CancelSeaAttack();
         RTTR_Assert(!soldier->GetAttackedGoal());

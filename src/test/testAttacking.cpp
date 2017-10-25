@@ -66,9 +66,11 @@ void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
 void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
 {
     if(helpers::contains(world.GetFigures(obj.GetPos()), &obj))
-        world.RemoveFigure(&obj, obj.GetPos());
+        world.RemoveFigure(obj.GetPos(), &obj);
+    else if(helpers::contains(world.GetFigures(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u)), &obj))
+        world.RemoveFigure(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u), &obj);
     obj.SetPos(world.GetNeighbour(pos, Direction::WEST));
-    world.AddFigure(&obj, obj.GetPos());
+    world.AddFigure(obj.GetPos(), &obj);
     if(obj.IsMoving())
         obj.FaceDir(Direction::EAST);
     else
@@ -126,7 +128,7 @@ struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_
         {
             nofPassiveSoldier* soldier = new nofPassiveSoldier(bldPos, bld->GetPlayer(), bld, bld, rank);
             world.GetPlayer(bld->GetPlayer()).IncreaseInventoryJob(soldier->GetJobType(), 1);
-            world.AddFigure(soldier, bldPos);
+            world.AddFigure(bldPos, soldier);
             // Let him "walk" to goal -> Already reached -> Added and all internal states set correctly
             soldier->WalkToGoal();
             BOOST_REQUIRE(soldier->HasNoGoal());
@@ -556,7 +558,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     // 5. Create new soldier who walks in after the attacker
     nofPassiveSoldier* newSld = new nofPassiveSoldier(milBld1FlagPos, 1, milBld1, milBld1, 0);
     milBld1->GotWorker(newSld->GetJobType(), newSld);
-    world.AddFigure(newSld, milBld1FlagPos);
+    world.AddFigure(milBld1FlagPos, newSld);
     newSld->ActAtFirst();
     // Attacker faster -> Bld taken
     RTTR_EXEC_TILL(30, milBld1->GetPlayer() == 0u);
@@ -610,8 +612,8 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     BOOST_REQUIRE(rs);
     nofCarrier* carrierIn = new nofCarrier(nofCarrier::CT_NORMAL, flagPos, curPlayer, rs, flag);
     nofCarrier* carrierOut = new nofCarrier(nofCarrier::CT_DONKEY, flagPos, curPlayer, rs, flag);
-    world.AddFigure(carrierIn, flagPos);
-    world.AddFigure(carrierOut, flagPos);
+    world.AddFigure(flagPos, carrierIn);
+    world.AddFigure(flagPos, carrierOut);
     rs->setCarrier(0, carrierIn);
     rs->setCarrier(1, carrierOut);
     // Add 2 coins for the bld
@@ -651,7 +653,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     RoadSegment* rsE = flagE->GetRoute(Direction::WEST);
     BOOST_REQUIRE(rsE);
     nofCarrier* carrierInE = new nofCarrier(nofCarrier::CT_NORMAL, flagPosE, curPlayer, rsE, flagE);
-    world.AddFigure(carrierInE, flagPosE);
+    world.AddFigure(flagPosE, carrierInE);
     rsE->setCarrier(0, carrierInE);
     // He also gets 1 coin
     Ware* coin = new Ware(GD_COINS, milBld1, flagE);

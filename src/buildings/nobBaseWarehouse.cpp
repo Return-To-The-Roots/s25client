@@ -103,7 +103,7 @@ void nobBaseWarehouse::DestroyBuilding()
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
-    gwg->AddFigure(new BurnedWarehouse(pos, player, inventory.real.people), pos);
+    gwg->AddFigure(pos, new BurnedWarehouse(pos, player, inventory.real.people));
 
     nobBaseMilitary::DestroyBuilding();
 }
@@ -599,7 +599,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     {
         noFigure* fig = leave_house.front();
 
-        gwg->AddFigure(fig, pos);
+        gwg->AddFigure(pos, fig);
 
         // Init road walking for figures walking on roads
         if(fig->IsWalkingOnRoad())
@@ -636,7 +636,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             // Dann Ware raustragen lassen
             Ware* ware = waiting_wares.front();
             nofWarehouseWorker* worker = new nofWarehouseWorker(pos, player, ware, 0);
-            gwg->AddFigure(worker, pos);
+            gwg->AddFigure(pos, worker);
             inventory.visual.Remove(ConvertShields(ware->type));
             worker->WalkToGoal();
             ware->Carry(GetFlag());

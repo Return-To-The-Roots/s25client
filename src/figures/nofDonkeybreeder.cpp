@@ -98,7 +98,7 @@ void nofDonkeybreeder::WorkFinished()
         road->GotDonkey(donkey);
 
     // Esel absetzen
-    gwg->AddFigure(donkey, pos);
+    gwg->AddFigure(pos, donkey);
 
     // In die neue Welt laufen
     donkey->ActAtFirst();
