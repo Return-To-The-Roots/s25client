@@ -23,6 +23,7 @@
 #include "GamePlayer.h"
 #include "GameServer.h"
 #include "Loader.h"
+#include "MapGeometry.h"
 #include "SoundManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
@@ -175,7 +176,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
             if(visibility == VIS_VISIBLE)
             {
                 DrawObject(curPt, curPos);
-
+                DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), between_lines);
                 DrawFigures(curPt, curPos, between_lines);
 
                 // Construction aid mode
@@ -413,16 +414,44 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
 
 void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines)
 {
-    const std::list<noBase*>& figures = GetWorld().GetNode(pt).figures;
-    for(std::list<noBase*>::const_iterator it = figures.begin(); it != figures.end(); ++it)
+    const std::list<noBase*>& figures = GetWorld().GetFigures(pt);
+    BOOST_FOREACH(noBase* figure, figures)
     {
-        // Bewegt er sich oder ist es ein Schiff?
-        if((*it)->IsMoving() || (*it)->GetGOT() == GOT_SHIP)
-            // Dann nach der gesamten Zeile zeichnen
-            between_lines.push_back(ObjectBetweenLines(*it, curPos));
+        if(figure->IsMoving())
+        {
+            // Drawn from above
+            Direction curMoveDir = static_cast<noMovable*>(figure)->GetCurMoveDir();
+            if(curMoveDir == Direction::NORTHEAST || curMoveDir == Direction::NORTHWEST)
+                continue;
+            // Draw later
+            between_lines.push_back(ObjectBetweenLines(figure, curPos));
+        } else if(figure->GetGOT() == GOT_SHIP)
+            between_lines.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
         else
             // Ansonsten jetzt schon zeichnen
-            (*it)->Draw(curPos);
+            figure->Draw(curPos);
+    }
+}
+
+void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+                                               std::vector<ObjectBetweenLines>& between_lines)
+{
+    // First draw figures moving towards this point from below
+    static const boost::array<Direction, 2> aboveDirs = {{Direction::NORTHEAST, Direction::NORTHWEST}};
+    BOOST_FOREACH(Direction dir, aboveDirs)
+    {
+        // Get figures opposite the current dir and check if they are moving in this dir
+        // Coordinates transform
+        Point<int> curOffset;
+        MapPoint curPt = terrainRenderer.ConvertCoords(GetNeighbour(curPos, dir + 3u), &curOffset);
+        Point<int> figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+
+        const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
+        BOOST_FOREACH(noBase* figure, figures)
+        {
+            if(figure->IsMoving() && static_cast<noMovable*>(figure)->GetCurMoveDir() == dir)
+                between_lines.push_back(ObjectBetweenLines(figure, figPos));
+        }
     }
 }
 

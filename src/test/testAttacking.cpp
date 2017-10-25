@@ -67,8 +67,6 @@ void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
 {
     if(helpers::contains(world.GetFigures(obj.GetPos()), &obj))
         world.RemoveFigure(&obj, obj.GetPos());
-    else if(helpers::contains(world.GetFigures(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u)), &obj))
-        world.RemoveFigure(&obj, world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u));
     obj.SetPos(world.GetNeighbour(pos, Direction::WEST));
     world.AddFigure(&obj, obj.GetPos());
     if(obj.IsMoving())

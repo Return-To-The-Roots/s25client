@@ -93,9 +93,7 @@ void iwSettings::Msg_OptionGroupChange(const unsigned ctrl_id, const int selecti
 {
     switch(ctrl_id)
     {
-        case 3:
-            SETTINGS.video.fullscreen = (selection == 1);
-            break;
+        case 3: SETTINGS.video.fullscreen = (selection == 1); break;
     }
 }
 

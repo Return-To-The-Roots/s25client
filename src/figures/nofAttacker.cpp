@@ -1086,12 +1086,11 @@ void nofAttacker::HomeHarborLost()
 void nofAttacker::CancelAtShip()
 {
     // Alle Figuren durchgehen
-    std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(shipPos);
-    for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
+    BOOST_FOREACH(noBase* figure, gwg->GetFigures(shipPos))
     {
-        if((*it)->GetObjId() == ship_obj_id)
+        if(figure->GetObjId() == ship_obj_id)
         {
-            noShip* ship = static_cast<noShip*>(*it);
+            noShip* ship = static_cast<noShip*>(figure);
             ship->SeaAttackerWishesNoReturn();
             break;
         }
@@ -1129,12 +1128,11 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
     if(pos == shipPos)
     {
         // Alle Figuren durchgehen
-        std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(pos);
-        for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        BOOST_FOREACH(noBase* figure, gwg->GetFigures(pos))
         {
-            if((*it)->GetObjId() == ship_obj_id)
+            if(figure->GetObjId() == ship_obj_id)
             {
-                StartReturnViaShip(static_cast<noShip&>(**it));
+                StartReturnViaShip(static_cast<noShip&>(*figure));
                 return;
             }
         }

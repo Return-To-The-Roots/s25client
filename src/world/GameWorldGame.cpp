@@ -727,18 +727,11 @@ void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
         // Koordinaten um den Punkt herum
         MapPoint nb = GetNeighbour(pt, Direction::fromInt(i));
 
-        // Figuren Bescheid sagen, es können auch auf den Weg gestoppte sein, die müssen auch berücksichtigt
-        // werden, daher die *From-Methode
-        std::vector<noBase*> objects = GetDynamicObjectsFrom(nb);
-
-        // Auch Figuren da, die rumlaufen können?
-        if(!objects.empty())
+        // Figuren Bescheid sagen
+        BOOST_FOREACH(noBase* object, GetFigures(nb))
         {
-            for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
-            {
-                if((*it)->GetType() == NOP_FIGURE)
-                    static_cast<noFigure*>(*it)->NodeFreed(pt);
-            }
+            if(object->GetType() == NOP_FIGURE)
+                static_cast<noFigure*>(object)->NodeFreed(pt);
         }
     }
 }
@@ -896,11 +889,8 @@ void GameWorldGame::AttackViaSea(const unsigned char player_attacker, const MapP
 
 bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
 {
-    /// Objekte sammeln
-    std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
-
     // Figuren durchgehen, bei Kämpfen und wartenden Angreifern sowie anderen wartenden Figuren stoppen!
-    for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
+    BOOST_FOREACH(noBase* object, GetFigures(pt))
     {
         // andere wartende Figuren
         /*
@@ -916,16 +906,16 @@ bool GameWorldGame::IsRoadNodeForFigures(const MapPoint pt)
                 }*/
 
         // Kampf
-        if((*it)->GetGOT() == GOT_FIGHTING)
+        if(object->GetGOT() == GOT_FIGHTING)
         {
-            if(static_cast<noFighting*>(*it)->IsActive())
+            if(static_cast<noFighting*>(object)->IsActive())
                 return false;
         }
 
         //// wartende Angreifer
-        if((*it)->GetGOT() == GOT_NOF_ATTACKER)
+        if(object->GetGOT() == GOT_NOF_ATTACKER)
         {
-            if(static_cast<nofAttacker*>(*it)->IsBlockingRoads())
+            if(static_cast<nofAttacker*>(object)->IsBlockingRoads())
                 return false;
         }
     }
@@ -1122,10 +1112,9 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
 bool GameWorldGame::IsScoutingFigureOnNode(const MapPoint& pt, unsigned player, unsigned distance) const
 {
     BOOST_STATIC_ASSERT_MSG(VISUALRANGE_SCOUT >= VISUALRANGE_SOLDIER, "Visual range changed. Check loop below!");
-    std::vector<noBase*> objects = GetDynamicObjectsFrom(pt);
 
     // Späher/Soldaten in der Nähe prüfen und direkt auf dem Punkt
-    BOOST_FOREACH(noBase* obj, objects)
+    BOOST_FOREACH(noBase* obj, GetFigures(pt))
     {
         const GO_Type got = obj->GetGOT();
         // Check for scout. Note: no need to check for distance as scouts have higher distance than soldiers

@@ -65,9 +65,6 @@ public:
 
     /// Returns the direction in which the object is moving/which it is facing
     Direction GetCurMoveDir() const { return curMoveDir; }
-    /// Return true if the object is moving north which means it actually belongs to the target point
-    /// as it has to be drawn from that point
-    bool IsMovingUpwards() const { return curMoveDir == Direction::NORTHWEST || curMoveDir == Direction::NORTHEAST; }
     /// "Turns" the object in that direction without starting to walk
     void FaceDir(Direction newDir);
     /// In aktueller Richtung ein Stück zurücklegen
@@ -75,7 +72,7 @@ public:
     // Starten zu Laufen, Event anmelden
     void StartMoving(const Direction dir, unsigned gf_length);
     // Interpoliert die Position zwischen zwei Knoten punkten
-    DrawPoint CalcRelative(const DrawPoint& curPt, const DrawPoint& nextPt) const;
+    DrawPoint CalcRelative(DrawPoint curPt, DrawPoint nextPt) const;
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
     DrawPoint CalcWalkingRelative() const;
     // Steht er in der zwischen 2 Wegpunkten?

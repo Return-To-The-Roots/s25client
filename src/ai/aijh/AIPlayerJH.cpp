@@ -1337,10 +1337,9 @@ void AIPlayerJH::HandleExpedition(const noShip* ship)
 
 void AIPlayerJH::HandleExpedition(const MapPoint pt)
 {
-    std::vector<noBase*> objs = gwb.GetDynamicObjectsFrom(pt);
     const noShip* ship = NULL;
 
-    BOOST_FOREACH(const noBase* obj, objs)
+    BOOST_FOREACH(const noBase* obj, gwb.GetFigures(pt))
     {
         if(obj->GetGOT() == GOT_SHIP)
         {

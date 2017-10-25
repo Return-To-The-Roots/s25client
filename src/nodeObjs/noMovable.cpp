@@ -50,18 +50,9 @@ noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
 void noMovable::Walk()
 {
     moving = false;
-
-    if(!IsMovingUpwards())
-    {
-        gwg->RemoveFigure(this, pos);
-
-        pos = gwg->GetNeighbour(pos, curMoveDir);
-
-        gwg->AddFigure(this, pos);
-    } else
-    {
-        pos = gwg->GetNeighbour(pos, curMoveDir);
-    }
+    gwg->RemoveFigure(this, pos);
+    pos = gwg->GetNeighbour(pos, curMoveDir);
+    gwg->AddFigure(this, pos);
 }
 
 void noMovable::FaceDir(Direction newDir)
@@ -125,16 +116,9 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
     current_ev = GetEvMgr().AddEvent(this, gf_length);
     this->curMoveDir = dir;
     moving = true;
-
-    // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
-    if(IsMovingUpwards())
-    {
-        gwg->RemoveFigure(this, pos);
-        gwg->AddFigure(this, gwg->GetNeighbour(pos, dir));
-    }
 }
 
-DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextPt) const
+DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 {
     if(current_ev)
     {
@@ -164,17 +148,31 @@ DrawPoint noMovable::CalcRelative(const DrawPoint& curPt, const DrawPoint& nextP
 
     // We are in that event
     RTTR_Assert(curTimePassed <= duration);
-    // We need to convert to int
-    RTTR_Assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
-    RTTR_Assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
 
-    if(!IsMovingUpwards())
+    // Check for map border crossing
+    const Point<int> mapDrawSize = gwg->GetSize() * Point<int>(TR_W, TR_H);
+    if(std::abs(nextPt.x - curPt.x) >= mapDrawSize.x / 2)
     {
-        return ((nextPt - curPt) * static_cast<int>(curTimePassed)) / static_cast<int>(duration);
-    } else
-    {
-        return ((nextPt - curPt) * static_cast<int>(duration - curTimePassed)) / static_cast<int>(duration);
+        // So we need to get closer to nextPt
+        if(curPt.x > nextPt.x)
+            curPt.x -= mapDrawSize.x;
+        else
+            curPt.x += mapDrawSize.x;
     }
+    if(std::abs(curPt.y - nextPt.y) >= mapDrawSize.y / 2)
+    {
+        if(curPt.y > nextPt.y)
+            curPt.y -= mapDrawSize.y;
+        else
+            curPt.y += mapDrawSize.y;
+    }
+
+    RTTR_Assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
+    int iCurTimePassed = static_cast<int>(curTimePassed);
+    RTTR_Assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
+    int iDuration = static_cast<int>(duration);
+
+    return ((nextPt - curPt) * iCurTimePassed) / iDuration;
 }
 
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
@@ -182,33 +180,6 @@ DrawPoint noMovable::CalcWalkingRelative() const
 {
     Point<int> curPt = gwg->GetNodePos(pos);
     Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));
-
-    // Gehen wir über einen Kartenrand (horizontale Richung?)
-    const int mapWidth = gwg->GetWidth() * TR_W;
-    if(std::abs(curPt.x - nextPt.x) >= mapWidth / 2)
-    {
-        // So we need to get closer to nextPt
-        if(curPt.x > nextPt.x)
-            curPt.x -= mapWidth;
-        else
-            curPt.x += mapWidth;
-    }
-    // Und dasselbe für vertikale Richtung
-    const int mapHeight = gwg->GetHeight() * TR_H;
-    if(std::abs(curPt.y - nextPt.y) >= mapHeight / 2)
-    {
-        if(curPt.y > nextPt.y)
-            curPt.y -= mapHeight;
-        else
-            curPt.y += mapHeight;
-    }
-
-    // Wenn sie hochlaufen, muss es andersrum sein, da die Tiere dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(IsMovingUpwards())
-    {
-        using std::swap;
-        swap(curPt, nextPt);
-    }
 
     return CalcRelative(curPt, nextPt);
 }
@@ -222,21 +193,6 @@ void noMovable::PauseWalking()
     // Event abmelden
     GetEvMgr().RemoveEvent(current_ev);
     moving = false;
-
-    // Achtung, evtl wird er gleich in dem gf gestoppt, wo er auch losgelaufen war
-    // in dem Fall ist es wie, als ob er normal an einem bestimmten Knotenpunkt stoppt, bloß dass er
-    // schon losgelaufen war, als der andere ihn stoppt, daher muss Verschieben wegen dem Zeichnen im GameWorld
-    // rückgängig gemacht werden!
-    if(pause_walked_gf == 0)
-    {
-        // Wenn wir nach oben gehen, muss vom oberen Punkt dann aus gezeichnet werden im GameWorld
-        // --> rückgängig!
-        if(IsMovingUpwards())
-        {
-            gwg->RemoveFigure(this, gwg->GetNeighbour(pos, curMoveDir));
-            gwg->AddFigure(this, pos);
-        }
-    }
 }
 
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt

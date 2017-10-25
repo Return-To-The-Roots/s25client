@@ -70,10 +70,6 @@ public:
     /// Setzt GameInterface
     void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
 
-    /// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte,
-    /// die sich dort befinden, zur�ck
-    std::vector<noBase*> GetDynamicObjectsFrom(const MapPoint pt) const;
-
     /// Can a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road
     bool IsRoadAvailable(const bool boat_road, const MapPoint pt) const;

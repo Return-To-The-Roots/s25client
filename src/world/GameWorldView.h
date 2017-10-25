@@ -132,11 +132,13 @@ public:
 
 private:
     void CalcFxLx();
-    void DrawAIDebug(const MapPoint& pt, const DrawPoint& curPos);
     void DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis);
     void DrawObject(const MapPoint& pt, const DrawPoint& curPos);
     void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
     void DrawFigures(const MapPoint& pt, const DrawPoint& curPos, std::vector<ObjectBetweenLines>& between_lines);
+    void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+                                    std::vector<ObjectBetweenLines>& between_lines);
+
     void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse);
