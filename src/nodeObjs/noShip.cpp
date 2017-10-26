@@ -348,7 +348,7 @@ void noShip::HandleEvent(const unsigned id)
                     break;
 
                 figures.pop_front();
-                gwg->AddFigure(attacker, pos);
+                gwg->AddFigure(pos, attacker);
 
                 current_ev = GetEvMgr().AddEvent(this, 30, 1);
                 attacker->StartAttackOnOtherIsland(pos, GetObjId());

@@ -117,7 +117,7 @@ void nofPassiveSoldier::GoalReached()
     static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
 
     // und wir können uns auch aus der Laufliste erstmal entfernen
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
 }
 
 void nofPassiveSoldier::InBuildingDestroyed()
@@ -125,7 +125,7 @@ void nofPassiveSoldier::InBuildingDestroyed()
     building = NULL;
 
     // Auf die Karte setzen
-    gwg->AddFigure(this, pos);
+    gwg->AddFigure(pos, this);
     // Erstmal in zufällige Richtung rammeln
     StartWandering();
 

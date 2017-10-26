@@ -32,23 +32,23 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
-#include "mapGenerator/MapGenerator.h"
-#include "liblobby/LobbyClient.h"
-#include "libutil/fileFuncs.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
+#include "mapGenerator/MapGenerator.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
+#include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
+#include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-#include <boost/foreach.hpp>
 #include <boost/bind.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+#include <boost/thread.hpp>
 
 /** @class dskSelectMap
  *
@@ -77,7 +77,8 @@
  *  @param[in] name Server-Name
  *  @param[in] pass Server-Passwort
  */
-dskSelectMap::dskSelectMap(const CreateServerInfo& csi) : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(NULL), waitWnd(NULL)
+dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
+    : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(NULL), waitWnd(NULL)
 {
     // Die Tabelle für die Maps
     AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216,

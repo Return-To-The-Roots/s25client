@@ -162,7 +162,7 @@ void noFigure::ActAtFirst()
             // Wenn ich gleich wieder nach Hause geschickt wurde und aus einem Lagerhaus rauskomme, gar nicht erst rausgehen!
             if(goal_->GetPos() == pos)
             {
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(goal_));
                 // Reset goal before re-adding to wh
                 nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(goal_);
@@ -196,54 +196,26 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
 
 DrawPoint noFigure::CalcFigurRelative() const
 {
+    MapPoint targetPt = gwg->GetNeighbour(pos, GetCurMoveDir());
     Point<int> curPt = gwg->GetNodePos(pos);
-    Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, GetCurMoveDir()));
+    Point<int> nextPt = gwg->GetNodePos(targetPt);
 
-    // Gehen wir über einen Kartenrand (horizontale Richung?)
-    const int mapWidth = gwg->GetWidth() * TR_W;
-    if(std::abs(curPt.x - nextPt.x) >= mapWidth / 2)
-    {
-        // So we need to get closer to nextPt
-        if(curPt.x > nextPt.x)
-            curPt.x -= mapWidth;
-        else
-            curPt.x += mapWidth;
-    }
-    // Und dasselbe für vertikale Richtung
-    const int mapHeight = gwg->GetHeight() * TR_H;
-    if(std::abs(curPt.y - nextPt.y) >= mapHeight / 2)
-    {
-        if(curPt.y > nextPt.y)
-            curPt.y -= mapHeight;
-        else
-            curPt.y += mapHeight;
-    }
+    Point<int> offset(0, 0);
 
-    Point<int> result;
-
-    const MapPoint nb = gwg->GetNeighbour(pos, Direction::NORTHWEST);
     if(GetCurMoveDir() == Direction::NORTHWEST
-       && (gwg->GetNO(nb)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(nb)->GetType() == NOP_BUILDING))
+       && (gwg->GetNO(targetPt)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(targetPt)->GetType() == NOP_BUILDING))
     {
-        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(nb);
+        noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(targetPt);
         nextPt += bld->GetDoorPoint();
-        result = bld->GetDoorPoint();
-    } else if(gwg->GetNO(pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    } else if(GetCurMoveDir() == Direction::SOUTHEAST
+              && (gwg->GetNO(pos)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(pos)->GetType() == NOP_BUILDING))
     {
         noBaseBuilding* const bld = gwg->GetSpecObj<noBaseBuilding>(pos);
         curPt += bld->GetDoorPoint();
-        result = bld->GetDoorPoint();
-    } else
-        result = Point<int>(0, 0);
-
-    // Wenn die Träger hochlaufen, muss es andersrum sein, da die Träger dann immer vom OBEREN Punkt aus gezeichnet werden
-    if(IsMovingUpwards())
-    {
-        using std::swap;
-        swap(curPt, nextPt);
+        offset = bld->GetDoorPoint();
     }
 
-    return result + CalcRelative(curPt, nextPt);
+    return offset + CalcRelative(curPt, nextPt);
 }
 
 void noFigure::StartWalking(const Direction dir)
@@ -262,7 +234,7 @@ void noFigure::StartWalking(const Direction dir)
     if(dir == Direction::NORTHWEST && gwg->GetNO(gwg->GetNeighbour(pos, Direction::NORTHWEST))->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(gwg->GetNeighbour(pos, Direction::NORTHWEST))->OpenDoor(); // Dann die Tür aufmachen
     // oder aus einem raus?
-    if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
+    else if(dir == Direction::SOUTHEAST && gwg->GetNO(pos)->GetType() == NOP_BUILDING)
         gwg->GetSpecObj<noBuilding>(pos)->OpenDoor(); // Dann die Tür aufmachen
 
     // Ist der Platz schon besetzt, wo wir hinlaufen wollen und laufen wir auf Straßen?
@@ -347,7 +319,7 @@ void noFigure::WalkToGoal()
             if(fs == FS_GOHOME)
             {
                 // Mann im Lagerhaus angekommen
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 static_cast<nobBaseWarehouse*>(goal)->AddFigure(this);
             } else
             {
@@ -397,7 +369,7 @@ void noFigure::WalkToGoal()
                 {
                     // Uns in den Hafen einquartieren
                     cur_rs = NULL; // wir laufen nicht mehr auf einer Straße
-                    gwg->RemoveFigure(this, pos);
+                    gwg->RemoveFigure(pos, this);
                     static_cast<nobHarborBuilding*>(hb)->AddFigureForShip(this, next_harbor);
                 }
             } else
@@ -459,11 +431,9 @@ void noFigure::HandleEvent(const unsigned id)
             // Figure could be in a ship etc.)
             gwg->RecalcMovingVisibilities(old_pos, player, GetVisualRange(), old_dir, NULL);
 
-            std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(old_pos);
-
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
-            if(!helpers::contains(figures, this))
+            if(!helpers::contains(gwg->GetFigures(old_pos), this))
                 CalcVisibilities(old_pos);
         }
     }
@@ -886,7 +856,7 @@ void noFigure::DrawWalking(DrawPoint drawPt)
 void noFigure::Die()
 {
     // Weg mit mir
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))
@@ -912,7 +882,7 @@ void noFigure::RemoveFromInventory()
 void noFigure::DieFailedTrade()
 {
     // Weg mit mir
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     GetEvMgr().AddToKillList(this);
     // ggf. Leiche hinlegen, falls da nix ist
     if(!gwg->GetSpecObj<noBase>(pos))

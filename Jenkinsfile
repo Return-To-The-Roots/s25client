@@ -41,7 +41,7 @@ def transformIntoStep(arch, wspwd) {
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$COMMANDS && make \$PARAMS"
+                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$COMMANDS && make \$PARAMS VERBOSE=1"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
@@ -75,9 +75,10 @@ catchError() {
                 checkout scm
                 
                 sh """set -x
-                      git submodule foreach "git reset --hard || true" || true
-                      git reset --hard || true
-                      git submodule update --init || true
+                      git reset --hard
+                      git submodule foreach git clean --force
+                      git submodule foreach git reset --hard
+                      git submodule update --init --force --checkout
                    """
             
                 stash includes: '**, .git/', excludes: 'ws/**', name: 'source', useDefaultExcludes: false

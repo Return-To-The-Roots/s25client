@@ -111,7 +111,7 @@ void World::Resize(const MapExtent& newSize)
     }
 }
 
-void World::AddFigure(noBase* fig, const MapPoint pt)
+void World::AddFigure(const MapPoint pt, noBase* fig)
 {
     if(!fig)
         return;
@@ -129,7 +129,7 @@ void World::AddFigure(noBase* fig, const MapPoint pt)
 #endif
 }
 
-void World::RemoveFigure(noBase* fig, const MapPoint pt)
+void World::RemoveFigure(const MapPoint pt, noBase* fig)
 {
     RTTR_Assert(helpers::contains(GetNode(pt).figures, fig));
     GetNodeInt(pt).figures.remove(fig);

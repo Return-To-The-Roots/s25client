@@ -57,7 +57,7 @@ void nofTradeLeader::GoalReached()
     noBase* nob = gwg->GetNO(goalPos);
     RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(nob));
     gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
 }
 

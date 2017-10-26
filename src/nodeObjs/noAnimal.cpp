@@ -174,7 +174,7 @@ void noAnimal::HandleEvent(const unsigned id)
         case 3:
         {
             // von der Karte tilgen
-            gwg->RemoveFigure(this, pos);
+            gwg->RemoveFigure(pos, this);
             GetEvMgr().AddToKillList(this);
         }
         break;

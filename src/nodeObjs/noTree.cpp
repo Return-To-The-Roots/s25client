@@ -237,7 +237,7 @@ void noTree::ProduceAnimal()
       {SPEC_RABBITWHITE, SPEC_RABBITGREY, SPEC_FOX, SPEC_STAG, SPEC_DEER, SPEC_SHEEP}};
     noAnimal* animal = new noAnimal(possibleSpecies[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleSpecies.size())], pos);
     // In die Landschaft setzen
-    gwg->AddFigure(animal, pos);
+    gwg->AddFigure(pos, animal);
     // Und ihm die Pforten geben..
     animal->StartLiving();
 }

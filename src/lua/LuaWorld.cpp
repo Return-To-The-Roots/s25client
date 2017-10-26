@@ -90,6 +90,6 @@ void LuaWorld::AddAnimal(int x, int y, Species species)
     lua::assertTrue(static_cast<unsigned>(species) < SPEC_COUNT, "Invalid animal species");
     MapPoint pos = gw.MakeMapPoint(Point<int>(x, y));
     noAnimal* animal = new noAnimal(species, pos);
-    gw.AddFigure(animal, pos);
+    gw.AddFigure(pos, animal);
     animal->StartLiving();
 }

@@ -76,7 +76,7 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     owner.AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
-    gwg->AddFigure(builder, pos);
+    gwg->AddFigure(pos, builder);
 
     // Baumaterialien in der Inventur verbuchen
     owner.DecreaseInventoryWare(GD_BOARDS, boards);

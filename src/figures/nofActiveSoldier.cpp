@@ -25,8 +25,8 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
-
 #include "libutil/Log.h"
+#include <boost/foreach.hpp>
 #include <stdexcept>
 
 nofActiveSoldier::nofActiveSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home, const unsigned char rank,
@@ -75,7 +75,7 @@ void nofActiveSoldier::GoalReached()
     building->AddActiveSoldier(this);
 
     // And remove myself from the map
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
 }
 
 void nofActiveSoldier::ReturnHome()
@@ -114,7 +114,7 @@ void nofActiveSoldier::WalkingHome()
         // We're there!
         building->AddActiveSoldier(this);
         // Remove myself from the map
-        gwg->RemoveFigure(this, pos);
+        gwg->RemoveFigure(pos, this);
         return;
     }
     unsigned char dir = gwg->FindHumanPath(pos, building->GetFlag()->GetPos(), 100);
@@ -265,16 +265,13 @@ bool nofActiveSoldier::FindEnemiesNearby(unsigned char excludedOwner)
     enemy = NULL;
 
     // Get all points in a radius of 2
-    std::vector<MapPoint> pts = gwg->GetPointsInRadius(pos, 2);
-    // Don't forget own position
-    pts.insert(pts.begin(), pos);
+    std::vector<MapPoint> pts = gwg->GetPointsInRadiusWithCenter(pos, 2);
 
     for(std::vector<MapPoint>::const_iterator itPos = pts.begin(); itPos != pts.end(); ++itPos)
     {
-        std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(*itPos);
-        for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
+        BOOST_FOREACH(noBase* object, gwg->GetFigures(*itPos))
         {
-            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(*it);
+            nofActiveSoldier* soldier = dynamic_cast<nofActiveSoldier*>(object);
             if(!soldier || soldier->GetPlayer() == excludedOwner)
                 continue;
             if(soldier->IsReadyForFight() && !gwg->GetPlayer(soldier->GetPlayer()).IsAlly(player))
@@ -348,7 +345,7 @@ void nofActiveSoldier::MeetingEnemy()
         if(enemy->GetPos() == fightSpot_ && enemy->GetState() == STATE_WAITINGFORFIGHT)
         {
             // Start fighting
-            gwg->AddFigure(new noFighting(enemy, this), pos);
+            gwg->AddFigure(pos, new noFighting(enemy, this));
 
             enemy->FightingStarted();
             FightingStarted();
@@ -476,8 +473,7 @@ bool nofActiveSoldier::GetFightSpotNear(nofActiveSoldier* other, MapPoint* fight
         else
             middle.y += halfMapHeight;
     }
-    RTTR_Assert(std::abs(otherPos.x - middle.x) <= mapWidth / 4);
-    RTTR_Assert(std::abs(otherPos.y - middle.y) <= mapHeight / 4);
+    RTTR_Assert(gwg->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
 
     // Test Middle point first
     if(gwg->ValidPointForFighting(middle, true, NULL)

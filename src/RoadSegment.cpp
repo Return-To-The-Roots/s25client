@@ -28,6 +28,7 @@
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
 #include "libutil/Log.h"
+#include <boost/foreach.hpp>
 #include <stdexcept>
 
 RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* const f2, const std::vector<Direction>& route)
@@ -78,16 +79,15 @@ void RoadSegment::Destroy_RoadSegment()
 
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
-            // Figuren sammeln, Achtung, einige können (... ? was?)
-            std::vector<noBase*> objects = gwg->GetDynamicObjectsFrom(pt);
-            for(std::vector<noBase*>::iterator it = objects.begin(); it != objects.end(); ++it)
+            // Figuren sammeln
+            BOOST_FOREACH(noBase* object, gwg->GetFigures(pt))
             {
-                if((*it)->GetType() == NOP_FIGURE)
+                if(object->GetType() == NOP_FIGURE)
                 {
-                    if(static_cast<noFigure*>(*it)->GetCurrentRoad() == this)
+                    if(static_cast<noFigure*>(object)->GetCurrentRoad() == this)
                     {
-                        static_cast<noFigure*>(*it)->Abrogate();
-                        static_cast<noFigure*>(*it)->StartWandering();
+                        static_cast<noFigure*>(object)->Abrogate();
+                        static_cast<noFigure*>(object)->StartWandering();
                     }
                 }
             }

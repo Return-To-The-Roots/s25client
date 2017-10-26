@@ -336,35 +336,6 @@ bool GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) const
     return false;
 }
 
-/// Gibt Dynamische Objekte, die von einem bestimmten Punkt aus laufen oder dort stehen sowie andere Objekte,
-/// die sich dort befinden, zurück
-std::vector<noBase*> GameWorldBase::GetDynamicObjectsFrom(const MapPoint pt) const
-{
-    std::vector<noBase*> objects;
-    // Look also on the points above and below for figures
-    const MapPoint coords[3] = {pt, MapPoint(GetNeighbour(pt, Direction::NORTHWEST)), MapPoint(GetNeighbour(pt, Direction::NORTHEAST))};
-
-    for(unsigned i = 0; i < 3; ++i)
-    {
-        const std::list<noBase*>& figures = GetFigures(coords[i]);
-        if(figures.empty())
-            continue;
-        BOOST_FOREACH(noBase* obj, figures)
-        {
-            // Ist es auch ein Figur und befindet sie sich an diesem Punkt?
-            const noMovable* movable = dynamic_cast<noMovable*>(obj);
-            if(movable)
-            {
-                if(movable->GetPos() == pt)
-                    objects.push_back(obj);
-            } else if(i == 0)
-                // Den Rest nur bei den richtigen Koordinaten aufnehmen
-                objects.push_back(obj);
-        }
-    }
-    return objects;
-}
-
 template<typename T_IsHarborOk>
 unsigned GameWorldBase::GetHarborInDir(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
                                        const unsigned char player, T_IsHarborOk isHarborOk) const

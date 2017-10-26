@@ -28,9 +28,8 @@
 #include <string>
 #include <vector>
 
-namespace boost
-{
-    class thread;
+namespace boost {
+class thread;
 }
 
 class dskSelectMap : public Desktop, public ClientInterface, public LobbyInterface

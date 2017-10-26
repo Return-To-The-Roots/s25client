@@ -404,7 +404,7 @@ void nofHunter::HandleStateWalkingToCadaver()
 void nofHunter::HandleStateEviscerating()
 {
     // Tier verschwinden lassen
-    gwg->RemoveFigure(animal, pos);
+    gwg->RemoveFigure(pos, animal);
     // Tier vernichten
     animal->Eviscerated();
     animal->Destroy();

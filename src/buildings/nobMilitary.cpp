@@ -225,7 +225,7 @@ void nobMilitary::HandleEvent(const unsigned id)
             {
                 // Dann raus mit denen
                 noFigure* soldier = *leave_house.begin();
-                gwg->AddFigure(soldier, pos);
+                gwg->AddFigure(pos, soldier);
 
                 soldier->ActAtFirst();
                 leave_house.pop_front();

@@ -170,7 +170,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                     nobBaseWarehouse* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
                     wh->AddFigure(this);
-                    gwg->RemoveFigure(this, pos);
+                    gwg->RemoveFigure(pos, this);
 
                     // Evtl Träger aus dem HQ wieder verwenden
                     owner.FindWarehouseForAllRoads();

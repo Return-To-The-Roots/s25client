@@ -156,7 +156,7 @@ void nofWarehouseWorker::Walked()
     }
 
     // dann mich killen
-    gwg->RemoveFigure(this, pos);
+    gwg->RemoveFigure(pos, this);
     GetEvMgr().AddToKillList(this);
 
     // Von der Inventur wieder abziehen

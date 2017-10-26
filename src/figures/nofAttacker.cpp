@@ -189,7 +189,7 @@ void nofAttacker::Walked()
                 if(defender)
                 {
                     // Start fight with the defender
-                    gwg->AddFigure(new noFighting(this, defender), pos);
+                    gwg->AddFigure(pos, new noFighting(this, defender));
 
                     // Set the appropriate states
                     state = STATE_ATTACKING_FIGHTINGVSDEFENDER;
@@ -260,7 +260,7 @@ void nofAttacker::Walked()
                     RemoveFromAttackedGoal();
                     // Tell that we arrived and probably call other capturers
                     goal->CapturingSoldierArrived();
-                    gwg->RemoveFigure(this, pos);
+                    gwg->RemoveFigure(pos, this);
 
                 }
                 // oder ein Hauptquartier oder Hafen?
@@ -309,7 +309,7 @@ void nofAttacker::Walked()
             {
                 // Uns zum Hafen hinzufügen
                 state = STATE_SEAATTACKING_WAITINHARBOR;
-                gwg->RemoveFigure(this, pos);
+                gwg->RemoveFigure(pos, this);
                 gwg->GetSpecObj<nobHarborBuilding>(pos)->AddSeaAttacker(this);
 
                 return;
@@ -832,7 +832,7 @@ void nofAttacker::CapturingWalking()
         if(ship_obj_id)
             CancelAtShip();
         // mich von der Karte tilgen-
-        gwg->RemoveFigure(this, pos);
+        gwg->RemoveFigure(pos, this);
         // Das ist nun mein neues zu Hause
         building = attacked_goal;
         // und zum Gebäude hinzufügen
@@ -1056,7 +1056,7 @@ void nofAttacker::StartReturnViaShip(noShip& ship)
     if(pos.isValid())
     {
         // remove us from where we are, so nobody will ever draw us :)
-        gwg->RemoveFigure(this, pos);
+        gwg->RemoveFigure(pos, this);
         pos = MapPoint::Invalid(); // Similar to start ship journey
         // Uns zum Schiff hinzufügen
         ship.AddReturnedAttacker(this);
@@ -1086,12 +1086,11 @@ void nofAttacker::HomeHarborLost()
 void nofAttacker::CancelAtShip()
 {
     // Alle Figuren durchgehen
-    std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(shipPos);
-    for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
+    BOOST_FOREACH(noBase* figure, gwg->GetFigures(shipPos))
     {
-        if((*it)->GetObjId() == ship_obj_id)
+        if(figure->GetObjId() == ship_obj_id)
         {
-            noShip* ship = static_cast<noShip*>(*it);
+            noShip* ship = static_cast<noShip*>(figure);
             ship->SeaAttackerWishesNoReturn();
             break;
         }
@@ -1129,12 +1128,11 @@ void nofAttacker::HandleState_SeaAttack_ReturnToShip()
     if(pos == shipPos)
     {
         // Alle Figuren durchgehen
-        std::vector<noBase*> figures = gwg->GetDynamicObjectsFrom(pos);
-        for(std::vector<noBase*>::iterator it = figures.begin(); it != figures.end(); ++it)
+        BOOST_FOREACH(noBase* figure, gwg->GetFigures(pos))
         {
-            if((*it)->GetObjId() == ship_obj_id)
+            if(figure->GetObjId() == ship_obj_id)
             {
-                StartReturnViaShip(static_cast<noShip&>(**it));
+                StartReturnViaShip(static_cast<noShip&>(*figure));
                 return;
             }
         }

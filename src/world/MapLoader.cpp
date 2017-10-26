@@ -364,7 +364,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         if(species != SPEC_NOTHING)
         {
             noAnimal* animal = new noAnimal(species, pt);
-            world.AddFigure(animal, pt);
+            world.AddFigure(pt, animal);
             // Loslaufen
             animal->StartLiving();
         }

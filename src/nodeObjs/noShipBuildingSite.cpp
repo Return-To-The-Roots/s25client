@@ -100,7 +100,7 @@ void noShipBuildingSite::MakeBuildStep()
         GetEvMgr().AddToKillList(this);
         gwg->SetNO(pos, NULL);
         noShip* ship = new noShip(pos, player);
-        gwg->AddFigure(ship, pos);
+        gwg->AddFigure(pos, ship);
 
         // Schiff registrieren lassen
         gwg->GetPlayer(player).RegisterShip(ship);
