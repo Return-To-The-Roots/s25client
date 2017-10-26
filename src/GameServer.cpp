@@ -754,7 +754,7 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
 
     SendToAll(GameMessage_Player_Kicked(playerId, cause, param));
     AnnounceStatusChange();
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % playerId % cause % param;
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % unsigned(playerId) % unsigned(cause) % param;
 
     if(status == SS_GAME)
         SendNothingNC(playerId);
@@ -1142,7 +1142,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 
     GameServerPlayer& player = players[msg.player];
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n") % msg.player % msg.playername;
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n") % unsigned(msg.player) % msg.playername;
 
     player.name = msg.playername;
 
@@ -1191,12 +1191,12 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 
     player.nation = msg.nation;
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLENATION\n") % msg.player;
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLENATION\n") % unsigned(msg.player);
 
     // Nation-Change senden
     SendToAll(GameMessage_Player_Set_Nation(msg.player, msg.nation));
 
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n") % msg.player % player.nation;
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n") % unsigned(msg.player) % player.nation;
     return true;
 }
 
@@ -1211,9 +1211,9 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 
     player.team = msg.team;
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLETEAM\n") % msg.player;
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_TOGGLETEAM\n") % unsigned(msg.player);
     SendToAll(GameMessage_Player_Set_Team(msg.player, msg.team));
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n") % msg.player % player.team;
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n") % unsigned(msg.player) % player.team;
     return true;
 }
 
@@ -1224,7 +1224,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
     if(msg.player >= GetMaxPlayerCount())
         return true;
 
-    LOG.writeToFile("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n") % msg.player % msg.color;
+    LOG.writeToFile("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n") % unsigned(msg.player) % msg.color;
     CheckAndSetColor(msg.player, msg.color);
     return true;
 }
@@ -1245,10 +1245,10 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
     if(!player.isReady && countdown.IsActive())
         CancelCountdown();
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_READY(%s)\n") % msg.player % (player.isReady ? "true" : "false");
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_READY(%s)\n") % unsigned(msg.player) % (player.isReady ? "true" : "false");
     // Broadcast to all players
     SendToAll(msg);
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n") % msg.player % (player.isReady ? "true" : "false");
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n") % unsigned(msg.player) % (player.isReady ? "true" : "false");
     return true;
 }
 
@@ -1263,13 +1263,13 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 
     bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % msg.player % msg.mapChecksum % mapinfo.mapChecksum
-      % (checksumok ? "yes" : "no");
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % unsigned(msg.player) % msg.mapChecksum
+      % mapinfo.mapChecksum % (checksumok ? "yes" : "no");
 
     // Antwort senden
     player.send_queue.push(new GameMessage_Map_ChecksumOK(checksumok));
 
-    LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n") % msg.player % checksumok;
+    LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n") % unsigned(msg.player) % checksumok;
 
     if(!checksumok)
         KickPlayer(msg.player, NP_WRONGCHECKSUM, 0);
@@ -1278,7 +1278,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
         // den anderen Spielern mitteilen das wir einen neuen haben
         SendToAll(GameMessage_Player_New(msg.player, player.name));
 
-        LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % msg.player % player.name;
+        LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % unsigned(msg.player) % player.name;
 
         // belegt markieren
         player.ps = PS_OCCUPIED;
@@ -1316,7 +1316,7 @@ bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
         return true;
 
     GameServerPlayer& player = players[msg.player];
-    // LOG.writeToFile("SERVER <<< GC %u\n") % msg.player;
+    // LOG.writeToFile("SERVER <<< GC %u\n") % unsigned(msg.player);
 
     // Only valid from humans (for now)
     if(player.ps != PS_OCCUPIED)
@@ -1350,7 +1350,7 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
         }
     } else
     {
-        LOG.write("Received async log from %u, but did not expect it!\n") % msg.player;
+        LOG.write("Received async log from %u, but did not expect it!\n") % unsigned(msg.player);
         return true;
     }
 
@@ -1506,7 +1506,7 @@ void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char ne
 {
     RTTR_Assert(status == SS_GAME); // Change player only ingame
 
-    LOG.write("GameServer::ChangePlayer %i - %i \n") % old_id % new_id;
+    LOG.write("GameServer::ChangePlayer %i - %i \n") % unsigned(old_id) % unsigned(new_id);
     using std::swap;
     swap(players[new_id].ps, players[old_id].ps);
     swap(players[new_id].so, players[old_id].so);

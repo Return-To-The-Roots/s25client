@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
+#include "PointOutput.h"
 #include "Random.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
@@ -192,7 +193,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc >= 0xF0 && lc <= 0xFD)
                     obj = new noTree(pt, 3, 3);
                 else
-                    LOG.write(_("Unknown tree1-4 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown tree1-4 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -208,7 +209,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc >= 0xF0 && lc <= 0xFD)
                     obj = new noTree(pt, 7, 3);
                 else
-                    LOG.write(_("Unknown tree5-8 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown tree5-8 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -218,7 +219,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x30 && lc <= 0x3D)
                     obj = new noTree(pt, 8, 3);
                 else
-                    LOG.write(_("Unknown tree9 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown tree9 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -291,7 +292,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc == 0x35)
                     obj = new noStaticObject(pt, 4, 5);
                 else
-                    LOG.write(_("Unknown nature object at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown nature object at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -301,7 +302,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x01 && lc <= 0x06)
                     obj = new noGranite(GT_1, lc - 1);
                 else
-                    LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -311,7 +312,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x01 && lc <= 0x06)
                     obj = new noGranite(GT_2, lc - 1);
                 else
-                    LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -321,7 +322,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             default:
 #ifndef NDEBUG
                 unsigned unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
-                LOG.write(_("Unknown object at (%1%, %2%): (0x%3$x: 0x%4$x)\n")) % pt.x % pt.y % unknownObj % unsigned(lc);
+                LOG.write(_("Unknown object at %1%: (0x%2$x: 0x%3$x)\n")) % pt % unknownObj % unsigned(lc);
 #endif // !NDEBUG
                 break;
         }
@@ -355,7 +356,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
             default:
 #ifndef NDEBUG
                 unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
-                LOG.write(_("Unknown animal species at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unknownAnimal;
+                LOG.write(_("Unknown animal species at %1%: (0x%2$x)\n")) % pt % unknownAnimal;
 #endif // !NDEBUG
                 species = SPEC_NOTHING;
                 break;
@@ -436,7 +437,7 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         }
         if(!foundCoast)
         {
-            LOG.write("Map Bug: Found harbor without coast at %u:%u. Removing!\n") % it->pos.x % it->pos.y;
+            LOG.write("Map Bug: Found harbor without coast at %1%. Removing!\n") % it->pos;
             it = world.harbor_pos.erase(it);
         } else
         {

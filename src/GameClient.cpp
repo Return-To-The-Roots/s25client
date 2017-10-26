@@ -434,7 +434,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_Player_New& msg)
 {
-    LOG.writeToFile("<<< NMS_PLAYER_NEW(%d)\n") % msg.player;
+    LOG.writeToFile("<<< NMS_PLAYER_NEW(%d)\n") % unsigned(msg.player);
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->getNumPlayers())
         return true;
@@ -554,7 +554,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
-    LOG.writeToFile("<<< NMS_PLAYER_READY(%d, %s)\n") % msg.player % (msg.ready ? "true" : "false");
+    LOG.writeToFile("<<< NMS_PLAYER_READY(%d, %s)\n") % unsigned(msg.player) % (msg.ready ? "true" : "false");
 
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->getNumPlayers())
@@ -572,7 +572,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 {
-    LOG.writeToFile("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n") % msg.player % msg.cause % msg.param;
+    LOG.writeToFile("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n") % unsigned(msg.player) % unsigned(msg.cause) % msg.param;
 
     RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
@@ -594,7 +594,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 
 bool GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
-    LOG.writeToFile("<<< NMS_PLAYER_SWAP(%u, %u)\n") % msg.player % msg.player2;
+    LOG.writeToFile("<<< NMS_PLAYER_SWAP(%u, %u)\n") % unsigned(msg.player) % unsigned(msg.player2);
 
     RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
@@ -990,7 +990,7 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
         return true;
     if(msg.player >= gw->GetPlayerCount())
         return true;
-    // LOG.writeToFile("CLIENT <<< GC %u\n") % msg.player;
+    // LOG.writeToFile("CLIENT <<< GC %u\n") % unsigned(msg.player);
     // Nachricht in Queue einhängen
     gw->GetPlayer(msg.player).gc_queue.push(msg.gcs);
     // If this is our GC then it must be the next and only command as we need to execute this before we even send the next one

@@ -1,3 +1,4 @@
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
 	# RPath enabled by default. Rpath only supported in CMake >2.8.12
