@@ -29,6 +29,7 @@
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainData.h"
+#include <boost/foreach.hpp>
 #include <set>
 
 World::World() : lt(LT_GREENLAND), noNodeObj(NULL) {}
@@ -404,6 +405,23 @@ const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const unsigned
 {
     RTTR_Assert(harborId);
     return harbor_pos[harborId].neighbors[dir.toUInt()];
+}
+
+/// Berechnet die Entfernung zwischen 2 Hafenpunkten
+unsigned World::CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const
+{
+    if(habor_id1 == harborId2) // special case: distance to self
+        return 0;
+    for(unsigned i = 0; i < 6; ++i)
+    {
+        BOOST_FOREACH(const HarborPos::Neighbor& n, harbor_pos[habor_id1].neighbors[i])
+        {
+            if(n.id == harborId2)
+                return n.distance;
+        }
+    }
+
+    return 0xffffffff;
 }
 
 unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const

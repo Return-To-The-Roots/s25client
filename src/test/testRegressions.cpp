@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "PointOutput.h"
 #include "RTTR_AssertError.h"
 #include "TerrainRenderer.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -31,7 +32,6 @@
 #include "gameData/MapConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "test/CreateEmptyWorld.h"
-#include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include "test/initTestHelpers.h"
 #include <boost/array.hpp>

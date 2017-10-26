@@ -19,6 +19,7 @@
 #include "GameClient.h"
 #include "GameMessages.h"
 #include "GamePlayer.h"
+#include "PointOutput.h"
 #include "RTTR_AssertError.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
@@ -28,7 +29,6 @@
 #include "nodeObjs/noStaticObject.h"
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
-#include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>

@@ -127,8 +127,6 @@ public:
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
     unsigned GetNextFreeHarborPoint(const MapPoint pt, const unsigned origin_harborId, const ShipDirection& dir,
                                     const unsigned char player) const;
-    /// Berechnet die Entfernung zwischen 2 Hafenpunkten
-    unsigned CalcHarborDistance(const unsigned habor_id1, const unsigned harborId2) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
     unsigned CalcDistanceToNearestHarbor(const MapPoint pos) const;
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!

@@ -22,6 +22,7 @@
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
+#include "PointOutput.h"
 #include "files.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/GameWorldGame.h"
@@ -30,7 +31,6 @@
 #include "gameTypes/Nation.h"
 #include "test/BQOutput.h"
 #include "test/CreateEmptyWorld.h"
-#include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
@@ -145,6 +145,84 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
     BOOST_REQUIRE(player.isUsed());
     BOOST_REQUIRE(worldCreator.hqs[0].isValid());
     BOOST_REQUIRE_EQUAL(world.GetNO(worldCreator.hqs[0])->GetGOT(), GOT_NOB_HQ);
+}
+
+BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
+{
+    world.Init(MapExtent(30, 30), LT_GREENLAND);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = TT_WATER;
+    }
+
+    // Place multiple harbor spots next to each other so their coastal points are on the same node
+    std::vector<MapPoint> hbPos;
+    hbPos.push_back(MapPoint(10, 10));
+    hbPos.push_back(MapPoint(9, 10));
+    hbPos.push_back(MapPoint(11, 10));
+
+    hbPos.push_back(MapPoint(20, 10));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NORTHWEST));
+
+    hbPos.push_back(MapPoint(10, 20));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NORTHEAST));
+
+    hbPos.push_back(MapPoint(0, 10));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SOUTHEAST));
+
+    hbPos.push_back(MapPoint(20, 10));
+    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SOUTHWEST));
+
+    // Place land in radius 2
+    BOOST_FOREACH(const MapPoint& pt, hbPos)
+    {
+        BOOST_FOREACH(const MapPoint& curPt, world.GetPointsInRadius(pt, 1))
+        {
+            for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+                setRightTerrain(world, curPt, Direction::fromInt(dir), TT_SAVANNAH);
+        }
+    }
+
+    // And a node of water nearby so we do have a coast
+    std::vector<MapPoint> waterPts;
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SOUTHWEST), Direction::SOUTHWEST));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[0], Direction::SOUTHEAST), Direction::SOUTHEAST));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[3], Direction::NORTHEAST), Direction::NORTHEAST));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[5], Direction::EAST), Direction::EAST));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[7], Direction::SOUTHWEST), Direction::SOUTHWEST));
+    waterPts.push_back(world.GetNeighbour(world.GetNeighbour(hbPos[9], Direction::SOUTHEAST), Direction::SOUTHEAST));
+
+    BOOST_FOREACH(const MapPoint& pt, waterPts)
+    {
+        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+            setRightTerrain(world, pt, Direction::fromInt(dir), TT_WATER);
+    }
+
+    // Check if this works
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
+    // All harbors valid
+    BOOST_REQUIRE_EQUAL(world.GetHarborPointCount(), hbPos.size());
+    for(unsigned startHb = 1; startHb < world.GetHarborPointCount(); startHb++)
+    {
+        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
+        {
+            unsigned seaId = world.GetSeaId(startHb, Direction::fromInt(dir));
+            if(!seaId)
+                continue;
+            MapPoint startPt = world.GetCoastalPoint(startHb, seaId);
+            BOOST_REQUIRE_EQUAL(startPt, world.GetNeighbour(world.GetHarborPoint(startHb), Direction::fromInt(dir)));
+            for(unsigned targetHb = 1; targetHb < world.GetHarborPointCount(); targetHb++)
+            {
+                MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);
+                if(!destPt.isValid())
+                    continue;
+                std::vector<Direction> route;
+                BOOST_REQUIRE(startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, NULL));
+                BOOST_REQUIRE_EQUAL(route.size(), world.CalcHarborDistance(startHb, targetHb));
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

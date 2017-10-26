@@ -81,3 +81,21 @@ bool CreateUninitWorld::operator()(GameWorldGame& world) const
     world.Init(size_, LT_GREENLAND);
     return true;
 }
+
+void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t)
+{
+    switch(Direction::Type(dir))
+    {
+        case Direction::WEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t; break;
+        case Direction::NORTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t; break;
+        case Direction::NORTHEAST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHEAST)).t1 = t; break;
+        case Direction::EAST: world.GetNodeWriteable(pt).t2 = t; break;
+        case Direction::SOUTHEAST: world.GetNodeWriteable(pt).t1 = t; break;
+        case Direction::SOUTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::WEST)).t2 = t; break;
+    }
+}
+
+void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t)
+{
+    setRightTerrain(world, pt, Direction(dir.toUInt() + 6 - 1), t);
+}

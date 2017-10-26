@@ -19,6 +19,7 @@
 #include "ClientInterface.h"
 #include "GameClient.h"
 #include "GameMessages.h"
+#include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "helpers/Deleter.h"
@@ -30,7 +31,6 @@
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
-#include "test/PointOutput.h"
 #include "test/initTestHelpers.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>

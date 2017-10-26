@@ -413,25 +413,6 @@ unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned
     return GetHarborInDir(pt, origin_harborId, dir, player, bind(&GameWorldBase::IsHarborPointFree, this, _1, player));
 }
 
-/// Berechnet die Entfernung zwischen 2 Hafenpunkten
-unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsigned harborId2) const
-{
-    if(habor_id1 == harborId2) // special case: distance to self
-        return 0;
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(habor_id1, ShipDirection::fromInt(i));
-        for(unsigned z = 0; z < neighbors.size(); ++z)
-        {
-            const HarborPos::Neighbor& n = neighbors[z];
-            if(n.id == harborId2)
-                return n.distance;
-        }
-    }
-
-    return 0xffffffff;
-}
-
 /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
 unsigned GameWorldBase::CalcDistanceToNearestHarbor(const MapPoint pos) const
 {

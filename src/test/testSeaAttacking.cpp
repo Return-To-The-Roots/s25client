@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
+#include "PointOutput.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -32,7 +33,6 @@
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
-#include "test/PointOutput.h"
 #include "test/SeaWorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
