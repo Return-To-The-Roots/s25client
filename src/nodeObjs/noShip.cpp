@@ -598,6 +598,8 @@ void noShip::FoundColony()
     // Kolonie gründen
     if(gwg->FoundColony(goal_harborId, ownerId_, seaId_))
     {
+        // For checks
+        state = STATE_EXPEDITION_UNLOADING;
         // Dann idlen wir wieder
         StartIdling();
         // Neue Arbeit suchen
