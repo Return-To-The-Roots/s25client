@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Replay.h"
+#include "BasePlayerInfo.h"
 #include "Savegame.h"
 #include "gameTypes/MapInfo.h"
 #include "libendian/ConvertEndianess.h"
@@ -191,7 +192,7 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
     {
         // Validate savegame
         Savegame save;
-        if(!save.Load(file, false, false))
+        if(!save.ReadFileHeader(file))
         {
             lastErrorMsg = std::string(_("Savegame error: ")) + save.GetLastErrorMsg();
             return false;

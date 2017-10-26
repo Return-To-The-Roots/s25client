@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Savegame.h"
+#include "BasePlayerInfo.h"
 #include "libendian/ConvertEndianess.h"
 #include "libutil/BinaryFile.h"
 
@@ -88,7 +89,15 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
     // Map-Name
     mapName = file.ReadShortString();
 
+    if(!load_players)
+    {
+        players.clear();
+        start_gf = 0xFFFFFFFF;
+        return true;
+    }
+    
     ReadPlayerData(file);
+
     ReadGGS(file);
 
     // Start-GF

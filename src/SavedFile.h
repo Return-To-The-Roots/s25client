@@ -34,7 +34,6 @@ public:
     SavedFile();
     virtual ~SavedFile();
 
-protected:
     /// Return the file signature. Must be at most 32 bytes
     virtual std::string GetSignature() const = 0;
     /// Return the file format version
@@ -55,14 +54,6 @@ protected:
     /// liest die GlobalGameSettings aus der Datei.
     void ReadGGS(BinaryFile& file);
 
-public:
-    /// Zeitpunkt der Aufnahme
-    unser_time_t save_time;
-    /// Mapname
-    std::string mapName;
-    /// GGS
-    GlobalGameSettings ggs;
-
     const BasePlayerInfo& GetPlayer(unsigned idx) const;
     unsigned GetPlayerCount();
     void AddPlayer(const BasePlayerInfo& player);
@@ -70,11 +61,17 @@ public:
     std::string GetLastErrorMsg() const;
     std::string GetRevision() const;
 
+    /// Zeitpunkt der Aufnahme
+    unser_time_t save_time;
+    /// Mapname
+    std::string mapName;
+    /// GGS
+    GlobalGameSettings ggs;
+
 protected:
     /// Last error message during loading
     std::string lastErrorMsg;
 
-private:
     std::vector<BasePlayerInfo> players;
     /// Revision as saved in the file
     boost::array<char, 8> revision;
