@@ -35,6 +35,7 @@
 #include "ogl/SoundEffectItem.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
+#include "libutil/MyTime.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>

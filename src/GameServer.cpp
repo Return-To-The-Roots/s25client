@@ -163,7 +163,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         {
             Savegame save;
 
-            if(!save.Load(mapinfo.filepath, false, false))
+            if(!save.Load(mapinfo.filepath, true, false))
                 return false;
 
             // Spieleranzahl
@@ -992,7 +992,7 @@ void GameServer::WaitForClients()
             if(!socket.isValid())
                 return;
 
-            unsigned char newPlayerId = 0xFF;
+            unsigned newPlayerId = 0xFFFFFFFF;
             // Geeigneten Platz suchen
             for(unsigned playerId = 0; playerId < players.size(); ++playerId)
             {
@@ -1011,7 +1011,7 @@ void GameServer::WaitForClients()
             MessageHandler::send(socket, msg);
 
             // war kein platz mehr frei, wenn ja dann verbindung trennen?
-            if(newPlayerId == 0xFF)
+            if(newPlayerId == 0xFFFFFFFF)
                 socket.Close();
         }
     }

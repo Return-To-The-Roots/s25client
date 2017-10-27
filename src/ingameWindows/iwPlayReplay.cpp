@@ -17,17 +17,16 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwPlayReplay.h"
-
-#include "Loader.h"
-#include "WindowManager.h"
-#include "drivers/VideoDriverWrapper.h"
-
 #include "BasePlayerInfo.h"
 #include "GameClient.h"
 #include "ListDir.h"
+#include "Loader.h"
+#include "Replay.h"
+#include "WindowManager.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlTextButton.h"
 #include "desktops/dskGameLoader.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/converters.h"
 #include "iwMsgbox.h"

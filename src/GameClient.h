@@ -21,7 +21,6 @@
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
 #include "GlobalGameSettings.h"
-#include "Replay.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/Deleter.h"
 #include "postSystem/PostBox.h"
@@ -47,8 +46,10 @@ class GameEvent;
 class GameLobby;
 class GameWorldView;
 class GameWorld;
+class Replay;
 class EventManager;
 struct PlayerGameCommands;
+struct ReplayInfo;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
 {
@@ -134,20 +135,20 @@ public:
     void SetReplayPause(bool pause);
     void ToggleReplayPause() { SetReplayPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
-    void ToggleReplayFOW() { replayinfo.all_visible = !replayinfo.all_visible; }
+    void ToggleReplayFOW();
     /// Prüft, ob FoW im Replaymodus ausgeschalten ist
-    bool IsReplayFOWDisabled() const { return replayinfo.all_visible; }
+    bool IsReplayFOWDisabled() const;
     /// Gibt Replay-Ende (GF) zurück
-    unsigned GetLastReplayGF() const { return replayinfo.replay.lastGF_; }
+    unsigned GetLastReplayGF() const;
     /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
     std::string FormatGFTime(const unsigned gf) const;
 
     /// Gibt Replay-Dateiname zurück
-    const std::string& GetReplayFileName() const { return replayinfo.filename; }
+    const std::string& GetReplayFileName() const;
     /// Wird ein Replay abgespielt?
-    bool IsReplayModeOn() const { return replay_mode; }
+    bool IsReplayModeOn() const { return !!replayinfo; }
 
-    Replay& GetReplay() { return replayinfo.replay; }
+    Replay& GetReplay();
 
     /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
     unsigned GetTournamentModeDuration() const;
@@ -304,30 +305,8 @@ private:
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;
 
-    struct ReplayInfo
-    {
-    public:
-        ReplayInfo() { Clear(); }
-        void Clear();
-
-        /// Replaydatei
-        Replay replay;
-        /// Replay asynchron (Meldung nur einmal ausgeben!)
-        int async;
-        bool end;
-        // Nächster Replay-Command-Zeitpunkt (in GF)
-        unsigned next_gf;
-        /// Replay-Dateiname
-        std::string filename;
-        /// Alles sichtbar (FoW deaktiviert)
-        bool all_visible;
-    } replayinfo;
-
-    /// Replaymodus an oder aus?
-    bool replay_mode;
-
-    /// Spiel-Log für Asyncs
-    FILE* game_log;
+    boost::interprocess::unique_ptr<ReplayInfo, Deleter<ReplayInfo> > replayinfo;
+    bool replayMode;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

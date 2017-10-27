@@ -52,6 +52,7 @@
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
+#include "libutil/MyTime.h"
 #include <set>
 #include <sstream>
 

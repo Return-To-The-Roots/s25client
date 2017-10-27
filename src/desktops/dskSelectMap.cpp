@@ -365,7 +365,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 void dskSelectMap::CI_Error(const ClientError ce)
 {
     // Error messages, CE_* values cannot be gotten here but are added to avoid memory access errors
-    const boost::array<std::string, 8> errors = {{_("Incomplete message was received!"), "CE_SERVERFULL", "CE_WRONGPW",
+    const boost::array<std::string, 8> errors = {{_("Incomplete message was received!"), _("This Server is full!"), "CE_WRONGPW",
                                                   _("Lost connection to server!"), "CE_INVALIDSERVERTYPE",
                                                   _("Map transmission was corrupt!"), "CE_WRONGVERSION", "CE_LOBBYFULL"}};
 

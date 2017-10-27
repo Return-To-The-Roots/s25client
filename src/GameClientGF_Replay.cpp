@@ -22,6 +22,7 @@
 #include "GlobalVars.h"
 #include "PlayerGameCommands.h"
 #include "Random.h"
+#include "ReplayInfo.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 
@@ -31,25 +32,25 @@ void GameClient::ExecuteGameFrame_Replay()
     AsyncChecksum checksum(randcheckinfo.rand);
 
     const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo.next_gf >= curGF || curGF > replayinfo.replay.lastGF_);
+    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.lastGF_);
 
     // Execute all commands from the replay for the current GF
-    while(replayinfo.next_gf == curGF)
+    while(replayinfo->next_gf == curGF)
     {
         // What type of command follows?
-        Replay::ReplayCommand rc = replayinfo.replay.ReadRCType();
+        Replay::ReplayCommand rc = replayinfo->replay.ReadRCType();
 
         if(rc == Replay::RC_CHAT)
         {
             uint8_t player, dest;
             std::string message;
-            replayinfo.replay.ReadChatCommand(player, dest, message);
+            replayinfo->replay.ReadChatCommand(player, dest, message);
 
             if(ci)
                 ci->CI_Chat(player, ChatDestination(dest), message);
         } else if(rc == Replay::RC_GAME)
         {
-            std::vector<unsigned char> gcData = replayinfo.replay.ReadGameCommand();
+            std::vector<unsigned char> gcData = replayinfo->replay.ReadGameCommand();
             Serializer ser(&gcData.front(), gcData.size());
             PlayerGameCommands msg;
             uint8_t gcPlayer = ser.PopUnsignedChar();
@@ -63,7 +64,7 @@ void GameClient::ExecuteGameFrame_Replay()
             if(msgChecksum.randChecksum != 0 && msgChecksum != checksum)
             {
                 // Show message if this is the first async GF
-                if(replayinfo.async == 0)
+                if(replayinfo->async == 0)
                 {
                     char text[256];
                     sprintf(text, _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF);
@@ -78,18 +79,18 @@ void GameClient::ExecuteGameFrame_Replay()
                     framesinfo.isPaused = true;
                 }
 
-                replayinfo.async++;
+                replayinfo->async++;
             }
         }
         // Read GF of next command
-        replayinfo.replay.ReadGF(&replayinfo.next_gf);
+        replayinfo->replay.ReadGF(&replayinfo->next_gf);
     }
 
     // Run game simulation
     NextGF();
 
     // Check for game end
-    if(curGF == replayinfo.replay.lastGF_)
+    if(curGF == replayinfo->replay.lastGF_)
     {
         char text[256];
         sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF,
@@ -99,16 +100,16 @@ void GameClient::ExecuteGameFrame_Replay()
         if(ci)
             ci->CI_ReplayEndReached(text);
 
-        if(replayinfo.async != 0)
+        if(replayinfo->async != 0)
         {
             char text[256];
-            sprintf(text, _("Notice: Overall asynchronous frame count: %u"), replayinfo.async);
+            sprintf(text, _("Notice: Overall asynchronous frame count: %u"), replayinfo->async);
             // Messenger im Game
             if(ci)
                 ci->CI_ReplayEndReached(text);
         }
 
-        replayinfo.end = true;
+        replayinfo->end = true;
         framesinfo.isPaused = true;
     }
 }

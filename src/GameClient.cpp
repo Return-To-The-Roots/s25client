@@ -35,6 +35,7 @@
 #include "PlayerGameCommands.h"
 #include "RTTR_Version.h"
 #include "Random.h"
+#include "ReplayInfo.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Settings.h"
@@ -76,19 +77,9 @@ void GameClient::RandCheckInfo::Clear()
     rand = 0;
 }
 
-void GameClient::ReplayInfo::Clear()
-{
-    replay = Replay();
-    async = 0;
-    end = false;
-    next_gf = 0;
-    filename.clear();
-    all_visible = false;
-}
-
 GameClient::GameClient()
     : skiptogf(0), playerId_(0), recv_queue(&GameMessage::create_game), send_queue(&GameMessage::create_game), state(CS_STOPPED), ci(NULL),
-      replay_mode(false), game_log(NULL)
+      replayMode(false)
 {
     clientconfig.Clear();
     framesinfo.Clear();
@@ -136,7 +127,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
         ci->CI_NextConnectState(CS_WAITFORANSWER);
 
     // Es wird kein Replay abgespielt, sondern dies ist ein richtiges Spiel
-    replay_mode = false;
+    replayMode = false;
 
     return true;
 }
@@ -217,7 +208,11 @@ void GameClient::Stop()
     clientconfig.Clear();
     mapinfo.Clear();
 
-    replayinfo.replay.StopRecording();
+    if(replayinfo)
+    {
+        replayinfo->replay.StopRecording();
+        replayinfo.reset();
+    }
 
     socket.Close();
 
@@ -246,7 +241,7 @@ GameLobby& GameClient::GetGameLobby()
  */
 void GameClient::StartGame(const unsigned random_init)
 {
-    RTTR_Assert(state == CS_CONFIG || (state == CS_STOPPED && replay_mode));
+    RTTR_Assert(state == CS_CONFIG || (state == CS_STOPPED && replayMode));
 
     // Mond malen
     Point<int> moonPos = VIDEODRIVER.GetMousePos();
@@ -329,13 +324,13 @@ void GameClient::StartGame(const unsigned random_init)
     // Zeit setzen
     framesinfo.lastTime = VIDEODRIVER.GetTickCount();
 
-    if(!replay_mode)
+    if(!replayMode)
     {
+        RTTR_Assert(!replayinfo);
+        replayinfo.reset(new ReplayInfo);
         WriteReplayHeader(random_init);
         std::stringstream fileName;
         fileName << FILE_PATHS[47] << TIME.FormatTime("game_%Y-%m-%d_%H-%i-%s") << "-" << (rand() % 100) << ".log";
-
-        game_log = fopen(fileName.str().c_str(), "a");
     }
 
     // Daten nach dem Schreiben des Replays ggf wieder löschen
@@ -347,10 +342,10 @@ void GameClient::RealStart()
     RTTR_Assert(state == CS_LOADING);
     state = CS_GAME; // zu gamestate wechseln
 
-    framesinfo.isPaused = replay_mode;
+    framesinfo.isPaused = replayMode;
 
     // Send empty GC for first NWF
-    if(!replay_mode)
+    if(!replayMode)
         SendNothingNC(0);
 
     GAMEMANAGER.ResetAverageFPS();
@@ -733,7 +728,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
             return true;
 
         /// Mit im Replay aufzeichnen
-        replayinfo.replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
+        replayinfo->replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
 
         GamePlayer& player = gw->GetPlayer(msg.player);
 
@@ -1040,7 +1035,7 @@ void GameClient::DecreaseSpeed()
 
 void GameClient::IncreaseReplaySpeed()
 {
-    if(replay_mode)
+    if(replayMode)
     {
         if(framesinfo.gf_length > 10)
             framesinfo.gf_length -= 10;
@@ -1051,7 +1046,7 @@ void GameClient::IncreaseReplaySpeed()
 
 void GameClient::DecreaseReplaySpeed()
 {
-    if(replay_mode)
+    if(replayMode)
     {
         if(framesinfo.gf_length == 1)
             framesinfo.gf_length = 10;
@@ -1276,7 +1271,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
     if(skipping || skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
-        if(replay_mode)
+        if(replayMode)
         {
             // In replay mode we have all commands in  the file -> Execute them
             ExecuteGameFrame_Replay();
@@ -1332,7 +1327,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             NextGF();
         }
 
-        RTTR_Assert(replay_mode || curGF <= framesinfo.gfNrServer + framesinfo.nwf_length);
+        RTTR_Assert(replayMode || curGF <= framesinfo.gfNrServer + framesinfo.nwf_length);
         // Store this timestamp
         framesinfo.lastTime = currentTime;
         // Reset frameTime
@@ -1341,8 +1336,8 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         HandleAutosave();
 
         // GF-Ende im Replay aktualisieren
-        if(!replay_mode)
-            replayinfo.replay.UpdateLastGF(curGF);
+        if(!replayMode)
+            replayinfo->replay.UpdateLastGF(curGF);
     } else
     {
         // Next GF not yet reached, just update the time in the current one for drawing
@@ -1354,7 +1349,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 void GameClient::HandleAutosave()
 {
     // If inactive or during replay -> no autosave
-    if(!SETTINGS.interface.autosave_interval || replay_mode)
+    if(!SETTINGS.interface.autosave_interval || replayMode)
         return;
 
     // Alle .... GF
@@ -1446,50 +1441,50 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
     // Headerinfos füllen
 
     // Timestamp der Aufzeichnung
-    replayinfo.replay.save_time = cTime;
+    replayinfo->replay.save_time = cTime;
     /// NWF-Länge
-    replayinfo.replay.nwf_length = framesinfo.nwf_length;
+    replayinfo->replay.nwf_length = framesinfo.nwf_length;
     // Random-Init
-    replayinfo.replay.random_init = random_init;
+    replayinfo->replay.random_init = random_init;
 
-    WritePlayerInfo(replayinfo.replay);
+    WritePlayerInfo(replayinfo->replay);
 
     // GGS-Daten
-    replayinfo.replay.ggs = GetGGS();
+    replayinfo->replay.ggs = GetGGS();
 
     // Mapname
-    replayinfo.replay.mapName = mapinfo.title;
-    replayinfo.replay.mapFileName = bfs::path(mapinfo.filepath).filename().string();
+    replayinfo->replay.mapName = mapinfo.title;
+    replayinfo->replay.mapFileName = bfs::path(mapinfo.filepath).filename().string();
 
     // Datei speichern
-    if(!replayinfo.replay.WriteHeader(fileName, mapinfo))
-        LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.replay.\n");
+    if(!replayinfo->replay.WriteHeader(fileName, mapinfo))
+        LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo->replay.\n");
 }
 
 bool GameClient::StartReplay(const std::string& path)
 {
     RTTR_Assert(state == CS_STOPPED);
-    replayinfo.Clear();
+    replayinfo.reset(new ReplayInfo);
     mapinfo.Clear();
-    replayinfo.filename = path;
+    replayinfo->filename = path;
 
-    if(!replayinfo.replay.LoadHeader(path, &mapinfo))
+    if(!replayinfo->replay.LoadHeader(path, &mapinfo))
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
-          % (replayinfo.replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo.replay.GetLastErrorMsg());
+          % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
         return false;
     }
 
-    gameLobby.reset(new GameLobby(true, true, replayinfo.replay.GetPlayerCount()));
+    gameLobby.reset(new GameLobby(true, true, replayinfo->replay.GetPlayerCount()));
 
     // NWF-Länge
-    framesinfo.nwf_length = replayinfo.replay.nwf_length;
+    framesinfo.nwf_length = replayinfo->replay.nwf_length;
 
     // Spielerdaten
-    for(unsigned i = 0; i < replayinfo.replay.GetPlayerCount(); ++i)
-        gameLobby->getPlayer(i) = JoinPlayerInfo(replayinfo.replay.GetPlayer(i));
+    for(unsigned i = 0; i < replayinfo->replay.GetPlayerCount(); ++i)
+        gameLobby->getPlayer(i) = JoinPlayerInfo(replayinfo->replay.GetPlayer(i));
 
     bool playerFound = false;
     // Find a player to spectate from
@@ -1517,7 +1512,7 @@ bool GameClient::StartReplay(const std::string& path)
     }
 
     // GGS-Daten
-    gameLobby->getSettings() = replayinfo.replay.ggs;
+    gameLobby->getSettings() = replayinfo->replay.ggs;
 
     switch(mapinfo.type)
     {
@@ -1525,7 +1520,7 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_OLDMAP:
         {
             // Richtigen Pfad zur Map erstellen
-            mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + replayinfo.replay.mapFileName;
+            mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + replayinfo->replay.mapFileName;
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 LOG.write(_("Error decompressing map file"));
@@ -1551,13 +1546,13 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_SAVEGAME: break;
     }
 
-    replay_mode = true;
-    replayinfo.async = 0;
-    replayinfo.end = false;
+    replayMode = true;
+    replayinfo->async = 0;
+    replayinfo->end = false;
 
     try
     {
-        StartGame(replayinfo.replay.random_init);
+        StartGame(replayinfo->replay.random_init);
     } catch(SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
@@ -1567,7 +1562,7 @@ bool GameClient::StartReplay(const std::string& path)
         return false;
     }
 
-    replayinfo.replay.ReadGF(&replayinfo.next_gf);
+    replayinfo->replay.ReadGF(&replayinfo->next_gf);
 
     return true;
 }
@@ -1625,7 +1620,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
     unsigned start_ticks = VIDEODRIVER.GetTickCount();
 
-    if(!replay_mode)
+    if(!replayMode)
     {
         // unpause before skipping
         GAMESERVER.SetPaused(false);
@@ -1720,11 +1715,26 @@ void GameClient::ResetVisualSettings()
 
 void GameClient::SetReplayPause(bool pause)
 {
-    if(replay_mode)
+    if(replayMode)
     {
         framesinfo.isPaused = pause;
         framesinfo.frameTime = 0;
     }
+}
+
+void GameClient::ToggleReplayFOW()
+{
+    replayinfo->all_visible = !replayinfo->all_visible;
+}
+
+bool GameClient::IsReplayFOWDisabled() const
+{
+    return replayinfo->all_visible;
+}
+
+unsigned GameClient::GetLastReplayGF() const
+{
+    return replayinfo->replay.lastGF_;
 }
 
 bool GameClient::AddGC(gc::GameCommand* gc)
@@ -1791,6 +1801,16 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
         sprintf(str, "%02u:%02u", minutes, seconds);
 
     return std::string(str);
+}
+
+const std::string& GameClient::GetReplayFileName() const
+{
+    return replayinfo->filename;
+}
+
+Replay& GameClient::GetReplay()
+{
+    return replayinfo->replay;
 }
 
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise

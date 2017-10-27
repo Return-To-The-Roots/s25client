@@ -57,6 +57,7 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 #else
 #include <execinfo.h>
 #endif
+#include "Replay.h"
 
 #ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H

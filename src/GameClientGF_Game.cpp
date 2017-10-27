@@ -20,6 +20,7 @@
 #include "GameMessage_GameCommand.h"
 #include "GamePlayer.h"
 #include "Random.h"
+#include "ReplayInfo.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 
@@ -39,14 +40,14 @@ void GameClient::ExecuteNWF()
 
             // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
             // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
-            if(!msg.gcs.empty() && !replay_mode)
+            if(!msg.gcs.empty() && !replayMode)
             {
                 // Aktuelle Checksumme reinschreiben
                 msg.checksum = checksum;
                 Serializer ser;
                 ser.PushUnsignedChar(i);
                 msg.Serialize(ser);
-                replayinfo.replay.AddGameCommand(curGF, ser.GetLength(), ser.GetData());
+                replayinfo->replay.AddGameCommand(curGF, ser.GetLength(), ser.GetData());
             }
 
             // Das ganze Zeug soll die andere Funktion ausführen

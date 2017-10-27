@@ -95,7 +95,7 @@ bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_s
         start_gf = 0xFFFFFFFF;
         return true;
     }
-    
+
     ReadPlayerData(file);
 
     ReadGGS(file);
