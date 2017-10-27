@@ -282,7 +282,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {
     unsigned playerColor = ctrlChat::CalcUniqueColor(player);
 
-    std::string time = TIME.FormatTime("(%H:%i:%s)");
+    std::string time = libutil::Time::FormatTime("(%H:%i:%s)");
 
     if(player == "LobbyBot")
     {

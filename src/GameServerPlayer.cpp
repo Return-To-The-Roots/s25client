@@ -78,7 +78,7 @@ void GameServerPlayer::CloseConnections()
 unsigned GameServerPlayer::GetTimeOut() const
 {
     // Nach 35 Sekunden kicken
-    const int timeout = 35 - int(TIME.CurrentTime() - last_command_timeout) / 1000;
+    const int timeout = 35 - int(libutil::Time::CurrentTime() - last_command_timeout) / 1000;
     return (timeout >= 0 ? timeout : 0);
 }
 
@@ -88,7 +88,7 @@ void GameServerPlayer::Lagging()
     // Laggt neu?
     if(!last_command_timeout)
         // Anfangs des Laggens merken
-        last_command_timeout = TIME.CurrentTime();
+        last_command_timeout = libutil::Time::CurrentTime();
 }
 
 /// Spieler laggt nicht (mehr)

@@ -991,7 +991,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 {
     if((playerId != 0xFFFFFFFF) && !IsSinglePlayer())
     {
-        std::string time = TIME.FormatTime("(%H:%i:%s)");
+        std::string time = libutil::Time::FormatTime("(%H:%i:%s)");
 
         gameChat->AddMessage(time, gameLobby.getPlayer(playerId).name, gameLobby.getPlayer(playerId).color, msg, 0xFFFFFF00);
         if(!gameChat->IsVisible())

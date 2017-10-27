@@ -113,10 +113,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     {
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
         mayBeHunted = sgd.PopBool();
-        if(sgd.GetGameDataVersion() < 1)
-            canPlayerSendAggDefender.resize(gwg->GetPlayerCount(), 2);
-        else
-            sgd.PopContainer(canPlayerSendAggDefender);
+        sgd.PopContainer(canPlayerSendAggDefender);
         huntingDefender = sgd.PopObject<nofAggressiveDefender>(GOT_NOF_AGGRESSIVEDEFENDER);
 
         radius = sgd.PopUnsignedShort();

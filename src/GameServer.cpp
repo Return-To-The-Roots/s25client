@@ -169,7 +169,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             // Spieleranzahl
             config.playercount = save.GetPlayerCount();
             bfs::path mapPath = map_path;
-            mapinfo.title = save.mapName;
+            mapinfo.title = save.GetMapName();
         }
         break;
     }
@@ -1414,7 +1414,7 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
         di.SendReplay();
     }
 
-    std::string fileName = GetFilePath(FILE_PATHS[47]) + TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
+    std::string fileName = GetFilePath(FILE_PATHS[47]) + libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
     bnw::ofstream file(fileName);

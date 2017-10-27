@@ -29,13 +29,12 @@ struct ReplayInfo
 
     /// Replaydatei
     Replay replay;
+    std::string fileName;
     /// Replay asynchron (Meldung nur einmal ausgeben!)
     int async;
     bool end;
     // Nächster Replay-Command-Zeitpunkt (in GF)
     unsigned next_gf;
-    /// Replay-Dateiname
-    std::string filename;
     /// Alles sichtbar (FoW deaktiviert)
     bool all_visible;
 };

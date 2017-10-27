@@ -294,14 +294,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
     sgd.PopObjectContainer(ships, GOT_SHIP);
 
-    if(sgd.GetGameDataVersion() < 1u)
-    {
-        // Reverse as we use pop_back
-        for(unsigned i = 0; i < 5; ++i)
-            shouldSendDefenderList.insert(shouldSendDefenderList.begin(), sgd.PopBool());
-        shouldSendDefenderList.resize(shouldSendDefenderList.size() - sgd.PopUnsignedShort());
-    } else
-        sgd.PopContainer(shouldSendDefenderList);
+    sgd.PopContainer(shouldSendDefenderList);
 
     hqPos = sgd.PopMapPoint();
 

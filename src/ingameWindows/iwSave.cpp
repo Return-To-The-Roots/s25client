@@ -91,22 +91,20 @@ void iwSaveLoad::RefreshTable()
         }
 
         // Zeitstring erstellen
-        std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
+        std::string dateStr = libutil::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
 
         // Dateiname noch rausextrahieren aus dem Pfad
         bfs::path path = *it;
         if(!path.has_filename())
             continue;
-        bfs::path fileName = path.filename();
-
-        // ".sav" am Ende weg
-        RTTR_Assert(fileName.has_extension());
-        fileName.replace_extension();
+        // Just filename w/o extension
+        bfs::path fileName = path.stem();
 
         std::string startGF = helpers::toString(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.mapName.c_str(), dateStr.c_str(), startGF.c_str(), it->c_str());
+        GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.GetMapName().c_str(), dateStr.c_str(), startGF.c_str(),
+                                      it->c_str());
     }
 
     // Nach Zeit Sortieren

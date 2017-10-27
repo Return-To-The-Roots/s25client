@@ -68,7 +68,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
             std::vector<std::string> savFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
 
             bfs::path path;
-            unser_time_t recent = 0;
+            libutil::time64_t recent = 0;
             for(std::vector<std::string>::iterator it = savFiles.begin(); it != savFiles.end(); ++it)
             {
                 Savegame save;
@@ -77,9 +77,9 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 if(!save.Load(*it, false, false))
                     continue;
 
-                if(save.save_time > recent)
+                if(save.GetSaveTime() > recent)
                 {
-                    recent = save.save_time;
+                    recent = save.GetSaveTime();
                     path = *it;
                 }
             }

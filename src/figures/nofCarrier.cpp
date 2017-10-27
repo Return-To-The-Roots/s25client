@@ -190,7 +190,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                     // <Silvesteregg>
                     // day of year, 0-365, accuracy about 1/4 day
-                    int doy = (TIME.CurrentTime() % 31556925) / 86400;
+                    int doy = (libutil::Time::CurrentTime() % 31556925) / 86400;
 
                     // last hours of last or first day of year
                     if((doy > 364) || (doy < 1))

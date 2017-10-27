@@ -146,7 +146,7 @@ public:
     /// Gibt Replay-Dateiname zurück
     const std::string& GetReplayFileName() const;
     /// Wird ein Replay abgespielt?
-    bool IsReplayModeOn() const { return !!replayinfo; }
+    bool IsReplayModeOn() const { return replayMode; }
 
     Replay& GetReplay();
 
@@ -245,7 +245,7 @@ private:
     // Replaymethoden
 
     /// Schreibt den Header der Replaydatei
-    void WriteReplayHeader(const unsigned random_init);
+    void StartReplayRecording(const unsigned random_init);
     void WritePlayerInfo(SavedFile& file);
 
 public:

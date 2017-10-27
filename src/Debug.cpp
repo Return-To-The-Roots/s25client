@@ -263,25 +263,22 @@ bool DebugInfo::SendReplay()
     {
         Replay& rpl = GAMECLIENT.GetReplay();
 
-        if(!rpl.IsValid())
+        if(!rpl.IsRecording())
             return true;
 
-        BinaryFile* f = rpl.GetFile();
+        BinaryFile& f = rpl.GetFile();
 
-        if(!f) // no replay to send
-            return true;
+        f.Flush();
 
-        f->Flush();
-
-        unsigned replay_len = f->Tell();
+        unsigned replay_len = f.Tell();
 
         LOG.write("- Replay length: %u\n") % replay_len;
 
         boost::interprocess::unique_ptr<char, Deleter<char[]> > replay(new char[replay_len]);
 
-        f->Seek(0, SEEK_SET);
+        f.Seek(0, SEEK_SET);
 
-        f->ReadRawData(replay.get(), replay_len);
+        f.ReadRawData(replay.get(), replay_len);
 
         unsigned compressed_len = replay_len * 2 + 600;
         boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);

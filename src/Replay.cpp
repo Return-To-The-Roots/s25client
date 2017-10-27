@@ -22,35 +22,41 @@
 #include "gameTypes/MapInfo.h"
 #include "libendian/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 std::string Replay::GetSignature() const
 {
-    /// Kleine Signatur am Anfang "RTTRRP", die ein gültiges S25 RTTR Replay kennzeichnet
-    return "RTTRRP";
+    return "RTTRRP2";
 }
 
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
-    return 31;
+    return 1;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : nwf_length(0), random_init(0), lastGF_(0), last_gf_file_pos(0), gf_file_pos(0) {}
+Replay::Replay() : nwf_length(0), random_init(0), lastGF_(0), isRecording(false), last_gf_file_pos(0) {}
 
 Replay::~Replay()
 {
     StopRecording();
 }
 
-void Replay::StopRecording()
+void Replay::Close()
 {
     file.Close();
     ClearPlayers();
 }
 
-bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
+void Replay::StopRecording()
+{
+    file.Close();
+    isRecording = false;
+}
+
+bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
 {
     // Deny overwrite, also avoids double-opening by different processes
     if(bfs::exists(filename))
@@ -59,36 +65,36 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
     if(!file.Open(filename, OFM_WRITE))
         return false;
 
-    Replay::fileName_ = filename;
+    isRecording = true;
+    /// End-GF (erstmal nur 0, wird dann im Spiel immer geupdatet)
+    lastGF_ = 0;
+    mapType_ = mapInfo.type;
 
-    // Versionszeug schreiben
-    WriteFileHeader(file);
-    unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
-    file.WriteRawData(&tmpTime, sizeof(tmpTime));
-    /// NWF-Länge
-    file.WriteUnsignedShort(nwf_length);
-    /// Zufallsgeneratorinitialisierung
-    file.WriteUnsignedInt(random_init);
+    // Write header
+    WriteAllHeaderData(file, mapInfo.title);
+
+    file.WriteUnsignedShort(static_cast<unsigned short>(mapType_));
+    // For validation purposes
+    if(mapType_ == MAPTYPE_SAVEGAME)
+        mapInfo.savegame->WriteFileHeader(file);
 
     // Position merken für End-GF
     last_gf_file_pos = file.Tell();
-
-    /// End-GF (erstmal nur 0, wird dann im Spiel immer geupdatet)
     file.WriteUnsignedInt(lastGF_);
-    // Spielerdaten
+
     WritePlayerData(file);
-    // GGS
     WriteGGS(file);
 
-    // Map-Type
-    file.WriteUnsignedShort(static_cast<unsigned short>(mapInfo.type));
+    // Game data
+    file.WriteUnsignedShort(nwf_length);
+    file.WriteUnsignedInt(random_init);
 
-    switch(mapInfo.type)
+    switch(mapType_)
     {
-        default: break;
+        default: return false;
         case MAPTYPE_OLDMAP:
-        {
             RTTR_Assert(!mapInfo.savegame);
+            file.WriteLongString(mapInfo.filepath);
             // Map-Daten
             file.WriteUnsignedInt(mapInfo.mapData.length);
             file.WriteUnsignedInt(mapInfo.mapData.data.size());
@@ -99,96 +105,31 @@ bool Replay::WriteHeader(const std::string& filename, const MapInfo& mapInfo)
                 file.WriteUnsignedInt(mapInfo.luaData.data.size());
                 file.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
             }
-        }
-        break;
-        case MAPTYPE_SAVEGAME:
-        {
-            // Savegame speichern
-            if(!mapInfo.savegame->Save(file))
-                return false;
-        }
-        break;
+            break;
+        case MAPTYPE_SAVEGAME: mapInfo.savegame->Save(file, GetMapName()); break;
     }
-
-    // Mapname
-    file.WriteShortString(mapFileName);
-    file.WriteShortString(mapName);
-
     // Alles sofort reinschreiben
     file.Flush();
-
-    gf_file_pos = 0;
 
     return true;
 }
 
-bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
+bool Replay::LoadHeader(const std::string& filename, bool loadSettings)
 {
-    this->fileName_ = filename;
     // Datei öffnen
     if(!file.Open(filename, OFM_READ))
     {
         lastErrorMsg = _("File could not be opened.");
         return false;
     }
+    isRecording = false;
 
     // Check file header
-    if(!ReadFileHeader(file))
+    if(!ReadAllHeaderData(file))
         return false;
 
-    // Zeitstempel
-    file.ReadRawData(&save_time, sizeof(save_time));
-    save_time = libendian::ConvertEndianess<false>::toNative(save_time);
-    // NWF-Länge
-    nwf_length = file.ReadUnsignedShort();
-    // Zufallsgeneratorinitialisierung
-    random_init = file.ReadUnsignedInt();
-    /// End-GF
-    lastGF_ = file.ReadUnsignedInt();
-
-    ReadPlayerData(file);
-    ReadGGS(file);
-
-    // Map-Type
-    MapType mapType = static_cast<MapType>(file.ReadUnsignedShort());
-
-    if(mapInfo)
-    {
-        switch(mapType)
-        {
-            default: break;
-            case MAPTYPE_OLDMAP:
-            {
-                // Map-Daten
-                mapInfo->mapData.length = file.ReadUnsignedInt();
-                mapInfo->mapData.data.resize(file.ReadUnsignedInt());
-                file.ReadRawData(&mapInfo->mapData.data[0], mapInfo->mapData.data.size());
-                mapInfo->luaData.length = file.ReadUnsignedInt();
-                if(mapInfo->luaData.length)
-                {
-                    mapInfo->luaData.data.resize(file.ReadUnsignedInt());
-                    file.ReadRawData(&mapInfo->luaData.data[0], mapInfo->luaData.data.size());
-                }
-            }
-            break;
-            case MAPTYPE_SAVEGAME:
-            {
-                // Load savegame
-                mapInfo->savegame.reset(new Savegame);
-                if(!mapInfo->savegame->Load(file, true, true))
-                {
-                    lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo->savegame->GetLastErrorMsg();
-                    return false;
-                }
-            }
-            break;
-        }
-
-        mapFileName = file.ReadShortString();
-        mapName = file.ReadShortString();
-        mapInfo->title = mapName;
-        mapInfo->type = mapType;
-    } else if(mapType == MAPTYPE_SAVEGAME)
+    mapType_ = static_cast<MapType>(file.ReadUnsignedShort());
+    if(mapType_ == MAPTYPE_SAVEGAME)
     {
         // Validate savegame
         Savegame save;
@@ -199,70 +140,85 @@ bool Replay::LoadHeader(const std::string& filename, MapInfo* mapInfo)
         }
     }
 
+    lastGF_ = file.ReadUnsignedInt();
+
+    if(loadSettings)
+    {
+        ReadPlayerData(file);
+        ReadGGS(file);
+    }
+
     return true;
 }
 
-void Replay::AddChatCommand(const unsigned gf, const unsigned char player, const unsigned char dest, const std::string& str)
+bool Replay::LoadGameData(MapInfo& mapInfo)
+{
+    nwf_length = file.ReadUnsignedShort();
+    random_init = file.ReadUnsignedInt();
+
+    mapInfo.Clear();
+    mapInfo.type = mapType_;
+    mapInfo.title = GetMapName();
+    switch(mapType_)
+    {
+        default: return false;
+        case MAPTYPE_OLDMAP:
+        {
+            mapInfo.filepath = file.ReadLongString();
+            // Map-Daten
+            mapInfo.mapData.length = file.ReadUnsignedInt();
+            mapInfo.mapData.data.resize(file.ReadUnsignedInt());
+            file.ReadRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
+            mapInfo.luaData.length = file.ReadUnsignedInt();
+            if(mapInfo.luaData.length)
+            {
+                mapInfo.luaData.data.resize(file.ReadUnsignedInt());
+                file.ReadRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
+            }
+            break;
+        }
+        case MAPTYPE_SAVEGAME:
+        {
+            // Load savegame
+            mapInfo.savegame.reset(new Savegame);
+            if(!mapInfo.savegame->Load(file, true, true))
+            {
+                lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->GetLastErrorMsg();
+                return false;
+            }
+            break;
+        }
+    }
+
+    return true;
+}
+
+void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std::string& str)
 {
     if(!file.IsValid())
         return;
 
-    // GF-Anzahl
-    if(gf_file_pos)
-    {
-        unsigned current_pos = file.Tell();
-        file.Seek(gf_file_pos, SEEK_SET);
-        file.WriteUnsignedInt(gf);
-        file.Seek(current_pos, SEEK_SET);
-    } else
-        file.WriteUnsignedInt(gf);
+    file.WriteUnsignedInt(gf);
 
-    // Type (0)
     file.WriteUnsignedChar(RC_CHAT);
-    // Spieler
     file.WriteUnsignedChar(player);
-    // Ziel
     file.WriteUnsignedChar(dest);
-    // Chat-Text
     file.WriteLongString(str);
-
-    // Platzhalter für nächste GF-Zahl
-    gf_file_pos = file.Tell();
-    file.WriteUnsignedInt(0xffffffff);
 
     // Sofort rein damit
     file.Flush();
 }
 
-void Replay::AddGameCommand(const unsigned gf, const unsigned short length, const unsigned char* const data)
+void Replay::AddGameCommand(unsigned gf, unsigned short length, const unsigned char* data)
 {
     if(!file.IsValid())
         return;
 
-    //// Marker schreiben
-    // file.WriteRawData("GCCM", 4);
+    file.WriteUnsignedInt(gf);
 
-    // GF-Anzahl
-    if(gf_file_pos)
-    {
-        unsigned current_pos = file.Tell();
-        file.Seek(gf_file_pos, SEEK_SET);
-        file.WriteUnsignedInt(gf);
-        file.Seek(current_pos, SEEK_SET);
-    } else
-        file.WriteUnsignedInt(gf);
-
-    // Type (RC_GAME)
     file.WriteUnsignedChar(RC_GAME);
-
-    // Länge der Daten
     file.WriteUnsignedShort(length);
-    // Daten
     file.WriteRawData(data, length);
-
-    // Platzhalter für nächste GF-Zahl
-    gf_file_pos = file.Tell();
-    file.WriteUnsignedInt(0xeeeeeeee);
 
     // Sofort rein damit
     file.Flush();
@@ -270,19 +226,17 @@ void Replay::AddGameCommand(const unsigned gf, const unsigned short length, cons
 
 bool Replay::ReadGF(unsigned* gf)
 {
-    //// kein Marker bedeutet das Ende der Welt
-    // if(memcmp(marker, "GCCM", 4) != 0)
-    //  return false;
-
-    // GF-Anzahl
-    *gf = file.ReadUnsignedInt();
-
-    // Replaydatei zu Ende?
-    bool eof = file.EndOfFile();
-    if(eof)
+    try
+    {
+        *gf = file.ReadUnsignedInt();
+    } catch(std::runtime_error&)
+    {
         *gf = 0xFFFFFFFF;
-
-    return !eof;
+        if(file.EndOfFile())
+            return false;
+        throw;
+    }
+    return true;
 }
 
 Replay::ReplayCommand Replay::ReadRCType()
@@ -305,7 +259,7 @@ std::vector<unsigned char> Replay::ReadGameCommand()
     return result;
 }
 
-void Replay::UpdateLastGF(const unsigned last_gf)
+void Replay::UpdateLastGF(unsigned last_gf)
 {
     if(!file.IsValid())
         return;

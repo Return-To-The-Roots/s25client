@@ -51,7 +51,7 @@ public:
 private:
     unsigned connecttime;
     /// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
-    unser_time_t last_command_timeout;
+    libutil::time64_t last_command_timeout;
 
 public:
     Socket so;

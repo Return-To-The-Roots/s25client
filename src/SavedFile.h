@@ -23,9 +23,10 @@
 #include "gameData/NationConsts.h"
 #include "libutil/MyTime.h"
 #include <string>
+#include <vector>
 
-struct BasePlayerInfo;
 class BinaryFile;
+struct BasePlayerInfo;
 
 /// Basisklasse für Replays und Savegames
 class SavedFile
@@ -44,6 +45,13 @@ public:
     /// Reads and validates the file header. On error false is returned and lastErrorMsg is set
     bool ReadFileHeader(BinaryFile& file);
 
+    /// Write common information (program version, map name, time and player names)
+    virtual void WriteExtHeader(BinaryFile& file, const std::string& mapName);
+    virtual bool ReadExtHeader(BinaryFile& file);
+
+    void WriteAllHeaderData(BinaryFile& file, const std::string& mapName);
+    bool ReadAllHeaderData(BinaryFile& file);
+
     /// Schreibt Spielerdaten
     void WritePlayerData(BinaryFile& file);
     /// Liest Spielerdaten aus
@@ -58,13 +66,14 @@ public:
     unsigned GetPlayerCount();
     void AddPlayer(const BasePlayerInfo& player);
     void ClearPlayers();
-    std::string GetLastErrorMsg() const;
-    std::string GetRevision() const;
 
-    /// Zeitpunkt der Aufnahme
-    unser_time_t save_time;
-    /// Mapname
-    std::string mapName;
+    std::string GetLastErrorMsg() const { return lastErrorMsg; }
+
+    std::string GetRevision() const;
+    std::string GetMapName() const { return mapName_; }
+    libutil::time64_t GetSaveTime() const { return saveTime_; }
+    const std::vector<std::string>& GetPlayerNames() const { return playerNames_; }
+
     /// GGS
     GlobalGameSettings ggs;
 
@@ -72,9 +81,15 @@ protected:
     /// Last error message during loading
     std::string lastErrorMsg;
 
+private:
     std::vector<BasePlayerInfo> players;
     /// Revision as saved in the file
     boost::array<char, 8> revision;
+    /// Zeitpunkt der Aufnahme
+    libutil::time64_t saveTime_;
+    /// Mapname
+    std::string mapName_;
+    std::vector<std::string> playerNames_;
 };
 
 #endif // !GAMEFILES_H_INCLUDED

@@ -327,10 +327,9 @@ void GameClient::StartGame(const unsigned random_init)
     if(!replayMode)
     {
         RTTR_Assert(!replayinfo);
-        replayinfo.reset(new ReplayInfo);
-        WriteReplayHeader(random_init);
+        StartReplayRecording(random_init);
         std::stringstream fileName;
-        fileName << FILE_PATHS[47] << TIME.FormatTime("game_%Y-%m-%d_%H-%i-%s") << "-" << (rand() % 100) << ".log";
+        fileName << FILE_PATHS[47] << libutil::Time::FormatTime("game_%Y-%m-%d_%H-%i-%s") << "-" << (rand() % 100) << ".log";
     }
 
     // Daten nach dem Schreiben des Replays ggf wieder löschen
@@ -788,7 +787,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     if(ci)
         ci->CI_Async(checksum_list.str());
 
-    std::string timeStr = TIME.FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    std::string timeStr = libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
     std::string filePathSave = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
     std::string filePathLog = GetFilePath(FILE_PATHS[47]) + timeStr + "Player.log";
     RANDOM.SaveLog(filePathLog);
@@ -906,7 +905,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
             case MAPTYPE_SAVEGAME:
             {
                 mapinfo.savegame.reset(new Savegame);
-                if(!mapinfo.savegame->Load(mapinfo.filepath, true, true))
+                if(!mapinfo.savegame->Load(mapinfo.filepath, true, false))
                 {
                     if(ci)
                         ci->CI_Error(CE_WRONGMAP);
@@ -916,7 +915,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 
                 RTTR_Assert(!gameLobby);
                 gameLobby.reset(new GameLobby(true, IsHost(), mapinfo.savegame->GetPlayerCount()));
-                mapinfo.title = mapinfo.savegame->mapName;
+                mapinfo.title = mapinfo.savegame->GetMapName();
             }
             break;
         }
@@ -1432,16 +1431,11 @@ void GameClient::WritePlayerInfo(SavedFile& file)
         file.AddPlayer(gw->GetPlayer(i));
 }
 
-void GameClient::WriteReplayHeader(const unsigned random_init)
+void GameClient::StartReplayRecording(const unsigned random_init)
 {
-    // Dateiname erzeugen
-    unser_time_t cTime = TIME.CurrentTime();
-    std::string fileName = GetFilePath(FILE_PATHS[51]) + TIME.FormatTime("%Y-%m-%d_%H-%i-%s", &cTime) + ".rpl";
+    replayinfo.reset(new ReplayInfo);
+    replayinfo->fileName = libutil::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
 
-    // Headerinfos füllen
-
-    // Timestamp der Aufzeichnung
-    replayinfo->replay.save_time = cTime;
     /// NWF-Länge
     replayinfo->replay.nwf_length = framesinfo.nwf_length;
     // Random-Init
@@ -1452,30 +1446,30 @@ void GameClient::WriteReplayHeader(const unsigned random_init)
     // GGS-Daten
     replayinfo->replay.ggs = GetGGS();
 
-    // Mapname
-    replayinfo->replay.mapName = mapinfo.title;
-    replayinfo->replay.mapFileName = bfs::path(mapinfo.filepath).filename().string();
-
     // Datei speichern
-    if(!replayinfo->replay.WriteHeader(fileName, mapinfo))
-        LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo->replay.\n");
+    if(!replayinfo->replay.StartRecording(GetFilePath(FILE_PATHS[51]) + replayinfo->fileName, mapinfo))
+    {
+        LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.\n");
+        replayinfo.reset();
+    }
 }
 
 bool GameClient::StartReplay(const std::string& path)
 {
     RTTR_Assert(state == CS_STOPPED);
-    replayinfo.reset(new ReplayInfo);
     mapinfo.Clear();
-    replayinfo->filename = path;
+    replayinfo.reset(new ReplayInfo);
 
-    if(!replayinfo->replay.LoadHeader(path, &mapinfo))
+    if(!replayinfo->replay.LoadHeader(path, true) || !replayinfo->replay.LoadGameData(mapinfo))
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
           % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
+        replayinfo.reset();
         return false;
     }
+    replayinfo->fileName = bfs::path(replayinfo->replay.GetFile().getFilePath()).filename().string();
 
     gameLobby.reset(new GameLobby(true, true, replayinfo->replay.GetPlayerCount()));
 
@@ -1520,7 +1514,8 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_OLDMAP:
         {
             // Richtigen Pfad zur Map erstellen
-            mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + replayinfo->replay.mapFileName;
+            bfs::path mapFilePath = bfs::path(GetFilePath(FILE_PATHS[48])) / bfs::path(mapinfo.filepath).filename();
+            mapinfo.filepath = mapFilePath.string();
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 LOG.write(_("Error decompressing map file"));
@@ -1531,7 +1526,7 @@ bool GameClient::StartReplay(const std::string& path)
             }
             if(mapinfo.luaData.length)
             {
-                mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+                mapinfo.luaFilepath = mapFilePath.replace_extension("lua").string();
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
                     LOG.write(_("Error decompressing lua file"));
@@ -1683,11 +1678,6 @@ unsigned GameClient::SaveToFile(const std::string& filename)
 
     Savegame save;
 
-    // Timestamp der Aufzeichnung
-    save.save_time = TIME.CurrentTime();
-    // Mapname
-    save.mapName = this->mapinfo.title;
-
     WritePlayerInfo(save);
 
     // GGS-Daten
@@ -1702,7 +1692,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     save.sgd.MakeSnapshot(*gw);
 
     // Und alles speichern
-    if(!save.Save(filename))
+    if(!save.Save(filename, mapinfo.title))
         return 1;
     else
         return 0;
@@ -1805,11 +1795,13 @@ std::string GameClient::FormatGFTime(const unsigned gf) const
 
 const std::string& GameClient::GetReplayFileName() const
 {
-    return replayinfo->filename;
+    static std::string emptyString;
+    return replayinfo ? replayinfo->fileName : emptyString;
 }
 
 Replay& GameClient::GetReplay()
 {
+    RTTR_Assert(replayinfo);
     return replayinfo->replay;
 }
 

@@ -35,6 +35,7 @@
 #include "libutil/Log.h"
 #include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 class SwitchOnStart : public ClientInterface
 {
@@ -90,7 +91,7 @@ void iwPlayReplay::PopulateTable()
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(*it))
+        if(!replay.LoadHeader(*it, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
@@ -103,22 +104,16 @@ void iwPlayReplay::PopulateTable()
         }
 
         // Zeitstamp benutzen
-        std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
+        std::string dateStr = libutil::Time::FormatTime("%d.%m.%Y - %H:%i", replay.GetSaveTime());
 
         // Spielernamen auslesen
         std::string tmp_players;
-        for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
+        BOOST_FOREACH(const std::string& playerName, replay.GetPlayerNames())
         {
-            // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
-            const BasePlayerInfo& curPlayer = replay.GetPlayer(i);
-            if(curPlayer.isUsed())
-            {
-                // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
-                if(!tmp_players.empty())
-                    tmp_players += ", ";
+            if(!tmp_players.empty())
+                tmp_players += ", ";
 
-                tmp_players += curPlayer.name;
-            }
+            tmp_players += playerName;
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
@@ -214,9 +209,9 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
         {
             Replay replay;
-            if(!replay.LoadHeader(*it))
+            if(!replay.LoadHeader(*it, false))
             {
-                replay.StopRecording();
+                replay.Close();
                 boost::system::error_code ec;
                 bfs::remove(*it, ec);
             }
