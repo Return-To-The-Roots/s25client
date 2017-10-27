@@ -42,9 +42,9 @@
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 
 // Size is chosen based on current maximum attacking distances!
-struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
+struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 {
-    typedef SeaWorldWithGCExecution<62, 64> Parent;
+    typedef SeaWorldWithGCExecution<3, 62, 64> Parent;
     using Parent::curPlayer;
     using Parent::ggs;
     using Parent::world;
@@ -619,9 +619,9 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     // Still have our harbor
     const unsigned hbId = world.GetHarborPointID(harborPos[1]);
     BOOST_REQUIRE(hbId);
-    // Should have coast to both north points
+    // Should have coast at NE (NW is skipped)
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::WEST), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), 1u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), 0u);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), 1u);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::EAST), 0u);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SOUTHEAST), 0u);

@@ -365,12 +365,10 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     const GO_Type got = no.GetGOT();
     if(got == GOT_BUILDINGSITE)
     {
-        char text[256];
         unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
-        snprintf(text, 256, "(%d %%)", p);
-        SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+        SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
     } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
     {
         const nobUsual& n = static_cast<const nobUsual&>(no);

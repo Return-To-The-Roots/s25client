@@ -16,8 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
+#include "PointOutput.h"
 #include "controls/ctrlPreviewMinimap.h"
-#include "test/PointOutput.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 #include <boost/test/unit_test.hpp>

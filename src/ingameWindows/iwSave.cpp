@@ -17,15 +17,13 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "iwSave.h"
-
-#include "Loader.h"
-#include "WindowManager.h"
-
 #include "GameClient.h"
 #include "GameServer.h"
 #include "ListDir.h"
+#include "Loader.h"
 #include "Savegame.h"
 #include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
@@ -149,11 +147,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     // Die Intervalle
     for(unsigned i = 0; i < numIntervalls; ++i)
-    {
-        char str[64];
-        sprintf(str, "%u GF", AUTO_SAVE_INTERVALS[i]);
-        combo->AddString(str);
-    }
+        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i]) + " GF");
 
     // Richtigen Eintrag auswählen
     bool found = false;

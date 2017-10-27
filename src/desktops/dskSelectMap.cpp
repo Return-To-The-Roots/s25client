@@ -32,6 +32,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
+#include "helpers/converters.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -422,9 +423,8 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         const bool hasLua = bfs::is_regular_file(luaFilepath);
 
         // Und Zeilen vorbereiten
-        char players[64], size[32];
-        snprintf(players, 64, _("%d Player"), header->getPlayer());
-        snprintf(size, 32, "%dx%d", header->getWidth(), header->getHeight());
+        std::string players = (boost::format(_("%d Player")) % header->getPlayer()).str();
+        std::string size = helpers::toString(header->getWidth()) + "x" + helpers::toString(header->getWidth());
 
         // und einfügen
         const std::string landscapes[3] = {_("Greenland"), _("Wasteland"), _("Winter world")};
@@ -434,6 +434,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
             name += " (*)";
         std::string author = cvStringToUTF8(header->getAuthor());
 
-        table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filePath.c_str());
+        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapes[header->getGfxSet()].c_str(), size.c_str(),
+                      filePath.c_str());
     }
 }

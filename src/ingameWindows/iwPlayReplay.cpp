@@ -36,6 +36,7 @@
 #include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 
 class SwitchOnStart : public ClientInterface
 {
@@ -136,9 +137,7 @@ void iwPlayReplay::PopulateTable()
     else
     {
         btDelInvalid->SetVisible(true);
-        char text[255];
-        snprintf(text, 255, _("Delete Invalid (%u)"), numInvalid);
-        btDelInvalid->SetText(text);
+        btDelInvalid->SetText((boost::format(_("Delete Invalid (%u)")) % numInvalid).str());
     }
     loadedOnce = true;
 }

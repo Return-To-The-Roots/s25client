@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().back(), harbor);
     std::vector<nobHarborBuilding*> harbors;
     BOOST_REQUIRE_EQUAL(world.GetNode(MapPoint(0, 0)).seaId, seaId);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), seaId);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), seaId);
     player.GetHarborsAtSea(harbors, seaId);
     BOOST_REQUIRE_EQUAL(harbors.size(), 1u);
     BOOST_REQUIRE_EQUAL(harbors.front(), harbor);

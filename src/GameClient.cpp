@@ -58,6 +58,7 @@
 #include "libutil/SocketSet.h"
 #include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
@@ -1639,10 +1640,9 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             gwv.Draw(road, MapPoint::Invalid(), false);
 
             // text oben noch hinschreiben
-            char nwf_string[256];
-            snprintf(nwf_string, 255, _("current GF: %u - still fast forwarding: %d GFs left (%d %%)"), GetGFNumber(), gf - i,
-                     (i * 100 / gf));
-            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwf_string, glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
+            boost::format nwfString(_("current GF: %u - still fast forwarding: %d GFs left (%d %%)"));
+            nwfString % GetGFNumber() % (gf - i) % (i * 100 / gf);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwfString.str(), glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }
@@ -1652,9 +1652,9 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat
     unsigned ticks = VIDEODRIVER.GetTickCount() - start_ticks;
-    char text[256];
-    snprintf(text, sizeof(text), _("Jump finished (%.3f seconds)."), (double)ticks / 1000.0);
-    ci->CI_Chat(playerId_, CD_SYSTEM, text);
+    boost::format text(_("Jump finished (%1$.3g seconds)."));
+    text % (ticks / 1000.0);
+    ci->CI_Chat(playerId_, CD_SYSTEM, text.str());
     SetReplayPause(true);
 }
 

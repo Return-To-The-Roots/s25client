@@ -82,6 +82,7 @@
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>

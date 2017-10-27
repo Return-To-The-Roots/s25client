@@ -27,6 +27,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskHostGame.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
@@ -203,11 +204,7 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
  */
 void iwDirectIPConnect::SetPort(unsigned short port)
 {
-    static char p[256];
-    snprintf(p, 256, "%d", port);
-
-    ctrlEdit* pp = GetCtrl<ctrlEdit>(3);
-    pp->SetText(p);
+    GetCtrl<ctrlEdit>(3)->SetText(helpers::toString(port));
 }
 
 void iwDirectIPConnect::CI_Error(const ClientError ce)
