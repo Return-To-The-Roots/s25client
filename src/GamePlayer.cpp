@@ -175,6 +175,8 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
     if(!(ps == PS_OCCUPIED || ps == PS_AI))
         return;
 
+    sgd.PushBool(isDefeated);
+
     buildings.Serialize(sgd);
 
     sgd.PushObjectContainer(roads, true);
@@ -275,6 +277,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
         return;
 
+    isDefeated = sgd.PopBool();
     buildings.Deserialize(sgd);
 
     sgd.PopObjectContainer(roads, GOT_ROADSEGMENT);
