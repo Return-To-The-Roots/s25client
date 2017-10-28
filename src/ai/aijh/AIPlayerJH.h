@@ -222,6 +222,7 @@ public:
                           bool keepstartflag = false);
     // finds all unused flags and roads, removes flags or reconnects them as neccessary
     void RemoveAllUnusedRoads(const MapPoint pt);
+    void CheckForUnconnectedBuildingSites();
     // check if there are free soldiers (in hq/storehouses)
     unsigned SoldierAvailable(int rank = -1);
 

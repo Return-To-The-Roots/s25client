@@ -245,6 +245,7 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
 
     if((gf + playerId * 7) % build_interval == 0) // plan new buildings
     {
+        CheckForUnconnectedBuildingSites();
         PlanNewBuildings(gf);
     }
 }
@@ -1973,17 +1974,37 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
 {
     std::vector<const noFlag*> flags = construction->FindFlags(pt, 25);
     // Jede Flagge testen...
-    std::list<const noFlag*> reconnectflags;
+    std::vector<const noFlag*> reconnectflags;
     for(unsigned i = 0; i < flags.size(); ++i)
     {
         if(RemoveUnusedRoad(*flags[i], 255, true, false))
             reconnectflags.push_back(flags[i]);
     }
     UpdateNodesAround(pt, 25);
-    while(!reconnectflags.empty())
+    BOOST_FOREACH(const noFlag* flag, reconnectflags)
+        construction->AddConnectFlagJob(flag);
+}
+
+void AIPlayerJH::CheckForUnconnectedBuildingSites()
+{
+    if(construction->GetConnectJobNum() > 0 || construction->GetBuildJobNum() > 0)
+        return;
+    BOOST_FOREACH(noBuildingSite* bldSite, player.GetBuildingRegister().GetBuildingSites())
     {
-        construction->AddConnectFlagJob(reconnectflags.front());
-        reconnectflags.pop_front();
+        noFlag* flag = bldSite->GetFlag();
+        bool foundRoute = false;
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        {
+            if(dir == Direction::NORTHWEST)
+                continue;
+            if(flag->GetRoute(Direction::fromInt(dir)))
+            {
+                foundRoute = true;
+                break;
+            }
+        }
+        if(!foundRoute)
+            construction->AddConnectFlagJob(flag);
     }
 }
 
