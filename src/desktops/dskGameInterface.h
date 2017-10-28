@@ -71,6 +71,8 @@ private:
     bool isScrolling;
     Point<int> startScrollPt;
     size_t zoomLvl;
+    bool isCheatModeOn;
+    std::string curCheatTxt;
 
 public:
     dskGameInterface(GameWorldBase& world);

@@ -103,7 +103,7 @@ enum
 dskGameInterface::dskGameInterface(GameWorldBase& world)
     : Desktop(NULL), gameClient(GAMECLIENT), worldViewer(gameClient.GetPlayerId(), world),
       gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
-      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
+      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -321,17 +321,15 @@ void dskGameInterface::Msg_PaintAfter()
     // Show icons in the upper right corner of the game interface
     DrawPoint iconPos(VIDEODRIVER.GetScreenSize().x - 56, 32);
 
-    /*
     // Draw cheating indicator icon (WINTER) - Single Player only!
-    if (...)
+    if(isCheatModeOn)
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
         const DrawPoint drawPos(iconPos);
 
         iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
-        cheatingImg->Draw(drawPos, 0, 0, 0, 0);
+        cheatingImg->DrawFull(drawPos);
     }
-    */
 
     // Draw speed indicator icon
     const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().speed];
@@ -652,18 +650,42 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KT_F9: // Readme
             WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
             return true;
+        case KT_F10: { bool allowHumanAI = isCheatModeOn;
 #ifndef NDEBUG
-        case KT_F10:
-            if(gameClient.GetState() == GameClient::CS_GAME && !gameClient.IsReplayModeOn())
+            allowHumanAI = true;
+#endif // !NDEBUG
+            if(gameClient.GetState() == GameClient::CS_GAME && allowHumanAI && !gameClient.IsReplayModeOn())
                 gameClient.ToggleHumanAIPlayer();
             return true;
-#endif
+        }
         case KT_F11: // Music player (midi files)
             WINDOWMANAGER.Show(new iwMusicPlayer);
             return true;
         case KT_F12: // Optionsfenster
             WINDOWMANAGER.Show(new iwOptionsWindow());
             return true;
+    }
+
+    static std::string winterCheat = "winter";
+    switch(ke.c)
+    {
+        case 'w':
+        case 'i':
+        case 'n':
+        case 't':
+        case 'e':
+        case 'r':
+            curCheatTxt += char(ke.c);
+            if(winterCheat.find(curCheatTxt) == 0)
+            {
+                if(curCheatTxt == winterCheat)
+                {
+                    isCheatModeOn = !isCheatModeOn;
+                    curCheatTxt.clear();
+                }
+            } else
+                curCheatTxt.clear();
+            break;
     }
 
     switch(ke.c)
