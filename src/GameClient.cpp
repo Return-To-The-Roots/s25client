@@ -263,6 +263,14 @@ void GameClient::StartGame(const unsigned random_init)
     // Random-Generator initialisieren
     RANDOM.Init(random_init);
 
+    if(mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
+    {
+        if(ci)
+            ci->CI_Error(CE_WRONGMAP);
+        Stop();
+        return;
+    }
+
     // If we have a savegame, start at its first GF, else at 0
     unsigned startGF = (mapinfo.type == MAPTYPE_SAVEGAME) ? mapinfo.savegame->start_gf : 0;
     // Create the world, starting with the event manager
