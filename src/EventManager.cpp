@@ -95,11 +95,14 @@ void EventManager::DestroyCurrentObjects()
 
 void EventManager::ExecuteCurrentEvents()
 {
-    RTTR_Assert(events.empty() || events.begin()->first >= currentGF);
+    if(events.empty())
+        return;
+    // Get list of events to be executed next
+    EventMap::iterator itCurEvents = events.begin();
 
-    // Get list of events for current GF
-    EventMap::iterator itCurEvents = events.find(currentGF);
-    if(itCurEvents != events.end())
+    RTTR_Assert(itCurEvents->first >= currentGF);
+
+    if(itCurEvents->first == currentGF)
         ExecuteEvents(itCurEvents);
 }
 
