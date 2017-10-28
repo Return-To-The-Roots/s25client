@@ -263,7 +263,7 @@ void GameClient::StartGame(const unsigned random_init)
     // Random-Generator initialisieren
     RANDOM.Init(random_init);
 
-    if(mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
+    if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
     {
         if(ci)
             ci->CI_Error(CE_WRONGMAP);
