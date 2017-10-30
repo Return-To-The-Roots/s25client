@@ -82,17 +82,16 @@ public:
     void UpdateLastGF(unsigned last_gf);
 
     BinaryFile& GetFile() { return file; }
+    unsigned GetLastGF() const { return lastGF_; }
 
-    /// NWF-Länge
-    unsigned short nwf_length;
     /// Zufallsgeneratorinitialisierung
     unsigned random_init;
-    /// End-GF
-    unsigned lastGF_;
 
 protected:
     BinaryFile file;
     bool isRecording;
+    /// End-GF
+    unsigned lastGF_;
     /// Position des End-GF in der Datei
     unsigned last_gf_file_pos;
     MapType mapType_;

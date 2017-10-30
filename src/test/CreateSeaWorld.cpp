@@ -148,7 +148,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         RTTR_Assert(harborsPlaced == 2);
     }
 
-    MapLoader::InitSeasAndHarbors(world, harbors);
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 
     if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
         return false;
@@ -201,7 +201,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
             node.t1 = node.t2 = TT_MEADOW1;
         }
     }
-    MapLoader::PlaceHQs(world, hqPositions, playerNations_, false);
+    BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations_, false));
 
     std::vector<MapPoint> harbors;
     BOOST_FOREACH(MapPoint hqPos, hqPositions)
@@ -212,6 +212,6 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
         BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos + Position(0, landRadius)), world, harbors));
     }
     RTTR_Assert(harbors.size() == hqPositions.size() * 4u);
-    MapLoader::InitSeasAndHarbors(world, harbors);
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
     return true;
 }

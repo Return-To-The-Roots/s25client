@@ -37,7 +37,7 @@ uint16_t Replay::GetVersion() const
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : nwf_length(0), random_init(0), lastGF_(0), isRecording(false), last_gf_file_pos(0) {}
+Replay::Replay() : random_init(0), isRecording(false), lastGF_(0), last_gf_file_pos(0) {}
 
 Replay::~Replay()
 {
@@ -86,7 +86,6 @@ bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
     WriteGGS(file);
 
     // Game data
-    file.WriteUnsignedShort(nwf_length);
     file.WriteUnsignedInt(random_init);
 
     switch(mapType_)
@@ -153,7 +152,6 @@ bool Replay::LoadHeader(const std::string& filename, bool loadSettings)
 
 bool Replay::LoadGameData(MapInfo& mapInfo)
 {
-    nwf_length = file.ReadUnsignedShort();
     random_init = file.ReadUnsignedInt();
 
     mapInfo.Clear();

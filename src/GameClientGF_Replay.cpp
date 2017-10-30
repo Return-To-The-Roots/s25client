@@ -32,7 +32,7 @@ void GameClient::ExecuteGameFrame_Replay()
     AsyncChecksum checksum(randcheckinfo.rand);
 
     const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.lastGF_);
+    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF());
 
     // Execute all commands from the replay for the current GF
     while(replayinfo->next_gf == curGF)
@@ -90,7 +90,7 @@ void GameClient::ExecuteGameFrame_Replay()
     NextGF();
 
     // Check for game end
-    if(curGF == replayinfo->replay.lastGF_)
+    if(curGF == replayinfo->replay.GetLastGF())
     {
         char text[256];
         sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF,

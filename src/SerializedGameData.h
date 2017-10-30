@@ -171,18 +171,6 @@ private:
 // Implementation
 ////////////////////////////////////////////////////////////////////////////////
 
-template<>
-inline void Serializer::Push(bool val)
-{
-    PushBool(val);
-}
-
-template<>
-inline bool Serializer::Pop<bool>()
-{
-    return PopBool();
-}
-
 template<typename T>
 void SerializedGameData::PushObjectContainer(const T& gos, const bool known)
 {

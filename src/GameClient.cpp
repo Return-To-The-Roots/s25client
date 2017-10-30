@@ -1444,15 +1444,9 @@ void GameClient::StartReplayRecording(const unsigned random_init)
 {
     replayinfo.reset(new ReplayInfo);
     replayinfo->fileName = libutil::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
-
-    /// NWF-Länge
-    replayinfo->replay.nwf_length = framesinfo.nwf_length;
-    // Random-Init
     replayinfo->replay.random_init = random_init;
 
     WritePlayerInfo(replayinfo->replay);
-
-    // GGS-Daten
     replayinfo->replay.ggs = GetGGS();
 
     // Datei speichern
@@ -1482,10 +1476,6 @@ bool GameClient::StartReplay(const std::string& path)
 
     gameLobby.reset(new GameLobby(true, true, replayinfo->replay.GetPlayerCount()));
 
-    // NWF-Länge
-    framesinfo.nwf_length = replayinfo->replay.nwf_length;
-
-    // Spielerdaten
     for(unsigned i = 0; i < replayinfo->replay.GetPlayerCount(); ++i)
         gameLobby->getPlayer(i) = JoinPlayerInfo(replayinfo->replay.GetPlayer(i));
 
@@ -1732,7 +1722,7 @@ bool GameClient::IsReplayFOWDisabled() const
 
 unsigned GameClient::GetLastReplayGF() const
 {
-    return replayinfo->replay.lastGF_;
+    return replayinfo->replay.GetLastGF();
 }
 
 bool GameClient::AddGC(gc::GameCommand* gc)

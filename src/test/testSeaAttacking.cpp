@@ -614,7 +614,7 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     BOOST_REQUIRE(world.IsWaterPoint(world.GetNeighbour(ptNW, Direction::NORTHWEST)));
     BOOST_REQUIRE(world.IsWaterPoint(seaPtN));
     // Re-init seas/harbors
-    MapLoader::InitSeasAndHarbors(world);
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
 
     // Still have our harbor
     const unsigned hbId = world.GetHarborPointID(harborPos[1]);

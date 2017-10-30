@@ -22,7 +22,7 @@
 #include "PlayerInfo.h"
 #include "TestEventManager.h"
 #include "addons/const_addons.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
 #include <boost/test/unit_test.hpp>
@@ -99,7 +99,7 @@ struct WorldFixture
 {
     TestEventManager em;
     GlobalGameSettings ggs;
-    GameWorldGame world;
+    GameWorld world;
     T_WorldCreator worldCreator;
     WorldFixture()
         : em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em),

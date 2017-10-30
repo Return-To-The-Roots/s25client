@@ -122,7 +122,7 @@ void iwPlayReplay::PopulateTable()
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
-        std::string lastGF = helpers::toString(replay.lastGF_);
+        std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
         table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it->c_str());

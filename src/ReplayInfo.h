@@ -33,7 +33,7 @@ struct ReplayInfo
     /// Replay asynchron (Meldung nur einmal ausgeben!)
     int async;
     bool end;
-    // Nächster Replay-Command-Zeitpunkt (in GF)
+    // NÃ¤chster Replay-Command-Zeitpunkt (in GF)
     unsigned next_gf;
     /// Alles sichtbar (FoW deaktiviert)
     bool all_visible;

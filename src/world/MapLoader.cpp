@@ -495,6 +495,11 @@ struct CalcHarborPosNeighborsNode
 /// Calculate the distance from each harbor to the others
 void MapLoader::CalcHarborPosNeighbors(World& world)
 {
+    BOOST_FOREACH(HarborPos& harbor, world.harbor_pos)
+    {
+        for(unsigned z = 0; z < 6; ++z)
+            harbor.neighbors[z].clear();
+    }
     PathConditionShip shipPathChecker(world);
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive

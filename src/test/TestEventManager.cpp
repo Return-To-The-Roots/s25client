@@ -72,3 +72,11 @@ void TestEventManager::RescheduleEvent(GameEvent& event, unsigned targetGF)
     event.length = targetGF - event.startGF;
     AddEventToQueue(&event);
 }
+
+std::vector<const GameEvent*> TestEventManager::GetEvents() const
+{
+    std::vector<const GameEvent*> nextEv;
+    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+        nextEv.insert(nextEv.end(), it->second.begin(), it->second.end());
+    return nextEv;
+}
