@@ -193,7 +193,7 @@ public:
 
 protected:
     /// Called when the visibility of point changed for a player
-    void VisibilityChanged(const MapPoint pt, unsigned player) override;
+    void VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
     /// Called, when the altitude of a point was changed
     void AltitudeChanged(const MapPoint pt) override;
 

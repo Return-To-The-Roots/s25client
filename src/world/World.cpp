@@ -197,18 +197,19 @@ void World::SetReserved(const MapPoint pt, const bool reserved)
     GetNodeInt(pt).reserved = reserved;
 }
 
-void World::SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime)
+void World::SetVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime)
 {
     FoWNode& node = GetNodeInt(pt).fow[player];
-    if(node.visibility == vis)
+    Visibility oldVis = node.visibility;
+    if(oldVis == vis)
         return;
 
     node.visibility = vis;
     if(vis == VIS_VISIBLE)
         deletePtr(node.object);
     else if(vis == VIS_FOW)
-        SaveFOWNode(pt, player, curTime);
-    VisibilityChanged(pt, player);
+        SaveFOWNode(pt, player, fowTime);
+    VisibilityChanged(pt, player, oldVis, vis);
 }
 
 void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)

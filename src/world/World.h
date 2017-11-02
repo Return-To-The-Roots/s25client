@@ -111,7 +111,9 @@ public:
     void SetResource(const MapPoint pt, const unsigned char newResource) { GetNodeInt(pt).resources = newResource; }
     void SetOwner(const MapPoint pt, const unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
     void SetReserved(const MapPoint pt, const bool reserved);
-    void SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime);
+    /// Sets the visibility and fires a Visibility Changed event if different
+    /// fowTime is only used if visibility gets changed to FoW
+    void SetVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime = 0);
 
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
 
@@ -184,7 +186,7 @@ protected:
     /// Notify derived classes of changed altitude
     virtual void AltitudeChanged(const MapPoint pt) = 0;
     /// Notify derived classes of changed visibility
-    virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
+    virtual void VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) = 0;
     /// Sets the road for the given (road) direction
     void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
     BoundaryStones& GetBoundaryStones(const MapPoint pt) { return GetNodeInt(pt).boundary_stones; }

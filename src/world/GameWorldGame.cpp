@@ -1168,14 +1168,8 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 
     // Vollständig sichtbar --> vollständig sichtbar logischerweise
     if(visible)
-    {
-        if(visibility_before != VIS_VISIBLE)
-        {
-            if(HasLua())
-                GetLua().EventExplored(player, pt, GetNode(pt).owner);
-            SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
-        }
-    } else
+        MakeVisible(pt, player);
+    else
     {
         // nicht mehr sichtbar
         // Je nach vorherigen Zustand und Einstellung entscheiden
@@ -1201,11 +1195,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 
 void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 {
-    Visibility visibility_before = GetNode(pt).fow[player].visibility;
-    SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
-
-    if(visibility_before != VIS_VISIBLE && HasLua())
-        GetLua().EventExplored(player, pt, GetNode(pt).owner);
+    SetVisibility(pt, player, VIS_VISIBLE);
 }
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
@@ -1407,9 +1397,11 @@ MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)
     return GetNodeInt(pt);
 }
 
-void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player)
+void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
 {
-    GameWorldBase::VisibilityChanged(pt, player);
+    GameWorldBase::VisibilityChanged(pt, player, oldVis, newVis);
+    if(oldVis == VIS_INVISIBLE && newVis == VIS_VISIBLE && HasLua())
+        GetLua().EventExplored(player, pt, GetNode(pt).owner);
     // Minimap Bescheid sagen
     if(gi)
         gi->GI_UpdateMinimap(pt);

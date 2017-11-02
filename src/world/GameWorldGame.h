@@ -180,7 +180,7 @@ public:
     void RecalcBorderStones(Point<int> startPt, Point<int> endPt);
 
 protected:
-    void VisibilityChanged(const MapPoint pt, unsigned player) override;
+    void VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
 };
 
 #endif // GameWorldGame_h__

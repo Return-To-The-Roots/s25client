@@ -267,7 +267,7 @@ Point<int> GameWorldBase::GetNodePos(const MapPoint pt) const
     return result;
 }
 
-void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player)
+void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
 {
     GetNotifications().publish(PlayerNodeNote(PlayerNodeNote::Visibility, pt, player));
 }
