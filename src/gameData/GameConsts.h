@@ -24,9 +24,6 @@
 /// Geschwindigkeitsabstufungen - Längen der GFs in ms
 const boost::array<unsigned, 6> SUPPRESS_UNUSED SPEED_GF_LENGTHS = {{80, 60, 50, 40, 30, 1}};
 
-/// Konvertierungstabelle von Rohstoff-Indizes von den Bergwerken --> Map
-const boost::array<unsigned char, 5> SUPPRESS_UNUSED RESOURCES_MINE_TO_MAP = {{3, 0, 1, 2, 4}};
-
 /// Reichweite der Bergarbeiter
 const unsigned MINER_RADIUS = 2;
 

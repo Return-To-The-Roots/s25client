@@ -18,6 +18,7 @@
 #ifndef MapNode_h__
 #define MapNode_h__
 
+#include "Resource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
@@ -41,7 +42,7 @@ struct MapNode
     /// of the pt)
     TerrainType t1, t2;
     /// Ressourcen
-    unsigned char resources;
+    Resource resources;
     /// Reservierungen
     bool reserved;
     /// Owner (playerIdx - 1)

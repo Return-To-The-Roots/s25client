@@ -82,12 +82,12 @@ GoodType nofMiner::ProduceWare()
 
 bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && FindPointWithResource(workplace->GetBuildingType() - BLD_GRANITEMINE).isValid();
+    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
 }
 
 bool nofMiner::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(workplace->GetBuildingType() - BLD_GRANITEMINE);
+    MapPoint resPt = FindPointWithResource(GetRequiredResType());
     if(!resPt.isValid())
         return false;
     const GlobalGameSettings& settings = gwg->GetGGS();
@@ -96,4 +96,15 @@ bool nofMiner::StartWorking()
     if(!inexhaustibleRes)
         gwg->ReduceResource(resPt);
     return nofWorkman::StartWorking();
+}
+
+Resource::Type nofMiner::GetRequiredResType() const
+{
+    switch(workplace->GetBuildingType())
+    {
+        case BLD_GOLDMINE: return Resource::Gold;
+        case BLD_IRONMINE: return Resource::Iron;
+        case BLD_COALMINE: return Resource::Coal;
+        default: return Resource::Granite;
+    }
 }

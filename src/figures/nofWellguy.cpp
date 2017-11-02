@@ -116,12 +116,12 @@ GoodType nofWellguy::ProduceWare()
 bool nofWellguy::AreWaresAvailable() const
 {
     // Check for water
-    return FindPointWithResource(4).isValid();
+    return FindPointWithResource(Resource::Water).isValid();
 }
 
 bool nofWellguy::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(4);
+    MapPoint resPt = FindPointWithResource(Resource::Water);
     if(!resPt.isValid())
         return false;
     if(gwg->GetGGS().isEnabled(AddonId::EXHAUSTIBLE_WELLS))

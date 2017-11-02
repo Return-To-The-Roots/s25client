@@ -20,6 +20,7 @@
 
 #include "nofBuildingWorker.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/Resource.h"
 class SerializedGameData;
 class nobBaseWarehouse;
 class nobUsual;
@@ -48,7 +49,7 @@ protected:
     virtual bool StartWorking();
 
     /// Looks for a point with a given resource on the node
-    MapPoint FindPointWithResource(unsigned char type) const;
+    MapPoint FindPointWithResource(Resource::Type type) const;
 
 public:
     /// Going to workplace

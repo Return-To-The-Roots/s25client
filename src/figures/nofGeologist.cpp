@@ -262,11 +262,11 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
         case STATE_GEOLOGIST_DIG:
         {
             // Ressourcen an diesem Punkt untersuchen
-            unsigned char resources = gwg->GetNode(pos).resources;
+            Resource resources = gwg->GetNode(pos).resources;
+            if(resources.getType() == Resource::Fish)
+                resources.setType(Resource::Nothing);
 
-            if((resources >= 0x41 && resources <= 0x47) || (resources >= 0x49 && resources <= 0x4F)
-               || (resources >= 0x51 && resources <= 0x57) || (resources >= 0x59 && resources <= 0x5F)
-               || (resources >= 0x21 && resources <= 0x2F))
+            if(resources.getAmount() > 0u)
             {
                 // Es wurde was gefunden, erstmal Jubeln
                 state = STATE_GEOLOGIST_CHEER;
@@ -418,70 +418,41 @@ void nofGeologist::GoToNextNode()
     }
 }
 
-void nofGeologist::SetSign(const unsigned char resources)
+void nofGeologist::SetSign(Resource resources)
 {
+    RTTR_Assert(resources.getType() != Resource::Fish); // Shall never happen
+
     // Bestimmte Objekte können gelöscht werden
     NodalObjectType noType = gwg->GetNO(pos)->GetType();
     if(noType != NOP_NOTHING && noType != NOP_ENVIRONMENT)
         return;
     gwg->DestroyNO(pos, false);
 
-    // Schildtyp und -häufigkeit herausfinden
-    unsigned char quantity;
-    Resource type;
-
-    if(resources >= 0x41 && resources <= 0x47)
-    {
-        type = RES_COAL;
-        quantity = (resources - 0x40) / 3;
-    } else if(resources >= 0x49 && resources <= 0x4F)
-    {
-        type = RES_IRON;
-        quantity = (resources - 0x48) / 3;
-    } else if(resources >= 0x51 && resources <= 0x57)
-    {
-        type = RES_GOLD;
-        quantity = (resources - 0x50) / 3;
-    } else if(resources >= 0x59 && resources <= 0x5F)
-    {
-        type = RES_GRANITE;
-        quantity = (resources - 0x58) / 3;
-    } else if(resources >= 0x21 && resources <= 0x27)
-    {
-        type = RES_WATER;
-        quantity = (resources - 0x20) / 3;
-    } else
-    {
-        // nichts
-        type = RES_TYPES_COUNT;
-        quantity = 0;
-    }
-
     // Schild setzen
-    gwg->SetNO(pos, new noSign(pos, type, quantity));
+    gwg->SetNO(pos, new noSign(pos, resources));
 
     // If nothing found, there is nothing left to do
-    if(type == RES_TYPES_COUNT)
+    if(resources.getAmount() == 0u)
         return;
 
-    if(!resAlreadyFound[type] && !IsSignInArea(type))
+    if(!resAlreadyFound[resources.getType()] && !IsSignInArea(resources.getType()))
     {
         const char* msg;
-        switch(type)
+        switch(resources.getType())
         {
-            case RES_IRON: msg = _("Found iron ore"); break;
-            case RES_GOLD: msg = _("Found gold"); break;
-            case RES_COAL: msg = _("Found coal"); break;
-            case RES_GRANITE: msg = _("Found granite"); break;
-            case RES_WATER: msg = _("Found water"); break;
+            case Resource::Iron: msg = _("Found iron ore"); break;
+            case Resource::Gold: msg = _("Found gold"); break;
+            case Resource::Coal: msg = _("Found coal"); break;
+            case Resource::Granite: msg = _("Found granite"); break;
+            case Resource::Water: msg = _("Found water"); break;
             default: RTTR_Assert(false); return;
         }
         SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
-        gwg->GetNotifications().publish(ResourceNote(player, pos, type, quantity));
+        gwg->GetNotifications().publish(ResourceNote(player, pos, resources));
         if(gwg->HasLua())
-            gwg->GetLua().EventResourceFound(this->player, pos, type, quantity);
+            gwg->GetLua().EventResourceFound(this->player, pos, resources.getType(), resources.getAmount());
     }
-    resAlreadyFound[type] = true;
+    resAlreadyFound[resources.getType()] = true;
 }
 
 void nofGeologist::LostWork()
@@ -508,10 +479,10 @@ void nofGeologist::LostWork()
 
 struct IsSignOfType
 {
-    const unsigned type;
+    const Resource::Type type;
     const World& gwb;
 
-    IsSignOfType(unsigned type, const World& gwb) : type(type), gwb(gwb) {}
+    IsSignOfType(Resource::Type type, const World& gwb) : type(type), gwb(gwb) {}
 
     bool operator()(const MapPoint& pt, unsigned /*distance*/)
     {
@@ -520,7 +491,7 @@ struct IsSignOfType
     }
 };
 
-bool nofGeologist::IsSignInArea(unsigned char type) const
+bool nofGeologist::IsSignInArea(Resource::Type type) const
 {
     return gwg->CheckPointsInRadius(pos, 7, IsSignOfType(type, *gwg), false);
 }

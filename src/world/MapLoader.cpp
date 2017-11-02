@@ -111,22 +111,31 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         node.t1 = TerrainData::MapIdx2Terrain(t1);
         node.t2 = TerrainData::MapIdx2Terrain(t2);
 
-        unsigned char resource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
+        unsigned char mapResource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
+        Resource resource;
         // Wasser?
-        if(resource == 0x20 || resource == 0x21)
+        if(mapResource == 0x20 || mapResource == 0x21)
         {
             // TODO: Berge hatten komische Wasserbeeinflussung
             // ggf 0-4 Wasser setzen
             if((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
-                resource = 0; // Kein Wasser, in der W�ste, da isses trocken!
+                resource = Resource(0); // No water in water or desert
             else if((node.t1 == TT_STEPPE || node.t2 == TT_STEPPE))
-                resource = 0x23; // 2 Wasser
+                resource = Resource(Resource::Water, 2); // 2 Wasser
             else if((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
-                resource = 0x25; // 4 Wasser
+                resource = Resource(Resource::Water, 4); // 4 Wasser
             else
-                resource = 0x27;                      // 7 Wasser
-        } else if(resource > 0x80 && resource < 0x90) // fish
-            resource = 0x84;                          // Use 4 fish
+                resource = Resource(Resource::Water, 7); // 7 Wasser
+        } else if(mapResource > 0x40 && mapResource < 0x48)
+            resource = Resource(Resource::Coal, mapResource - 0x40);
+        else if(mapResource > 0x48 && mapResource < 0x50)
+            resource = Resource(Resource::Iron, mapResource - 0x48);
+        else if(mapResource > 0x50 && mapResource < 0x58)
+            resource = Resource(Resource::Gold, mapResource - 0x50);
+        else if(mapResource > 0x58 && mapResource < 0x60)
+            resource = Resource(Resource::Granite, mapResource - 0x58);
+        else if(mapResource > 0x80 && mapResource < 0x90) // fish
+            resource = Resource(Resource::Fish, 4);       // Use 4 fish
         node.resources = resource;
 
         node.reserved = false;

@@ -108,7 +108,7 @@ public:
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
-    void SetResource(const MapPoint pt, const unsigned char newResource) { GetNodeInt(pt).resources = newResource; }
+    void SetResource(const MapPoint pt, Resource newResource) { GetNodeInt(pt).resources = newResource; }
     void SetOwner(const MapPoint pt, const unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
     void SetReserved(const MapPoint pt, const bool reserved);
     /// Sets the visibility and fires a Visibility Changed event if different

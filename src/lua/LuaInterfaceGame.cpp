@@ -134,11 +134,11 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
     ADD_LUA_CONST(GD_MEAT);
     ADD_LUA_CONST(GD_HAM);
 
-    ADD_LUA_CONST(RES_IRON);
-    ADD_LUA_CONST(RES_GOLD);
-    ADD_LUA_CONST(RES_COAL);
-    ADD_LUA_CONST(RES_GRANITE);
-    ADD_LUA_CONST(RES_WATER);
+    lua["RES_IRON"] = Resource::Iron;
+    lua["RES_GOLD"] = Resource::Gold;
+    lua["RES_COAL"] = Resource::Coal;
+    lua["RES_GRANITE"] = Resource::Granite;
+    lua["RES_WATER"] = Resource::Water;
 
 #undef ADD_LUA_CONST
 #define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name

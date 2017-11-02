@@ -109,13 +109,13 @@ void nofFisher::WorkStarted()
     for(unsigned char i = 0; i < 6; ++i)
     {
         tmpFishingDir = Direction(i + doffset);
-        unsigned char neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources;
-        if(neighbourRes > 0x80 && neighbourRes < 0x90)
+        Resource neighbourRes = gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources;
+        if(neighbourRes.has(Resource::Fish))
             break;
     }
 
     // Wahrscheinlichkeit, einen Fisch zu fangen sinkt mit abnehmendem Bestand
-    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources - 0x80) * 10;
+    unsigned short probability = 40 + (gwg->GetNode(gwg->GetNeighbour(pos, tmpFishingDir)).resources.getAmount()) * 10;
     successful = (RANDOM.Rand(__FILE__, __LINE__, GetObjId(), 100) < probability);
     fishing_dir = tmpFishingDir.toUInt();
 }
@@ -143,8 +143,7 @@ nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt) const
     // irgendwo drumherum muss es Fisch geben
     for(unsigned char i = 0; i < 6; ++i)
     {
-        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources > 0x80
-           && gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources < 0x90)
+        if(gwg->GetNode(gwg->GetNeighbour(pt, Direction::fromInt(i))).resources.has(Resource::Fish))
             return PQ_CLASS1;
     }
 

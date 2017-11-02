@@ -38,20 +38,19 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
 
 AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 {
-    unsigned char subres = gwb.GetNode(pt).resources;
-
-    if(subres > 0x40 + 0 * 8 && subres < 0x48 + 0 * 8)
-        return AIResource::COAL;
-    else if(subres > 0x40 + 1 * 8 && subres < 0x48 + 1 * 8)
-        return AIResource::IRONORE;
-    else if(subres > 0x40 + 2 * 8 && subres < 0x48 + 2 * 8)
-        return AIResource::GOLD;
-    else if(subres > 0x40 + 3 * 8 && subres < 0x48 + 3 * 8)
-        return AIResource::GRANITE;
-    else if(subres > 0x80 && subres < 0x90)
-        return AIResource::FISH;
-    else
+    Resource subres = gwb.GetNode(pt).resources;
+    if(subres.getAmount() == 0u)
         return AIResource::NOTHING;
+    switch(subres.getType())
+    {
+        case Resource::Iron: return AIResource::IRONORE;
+        case Resource::Gold: return AIResource::GOLD;
+        case Resource::Coal: return AIResource::COAL;
+        case Resource::Granite: return AIResource::GRANITE;
+        case Resource::Fish: return AIResource::FISH;
+        default: break;
+    }
+    return AIResource::NOTHING;
 }
 
 AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const

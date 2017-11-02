@@ -110,22 +110,15 @@ namespace {
 struct NodeHasResource
 {
     const GameWorldGame& gwg;
-    const unsigned char res;
-    NodeHasResource(const GameWorldGame& gwg, const unsigned char res) : gwg(gwg), res(res) {}
+    const Resource::Type res;
+    NodeHasResource(const GameWorldGame& gwg, const Resource::Type res) : gwg(gwg), res(res) {}
 
-    bool operator()(const MapPoint pt) { return gwg.IsResourcesOnNode(pt, res); }
+    bool operator()(const MapPoint pt) { return gwg.GetNode(pt).resources.has(res); }
 };
 } // namespace
 
-/**
- *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
- *  an einer (umliegenden) Stelle.
- */
-MapPoint nofWorkman::FindPointWithResource(unsigned char type) const
+MapPoint nofWorkman::FindPointWithResource(Resource::Type type) const
 {
-    // in Map-Resource-Koordinaten konvertieren
-    type = RESOURCES_MINE_TO_MAP[type];
-
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type), true);
     if(!pts.empty())

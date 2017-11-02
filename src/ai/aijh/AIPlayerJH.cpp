@@ -2454,7 +2454,7 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
         {
             for(MapCoord r2 = 0; r2 < r; t2 = gwb.GetNeighbour(t2, Direction(i)), ++r2)
             {
-                if(gwb.GetNode(t2).resources > 0x80 && gwb.GetNode(t2).resources < 0x90) // fish on current spot?
+                if(gwb.GetNode(t2).resources.has(Resource::Fish)) // fish on current spot?
                 {
                     // LOG.write(("found fish at %i,%i ",t2);
                     // try to find a path to a neighboring node on the coast

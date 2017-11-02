@@ -187,8 +187,9 @@ GO_Type World::GetGOT(const MapPoint pt) const
 
 void World::ReduceResource(const MapPoint pt)
 {
-    RTTR_Assert(GetNodeInt(pt).resources > 0);
-    GetNodeInt(pt).resources--;
+    uint8_t curAmount = GetNodeInt(pt).resources.getAmount();
+    RTTR_Assert(curAmount > 0);
+    GetNodeInt(pt).resources.setAmount(curAmount - 1u);
 }
 
 void World::SetReserved(const MapPoint pt, const bool reserved)

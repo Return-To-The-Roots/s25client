@@ -41,7 +41,7 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
             MapNode& worldNode = world.GetNodeWriteable(pt);
             worldNode.altitude = rand() % 10 + 0xA;
             worldNode.shadow = rand() % 20;
-            worldNode.resources = rand() % 20;
+            worldNode.resources = Resource(rand() % 0xFF);
             worldNode.reserved = rand() % 2 == 0;
             worldNode.seaId = rand() % 20;
             worldNode.harborId = rand() % 20;
@@ -216,7 +216,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 BOOST_REQUIRE_EQUAL(loadNode.shadow, worldNode.shadow);
                 BOOST_REQUIRE_EQUAL(loadNode.t1, worldNode.t1);
                 BOOST_REQUIRE_EQUAL(loadNode.t2, worldNode.t2);
-                BOOST_REQUIRE_EQUAL(loadNode.resources, worldNode.resources);
+                BOOST_REQUIRE(loadNode.resources == worldNode.resources);
                 BOOST_REQUIRE_EQUAL(loadNode.reserved, worldNode.reserved);
                 BOOST_REQUIRE_EQUAL(loadNode.owner, worldNode.owner);
                 BOOST_REQUIRE_EQUAL(loadNode.bq, worldNode.bq);

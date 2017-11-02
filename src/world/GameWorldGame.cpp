@@ -1307,22 +1307,20 @@ bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) 
  *  Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
  *  Für Spiele ohne Gold.
  */
-void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char to)
+void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type to)
 {
-    // to == 0xFF heißt löschen
-    // in Map-Resource-Koordinaten konvertieren
-    from = RESOURCES_MINE_TO_MAP[from];
-    to = ((to != 0xFF) ? RESOURCES_MINE_TO_MAP[to] : 0xFF);
-
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
     // Alle Punkte durchgehen
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        unsigned char resources = GetNode(pt).resources;
+        Resource resources = GetNode(pt).resources;
         // Gibt es Ressourcen dieses Typs?
         // Wenn ja, dann umwandeln bzw löschen
-        if(resources >= 0x40 + from * 8 && resources < 0x48 + from * 8)
-            SetResource(pt, (to != 0xFF) ? resources - (from * 8 - to * 8) : 0);
+        if(resources.getType() == from)
+        {
+            resources.setType(to);
+            SetResource(pt, resources);
+        }
     }
 }
 
@@ -1375,21 +1373,6 @@ std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hb
             hps.push_back(i);
     }
     return hps;
-}
-
-bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char type) const
-{
-    RTTR_Assert(pt.x < GetWidth());
-    RTTR_Assert(pt.y < GetHeight());
-
-    unsigned char resources = GetNode(pt).resources;
-
-    // wasser?
-    if(type == 4)
-        return (resources > 0x20 && resources < 0x28);
-
-    // Gibts Ressourcen von dem Typ an diesem Punkt?
-    return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
 }
 
 MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)

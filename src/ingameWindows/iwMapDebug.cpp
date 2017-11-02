@@ -48,7 +48,7 @@ public:
                     data = "R";
                 break;
             case 2: data = helpers::toString(static_cast<unsigned>(node.altitude)); break;
-            case 3: data = helpers::toString(static_cast<unsigned>(node.resources)); break;
+            case 3: data = helpers::toString(static_cast<unsigned>(node.resources.getValue())); break;
             case 4:
                 if(node.seaId)
                     data = helpers::toString(node.seaId);

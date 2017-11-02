@@ -303,27 +303,18 @@ void GameClient::StartGame(const unsigned random_init)
         gw->LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
 
         /// Evtl. Goldvorkommen ändern
-        unsigned char target = 0xFF; // löschen
+        Resource::Type target; // löschen
         switch(ggs.getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
         {
             case 0:
-                target = 3;
-                break; // in Gold   konvertieren bzw. nichts tun
-            case 1:
-                target = 0xFF;
-                break; // löschen
-            case 2:
-                target = 2;
-                break; // in Eisen  konvertieren
-            case 3:
-                target = 1;
-                break; // in Kohle  konvertieren
-            case 4:
-                target = 0;
-                break; // in Granit konvertieren
+            default: target = Resource::Gold; break;
+            case 1: target = Resource::Nothing; break;
+            case 2: target = Resource::Iron; break;
+            case 3: target = Resource::Coal; break;
+            case 4: target = Resource::Granite; break;
         }
-        if(target != 3)
-            gw->ConvertMineResourceTypes(3, target);
+        if(target != Resource::Gold)
+            gw->ConvertMineResourceTypes(Resource::Gold, target);
     }
     gw->InitAfterLoad();
 
