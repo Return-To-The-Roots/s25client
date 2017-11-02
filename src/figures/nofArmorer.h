@@ -38,7 +38,7 @@ protected:
     GoodType ProduceWare() override;
     void HandleDerivedEvent(const unsigned id) override;
 
-    bool AreWaresAvailable() override;
+    bool AreWaresAvailable() const override;
 
 public:
     nofArmorer(const MapPoint pt, const unsigned char player, nobUsual* workplace);

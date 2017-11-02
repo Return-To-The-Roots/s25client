@@ -114,7 +114,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
     }
 }
 
-bool nofArmorer::AreWaresAvailable()
+bool nofArmorer::AreWaresAvailable() const
 {
     return workplace->WaresAvailable() || (gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
 }

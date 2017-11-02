@@ -57,7 +57,7 @@ private:
     void DrawOtherStates(DrawPoint drawPt) override;
 
 protected:
-    bool AreWaresAvailable() override;
+    bool AreWaresAvailable() const override;
 
 public:
     nofCharburner(const MapPoint pt, const unsigned char player, nobUsual* workplace);

@@ -188,7 +188,7 @@ public:
     /// Setzt neue Militäreinstellungen
     void ChangeMilitarySettings(const MilitarySettings& military_settings);
     /// Setzt neue Werkzeugeinstellungen
-    void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges);
+    void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, TOOL_COUNT>& orderChanges);
     /// Setzt neue Verteilungseinstellungen
     void ChangeDistribution(const Distributions& distribution_settings);
     /// Setzt neue Baureihenfolge-Einstellungen
@@ -307,7 +307,7 @@ public:
     unsigned GetToolsOrdered(unsigned toolIdx) const;
     /// Changes the current visual tool order by the given amount. Return true if anything was changed (tool order is clamped to [0,100])
     bool ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const;
-    const signed char* GetToolOrderDelta() const { return &tools_ordered_delta.front(); }
+    const int8_t* GetToolOrderDelta() const { return &tools_ordered_delta.front(); }
     unsigned GetToolPriority(unsigned toolIdx) const;
     /// Called when a ordered tool was finished
     void ToolOrderProcessed(unsigned toolIdx);
@@ -457,7 +457,7 @@ private:
     boost::array<bool, BUILDING_TYPES_COUNT> building_enabled;
 
     // TODO: Move to viewer. Mutable as a work-around
-    mutable boost::array<signed char, TOOL_COUNT> tools_ordered_delta;
+    mutable boost::array<int8_t, TOOL_COUNT> tools_ordered_delta;
 };
 
 #endif

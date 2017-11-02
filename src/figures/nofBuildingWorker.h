@@ -61,7 +61,7 @@ protected:
     // Ware, die er evtl gerade trägt
     GoodType ware;
 
-    /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gebeben (zu Optimeriungszwecken)
+    /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gegeben (zu Optimeriungszwecken)
     bool was_sounding;
 
 protected:
@@ -75,10 +75,7 @@ protected:
     void TryToWork();
     /// Returns true, when there are enough wares available for working.
     /// Note: On false, we will wait for the next ware or production change till checking again
-    virtual bool AreWaresAvailable();
-    /// Gets called right before we start working (actually pre-Work-Waiting) and can do final checking and handling
-    /// If false returned, work is not started and NO extra event is set for trying again. So handling must include retries
-    virtual bool ReadyForWork();
+    virtual bool AreWaresAvailable() const;
 
 private:
     /// von noFigure aufgerufen
@@ -100,11 +97,6 @@ private:
     virtual void DrawWalkingWithWare(DrawPoint drawPt);
     /// Zeichnen der Figur in sonstigen Arbeitslagen
     virtual void DrawOtherStates(DrawPoint drawPt);
-
-protected:
-    /// nur für Bergarbeiter!
-    /// Sucht die Nähe nach einer bestimmten Ressource ab und gibt true zurück, wenn er fündig wird und baut eins ab
-    bool GetResources(unsigned char type);
 
 public:
     State GetState() { return state; }

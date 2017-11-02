@@ -335,10 +335,10 @@ class ChangeTools : public GameCommand
     /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
     ToolSettings data;
 
-    boost::array<signed char, TOOL_COUNT> orders;
+    boost::array<int8_t, TOOL_COUNT> orders;
 
 protected:
-    ChangeTools(const ToolSettings& data, const signed char* order_delta = 0) : GameCommand(CHANGETOOLS), data(data)
+    ChangeTools(const ToolSettings& data, const int8_t* order_delta = 0) : GameCommand(CHANGETOOLS), data(data)
     {
         if(order_delta != 0)
         {

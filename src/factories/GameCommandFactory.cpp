@@ -85,7 +85,7 @@ bool GameCommandFactory::ChangeMilitary(const MilitarySettings& data)
     return AddGC(new gc::ChangeMilitary(data));
 }
 
-bool GameCommandFactory::ChangeTools(const ToolSettings& data, const signed char* order_delta /* = NULL*/)
+bool GameCommandFactory::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
 {
     return AddGC(new gc::ChangeTools(data, order_delta));
 }

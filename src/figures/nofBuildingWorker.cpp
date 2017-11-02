@@ -18,18 +18,15 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofBuildingWorker.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "Ware.h"
-#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobUsual.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
@@ -192,16 +189,10 @@ void nofBuildingWorker::TryToWork()
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     else if(AreWaresAvailable())
     {
-        if(ReadyForWork())
-        {
-            state = STATE_WAITING1;
-            current_ev =
-              GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
-            workplace->StopNotWorking();
-        } else
-        {
-            state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
-        }
+        state = STATE_WAITING1;
+        current_ev =
+          GetEvMgr().AddEvent(this, (GetGOT() == GOT_NOF_CATAPULTMAN) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+        workplace->StopNotWorking();
     } else
     {
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
@@ -210,14 +201,9 @@ void nofBuildingWorker::TryToWork()
     }
 }
 
-bool nofBuildingWorker::AreWaresAvailable()
+bool nofBuildingWorker::AreWaresAvailable() const
 {
     return workplace->WaresAvailable();
-}
-
-bool nofBuildingWorker::ReadyForWork()
-{
-    return true;
 }
 
 void nofBuildingWorker::GotWareOrProductionAllowed()
@@ -316,62 +302,6 @@ void nofBuildingWorker::LostWork()
     }
 
     workplace = NULL;
-}
-
-namespace {
-struct NodeHasResource
-{
-    const GameWorldGame& gwg;
-    const unsigned char res;
-    NodeHasResource(const GameWorldGame& gwg, const unsigned char res) : gwg(gwg), res(res) {}
-
-    bool operator()(const MapPoint pt) { return gwg.IsResourcesOnNode(pt, res); }
-};
-} // namespace
-
-/**
- *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
- *  an einer (umliegenden) Stelle.
- */
-bool nofBuildingWorker::GetResources(unsigned char type)
-{
-    // this makes granite mines work everywhere
-    const GlobalGameSettings& settings = gwg->GetGGS();
-    if(type == 0 && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES))
-        return true;
-    // in Map-Resource-Koordinaten konvertieren
-    type = RESOURCES_MINE_TO_MAP[type];
-
-    MapPoint mP(0, 0);
-    bool found = false;
-
-    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
-    if(gwg->IsResourcesOnNode(pos, type))
-    {
-        mP = pos;
-        found = true;
-    } else
-    {
-        std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type));
-        if(!pts.empty())
-        {
-            mP = pts.front();
-            found = true;
-        }
-    }
-
-    if(found)
-    {
-        // Minen / Brunnen unerschöpflich?
-        if((type == 4 && settings.isEnabled(AddonId::EXHAUSTIBLE_WELLS))
-           || (type != 4 && !settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)))
-            gwg->ReduceResource(mP);
-        return true;
-    }
-
-    workplace->OnOutOfResources();
-
-    return false;
 }
 
 void nofBuildingWorker::ProductionStopped()

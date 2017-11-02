@@ -778,7 +778,6 @@ bool GamePlayer::ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const
     if(newOrderAmount < 0 || newOrderAmount > 100)
         return false;
     tools_ordered_delta[toolIdx] += changeAmount;
-    gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
     return true;
 }
 
@@ -1328,10 +1327,12 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges)
+void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, TOOL_COUNT>& orderChanges)
 {
-    this->toolsSettings_ = tools_settings;
-    gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
+    const bool settingsChanged = toolsSettings_ != tools_settings;
+    toolsSettings_ = tools_settings;
+    if(settingsChanged)
+        gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
 
     for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {

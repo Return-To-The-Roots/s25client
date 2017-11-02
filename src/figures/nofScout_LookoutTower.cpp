@@ -63,8 +63,8 @@ void nofScout_LookoutTower::WorkplaceReached()
                     new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
 }
 
-bool nofScout_LookoutTower::AreWaresAvailable()
+bool nofScout_LookoutTower::AreWaresAvailable() const
 {
-    // Sp�hturm-Erkunder arbeiten nie!
+    // We never work!
     return false;
 }

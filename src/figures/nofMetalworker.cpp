@@ -28,15 +28,27 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
+#include "notifications/NotificationManager.h"
+#include "notifications/ToolNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameData/ToolConsts.h"
 #include "libutil/Log.h"
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/control_structures.hpp>
+#include <boost/lambda/if.hpp>
+#include <boost/lambda/lambda.hpp>
 
 nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_METALWORKER, pos, player, workplace), nextProducedTool(GD_NOTHING)
-{}
+{
+    namespace bl = boost::lambda;
+    using bl::_1;
+    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>(
+      bl::if_((bl::bind(&ToolNote::type, _1) == ToolNote::OrderPlaced || bl::bind(&ToolNote::type, _1) == ToolNote::SettingsChanged)
+              && bl::bind(&ToolNote::player, _1) == boost::ref(player))[bl::bind(&nofMetalworker::CheckForOrders, this)]);
+}
 
 nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
     : nofWorkman(sgd, obj_id), nextProducedTool(GoodType(sgd.PopUnsignedChar()))
@@ -45,9 +57,15 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
     {
         LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this with a new game, "
                   "report this!");
+        RTTR_Assert(false);
         state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
         current_ev = GetEvMgr().AddEvent(this, 1000, 2);
     }
+    namespace bl = boost::lambda;
+    using bl::_1;
+    toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>(
+      bl::if_((bl::bind(&ToolNote::type, _1) == ToolNote::OrderPlaced || bl::bind(&ToolNote::type, _1) == ToolNote::SettingsChanged)
+              && bl::bind(&ToolNote::player, _1) == boost::ref(player))[bl::bind(&nofMetalworker::CheckForOrders, this)]);
 }
 
 void nofMetalworker::Serialize(SerializedGameData& sgd) const
@@ -96,12 +114,51 @@ unsigned short nofMetalworker::GetCarryID() const
     return 0;
 }
 
-unsigned nofMetalworker::ToolsOrderedTotal() const
+bool nofMetalworker::HasToolOrder() const
 {
-    unsigned sum = 0;
+    const GamePlayer& owner = gwg->GetPlayer(player);
     for(unsigned i = 0; i < TOOL_COUNT; ++i)
-        sum += gwg->GetPlayer(player).GetToolsOrdered(i);
-    return sum;
+    {
+        if(owner.GetToolsOrdered(i) > 0u)
+            return true;
+    }
+    return false;
+}
+
+bool nofMetalworker::AreWaresAvailable() const
+{
+    if(!nofWorkman::AreWaresAvailable())
+        return false;
+    // If produce nothing on zero is disabled we will always produce something ->OK
+    if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 0)
+        return true;
+    // Any tool order?
+    if(HasToolOrder())
+        return true;
+    // Any non-zero priority?
+    const GamePlayer& owner = gwg->GetPlayer(player);
+    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    {
+        if(owner.GetToolPriority(i) > 0u)
+            return true;
+    }
+    return false;
+}
+
+bool nofMetalworker::StartWorking()
+{
+    nextProducedTool = GetOrderedTool();
+    if(nextProducedTool == GD_NOTHING)
+        nextProducedTool = GetRandomTool();
+
+    return (nextProducedTool != GD_NOTHING) && nofWorkman::StartWorking();
+}
+
+void nofMetalworker::CheckForOrders()
+{
+    // If we are waiting and an order or setting was changed -> See if we can work
+    if(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED)
+        TryToWork();
 }
 
 GoodType nofMetalworker::GetOrderedTool()
@@ -124,7 +181,7 @@ GoodType nofMetalworker::GetOrderedTool()
     {
         owner.ToolOrderProcessed(tool);
 
-        if(ToolsOrderedTotal() == 0)
+        if(HasToolOrder() == 0)
             SendPostMessage(player,
                             new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
 
@@ -135,12 +192,14 @@ GoodType nofMetalworker::GetOrderedTool()
 
 GoodType nofMetalworker::GetRandomTool()
 {
+    const GamePlayer& owner = gwg->GetPlayer(player);
+
     // Je nach Werkzeugeinstellungen zufällig ein Werkzeug produzieren, je größer der Balken,
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
     for(unsigned i = 0; i < TOOL_COUNT; ++i)
-        all_size += gwg->GetPlayer(player).GetToolPriority(i);
+        all_size += owner.GetToolPriority(i);
 
     // if they're all zero
     if(all_size == 0)
@@ -159,7 +218,7 @@ GoodType nofMetalworker::GetRandomTool()
 
     for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {
-        for(unsigned g = 0; g < gwg->GetPlayer(player).GetToolPriority(i); ++g)
+        for(unsigned g = 0; g < owner.GetToolPriority(i); ++g)
             random_array[curIdx++] = i;
     }
 
@@ -168,38 +227,7 @@ GoodType nofMetalworker::GetRandomTool()
     return tool;
 }
 
-bool nofMetalworker::ReadyForWork()
-{
-    nextProducedTool = GetOrderedTool();
-    if(nextProducedTool == GD_NOTHING)
-        nextProducedTool = GetRandomTool();
-
-    if(current_ev)
-    {
-        RTTR_Assert(current_ev->id == 2 && state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
-        GetEvMgr().RemoveEvent(current_ev);
-    }
-    if(nextProducedTool != GD_NOTHING)
-        return true;
-
-    // Try again in some time (200GF ~= 8s at 40ms/GF)
-    current_ev = GetEvMgr().AddEvent(this, 200, 2);
-    return false;
-}
-
 GoodType nofMetalworker::ProduceWare()
 {
     return nextProducedTool;
-}
-
-void nofMetalworker::HandleDerivedEvent(const unsigned id)
-{
-    if(id != 2)
-    {
-        nofWorkman::HandleDerivedEvent(id);
-        return;
-    }
-    RTTR_Assert(state == STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED);
-    current_ev = NULL;
-    TryToWork();
 }

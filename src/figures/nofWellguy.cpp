@@ -17,11 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofWellguy.h"
-
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -112,8 +113,18 @@ GoodType nofWellguy::ProduceWare()
     return GD_WATER;
 }
 
-bool nofWellguy::AreWaresAvailable()
+bool nofWellguy::AreWaresAvailable() const
 {
     // Check for water
-    return GetResources(4);
+    return FindPointWithResource(4).isValid();
+}
+
+bool nofWellguy::StartWorking()
+{
+    MapPoint resPt = FindPointWithResource(4);
+    if(!resPt.isValid())
+        return false;
+    if(gwg->GetGGS().isEnabled(AddonId::EXHAUSTIBLE_WELLS))
+        gwg->ReduceResource(resPt);
+    return nofWorkman::StartWorking();
 }

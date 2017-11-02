@@ -17,13 +17,12 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "nofWorkman.h"
-
 #include "EventManager.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "world/GameWorldGame.h"
+#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
-class SerializedGameData;
-class nobBaseWarehouse;
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)
@@ -44,34 +43,36 @@ void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        case STATE_WAITING1: { HandleStateWaiting1();
-        }
-        break;
-        case STATE_WORK: { HandleStateWork();
-        }
-        break;
-        case STATE_WAITING2: { HandleStateWaiting2();
-        }
-        break;
+        case STATE_WAITING1: HandleStateWaiting1(); break;
+        case STATE_WORK: HandleStateWork(); break;
+        case STATE_WAITING2: HandleStateWaiting2(); break;
         default: break;
     }
 }
 
-void nofWorkman::HandleStateWaiting1()
+bool nofWorkman::StartWorking()
 {
-    // Nach 1. Warten wird gearbeitet
     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
     state = STATE_WORK;
     workplace->is_working = true;
-
     // Waren verbrauchen
     workplace->ConsumeWares();
+    return true;
+}
+
+void nofWorkman::HandleStateWaiting1()
+{
+    current_ev = NULL;
+    if(!StartWorking())
+    {
+        state = STATE_WAITINGFORWARES_OR_PRODUCTIONSTOPPED;
+        workplace->StartNotWorking();
+    }
 }
 
 void nofWorkman::HandleStateWaiting2()
 {
-    current_ev = 0;
-
+    current_ev = NULL;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
     if((ware = ProduceWare()) == GD_NOTHING)
     {
@@ -105,6 +106,32 @@ void nofWorkman::HandleStateWork()
     }
 }
 
-void nofWorkman::WalkedDerived() {}
+namespace {
+struct NodeHasResource
+{
+    const GameWorldGame& gwg;
+    const unsigned char res;
+    NodeHasResource(const GameWorldGame& gwg, const unsigned char res) : gwg(gwg), res(res) {}
 
-void nofWorkman::WorkFinished() {}
+    bool operator()(const MapPoint pt) { return gwg.IsResourcesOnNode(pt, res); }
+};
+} // namespace
+
+/**
+ *  verbraucht einen Rohstoff einer Mine oder eines Brunnens
+ *  an einer (umliegenden) Stelle.
+ */
+MapPoint nofWorkman::FindPointWithResource(unsigned char type) const
+{
+    // in Map-Resource-Koordinaten konvertieren
+    type = RESOURCES_MINE_TO_MAP[type];
+
+    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius<1>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type), true);
+    if(!pts.empty())
+        return pts.front();
+
+    workplace->OnOutOfResources();
+
+    return MapPoint::Invalid();
+}

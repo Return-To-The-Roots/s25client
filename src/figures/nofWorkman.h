@@ -31,11 +31,11 @@ class nofWorkman : public nofBuildingWorker
 {
 private:
     // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
-    void WalkedDerived() override; // man gelaufen ist
+    void WalkedDerived() override {} // man gelaufen ist
     /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
     virtual GoodType ProduceWare() = 0;
     /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
-    virtual void WorkFinished();
+    virtual void WorkFinished() {}
 
 protected:
     /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
@@ -43,6 +43,12 @@ protected:
     void HandleStateWaiting1();
     void HandleStateWaiting2();
     void HandleStateWork();
+    /// Called when the work actually starts. The base implementation changes the state and reduces ware count.
+    /// Subclasses can return false, if work has to be aborted for any reason in which case we enter the wait-for-wares state
+    virtual bool StartWorking();
+
+    /// Looks for a point with a given resource on the node
+    MapPoint FindPointWithResource(unsigned char type) const;
 
 public:
     /// Going to workplace

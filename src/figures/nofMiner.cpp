@@ -19,11 +19,13 @@
 #include "nofMiner.h"
 
 #include "GameClient.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
+#include "world/GameWorldGame.h"
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace) {}
 
@@ -78,7 +80,20 @@ GoodType nofMiner::ProduceWare()
     }
 }
 
-bool nofMiner::AreWaresAvailable()
+bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
+    return nofWorkman::AreWaresAvailable() && FindPointWithResource(workplace->GetBuildingType() - BLD_GRANITEMINE).isValid();
+}
+
+bool nofMiner::StartWorking()
+{
+    MapPoint resPt = FindPointWithResource(workplace->GetBuildingType() - BLD_GRANITEMINE);
+    if(!resPt.isValid())
+        return false;
+    const GlobalGameSettings& settings = gwg->GetGGS();
+    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
+                            || (workplace->GetBuildingType() == BLD_GRANITEMINE && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
+    if(!inexhaustibleRes)
+        gwg->ReduceResource(resPt);
+    return nofWorkman::StartWorking();
 }
