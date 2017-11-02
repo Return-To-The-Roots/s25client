@@ -146,7 +146,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
                 current_ev = GetEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
-                StartNotWorking();
+                workplace->StartNotWorking();
                 return;
             }
 

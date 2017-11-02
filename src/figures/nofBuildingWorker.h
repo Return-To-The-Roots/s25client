@@ -61,11 +61,6 @@ protected:
     // Ware, die er evtl gerade trägt
     GoodType ware;
 
-    /// Wieviel er von den letzen 100gf NICHT gearbeitet hat (fürs Ausrechnen der Produktivität)
-    unsigned short not_working;
-    /// Seit welchem Zeitpunkt (in gf) er ggf. NICHT mehr arbeitet (0xFFFFFFFF = er arbeitet gerade)
-    unsigned since_not_working;
-
     /// Hat der Bauarbeiter bei seiner Arbeit Sounds von sich gebeben (zu Optimeriungszwecken)
     bool was_sounding;
 
@@ -73,10 +68,6 @@ protected:
     /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch nicht)
     /// also fertig mit Arbeiten sind
     void WorkingReady();
-    /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
-    void StartNotWorking();
-    /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
-    void StopNotWorking();
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
     void AbrogateWorkplace() override;
     /// Tries to start working.
@@ -148,13 +139,8 @@ public:
     bool FreePlaceAtFlag();
     /// Wenn das Haus des Arbeiters abbrennt
     void LostWork();
-    /// Rechnet die Produktivität aus (und setzt den Zähler zurück, setzt vorraus, dass das in 100 gf - Abständen aufgerufen wird !!!)
-    unsigned short CalcProductivity();
     /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
     void ProductionStopped();
-
-protected:
-    bool outOfRessourcesMsgSent;
 };
 
 #endif

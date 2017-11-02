@@ -50,9 +50,14 @@ class nobUsual : public noBuilding
     const GameEvent* orderware_ev;
     /// Rechne-Produktivität-aus-Event
     const GameEvent* productivity_ev;
-    /// Letzte Produktivitäten (Durschnitt = Gesamtproduktivität), vorne das neuste !
-    static const unsigned LAST_PRODUCTIVITIES_COUNT = 6;
-    boost::array<unsigned short, LAST_PRODUCTIVITIES_COUNT> last_productivities;
+    /// Letzte Produktivitäten (Durchschnitt = Gesamt produktivität), vorne das neuste !
+    boost::array<unsigned short, 6> last_productivities;
+    /// How many GFs he did not work since the last productivity calculation
+    unsigned short numGfNotWorking;
+    /// Since which GF he did not work (0xFFFFFFFF = currently working)
+    unsigned since_not_working;
+    /// Did we notify the player that we are out of resources?
+    bool outOfRessourcesMsgSent;
 
 protected:
     friend class SerializedGameData;
@@ -130,8 +135,16 @@ public:
     bool IsProductionDisabledVirtual() const { return disable_production_virtual; }
     /// Fragt ab, ob Produktion ausgeschaltet ist (real)
     bool IsProductionDisabled() const { return disable_production; }
-    /// Setzt Produktivität instant auf 0 (Keine Ressourcen mehr)
-    void SetProductivityToZero();
+    /// Called when there are no more resources
+    void OnOutOfResources();
+    /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
+    void StartNotWorking();
+    /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
+    void StopNotWorking();
+
+private:
+    /// Calculates the productivity and resets the counter
+    unsigned short CalcProductivity();
 };
 
 #endif

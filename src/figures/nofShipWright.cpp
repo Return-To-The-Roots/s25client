@@ -127,7 +127,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 } else
                 {
                     // Nichts zu arbeiten gefunden
-                    StartNotWorking();
+                    workplace->StartNotWorking();
                     // Weiter warten, vielleicht gibts ja später wieder mal was
                     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
                 }
@@ -191,7 +191,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char /*first_dir*/)
     // Anfangen zu laufen (erstmal aus dem Haus raus!)
     StartWalking(Direction::SOUTHEAST);
 
-    StopNotWorking();
+    workplace->StopNotWorking();
 }
 
 /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet

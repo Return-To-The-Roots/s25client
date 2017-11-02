@@ -27,8 +27,10 @@
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
 #include "helpers/containerUtils.h"
+#include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
@@ -37,7 +39,8 @@
 
 nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation nation)
     : noBuilding(type, pos, player, nation), worker(NULL), disable_production(false), disable_production_virtual(false),
-      last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), is_working(false)
+      last_ordered_ware(0), orderware_ev(NULL), productivity_ev(NULL), numGfNotWorking(0), since_not_working(0xFFFFFFFF),
+      outOfRessourcesMsgSent(false), is_working(false)
 {
     std::fill(numWares.begin(), numWares.end(), 0);
 
@@ -59,7 +62,8 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>(GOT_UNKNOWN)), productivity(sgd.PopUnsignedShort()),
       disable_production(sgd.PopBool()), disable_production_virtual(disable_production), last_ordered_ware(sgd.PopUnsignedChar()),
-      orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()), is_working(sgd.PopBool())
+      orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()), numGfNotWorking(sgd.PopUnsignedShort()),
+      since_not_working(sgd.PopUnsignedInt()), outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
     for(unsigned i = 0; i < 3; ++i)
         numWares[i] = sgd.PopUnsignedChar();
@@ -68,7 +72,7 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
 
     BOOST_FOREACH(std::list<Ware*>& orderedWare, ordered_wares)
         sgd.PopObjectContainer(orderedWare, GOT_WARE);
-    for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
+    for(unsigned i = 0; i < last_productivities.size(); ++i)
         last_productivities[i] = sgd.PopUnsignedShort();
 }
 
@@ -83,12 +87,15 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
     sgd.PushObject(orderware_ev, true);
     sgd.PushObject(productivity_ev, true);
     sgd.PushBool(is_working);
+    sgd.PushUnsignedShort(numGfNotWorking);
+    sgd.PushUnsignedInt(since_not_working);
+    sgd.PushBool(outOfRessourcesMsgSent);
 
     for(unsigned i = 0; i < 3; ++i)
         sgd.PushUnsignedChar(numWares[i]);
     BOOST_FOREACH(const std::list<Ware*>& orderedWare, ordered_wares)
         sgd.PushObjectContainer(orderedWare, true);
-    for(unsigned i = 0; i < LAST_PRODUCTIVITIES_COUNT; ++i)
+    for(unsigned i = 0; i < last_productivities.size(); ++i)
         sgd.PushUnsignedShort(last_productivities[i]);
 }
 
@@ -241,7 +248,7 @@ void nobUsual::HandleEvent(const unsigned id)
 {
     if(id)
     {
-        const unsigned short current_productivity = worker->CalcProductivity();
+        const unsigned short current_productivity = CalcProductivity();
         // Sum over all last productivities and current (as start value)
         productivity = std::accumulate(last_productivities.begin(), last_productivities.end(), current_productivity);
         // Produktivität "verrücken"
@@ -519,8 +526,66 @@ bool nobUsual::HasWorker() const
     return worker && worker->GetState() != nofBuildingWorker::STATE_FIGUREWORK;
 }
 
-void nobUsual::SetProductivityToZero()
+void nobUsual::OnOutOfResources()
 {
+    // Post verschicken, keine Rohstoffe mehr da
+    if(outOfRessourcesMsgSent)
+        return;
+    outOfRessourcesMsgSent = true;
     productivity = 0;
     std::fill(last_productivities.begin(), last_productivities.end(), 0);
+
+    const char* error;
+    if(GetBuildingType() == BLD_WELL)
+        error = _("This well has dried out");
+    else if(BuildingProperties::IsMine(GetBuildingType()))
+        error = _("This mine is exhausted");
+    else if(GetBuildingType() == BLD_QUARRY)
+        error = _("No more stones in range");
+    else if(GetBuildingType() == BLD_FISHERY)
+        error = _("No more fishes in range");
+    else
+        return;
+
+    SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *this));
+    gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, GetPos(), GetBuildingType()));
+}
+
+void nobUsual::StartNotWorking()
+{
+    // Wenn noch kein Zeitpunkt festgesetzt wurde, jetzt merken
+    if(since_not_working == 0xFFFFFFFF)
+        since_not_working = GetEvMgr().GetCurrentGF();
+}
+
+void nobUsual::StopNotWorking()
+{
+    // Falls wir vorher nicht gearbeitet haben, diese Zeit merken für die Produktivität
+    if(since_not_working != 0xFFFFFFFF)
+    {
+        numGfNotWorking += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
+        since_not_working = 0xFFFFFFFF;
+    }
+}
+
+unsigned short nobUsual::CalcProductivity()
+{
+    if(outOfRessourcesMsgSent)
+        return 0;
+    // Gucken, ob bis jetzt gearbeitet wurde/wird oder nicht, je nachdem noch was dazuzählen
+    if(since_not_working != 0xFFFFFFFF)
+    {
+        // Es wurde bis jetzt nicht mehr gearbeitet, das also noch dazuzählen
+        numGfNotWorking += static_cast<unsigned short>(GetEvMgr().GetCurrentGF() - since_not_working);
+        // Zähler zurücksetzen
+        since_not_working = GetEvMgr().GetCurrentGF();
+    }
+
+    // Produktivität ausrechnen
+    unsigned short productivity = (400 - numGfNotWorking) / 4;
+
+    // Zähler zurücksetzen
+    numGfNotWorking = 0;
+
+    return productivity;
 }

@@ -207,14 +207,14 @@ void nofHunter::TryStartHunting()
         // Anfangen zu laufen (erstmal aus dem Haus raus!)
         StartWalking(Direction::SOUTHEAST);
 
-        StopNotWorking();
+        workplace->StopNotWorking();
     } else
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
         gwg->GetNotifications().publish(
           BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
-        StartNotWorking();
+        workplace->StartNotWorking();
     }
 
     was_sounding = false;
