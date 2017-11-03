@@ -19,7 +19,6 @@
 #define XorShift_h__
 
 #include <boost/array.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/limits.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/utility/enable_if.hpp>
@@ -35,6 +34,7 @@ public:
 
     static result_type min() { return 1; }
     static result_type max() { return std::numeric_limits<uint64_t>::max(); }
+    static const char* getName() { return "XorShift"; }
 
     XorShift() { seed(); }
     explicit XorShift(uint64_t initSeed) { seed(initSeed); }
@@ -51,13 +51,11 @@ public:
 
     /// Return random value in [min, max]
     result_type operator()();
-    /// Return random value in [0, maxVal] for a small maxVal
-    unsigned operator()(unsigned maxVal);
 
     void discard(uint64_t j);
 
-    void Serialize(Serializer& ser) const;
-    void Deserialize(Serializer& ser);
+    void serialize(Serializer& ser) const;
+    void deserialize(Serializer& ser);
 
 private:
     friend std::ostream& operator<<(std::ostream& os, const XorShift& obj);
@@ -74,7 +72,7 @@ inline void XorShift::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost:
     boost::array<uint32_t, 2> seeds;
     seedSeq.generate(seeds.begin(), seeds.end());
     // Interpret 2 32 bit values as one 64 bit value
-    seed(*reinterpret_cast<uint64_t*>(seeds.data()));
+    seed((static_cast<uint64_t>(seeds[0]) << 32) | seeds[1]);
 }
 
 inline XorShift::result_type XorShift::operator()()
@@ -83,12 +81,6 @@ inline XorShift::result_type XorShift::operator()()
     state_ ^= state_ << 25; // b
     state_ ^= state_ >> 27; // c
     return state_ * UINT64_C(2685821657736338717);
-}
-
-inline unsigned XorShift::operator()(unsigned maxVal)
-{
-    uint64_t value = (*this)() - 1;
-    return static_cast<unsigned>(value % (maxVal + 1));
 }
 
 #endif // XorShift_h__

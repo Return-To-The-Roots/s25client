@@ -20,7 +20,7 @@
 #ifndef RANDOM_H_INCLUDED
 #define RANDOM_H_INCLUDED
 
-#include "random/OldLCG.h"
+#include "random/XorShift.h"
 #include "libutil/Singleton.h"
 #include <boost/array.hpp>
 #include <iosfwd>
@@ -35,8 +35,7 @@ class Serializer;
 /// Allows getting/restoring the state and provides a log of the last invocations and results
 /// T_PRNG must be a model of the Pseudo-Random Number Generator according to boost:
 ///        http://www.boost.org/doc/libs/1_61_0/doc/html/boost_random/reference.html#boost_random.reference.concepts.pseudo_random_number_generator
-/// Additionally it must implement Serialize and Deserialize functions
-/// and operator()(unsigned max) to return a random value in the range [0, max)
+/// Additionally it must implement Serialize and Deserialize functions and provide a static GetName function
 template<class T_PRNG>
 class Random : public Singleton<Random<T_PRNG> >
 {
@@ -96,7 +95,7 @@ private:
 };
 
 /// The actual PRNG used for the ingame RNG
-typedef OldLCG UsedPRNG;
+typedef XorShift UsedPRNG;
 typedef Random<UsedPRNG> UsedRandom;
 typedef UsedRandom::RandomEntry RandomEntry;
 

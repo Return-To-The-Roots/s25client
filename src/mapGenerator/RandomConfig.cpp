@@ -18,6 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
 #include <boost/random/uniform_real_distribution.hpp>
+// Fix stupid conversion warning in boost
+#pragma warning(push)
+#pragma warning(disable : 4244)
+#include <boost/random/uniform_smallint.hpp>
+#pragma warning(pop)
 #include <ctime>
 #include <stdexcept>
 
@@ -311,13 +316,14 @@ void RandomConfig::CreateRandom()
 
 int RandomConfig::Rand(const int max)
 {
-    RTTR_Assert(max > 0);
-    return static_cast<int>(rng_(max - 1));
+    return Rand(0, max);
 }
 
 int RandomConfig::Rand(const int min, const int max)
 {
-    return min + Rand(max - min);
+    RTTR_Assert(max > min);
+    boost::random::uniform_smallint<> distr(min, max - 1);
+    return distr(rng_);
 }
 
 double RandomConfig::DRand(const double min, const double max)

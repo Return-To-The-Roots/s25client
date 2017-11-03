@@ -16,32 +16,32 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "OldLCG.h"
+#include "DefaultLCG.h"
 #include "libutil/Serializer.h"
 #include <iostream>
 
-void OldLCG::discard(uint64_t j)
+void DefaultLCG::discard(uint64_t j)
 {
     for(uint64_t i = 0; i < j; i++)
         (*this)();
 }
 
-void OldLCG::Deserialize(Serializer& ser)
+void DefaultLCG::deserialize(Serializer& ser)
 {
     state_ = ser.PopUnsignedInt();
 }
 
-void OldLCG::Serialize(Serializer& ser) const
+void DefaultLCG::serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(state_);
 }
 
-std::ostream& operator<<(std::ostream& os, const OldLCG& obj)
+std::ostream& operator<<(std::ostream& os, const DefaultLCG& obj)
 {
     return os << obj.state_;
 }
 
-std::istream& operator>>(std::istream& is, OldLCG& obj)
+std::istream& operator>>(std::istream& is, DefaultLCG& obj)
 {
     return is >> obj.state_;
 }

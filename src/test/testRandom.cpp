@@ -17,6 +17,7 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "Random.h"
+#include "random/DefaultLCG.h"
 #include "random/XorShift.h"
 #include "test/initTestHelpers.h"
 #include "libutil/Serializer.h"
@@ -37,7 +38,7 @@ struct SeedFixture
     {
         // For every seed the rng must return good random values
         // so try a regular one and some corner cases
-        seeds += 0x1337, 0, std::numeric_limits<unsigned>::max(), std::numeric_limits<unsigned short>::max();
+        seeds += 0, 0x1337, std::numeric_limits<unsigned>::max(), std::numeric_limits<unsigned short>::max();
     }
     std::vector<unsigned> seeds;
 };
@@ -82,7 +83,7 @@ BOOST_AUTO_TEST_CASE(RandomSameSeq)
     // The rng must return the same sequence of values for a given seed
     RANDOM.Init(0x1337);
     std::vector<int> results;
-    results += 713, 860, 519, 141, 414, 616, 313, 458, 421, 302;
+    results += 623, 453, 927, 305, 478, 933, 230, 491, 968, 623, 418;
     BOOST_FOREACH(int result, results)
     {
         // std::cout << RANDOM_RAND(0, 1024) << std::endl;
@@ -120,18 +121,16 @@ void testRange(const T_Seeds& seeds)
         }
 
         std::vector<std::vector<unsigned> > results;
-        results += std::vector<unsigned>(1), std::vector<unsigned>(10), std::vector<unsigned>(11), std::vector<unsigned>(13),
+        results += std::vector<unsigned>(2), std::vector<unsigned>(10), std::vector<unsigned>(11), std::vector<unsigned>(13),
           std::vector<unsigned>(32), std::vector<unsigned>(33);
         const unsigned numSamples = 3000;
         for(unsigned i = 0; i < numSamples; i++)
         {
             BOOST_FOREACH(std::vector<unsigned>& result, results)
             {
-                const unsigned maxVal = static_cast<unsigned>(result.size() - 1);
-                unsigned val = rng(maxVal);
-                BOOST_REQUIRE_LE(val, maxVal);
-                // Using .at makes sure we don't exceed the maximum value
-                ++result.at(val);
+                const unsigned maxVal = static_cast<unsigned>(result.size());
+                unsigned val = rng() % maxVal;
+                ++result[val];
             }
         }
         // We want a uniform distribution. So all values should occur about the same number of times
@@ -151,28 +150,21 @@ void testRange(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(ValueRangeValid)
 {
-    testRange<OldLCG>(seeds);
+    testRange<DefaultLCG>(seeds);
     testRange<XorShift>(seeds);
-}
-
-template<class T_RNG, class T_Seeds>
-void testEmptyRange(const T_Seeds& seeds)
-{
-    BOOST_FOREACH(unsigned seed, seeds)
-    {
-        T_RNG rng(seed);
-        for(int i = 0; i < 100; i++)
-        {
-            // Create a random number in [0, 0] is always 0
-            BOOST_REQUIRE_EQUAL(rng(0), 0u);
-        }
-    }
 }
 
 BOOST_AUTO_TEST_CASE(EmptyRange)
 {
-    testEmptyRange<OldLCG>(seeds);
-    testEmptyRange<XorShift>(seeds);
+    BOOST_FOREACH(unsigned seed, seeds)
+    {
+        RANDOM.Init(seed);
+        for(int i = 0; i < 100; i++)
+        {
+            // Create a random number in [0, 0] is always 0
+            BOOST_REQUIRE_EQUAL(RANDOM_RAND(1337, 0), 0);
+        }
+    }
 }
 
 template<class T_RNG, class T_Seed>
@@ -200,7 +192,7 @@ void testCtorFromSeedSeq(const T_Seed& seeds)
 
 BOOST_AUTO_TEST_CASE(CtorFromSeedSeq)
 {
-    testCtorFromSeedSeq<OldLCG>(seeds);
+    testCtorFromSeedSeq<DefaultLCG>(seeds);
     testCtorFromSeedSeq<XorShift>(seeds);
 }
 
@@ -229,7 +221,7 @@ void testCopy(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(Copy)
 {
-    testCopy<OldLCG>(seeds);
+    testCopy<DefaultLCG>(seeds);
     testCopy<XorShift>(seeds);
 }
 
@@ -253,7 +245,7 @@ void testStreamOps(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(StreamOperations)
 {
-    testStreamOps<OldLCG>(seeds);
+    testStreamOps<DefaultLCG>(seeds);
     testStreamOps<XorShift>(seeds);
 }
 
@@ -267,15 +259,15 @@ void testSerialize(const T_Seeds& seeds)
         for(unsigned i = 0; i < 10; i++)
             rng();
         Serializer ser;
-        rng.Serialize(ser);
-        rng2.Deserialize(ser);
+        rng.serialize(ser);
+        rng2.deserialize(ser);
         BOOST_REQUIRE_EQUAL(rng, rng2);
     }
 }
 
 BOOST_AUTO_TEST_CASE(Serialization)
 {
-    testSerialize<OldLCG>(seeds);
+    testSerialize<DefaultLCG>(seeds);
     testSerialize<XorShift>(seeds);
 }
 
@@ -296,7 +288,7 @@ void testDiscard(const T_Seeds& seeds)
 
 BOOST_AUTO_TEST_CASE(Discard)
 {
-    testDiscard<OldLCG>(seeds);
+    testDiscard<DefaultLCG>(seeds);
     testDiscard<XorShift>(seeds);
 }
 

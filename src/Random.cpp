@@ -19,6 +19,16 @@
 #include "Random.h"
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
+#include <stdexcept>
+
+template<class T_PRNG>
+int calcRandValue(T_PRNG& rng, int max)
+{
+    // Special case: [0, 0) makes 0
+    if(max == 0)
+        return 0;
+    return static_cast<int>(rng() % static_cast<unsigned>(max));
+}
 
 template<class T_PRNG>
 Random<T_PRNG>::Random()
@@ -45,8 +55,7 @@ int Random<T_PRNG>::Rand(const char* const src_name, const unsigned src_line, co
     history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, max, rng_, src_name, src_line, obj_id);
     ++numInvocations_;
 
-    // Special case: [0, 0) makes 0
-    return (max == 0) ? 0 : rng_(max - 1);
+    return calcRandValue(rng_, max);
 }
 
 template<class T_PRNG>
@@ -61,7 +70,7 @@ unsigned Random<T_PRNG>::CalcChecksum(const PRNG& rng)
     // This is designed in a way that makes the checksum be equivalent
     // to the state of the OldLCG for compatibility with old versions
     Serializer ser;
-    rng.Serialize(ser);
+    rng.serialize(ser);
     unsigned checksum = 0;
     while(ser.GetBytesLeft() >= sizeof(unsigned))
         checksum += ser.PopUnsignedInt();
@@ -119,7 +128,9 @@ void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(counter);
     ser.PushSignedInt(max);
-    rngState.Serialize(ser);
+    // We save the type a) for double checking and b) for future extension
+    ser.PushString(T_PRNG::getName());
+    rngState.serialize(ser);
     ser.PushString(src_name);
     ser.PushUnsignedInt(src_line);
     ser.PushUnsignedInt(obj_id);
@@ -130,7 +141,10 @@ void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
 {
     counter = ser.PopUnsignedInt();
     max = ser.PopSignedInt();
-    rngState.Deserialize(ser);
+    std::string name = ser.PopString();
+    if(name != T_PRNG::getName())
+        throw std::runtime_error("Wrong random number generator");
+    rngState.deserialize(ser);
     src_name = ser.PopString();
     src_line = ser.PopUnsignedInt();
     obj_id = ser.PopUnsignedInt();
@@ -140,7 +154,7 @@ template<class T_PRNG>
 int Random<T_PRNG>::RandomEntry::GetValue() const
 {
     PRNG tmpRng(rngState);
-    return (max == 0) ? 0 : tmpRng(max - 1);
+    return calcRandValue(tmpRng, max);
 }
 
 template<class T_PRNG>
