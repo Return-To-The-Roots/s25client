@@ -313,8 +313,7 @@ void GameClient::StartGame(const unsigned random_init)
             case 3: target = Resource::Coal; break;
             case 4: target = Resource::Granite; break;
         }
-        if(target != Resource::Gold)
-            gw->ConvertMineResourceTypes(Resource::Gold, target);
+        gw->ConvertMineResourceTypes(Resource::Gold, target);
     }
     gw->InitAfterLoad();
 

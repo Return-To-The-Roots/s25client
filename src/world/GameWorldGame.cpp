@@ -1310,7 +1310,9 @@ bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) 
 void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type to)
 {
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
-    // Alle Punkte durchgehen
+    if(from == to)
+        return;
+
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
         Resource resources = GetNode(pt).resources;

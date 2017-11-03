@@ -261,12 +261,13 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
         default: break;
         case STATE_GEOLOGIST_DIG:
         {
-            // Ressourcen an diesem Punkt untersuchen
-            Resource resources = gwg->GetNode(pos).resources;
-            if(resources.getType() == Resource::Fish)
-                resources.setType(Resource::Nothing);
+            // Check what is here
+            Resource foundRes = gwg->GetNode(pos).resources;
+            // We don't care for fish (and most likely never find it)
+            if(foundRes.getType() == Resource::Fish)
+                foundRes.setType(Resource::Nothing);
 
-            if(resources.getAmount() > 0u)
+            if(foundRes.getAmount() > 0u)
             {
                 // Es wurde was gefunden, erstmal Jubeln
                 state = STATE_GEOLOGIST_CHEER;
@@ -274,7 +275,7 @@ void nofGeologist::HandleDerivedEvent(const unsigned /*id*/)
             } else
             {
                 // leeres Schild hinstecken und ohne Jubel weiterziehen
-                SetSign(resources);
+                SetSign(foundRes);
                 /// Punkt wieder freigeben
                 gwg->SetReserved(pos, false);
                 GoToNextNode();

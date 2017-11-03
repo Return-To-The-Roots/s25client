@@ -19,6 +19,7 @@
 #define Resource_h__
 
 /// Holds a resource and its value.
+/// Maximum number of resource types and amount is 15!
 /// It makes sure that Type == Nothing => Amount == 0, but not vice versa!
 /// Also: A value of 0 means Nothing|0
 class Resource
@@ -40,13 +41,15 @@ public:
 
     Resource(Type type, uint8_t amount);
     explicit Resource(uint8_t value = 0);
-    //explicit operator uint8_t() const { return value; }
-    //explicit operator uint32_t() const { return value; }
+    // C++11
+    // explicit operator uint8_t() const { return value; }
+    // explicit operator uint32_t() const { return value; }
     uint8_t getValue() const { return value; }
     Type getType() const { return Type(value >> 4); }
     uint8_t getAmount() const { return value & 0x0F; }
     void setType(Type newType);
     void setAmount(uint8_t newAmount);
+    /// True if we have a non-zero amount of the given resource. Always false for Nothing
     bool has(Type type) const { return getAmount() > 0u && getType() == type; }
     bool operator==(Resource rhs) const { return value == rhs.value; }
     bool operator!=(Resource rhs) const { return !(*this == rhs); }
