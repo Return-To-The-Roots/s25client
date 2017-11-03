@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofAggressiveDefender.h"
 #include "GameClient.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "nofAttacker.h"

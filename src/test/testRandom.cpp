@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "defines.h" // IWYU pragma: keep
-#include "Random.h"
+#include "random/Random.h"
 #include "random/DefaultLCG.h"
 #include "random/XorShift.h"
 #include "test/initTestHelpers.h"

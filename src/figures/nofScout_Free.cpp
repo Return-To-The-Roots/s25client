@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofScout_Free.h"
 
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "world/GameWorldGame.h"

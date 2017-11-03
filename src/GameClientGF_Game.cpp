@@ -19,7 +19,7 @@
 #include "GameClient.h"
 #include "GameMessage_GameCommand.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "ReplayInfo.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"

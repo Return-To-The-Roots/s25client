@@ -34,7 +34,7 @@
 #include "Loader.h"
 #include "PlayerGameCommands.h"
 #include "RTTR_Version.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "ReplayInfo.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"

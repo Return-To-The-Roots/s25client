@@ -19,7 +19,7 @@
 #include "nofPassiveSoldier.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"

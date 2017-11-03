@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"

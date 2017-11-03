@@ -21,7 +21,7 @@
 #include "FindWhConditions.h"
 #include "GameInterface.h"
 #include "GlobalGameSettings.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "TradePathCache.h"

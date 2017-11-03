@@ -19,7 +19,7 @@
 #include "iwChat.h"
 #include "GameClient.h"
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
 #include "gameData/const_gui_ids.h"

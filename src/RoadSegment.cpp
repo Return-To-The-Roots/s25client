@@ -19,7 +19,7 @@
 #include "RoadSegment.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofCarrier.h"

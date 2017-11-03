@@ -23,7 +23,7 @@
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "Point.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"

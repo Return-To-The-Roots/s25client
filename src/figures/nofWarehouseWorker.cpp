@@ -19,7 +19,7 @@
 #include "nofWarehouseWorker.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"

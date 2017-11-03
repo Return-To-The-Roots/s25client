@@ -22,7 +22,7 @@
 #include "FindWhConditions.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "factories/JobFactory.h"

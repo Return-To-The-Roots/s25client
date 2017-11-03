@@ -24,7 +24,7 @@
 #include "GameMessageInterface.h"
 #include "GameServerInterface.h"
 #include "GlobalGameSettings.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"

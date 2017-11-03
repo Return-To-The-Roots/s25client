@@ -22,7 +22,7 @@
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"

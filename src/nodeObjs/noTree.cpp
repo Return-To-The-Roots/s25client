@@ -23,7 +23,7 @@
 #include "GameClient.h"
 #include "GameInterface.h"
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "noAnimal.h"

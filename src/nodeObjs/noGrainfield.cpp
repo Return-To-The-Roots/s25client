@@ -21,7 +21,7 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"

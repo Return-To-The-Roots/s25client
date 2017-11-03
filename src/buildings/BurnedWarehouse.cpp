@@ -21,7 +21,7 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
 #include "pathfinding/PathConditionHuman.h"

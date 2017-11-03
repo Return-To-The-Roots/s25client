@@ -18,7 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
 #include "PointOutput.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "ogl/glArchivItem_Map.h"

@@ -19,7 +19,7 @@
 #include "nobBaseMilitary.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"

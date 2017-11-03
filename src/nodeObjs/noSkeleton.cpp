@@ -19,7 +19,7 @@
 #include "noSkeleton.h"
 #include "EventManager.h"
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"

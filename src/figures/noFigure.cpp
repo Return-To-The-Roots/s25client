@@ -23,7 +23,7 @@
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
