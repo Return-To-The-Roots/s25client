@@ -23,6 +23,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
+#include <boost/bind.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <utility>
 
@@ -47,7 +48,7 @@ unsigned LuaInterfaceBase::GetVersion()
 
 unsigned LuaInterfaceBase::GetFeatureLevel()
 {
-    return 1;
+    return 2;
 }
 
 LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
@@ -59,6 +60,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
     lua.openlib("math", luaopen_math);
 
     Register(lua);
+    lua["_"] = kaguya::function<std::string(const std::string&)>(boost::bind(&LuaInterfaceBase::Translate, this, _1));
 }
 
 LuaInterfaceBase::~LuaInterfaceBase() {}
@@ -90,29 +92,56 @@ void LuaInterfaceBase::ErrorHandlerThrow(int status, const char* message)
     throw std::runtime_error(message);
 }
 
+void LuaInterfaceBase::InitTranslations()
+{
+    // Init with default
+    translations_ = GetTranslationFromLua("en_GB");
+    // Replace with entries of current locale
+    std::string locale = mysetlocale(LC_ALL, NULL);
+    std::map<std::string, std::string> translated = GetTranslationFromLua(locale);
+    for(std::map<std::string, std::string>::const_iterator it = translated.begin(); it != translated.end(); ++it)
+        translations_[it->first] = it->second;
+}
+
+std::map<std::string, std::string> LuaInterfaceBase::GetTranslationFromLua(const std::string& code)
+{
+    kaguya::LuaRef entry = lua["rttrLocales"][code];
+    if(entry.type() == LUA_TTABLE)
+        return entry;
+    size_t pos = code.find('_');
+    if(pos != std::string::npos)
+    {
+        std::string lang = code.substr(0, pos);
+        entry = lua["rttrLocales"][lang];
+        if(entry.type() == LUA_TTABLE)
+            return entry;
+    }
+    return std::map<std::string, std::string>();
+}
+
 bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
 {
+    script_.clear();
     if(!lua.dofile(scriptPath))
-    {
-        script_.clear();
         return false;
-    } else
+    else
     {
         bnw::ifstream scriptFile(scriptPath.c_str());
         script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
+        InitTranslations();
         return true;
     }
 }
 
 bool LuaInterfaceBase::LoadScriptString(const std::string& script)
 {
+    script_.clear();
     if(!lua.dostring(script))
-    {
-        script_.clear();
         return false;
-    } else
+    else
     {
         script_ = script;
+        InitTranslations();
         return true;
     }
 }
@@ -163,6 +192,15 @@ void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& ms
     iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
     msgBox->MoveIcon(DrawPoint(iconX, iconY));
     WINDOWMANAGER.Show(msgBox);
+}
+
+std::string LuaInterfaceBase::Translate(const std::string& key)
+{
+    std::map<std::string, std::string>::const_iterator entry = translations_.find(key);
+    if(entry == translations_.end())
+        return key;
+    else
+        return entry->second.c_str();
 }
 
 void LuaInterfaceBase::Log(const std::string& msg)

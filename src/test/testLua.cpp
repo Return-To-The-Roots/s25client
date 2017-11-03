@@ -110,6 +110,49 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     // TODO: Add test for message box
 }
 
+struct LocaleResetter
+{
+    const char* oldLoc;
+    LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, newLoc)) {}
+    ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc); }
+};
+
+BOOST_AUTO_TEST_CASE(Translations)
+{
+    // Return same id if nothing set
+    executeLua("rttr:Log(_('Foo'))");
+    BOOST_REQUIRE_EQUAL(getLog(), "Foo\n");
+    // Return translation for default locale
+    executeLua("rttrLocales = { en_GB = { Foo = 'Eng', Bar = 'Eng2' } }");
+    executeLua("rttr:Log(_('Foo'))");
+    BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
+    // Return translation for language or default
+    std::string localSetting =
+      "rttrLocales = { en_GB = { Foo = 'Eng', Bar = 'Eng2' }, pt = { Foo = 'Port', Bar = 'Port2' }, pt_BR = { Foo = 'PortBR', "
+      "Bar = 'PortBR2' } }";
+    // With region
+    {
+        LocaleResetter loc("pt_BR");
+        executeLua(localSetting);
+        executeLua("rttr:Log(_('Foo'))");
+        BOOST_REQUIRE_EQUAL(getLog(), "PortBR\n");
+    }
+    // Other region
+    {
+        LocaleResetter loc("pt_PT");
+        executeLua(localSetting);
+        executeLua("rttr:Log(_('Foo'))");
+        BOOST_REQUIRE_EQUAL(getLog(), "Port\n");
+    }
+    // Non-Translated lang
+    {
+        LocaleResetter loc("de");
+        executeLua(localSetting);
+        executeLua("rttr:Log(_('Foo'))");
+        BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
+    }
+}
+
 namespace {
 struct StoreChat : public ClientInterface
 {
