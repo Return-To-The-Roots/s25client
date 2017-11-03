@@ -17,15 +17,11 @@
 
 #include "defines.h" // IWYU pragma: keep
 #include "languages.h"
-
 #include "Loader.h"
-
-#include "Settings.h"
 #include "files.h"
 #include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
-
 #include <algorithm>
 
 bool operator<(const Language& o1, const Language& o2)
@@ -67,10 +63,10 @@ const Language& Languages::getLanguage(unsigned i)
     if(!loaded)
         loadLanguages();
 
-    if(i < languages.size())
-        return languages[i];
+    if(i >= languages.size())
+        i = 0;
 
-    return languages.at(0);
+    return languages.at(i);
 }
 
 unsigned Languages::getCount()
@@ -78,28 +74,21 @@ unsigned Languages::getCount()
     if(!loaded)
         loadLanguages();
 
-    return unsigned(languages.size());
+    return static_cast<unsigned>(languages.size());
 }
 
 void Languages::setLanguage(const std::string& lang_code)
 {
-    SETTINGS.language.language = lang_code; //-V807
-
     std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-    if(SETTINGS.language.language.empty())
-        SETTINGS.language.language = locale;
-
     const char* domain = "rttr";
-    bind_textdomain_codeset(domain, "UTF-8");
-    bindtextdomain(domain, FILE_PATHS[15]);
-    textdomain(domain);
+    mybind_textdomain_codeset(domain, "UTF-8");
+    mybindtextdomain(domain, FILE_PATHS[15]);
+    mytextdomain(domain);
 }
 
 const std::string Languages::setLanguage(unsigned i)
 {
     const Language& l = getLanguage(i);
-
     setLanguage(l.code);
-
     return l.code;
 }
