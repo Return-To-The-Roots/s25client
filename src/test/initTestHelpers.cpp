@@ -18,11 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 
 #include "Loader.h"
-#include "random/Random.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "mockupDrivers/MockupVideoDriver.h"
+#include "random/Random.h"
 #include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>

@@ -20,6 +20,7 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "world/GameWorldGame.h"

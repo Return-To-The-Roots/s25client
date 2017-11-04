@@ -20,6 +20,7 @@
 #include "DrawPointInit.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "Ware.h"
 #include "WindowManager.h"

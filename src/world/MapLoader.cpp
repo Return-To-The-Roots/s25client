@@ -18,11 +18,11 @@
 #include "defines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
 #include "PointOutput.h"
-#include "random/Random.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
+#include "random/Random.h"
 #include "world/World.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"

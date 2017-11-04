@@ -19,6 +19,7 @@
 #include "GameWorld.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/noBuildingSite.h"

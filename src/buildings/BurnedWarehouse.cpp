@@ -21,10 +21,10 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 
 /// Anzahl der Rausgeh-Etappen

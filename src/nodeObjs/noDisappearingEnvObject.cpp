@@ -20,8 +20,8 @@
 
 #include "EventManager.h"
 #include "GameClient.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "libutil/colors.h"
 

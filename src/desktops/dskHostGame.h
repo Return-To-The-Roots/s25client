@@ -74,7 +74,7 @@ private:
     void CI_NewPlayer(const unsigned playerId) override;
     void CI_PlayerLeft(const unsigned playerId) override;
 
-    void CI_GameStarted(GameWorldBase& world) override;
+    void CI_GameStarted(boost::shared_ptr<Game> game) override;
 
     void CI_PSChanged(const unsigned playerId, const PlayerState ps) override;
     void CI_NationChanged(const unsigned playerId, const Nation nation) override;

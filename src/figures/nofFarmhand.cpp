@@ -19,11 +19,11 @@
 #include "nofFarmhand.h"
 #include "EventManager.h"
 #include "GameClient.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "notifications/BuildingNote.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 

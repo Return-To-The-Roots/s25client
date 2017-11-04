@@ -21,6 +21,7 @@
 #include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"

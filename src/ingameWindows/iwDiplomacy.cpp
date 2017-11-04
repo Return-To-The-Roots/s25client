@@ -20,6 +20,7 @@
 
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlComboBox.h"

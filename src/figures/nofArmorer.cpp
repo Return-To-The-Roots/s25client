@@ -20,6 +20,7 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"

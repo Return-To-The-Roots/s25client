@@ -25,6 +25,7 @@
 #include "helpers/Deleter.h"
 #include "helpers/converters.h"
 #include "notifications/BuildingNote.h"
+#include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"

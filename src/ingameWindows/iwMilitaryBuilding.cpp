@@ -21,6 +21,7 @@
 
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "addons/const_addons.h"

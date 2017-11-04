@@ -29,7 +29,7 @@ class GameWorldBase;
 class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskGameLoader(GameWorldBase& world);
+    dskGameLoader(boost::shared_ptr<Game> game);
     ~dskGameLoader() override;
 
     void LC_Status_Error(const std::string& error) override;
@@ -39,7 +39,7 @@ private:
     void Msg_Timer(const unsigned ctrl_id) override;
 
     unsigned position;
-    GameWorldBase& world;
+    boost::shared_ptr<Game> game;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

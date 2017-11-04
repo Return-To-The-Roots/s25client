@@ -21,15 +21,14 @@
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "PlayerGameCommands.h"
-#include "random/Random.h"
 #include "ReplayInfo.h"
+#include "random/Random.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 
 void GameClient::ExecuteGameFrame_Replay()
 {
-    randcheckinfo.rand = RANDOM.GetChecksum();
-    AsyncChecksum checksum(randcheckinfo.rand);
+    AsyncChecksum checksum(RANDOM.GetChecksum());
 
     const unsigned curGF = GetGFNumber();
     RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF());

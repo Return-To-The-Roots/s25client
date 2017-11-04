@@ -18,6 +18,7 @@
 #include "defines.h" // IWYU pragma: keep
 #include "dskGameLoader.h"
 
+#include "Game.h"
 #include "GameClient.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
@@ -39,8 +40,8 @@
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
-dskGameLoader::dskGameLoader(GameWorldBase& world)
-    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)), position(0), world(world)
+dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
+    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)), position(0), game(game)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
@@ -104,8 +105,8 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
         case 2: // Nationen ermitteln
         {
             memset(load_nations, 0, sizeof(bool) * NAT_COUNT);
-            for(unsigned char i = 0; i < world.GetPlayerCount(); ++i)
-                load_nations[world.GetPlayer(i).nation] = true;
+            for(unsigned char i = 0; i < game->world.GetPlayerCount(); ++i)
+                load_nations[game->world.GetPlayer(i).nation] = true;
 
             text->SetText(_("Tribal chiefs assembled around the table..."));
             interval = 50;
@@ -114,13 +115,13 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
         case 3: // Objekte laden
         {
-            if(!LOADER.LoadFilesAtGame(world.GetLandscapeType(), load_nations))
+            if(!LOADER.LoadFilesAtGame(game->world.GetLandscapeType(), load_nations))
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
             }
 
-            if(world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+            if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
             {
                 if(!LOADER.LoadFilesFromAddon(AddonId::CATAPULT_GRAPHICS))
                 {
@@ -161,7 +162,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
         case 6: // zum Spiel wechseln
         {
-            WINDOWMANAGER.Switch(new dskGameInterface(world));
+            WINDOWMANAGER.Switch(new dskGameInterface(game));
             return;
         }
         break;

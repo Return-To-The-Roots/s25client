@@ -22,8 +22,9 @@
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
+#include <boost/shared_ptr.hpp>
 
-class GameWorldBase;
+class Game;
 class GlobalGameSettings;
 
 /// Verbindungsstatus beim Verbinden zum Server
@@ -63,7 +64,7 @@ public:
     virtual void CI_NewPlayer(const unsigned playerId) {}
     virtual void CI_PlayerLeft(const unsigned playerId) {}
 
-    virtual void CI_GameStarted(GameWorldBase& world) {}
+    virtual void CI_GameStarted(boost::shared_ptr<Game> game) {}
 
     virtual void CI_PSChanged(const unsigned playerId, const PlayerState ps) {}
     virtual void CI_NationChanged(const unsigned playerId, const Nation nation) {}

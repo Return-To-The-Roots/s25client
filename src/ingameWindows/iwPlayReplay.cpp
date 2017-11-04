@@ -44,7 +44,7 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameStarted(GameWorldBase& world) override { WINDOWMANAGER.Switch(new dskGameLoader(world)); }
+    void CI_GameStarted(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 std::vector<std::string> GetReplays()

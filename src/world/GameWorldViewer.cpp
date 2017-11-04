@@ -19,6 +19,7 @@
 #include "world/GameWorldViewer.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "buildings/nobMilitary.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "notifications/NodeNote.h"

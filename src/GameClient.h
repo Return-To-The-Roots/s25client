@@ -20,10 +20,8 @@
 #include "FramesInfo.h"
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
-#include "GlobalGameSettings.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/Deleter.h"
-#include "postSystem/PostBox.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
@@ -33,6 +31,7 @@
 #include "libutil/Singleton.h"
 #include "libutil/Socket.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace AI {
 struct Info;
@@ -45,7 +44,7 @@ class GamePlayer;
 class GameEvent;
 class GameLobby;
 class GameWorldView;
-class GameWorld;
+class Game;
 class Replay;
 class EventManager;
 struct PlayerGameCommands;
@@ -79,12 +78,8 @@ public:
     std::string GetGameName() const { return clientconfig.gameName; }
 
     unsigned GetPlayerId() const { return playerId_; }
-    bool IsSinglePlayer() const;
     /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
     AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
-
-    /// Return current GameSettings. Only valid during the game!
-    const GlobalGameSettings& GetGGS() const;
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
@@ -103,7 +98,7 @@ public:
     // Initialisiert und startet das Spiel
     void StartGame(const unsigned random_init);
     /// Wird aufgerufen, wenn das GUI fertig mit Laden ist und es losgehen kann
-    void RealStart();
+    void GameStarted();
 
     /// Beendet das Spiel, zerstört die Spielstrukturen
     void ExitGame();
@@ -198,9 +193,6 @@ private:
     /// Checks if its time for autosaving (if enabled) and does it
     void HandleAutosave();
 
-    /// Führt für alle Spieler einen Statistikschritt aus, wenn die Zeit es verlangt
-    void StatisticStep();
-
     //  Netzwerknachrichten
     bool OnGameMessage(const GameMessage_Ping& msg) override;
 
@@ -258,18 +250,16 @@ public:
 private:
     /// Spieler-ID dieses Clients
     unsigned playerId_;
-    /// Globale Spieleinstellungen (TODO: Remove. Should be either game state or game lobby state)
-    GlobalGameSettings ggs;
 
     MessageQueue recv_queue, send_queue;
     Socket socket;
 
     ClientState state;
+
     /// Gameworld and event manager (valid during LOADING and GAME state)
-    boost::interprocess::unique_ptr<GameWorld, Deleter<GameWorld> > gw;
-    boost::interprocess::unique_ptr<EventManager, Deleter<EventManager> > em;
+    boost::shared_ptr<Game> game;
     /// Game lobby (valid during CONFIG state)
-    boost::interprocess::unique_ptr<GameLobby, Deleter<GameLobby> > gameLobby;
+    boost::shared_ptr<GameLobby> gameLobby;
 
     class ClientConfig
     {
@@ -288,15 +278,6 @@ private:
     MapInfo mapinfo;
 
     FramesInfoClient framesinfo;
-
-    class RandCheckInfo
-    {
-    public:
-        RandCheckInfo() { Clear(); }
-        void Clear();
-
-        unsigned rand;
-    } randcheckinfo;
 
     ClientInterface* ci;
 

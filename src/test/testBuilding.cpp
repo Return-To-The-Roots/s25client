@@ -31,6 +31,7 @@
 #include "test/CreateEmptyWorld.h"
 #include "test/WorldFixture.h"
 #include <boost/foreach.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/test/unit_test.hpp>
 
 // Test stuff related to building/building quality
@@ -198,6 +199,8 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     }
 }
 
+void deleteNoting(void*) {}
+
 BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
 {
     initGUITests();
@@ -207,7 +210,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     // Set player
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(0));
 
-    dskGameInterface gameDesktop(world);
+    dskGameInterface gameDesktop(boost::shared_ptr<Game>(&this->game, &deleteNoting));
     const GameWorldViewer& gwv = gameDesktop.GetViewer();
     // Start at a position a bit away from the HQ so all points are castles
     const MapPoint roadPt = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(6, 6));

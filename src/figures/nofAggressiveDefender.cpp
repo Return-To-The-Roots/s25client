@@ -18,11 +18,12 @@
 #include "defines.h" // IWYU pragma: keep
 #include "nofAggressiveDefender.h"
 #include "GameClient.h"
-#include "random/Random.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary* const home,

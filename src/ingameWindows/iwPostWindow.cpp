@@ -31,6 +31,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "postSystem/DiplomacyPostQuestion.h"
+#include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldView.h"
 #include "gameData/const_gui_ids.h"

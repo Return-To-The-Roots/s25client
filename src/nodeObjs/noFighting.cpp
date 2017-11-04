@@ -20,8 +20,8 @@
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
@@ -29,6 +29,7 @@
 #include "noSkeleton.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 

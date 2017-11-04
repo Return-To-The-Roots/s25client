@@ -19,9 +19,9 @@
 #include "noSkeleton.h"
 #include "EventManager.h"
 #include "Loader.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 
 noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NOP_ENVIRONMENT, pos), type(0)

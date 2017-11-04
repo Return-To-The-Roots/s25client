@@ -19,10 +19,10 @@
 #include "nofPassiveSoldier.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"
 class RoadSegment;

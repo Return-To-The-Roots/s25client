@@ -20,13 +20,14 @@
 
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
-#include "random/Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 
 nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* workplace)
