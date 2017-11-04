@@ -124,13 +124,13 @@ BOOST_AUTO_TEST_CASE(Translations)
     executeLua("rttr:Log(_('Foo'))");
     BOOST_REQUIRE_EQUAL(getLog(), "Foo\n");
     // Return translation for default locale
-    executeLua("rttrLocales = { en_GB = { Foo = 'Eng', Bar = 'Eng2' } }");
+    executeLua("rttr:RegisterTranslations({ en_GB = { Foo = 'Eng', Bar = 'Eng2' } })");
     executeLua("rttr:Log(_('Foo'))");
     BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
     // Return translation for language or default
     std::string localSetting =
-      "rttrLocales = { en_GB = { Foo = 'Eng', Bar = 'Eng2' }, pt = { Foo = 'Port', Bar = 'Port2' }, pt_BR = { Foo = 'PortBR', "
-      "Bar = 'PortBR2' } }";
+      "rttr:RegisterTranslations({ en_GB = { Foo = 'Eng', Bar = 'Eng2' }, pt = { Foo = 'Port', Bar = 'Port2' }, pt_BR = { Foo = 'PortBR', "
+      "Bar = 'PortBR2' } })";
     // With region
     {
         LocaleResetter loc("pt_BR");
