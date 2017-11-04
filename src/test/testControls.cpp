@@ -30,7 +30,7 @@ void resizeMap(glArchivItem_Map& glMap, const Extent& size)
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header;
     header->setWidth(size.x);
     header->setHeight(size.y);
-    header->setPlayer(2);
+    header->setNumPlayers(2);
     map.push(header);
     for(int i = 0; i <= MAP_TYPE; i++)
         map.push(new libsiedler2::ArchivItem_Raw(std::vector<uint8_t>(prodOfComponents(size))));

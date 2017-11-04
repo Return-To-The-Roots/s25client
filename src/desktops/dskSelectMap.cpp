@@ -416,14 +416,14 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
         RTTR_Assert(header);
 
-        if(header->getPlayer() > MAX_PLAYERS)
+        if(header->getNumPlayers() > MAX_PLAYERS)
             continue;
 
         const bfs::path luaFilepath = bfs::path(filePath).replace_extension("lua");
         const bool hasLua = bfs::is_regular_file(luaFilepath);
 
         // Und Zeilen vorbereiten
-        std::string players = (boost::format(_("%d Player")) % header->getPlayer()).str();
+        std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header->getNumPlayers())).str();
         std::string size = helpers::toString(header->getWidth()) + "x" + helpers::toString(header->getWidth());
 
         // und einfügen

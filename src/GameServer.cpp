@@ -154,7 +154,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
             RTTR_Assert(header);
 
-            config.playercount = header->getPlayer();
+            config.playercount = header->getNumPlayers();
             mapinfo.title = cvStringToUTF8(header->getName());
         }
         break;

@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
     BOOST_CHECK_EQUAL(header.getWidth(), 176);
     BOOST_CHECK_EQUAL(header.getHeight(), 80);
-    BOOST_CHECK_EQUAL(header.getPlayer(), 4);
+    BOOST_CHECK_EQUAL(header.getNumPlayers(), 4);
 
     std::vector<Nation> nations(0);
     MapLoader loader(world, nations);

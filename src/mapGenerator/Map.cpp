@@ -53,7 +53,7 @@ libsiedler2::Archiv* Map::CreateArchiv()
     header->setAuthor(author);
     header->setWidth(size.x);
     header->setHeight(size.y);
-    header->setPlayer(players);
+    header->setNumPlayers(players);
     header->setGfxSet(type);
 
     for(unsigned i = 0; i < positions.size(); i++)

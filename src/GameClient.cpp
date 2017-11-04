@@ -880,7 +880,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 RTTR_Assert(header);
 
                 RTTR_Assert(!gameLobby);
-                gameLobby.reset(new GameLobby(false, IsHost(), header->getPlayer()));
+                gameLobby.reset(new GameLobby(false, IsHost(), header->getNumPlayers()));
                 mapinfo.title = cvStringToUTF8(header->getName());
             }
             break;
