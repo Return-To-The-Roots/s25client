@@ -1,5 +1,6 @@
 
-FIND_PACKAGE(BZip2 REQUIRED)
+FIND_PACKAGE(BZIP2 REQUIRED)
+gather_dll(BZIP2)
 FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
 FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale thread)
@@ -84,10 +85,6 @@ IF("${RTTR_Assert_Enabled}" EQUAL 0)
 ELSEIF("${RTTR_Assert_Enabled}" EQUAL 1)
 	ADD_DEFINITIONS(-DRTTR_ENABLE_ASSERTS=1)
 ENDIF()
-
-if(HAVE_STRUCT_TIMESPEC)
-    add_definitions(-DHAVE_STRUCT_TIMESPEC)
-endif()
 
 if(MSVC)
 	# disable warning 4267: 'var' : conversion from 'size_t' to 'type', possible loss of data

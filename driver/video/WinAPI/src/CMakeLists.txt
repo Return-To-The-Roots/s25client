@@ -4,7 +4,7 @@ IF (WIN32)
 
 	ADD_DEFINITIONS(-DBUILD_DLL)
 
-	ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
+	ADD_LIBRARY(videoWinAPI SHARED WinAPI.cpp WinAPI.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	TARGET_LINK_LIBRARIES(videoWinAPI videodrv s25util gdi32 opengl32 user32) 
 
 	SET_PROPERTY(TARGET videoWinAPI PROPERTY POSITION_INDEPENDENT_CODE ON)

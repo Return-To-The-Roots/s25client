@@ -26,7 +26,7 @@ ELSE()
 	ENDIF ()
 		
     FILE(GLOB LIB_SRC *.cpp *.h)
-	ADD_LIBRARY(audioSDL SHARED ${LIB_SRC} ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
+	ADD_LIBRARY(audioSDL SHARED ${LIB_SRC} ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	TARGET_LINK_LIBRARIES(audioSDL audiodrv s25util ${SDL_LIBRARY} ${SDLMIXER_LIBRARY} ${Boost_LIBRARIES})
 
 	INSTALL(TARGETS audioSDL DESTINATION ${RTTR_DRIVERDIR}/audio)

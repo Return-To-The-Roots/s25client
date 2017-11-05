@@ -468,20 +468,17 @@ if(RTTR_BUILD_UPDATER)
     ADD_SUBDIRECTORY(s25update)
 endif()
 
-set(commonSrcDir ${PROJECT_SOURCE_DIR}/common)
-set(COMMON_SRC
-    ${commonSrcDir}/include/commonDefines.h
-    ${commonSrcDir}/RTTR_Assert.cpp
-    ${commonSrcDir}/include/RTTR_Assert.h
-    ${commonSrcDir}/include/RTTR_AssertError.h)
-include_directories(${commonSrcDir}/include)
+if(HAVE_STRUCT_TIMESPEC)
+    add_definitions(-DHAVE_STRUCT_TIMESPEC)
+endif()
+add_subdirectory(common)
 ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(src)
+add_subdirectory(s25edit)
 
 if(ClangFormat_FOUND)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
-    add_ClangFormat_files(${COMMON_SRC})
     add_ClangFormat_target("file")
 endif()
 

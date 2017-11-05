@@ -17,9 +17,9 @@
 
 #include "driverDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
-#include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
+#include "helpers/containerUtils.h"
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>

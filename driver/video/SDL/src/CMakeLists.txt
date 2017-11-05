@@ -14,7 +14,7 @@ IF (SDL_FOUND)
         gather_dll_by_name(SDL SDL.dll)
 	ENDIF ()
 
-	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp ${COMMON_SRC})
+	ADD_LIBRARY(videoSDL SHARED VideoSDL.cpp VideoSDL.h ${PROJECT_SOURCE_DIR}/driver/src/DriverInterface.cpp)
 	TARGET_LINK_LIBRARIES(videoSDL videodrv s25util ${SDL_LIBRARY})
 	if(WIN32)
 		target_link_libraries(videoSDL opengl32)

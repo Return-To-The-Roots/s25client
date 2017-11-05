@@ -19,9 +19,9 @@
 #include "WinAPI.h"
 
 #include "../../../../win32/resource.h"
-#include "../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
+#include "helpers/containerUtils.h"
 #include "libutil/ucString.h"
 #include <GL/gl.h>
 #include <cstdlib>
