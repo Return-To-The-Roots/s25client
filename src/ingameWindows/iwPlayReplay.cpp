@@ -22,6 +22,7 @@
 #include "ListDir.h"
 #include "Loader.h"
 #include "Replay.h"
+#include "RttrConfig.h"
 #include "WindowManager.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlTextButton.h"
@@ -33,7 +34,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/Log.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
@@ -49,7 +49,7 @@ public:
 
 std::vector<std::string> GetReplays()
 {
-    return ListDir(GetFilePath(FILE_PATHS[51]), "rpl");
+    return ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[51]), "rpl");
 }
 
 iwPlayReplay::iwPlayReplay()

@@ -18,13 +18,13 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "DriverWrapper.h"
 #include "ListDir.h"
+#include "RttrConfig.h"
 #include "driver/DriverInterfaceVersion.h"
 #include "driver/Interface.h"
 #include "files.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
-#include "libutil/fileFuncs.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
 #ifndef _WIN32
@@ -171,9 +171,9 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 {
     std::vector<DriverItem> driver_list;
 
-    const std::string DIRECTORY[2] = {"video", "audio"};
+    const std::string DIRECTORY[2] = {"/video", "/audio"};
 
-    std::string path = GetFilePath(FILE_PATHS[46]) + DIRECTORY[dt];
+    std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[46]) + DIRECTORY[dt];
     std::string extension =
 #ifdef _WIN32
       "dll";

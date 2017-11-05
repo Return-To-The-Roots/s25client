@@ -23,6 +23,7 @@
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
 #include "PointOutput.h"
+#include "RttrConfig.h"
 #include "files.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/GameWorldGame.h"
@@ -40,9 +41,13 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
-BOOST_AUTO_TEST_SUITE(MapTestSuite)
+struct MapTestFixture
+{
+    const std::string testMapPath;
+    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(std::string(FILE_PATHS[52]) + "/Bergruft.swd")) {}
+};
 
-const std::string testMapPath = std::string(FILE_PATHS[52]) + "Bergruft.swd";
+BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
 
 BOOST_AUTO_TEST_CASE(LoadSaveMap)
 {
@@ -65,7 +70,7 @@ struct UninitializedWorldCreator
     bool operator()(GameWorldBase& world) { return true; }
 };
 
-struct LoadWorldFromFileCreator
+struct LoadWorldFromFileCreator : MapTestFixture
 {
     glArchivItem_Map map;
     std::vector<MapPoint> hqs;
@@ -103,8 +108,9 @@ struct WorldLoaded1PFixture : public WorldFixture<LoadWorldFromFileCreator, 1>
 
 BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 {
+    MapTestFixture fixture;
     glArchivItem_Map map;
-    bnw::ifstream mapFile(testMapPath, std::ios::binary);
+    bnw::ifstream mapFile(fixture.testMapPath, std::ios::binary);
     BOOST_REQUIRE_EQUAL(map.load(mapFile, false), 0);
     const libsiedler2::ArchivItem_Map_Header& header = map.getHeader();
     BOOST_CHECK_EQUAL(header.getWidth(), 176);

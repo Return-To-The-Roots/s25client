@@ -20,12 +20,12 @@
 #include "iwTextfile.h"
 
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "controls/ctrlMultiline.h"
 #include "files.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
-#include "libutil/fileFuncs.h"
 #include <boost/nowide/fstream.hpp>
 
 /**
@@ -41,13 +41,13 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     ctrlMultiline* text = AddMultiline(2, DrawPoint(10, 20), Extent(GetSize().x - 20, 450), TC_GREEN1, NormalFont);
 
     // Pfad mit gewählter Sprache auswählen
-    std::string path = GetFilePath(FILE_PATHS[88]) + SETTINGS.language.language + "/" + filename;
+    std::string path = RTTRCONFIG.ExpandPath(FILE_PATHS[88]) + "/" + SETTINGS.language.language + "/" + filename;
 
     bnw::ifstream file(path);
     if(!file)
     {
         // lokalisierte Vresion nicht gefunden, Standard öffnen
-        path = FILE_PATHS[88] + filename;
+        path = RTTRCONFIG.ExpandPath(FILE_PATHS[88]) + "/" + filename;
         file.clear();
         file.open(path);
         if(!file)

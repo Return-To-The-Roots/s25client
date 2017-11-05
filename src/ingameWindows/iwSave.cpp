@@ -21,6 +21,7 @@
 #include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
 #include "WindowManager.h"
@@ -34,7 +35,6 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;
@@ -71,7 +71,7 @@ void iwSaveLoad::RefreshTable()
 
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
-    std::vector<std::string> saveFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
+    std::vector<std::string> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
     for(std::vector<std::string>::iterator it = saveFiles.begin(); it != saveFiles.end(); ++it)
     {
         Savegame save;
@@ -116,7 +116,7 @@ void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param) {}
 void iwSave::SaveLoad()
 {
     // Speichern
-    std::string tmp = GetFilePath(FILE_PATHS[85]);
+    std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]);
     tmp += GetCtrl<ctrlEdit>(1)->GetText();
     tmp += ".sav";
 

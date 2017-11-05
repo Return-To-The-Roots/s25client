@@ -49,8 +49,6 @@ class ArchivItem_Ini;
 class ArchivItem_Palette;
 } // namespace libsiedler2
 
-const std::string CONFIG_NAME = "config";
-
 /// Loader Klasse.
 class Loader : public Singleton<Loader, SingletonPolicies::WithLongevity>
 {
@@ -81,11 +79,6 @@ public:
     void ClearTerrainTextures();
     /// Lädt das Terrain.
     bool CreateTerrainTextures();
-
-    /// Lädt die Settings.
-    bool LoadSettings();
-    /// Speichert die Settings.
-    bool SaveSettings();
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
@@ -126,7 +119,6 @@ public:
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
     glArchivItem_Bitmap* GetTexImageN(unsigned nr);
     const libsiedler2::ArchivItem_Palette* GetTexPalette();
-    libsiedler2::ArchivItem_Ini* GetSettingsIniN(const std::string& name);
     /// Returns the texture for the given terrain. For animated textures the given frame is returned
     glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 

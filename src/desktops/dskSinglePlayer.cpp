@@ -17,13 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSinglePlayer.h"
-
 #include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "Savegame.h"
 #include "WindowManager.h"
-
 #include "controls/ctrlButton.h"
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
@@ -32,7 +31,6 @@
 #include "ingameWindows/iwPlayReplay.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 /** @class dskSinglePlayer
@@ -65,7 +63,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 3: // "Letztes Spiel fortsetzen"
         {
-            std::vector<std::string> savFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
+            std::vector<std::string> savFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
 
             bfs::path path;
             libutil::time64_t recent = 0;

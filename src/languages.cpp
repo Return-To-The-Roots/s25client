@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "languages.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "files.h"
 #include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Ini.h"
@@ -38,7 +39,7 @@ Languages::Languages() : loaded(false)
 {
     const char* domain = "rttr";
     mybind_textdomain_codeset(domain, "UTF-8");
-    mybindtextdomain(domain, FILE_PATHS[15]);
+    mybindtextdomain(domain, RTTRCONFIG.ExpandPath(FILE_PATHS[15]).c_str());
     mytextdomain(domain);
 }
 

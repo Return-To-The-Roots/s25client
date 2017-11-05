@@ -19,7 +19,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Loader.h"
-#include "ProgramInitHelpers.h"
+#include "RttrConfig.h"
 #include "files.h"
 #include "languages.h"
 #include "mygettext/mygettext.h"
@@ -29,7 +29,6 @@
 #include "libutil/Log.h"
 #include "libutil/Socket.h"
 #include "libutil/StringStreamWriter.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
@@ -53,14 +52,14 @@ struct TestSetup
             throw std::runtime_error("Could not init locale");
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
-        if(!InitWorkingDirectory())
+        if(!RTTRCONFIG.Init())
             throw std::runtime_error("Could not init working directory. Misplaced binary?");
-        if(!bfs::is_directory(RTTRDIR))
-            throw std::runtime_error(std::string(RTTRDIR) + " not found. Binary misplaced or RTTR folder not copied?");
+        if(!bfs::is_directory(RTTRCONFIG.ExpandPath("<RTTR_RTTR>")))
+            throw std::runtime_error(RTTRCONFIG.ExpandPath("<RTTR_RTTR>") + " not found. Binary misplaced or RTTR folder not copied?");
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
         Socket::Initialize();
-        LOADER.LoadFile(GetFilePath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
+        LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
     }
     ~TestSetup()
     {

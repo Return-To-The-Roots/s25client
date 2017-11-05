@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ProgramInitHelpers.h"
+#include "RttrConfig.h"
 #include "libutil/System.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem/operations.hpp>
@@ -124,7 +124,7 @@ public:
 
 BOOST_AUTO_TEST_CASE(PrefixPath)
 {
-    bfs::path prefixPath = GetPrefixPath();
+    bfs::path prefixPath = RTTRCONFIG.GetPrefixPath();
     BOOST_REQUIRE(!prefixPath.empty());
     BOOST_REQUIRE(bfs::exists(prefixPath));
     BOOST_REQUIRE(bfs::is_directory(prefixPath));
@@ -139,14 +139,14 @@ BOOST_AUTO_TEST_CASE(PrefixPath)
     {
         bfs::path fakePrefixPath = bfs::current_path() / "testPrefixPath";
         BOOST_REQUIRE(System::setEnvVar("RTTR_PREFIX_DIR", fakePrefixPath.string()));
-        BOOST_REQUIRE_EQUAL(GetPrefixPath(), fakePrefixPath);
+        BOOST_REQUIRE_EQUAL(RTTRCONFIG.GetPrefixPath(), fakePrefixPath);
         BOOST_REQUIRE(System::removeEnvVar("RTTR_PREFIX_DIR"));
     }
     {
         ResetWorkDir resetWorkDir;
         // Just change it in case we would not change it back
         bfs::current_path(bfs::current_path().parent_path());
-        BOOST_REQUIRE(InitWorkingDirectory());
+        BOOST_REQUIRE(RTTRCONFIG.Init());
         BOOST_REQUIRE_EQUAL(prefixPath, bfs::current_path());
     }
 }

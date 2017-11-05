@@ -21,6 +21,7 @@
 #include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "WindowManager.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
@@ -44,7 +45,6 @@
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
@@ -160,8 +160,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
     static const boost::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
     // Und wieder füllen lassen
-    FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "swd"));
-    FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "wld"));
+    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "swd"));
+    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "wld"));
 
     // Dann noch sortieren
     bool sortAsc = true;
@@ -277,7 +277,7 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 void dskSelectMap::CreateRandomMap()
 {
     // setup filepath for the random map
-    std::string mapPath = GetFilePath(FILE_PATHS[48]);
+    std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]);
     mapPath.append("Random.swd");
 
     // create a random map and save filepath

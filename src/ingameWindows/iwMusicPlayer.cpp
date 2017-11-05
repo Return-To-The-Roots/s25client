@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMusicPlayer.h"
-
 #include "ListDir.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
@@ -32,8 +32,8 @@
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
+#include <boost/nowide/cstdio.hpp>
 #include <cstdio>
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
@@ -158,7 +158,7 @@ void iwMusicPlayer::Msg_ListChooseItem(const unsigned ctrl_id, const unsigned se
 
 std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& combo_str)
 {
-    return (GetFilePath(FILE_PATHS[90]) + combo_str + ".pll");
+    return (RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + combo_str + ".pll");
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
@@ -287,7 +287,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
 bool ValidateFile(const std::string& filename)
 {
-    FILE* file = fopen(filename.c_str(), "r");
+    FILE* file = bnw::fopen(filename.c_str(), "r");
     if(!file)
         return false;
     else

@@ -20,6 +20,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Loader.h"
 #include "ListDir.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "addons/const_addons.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -45,7 +46,6 @@
 #include "libsiedler2/PixelBufferPaletted.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
-#include "libutil/fileFuncs.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -117,7 +117,7 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
         // yes, load all files in the directory
         unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
-        LOG.write(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % GetFilePath(file);
+        LOG.write(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % RTTRCONFIG.ExpandPath(file);
 
         std::vector<std::string> lst = ListDir(file, "lst", true);
         lst = ListDir(file, "bob", true, &lst);
@@ -169,7 +169,7 @@ bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* file
         if(files[i] == 0xFFFFFFFF)
             continue;
 
-        std::string filePath = GetFilePath(FILE_PATHS[files[i]]);
+        std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[files[i]]);
         if(!LoadFileOrDir(filePath, files[i], isOriginal))
         {
             LOG.write(_("Failed to load %s\n")) % filePath;
@@ -191,7 +191,7 @@ bool Loader::LoadLsts(unsigned dir)
     unsigned files_count;
     unsigned files[2] = {dir, dir + 3};
 
-    if(GetFilePath(FILE_PATHS[dir]) == GetFilePath(FILE_PATHS[dir + 3]))
+    if(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]) == RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3]))
         files_count = 1;
     else
         files_count = 2;
@@ -206,7 +206,7 @@ bool Loader::LoadLsts(unsigned dir)
  */
 bool Loader::LoadSounds()
 {
-    std::string soundLSTPath = GetFilePath(FILE_PATHS[55]);
+    std::string soundLSTPath = RTTRCONFIG.ExpandPath(FILE_PATHS[55]);
     if(bfs::exists(soundLSTPath))
     {
         // Archive might be faulty: Remove if it is and recreate
@@ -219,7 +219,7 @@ bool Loader::LoadSounds()
         // nein, dann konvertieren
 
         std::stringstream cmdss;
-        cmdss << GetFilePath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
+        cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
 
 // name anhängen
 #ifdef _WIN32
@@ -230,9 +230,9 @@ bool Loader::LoadSounds()
 
         // parameter anhängen
         cmdss << " -s \"";
-        cmdss << GetFilePath(FILE_PATHS[56]); // script
+        cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[56]); // script
         cmdss << "\" -f \"";
-        cmdss << GetFilePath(FILE_PATHS[49]); // quelle
+        cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[49]); // quelle
         cmdss << "\" -t \"";
         cmdss << soundLSTPath; // ziel
         cmdss << "\"";
@@ -253,11 +253,11 @@ bool Loader::LoadSounds()
     if(!boost::filesystem::exists(soundLSTPath))
     {
         // existiert nicht
-        if(!LoadFile(GetFilePath(FILE_PATHS[49]), NULL, true))
+        if(!LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[49]), NULL, true))
             return false;
     }
 
-    std::vector<std::string> oggFiles = ListDir(GetFilePath(FILE_PATHS[50]), "ogg");
+    std::vector<std::string> oggFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[50]), "ogg");
 
     unsigned i = 0;
     sng_lst.alloc(oggFiles.size());
@@ -332,39 +332,6 @@ std::vector<std::string> Loader::ExplodeString(std::string const& line, const ch
         result.push_back(in.str().substr(len));
 
     return result;
-}
-
-/**
- *  Lädt die Settings.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::LoadSettings()
-{
-    return LoadFileOrDir(GetFilePath(FILE_PATHS[0]), 0, true);
-}
-
-/**
- *  Speichert die Settings.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::SaveSettings()
-{
-    std::string file = GetFilePath(FILE_PATHS[0]);
-
-    LOG.write(_("Writing \"%s\": ")) % file;
-    fflush(stdout);
-
-    if(libsiedler2::Write(file, *GetInfoN(CONFIG_NAME)) != 0)
-        return false;
-
-    using namespace boost::filesystem;
-    permissions(file, owner_read | owner_write);
-
-    LOG.write(_("finished\n"));
-
-    return true;
 }
 
 void Loader::LoadDummyGUIFiles()
@@ -454,7 +421,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     if(!LoadFilesFromArray(files.size(), &files.front(), true))
         return false;
 
-    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(GetFilePath(RTTRDIR "/LSTS/GAME/Babylonier/"), 0, true))
+    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier/"), 0, true))
         return false;
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
@@ -863,7 +830,7 @@ void Loader::fillCaches()
 bool Loader::LoadFilesFromAddon(const AddonId id)
 {
     std::stringstream s;
-    s << GetFilePath(FILE_PATHS[96]) << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
+    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
 
     return LoadFileOrDir(s.str(), 96, false);
 }
@@ -1015,11 +982,6 @@ const libsiedler2::ArchivItem_Palette* Loader::GetTexPalette()
     return dynamic_cast<const libsiedler2::ArchivItem_Palette*>(GetTexImageN(0)->getPalette());
 }
 
-libsiedler2::ArchivItem_Ini* Loader::GetSettingsIniN(const std::string& name)
-{
-    return static_cast<libsiedler2::ArchivItem_Ini*>(GetInfoN(CONFIG_NAME)->find(name));
-}
-
 glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame /* = 0*/)
 {
     if(TerrainData::IsAnimated(t))
@@ -1128,7 +1090,7 @@ bool Loader::LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_P
 {
     unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
-    std::string file = GetFilePath(pfad);
+    std::string file = RTTRCONFIG.ExpandPath(pfad);
 
     LOG.write(_("Loading \"%s\": ")) % file;
     fflush(stdout);

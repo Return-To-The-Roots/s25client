@@ -17,24 +17,20 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Settings.h"
-
-#include "Loader.h"
 #include "RTTR_Version.h"
+#include "RttrConfig.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "languages.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
+#include "libsiedler2/libsiedler2.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
-#include "libutil/fileFuncs.h"
-#include <sstream>
-#ifndef _WIN32
-#include <cstring>
-#endif
-
+#include <boost/filesystem/operations.hpp>
 #include <boost/lexical_cast.hpp>
+#include <sstream>
 
 const unsigned Settings::SETTINGS_VERSION = 12;
 const unsigned Settings::SETTINGS_SECTIONS = 11;
@@ -49,9 +45,6 @@ Settings::Settings() //-V730
 
 bool Settings::LoadDefaults()
 {
-    // force deletion of old values
-    LOADER.GetInfoN(CONFIG_NAME)->clear();
-
     // global
     // {
     // 0 = ask user at start,1 = enabled, 2 = disabled
@@ -147,25 +140,27 @@ bool Settings::LoadDefaults()
 // Routine zum Laden der Konfiguration
 bool Settings::Load()
 {
-    if(!LOADER.LoadSettings() && LOADER.GetInfoN(CONFIG_NAME)->size() != SETTINGS_SECTIONS)
+    libsiedler2::Archiv settings;
+    std::string settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
+    if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SETTINGS_SECTIONS)
     {
-        s25Util::warning(std::string("No or corrupt \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
+        s25Util::warning(std::string("No or corrupt \"") + settingsPath + "\" found, using default values.");
         return LoadDefaults();
     }
 
     try
     {
-        const libsiedler2::ArchivItem_Ini* iniGlobal = LOADER.GetSettingsIniN("global");
-        const libsiedler2::ArchivItem_Ini* iniVideo = LOADER.GetSettingsIniN("video");
-        const libsiedler2::ArchivItem_Ini* iniLanguage = LOADER.GetSettingsIniN("language");
-        const libsiedler2::ArchivItem_Ini* iniDriver = LOADER.GetSettingsIniN("driver");
-        const libsiedler2::ArchivItem_Ini* iniSound = LOADER.GetSettingsIniN("sound");
-        const libsiedler2::ArchivItem_Ini* iniLobby = LOADER.GetSettingsIniN("lobby");
-        const libsiedler2::ArchivItem_Ini* iniServer = LOADER.GetSettingsIniN("server");
-        const libsiedler2::ArchivItem_Ini* iniProxy = LOADER.GetSettingsIniN("proxy");
-        const libsiedler2::ArchivItem_Ini* iniInterface = LOADER.GetSettingsIniN("interface");
-        const libsiedler2::ArchivItem_Ini* iniIngame = LOADER.GetSettingsIniN("ingame");
-        const libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
+        const libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
+        const libsiedler2::ArchivItem_Ini* iniVideo = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("video"));
+        const libsiedler2::ArchivItem_Ini* iniLanguage = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("language"));
+        const libsiedler2::ArchivItem_Ini* iniDriver = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("driver"));
+        const libsiedler2::ArchivItem_Ini* iniSound = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("sound"));
+        const libsiedler2::ArchivItem_Ini* iniLobby = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("lobby"));
+        const libsiedler2::ArchivItem_Ini* iniServer = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("server"));
+        const libsiedler2::ArchivItem_Ini* iniProxy = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("proxy"));
+        const libsiedler2::ArchivItem_Ini* iniInterface = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
+        const libsiedler2::ArchivItem_Ini* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("ingame"));
+        const libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
         // ist eine der Kategorien nicht vorhanden?
         if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
@@ -174,7 +169,7 @@ bool Settings::Load()
            ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
         {
             // nein, dann Standardeinstellungen laden
-            s25Util::warning(GetFilePath(FILE_PATHS[0]) + " found, but its corrupted or has wrong version. Loading default values.");
+            s25Util::warning(settingsPath + " found, but its corrupted or has wrong version. Loading default values.");
             return LoadDefaults();
         }
 
@@ -205,7 +200,7 @@ bool Settings::Load()
 
         if(video.fullscreenSize.x == 0 || video.fullscreenSize.y == 0 || video.windowedSize.x == 0 || video.windowedSize.y == 0)
         {
-            s25Util::warning(std::string("Corrupted \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values.");
+            s25Util::warning(std::string("Corrupted \"") + settingsPath + "\" found, using default values.");
             return LoadDefaults();
         }
 
@@ -291,7 +286,7 @@ bool Settings::Load()
 
     } catch(boost::bad_lexical_cast& e)
     {
-        s25Util::warning(std::string("Corrupt \"") + GetFilePath(FILE_PATHS[0]) + "\" found, using default values. Error: " + e.what());
+        s25Util::warning(std::string("Corrupt \"") + settingsPath + "\" found, using default values. Error: " + e.what());
         return LoadDefaults();
     }
 
@@ -302,26 +297,22 @@ bool Settings::Load()
 // Routine zum Speichern der Konfiguration
 void Settings::Save()
 {
-    libsiedler2::Archiv& configInfo = *LOADER.GetInfoN(CONFIG_NAME);
-    if(configInfo.size() != SETTINGS_SECTIONS)
-    {
-        libsiedler2::ArchivItem_Ini item;
-        configInfo.alloc(SETTINGS_SECTIONS);
-        for(unsigned i = 0; i < SETTINGS_SECTIONS; ++i)
-            configInfo.set(i, new libsiedler2::ArchivItem_Ini(SETTINGS_SECTION_NAMES[i]));
-    }
+    libsiedler2::Archiv settings;
+    settings.alloc(SETTINGS_SECTIONS);
+    for(unsigned i = 0; i < SETTINGS_SECTIONS; ++i)
+        settings.set(i, new libsiedler2::ArchivItem_Ini(SETTINGS_SECTION_NAMES[i]));
 
-    libsiedler2::ArchivItem_Ini* iniGlobal = LOADER.GetSettingsIniN("global");
-    libsiedler2::ArchivItem_Ini* iniVideo = LOADER.GetSettingsIniN("video");
-    libsiedler2::ArchivItem_Ini* iniLanguage = LOADER.GetSettingsIniN("language");
-    libsiedler2::ArchivItem_Ini* iniDriver = LOADER.GetSettingsIniN("driver");
-    libsiedler2::ArchivItem_Ini* iniSound = LOADER.GetSettingsIniN("sound");
-    libsiedler2::ArchivItem_Ini* iniLobby = LOADER.GetSettingsIniN("lobby");
-    libsiedler2::ArchivItem_Ini* iniServer = LOADER.GetSettingsIniN("server");
-    libsiedler2::ArchivItem_Ini* iniProxy = LOADER.GetSettingsIniN("proxy");
-    libsiedler2::ArchivItem_Ini* iniInterface = LOADER.GetSettingsIniN("interface");
-    libsiedler2::ArchivItem_Ini* iniIngame = LOADER.GetSettingsIniN("ingame");
-    libsiedler2::ArchivItem_Ini* iniAddons = LOADER.GetSettingsIniN("addons");
+    libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
+    libsiedler2::ArchivItem_Ini* iniVideo = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("video"));
+    libsiedler2::ArchivItem_Ini* iniLanguage = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("language"));
+    libsiedler2::ArchivItem_Ini* iniDriver = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("driver"));
+    libsiedler2::ArchivItem_Ini* iniSound = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("sound"));
+    libsiedler2::ArchivItem_Ini* iniLobby = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("lobby"));
+    libsiedler2::ArchivItem_Ini* iniServer = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("server"));
+    libsiedler2::ArchivItem_Ini* iniProxy = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("proxy"));
+    libsiedler2::ArchivItem_Ini* iniInterface = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("interface"));
+    libsiedler2::ArchivItem_Ini* iniIngame = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("ingame"));
+    libsiedler2::ArchivItem_Ini* iniAddons = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("addons"));
 
     // ist eine der Kategorien nicht vorhanden?
     RTTR_Assert(iniGlobal && iniVideo && iniLanguage && iniDriver && iniSound && iniLobby && iniServer && iniProxy && iniInterface
@@ -425,5 +416,7 @@ void Settings::Save()
     }
     // }
 
-    LOADER.SaveSettings();
+    bfs::path settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
+    if(libsiedler2::Write(settingsPath.string(), settings) == 0)
+        bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
 }

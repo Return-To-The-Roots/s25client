@@ -15,14 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "ProgramInitHelpers.h"
+#include "commonDefines.h" // IWYU pragma: keep
+#include "RttrConfig.h"
 #include "libutil/Log.h"
 #include "libutil/System.h"
 #include <boost/filesystem.hpp>
 #include <build_paths.h>
+#include <stdexcept>
 
-bfs::path GetPrefixPath()
+// Expected: RTTR_BINDIR, RTTR_DATADIR, RTTR_GAMEDIR, RTTR_LIBDIR, RTTR_DRIVERDIR
+#if !(defined(RTTR_BINDIR) && defined(RTTR_DATADIR) && defined(RTTR_GAMEDIR) && defined(RTTR_LIBDIR) && defined(RTTR_DRIVERDIR))
+#error "At least one of the RTTR_*DIR is undefined!"
+#endif
+
+#ifndef RTTR_SETTINGSDIR
+#if defined(_WIN32)
+#define RTTR_SETTINGSDIR "~/Return To The Roots"
+#elif defined(__APPLE__)
+#define RTTR_SETTINGSDIR "~/Library/Application Support/Return To The Roots"
+#else
+#define RTTR_SETTINGSDIR "~/.s25rttr"
+#endif
+#endif // !RTTR_SETTINGSDIR
+
+bfs::path RttrConfig::GetPrefixPath() const
 {
     // Determine install prefix
     // Get path to current executable (at least for checks)
@@ -69,15 +85,55 @@ bfs::path GetPrefixPath()
                       LogTarget::Stderr)
               % prefixPath % exePath;
     }
-    return prefixPath;
+    return bfs::absolute(prefixPath);
 }
 
-bool InitWorkingDirectory()
+std::string RttrConfig::ExpandPath(const std::string& path) const
 {
-    bfs::path prefixPath = GetPrefixPath();
+    if(path.empty())
+        return prefixPath.string();
+    bfs::path outPath;
+    if(path[0] == '<')
+    {
+        static const char rttrPathId[] = "<RTTR_";
+        size_t startPos = path.find(rttrPathId);
+        if(startPos > 0u)
+            throw std::runtime_error("<RTTR_X> placeholders only allowed at start of path");
+        size_t endPos = path.find('>');
+        if(endPos == std::string::npos)
+            throw std::runtime_error("Incomplete <RTTR_X> placeholder found!");
+        std::string entry = path.substr(sizeof(rttrPathId) - 1, endPos - startPos - sizeof(rttrPathId) + 1);
+        std::map<std::string, std::string>::const_iterator it = pathMappings.find(entry);
+        if(it == pathMappings.end())
+            throw std::runtime_error("Invalid <RTTR_X> placeholder found!");
+        outPath = bfs::path(it->second) / path.substr(endPos + 1);
+    } else
+        outPath = path;
+    if(*outPath.begin() == "~")
+        outPath = homePath / outPath.string().substr(2);
+
+    outPath = bfs::absolute(outPath, prefixPath);
+    if(bfs::exists(outPath))
+        outPath = bfs::canonical(outPath);
+    return outPath.make_preferred().string();
+}
+
+bool RttrConfig::Init()
+{
+    prefixPath = GetPrefixPath();
     if(prefixPath.empty())
         return false;
     // Make the prefix path our working directory as all other paths are relative to that
     bfs::current_path(prefixPath);
+    homePath = System::getHomePath();
+    pathMappings.clear();
+    pathMappings["BIN"] = RTTR_BINDIR;
+    pathMappings["DATA"] = RTTR_DATADIR;
+    pathMappings["GAME"] = RTTR_GAMEDIR;
+    pathMappings["LIB"] = RTTR_LIBDIR;
+    pathMappings["DRIVER"] = RTTR_DRIVERDIR;
+    pathMappings["RTTR"] = RTTR_DATADIR "/RTTR";
+    pathMappings["CONFIG"] = RTTR_SETTINGSDIR;
+    pathMappings["USERDATA"] = RTTR_SETTINGSDIR;
     return true;
 }

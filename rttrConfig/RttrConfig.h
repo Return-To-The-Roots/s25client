@@ -17,14 +17,27 @@
 
 #pragma once
 
-#ifndef ProgramInitHelpers_h__
-#define ProgramInitHelpers_h__
+#ifndef RttrConfig_h__
+#define RttrConfig_h__
 
+#include "libutil/Singleton.h"
 #include <boost/filesystem/path.hpp>
+#include <map>
 #include <string>
 
-/// Return the prefix path for the installation
-bfs::path GetPrefixPath();
-bool InitWorkingDirectory();
+class RttrConfig : public Singleton<RttrConfig>
+{
+    boost::filesystem::path prefixPath, homePath;
+    std::map<std::string, std::string> pathMappings;
 
-#endif // ProgramInitHelpers_h__
+public:
+    bool Init();
+    /// Return the prefix path for the installation
+    boost::filesystem::path GetPrefixPath() const;
+    /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
+    std::string ExpandPath(const std::string& path) const;
+};
+
+#define RTTRCONFIG RttrConfig::inst()
+
+#endif // RttrConfig_h__

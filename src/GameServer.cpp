@@ -27,6 +27,7 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "RTTR_Version.h"
+#include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
 #include "ai/AIPlayer.h"
@@ -45,7 +46,6 @@
 #include "libsiedler2/prototypen.h"
 #include "libutil/SocketSet.h"
 #include "libutil/colors.h"
-#include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -1414,7 +1414,8 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
         di.SendReplay();
     }
 
-    std::string fileName = GetFilePath(FILE_PATHS[47]) + libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
+    std::string fileName =
+      RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
     bnw::ofstream file(fileName);

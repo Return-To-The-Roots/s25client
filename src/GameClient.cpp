@@ -34,6 +34,7 @@
 #include "PlayerGameCommands.h"
 #include "RTTR_Version.h"
 #include "ReplayInfo.h"
+#include "RttrConfig.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "Settings.h"
@@ -54,7 +55,6 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/SocketSet.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -313,8 +313,6 @@ void GameClient::StartGame(const unsigned random_init)
     {
         RTTR_Assert(!replayinfo);
         StartReplayRecording(random_init);
-        std::stringstream fileName;
-        fileName << FILE_PATHS[47] << libutil::Time::FormatTime("game_%Y-%m-%d_%H-%i-%s") << "-" << (rand() % 100) << ".log";
     }
 
     // Daten nach dem Schreiben des Replays ggf wieder löschen
@@ -770,8 +768,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
         ci->CI_Async(checksum_list.str());
 
     std::string timeStr = libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
-    std::string filePathSave = GetFilePath(FILE_PATHS[85]) + timeStr + ".sav";
-    std::string filePathLog = GetFilePath(FILE_PATHS[47]) + timeStr + "Player.log";
+    std::string filePathSave = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + timeStr + ".sav";
+    std::string filePathLog = RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + timeStr + "Player.log";
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
     LOG.write("Async log saved at \"%s\", game saved at \"%s\"\n") % filePathLog % filePathSave;
@@ -807,7 +805,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown& /*msg*/
 bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 {
     // full path
-    mapinfo.filepath = GetFilePath(FILE_PATHS[48]) + msg.map_name;
+    mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + msg.map_name;
     mapinfo.type = msg.mt;
     mapinfo.mapData.data.resize(msg.mapCompressedLen);
     mapinfo.mapData.length = msg.mapLen;
@@ -1248,7 +1246,7 @@ void GameClient::HandleAutosave()
     // Alle .... GF
     if(GetGFNumber() % SETTINGS.interface.autosave_interval == 0)
     {
-        std::string tmp = GetFilePath(FILE_PATHS[85]);
+        std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]);
 
         if(this->mapinfo.title.length())
         {
@@ -1316,7 +1314,7 @@ void GameClient::StartReplayRecording(const unsigned random_init)
     replayinfo->replay.ggs = game->ggs;
 
     // Datei speichern
-    if(!replayinfo->replay.StartRecording(GetFilePath(FILE_PATHS[51]) + replayinfo->fileName, mapinfo))
+    if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(FILE_PATHS[51]) + "/" + replayinfo->fileName, mapinfo))
     {
         LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.\n");
         replayinfo.reset();
@@ -1379,7 +1377,7 @@ bool GameClient::StartReplay(const std::string& path)
         case MAPTYPE_OLDMAP:
         {
             // Richtigen Pfad zur Map erstellen
-            bfs::path mapFilePath = bfs::path(GetFilePath(FILE_PATHS[48])) / bfs::path(mapinfo.filepath).filename();
+            bfs::path mapFilePath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[48])) / bfs::path(mapinfo.filepath).filename();
             mapinfo.filepath = mapFilePath.string();
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
