@@ -171,14 +171,18 @@ std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya
     kaguya::LuaRef entry = luaTranslations[code];
     if(entry.type() == LUA_TTABLE)
         return entry;
-    size_t pos = code.find('_');
-    if(pos != std::string::npos)
+    std::string lang, region, encoding;
+    splitLanguageCode(code, lang, region, encoding);
+
+    if(!region.empty())
     {
-        std::string lang = code.substr(0, pos);
-        entry = luaTranslations[lang];
+        entry = luaTranslations[lang + "_" + region];
         if(entry.type() == LUA_TTABLE)
             return entry;
     }
+    entry = luaTranslations[lang];
+    if(entry.type() == LUA_TTABLE)
+        return entry;
     return std::map<std::string, std::string>();
 }
 

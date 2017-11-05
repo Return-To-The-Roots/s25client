@@ -226,10 +226,11 @@ void ctrlList::DeleteAllItems()
  */
 const std::string& ctrlList::GetItemText(unsigned short line) const
 {
+    static const std::string EMPTY;
     if(line < lines.size())
-        return lines.at(line);
+        return lines[line];
 
-    return EMPTY_STRING;
+    return EMPTY;
 }
 
 /**

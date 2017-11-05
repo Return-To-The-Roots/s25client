@@ -60,7 +60,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
-    AddText(6, DrawPoint(150, 215), EMPTY_STRING, COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(6, DrawPoint(150, 215), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // "Verbinden"
     AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TC_GREEN2, _("Connect"), NormalFont);
@@ -79,7 +79,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
 void iwDirectIPConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
-    SetText(EMPTY_STRING, COLOR_RED, true);
+    SetText("", COLOR_RED, true);
 }
 
 void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)

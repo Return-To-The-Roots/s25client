@@ -15,17 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
+#define BOOST_TEST_MODULE RTTR_Test
+
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "Loader.h"
 #include "ProgramInitHelpers.h"
 #include "files.h"
+#include "languages.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
 #include "libutil/Socket.h"
 #include "libutil/StringStreamWriter.h"
-
-#define BOOST_TEST_MODULE RTTR_Test
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
@@ -56,6 +60,7 @@ struct TestSetup
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
         Socket::Initialize();
+        LOADER.LoadFile(GetFilePath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
     }
     ~TestSetup()
     {
@@ -77,4 +82,17 @@ BOOST_AUTO_TEST_CASE(LocaleFormatTest)
     BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234.5), "1234.5");
     BOOST_CHECK_EQUAL(boost::lexical_cast<float>("1234.5"), 1234.5);
     BOOST_CHECK_EQUAL(boost::lexical_cast<int>("1234"), 1234);
+
+    std::string oldLang = mysetlocale(LC_ALL, NULL);
+    // Should work on all languages
+    const unsigned numLanguages = LANGUAGES.getCount();
+    for(unsigned i = 0; i < numLanguages; i++)
+    {
+        LANGUAGES.setLanguage(i);
+        BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234), "1234");
+        BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234.5), "1234.5");
+        BOOST_CHECK_EQUAL(boost::lexical_cast<float>("1234.5"), 1234.5);
+        BOOST_CHECK_EQUAL(boost::lexical_cast<int>("1234"), 1234);
+    }
+    mysetlocale(LC_ALL, oldLang.c_str());
 }

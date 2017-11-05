@@ -34,6 +34,14 @@ bool operator<(const Language& o1, const Language& o2)
     return false;
 }
 
+Languages::Languages() : loaded(false)
+{
+    const char* domain = "rttr";
+    mybind_textdomain_codeset(domain, "UTF-8");
+    mybindtextdomain(domain, FILE_PATHS[15]);
+    mytextdomain(domain);
+}
+
 void Languages::loadLanguages()
 {
     const libsiedler2::Archiv& langInfo =
@@ -79,11 +87,8 @@ unsigned Languages::getCount()
 
 void Languages::setLanguage(const std::string& lang_code)
 {
-    std::string locale = mysetlocale(LC_ALL, lang_code.c_str());
-    const char* domain = "rttr";
-    mybind_textdomain_codeset(domain, "UTF-8");
-    mybindtextdomain(domain, FILE_PATHS[15]);
-    mytextdomain(domain);
+    mysetlocale(LC_ALL, lang_code.c_str());
+    std::locale::global(std::locale::classic());
 }
 
 const std::string Languages::setLanguage(unsigned i)

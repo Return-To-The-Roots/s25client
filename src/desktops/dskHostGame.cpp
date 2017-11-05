@@ -410,7 +410,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
         // Bereit (nicht bei KIs und Host)
         if(player.ps == PS_OCCUPIED && !player.isHost)
-            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, EMPTY_STRING, NULL, (localPlayerId_ != row));
+            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, "", NULL, (localPlayerId_ != row));
 
         // Ping ( "%d" )
         ctrlVarDeepening* ping =

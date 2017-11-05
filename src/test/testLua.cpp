@@ -113,9 +113,9 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
 
 struct LocaleResetter
 {
-    const char* oldLoc;
-    LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, newLoc)) {}
-    ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc); }
+    const std::string oldLoc;
+    LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, NULL)) { mysetlocale(LC_ALL, newLoc); }
+    ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc.c_str()); }
 };
 
 BOOST_AUTO_TEST_CASE(Translations)
