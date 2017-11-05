@@ -130,6 +130,7 @@ case "$SYSTEM_NAME" in
 	Darwin)
 		echo "extraction of debug symbols for Apple currently not supported" >&2
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
+		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25edit
 		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/video/libvideoSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/audio/libaudioSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s25update
@@ -138,6 +139,7 @@ case "$SYSTEM_NAME" in
 	;;
 	Windows)
 		extract_debug_symbols s25client.exe
+		extract_debug_symbols s25edit.exe
 		extract_debug_symbols driver/video/libvideoWinAPI.dll
 		extract_debug_symbols driver/video/libvideoSDL.dll
 		extract_debug_symbols driver/audio/libaudioSDL.dll
@@ -147,6 +149,7 @@ case "$SYSTEM_NAME" in
 	;;
 	Linux|FreeBSD)
 		extract_debug_symbols bin/s25client
+		extract_debug_symbols bin/s25edit
 		extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
 		extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
 		extract_debug_symbols bin/RTTR/s25update

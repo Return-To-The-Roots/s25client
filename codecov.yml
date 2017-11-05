@@ -3,5 +3,6 @@ coverage:
     ignore:
         - contrib/*
         - src/test/*
+        - s25edit/*
 comment: false
 

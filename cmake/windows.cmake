@@ -4,16 +4,7 @@ SET(Boost_USE_STATIC_LIBS TRUE)
 IF(NOT MSVC)
     include(CheckCXXSourceCompiles)
 	# set compiler flags
-    set(ADDITIONAL_FLAGS -ffast-math -mmmx -msse -fomit-frame-pointer -ggdb)
-    # Bug in MinGW with mfpmath=sse
-    set(CMAKE_REQUIRED_FLAGS "-msse -mfpmath=sse")
-    check_cxx_source_compiles("
-        #include <cmath>
-        int main() {}" FPMATH_SUPPORTED)
-    set(CMAKE_REQUIRED_FLAGS )
-    if(FPMATH_SUPPORTED)
-        list(APPEND ADDITIONAL_FLAGS -mfpmath=sse)
-    endif()
+    set(ADDITIONAL_FLAGS -ffast-math -mmmx -msse -msse2 -mfpmath=sse -fomit-frame-pointer -ggdb)
 	FORCE_ADD_FLAGS(CMAKE_C_FLAGS ${ADDITIONAL_FLAGS})
 	FORCE_ADD_FLAGS(CMAKE_CXX_FLAGS ${ADDITIONAL_FLAGS})
 
