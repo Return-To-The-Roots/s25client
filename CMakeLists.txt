@@ -473,6 +473,7 @@ if(HAVE_STRUCT_TIMESPEC)
 endif()
 add_subdirectory(common)
 ADD_SUBDIRECTORY(driver)
+ADD_SUBDIRECTORY(rttrConfig)
 ADD_SUBDIRECTORY(src)
 add_subdirectory(s25edit)
 

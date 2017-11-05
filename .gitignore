@@ -59,6 +59,7 @@
 /build/x64
 /build/DATA
 /build/GFX
+/build/rttrConfig
 /build/s25rttr
 /build/share
 /build/Makefile
