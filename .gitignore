@@ -44,6 +44,7 @@
 /build/s25client.sln
 /build/s25client.build
 /build/s25client.xcodeproj
+/build/s25edit
 /build/s25update
 /build/src
 /build/version
@@ -82,3 +83,4 @@ build_version_defines.h
 /S2
 
 /build/test/testConfig.h
+/win32/*.aps

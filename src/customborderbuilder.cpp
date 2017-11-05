@@ -38,7 +38,7 @@ rechts, wobei die Ecken zu oben/unten gehören. Sie müssen also an den Stellen 
 Vor dem Aufruf von buildBorder() muss der interne, öffentliche Zeiger *palette auf ein ArchivItem_Palette* gesetzt werden.
  */
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "customborderbuilder.h"
 #include "ogl/glArchivItem_Bitmap_Direct.h"
 #include "libsiedler2/Archiv.h"

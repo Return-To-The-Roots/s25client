@@ -16,8 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
-#ifndef defines_h__
-#define defines_h__
+#ifndef rttrDefines_h__
+#define rttrDefines_h__
 
 // IWYU pragma: begin_exports
 
@@ -27,10 +27,10 @@
 // IWYU pragma: end_exports
 
 /**
- *  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
- *  Union. GCC meckert da sonst wegen "type punned pointer" bzw
- *  "iso c++ forbids conversion".
- */
+*  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
+*  Union. GCC meckert da sonst wegen "type punned pointer" bzw
+*  "iso c++ forbids conversion".
+*/
 template<typename F>
 inline F pto2ptf(void* o)
 {
@@ -56,4 +56,4 @@ inline T max(T a, T b)
     return (a < b) ? b : a;
 }
 
-#endif // defines_h__
+#endif // rttrDefines_h__
