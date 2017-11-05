@@ -1415,7 +1415,7 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     }
 
     std::string fileName =
-      RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
+      RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
     bnw::ofstream file(fileName);

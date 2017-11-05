@@ -154,7 +154,7 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     ctrlTable* table = GetCtrl<ctrlTable>(ID_tblServer);
-    unsigned selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
+    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
     if(selection >= openGames.size())
         return false;
 

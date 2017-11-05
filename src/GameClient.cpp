@@ -767,7 +767,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     if(ci)
         ci->CI_Async(checksum_list.str());
 
-    std::string timeStr = libutil::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    std::string timeStr = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
     std::string filePathSave = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + timeStr + ".sav";
     std::string filePathLog = RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + timeStr + "Player.log";
     RANDOM.SaveLog(filePathLog);
@@ -1307,7 +1307,7 @@ void GameClient::WritePlayerInfo(SavedFile& file)
 void GameClient::StartReplayRecording(const unsigned random_init)
 {
     replayinfo.reset(new ReplayInfo);
-    replayinfo->fileName = libutil::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
+    replayinfo->fileName = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
     replayinfo->replay.random_init = random_init;
 
     WritePlayerInfo(replayinfo->replay);

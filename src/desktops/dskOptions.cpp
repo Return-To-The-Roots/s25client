@@ -46,6 +46,7 @@
 #include "ingameWindows/iwTextfile.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/colors.h"
+#include <boost/lexical_cast.hpp>
 
 /** @class dskOptions
  *
@@ -569,7 +570,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
             // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()
             SETTINGS.proxy.proxy = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
-            SETTINGS.proxy.port = atoi(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
+            SETTINGS.proxy.port = boost::lexical_cast<unsigned>(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
 
             SETTINGS.Save();
 

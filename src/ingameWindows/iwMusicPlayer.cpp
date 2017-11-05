@@ -33,6 +33,7 @@
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/nowide/cstdio.hpp>
 #include <cstdio>
 
@@ -248,14 +249,12 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // Less Repeats
         case 13:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
+            unsigned repeats = GetRepeats();
 
             if(repeats)
             {
                 --repeats;
-                char str[32];
-                sprintf(str, "%u", repeats);
-                GetCtrl<ctrlTextDeepening>(12)->SetText(str);
+                SetRepeats(repeats);
                 changed = true;
             }
         }
@@ -263,11 +262,9 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // More Repeats
         case 14:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
+            unsigned repeats = GetRepeats();
             ++repeats;
-            char str[32];
-            sprintf(str, "%u", repeats);
-            GetCtrl<ctrlTextDeepening>(12)->SetText(str);
+            SetRepeats(repeats);
             changed = true;
         }
         break;
@@ -379,9 +376,7 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
 }
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
-    char repeats_str[32];
-    sprintf(repeats_str, "%u", repeats);
-    GetCtrl<ctrlTextDeepening>(12)->SetText(repeats_str);
+    GetCtrl<ctrlTextDeepening>(12)->SetText(boost::lexical_cast<std::string>(repeats));
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
@@ -404,7 +399,7 @@ std::vector<std::string> iwMusicPlayer::GetSegments() const
 
 unsigned iwMusicPlayer::GetRepeats() const
 {
-    return atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
+    return boost::lexical_cast<unsigned>(GetCtrl<ctrlTextDeepening>(12)->GetText());
 }
 
 bool iwMusicPlayer::GetRandomPlayback() const
@@ -417,7 +412,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 {
     GetCtrl<ctrlComboBox>(2)->DeleteAllItems();
 
-    std::vector<std::string> playlists = ListDir(std::string(FILE_PATHS[90]), "pll");
+    std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
     for(std::vector<std::string>::iterator it = playlists.begin(); it != playlists.end(); ++it, ++i)

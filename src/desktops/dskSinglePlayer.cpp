@@ -66,7 +66,7 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
             std::vector<std::string> savFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
 
             bfs::path path;
-            libutil::time64_t recent = 0;
+            s25util::time64_t recent = 0;
             for(std::vector<std::string>::iterator it = savFiles.begin(); it != savFiles.end(); ++it)
             {
                 Savegame save;

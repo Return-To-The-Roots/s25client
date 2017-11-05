@@ -105,7 +105,7 @@ void iwPlayReplay::PopulateTable()
         }
 
         // Zeitstamp benutzen
-        std::string dateStr = libutil::Time::FormatTime("%d.%m.%Y - %H:%i", replay.GetSaveTime());
+        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", replay.GetSaveTime());
 
         // Spielernamen auslesen
         std::string tmp_players;

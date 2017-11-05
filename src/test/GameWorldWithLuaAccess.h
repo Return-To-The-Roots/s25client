@@ -100,7 +100,7 @@ struct LuaTestsFixture
     {
         try
         {
-            executeLua(std::string("assert(") + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
+            executeLua("assert(" + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
         } catch(std::runtime_error& e)
         {
             boost::test_tools::predicate_result result(false);

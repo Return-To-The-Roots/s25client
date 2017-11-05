@@ -21,6 +21,7 @@
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
@@ -40,7 +41,7 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
 
 void iwSkipGFs::SkipGFs()
 {
-    int gf = atoi(GetCtrl<ctrlEdit>(1)->GetText().c_str());
+    int gf = s25util::fromStringClassic(GetCtrl<ctrlEdit>(1)->GetText().c_str(), 0);
     GAMECLIENT.SkipGF(gf, gwv);
 }
 

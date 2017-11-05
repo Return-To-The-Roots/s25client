@@ -23,7 +23,6 @@
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "helpers/Deleter.h"
-#include "helpers/converters.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -33,6 +32,7 @@
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include "test/initTestHelpers.h"
+#include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
-    BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", helpers::toString(lua.GetFeatureLevel())));
+    BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
 
     // (Invalid) connect to set params
     BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, true, false));
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
 
     for(unsigned i = 0; i < 2; i++)
     {
-        BOOST_CHECK(isLuaEqual("rttr:GetGF()", helpers::toString(world.em.GetCurrentGF())));
+        BOOST_CHECK(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.em.GetCurrentGF())));
         world.em.ExecuteNextGF();
     }
 
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
     BOOST_CHECK(isLuaEqual("player:GetName()", "'PlayerAI'"));
     BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
     BOOST_CHECK(isLuaEqual("player:GetTeam()", "TM_TEAM2"));
-    BOOST_CHECK(isLuaEqual("player:GetColor()", helpers::toString(0xFFFF0000)));
+    BOOST_CHECK(isLuaEqual("player:GetColor()", s25util::toStringClassic(0xFFFF0000)));
     BOOST_CHECK(isLuaEqual("player:IsHuman()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsAI()", "true"));
     BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
@@ -448,15 +448,15 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_REQUIRE(!hq->IsTent());
 
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(hq->GetPos().x)));
-    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(hq->GetPos().y)));
+    BOOST_CHECK(isLuaEqual("hqX", s25util::toStringClassic(hq->GetPos().x)));
+    BOOST_CHECK(isLuaEqual("hqY", s25util::toStringClassic(hq->GetPos().y)));
 
     // Destroy players HQ
     world.DestroyNO(hq->GetPos());
     // HQ-Pos is invalid
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(MapPoint::Invalid().x)));
-    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(MapPoint::Invalid().y)));
+    BOOST_CHECK(isLuaEqual("hqX", s25util::toStringClassic(MapPoint::Invalid().x)));
+    BOOST_CHECK(isLuaEqual("hqY", s25util::toStringClassic(MapPoint::Invalid().y)));
     // Adding wares/people returns false
     executeLua("assert(player:AddWares(wares) == false)");
     executeLua("assert(player:AddPeople(people) == false)");

@@ -89,7 +89,7 @@ void iwSaveLoad::RefreshTable()
         }
 
         // Zeitstring erstellen
-        std::string dateStr = libutil::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
+        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
 
         // Dateiname noch rausextrahieren aus dem Pfad
         bfs::path path = *it;

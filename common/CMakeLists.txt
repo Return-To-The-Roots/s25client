@@ -11,6 +11,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 add_library(s25Common STATIC ${ALL_SRC})
 target_include_directories(s25Common PUBLIC include)
 target_link_libraries(s25Common s25util)
+SET_PROPERTY(TARGET s25Common PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(ClangFormat_FOUND)
     add_ClangFormat_files(${ALL_SRC})

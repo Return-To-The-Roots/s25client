@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     BOOST_REQUIRE(tmpFile.isValid());
     tmpFile.close();
 
-    libutil::time64_t saveTime = libutil::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_REQUIRE(save.Save(tmpFile.filePath, "MapTitle"));
     BOOST_REQUIRE_LE(save.GetSaveTime() - saveTime, 20); // 20s difference max
     const unsigned origObjNum = GameObject::GetObjCount();
@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     BOOST_REQUIRE(!replay.IsReplaying());
 
     bfs::remove(tmpFile.filePath);
-    libutil::time64_t saveTime = libutil::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_REQUIRE(replay.StartRecording(tmpFile.filePath, map));
     BOOST_REQUIRE_LE(replay.GetSaveTime() - saveTime, 20); // 20s difference max
     BOOST_REQUIRE(replay.IsValid());
@@ -365,7 +365,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_REQUIRE(tmpFile.isValid());
     tmpFile.close();
     bfs::remove(tmpFile.filePath);
-    libutil::time64_t saveTime = libutil::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_REQUIRE(replay.StartRecording(tmpFile.filePath, map));
     BOOST_REQUIRE_LE(replay.GetSaveTime() - saveTime, 20); // 20s difference max
     BOOST_REQUIRE(replay.IsValid());

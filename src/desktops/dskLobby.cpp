@@ -167,17 +167,17 @@ void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const int selection)
         {
             const std::string item = table->GetItemText(selection, 0);
 
-            if(atoi(item.c_str()) != 0)
+            if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {
                 if(serverInfoWnd)
                 {
-                    if(serverInfoWnd->GetServerId() == (unsigned)atoi(item.c_str()))
+                    if(serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item.c_str()))
                         return; // raus
 
                     WINDOWMANAGER.Close(serverInfoWnd);
                 }
 
-                serverInfoWnd = new iwLobbyServerInfo(atoi(item.c_str()));
+                serverInfoWnd = new iwLobbyServerInfo(boost::lexical_cast<unsigned>(item.c_str()));
                 serverInfoWnd->SetTitle(table->GetItemText(selection, 1));
                 WINDOWMANAGER.Show(serverInfoWnd, true);
             }
@@ -219,7 +219,7 @@ void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
 bool dskLobby::ConnectToSelectedGame()
 {
     ctrlTable* table = GetCtrl<ctrlTable>(10);
-    unsigned selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
+    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
     BOOST_FOREACH(const LobbyServerInfo& server, LOBBYCLIENT.GetServerList())
     {
         if(server.getId() != selection)
@@ -282,7 +282,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {
     unsigned playerColor = ctrlChat::CalcUniqueColor(player);
 
-    std::string time = libutil::Time::FormatTime("(%H:%i:%s)");
+    std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
 
     if(player == "LobbyBot")
     {

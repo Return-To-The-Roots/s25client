@@ -9,6 +9,7 @@ target_link_libraries(rttrConfig
 	PUBLIC s25util
 	PUBLIC s25Common
 	PUBLIC ${BOOST_LIBRARIES})
+SET_PROPERTY(TARGET rttrConfig PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if(ClangFormat_FOUND)
     add_clangFormat_files(${ALL_SOURCES})

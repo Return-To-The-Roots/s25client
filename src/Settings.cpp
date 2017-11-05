@@ -26,11 +26,10 @@
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/libsiedler2.h"
+#include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
 #include <boost/filesystem/operations.hpp>
-#include <boost/lexical_cast.hpp>
-#include <sstream>
 
 const unsigned Settings::SETTINGS_VERSION = 12;
 const unsigned Settings::SETTINGS_SECTIONS = 11;
@@ -280,11 +279,12 @@ bool Settings::Load()
             const libsiedler2::ArchivItem_Text* item = dynamic_cast<const libsiedler2::ArchivItem_Text*>(iniAddons->get(addon));
 
             if(item)
-                addons.configuration.insert(std::make_pair(atoi(item->getName().c_str()), atoi(item->getText().c_str())));
+                addons.configuration.insert(std::make_pair(s25util::fromStringClassic<unsigned>(item->getName()),
+                                                           s25util::fromStringClassic<unsigned>(item->getText())));
         }
         // }
 
-    } catch(boost::bad_lexical_cast& e)
+    } catch(s25util::ConversionError& e)
     {
         s25Util::warning(std::string("Corrupt \"") + settingsPath + "\" found, using default values. Error: " + e.what());
         return LoadDefaults();
@@ -408,12 +408,7 @@ void Settings::Save()
     // {
     iniAddons->clear();
     for(std::map<unsigned, unsigned>::const_iterator it = addons.configuration.begin(); it != addons.configuration.end(); ++it)
-    {
-        std::stringstream name, value;
-        name << it->first;
-        value << it->second;
-        iniAddons->addValue(name.str(), value.str());
-    }
+        iniAddons->addValue(s25util::toStringClassic(it->first), s25util::toStringClassic(it->second));
     // }
 
     bfs::path settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);

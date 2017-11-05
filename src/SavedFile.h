@@ -71,7 +71,7 @@ public:
 
     std::string GetRevision() const;
     std::string GetMapName() const { return mapName_; }
-    libutil::time64_t GetSaveTime() const { return saveTime_; }
+    s25util::time64_t GetSaveTime() const { return saveTime_; }
     const std::vector<std::string>& GetPlayerNames() const { return playerNames_; }
 
     /// GGS
@@ -86,7 +86,7 @@ private:
     /// Revision as saved in the file
     boost::array<char, 8> revision;
     /// Zeitpunkt der Aufnahme
-    libutil::time64_t saveTime_;
+    s25util::time64_t saveTime_;
     /// Mapname
     std::string mapName_;
     std::vector<std::string> playerNames_;

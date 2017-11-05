@@ -89,7 +89,6 @@ unsigned Languages::getCount()
 void Languages::setLanguage(const std::string& lang_code)
 {
     mysetlocale(LC_ALL, lang_code.c_str());
-    std::locale::global(std::locale::classic());
 }
 
 const std::string Languages::setLanguage(unsigned i)

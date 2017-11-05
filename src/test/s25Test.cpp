@@ -20,24 +20,18 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Loader.h"
 #include "RttrConfig.h"
-#include "files.h"
 #include "languages.h"
-#include "mygettext/mygettext.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
 #include "libutil/Socket.h"
 #include "libutil/StringStreamWriter.h"
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 #include <stdexcept>
-#include <string>
-#include <vector>
 
 // Test helpers. Header only
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
@@ -59,7 +53,6 @@ struct TestSetup
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
         Socket::Initialize();
-        LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
     }
     ~TestSetup()
     {
@@ -74,24 +67,3 @@ BOOST_GLOBAL_FIXTURE(TestSetup);
 // Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
 BOOST_GLOBAL_FIXTURE(TestSetup)
 #endif
-
-BOOST_AUTO_TEST_CASE(LocaleFormatTest)
-{
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234), "1234");
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234.5), "1234.5");
-    BOOST_CHECK_EQUAL(boost::lexical_cast<float>("1234.5"), 1234.5);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<int>("1234"), 1234);
-
-    std::string oldLang = mysetlocale(LC_ALL, NULL);
-    // Should work on all languages
-    const unsigned numLanguages = LANGUAGES.getCount();
-    for(unsigned i = 0; i < numLanguages; i++)
-    {
-        LANGUAGES.setLanguage(i);
-        BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234), "1234");
-        BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234.5), "1234.5");
-        BOOST_CHECK_EQUAL(boost::lexical_cast<float>("1234.5"), 1234.5);
-        BOOST_CHECK_EQUAL(boost::lexical_cast<int>("1234"), 1234);
-    }
-    mysetlocale(LC_ALL, oldLang.c_str());
-}

@@ -89,6 +89,7 @@
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
+#include <cstdio>
 #include <sstream>
 
 namespace {

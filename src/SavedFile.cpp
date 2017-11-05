@@ -47,12 +47,12 @@ void SavedFile::WriteFileHeader(BinaryFile& file)
 void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
 {
     // Store data in struct
-    saveTime_ = libutil::Time::CurrentTime();
+    saveTime_ = s25util::Time::CurrentTime();
     mapName_ = mapName;
 
     // Program version
     file.WriteRawData(&revision[0], revision.size());
-    libutil::time64_t tmpTime = libendian::ConvertEndianess<false>::fromNative(saveTime_);
+    s25util::time64_t tmpTime = libendian::ConvertEndianess<false>::fromNative(saveTime_);
     file.WriteRawData(&tmpTime, sizeof(tmpTime));
     file.WriteShortString(mapName);
     file.WriteUnsignedInt(playerNames_.size());
