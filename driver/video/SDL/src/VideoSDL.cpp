@@ -274,6 +274,18 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
         return false;
     }
 
+#ifdef _WIN32
+    SDL_SysWMinfo info;
+    // get window handle from SDL
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) == 1)
+    {
+        LPARAM icon = (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
+        SendMessage(info.window, WM_SETICON, ICON_BIG, icon);
+        SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
+    }
+#endif // _WIN32
+
     return true;
 }
 
