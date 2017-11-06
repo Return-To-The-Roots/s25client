@@ -220,6 +220,9 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
     {
         default: break;
         case KT_DELETE: // Delete current message
+#ifdef __APPLE__
+        case KT_BACKSPACE: // Macs usually have no delete key on small keyboards, so backspace is more convenient
+#endif
             Msg_ButtonClick(ID_DELETE);
             return true;
     }

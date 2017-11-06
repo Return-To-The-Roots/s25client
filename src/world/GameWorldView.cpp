@@ -291,7 +291,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     continue;
 
                 if((gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
-                   || (gwv.GetBQ(curPt) == BQ_FLAG))
+                   || (gwv.GetBQ(curPt) == BQ_FLAG) || (GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start))
                 {
                     unsigned id;
                     switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
@@ -309,7 +309,21 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                         default: id = 60; break;
                     }
 
-                    LOADER.GetMapImageN(id)->DrawFull(curPos);
+                    // If item at direction is a flag and not the start, draw the direction glyph halfway out
+                    if (GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start)
+                    {
+                        // Last clicked position (coordinate) in the road route
+                        Point<int> lastPos = GetWorld().GetNodePos(rb.point) - offset + curOffset;
+                        Point<int> halfwayPos;
+                        halfwayPos.x = (curPos.x + lastPos.x) / 2;
+                        halfwayPos.y = (curPos.y + lastPos.y) / 2;
+                        LOADER.GetMapImageN(id)->DrawFull(halfwayPos);
+                    }
+                    // Otherwise draw the direction glyph on the position
+                    else
+                    {
+                        LOADER.GetMapImageN(id)->DrawFull(curPos);
+                    }
                 }
 
                 // Flaggenanschluss? --> extra zeichnen
