@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMilitary.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -25,6 +24,7 @@
 #include "addons/const_addons.h"
 #include "controls/ctrlProgress.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"

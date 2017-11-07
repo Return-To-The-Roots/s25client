@@ -19,7 +19,6 @@
 #include "Ware.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
@@ -27,6 +26,7 @@
 #include "buildings/noBuilding.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"

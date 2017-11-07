@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofForester.h"
 
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"

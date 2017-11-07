@@ -17,13 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
-#include "ClientInterface.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "WindowManager.h"
 #include "desktops/dskGameLoader.h"
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include <boost/array.hpp>
 #include <boost/filesystem/path.hpp>
 #include <algorithm>

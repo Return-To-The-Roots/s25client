@@ -19,7 +19,6 @@
 #include "nobUsual.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
@@ -27,6 +26,7 @@
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

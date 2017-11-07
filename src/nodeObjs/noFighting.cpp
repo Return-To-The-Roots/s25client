@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "noFighting.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -26,6 +25,7 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "figures/nofActiveSoldier.h"
+#include "network/GameClient.h"
 #include "noSkeleton.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"

@@ -14,32 +14,27 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskGAMELOADER_H_INCLUDED
-#define dskGAMELOADER_H_INCLUDED
 
 #pragma once
 
-#include "Desktop.h"
+#ifndef ClientPlayers_h__
+#define ClientPlayers_h__
 
-#include "network/ClientInterface.h"
-#include "liblobby/LobbyInterface.h"
+#include "ClientPlayer.h"
+#include <vector>
 
-class GameWorldBase;
+struct ClientPlayer;
 
-class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
+struct ClientPlayers
 {
-public:
-    dskGameLoader(boost::shared_ptr<Game> game);
-    ~dskGameLoader() override;
+    void add(unsigned playerId) { players.push_back(ClientPlayer(playerId)); }
+    const ClientPlayer& get(unsigned idx) const { return players[idx]; }
+    ClientPlayer& get(unsigned idx) { return players[idx]; }
+    unsigned getNumPlayers() const { return static_cast<unsigned>(players.size()); }
+    std::vector<ClientPlayer> players;
 
-    void LC_Status_Error(const std::string& error) override;
-
-private:
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-    void Msg_Timer(const unsigned ctrl_id) override;
-
-    unsigned position;
-    boost::shared_ptr<Game> game;
+    /// Set the isLagging flag and returns true iff any player is lagging
+    bool checkForLaggingPlayers();
 };
 
-#endif // !dskGAMELOADER_H_INCLUDED
+#endif // ClientPlayers_h__

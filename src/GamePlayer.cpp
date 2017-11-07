@@ -56,7 +56,7 @@
 #include <limits>
 
 GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorldGame& gwg)
-    : GamePlayerInfo(playerId, playerInfo), is_lagging(false), gwg(&gwg), hqPos(MapPoint::Invalid()), emergency(false)
+    : GamePlayerInfo(playerId, playerInfo), gwg(&gwg), hqPos(MapPoint::Invalid()), emergency(false)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 

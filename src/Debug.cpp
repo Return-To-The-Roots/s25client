@@ -19,10 +19,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
-#include "GameClient.h"
 #include "RTTR_Version.h"
 #include "Settings.h"
 #include "helpers/Deleter.h"
+#include "network/GameClient.h"
 #include "libutil/Log.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>

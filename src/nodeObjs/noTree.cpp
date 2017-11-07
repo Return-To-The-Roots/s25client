@@ -20,12 +20,12 @@
 
 #include "EventManager.h"
 #include "FOWObjects.h"
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
+#include "network/GameClient.h"
 #include "noAnimal.h"
 #include "noDisappearingMapEnvObject.h"
 #include "ogl/glSmartBitmap.h"

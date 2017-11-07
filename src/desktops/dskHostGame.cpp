@@ -17,9 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskHostGame.h"
-#include "GameClient.h"
 #include "GameLobby.h"
-#include "GameServer.h"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -46,6 +44,8 @@
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "lua/LuaInterfaceSettings.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"

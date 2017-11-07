@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
@@ -27,6 +26,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"
 #include "pathfinding/FreePathFinder.h"

@@ -20,7 +20,6 @@
 
 #include "Loader.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "WindowManager.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -34,6 +33,7 @@
 #include "iwHQ.h"
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"

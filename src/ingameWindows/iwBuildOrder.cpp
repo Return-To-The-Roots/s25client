@@ -17,12 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuildOrder.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlList.h"
+#include "network/GameClient.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"

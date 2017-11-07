@@ -16,12 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "GameServerInterface.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
+#include "network/GameServerInterface.h"
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"

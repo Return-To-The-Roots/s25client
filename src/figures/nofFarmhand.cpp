@@ -18,10 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"

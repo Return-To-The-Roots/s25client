@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofAttacker.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
@@ -26,6 +25,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "nofAggressiveDefender.h"
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"

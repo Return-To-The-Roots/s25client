@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -25,6 +24,7 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
+#include "network/GameClient.h"
 #include "nobBaseWarehouse.h"
 #include "notifications/BuildingNote.h"
 #include "world/GameWorldGame.h"

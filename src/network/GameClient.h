@@ -32,6 +32,8 @@
 #include "libutil/Socket.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <queue>
+#include <vector>
 
 namespace AI {
 struct Info;
@@ -48,6 +50,8 @@ class Game;
 class Replay;
 class EventManager;
 struct PlayerGameCommands;
+struct ClientPlayers;
+
 struct ReplayInfo;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
@@ -104,6 +108,9 @@ public:
     void ExitGame();
 
     ClientState GetState() const { return state; }
+    Replay& GetReplay();
+    boost::shared_ptr<const ClientPlayers> GetPlayers() const;
+
     unsigned GetGFNumber() const;
     unsigned GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
@@ -143,8 +150,6 @@ public:
     /// Wird ein Replay abgespielt?
     bool IsReplayModeOn() const { return replayMode; }
 
-    Replay& GetReplay();
-
     /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
     unsigned GetTournamentModeDuration() const;
 
@@ -155,8 +160,6 @@ public:
     /// Sends a request to swap places with the requested player. Only for debugging!
     void RequestSwapToPlayer(const unsigned char newId);
 
-    /// Laggt ein bestimmter Spieler gerade?
-    bool IsLagging(const unsigned id);
     /// Spiel pausiert?
     bool IsPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
@@ -185,8 +188,6 @@ private:
     void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
     void SendNothingNC();
-    /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
-    bool IsPlayerLagging();
 
     /// Führt notwendige Dinge für nächsten GF aus
     void NextGF();
@@ -256,8 +257,10 @@ private:
 
     ClientState state;
 
-    /// Gameworld and event manager (valid during LOADING and GAME state)
+    /// Game state itself (valid during LOADING and GAME state)
     boost::shared_ptr<Game> game;
+    /// Game commands to execute per player
+    boost::shared_ptr<ClientPlayers> networkPlayers;
     /// Game lobby (valid during CONFIG state)
     boost::shared_ptr<GameLobby> gameLobby;
 

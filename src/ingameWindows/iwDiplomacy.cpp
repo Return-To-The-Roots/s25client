@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDiplomacy.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -29,6 +28,7 @@
 #include "controls/ctrlTextDeepening.h"
 #include "helpers/converters.h"
 #include "iwMsgbox.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"

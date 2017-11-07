@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameManager.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
@@ -33,6 +31,8 @@
 #include "helpers/converters.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include "ingameWindows/iwMusicPlayer.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/GameConsts.h"
 #include "liblobby/LobbyClient.h"

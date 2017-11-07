@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwTools.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -29,6 +28,7 @@
 #include "controls/ctrlProgress.h"
 #include "helpers/converters.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
 #include "world/GameWorldBase.h"

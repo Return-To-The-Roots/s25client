@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofTradeDonkey.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"

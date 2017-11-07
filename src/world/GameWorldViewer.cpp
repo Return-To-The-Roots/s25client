@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldViewer.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "buildings/nobMilitary.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"
 #include "notifications/RoadNote.h"

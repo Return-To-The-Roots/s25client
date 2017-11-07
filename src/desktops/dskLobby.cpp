@@ -16,7 +16,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskLobby.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "RTTR_Version.h"
 #include "Settings.h"
@@ -32,6 +31,7 @@
 #include "ingameWindows/iwLobbyRanking.h"
 #include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"

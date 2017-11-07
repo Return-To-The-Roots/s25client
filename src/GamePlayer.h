@@ -20,7 +20,6 @@
 
 #include "BuildingRegister.h"
 #include "GamePlayerInfo.h"
-#include "PlayerGameCommands.h"
 #include "helpers/multiArray.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Inventory.h"
@@ -345,11 +344,6 @@ public:
     bool IsDependentFigure(noFigure* fig);
 
     void FillVisualSettings(VisualSettings& visualSettings) const;
-
-    /// Laggt der Spieler?
-    bool is_lagging;
-    /// Empfangene GC für diesen Spieler
-    std::queue<PlayerGameCommands> gc_queue;
 
     static BuildOrders GetStandardBuildOrder();
 

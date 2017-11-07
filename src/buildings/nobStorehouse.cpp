@@ -18,8 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nobStorehouse.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
+#include "network/GameClient.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 

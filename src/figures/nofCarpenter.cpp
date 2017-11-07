@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCarpenter.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 

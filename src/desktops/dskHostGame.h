@@ -18,10 +18,10 @@
 #ifndef WP_HOSTGAME_H_
 #define WP_HOSTGAME_H_
 
-#include "ClientInterface.h"
 #include "Desktop.h"
 #include "GlobalGameSettings.h"
 #include "helpers/Deleter.h"
+#include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>

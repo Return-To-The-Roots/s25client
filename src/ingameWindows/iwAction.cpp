@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwAction.h"
 
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -34,6 +33,7 @@
 #include "iwDemolishBuilding.h"
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"

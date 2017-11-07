@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofActiveSoldier.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
+#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"

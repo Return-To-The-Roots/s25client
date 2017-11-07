@@ -19,7 +19,6 @@
 #include "nofMetalworker.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -28,6 +27,7 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

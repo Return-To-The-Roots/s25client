@@ -18,10 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofDonkeybreeder.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "nofCarrier.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"

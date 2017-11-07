@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include "ClientInterface.h"
 #include "Desktop.h"
 #include "GameInterface.h"
 #include "IngameMinimap.h"
 #include "Messenger.h"
 #include "customborderbuilder.h"
 #include "ingameWindows/iwAction.h"
+#include "network/ClientInterface.h"
 #include "notifications/Subscribtion.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
@@ -43,36 +43,10 @@ class PostBox;
 class PostMsg;
 struct BuildingNote;
 struct KeyEvent;
+struct ClientPlayers;
 
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface
 {
-private:
-    boost::shared_ptr<const Game> game_;
-    GameWorldViewer worldViewer;
-    GameWorldView gwv;
-
-    CustomBorderBuilder cbb;
-
-    boost::array<glArchivItem_Bitmap*, 4> borders;
-
-    /// Straßenbauzeug
-    RoadBuildState road;
-
-    // Aktuell geöffnetes Aktionsfenster
-    iwAction* actionwindow;
-    // Aktuell geöffnetes Straßenbaufenster
-    iwRoadWindow* roadwindow;
-    // Messenger für die Nachrichten
-    Messenger messenger;
-    /// Minimap-Instanz
-    IngameMinimap minimap;
-
-    bool isScrolling;
-    Point<int> startScrollPt;
-    size_t zoomLvl;
-    bool isCheatModeOn;
-    std::string curCheatTxt;
-
 public:
     dskGameInterface(boost::shared_ptr<Game> game);
     ~dskGameInterface() override;
@@ -163,6 +137,32 @@ private:
     void OnBuildingNote(const BuildingNote& note);
 
     PostBox& GetPostBox();
+    boost::shared_ptr<const Game> game_;
+    boost::shared_ptr<const ClientPlayers> networkPlayers;
+    GameWorldViewer worldViewer;
+    GameWorldView gwv;
+
+    CustomBorderBuilder cbb;
+
+    boost::array<glArchivItem_Bitmap*, 4> borders;
+
+    /// Straßenbauzeug
+    RoadBuildState road;
+
+    // Aktuell geöffnetes Aktionsfenster
+    iwAction* actionwindow;
+    // Aktuell geöffnetes Straßenbaufenster
+    iwRoadWindow* roadwindow;
+    // Messenger für die Nachrichten
+    Messenger messenger;
+    /// Minimap-Instanz
+    IngameMinimap minimap;
+
+    bool isScrolling;
+    Point<int> startScrollPt;
+    size_t zoomLvl;
+    bool isCheatModeOn;
+    std::string curCheatTxt;
     Subscribtion evBld;
 };
 

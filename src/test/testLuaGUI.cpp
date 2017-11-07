@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CollisionDetection.h"
-#include "GameClient.h"
-#include "GameMessages.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -26,6 +24,8 @@
 #include "controls/ctrlMultiline.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 #include "ogl/glArchivItem_Font.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include <boost/assign/std/vector.hpp>

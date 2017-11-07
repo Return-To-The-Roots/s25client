@@ -22,7 +22,6 @@
 #include "WindowManager.h"
 
 #include "GamePlayer.h"
-#include "GameServer.h"
 #include "addons/const_addons.h"
 #include "iwAIDebug.h"
 #include "iwBuildOrder.h"
@@ -38,6 +37,7 @@
 #include "iwStatistics.h"
 #include "iwTools.h"
 #include "iwTransport.h"
+#include "network/GameServer.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"

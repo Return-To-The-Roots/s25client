@@ -16,12 +16,13 @@
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientInterface.h"
-#include "GameClient.h"
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "PlayerGameCommands.h"
 #include "ReplayInfo.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "random/Random.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 

@@ -18,12 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMiner.h"
 
-#include "GameClient.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 

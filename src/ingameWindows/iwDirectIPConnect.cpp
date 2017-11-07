@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDirectIPConnect.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "WindowManager.h"
@@ -28,6 +27,7 @@
 #include "desktops/dskHostGame.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"

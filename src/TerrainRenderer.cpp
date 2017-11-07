@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 #include "ExtensionList.h"
-#include "GameClient.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 #include "world/GameWorldBase.h"

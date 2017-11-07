@@ -19,7 +19,6 @@
 #include "dskGameLoader.h"
 
 #include "Game.h"
-#include "GameClient.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -32,6 +31,7 @@
 #include "dskLobby.h"
 #include "files.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"

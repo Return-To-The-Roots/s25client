@@ -18,12 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
+#include "network/GameClient.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"

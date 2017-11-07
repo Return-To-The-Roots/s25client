@@ -18,10 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofWoodcutter.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"

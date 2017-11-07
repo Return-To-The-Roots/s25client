@@ -19,9 +19,9 @@
 #include "noStaticObject.h"
 #include "noExtension.h"
 
-#include "GameClient.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
 #include "world/GameWorldGame.h"

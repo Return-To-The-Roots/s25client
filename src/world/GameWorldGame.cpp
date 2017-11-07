@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -32,6 +31,7 @@
 #include "figures/nofScout_Free.h"
 #include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/RoadNote.h"

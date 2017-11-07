@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nobHQ.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"

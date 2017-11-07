@@ -18,13 +18,13 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFisher.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"

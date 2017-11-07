@@ -19,10 +19,10 @@
 #include "noShipBuildingSite.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "noShip.h"
 #include "notifications/ShipNote.h"
 #include "ogl/glArchivItem_Bitmap.h"

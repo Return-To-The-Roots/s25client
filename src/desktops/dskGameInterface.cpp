@@ -21,10 +21,8 @@
 #include "CollisionDetection.h"
 #include "EventManager.h"
 #include "Game.h"
-#include "GameClient.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
-#include "GameServer.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
@@ -64,6 +62,9 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
+#include "network/ClientPlayers.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
 #include "ogl/SoundEffectItem.h"
@@ -84,6 +85,7 @@
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
@@ -104,7 +106,7 @@ enum
 }
 
 dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
-    : Desktop(NULL), game_(game), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
+    : Desktop(NULL), game_(game), networkPlayers(GAMECLIENT.GetPlayers()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
       roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -313,12 +315,13 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    BOOST_FOREACH(const ClientPlayer& player, networkPlayers->players)
     {
-        const GamePlayer& player = world.GetPlayer(i);
-        if(player.is_lagging)
-            LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, player.color);
-        snailPos.x -= 40;
+        if(player.isLagging)
+        {
+            LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world.GetPlayer(player.id).color);
+            snailPos.x -= 40;
+        }
     }
 
     // Show icons in the upper right corner of the game interface

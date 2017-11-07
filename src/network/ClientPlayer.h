@@ -14,32 +14,21 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef dskGAMELOADER_H_INCLUDED
-#define dskGAMELOADER_H_INCLUDED
 
 #pragma once
 
-#include "Desktop.h"
+#ifndef ClientPlayer_h__
+#define ClientPlayer_h__
 
-#include "network/ClientInterface.h"
-#include "liblobby/LobbyInterface.h"
+#include "PlayerGameCommands.h"
+#include <queue>
 
-class GameWorldBase;
-
-class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
+struct ClientPlayer
 {
-public:
-    dskGameLoader(boost::shared_ptr<Game> game);
-    ~dskGameLoader() override;
-
-    void LC_Status_Error(const std::string& error) override;
-
-private:
-    void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
-    void Msg_Timer(const unsigned ctrl_id) override;
-
-    unsigned position;
-    boost::shared_ptr<Game> game;
+    explicit ClientPlayer(unsigned id) : id(id), isLagging(false) {}
+    unsigned id;
+    std::queue<PlayerGameCommands> gcsToExecute;
+    bool isLagging;
 };
 
-#endif // !dskGAMELOADER_H_INCLUDED
+#endif // ClientPlayer_h__

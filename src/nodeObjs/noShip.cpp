@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "noShip.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -30,6 +29,7 @@
 #include "figures/noFigure.h"
 #include "figures/nofAttacker.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/ShipNote.h"
 #include "ogl/glArchivItem_Bitmap.h"

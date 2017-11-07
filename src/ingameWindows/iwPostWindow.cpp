@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPostWindow.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -28,6 +27,7 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "iwHelp.h"
 #include "macros.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "postSystem/DiplomacyPostQuestion.h"

@@ -16,8 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "GameClient.h"
-#include "GameMessages.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "RTTR_AssertError.h"
@@ -25,6 +23,8 @@
 #include "desktops/dskGameInterface.h"
 #include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"

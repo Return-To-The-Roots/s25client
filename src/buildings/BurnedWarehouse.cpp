@@ -19,10 +19,10 @@
 #include "BurnedWarehouse.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
+#include "network/GameClient.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"

@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPlayReplay.h"
 #include "BasePlayerInfo.h"
-#include "GameClient.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "Replay.h"
@@ -31,6 +30,7 @@
 #include "files.h"
 #include "helpers/converters.h"
 #include "iwMsgbox.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/Log.h"

@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -40,6 +38,8 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
 #include "mapGenerator/MapGenerator.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "liblobby/LobbyClient.h"

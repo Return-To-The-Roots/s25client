@@ -18,12 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofShipWright.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobShipYard.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"

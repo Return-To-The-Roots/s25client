@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwSave.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -32,6 +30,8 @@
 #include "files.h"
 #include "helpers/converters.h"
 #include "iwPleaseWait.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"

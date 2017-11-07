@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaServerPlayer.h"
-#include "GameMessages.h"
-#include "GameServerInterface.h"
 #include "JoinPlayerInfo.h"
 #include "helpers/converters.h"
 #include "lua/LuaHelpers.h"
+#include "network/GameMessages.h"
+#include "network/GameServerInterface.h"
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 #include <stdexcept>

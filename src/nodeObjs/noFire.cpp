@@ -19,13 +19,13 @@
 #include "noFire.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"
 

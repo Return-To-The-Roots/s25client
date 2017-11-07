@@ -19,8 +19,8 @@
 #include "noDisappearingEnvObject.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "libutil/colors.h"

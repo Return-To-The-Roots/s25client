@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "ClientInterface.h"
 #include "IngameWindow.h"
+#include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 
 class iwDirectIPConnect : public IngameWindow, public ClientInterface

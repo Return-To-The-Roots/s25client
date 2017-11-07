@@ -16,10 +16,11 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientInterface.h"
-#include "GameClient.h"
-#include "GameMessages.h"
+#include "ClientPlayers.h"
 #include "GamePlayer.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
@@ -112,7 +113,7 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
     }
 
     using std::swap;
-    swap(GetPlayer(player1).gc_queue, GetPlayer(player2).gc_queue);
+    swap(networkPlayers->get(player1).gcsToExecute, networkPlayers->get(player2).gcsToExecute);
 
     if(ci)
         ci->CI_PlayersSwapped(player1, player2);

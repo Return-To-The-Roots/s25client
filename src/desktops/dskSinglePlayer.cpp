@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSinglePlayer.h"
-#include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -31,6 +30,7 @@
 #include "ingameWindows/iwPlayReplay.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
+#include "network/GameServer.h"
 #include <boost/filesystem.hpp>
 
 /** @class dskSinglePlayer

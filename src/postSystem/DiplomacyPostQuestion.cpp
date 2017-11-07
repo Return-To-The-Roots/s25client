@@ -19,7 +19,7 @@
 #include "DiplomacyPostQuestion.h"
 #include "GamePlayerInfo.h"
 // TODO: Remove this and add FormatGFTime somewhere else
-#include "GameClient.h"
+#include "network/GameClient.h"
 #include <boost/format.hpp>
 
 DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer,

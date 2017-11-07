@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwChat.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
+#include "network/GameClient.h"
 #include "random/Random.h"
 #include "gameData/const_gui_ids.h"
 

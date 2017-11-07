@@ -16,13 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientInterface.h"
-#include "GameClient.h"
-#include "GameMessages.h"
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "helpers/Deleter.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"

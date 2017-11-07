@@ -17,7 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameClient.h"
-#include "ClientInterface.h"
+#include "ClientPlayer.h"
+#include "ClientPlayers.h"
 #include "EventManager.h"
 #include "Game.h"
 #include "GameEvent.h"
@@ -25,9 +26,7 @@
 #include "GameLobby.h"
 #include "GameManager.h"
 #include "GameMessage_GameCommand.h"
-#include "GameMessages.h"
 #include "GameObject.h"
-#include "GameServer.h"
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
@@ -44,6 +43,9 @@
 #include "factories/AIFactory.h"
 #include "files.h"
 #include "helpers/Deleter.h"
+#include "network/ClientInterface.h"
+#include "network/GameMessages.h"
+#include "network/GameServer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "postSystem/PostManager.h"
@@ -265,6 +267,12 @@ void GameClient::StartGame(const unsigned random_init)
     // Create the game
     game.reset(
       new Game(gameLobby->getSettings(), startGF, std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end())));
+    networkPlayers.reset(new ClientPlayers());
+    for(unsigned id = 0; id < gameLobby->getNumPlayers(); id++)
+    {
+        if(gameLobby->getPlayer(id).isUsed())
+            networkPlayers->add(id);
+    }
     // Release lobby
     gameLobby.reset();
 
@@ -340,6 +348,7 @@ void GameClient::ExitGame()
     // Spielwelt zerstören
     human_ai.reset();
     game.reset();
+    networkPlayers.reset();
     // Clear remaining commands
     gameCommands_.clear();
 }
@@ -961,13 +970,13 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 {
     if(state != CS_LOADING && state != CS_GAME)
         return true;
-    if(msg.player >= game->world.GetPlayerCount()) //-V807
+    if(msg.player >= networkPlayers->getNumPlayers())
         return true;
     // LOG.writeToFile("CLIENT <<< GC %u\n") % unsigned(msg.player);
     // Nachricht in Queue einhängen
-    game->world.GetPlayer(msg.player).gc_queue.push(msg.gcs);
+    networkPlayers->get(msg.player).gcsToExecute.push(msg.gcs);
     // If this is our GC then it must be the next and only command as we need to execute this before we even send the next one
-    RTTR_Assert(msg.player != playerId_ || game->world.GetPlayer(msg.player).gc_queue.size() == 1);
+    RTTR_Assert(msg.player != playerId_ || networkPlayers->get(msg.player).gcsToExecute.size() == 1);
     return true;
 }
 
@@ -1117,29 +1126,6 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
     return true;
 }
 
-/// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
-bool GameClient::IsPlayerLagging()
-{
-    RTTR_Assert(state == CS_GAME);
-    bool is_lagging = false;
-
-    for(unsigned i = 0; i < game->world.GetPlayerCount(); ++i)
-    {
-        GamePlayer& player = game->world.GetPlayer(i);
-        if(player.isUsed())
-        {
-            if(player.gc_queue.empty())
-            {
-                player.is_lagging = true;
-                is_lagging = true;
-            } else
-                player.is_lagging = false;
-        }
-    }
-
-    return is_lagging;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
 void GameClient::ExecuteGameFrame(const bool skipping)
@@ -1172,7 +1158,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             {
                 // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
                 // -> Don't execute GF, don't autosave etc.
-                if(IsPlayerLagging())
+                if(networkPlayers->checkForLaggingPlayers())
                 {
                     // If a player is a few GFs behind, he will never catch up and always lag
                     // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
@@ -1644,6 +1630,12 @@ Replay& GameClient::GetReplay()
     return replayinfo->replay;
 }
 
+boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
+{
+    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    return networkPlayers;
+}
+
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
@@ -1669,9 +1661,4 @@ void GameClient::RequestSwapToPlayer(const unsigned char newId)
     GamePlayer& player = GetPlayer(newId);
     if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
         send_queue.push(new GameMessage_Player_Swap(playerId_, newId));
-}
-
-bool GameClient::IsLagging(const unsigned id)
-{
-    return GetPlayer(id).is_lagging;
 }
