@@ -129,13 +129,14 @@ mecho --blue "## Extracting debug info from files and saving them into dbg"
 case "$SYSTEM_NAME" in
 	Darwin)
 		echo "extraction of debug symbols for Apple currently not supported" >&2
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25edit
-		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/video/libvideoSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/audio/libaudioSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s25update
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/sound-convert
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s-c_resample
+		STRIP=@CMAKE_STRIP@
+		$STRIP -S ${DESTDIR}bin/s25client
+		$STRIP -S ${DESTDIR}bin/s25edit
+		$STRIP -S ${DESTDIR}lib/share/s25rttr/driver/video/libvideoSDL.dylib
+		$STRIP -S ${DESTDIR}lib/share/s25rttr/driver/audio/libaudioSDL.dylib
+		$STRIP -S ${DESTDIR}bin/RTTR/s25update
+		$STRIP -S ${DESTDIR}bin/RTTR/sound-convert
+		$STRIP -S ${DESTDIR}bin/RTTR/s-c_resample
 	;;
 	Windows)
 		extract_debug_symbols s25client.exe
@@ -186,13 +187,10 @@ case "$SYSTEM_NAME" in
 		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
 		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
 
-		SDK=/Developer/SDKs/MacOSX10.5.sdk
-		if [ ! -d $SDK ] ; then
-			SDK=/usr/lib/apple/SDKs/MacOSX10.5.sdk
-		fi
+		SDK=@CMAKE_OSX_SYSROOT@
 
 		# copy libs
-		for LIBSUFFIX in miniupnpc.5 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
+		for LIBSUFFIX in miniupnpc.16 miniupnpc.2.0 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
 			LIB=/usr/lib/lib${LIBSUFFIX}.dylib
 			if [ -f $SDK$LIB ] ; then
 				cp -rv $SDK$LIB ${DESTDIR}s25client.app/Contents/MacOS || exit 1
