@@ -15,15 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMiner.h"
 
 #include "GameClient.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SoundManager.h"
+#include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
-class SerializedGameData;
+#include "world/GameWorldGame.h"
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace) : nofWorkman(JOB_MINER, pos, player, workplace) {}
 
@@ -78,7 +80,31 @@ GoodType nofMiner::ProduceWare()
     }
 }
 
-bool nofMiner::AreWaresAvailable()
+bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && GetResources(workplace->GetBuildingType() - BLD_GRANITEMINE);
+    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+}
+
+bool nofMiner::StartWorking()
+{
+    MapPoint resPt = FindPointWithResource(GetRequiredResType());
+    if(!resPt.isValid())
+        return false;
+    const GlobalGameSettings& settings = gwg->GetGGS();
+    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
+                            || (workplace->GetBuildingType() == BLD_GRANITEMINE && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
+    if(!inexhaustibleRes)
+        gwg->ReduceResource(resPt);
+    return nofWorkman::StartWorking();
+}
+
+Resource::Type nofMiner::GetRequiredResType() const
+{
+    switch(workplace->GetBuildingType())
+    {
+        case BLD_GOLDMINE: return Resource::Gold;
+        case BLD_IRONMINE: return Resource::Iron;
+        case BLD_COALMINE: return Resource::Coal;
+        default: return Resource::Granite;
+    }
 }

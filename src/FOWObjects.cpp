@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "FOWObjects.h"
 #include "GameClient.h"
 #include "Loader.h"
@@ -103,41 +103,27 @@ void fowBuildingSite::Draw(DrawPoint drawPt) const
 
         // bis dahin gebautes Haus zeichnen
 
-        // Rohbau
-
         // ausrechnen, wie weit er ist
-        unsigned p1 = 0, p2 = 0;
+        unsigned progressRaw, progressBld;
+        unsigned maxProgressRaw, maxProgressBld;
 
         if(BUILDING_COSTS[nation][type].stones)
         {
             // Haus besteht aus Steinen und Brettern
-            p1 = min<unsigned>(build_progress, BUILDING_COSTS[nation][type].boards * 8);
-            p2 = BUILDING_COSTS[nation][type].boards * 8;
+            maxProgressRaw = BUILDING_COSTS[nation][type].boards * 8;
+            maxProgressBld = BUILDING_COSTS[nation][type].stones * 8;
         } else
         {
             // Haus besteht nur aus Brettern, dann 50:50
-            p1 = min<unsigned>(build_progress, BUILDING_COSTS[nation][type].boards * 4);
-            p2 = BUILDING_COSTS[nation][type].boards * 4;
+            maxProgressBld = maxProgressRaw = BUILDING_COSTS[nation][type].boards * 4;
         }
+        progressRaw = min<unsigned>(build_progress, maxProgressRaw);
+        progressBld = ((build_progress > maxProgressRaw) ? (build_progress - maxProgressRaw) : 0);
 
-        LOADER.building_cache[nation][type][1].drawPercent(drawPt, p1 * 100 / p2);
-
+        // Rohbau
+        LOADER.building_cache[nation][type][1].drawPercent(drawPt, progressRaw * 100 / maxProgressRaw, FOW_DRAW_COLOR);
         // Das richtige Haus
-        if(BUILDING_COSTS[nation][type].stones)
-        {
-            // Haus besteht aus Steinen und Brettern
-            p1 =
-              ((build_progress > BUILDING_COSTS[nation][type].boards * 8) ? (build_progress - BUILDING_COSTS[nation][type].boards * 8) : 0);
-            p2 = BUILDING_COSTS[nation][type].stones * 8;
-        } else
-        {
-            // Haus besteht nur aus Brettern, dann 50:50
-            p1 =
-              ((build_progress > BUILDING_COSTS[nation][type].boards * 4) ? (build_progress - BUILDING_COSTS[nation][type].boards * 4) : 0);
-            p2 = BUILDING_COSTS[nation][type].boards * 4;
-        }
-
-        LOADER.building_cache[nation][type][0].drawPercent(drawPt, p1 * 100 / p2);
+        LOADER.building_cache[nation][type][0].drawPercent(drawPt, progressBld * 100 / maxProgressBld, FOW_DRAW_COLOR);
     }
 }
 

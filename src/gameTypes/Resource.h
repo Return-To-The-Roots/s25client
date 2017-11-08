@@ -18,14 +18,66 @@
 #ifndef Resource_h__
 #define Resource_h__
 
-enum Resource
+/// Holds a resource and its value.
+/// Maximum number of resource types and amount is 15!
+/// It makes sure that Type == Nothing => Amount == 0, but not vice versa!
+/// Also: A value of 0 means Nothing|0
+class Resource
 {
-    RES_IRON = 0,
-    RES_GOLD = 1,
-    RES_COAL = 2,
-    RES_GRANITE = 3,
-    RES_WATER = 4,
-    RES_TYPES_COUNT
+    uint8_t value;
+
+public:
+    enum Type
+    {
+        Nothing,
+        Iron,
+        Gold,
+        Coal,
+        Granite,
+        Water,
+        Fish
+    };
+    BOOST_STATIC_CONSTEXPR int TypeCount = Fish + 1;
+
+    Resource(Type type, uint8_t amount);
+    explicit Resource(uint8_t value = 0);
+    // C++11
+    // explicit operator uint8_t() const { return value; }
+    // explicit operator uint32_t() const { return value; }
+    uint8_t getValue() const { return value; }
+    Type getType() const { return Type(value >> 4); }
+    uint8_t getAmount() const { return value & 0x0F; }
+    void setType(Type newType);
+    void setAmount(uint8_t newAmount);
+    /// True if we have a non-zero amount of the given resource. Always false for Nothing
+    bool has(Type type) const { return getAmount() > 0u && getType() == type; }
+    bool operator==(Resource rhs) const { return value == rhs.value; }
+    bool operator!=(Resource rhs) const { return !(*this == rhs); }
 };
+
+inline Resource::Resource(Type type, uint8_t amount)
+{
+    if(type == Nothing)
+        value = 0;
+    else
+        value = (static_cast<uint8_t>(type) << 4) | (amount & 0x0F);
+}
+inline Resource::Resource(uint8_t value) : value(value)
+{
+    if(getType() == Nothing || getType() >= TypeCount)
+        value = 0;
+}
+inline void Resource::setType(Type newType)
+{
+    if(newType == Nothing)
+        value = 0;
+    else
+        value = (static_cast<uint8_t>(newType) << 4) | getAmount();
+}
+inline void Resource::setAmount(uint8_t newAmount)
+{
+    if(getType() != Nothing)
+        value = (value & 0xF0) | (newAmount & 0x0F);
+}
 
 #endif // Resource_h__

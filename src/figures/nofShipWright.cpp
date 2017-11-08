@@ -15,17 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofShipWright.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobShipYard.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noShipBuildingSite.h"
 #include "gameData/GameConsts.h"
@@ -127,7 +127,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
                 } else
                 {
                     // Nichts zu arbeiten gefunden
-                    StartNotWorking();
+                    workplace->StartNotWorking();
                     // Weiter warten, vielleicht gibts ja später wieder mal was
                     current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
                 }
@@ -191,7 +191,7 @@ void nofShipWright::StartWalkingToShip(const unsigned char /*first_dir*/)
     // Anfangen zu laufen (erstmal aus dem Haus raus!)
     StartWalking(Direction::SOUTHEAST);
 
-    StopNotWorking();
+    workplace->StopNotWorking();
 }
 
 /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet

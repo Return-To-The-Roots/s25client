@@ -18,11 +18,12 @@
 #ifndef WorldFixture_h__
 #define WorldFixture_h__
 
+#include "Game.h"
 #include "GlobalGameSettings.h"
 #include "PlayerInfo.h"
 #include "TestEventManager.h"
 #include "addons/const_addons.h"
-#include "world/GameWorldGame.h"
+#include "world/GameWorld.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
 #include <boost/test/unit_test.hpp>
@@ -97,12 +98,14 @@ template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = Wor
          unsigned T_height = WorldDefault<T_numPlayers>::height>
 struct WorldFixture
 {
-    TestEventManager em;
-    GlobalGameSettings ggs;
-    GameWorldGame world;
+    Game game;
+    TestEventManager& em;
+    GlobalGameSettings& ggs;
+    GameWorld& world;
     T_WorldCreator worldCreator;
     WorldFixture()
-        : em(0), world(std::vector<PlayerInfo>(T_numPlayers, GetPlayer()), ggs, em),
+        : game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer())),
+          em(static_cast<TestEventManager&>(*game.em)), ggs(const_cast<GlobalGameSettings&>(game.ggs)), world(game.world),
           worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {
         // Fast moving ships

@@ -15,20 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Savegame.h"
+#include "BasePlayerInfo.h"
 #include "libendian/ConvertEndianess.h"
 #include "libutil/BinaryFile.h"
 
 std::string Savegame::GetSignature() const
 {
-    /// Kleine Signatur am Anfang "RTTRSAVE", die ein gültiges S25 RTTR Savegame kennzeichnet
-    return "RTTRSAVE";
+    return "RTTRSV";
 }
 
 uint16_t Savegame::GetVersion() const
 {
-    return 36; // SaveGameVersion -- Updater signature, do NOT remove
+    // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
+    return 1; // SaveGameVersion -- Updater signature, do NOT remove
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,65 +38,70 @@ Savegame::Savegame() : SavedFile(), start_gf(0) {}
 
 Savegame::~Savegame() {}
 
-bool Savegame::Save(const std::string& filename)
+bool Savegame::Save(const std::string& filename, const std::string& mapName)
 {
     BinaryFile file;
 
-    return file.Open(filename, OFM_WRITE) && Save(file);
+    return file.Open(filename, OFM_WRITE) && Save(file, mapName);
 }
 
-bool Savegame::Save(BinaryFile& file)
+bool Savegame::Save(BinaryFile& file, const std::string& mapName)
 {
-    // Versionszeug schreiben
-    WriteFileHeader(file);
-
-    // Timestamp der Aufzeichnung
-    unser_time_t tmpTime = libendian::ConvertEndianess<false>::fromNative(save_time);
-    file.WriteRawData(&tmpTime, sizeof(tmpTime));
-
-    // Mapname
-    file.WriteShortString(mapName);
-
+    WriteAllHeaderData(file, mapName);
     WritePlayerData(file);
     WriteGGS(file);
-
-    // Start-GF
-    file.WriteUnsignedInt(start_gf);
-
-    // Serialisiertes Spielzeug reinschreiben
-    sgd.WriteToFile(file);
+    WriteGameData(file);
 
     return true;
 }
 
-bool Savegame::Load(const std::string& filePath, const bool load_players, const bool load_sgd)
+bool Savegame::Load(const std::string& filePath, bool loadSettings, bool loadGameData)
 {
     BinaryFile file;
 
-    return file.Open(filePath, OFM_READ) && Load(file, load_players, load_sgd);
+    return file.Open(filePath, OFM_READ) && Load(file, loadSettings, loadGameData);
 }
 
-bool Savegame::Load(BinaryFile& file, const bool load_players, const bool load_sgd)
+bool Savegame::Load(BinaryFile& file, bool loadSettings, bool loadGameData)
 {
-    // Signatur und Version einlesen
-    if(!ReadFileHeader(file))
+    ClearPlayers();
+    sgd.Clear();
+    if(!ReadAllHeaderData(file))
         return false;
 
-    // Zeitstempel
-    file.ReadRawData(&save_time, sizeof(save_time));
-    save_time = libendian::ConvertEndianess<false>::toNative(save_time);
-
-    // Map-Name
-    mapName = file.ReadShortString();
+    if(!loadSettings)
+        return true;
 
     ReadPlayerData(file);
     ReadGGS(file);
 
-    // Start-GF
+    if(loadGameData)
+        ReadGameData(file);
+
+    return true;
+}
+
+void Savegame::WriteExtHeader(BinaryFile& file, const std::string& mapName)
+{
+    SavedFile::WriteExtHeader(file, mapName);
+    file.WriteUnsignedInt(start_gf);
+}
+
+bool Savegame::ReadExtHeader(BinaryFile& file)
+{
+    if(!SavedFile::ReadExtHeader(file))
+        return false;
     start_gf = file.ReadUnsignedInt();
+    return true;
+}
 
-    if(load_sgd)
-        sgd.ReadFromFile(file); // Serialisiertes Spielzeug lesen
+void Savegame::WriteGameData(BinaryFile& file)
+{
+    sgd.WriteToFile(file);
+}
 
+bool Savegame::ReadGameData(BinaryFile& file)
+{
+    sgd.ReadFromFile(file);
     return true;
 }

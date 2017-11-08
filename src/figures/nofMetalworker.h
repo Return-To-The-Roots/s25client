@@ -19,6 +19,7 @@
 #define NOF_METALWORKER_H_
 
 #include "nofWorkman.h"
+#include "notifications/Subscribtion.h"
 
 class SerializedGameData;
 class nobUsual;
@@ -27,6 +28,7 @@ class nobUsual;
 class nofMetalworker : public nofWorkman
 {
     GoodType nextProducedTool;
+    Subscribtion toolOrderSub;
 
 protected:
     /// Zeichnet ihn beim Arbeiten
@@ -40,9 +42,11 @@ protected:
     /// Returns a random tool according to the priorities
     GoodType GetRandomTool();
 
-    unsigned ToolsOrderedTotal() const;
+    bool HasToolOrder() const;
 
-    bool ReadyForWork() override;
+    bool AreWaresAvailable() const override;
+    bool StartWorking() override;
+    void CheckForOrders();
 
 public:
     nofMetalworker(const MapPoint pt, const unsigned char player, nobUsual* workplace);
@@ -50,7 +54,6 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type GetGOT() const override { return GOT_NOF_METALWORKER; }
-    void HandleDerivedEvent(const unsigned id) override;
 };
 
 #endif

@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskGameInterface.h"
 
 #include "CollisionDetection.h"
 #include "EventManager.h"
+#include "Game.h"
 #include "GameClient.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
@@ -69,6 +70,7 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Font.h"
 #include "pathfinding/FindPathForRoad.h"
+#include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
@@ -82,10 +84,12 @@
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
+#include <cstdio>
 #include <sstream>
 
 namespace {
@@ -99,10 +103,10 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(GameWorldBase& world)
-    : Desktop(NULL), gameClient(GAMECLIENT), worldViewer(gameClient.GetPlayerId(), world),
+dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
+    : Desktop(NULL), game_(game), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
-      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX)
+      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -127,8 +131,8 @@ dskGameInterface::dskGameInterface(GameWorldBase& world)
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
 
     LOBBYCLIENT.SetInterface(this);
-    gameClient.SetInterface(this);
-    world.SetGameInterface(this);
+    GAMECLIENT.SetInterface(this);
+    game->world.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
     cbb.loadEdges(*LOADER.GetInfoN("resource"));
@@ -167,7 +171,7 @@ dskGameInterface::~dskGameInterface()
 {
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
-    gameClient.RemoveInterface(this);
+    GAMECLIENT.RemoveInterface(this);
     LOBBYCLIENT.RemoveInterface(this);
 }
 
@@ -176,10 +180,10 @@ void dskGameInterface::SetActive(bool activate)
     if(activate == IsActive())
         return;
     Desktop::SetActive(activate);
-    if(activate && gameClient.GetState() == GameClient::CS_LOADING)
+    if(activate && GAMECLIENT.GetState() == GameClient::CS_LOADING)
     {
         // Wir sind nun ingame
-        gameClient.RealStart();
+        GAMECLIENT.GameStarted();
     }
     if(!activate)
     {
@@ -231,7 +235,7 @@ void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_btMap: WINDOWMANAGER.Show(new iwMinimap(minimap, gwv)); break;
-        case ID_btOptions: WINDOWMANAGER.Show(new iwMainMenu(gwv, gameClient)); break;
+        case ID_btOptions: WINDOWMANAGER.Show(new iwMainMenu(gwv, GAMECLIENT)); break;
         case ID_btConstructionAid:
             if(WINDOWMANAGER.IsDesktopActive())
                 gwv.ToggleShowBQ();
@@ -279,23 +283,23 @@ void dskGameInterface::Msg_PaintAfter()
     char nwf_string[256];
 
     const GameWorldBase& world = worldViewer.GetWorld();
-    if(gameClient.IsReplayModeOn())
+    if(GAMECLIENT.IsReplayModeOn())
     {
         snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                 world.GetEvMgr().GetCurrentGF(), gameClient.GetLastReplayGF(), gameClient.GetGFLength(), gameClient.GetNWFLength(),
-                 gameClient.GetNWFLength() * gameClient.GetGFLength());
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(),
+                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
     } else
         snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                 world.GetEvMgr().GetCurrentGF(), gameClient.GetGFLength(), gameClient.GetNWFLength(),
-                 gameClient.GetNWFLength() * gameClient.GetGFLength(), worldViewer.GetPlayer().ping);
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(),
+                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), worldViewer.GetPlayer().ping);
 
     // tournament mode?
-    unsigned tmd = gameClient.GetTournamentModeDuration();
+    unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
 
     if(tmd)
     {
         // Convert gf to seconds
-        unsigned sec = (tmd - world.GetEvMgr().GetCurrentGF()) * gameClient.GetGFLength() / 1000;
+        unsigned sec = (tmd - world.GetEvMgr().GetCurrentGF()) * GAMECLIENT.GetGFLength() / 1000;
         char str[512];
         sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
     }
@@ -303,8 +307,8 @@ void dskGameInterface::Msg_PaintAfter()
     NormalFont->Draw(DrawPoint(30, 1), nwf_string, 0, 0xFFFFFF00);
 
     // Replaydateianzeige in der linken unteren Ecke
-    if(gameClient.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), gameClient.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
+    if(GAMECLIENT.IsReplayModeOn())
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), GAMECLIENT.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
                          0xFFFFFF00);
 
     // Laggende Spieler anzeigen in Form von Schnecken
@@ -320,20 +324,18 @@ void dskGameInterface::Msg_PaintAfter()
     // Show icons in the upper right corner of the game interface
     DrawPoint iconPos(VIDEODRIVER.GetScreenSize().x - 56, 32);
 
-    /*
     // Draw cheating indicator icon (WINTER) - Single Player only!
-    if (...)
+    if(isCheatModeOn)
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
         const DrawPoint drawPos(iconPos);
 
         iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
-        cheatingImg->Draw(drawPos, 0, 0, 0, 0);
+        cheatingImg->DrawFull(drawPos);
     }
-    */
 
     // Draw speed indicator icon
-    const int startSpeed = SPEED_GF_LENGTHS[GAMECLIENT.GetGGS().speed];
+    const int startSpeed = SPEED_GF_LENGTHS[game_->ggs.speed];
     const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
 
     if(speedStep != 0)
@@ -452,7 +454,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Vielleicht steht hier auch ein Schiff?
         if(noShip* ship = worldViewer.GetShip(cSel))
         {
-            WINDOWMANAGER.Show(new iwShip(gwv, gameClient, ship));
+            WINDOWMANAGER.Show(new iwShip(gwv, GAMECLIENT, ship));
             return true;
         }
 
@@ -464,19 +466,19 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
             // HQ
             if(bt == BLD_HEADQUARTERS)
                 // WINDOWMANAGER.Show(new iwTrade(gwv,this,gwb.GetSpecObj<nobHQ>(cselx,csely)));
-                WINDOWMANAGER.Show(new iwHQ(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                WINDOWMANAGER.Show(new iwHQ(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BLD_STOREHOUSE)
-                WINDOWMANAGER.Show(new iwBaseWarehouse(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.Show(new iwBaseWarehouse(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BLD_HARBORBUILDING)
                 WINDOWMANAGER.Show(
-                  new iwHarborBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
+                  new iwHarborBuilding(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
             else if(BuildingProperties::IsMilitary(bt))
-                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+                WINDOWMANAGER.Show(new iwMilitaryBuilding(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
             else
-                WINDOWMANAGER.Show(new iwBuilding(gwv, gameClient, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.Show(new iwBuilding(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
             return true;
         }
         // oder vielleicht eine Baustelle?
@@ -541,7 +543,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
                     // Allied warehouse? -> Show trade window
                     if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
                     {
-                        WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, gameClient));
+                        WINDOWMANAGER.Show(new iwTrade(*static_cast<const nobBaseWarehouse*>(building), worldViewer, GAMECLIENT));
                         return true;
                     }
                 }
@@ -643,7 +645,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwSave);
             return true;
         case KT_F3: // Map debug window/ Multiplayer coordinates
-            WINDOWMANAGER.Show(new iwMapDebug(gwv, gameClient.IsSinglePlayer() || gameClient.IsReplayModeOn()));
+            WINDOWMANAGER.Show(new iwMapDebug(gwv, game_->world.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn()));
             return true;
         case KT_F8: // Tastaturbelegung
             WINDOWMANAGER.Show(new iwTextfile("keyboardlayout.txt", _("Keyboard layout")));
@@ -651,12 +653,14 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case KT_F9: // Readme
             WINDOWMANAGER.Show(new iwTextfile("readme.txt", _("Readme!")));
             return true;
+        case KT_F10: { bool allowHumanAI = isCheatModeOn;
 #ifndef NDEBUG
-        case KT_F10:
-            if(gameClient.GetState() == GameClient::CS_GAME && !gameClient.IsReplayModeOn())
-                gameClient.ToggleHumanAIPlayer();
+            allowHumanAI = true;
+#endif // !NDEBUG
+            if(GAMECLIENT.GetState() == GameClient::CS_GAME && allowHumanAI && !GAMECLIENT.IsReplayModeOn())
+                GAMECLIENT.ToggleHumanAIPlayer();
             return true;
-#endif
+        }
         case KT_F11: // Music player (midi files)
             WINDOWMANAGER.Show(new iwMusicPlayer);
             return true;
@@ -665,24 +669,46 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             return true;
     }
 
+    static std::string winterCheat = "winter";
+    switch(ke.c)
+    {
+        case 'w':
+        case 'i':
+        case 'n':
+        case 't':
+        case 'e':
+        case 'r':
+            curCheatTxt += char(ke.c);
+            if(winterCheat.find(curCheatTxt) == 0)
+            {
+                if(curCheatTxt == winterCheat)
+                {
+                    isCheatModeOn = !isCheatModeOn;
+                    curCheatTxt.clear();
+                }
+            } else
+                curCheatTxt.clear();
+            break;
+    }
+
     switch(ke.c)
     {
         case '+':
-            if(gameClient.IsReplayModeOn())
+            if(GAMECLIENT.IsReplayModeOn())
             {
-                gameClient.IncreaseReplaySpeed();
-            } else if(gameClient.IsSinglePlayer())
+                GAMECLIENT.IncreaseReplaySpeed();
+            } else if(game_->world.IsSinglePlayer())
             {
-                gameClient.IncreaseSpeed();
+                GAMECLIENT.IncreaseSpeed();
             }
             return true;
         case '-':
-            if(gameClient.IsReplayModeOn())
+            if(GAMECLIENT.IsReplayModeOn())
             {
-                gameClient.DecreaseReplaySpeed();
-            } else if(gameClient.IsSinglePlayer())
+                GAMECLIENT.DecreaseReplaySpeed();
+            } else if(game_->world.IsSinglePlayer())
             {
-                gameClient.DecreaseSpeed();
+                GAMECLIENT.DecreaseSpeed();
             }
             return true;
 
@@ -696,16 +722,16 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case '8':
         {
             unsigned playerIdx = ke.c - '1';
-            if(gameClient.IsReplayModeOn())
+            if(GAMECLIENT.IsReplayModeOn())
             {
                 unsigned oldPlayerId = worldViewer.GetPlayerId();
-                gameClient.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
+                GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
             } else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
             {
                 const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
                 if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
-                    gameClient.RequestSwapToPlayer(playerIdx);
+                    GAMECLIENT.RequestSwapToPlayer(playerIdx);
             }
         }
             return true;
@@ -714,15 +740,15 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             gwv.MoveToLastPosition();
             return true;
         case 'v':
-            if(gameClient.IsSinglePlayer())
-                gameClient.IncreaseSpeed();
+            if(game_->world.IsSinglePlayer())
+                GAMECLIENT.IncreaseSpeed();
             return true;
         case 'c': // Gebäudenamen anzeigen
             gwv.ToggleShowNames();
             return true;
         case 'd': // Replay: FoW an/ausschalten
             // GameClient Bescheid sagen
-            gameClient.ToggleReplayFOW();
+            GAMECLIENT.ToggleReplayFOW();
             // Sichtbarkeiten neu setzen auf der Map-Anzeige und der Minimap
             worldViewer.RecalcAllColors();
             minimap.UpdateAll();
@@ -739,24 +765,24 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             WINDOWMANAGER.Show(new iwInventory(worldViewer.GetPlayer()));
             return true;
         case 'j': // GFs überspringen
-            if(gameClient.IsSinglePlayer() || gameClient.IsReplayModeOn())
+            if(game_->world.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
                 WINDOWMANAGER.Show(new iwSkipGFs(gwv));
             return true;
         case 'l': // Minimap anzeigen
             WINDOWMANAGER.Show(new iwMinimap(minimap, gwv));
             return true;
         case 'm': // Hauptauswahl
-            WINDOWMANAGER.Show(new iwMainMenu(gwv, gameClient));
+            WINDOWMANAGER.Show(new iwMainMenu(gwv, GAMECLIENT));
             return true;
         case 'n': // Show Post window
             WINDOWMANAGER.Show(new iwPostWindow(gwv, GetPostBox()));
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
-            if(gameClient.IsHost())
-                GAMESERVER.SetPaused(!gameClient.IsPaused());
-            else if(gameClient.IsReplayModeOn())
-                gameClient.ToggleReplayPause();
+            if(GAMECLIENT.IsHost())
+                GAMESERVER.SetPaused(!GAMECLIENT.IsPaused());
+            else if(GAMECLIENT.IsReplayModeOn())
+                GAMECLIENT.ToggleReplayPause();
             return true;
         case 'q': // Spiel verlassen
             if(ke.alt)
@@ -844,7 +870,7 @@ void dskGameInterface::Run()
     SOUNDMANAGER.PlayBirdSounds(noTree::QueryDrawCounter());
 
     // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
-    if(gameClient.IsPaused())
+    if(GAMECLIENT.IsPaused())
     {
         DrawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()), COLOR_SHADOW);
     }
@@ -855,7 +881,7 @@ void dskGameInterface::Run()
 void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad)
 {
     // Im Replay und in der Pause keine Straßen bauen
-    if(gameClient.IsReplayModeOn() || gameClient.IsPaused())
+    if(GAMECLIENT.IsReplayModeOn() || GAMECLIENT.IsPaused())
         return;
 
     road.mode = waterRoad ? RM_BOAT : RM_NORMAL;
@@ -979,7 +1005,7 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
 void dskGameInterface::GI_BuildRoad()
 {
-    gameClient.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
+    GAMECLIENT.BuildRoad(road.start, road.mode == RM_BOAT, road.route);
     road.mode = RM_DISABLED;
     GAMEMANAGER.SetCursor(CURSOR_HAND);
 }
@@ -1121,7 +1147,7 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
     {
         worldViewer.ChangePlayer(player1 == localPlayerId ? player2 : player1);
         // Set visual settings back to the actual ones
-        gameClient.ResetVisualSettings();
+        GAMECLIENT.ResetVisualSettings();
         minimap.UpdateAll();
         InitPlayer();
     }

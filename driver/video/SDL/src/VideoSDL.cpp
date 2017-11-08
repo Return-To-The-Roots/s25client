@@ -17,9 +17,9 @@
 
 #include "driverDefines.h" // IWYU pragma: keep
 #include "VideoSDL.h"
-#include "../../../../src/helpers/containerUtils.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
+#include "helpers/containerUtils.h"
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
@@ -273,6 +273,18 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
         PrintError(SDL_GetError());
         return false;
     }
+
+#ifdef _WIN32
+    SDL_SysWMinfo info;
+    // get window handle from SDL
+    SDL_VERSION(&info.version);
+    if(SDL_GetWMInfo(&info) == 1)
+    {
+        LPARAM icon = (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL));
+        SendMessage(info.window, WM_SETICON, ICON_BIG, icon);
+        SendMessage(info.window, WM_SETICON, ICON_SMALL, icon);
+    }
+#endif // _WIN32
 
     return true;
 }

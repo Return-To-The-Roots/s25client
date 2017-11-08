@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwChat.h"
 #include "GameClient.h"
 #include "Loader.h"
-#include "Random.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
+#include "random/Random.h"
 #include "gameData/const_gui_ids.h"
 
 unsigned char iwChat::chat_dest = 0;

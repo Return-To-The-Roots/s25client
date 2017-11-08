@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofForester.h"
 
 #include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SoundManager.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noTree.h"
 #include "gameData/TerrainData.h"

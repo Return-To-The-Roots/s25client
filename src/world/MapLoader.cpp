@@ -15,13 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
-#include "Random.h"
+#include "PointOutput.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
+#include "random/Random.h"
 #include "world/World.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
@@ -33,7 +34,10 @@
 #include "gameData/TerrainData.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/Log.h"
+#include <boost/foreach.hpp>
+#include <boost/typeof/typeof.hpp>
 #include <algorithm>
+#include <map>
 #include <queue>
 
 class noBase;
@@ -48,7 +52,8 @@ bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
     InitNodes(map, exploration);
     PlaceObjects(map);
     PlaceAnimals(map);
-    InitSeasAndHarbors(world);
+    if(!InitSeasAndHarbors(world))
+        return false;
 
     /// Schatten
     InitShadows(world);
@@ -106,22 +111,31 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         node.t1 = TerrainData::MapIdx2Terrain(t1);
         node.t2 = TerrainData::MapIdx2Terrain(t2);
 
-        unsigned char resource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
+        unsigned char mapResource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
+        Resource resource;
         // Wasser?
-        if(resource == 0x20 || resource == 0x21)
+        if(mapResource == 0x20 || mapResource == 0x21)
         {
             // TODO: Berge hatten komische Wasserbeeinflussung
             // ggf 0-4 Wasser setzen
             if((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
-                resource = 0; // Kein Wasser, in der W�ste, da isses trocken!
+                resource = Resource(0); // No water in water or desert
             else if((node.t1 == TT_STEPPE || node.t2 == TT_STEPPE))
-                resource = 0x23; // 2 Wasser
+                resource = Resource(Resource::Water, 2); // 2 Wasser
             else if((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
-                resource = 0x25; // 4 Wasser
+                resource = Resource(Resource::Water, 4); // 4 Wasser
             else
-                resource = 0x27;                      // 7 Wasser
-        } else if(resource > 0x80 && resource < 0x90) // fish
-            resource = 0x84;                          // Use 4 fish
+                resource = Resource(Resource::Water, 7); // 7 Wasser
+        } else if(mapResource > 0x40 && mapResource < 0x48)
+            resource = Resource(Resource::Coal, mapResource - 0x40);
+        else if(mapResource > 0x48 && mapResource < 0x50)
+            resource = Resource(Resource::Iron, mapResource - 0x48);
+        else if(mapResource > 0x50 && mapResource < 0x58)
+            resource = Resource(Resource::Gold, mapResource - 0x50);
+        else if(mapResource > 0x58 && mapResource < 0x60)
+            resource = Resource(Resource::Granite, mapResource - 0x58);
+        else if(mapResource > 0x80 && mapResource < 0x90) // fish
+            resource = Resource(Resource::Fish, 4);       // Use 4 fish
         node.resources = resource;
 
         node.reserved = false;
@@ -192,7 +206,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc >= 0xF0 && lc <= 0xFD)
                     obj = new noTree(pt, 3, 3);
                 else
-                    LOG.write(_("Unknown tree1-4 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown tree1-4 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -208,7 +222,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc >= 0xF0 && lc <= 0xFD)
                     obj = new noTree(pt, 7, 3);
                 else
-                    LOG.write(_("Unknown tree5-8 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown tree5-8 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -218,7 +232,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x30 && lc <= 0x3D)
                     obj = new noTree(pt, 8, 3);
                 else
-                    LOG.write(_("Unknown tree9 at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown tree9 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -291,7 +305,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc == 0x35)
                     obj = new noStaticObject(pt, 4, 5);
                 else
-                    LOG.write(_("Unknown nature object at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown nature object at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -301,7 +315,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x01 && lc <= 0x06)
                     obj = new noGranite(GT_1, lc - 1);
                 else
-                    LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -311,7 +325,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 if(lc >= 0x01 && lc <= 0x06)
                     obj = new noGranite(GT_2, lc - 1);
                 else
-                    LOG.write(_("Unknown granite type2 at (%1%, %2%): (0x%3$x)\n)")) % pt.x % pt.y % unsigned(lc);
+                    LOG.write(_("Unknown granite type2 at %1%: (0x%2$x)\n")) % pt % unsigned(lc);
             }
             break;
 
@@ -321,7 +335,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             default:
 #ifndef NDEBUG
                 unsigned unknownObj = map.GetMapDataAt(MAP_TYPE, pt.x, pt.y);
-                LOG.write(_("Unknown object at (%1%, %2%): (0x%3$x: 0x%4$x)\n")) % pt.x % pt.y % unknownObj % unsigned(lc);
+                LOG.write(_("Unknown object at %1%: (0x%2$x: 0x%3$x)\n")) % pt % unknownObj % unsigned(lc);
 #endif // !NDEBUG
                 break;
         }
@@ -355,7 +369,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
             default:
 #ifndef NDEBUG
                 unsigned unknownAnimal = map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y);
-                LOG.write(_("Unknown animal species at (%1%, %2%): (0x%3$x)\n")) % pt.x % pt.y % unknownAnimal;
+                LOG.write(_("Unknown animal species at %1%: (0x%2$x)\n")) % pt % unknownAnimal;
 #endif // !NDEBUG
                 species = SPEC_NOTHING;
                 break;
@@ -399,7 +413,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
     return true;
 }
 
-void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
+bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
 {
     world.harbor_pos.insert(world.harbor_pos.end(), additionalHarbors.begin(), additionalHarbors.end());
     // Clear current harbors and seas
@@ -426,17 +440,26 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     unsigned curHarborId = 1;
     for(std::vector<HarborPos>::iterator it = world.harbor_pos.begin() + 1; it != world.harbor_pos.end();)
     {
+        std::vector<bool> hasCoastAtSea(world.seas.size() + 1, false);
         bool foundCoast = false;
         for(unsigned z = 0; z < 6; ++z)
         {
-            const unsigned short seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, Direction::fromInt(z)));
+            // Skip point at NW as often there is no path from it if the harbor is north of an island
+            unsigned short seaId =
+              (z == Direction::NORTHWEST) ? 0 : world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, Direction::fromInt(z)));
+            // Only 1 coastal point per sea
+            if(hasCoastAtSea[seaId])
+                seaId = 0;
+            else
+                hasCoastAtSea[seaId] = true;
+
             it->cps[z].seaId = seaId;
             if(seaId)
                 foundCoast = true;
         }
         if(!foundCoast)
         {
-            LOG.write("Map Bug: Found harbor without coast at %u:%u. Removing!\n") % it->pos.x % it->pos.y;
+            LOG.write("Map Bug: Found harbor without coast at %1%. Removing!\n") % it->pos;
             it = world.harbor_pos.erase(it);
         } else
         {
@@ -445,14 +468,32 @@ void MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         }
     }
 
-    // Nachbarn der einzelnen Hafenpl�tze ermitteln
+    // Calculate the neighbors and distances
     CalcHarborPosNeighbors(world);
+
+    // Validate
+    for(unsigned startHbId = 1; startHbId < world.harbor_pos.size(); ++startHbId)
+    {
+        const HarborPos& startHbPos = world.harbor_pos[startHbId];
+        BOOST_FOREACH(const std::vector<HarborPos::Neighbor>& neighbors, startHbPos.neighbors)
+        {
+            BOOST_FOREACH(const HarborPos::Neighbor& neighbor, neighbors)
+            {
+                if(world.CalcHarborDistance(neighbor.id, startHbId) != neighbor.distance)
+                {
+                    LOG.write("Bug: Harbor distance mismatch for harbors %1%->%2%: %3% != %4%\n") % startHbId % neighbor.id
+                      % world.CalcHarborDistance(neighbor.id, startHbId) % neighbor.distance;
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }
 
 // class for finding harbor neighbors
-class CalcHarborPosNeighborsNode
+struct CalcHarborPosNeighborsNode
 {
-public:
     CalcHarborPosNeighborsNode() {} //-V730
     CalcHarborPosNeighborsNode(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
 
@@ -463,15 +504,20 @@ public:
 /// Calculate the distance from each harbor to the others
 void MapLoader::CalcHarborPosNeighbors(World& world)
 {
+    BOOST_FOREACH(HarborPos& harbor, world.harbor_pos)
+    {
+        for(unsigned z = 0; z < 6; ++z)
+            harbor.neighbors[z].clear();
+    }
     PathConditionShip shipPathChecker(world);
 
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
-    std::vector<unsigned> ptIsSeaPt(world.nodes.size()); //-V656
+    std::vector<int8_t> ptIsSeaPt(world.nodes.size()); //-V656
 
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         if(shipPathChecker.IsNodeOk(pt))
-            ptIsSeaPt[world.GetIdx(pt)] = 1;
+            ptIsSeaPt[world.GetIdx(pt)] = -1;
     }
 
     // FIFO queue used for a BFS
@@ -482,41 +528,53 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         RTTR_Assert(todo_list.empty());
 
         // Copy sea points to working flags. Possible values are
+        // -1 - sea point, not already visited
         // 0 - visited or no sea point
-        // 1 - sea point, not already visited
-        // n - harbor_pos[n - 1]
-        std::vector<unsigned> ptToVisitOrHb(ptIsSeaPt);
+        // 1 - Coast to a harbor
+        std::vector<int8_t> ptToVisitOrHb(ptIsSeaPt);
 
-        // add another entry, so that we can use the value from 'ptToVisitOrHb' directly.
-        std::vector<bool> hbFound(world.harbor_pos.size() + 1, false);
+        std::vector<bool> hbFound(world.harbor_pos.size(), false);
+        // For each sea, store the coastal point indices and their harbor
+        std::vector<std::multimap<unsigned, unsigned> > coastToHarborPerSea(world.seas.size() + 1);
+        std::vector<MapPoint> ownCoastalPoints;
 
         // mark coastal points around harbors
         for(unsigned otherHbId = 1; otherHbId < world.harbor_pos.size(); ++otherHbId)
         {
-            std::vector<bool> seaIsMarked(world.GetNumSeas(), false);
             for(unsigned d = 0; d < Direction::COUNT; d++)
             {
-                // In every direction there can be a coastal point to a sea
-                // So find the sea first and then the dedicated coastal point
                 unsigned seaId = world.GetSeaId(otherHbId, Direction::fromInt(d));
                 // No sea? -> Next
                 if(!seaId)
                     continue;
-                // Skip marked seas
-                if(seaIsMarked[seaId - 1])
-                    continue;
-                seaIsMarked[seaId - 1] = true;
-                // Get designated coastal point
-                const MapPoint coastPt = world.GetCoastalPoint(otherHbId, seaId);
+                const MapPoint coastPt = world.GetNeighbour(world.GetHarborPoint(otherHbId), Direction::fromInt(d));
                 // This should not be marked for visit
-                RTTR_Assert(ptToVisitOrHb[world.GetIdx(coastPt)] != 1);
+                unsigned idx = world.GetIdx(coastPt);
+                RTTR_Assert(ptToVisitOrHb[idx] != -1);
                 if(otherHbId == startHbId)
                 {
-                    // This is our start harbor. Add the sea points around it to our todo list.
-                    todo_list.push(CalcHarborPosNeighborsNode(coastPt, 0));
+                    // This is our start harbor. Add the coast points around it to our todo list.
+                    ownCoastalPoints.push_back(coastPt);
                 } else
-                    ptToVisitOrHb[world.GetIdx(coastPt)] = otherHbId + 1;
+                {
+                    ptToVisitOrHb[idx] = 1;
+                    coastToHarborPerSea[seaId].insert(std::make_pair(idx, otherHbId));
+                }
             }
+        }
+
+        BOOST_FOREACH(const MapPoint& ownCoastPt, ownCoastalPoints)
+        {
+            // Special case: Get all harbors that share the coast point with us
+            unsigned short seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
+            BOOST_AUTO(coastToHbs, coastToHarborPerSea[seaId].equal_range(world.GetIdx(ownCoastPt)));
+            for(BOOST_AUTO(it, coastToHbs.first); it != coastToHbs.second; ++it)
+            {
+                ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
+                world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(HarborPos::Neighbor(it->second, 0));
+                hbFound[it->second] = true;
+            }
+            todo_list.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
         }
 
         while(!todo_list.empty()) // as long as there are sea points on our todo list...
@@ -526,28 +584,44 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
             for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
-                    continue;
                 MapPoint curPt = world.GetNeighbour(curNode.pos, Direction::fromInt(dir));
                 unsigned idx = world.GetIdx(curPt);
 
-                if((ptToVisitOrHb[idx] > 1) && !hbFound[ptToVisitOrHb[idx]]) // found harbor we haven't already found
+                int ptValue = ptToVisitOrHb[idx];
+                // Already visited
+                if(ptValue == 0)
+                    continue;
+                // Not reachable
+                if(!shipPathChecker.IsEdgeOk(curNode.pos, Direction::fromInt(dir)))
+                    continue;
+
+                if(ptValue > 0) // found harbor(s)
                 {
                     ShipDirection shipDir = world.GetShipDir(world.harbor_pos[startHbId].pos, curPt);
-                    world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(
-                      HarborPos::Neighbor(ptToVisitOrHb[idx] - 1, curNode.distance + 1));
+                    unsigned seaId = world.GetSeaFromCoastalPoint(curPt);
+                    BOOST_AUTO(coastToHbs, coastToHarborPerSea[seaId].equal_range(idx));
+                    for(BOOST_AUTO(it, coastToHbs.first); it != coastToHbs.second; ++it)
+                    {
+                        unsigned otherHbId = it->second;
+                        if(hbFound[otherHbId])
+                            continue;
 
-                    todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
+                        hbFound[otherHbId] = true;
+                        world.harbor_pos[startHbId].neighbors[shipDir.toUInt()].push_back(
+                          HarborPos::Neighbor(otherHbId, curNode.distance + 1));
 
-                    hbFound[ptToVisitOrHb[idx]] = true;
-
-                    ptToVisitOrHb[idx] = 0;   // mark as visited, so we do not go here again
-                } else if(ptToVisitOrHb[idx]) // this detects any sea point plus harbors we already visited
-                {
-                    todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
-
-                    ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
+                        // Make this the only coastal point of this harbor for this sea
+                        HarborPos& otherHb = world.harbor_pos[otherHbId];
+                        RTTR_Assert(seaId);
+                        for(unsigned hbDir = 0; hbDir < Direction::COUNT; ++hbDir)
+                        {
+                            if(otherHb.cps[hbDir].seaId == seaId && world.GetNeighbour(otherHb.pos, Direction::fromInt(hbDir)) != curPt)
+                                otherHb.cps[hbDir].seaId = 0;
+                        }
+                    }
                 }
+                todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
+                ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
             }
         }
     }

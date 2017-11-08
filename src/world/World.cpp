@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/World.h"
 #include "world/MapGeometry.h"
 #include "nodeObjs/noFlag.h"
@@ -29,6 +29,7 @@
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/TerrainData.h"
+#include <boost/foreach.hpp>
 #include <set>
 
 World::World() : lt(LT_GREENLAND), noNodeObj(NULL) {}
@@ -186,8 +187,9 @@ GO_Type World::GetGOT(const MapPoint pt) const
 
 void World::ReduceResource(const MapPoint pt)
 {
-    RTTR_Assert(GetNodeInt(pt).resources > 0);
-    GetNodeInt(pt).resources--;
+    uint8_t curAmount = GetNodeInt(pt).resources.getAmount();
+    RTTR_Assert(curAmount > 0);
+    GetNodeInt(pt).resources.setAmount(curAmount - 1u);
 }
 
 void World::SetReserved(const MapPoint pt, const bool reserved)
@@ -196,18 +198,19 @@ void World::SetReserved(const MapPoint pt, const bool reserved)
     GetNodeInt(pt).reserved = reserved;
 }
 
-void World::SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime)
+void World::SetVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime)
 {
     FoWNode& node = GetNodeInt(pt).fow[player];
-    if(node.visibility == vis)
+    Visibility oldVis = node.visibility;
+    if(oldVis == vis)
         return;
 
     node.visibility = vis;
     if(vis == VIS_VISIBLE)
         deletePtr(node.object);
     else if(vis == VIS_FOW)
-        SaveFOWNode(pt, player, curTime);
-    VisibilityChanged(pt, player);
+        SaveFOWNode(pt, player, fowTime);
+    VisibilityChanged(pt, player, oldVis, vis);
 }
 
 void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
@@ -404,6 +407,23 @@ const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const unsigned
 {
     RTTR_Assert(harborId);
     return harbor_pos[harborId].neighbors[dir.toUInt()];
+}
+
+/// Berechnet die Entfernung zwischen 2 Hafenpunkten
+unsigned World::CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const
+{
+    if(habor_id1 == harborId2) // special case: distance to self
+        return 0;
+    for(unsigned i = 0; i < 6; ++i)
+    {
+        BOOST_FOREACH(const HarborPos::Neighbor& n, harbor_pos[habor_id1].neighbors[i])
+        {
+            if(n.id == harborId2)
+                return n.distance;
+        }
+    }
+
+    return 0xffffffff;
 }
 
 unsigned short World::GetSeaFromCoastalPoint(const MapPoint pt) const

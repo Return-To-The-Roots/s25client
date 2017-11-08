@@ -29,13 +29,19 @@ public:
     Savegame();
     ~Savegame() override;
 
+    std::string GetSignature() const override;
+    uint16_t GetVersion() const override;
+
     /// Schreibst Savegame oder Teile davon
-    bool Save(const std::string& filename);
-    bool Save(BinaryFile& file);
+    bool Save(const std::string& filename, const std::string& mapName);
+    bool Save(BinaryFile& file, const std::string& mapName);
 
     /// Lädt Savegame oder Teile davon
-    bool Load(const std::string& filename, const bool load_players, const bool load_sgd);
-    bool Load(BinaryFile& file, const bool load_players, const bool load_sgd);
+    bool Load(const std::string& filename, bool loadSettings, bool loadGameData);
+    bool Load(BinaryFile& file, bool loadSettings, bool loadGameData);
+
+    void WriteExtHeader(BinaryFile& file, const std::string& mapName) override;
+    bool ReadExtHeader(BinaryFile& file) override;
 
     /// Start-GF
     unsigned start_gf;
@@ -43,8 +49,8 @@ public:
     SerializedGameData sgd;
 
 protected:
-    std::string GetSignature() const override;
-    uint16_t GetVersion() const override;
+    void WriteGameData(BinaryFile& file);
+    bool ReadGameData(BinaryFile& file);
 };
 
 #endif //! GAMESAVEGAME_H_INCLUDED

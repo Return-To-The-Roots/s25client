@@ -29,7 +29,7 @@
  *
  *  @return liefert die API-Version des Treibers
  */
-DRIVERDLLAPI unsigned GetDriverAPIVersion(void)
+DRIVERDLLAPI unsigned GetDriverAPIVersion()
 {
     return DRIVERAPIVERSION;
 }

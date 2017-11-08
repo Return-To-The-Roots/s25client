@@ -15,16 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
 #include "EventManager.h"
 #include "GameClient.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "notifications/BuildingNote.h"
-#include "postSystem/PostMsgWithBuilding.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 
@@ -146,7 +145,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
 
                 // Wir arbeiten jetzt
                 workplace->is_working = true;
-                StopNotWorking();
+                workplace->StopNotWorking();
 
                 // Punkt für uns reservieren
                 gwg->SetReserved(dest, true);
@@ -159,33 +158,14 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 // We have to wait, since we do not know whether there are any unreachable or reserved points where there's more to get
                 current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
-                StartNotWorking();
+                workplace->StartNotWorking();
             } else
             {
-                if(!outOfRessourcesMsgSent)
+                switch(job_)
                 {
-                    switch(job_)
-                    {
-                        case JOB_STONEMASON:
-                        case JOB_FISHER:
-                        {
-                            const std::string msg = (job_ == JOB_STONEMASON) ? _("No more stones in range") : _("No more fishes in range");
-                            SendPostMessage(player,
-                                            new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), msg, PostCategory::Economy, *workplace));
-                            outOfRessourcesMsgSent = true;
-                            workplace->SetProductivityToZero();
-                            break;
-                        }
-                        default: break;
-                    }
-                }
-
-                // KI-Event erzeugen
-                switch(workplace->GetBuildingType())
-                {
+                    case JOB_STONEMASON:
+                    case JOB_FISHER: workplace->OnOutOfResources(); break;
                     case BLD_WOODCUTTER:
-                    case BLD_QUARRY:
-                    case BLD_FISHERY:
                         gwg->GetNotifications().publish(
                           BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;
@@ -195,7 +175,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 // Weiter warten, vielleicht gibts ja später wieder mal was
                 current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
 
-                StartNotWorking();
+                workplace->StartNotWorking();
             }
         }
         break;

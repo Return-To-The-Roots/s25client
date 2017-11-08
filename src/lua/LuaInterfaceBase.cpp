@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
 #include "GameClient.h"
 #include "GlobalVars.h"
@@ -23,6 +23,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
+#include <boost/bind.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <utility>
 
@@ -47,7 +48,7 @@ unsigned LuaInterfaceBase::GetVersion()
 
 unsigned LuaInterfaceBase::GetFeatureLevel()
 {
-    return 1;
+    return 2;
 }
 
 LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
@@ -59,6 +60,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
     lua.openlib("math", luaopen_math);
 
     Register(lua);
+    lua["_"] = kaguya::function<std::string(const std::string&)>(boost::bind(&LuaInterfaceBase::Translate, this, _1));
 }
 
 LuaInterfaceBase::~LuaInterfaceBase() {}
@@ -71,7 +73,8 @@ void LuaInterfaceBase::Register(kaguya::State& state)
                                  .addFunction("IsHost", &LuaInterfaceBase::IsHost)
                                  .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
                                  .addOverloadedFunctions("MsgBox", &LuaInterfaceBase::MsgBox, &LuaInterfaceBase::MsgBox2)
-                                 .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2));
+                                 .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2)
+                                 .addFunction("RegisterTranslations", &LuaInterfaceBase::RegisterTranslations));
     state.setErrorHandler(ErrorHandler);
 }
 
@@ -92,11 +95,10 @@ void LuaInterfaceBase::ErrorHandlerThrow(int status, const char* message)
 
 bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
 {
+    script_.clear();
     if(!lua.dofile(scriptPath))
-    {
-        script_.clear();
         return false;
-    } else
+    else
     {
         bnw::ifstream scriptFile(scriptPath.c_str());
         script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
@@ -106,11 +108,10 @@ bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
 
 bool LuaInterfaceBase::LoadScriptString(const std::string& script)
 {
+    script_.clear();
     if(!lua.dostring(script))
-    {
-        script_.clear();
         return false;
-    } else
+    else
     {
         script_ = script;
         return true;
@@ -163,6 +164,46 @@ void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& ms
     iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
     msgBox->MoveIcon(DrawPoint(iconX, iconY));
     WINDOWMANAGER.Show(msgBox);
+}
+
+std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
+{
+    kaguya::LuaRef entry = luaTranslations[code];
+    if(entry.type() == LUA_TTABLE)
+        return entry;
+    std::string lang, region, encoding;
+    splitLanguageCode(code, lang, region, encoding);
+
+    if(!region.empty())
+    {
+        entry = luaTranslations[lang + "_" + region];
+        if(entry.type() == LUA_TTABLE)
+            return entry;
+    }
+    entry = luaTranslations[lang];
+    if(entry.type() == LUA_TTABLE)
+        return entry;
+    return std::map<std::string, std::string>();
+}
+
+void LuaInterfaceBase::RegisterTranslations(const kaguya::LuaRef& luaTranslations)
+{
+    // Init with default
+    translations_ = GetTranslation(luaTranslations, "en_GB");
+    // Replace with entries of current locale
+    std::string locale = mysetlocale(LC_ALL, NULL);
+    std::map<std::string, std::string> translated = GetTranslation(luaTranslations, locale);
+    for(std::map<std::string, std::string>::const_iterator it = translated.begin(); it != translated.end(); ++it)
+        translations_[it->first] = it->second;
+}
+
+std::string LuaInterfaceBase::Translate(const std::string& key)
+{
+    std::map<std::string, std::string>::const_iterator entry = translations_.find(key);
+    if(entry == translations_.end())
+        return key;
+    else
+        return entry->second.c_str();
 }
 
 void LuaInterfaceBase::Log(const std::string& msg)

@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMusicPlayer.h"
-
 #include "ListDir.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
@@ -32,8 +32,9 @@
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/nowide/cstdio.hpp>
 #include <cstdio>
 
 iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned win_id, const std::string& title)
@@ -158,7 +159,7 @@ void iwMusicPlayer::Msg_ListChooseItem(const unsigned ctrl_id, const unsigned se
 
 std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& combo_str)
 {
-    return (GetFilePath(FILE_PATHS[90]) + combo_str + ".pll");
+    return (RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + combo_str + ".pll");
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
@@ -248,14 +249,12 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // Less Repeats
         case 13:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
+            unsigned repeats = GetRepeats();
 
             if(repeats)
             {
                 --repeats;
-                char str[32];
-                sprintf(str, "%u", repeats);
-                GetCtrl<ctrlTextDeepening>(12)->SetText(str);
+                SetRepeats(repeats);
                 changed = true;
             }
         }
@@ -263,11 +262,9 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // More Repeats
         case 14:
         {
-            unsigned repeats = atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
+            unsigned repeats = GetRepeats();
             ++repeats;
-            char str[32];
-            sprintf(str, "%u", repeats);
-            GetCtrl<ctrlTextDeepening>(12)->SetText(str);
+            SetRepeats(repeats);
             changed = true;
         }
         break;
@@ -287,7 +284,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
 bool ValidateFile(const std::string& filename)
 {
-    FILE* file = fopen(filename.c_str(), "r");
+    FILE* file = bnw::fopen(filename.c_str(), "r");
     if(!file)
         return false;
     else
@@ -379,9 +376,7 @@ void iwMusicPlayer::SetSegments(const std::vector<std::string>& segments)
 }
 void iwMusicPlayer::SetRepeats(unsigned repeats)
 {
-    char repeats_str[32];
-    sprintf(repeats_str, "%u", repeats);
-    GetCtrl<ctrlTextDeepening>(12)->SetText(repeats_str);
+    GetCtrl<ctrlTextDeepening>(12)->SetText(boost::lexical_cast<std::string>(repeats));
 }
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
@@ -404,7 +399,7 @@ std::vector<std::string> iwMusicPlayer::GetSegments() const
 
 unsigned iwMusicPlayer::GetRepeats() const
 {
-    return atoi(GetCtrl<ctrlTextDeepening>(12)->GetText().c_str());
+    return boost::lexical_cast<unsigned>(GetCtrl<ctrlTextDeepening>(12)->GetText());
 }
 
 bool iwMusicPlayer::GetRandomPlayback() const
@@ -417,7 +412,7 @@ void iwMusicPlayer::UpdatePlaylistCombo(const std::string& highlight_entry)
 {
     GetCtrl<ctrlComboBox>(2)->DeleteAllItems();
 
-    std::vector<std::string> playlists = ListDir(std::string(FILE_PATHS[90]), "pll");
+    std::vector<std::string> playlists = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[90]), "pll");
 
     unsigned i = 0;
     for(std::vector<std::string>::iterator it = playlists.begin(); it != playlists.end(); ++it, ++i)

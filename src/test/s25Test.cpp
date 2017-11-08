@@ -15,26 +15,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "ProgramInitHelpers.h"
-#include "files.h"
+#define BOOST_TEST_MODULE RTTR_Test
+
+#include "rttrDefines.h" // IWYU pragma: keep
+#include "Loader.h"
+#include "RttrConfig.h"
+#include "languages.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
 #include "libutil/Socket.h"
 #include "libutil/StringStreamWriter.h"
-
-#define BOOST_TEST_MODULE RTTR_Test
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 #include <stdexcept>
-#include <string>
-#include <vector>
 
 // Test helpers. Header only
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
@@ -49,10 +46,10 @@ struct TestSetup
             throw std::runtime_error("Could not init locale");
         // Write to string stream only to avoid file output on the test server
         LOG.open(new StringStreamWriter);
-        if(!InitWorkingDirectory())
+        if(!RTTRCONFIG.Init())
             throw std::runtime_error("Could not init working directory. Misplaced binary?");
-        if(!bfs::is_directory(RTTRDIR))
-            throw std::runtime_error(std::string(RTTRDIR) + " not found. Binary misplaced or RTTR folder not copied?");
+        if(!bfs::is_directory(RTTRCONFIG.ExpandPath("<RTTR_RTTR>")))
+            throw std::runtime_error(RTTRCONFIG.ExpandPath("<RTTR_RTTR>") + " not found. Binary misplaced or RTTR folder not copied?");
         srand(static_cast<unsigned>(time(NULL)));
         libsiedler2::setAllocator(new GlAllocator());
         Socket::Initialize();
@@ -70,11 +67,3 @@ BOOST_GLOBAL_FIXTURE(TestSetup);
 // Boost < 1.59 got the semicolon inside the macro causing an "extra ;" warning
 BOOST_GLOBAL_FIXTURE(TestSetup)
 #endif
-
-BOOST_AUTO_TEST_CASE(LocaleFormatTest)
-{
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234), "1234");
-    BOOST_CHECK_EQUAL(boost::lexical_cast<std::string>(1234.5), "1234.5");
-    BOOST_CHECK_EQUAL(boost::lexical_cast<float>("1234.5"), 1234.5);
-    BOOST_CHECK_EQUAL(boost::lexical_cast<int>("1234"), 1234);
-}

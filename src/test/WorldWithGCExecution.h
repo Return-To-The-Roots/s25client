@@ -39,6 +39,15 @@ protected:
 };
 
 // Avoid having to use "this->" to access those
+class WorldWithGCExecution1P : public WorldWithGCExecution<1>
+{
+public:
+    using WorldWithGCExecution<1>::world;
+    using WorldWithGCExecution<1>::curPlayer;
+    using WorldWithGCExecution<1>::hqPos;
+};
+
+// Avoid having to use "this->" to access those
 class WorldWithGCExecution2P : public WorldWithGCExecution<2>
 {
 public:

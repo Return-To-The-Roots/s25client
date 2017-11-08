@@ -41,6 +41,8 @@ public:
     /// Special position that gets translated to the mouse position when passed to the ctor
     static const DrawPoint posAtMouse;
 
+    static const Extent borderSize;
+
     IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, glArchivItem_Bitmap* background,
                  bool modal = false, bool closeOnRightClick = true, Window* parent = NULL);
     ~IngameWindow() override;
@@ -64,7 +66,7 @@ public:
     DrawPoint GetRightBottomBoundary();
 
     /// merkt das Fenster zum Schließen vor.
-    void Close(bool closeme = true) { this->closeme = closeme; }
+    void Close();
     /// soll das Fenster geschlossen werden.
     bool ShouldBeClosed() const { return closeme; }
 
@@ -80,7 +82,7 @@ public:
 
     /// Toggle the modal property. Modal windows disallow focus change.
     /// To also disallow closing of the window via the title bar or right-click set close_on_right_click to false
-    void SetModal(bool modal = true) { this->isModal_ = modal; }
+    void SetModal(bool modal = true);
     /// ist das Fenster ein modales Fenster?
     bool IsModal() const { return isModal_; }
 

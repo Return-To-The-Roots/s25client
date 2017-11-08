@@ -34,7 +34,6 @@
 #include "liblobby/LobbyInterface.h"
 #include <boost/array.hpp>
 
-class GameClient;
 class iwRoadWindow;
 class glArchivItem_Bitmap;
 class GlobalGameSettings;
@@ -48,7 +47,7 @@ struct KeyEvent;
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface
 {
 private:
-    GameClient& gameClient;
+    boost::shared_ptr<const Game> game_;
     GameWorldViewer worldViewer;
     GameWorldView gwv;
 
@@ -71,9 +70,11 @@ private:
     bool isScrolling;
     Point<int> startScrollPt;
     size_t zoomLvl;
+    bool isCheatModeOn;
+    std::string curCheatTxt;
 
 public:
-    dskGameInterface(GameWorldBase& world);
+    dskGameInterface(boost::shared_ptr<Game> game);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;

@@ -15,18 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCatapultMan.h"
 #include "CatapultStone.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
@@ -146,7 +146,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
                 current_ev = GetEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
-                StartNotWorking();
+                workplace->StartNotWorking();
                 return;
             }
 

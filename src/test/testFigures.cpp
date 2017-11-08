@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
+#include "PointOutput.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
 #include "nodeObjs/noFlag.h"
-#include "test/PointOutput.h"
 #include "test/WorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
 

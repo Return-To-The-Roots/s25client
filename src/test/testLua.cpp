@@ -15,23 +15,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ClientInterface.h"
 #include "GameClient.h"
 #include "GameMessages.h"
+#include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "helpers/Deleter.h"
-#include "helpers/converters.h"
 #include "notifications/BuildingNote.h"
+#include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
-#include "test/PointOutput.h"
 #include "test/initTestHelpers.h"
+#include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
@@ -95,7 +96,7 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
-    BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", helpers::toString(lua.GetFeatureLevel())));
+    BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
 
     // (Invalid) connect to set params
     BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, true, false));
@@ -108,6 +109,49 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 
     // TODO: Add test for message box
+}
+
+struct LocaleResetter
+{
+    const std::string oldLoc;
+    LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, NULL)) { mysetlocale(LC_ALL, newLoc); }
+    ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc.c_str()); }
+};
+
+BOOST_AUTO_TEST_CASE(Translations)
+{
+    // Return same id if nothing set
+    executeLua("rttr:Log(_('Foo'))");
+    BOOST_REQUIRE_EQUAL(getLog(), "Foo\n");
+    // Return translation for default locale
+    executeLua("rttr:RegisterTranslations({ en_GB = { Foo = 'Eng', Bar = 'Eng2' } })");
+    executeLua("rttr:Log(_('Foo'))");
+    BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
+    // Return translation for language or default
+    std::string localSetting =
+      "rttr:RegisterTranslations({ en_GB = { Foo = 'Eng', Bar = 'Eng2' }, pt = { Foo = 'Port', Bar = 'Port2' }, pt_BR = { Foo = 'PortBR', "
+      "Bar = 'PortBR2' } })";
+    // With region
+    {
+        LocaleResetter loc("pt_BR");
+        executeLua(localSetting);
+        executeLua("rttr:Log(_('Foo'))");
+        BOOST_REQUIRE_EQUAL(getLog(), "PortBR\n");
+    }
+    // Other region
+    {
+        LocaleResetter loc("pt_PT");
+        executeLua(localSetting);
+        executeLua("rttr:Log(_('Foo'))");
+        BOOST_REQUIRE_EQUAL(getLog(), "Port\n");
+    }
+    // Non-Translated lang
+    {
+        LocaleResetter loc("de");
+        executeLua(localSetting);
+        executeLua("rttr:Log(_('Foo'))");
+        BOOST_REQUIRE_EQUAL(getLog(), "Eng\n");
+    }
 }
 
 namespace {
@@ -167,7 +211,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
 
     for(unsigned i = 0; i < 2; i++)
     {
-        BOOST_CHECK(isLuaEqual("rttr:GetGF()", helpers::toString(world.em.GetCurrentGF())));
+        BOOST_CHECK(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.em.GetCurrentGF())));
         world.em.ExecuteNextGF();
     }
 
@@ -260,7 +304,7 @@ BOOST_AUTO_TEST_CASE(AccessPlayerProperties)
     BOOST_CHECK(isLuaEqual("player:GetName()", "'PlayerAI'"));
     BOOST_CHECK(isLuaEqual("player:GetNation()", "NAT_ROMANS"));
     BOOST_CHECK(isLuaEqual("player:GetTeam()", "TM_TEAM2"));
-    BOOST_CHECK(isLuaEqual("player:GetColor()", helpers::toString(0xFFFF0000)));
+    BOOST_CHECK(isLuaEqual("player:GetColor()", s25util::toStringClassic(0xFFFF0000)));
     BOOST_CHECK(isLuaEqual("player:IsHuman()", "false"));
     BOOST_CHECK(isLuaEqual("player:IsAI()", "true"));
     BOOST_CHECK(isLuaEqual("player:IsClosed()", "false"));
@@ -404,15 +448,15 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_REQUIRE(!hq->IsTent());
 
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(hq->GetPos().x)));
-    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(hq->GetPos().y)));
+    BOOST_CHECK(isLuaEqual("hqX", s25util::toStringClassic(hq->GetPos().x)));
+    BOOST_CHECK(isLuaEqual("hqY", s25util::toStringClassic(hq->GetPos().y)));
 
     // Destroy players HQ
     world.DestroyNO(hq->GetPos());
     // HQ-Pos is invalid
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_CHECK(isLuaEqual("hqX", helpers::toString(MapPoint::Invalid().x)));
-    BOOST_CHECK(isLuaEqual("hqY", helpers::toString(MapPoint::Invalid().y)));
+    BOOST_CHECK(isLuaEqual("hqX", s25util::toStringClassic(MapPoint::Invalid().x)));
+    BOOST_CHECK(isLuaEqual("hqY", s25util::toStringClassic(MapPoint::Invalid().y)));
     // Adding wares/people returns false
     executeLua("assert(player:AddWares(wares) == false)");
     executeLua("assert(player:AddPeople(people) == false)");
@@ -571,7 +615,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventOccupied(1, pt1);
     lua.EventExplored(1, pt2, 0);
     lua.EventGameFrame(0);
-    lua.EventResourceFound(1, pt3, RES_GOLD, 1);
+    lua.EventResourceFound(1, pt3, Resource::Gold, 1);
     executeLua("function getResName(res)\n  if(res==RES_IRON) then return 'Iron' "
                "elseif(res==RES_GOLD) then return 'Gold' "
                "elseif(res==RES_COAL) then return 'Coal' "
@@ -664,15 +708,15 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
                "'..y..')'..getResName(type)..':'..quantity)\nend");
     boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
-    lua.EventResourceFound(2, pt3, RES_IRON, 1);
+    lua.EventResourceFound(2, pt3, Resource::Iron, 1);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Iron" % 1).str());
-    lua.EventResourceFound(2, pt3, RES_GOLD, 2);
+    lua.EventResourceFound(2, pt3, Resource::Gold, 2);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Gold" % 2).str());
-    lua.EventResourceFound(2, pt3, RES_COAL, 3);
+    lua.EventResourceFound(2, pt3, Resource::Coal, 3);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Coal" % 3).str());
-    lua.EventResourceFound(2, pt3, RES_GRANITE, 6);
+    lua.EventResourceFound(2, pt3, Resource::Granite, 6);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Granite" % 6).str());
-    lua.EventResourceFound(2, pt3, RES_WATER, 5);
+    lua.EventResourceFound(2, pt3, Resource::Water, 5);
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Water" % 5).str());
 }
 

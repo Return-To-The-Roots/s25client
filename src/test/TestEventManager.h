@@ -36,6 +36,7 @@ public:
     bool IsEventActive(const GameObject& obj, const unsigned id) const;
     /// Reset an event so it is executed at the given GF
     void RescheduleEvent(GameEvent& event, unsigned targetGF);
+    std::vector<const GameEvent*> GetEvents() const;
 };
 
 #endif // TestEventManager_h__

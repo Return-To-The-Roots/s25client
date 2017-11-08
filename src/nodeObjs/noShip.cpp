@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noShip.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
@@ -35,6 +35,7 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "postSystem/ShipPostMsg.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/GameConsts.h"
@@ -598,6 +599,8 @@ void noShip::FoundColony()
     // Kolonie gründen
     if(gwg->FoundColony(goal_harborId, ownerId_, seaId_))
     {
+        // For checks
+        state = STATE_EXPEDITION_UNLOADING;
         // Dann idlen wir wieder
         StartIdling();
         // Neue Arbeit suchen
@@ -697,7 +700,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
 {
     Result res;
     // Zum Heimathafen fahren?
-    if(home_harbor == goal_harborId && covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
+    if(home_harbor == goal_harborId)
         res = DriveToHarbour();
     else
         res = DriveToHarbourPlace();
@@ -708,7 +711,7 @@ void noShip::HandleState_ExplorationExpeditionDriving()
         case GOAL_REACHED:
         {
             // Haben wir unsere Expedition beendet?
-            if(home_harbor == goal_harborId && covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
+            if(home_harbor == goal_harborId)
             {
                 // Dann sind wir fertig -> wieder entladen
                 state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
@@ -726,8 +729,13 @@ void noShip::HandleState_ExplorationExpeditionDriving()
         break;
         case NO_ROUTE_FOUND:
         case HARBOR_DOESNT_EXIST:
-            gwg->RecalcVisibilitiesAroundPoint(pos, GetVisualRange(), ownerId_, NULL);
-            StartIdling();
+            if(home_harbor != goal_harborId && home_harbor != 0)
+            {
+                // Try to go back
+                goal_harborId = home_harbor;
+                HandleState_ExplorationExpeditionDriving();
+            } else
+                FindUnloadGoal(STATE_EXPLORATIONEXPEDITION_DRIVING); // Unload anywhere!
             break;
     }
 }
@@ -1012,6 +1020,8 @@ void noShip::FindUnloadGoal(State newState)
         home_harbor = goal_harborId; // To allow unloading here
         if(state == STATE_EXPEDITION_DRIVING)
             HandleState_ExpeditionDriving();
+        else if(state == STATE_EXPLORATIONEXPEDITION_DRIVING)
+            HandleState_ExplorationExpeditionDriving();
         else if(state == STATE_TRANSPORT_DRIVING)
             HandleState_TransportDriving();
         else if(state == STATE_SEAATTACK_RETURN_DRIVING)
@@ -1112,10 +1122,13 @@ void noShip::HarborDestroyed(nobHarborBuilding* hb)
 /// Fängt an mit idlen und setzt nötigen Sachen auf NULL
 void noShip::StartIdling()
 {
-    // If those are not empty, then we ware lost, not idling!
+    // If those are not empty, then we are lost, not idling!
     RTTR_Assert(figures.empty());
     RTTR_Assert(wares.empty());
     RTTR_Assert(remaining_sea_attackers == 0);
+    // Implicit contained wares/figures on expeditions
+    RTTR_Assert(!IsOnExplorationExpedition() || state == STATE_EXPLORATIONEXPEDITION_UNLOADING);
+    RTTR_Assert(!IsOnExpedition() || state == STATE_EXPEDITION_UNLOADING);
 
     home_harbor = 0;
     goal_harborId = 0;
@@ -1166,15 +1179,6 @@ void noShip::ContinueExplorationExpedition()
     // Sind wir schon über unserem Limit, also zu weit gefahren
     if(covered_distance >= MAX_EXPLORATION_EXPEDITION_DISTANCE)
     {
-        // Ggf. sind wir schon da?
-        if(goal_harborId == home_harbor)
-        {
-            // Dann sind wir fertig -> wieder entladen
-            state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
-            current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
-            return;
-        }
-
         // Dann steuern wir unseren Heimathafen an!
         goal_harborId = home_harbor;
     } else
@@ -1184,19 +1188,10 @@ void noShip::ContinueExplorationExpedition()
         if(goal_harborId)
             hps = gwg->GetUnexploredHarborPoints(goal_harborId, seaId_, GetPlayerId());
 
-        // No possible spots?
+        // No possible spots? -> Go home
         if(hps.empty())
-        {
-            if(goal_harborId != home_harbor)
-                goal_harborId = home_harbor;
-            else
-            {
-                // We are already at home -> End
-                state = STATE_EXPLORATIONEXPEDITION_UNLOADING;
-                current_ev = GetEvMgr().AddEvent(this, UNLOADING_TIME, 1);
-                return;
-            }
-        } else
+            goal_harborId = home_harbor;
+        else
         {
             // Choose one randomly
             goal_harborId = hps[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), hps.size())];

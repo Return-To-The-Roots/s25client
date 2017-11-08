@@ -15,16 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef PointOutput_h__
-#define PointOutput_h__
+#pragma once
 
-#include "Point.h"
-#include <iostream>
+#ifndef RttrConfig_h__
+#define RttrConfig_h__
 
-template<typename T>
-std::ostream& operator<<(std::ostream& out, const Point<T>& point)
+#include "libutil/Singleton.h"
+#include <boost/filesystem/path.hpp>
+#include <map>
+#include <string>
+
+class RttrConfig : public Singleton<RttrConfig>
 {
-    return out << "(" << point.x << ", " << point.y << ")";
-}
+    boost::filesystem::path prefixPath, homePath;
+    std::map<std::string, std::string> pathMappings;
 
-#endif // PointOutput_h__
+public:
+    bool Init();
+    /// Return the prefix path for the installation
+    boost::filesystem::path GetPrefixPath() const;
+    /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
+    std::string ExpandPath(const std::string& path) const;
+};
+
+#define RTTRCONFIG RttrConfig::inst()
+
+#endif // RttrConfig_h__

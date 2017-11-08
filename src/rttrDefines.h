@@ -15,33 +15,45 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "OldLCG.h"
-#include "libutil/Serializer.h"
-#include <iostream>
+#pragma once
+#ifndef rttrDefines_h__
+#define rttrDefines_h__
 
-void OldLCG::discard(uint64_t j)
+// IWYU pragma: begin_exports
+
+#include "commonDefines.h"
+#include "macros.h"
+
+// IWYU pragma: end_exports
+
+/**
+ *  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
+ *  Union. GCC meckert da sonst wegen "type punned pointer" bzw
+ *  "iso c++ forbids conversion".
+ */
+template<typename F>
+inline F pto2ptf(void* o)
 {
-    for(uint64_t i = 0; i < j; i++)
-        (*this)();
+    union
+    {
+        F f;
+        void* o;
+    } U;
+    U.o = o;
+
+    return U.f;
 }
 
-void OldLCG::Deserialize(Serializer& ser)
+template<typename T>
+inline T min(T a, T b)
 {
-    state_ = ser.PopUnsignedInt();
+    return (a < b) ? a : b;
 }
 
-void OldLCG::Serialize(Serializer& ser) const
+template<typename T>
+inline T max(T a, T b)
 {
-    ser.PushUnsignedInt(state_);
+    return (a < b) ? b : a;
 }
 
-std::ostream& operator<<(std::ostream& os, const OldLCG& obj)
-{
-    return os << obj.state_;
-}
-
-std::istream& operator>>(std::istream& is, OldLCG& obj)
-{
-    return is >> obj.state_;
-}
+#endif // rttrDefines_h__

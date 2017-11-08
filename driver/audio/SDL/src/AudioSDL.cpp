@@ -43,7 +43,7 @@ DRIVERDLLAPI void FreeAudioInstance(IAudioDriver* driver)
     delete driver;
 }
 
-DRIVERDLLAPI const char* GetDriverName(void)
+DRIVERDLLAPI const char* GetDriverName()
 {
     return "(SDL) Audio via SDL_mixer-Library";
 }

@@ -15,12 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
 #include "GameClient.h"
 #include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "WindowManager.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPreviewMinimap.h"
@@ -32,6 +33,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
+#include "helpers/converters.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
 #include "ingameWindows/iwMsgbox.h"
@@ -43,7 +45,6 @@
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
-#include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
@@ -159,8 +160,8 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
     static const boost::array<unsigned, 9> ids = {{39, 40, 41, 42, 43, 52, 91, 93, 48}};
 
     // Und wieder füllen lassen
-    FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "swd"));
-    FillTable(ListDir(GetFilePath(FILE_PATHS[ids[selection]]), "wld"));
+    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "swd"));
+    FillTable(ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[ids[selection]]), "wld"));
 
     // Dann noch sortieren
     bool sortAsc = true;
@@ -276,7 +277,7 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 void dskSelectMap::CreateRandomMap()
 {
     // setup filepath for the random map
-    std::string mapPath = GetFilePath(FILE_PATHS[48]);
+    std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]);
     mapPath.append("Random.swd");
 
     // create a random map and save filepath
@@ -365,7 +366,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 void dskSelectMap::CI_Error(const ClientError ce)
 {
     // Error messages, CE_* values cannot be gotten here but are added to avoid memory access errors
-    const boost::array<std::string, 8> errors = {{_("Incomplete message was received!"), "CE_SERVERFULL", "CE_WRONGPW",
+    const boost::array<std::string, 8> errors = {{_("Incomplete message was received!"), _("This Server is full!"), "CE_WRONGPW",
                                                   _("Lost connection to server!"), "CE_INVALIDSERVERTYPE",
                                                   _("Map transmission was corrupt!"), "CE_WRONGVERSION", "CE_LOBBYFULL"}};
 
@@ -415,16 +416,15 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
         RTTR_Assert(header);
 
-        if(header->getPlayer() > MAX_PLAYERS)
+        if(header->getNumPlayers() > MAX_PLAYERS)
             continue;
 
         const bfs::path luaFilepath = bfs::path(filePath).replace_extension("lua");
         const bool hasLua = bfs::is_regular_file(luaFilepath);
 
         // Und Zeilen vorbereiten
-        char players[64], size[32];
-        snprintf(players, 64, _("%d Player"), header->getPlayer());
-        snprintf(size, 32, "%dx%d", header->getWidth(), header->getHeight());
+        std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header->getNumPlayers())).str();
+        std::string size = helpers::toString(header->getWidth()) + "x" + helpers::toString(header->getWidth());
 
         // und einfügen
         const std::string landscapes[3] = {_("Greenland"), _("Wasteland"), _("Winter world")};
@@ -434,6 +434,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
             name += " (*)";
         std::string author = cvStringToUTF8(header->getAuthor());
 
-        table->AddRow(0, name.c_str(), author.c_str(), players, landscapes[header->getGfxSet()].c_str(), size, filePath.c_str());
+        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapes[header->getGfxSet()].c_str(), size.c_str(),
+                      filePath.c_str());
     }
 }

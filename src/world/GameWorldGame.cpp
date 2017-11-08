@@ -15,12 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
@@ -1168,14 +1169,8 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 
     // Vollständig sichtbar --> vollständig sichtbar logischerweise
     if(visible)
-    {
-        if(visibility_before != VIS_VISIBLE)
-        {
-            if(HasLua())
-                GetLua().EventExplored(player, pt, GetNode(pt).owner);
-            SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
-        }
-    } else
+        MakeVisible(pt, player);
+    else
     {
         // nicht mehr sichtbar
         // Je nach vorherigen Zustand und Einstellung entscheiden
@@ -1201,11 +1196,7 @@ void GameWorldGame::RecalcVisibility(const MapPoint pt, const unsigned char play
 
 void GameWorldGame::MakeVisible(const MapPoint pt, const unsigned char player)
 {
-    Visibility visibility_before = GetNode(pt).fow[player].visibility;
-    SetVisibility(pt, player, VIS_VISIBLE, GetEvMgr().GetCurrentGF());
-
-    if(visibility_before != VIS_VISIBLE && HasLua())
-        GetLua().EventExplored(player, pt, GetNode(pt).owner);
+    SetVisibility(pt, player, VIS_VISIBLE);
 }
 
 void GameWorldGame::RecalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
@@ -1317,22 +1308,22 @@ bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) 
  *  Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
  *  Für Spiele ohne Gold.
  */
-void GameWorldGame::ConvertMineResourceTypes(unsigned char from, unsigned char to)
+void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type to)
 {
-    // to == 0xFF heißt löschen
-    // in Map-Resource-Koordinaten konvertieren
-    from = RESOURCES_MINE_TO_MAP[from];
-    to = ((to != 0xFF) ? RESOURCES_MINE_TO_MAP[to] : 0xFF);
-
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
-    // Alle Punkte durchgehen
+    if(from == to)
+        return;
+
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        unsigned char resources = GetNode(pt).resources;
+        Resource resources = GetNode(pt).resources;
         // Gibt es Ressourcen dieses Typs?
         // Wenn ja, dann umwandeln bzw löschen
-        if(resources >= 0x40 + from * 8 && resources < 0x48 + from * 8)
-            SetResource(pt, (to != 0xFF) ? resources - (from * 8 - to * 8) : 0);
+        if(resources.getType() == from)
+        {
+            resources.setType(to);
+            SetResource(pt, resources);
+        }
     }
 }
 
@@ -1387,29 +1378,16 @@ std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hb
     return hps;
 }
 
-bool GameWorldGame::IsResourcesOnNode(const MapPoint pt, const unsigned char type) const
-{
-    RTTR_Assert(pt.x < GetWidth());
-    RTTR_Assert(pt.y < GetHeight());
-
-    unsigned char resources = GetNode(pt).resources;
-
-    // wasser?
-    if(type == 4)
-        return (resources > 0x20 && resources < 0x28);
-
-    // Gibts Ressourcen von dem Typ an diesem Punkt?
-    return (resources > 0x40 + type * 8 && resources < 0x48 + type * 8);
-}
-
 MapNode& GameWorldGame::GetNodeWriteable(const MapPoint pt)
 {
     return GetNodeInt(pt);
 }
 
-void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player)
+void GameWorldGame::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
 {
-    GameWorldBase::VisibilityChanged(pt, player);
+    GameWorldBase::VisibilityChanged(pt, player, oldVis, newVis);
+    if(oldVis == VIS_INVISIBLE && newVis == VIS_VISIBLE && HasLua())
+        GetLua().EventExplored(player, pt, GetNode(pt).owner);
     // Minimap Bescheid sagen
     if(gi)
         gi->GI_UpdateMinimap(pt);

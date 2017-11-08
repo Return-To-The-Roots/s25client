@@ -15,12 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/win32_nanosleep.h"
 
 #ifdef _WIN32
 #include <windows.h>
-#include <stdint.h>
 
 /**
  *  nanosleep replacement for windows.

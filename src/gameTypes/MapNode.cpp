@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "gameTypes/MapNode.h"
 #include "SerializedGameData.h"
 #include "nodeObjs/noBase.h"
@@ -38,7 +38,7 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
     sgd.PushUnsignedChar(shadow);
     sgd.PushUnsignedChar(t1);
     sgd.PushUnsignedChar(t2);
-    sgd.PushUnsignedChar(resources);
+    sgd.PushUnsignedChar(static_cast<uint8_t>(resources.getValue()));
     sgd.PushBool(reserved);
     sgd.PushUnsignedChar(owner);
     for(unsigned b = 0; b < boundary_stones.size(); ++b)
@@ -67,7 +67,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
     RTTR_Assert(t1 < TT_COUNT);
     t2 = TerrainType(sgd.PopUnsignedChar());
     RTTR_Assert(t2 < TT_COUNT);
-    resources = sgd.PopUnsignedChar();
+    resources = Resource(sgd.PopUnsignedChar());
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();
     for(unsigned b = 0; b < boundary_stones.size(); ++b)

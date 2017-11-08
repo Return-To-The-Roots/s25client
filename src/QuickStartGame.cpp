@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "QuickStartGame.h"
 #include "ClientInterface.h"
 #include "GameClient.h"
@@ -35,7 +35,7 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameStarted(GameWorldBase& world) override { WINDOWMANAGER.Switch(new dskGameLoader(world)); }
+    void CI_GameStarted(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)

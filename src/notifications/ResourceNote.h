@@ -26,14 +26,11 @@ struct ResourceNote
 {
     ENABLE_NOTIFICATION(ResourceNote);
 
-    ResourceNote(unsigned player, const MapPoint& pos, Resource res, unsigned char quantity)
-        : player(player), pos(pos), res(res), quantity(quantity)
-    {}
+    ResourceNote(unsigned player, const MapPoint& pos, Resource res) : player(player), pos(pos), res(res) {}
 
     const unsigned player;
     const MapPoint pos;
     const Resource res;
-    const unsigned char quantity;
 };
 
 #endif // ResourceNote_h__

@@ -158,7 +158,7 @@ public:
 
     // Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
     // Für Spiele ohne Gold.
-    void ConvertMineResourceTypes(unsigned char from, unsigned char to);
+    void ConvertMineResourceTypes(Resource::Type from, Resource::Type to);
 
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
     bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId);
@@ -171,16 +171,13 @@ public:
     /// Liefert eine Liste der Hafenpunkte, die von einem bestimmten Hafenpunkt erreichbar sind
     std::vector<unsigned> GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId, unsigned playerId) const;
 
-    /// Returns true, if the given (map)-resource is available at that node
-    bool IsResourcesOnNode(const MapPoint pt, const unsigned char type) const;
-
     /// Writeable access to node. Use only for initial map setup!
     MapNode& GetNodeWriteable(const MapPoint pt);
     /// Recalculates where border stones should be done after a change in the given region
     void RecalcBorderStones(Point<int> startPt, Point<int> endPt);
 
 protected:
-    void VisibilityChanged(const MapPoint pt, unsigned player) override;
+    void VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
 };
 
 #endif // GameWorldGame_h__

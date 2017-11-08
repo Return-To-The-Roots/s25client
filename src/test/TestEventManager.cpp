@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "TestEventManager.h"
 #include "GameEvent.h"
 #include <boost/foreach.hpp>
@@ -71,4 +71,12 @@ void TestEventManager::RescheduleEvent(GameEvent& event, unsigned targetGF)
     RemoveEventFromQueue(event);
     event.length = targetGF - event.startGF;
     AddEventToQueue(&event);
+}
+
+std::vector<const GameEvent*> TestEventManager::GetEvents() const
+{
+    std::vector<const GameEvent*> nextEv;
+    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+        nextEv.insert(nextEv.end(), it->second.begin(), it->second.end());
+    return nextEv;
 }

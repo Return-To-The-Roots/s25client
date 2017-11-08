@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofAttacker.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "Random.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
@@ -30,6 +30,7 @@
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"
 #include "postSystem/PostMsgWithBuilding.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFighting.h"
 #include "nodeObjs/noFlag.h"
@@ -113,10 +114,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     {
         attacked_goal = sgd.PopObject<nobBaseMilitary>(GOT_UNKNOWN);
         mayBeHunted = sgd.PopBool();
-        if(sgd.GetGameDataVersion() < 1)
-            canPlayerSendAggDefender.resize(gwg->GetPlayerCount(), 2);
-        else
-            sgd.PopContainer(canPlayerSendAggDefender);
+        sgd.PopContainer(canPlayerSendAggDefender);
         huntingDefender = sgd.PopObject<nofAggressiveDefender>(GOT_NOF_AGGRESSIVEDEFENDER);
 
         radius = sgd.PopUnsignedShort();

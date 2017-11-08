@@ -15,17 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwSave.h"
-
-#include "Loader.h"
-#include "WindowManager.h"
-
 #include "GameClient.h"
 #include "GameServer.h"
 #include "ListDir.h"
+#include "Loader.h"
+#include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
@@ -36,7 +35,6 @@
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 const unsigned AUTO_SAVE_INTERVALS_COUNT = 7;
@@ -73,7 +71,7 @@ void iwSaveLoad::RefreshTable()
 
     GetCtrl<ctrlTable>(0)->DeleteAllItems();
 
-    std::vector<std::string> saveFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
+    std::vector<std::string> saveFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
     for(std::vector<std::string>::iterator it = saveFiles.begin(); it != saveFiles.end(); ++it)
     {
         Savegame save;
@@ -91,22 +89,20 @@ void iwSaveLoad::RefreshTable()
         }
 
         // Zeitstring erstellen
-        std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &save.save_time);
+        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
 
         // Dateiname noch rausextrahieren aus dem Pfad
         bfs::path path = *it;
         if(!path.has_filename())
             continue;
-        bfs::path fileName = path.filename();
-
-        // ".sav" am Ende weg
-        RTTR_Assert(fileName.has_extension());
-        fileName.replace_extension();
+        // Just filename w/o extension
+        bfs::path fileName = path.stem();
 
         std::string startGF = helpers::toString(save.start_gf);
 
         // Und das Zeug zur Tabelle hinzufügen
-        GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.mapName.c_str(), dateStr.c_str(), startGF.c_str(), it->c_str());
+        GetCtrl<ctrlTable>(0)->AddRow(0, fileName.string().c_str(), save.GetMapName().c_str(), dateStr.c_str(), startGF.c_str(),
+                                      it->c_str());
     }
 
     // Nach Zeit Sortieren
@@ -120,7 +116,7 @@ void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param) {}
 void iwSave::SaveLoad()
 {
     // Speichern
-    std::string tmp = GetFilePath(FILE_PATHS[85]);
+    std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]);
     tmp += GetCtrl<ctrlEdit>(1)->GetText();
     tmp += ".sav";
 
@@ -151,11 +147,7 @@ iwSave::iwSave() : iwSaveLoad(40, _("Save game!"))
 
     // Die Intervalle
     for(unsigned i = 0; i < numIntervalls; ++i)
-    {
-        char str[64];
-        sprintf(str, "%u GF", AUTO_SAVE_INTERVALS[i]);
-        combo->AddString(str);
-    }
+        combo->AddString(helpers::toString(AUTO_SAVE_INTERVALS[i]) + " GF");
 
     // Richtigen Eintrag auswählen
     bool found = false;

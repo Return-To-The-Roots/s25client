@@ -15,34 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
-#include "helpers/mathFuncs.h"
-#include <algorithm>
+#pragma once
 
-namespace helpers {
-int gcd(int a, int b)
+#ifndef ReplayInfo_h__
+#define ReplayInfo_h__
+
+#include "Replay.h"
+#include <string>
+
+struct ReplayInfo
 {
-    a = abs(a);
-    b = abs(b);
-    using std::swap;
-    if(a < b)
-        swap(a, b);
+    ReplayInfo() : async(0), end(false), next_gf(0), all_visible(false) {}
 
-    while(b > 0)
-    {
-        int remainder = a % b;
-        a = b;
-        b = remainder;
-    }
-    return a;
-}
+    /// Replaydatei
+    Replay replay;
+    std::string fileName;
+    /// Replay asynchron (Meldung nur einmal ausgeben!)
+    int async;
+    bool end;
+    // Nächster Replay-Command-Zeitpunkt (in GF)
+    unsigned next_gf;
+    /// Alles sichtbar (FoW deaktiviert)
+    bool all_visible;
+};
 
-unsigned roundedDiv(unsigned dividend, unsigned divisor)
-{
-    RTTR_Assert(divisor > 0);
-    RTTR_Assert(dividend + (divisor / 2) >= dividend); // Overflow check
-    // Standard way for emulation mathematical rounding: floor(divident / divisor + 0.5)
-    // Which is the same as: floor((divident + 0.5 * divisor) / divisor) == floor((divident + divisor / 2) / divisor)
-    return (dividend + (divisor / 2)) / divisor;
-}
-} // namespace helpers
+#endif // ReplayInfo_h__

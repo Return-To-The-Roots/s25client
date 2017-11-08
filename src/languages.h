@@ -34,7 +34,7 @@ struct Language
 class Languages : public Singleton<Languages>
 {
 public:
-    Languages() : loaded(false) {}
+    Languages();
 
     void setLanguage(const std::string& lang_code);
     const std::string setLanguage(unsigned i);

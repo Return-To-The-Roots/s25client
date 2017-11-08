@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
 #include "EventManager.h"
 #include "GameClient.h"
@@ -63,8 +63,8 @@ void nofScout_LookoutTower::WorkplaceReached()
                     new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"), PostCategory::Military, *workplace));
 }
 
-bool nofScout_LookoutTower::AreWaresAvailable()
+bool nofScout_LookoutTower::AreWaresAvailable() const
 {
-    // Sp�hturm-Erkunder arbeiten nie!
+    // We never work!
     return false;
 }

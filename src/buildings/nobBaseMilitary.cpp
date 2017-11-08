@@ -15,17 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nobBaseMilitary.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
 #include "nobMilitary.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"

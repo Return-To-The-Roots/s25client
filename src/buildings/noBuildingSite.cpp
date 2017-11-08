@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "buildings/noBuildingSite.h"
 #include "FOWObjects.h"
 #include "GamePlayer.h"
@@ -214,45 +214,27 @@ void noBuildingSite::Draw(DrawPoint drawPt)
         // Rohbau
 
         // ausrechnen, wie weit er ist
-        unsigned p1 = 0, p2 = 0;
+        unsigned progressRaw, progressBld;
+        unsigned maxProgressRaw, maxProgressBld;
 
-        if(BUILDING_COSTS[nation][GetBuildingType()].stones)
+        if(BUILDING_COSTS[nation][bldType_].stones)
         {
             // Haus besteht aus Steinen und Brettern
-            p1 = min<unsigned>(build_progress, BUILDING_COSTS[nation][GetBuildingType()].boards * 8);
-            p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 8;
+            maxProgressRaw = BUILDING_COSTS[nation][bldType_].boards * 8;
+            maxProgressBld = BUILDING_COSTS[nation][bldType_].stones * 8;
         } else
         {
             // Haus besteht nur aus Brettern, dann 50:50
-            p1 = min<unsigned>(build_progress, BUILDING_COSTS[nation][GetBuildingType()].boards * 4);
-            p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
+            maxProgressBld = maxProgressRaw = BUILDING_COSTS[nation][bldType_].boards * 4;
         }
+        progressRaw = min<unsigned>(build_progress, maxProgressRaw);
+        progressBld = ((build_progress > maxProgressRaw) ? (build_progress - maxProgressRaw) : 0);
 
-        LOADER.building_cache[nation][bldType_][1].drawPercent(drawPt, p1 * 100 / p2);
-
+        // Rohbau
+        LOADER.building_cache[nation][bldType_][1].drawPercent(drawPt, progressRaw * 100 / maxProgressRaw);
         // Das richtige Haus
-        if(BUILDING_COSTS[nation][GetBuildingType()].stones)
-        {
-            // Haus besteht aus Steinen und Brettern
-            p1 = ((build_progress > BUILDING_COSTS[nation][GetBuildingType()].boards * 8) ?
-                    (build_progress - BUILDING_COSTS[nation][GetBuildingType()].boards * 8) :
-                    0);
-            p2 = BUILDING_COSTS[nation][GetBuildingType()].stones * 8;
-        } else
-        {
-            // Haus besteht nur aus Brettern, dann 50:50
-            p1 = ((build_progress > BUILDING_COSTS[nation][GetBuildingType()].boards * 4) ?
-                    (build_progress - BUILDING_COSTS[nation][GetBuildingType()].boards * 4) :
-                    0);
-            p2 = BUILDING_COSTS[nation][GetBuildingType()].boards * 4;
-        }
-
-        LOADER.building_cache[nation][bldType_][0].drawPercent(drawPt, p1 * 100 / p2);
+        LOADER.building_cache[nation][bldType_][0].drawPercent(drawPt, progressBld * 100 / maxProgressBld);
     }
-
-    // char number[256];
-    // sprintf(number,"%u",obj_id);
-    // NormalFont->Draw(x,y,number,0,0xFFFF0000);
 }
 
 /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War

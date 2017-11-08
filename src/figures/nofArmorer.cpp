@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofArmorer.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
@@ -114,7 +115,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
     }
 }
 
-bool nofArmorer::AreWaresAvailable()
+bool nofArmorer::AreWaresAvailable() const
 {
     return workplace->WaresAvailable() || (gwg->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
 }

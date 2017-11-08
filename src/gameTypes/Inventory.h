@@ -29,6 +29,8 @@ struct Inventory
     boost::array<unsigned, JOB_TYPES_COUNT> people;
 
     Inventory() { clear(); }
+    unsigned operator[](GoodType good) const { return goods[good]; }
+    unsigned operator[](Job job) const { return people[job]; }
     /// Sets everything to 0
     void clear();
     void Add(const GoodType good, const unsigned amount = 1) { goods[good] += amount; }

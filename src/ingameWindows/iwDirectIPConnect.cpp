@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDirectIPConnect.h"
 #include "GameClient.h"
 #include "Loader.h"
@@ -27,6 +27,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskHostGame.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
@@ -59,7 +60,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
-    AddText(6, DrawPoint(150, 215), EMPTY_STRING, COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(6, DrawPoint(150, 215), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
 
     // "Verbinden"
     AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TC_GREEN2, _("Connect"), NormalFont);
@@ -78,7 +79,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
 void iwDirectIPConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
-    SetText(EMPTY_STRING, COLOR_RED, true);
+    SetText("", COLOR_RED, true);
 }
 
 void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
@@ -203,11 +204,7 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
  */
 void iwDirectIPConnect::SetPort(unsigned short port)
 {
-    static char p[256];
-    snprintf(p, 256, "%d", port);
-
-    ctrlEdit* pp = GetCtrl<ctrlEdit>(3);
-    pp->SetText(p);
+    GetCtrl<ctrlEdit>(3)->SetText(helpers::toString(port));
 }
 
 void iwDirectIPConnect::CI_Error(const ClientError ce)

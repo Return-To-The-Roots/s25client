@@ -1,3 +1,4 @@
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
 	# RPath enabled by default. Rpath only supported in CMake >2.8.12
@@ -107,32 +108,7 @@ INCLUDE("cmake/${PLATFORM_NAME}.cmake")
 # Boost
 ################################################################################
 
-# Default boost libs are static on self-build windows versions and dynamic in the linux package repos
-IF(WIN32)
-	SET(RTTR_USE_STATIC_BOOST_DEFAULT ON)
-ELSE()
-	SET(RTTR_USE_STATIC_BOOST_DEFAULT OFF)
-ENDIF()
-	
-OPTION(RTTR_USE_STATIC_BOOST "Build with static BOOST libraries instead of dynamic" ${RTTR_USE_STATIC_BOOST_DEFAULT})
-IF((NOT "${Boost_USE_STATIC_LIBS}" AND ${RTTR_USE_STATIC_BOOST}) OR
-   ("${Boost_USE_STATIC_LIBS}" AND NOT ${RTTR_USE_STATIC_BOOST}))
-    set(Boost_USE_STATIC_LIBS ${RTTR_USE_STATIC_BOOST})
-    unset(Boost_INCLUDE_DIR CACHE)
-    unset(Boost_LIBRARY_DIRS CACHE)
-ENDIF()
-if(Boost_USE_STATIC_LIBS)
-   message(STATUS "Linking against boost static libraries")
-else(Boost_USE_STATIC_LIBS)
-   message(STATUS "Linking against boost dynamic libraries")
-endif(Boost_USE_STATIC_LIBS)
-
-# For some reason boost needs sometimes 1.xy and sometimes 1.xy.0 to detect folder structures like boost_1_55_0
-SET(TMP_VERSIONS "1.64" "1.63" "1.62" "1.61" "1.60" "1.59" "1.58" "1.57" "1.56" "1.55")
-foreach(I_VERSION ${TMP_VERSIONS})
-	list(APPEND Boost_ADDITIONAL_VERSIONS "${I_VERSION}.0" "${I_VERSION}")
-endforeach()
-UNSET(TMP_VERSIONS)
+include(RttrBoostCfg)
 
 IF(EXISTS "${RTTR_CONTRIB_DIR}/boost" AND IS_DIRECTORY "${RTTR_CONTRIB_DIR}/boost")
 	SET(BOOST_ROOT ${RTTR_CONTRIB_DIR}/boost CACHE PATH "Path to find boost at")
@@ -145,7 +121,7 @@ IF(NOT Boost_FOUND)
     "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
     "since cmake was unable to find boost!")
 ELSEIF("${BOOST_LIBRARYDIR}" STREQUAL "")
-	SET(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIR}/stage/lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Hint for boost libraries")
+	list(APPEND CMAKE_PREFIX_PATH "${Boost_INCLUDE_DIR}/stage")
 ENDIF()
 
 SET(TMP_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
@@ -442,14 +418,14 @@ foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
 endforeach()
 option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
 
-# Add this first at it defines dependencies for other projects (e.g. nowide and utf8)
+# Add this first as it defines dependencies for other projects (e.g. nowide and utf8)
 ADD_SUBDIRECTORY(libutil)
 
 # Then we need the version generator so we can depend on it
 ADD_SUBDIRECTORY(version)
 
 ADD_CUSTOM_TARGET(updateversion ALL
-				  COMMAND "$<TARGET_FILE:version>" "${CMAKE_SOURCE_DIR}"
+				  COMMAND $<TARGET_FILE:version> "${CMAKE_SOURCE_DIR}"
 				  DEPENDS version
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
@@ -467,20 +443,18 @@ if(RTTR_BUILD_UPDATER)
     ADD_SUBDIRECTORY(s25update)
 endif()
 
-set(commonSrcDir ${PROJECT_SOURCE_DIR}/common)
-set(COMMON_SRC
-    ${commonSrcDir}/include/commonDefines.h
-    ${commonSrcDir}/RTTR_Assert.cpp
-    ${commonSrcDir}/include/RTTR_Assert.h
-    ${commonSrcDir}/include/RTTR_AssertError.h)
-include_directories(${commonSrcDir}/include)
+if(HAVE_STRUCT_TIMESPEC)
+    add_definitions(-DHAVE_STRUCT_TIMESPEC)
+endif()
+add_subdirectory(common)
 ADD_SUBDIRECTORY(driver)
+ADD_SUBDIRECTORY(rttrConfig)
 ADD_SUBDIRECTORY(src)
+add_subdirectory(s25edit)
 
 if(ClangFormat_FOUND)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
-    add_ClangFormat_files(${COMMON_SRC})
     add_ClangFormat_target("file")
 endif()
 

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "SerializedGameData.h"
 #include "CatapultStone.h"
 #include "EventManager.h"
@@ -190,14 +190,11 @@ void SerializedGameData::Prepare(bool reading)
     static const boost::array<char, 4> versionID = {"VER"};
     if(reading)
     {
-        gameDataVersion = 0;
-        // This check can go on next savegame version (> 36)
-        if(GetBytesLeft() >= versionID.size() && std::equal(versionID.begin(), versionID.end(), GetData()))
-        {
-            boost::array<char, 4> versionIDRead;
-            PopRawData(&versionIDRead.front(), versionIDRead.size());
-            gameDataVersion = PopUnsignedInt();
-        }
+        boost::array<char, 4> versionIDRead;
+        PopRawData(&versionIDRead.front(), versionIDRead.size());
+        if(versionIDRead != versionID)
+            throw Error("Invalid file format!");
+        gameDataVersion = PopUnsignedInt();
     } else
     {
         Clear();

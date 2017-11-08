@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU-pragma: keep
+#include "rttrDefines.h" // IWYU-pragma: keep
 #include "iwMapDebug.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -48,7 +48,7 @@ public:
                     data = "R";
                 break;
             case 2: data = helpers::toString(static_cast<unsigned>(node.altitude)); break;
-            case 3: data = helpers::toString(static_cast<unsigned>(node.resources)); break;
+            case 3: data = helpers::toString(static_cast<unsigned>(node.resources.getValue())); break;
             case 4:
                 if(node.seaId)
                     data = helpers::toString(node.seaId);

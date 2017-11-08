@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCharburner.h"
 
 #include "GameClient.h"
@@ -242,7 +242,7 @@ void nofCharburner::DrawOtherStates(DrawPoint drawPt)
     }
 }
 
-bool nofCharburner::AreWaresAvailable()
+bool nofCharburner::AreWaresAvailable() const
 {
     // Charburner doesn't need wares for harvesting!
     // -> Wares are considered when calling GetPointQuality!

@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofWarehouseWorker.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"

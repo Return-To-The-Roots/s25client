@@ -20,11 +20,8 @@
 #include "FramesInfo.h"
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
-#include "GlobalGameSettings.h"
-#include "Replay.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/Deleter.h"
-#include "postSystem/PostBox.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
@@ -34,6 +31,7 @@
 #include "libutil/Singleton.h"
 #include "libutil/Socket.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace AI {
 struct Info;
@@ -46,9 +44,11 @@ class GamePlayer;
 class GameEvent;
 class GameLobby;
 class GameWorldView;
-class GameWorld;
+class Game;
+class Replay;
 class EventManager;
 struct PlayerGameCommands;
+struct ReplayInfo;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
 {
@@ -78,12 +78,8 @@ public:
     std::string GetGameName() const { return clientconfig.gameName; }
 
     unsigned GetPlayerId() const { return playerId_; }
-    bool IsSinglePlayer() const;
     /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
     AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
-
-    /// Return current GameSettings. Only valid during the game!
-    const GlobalGameSettings& GetGGS() const;
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
@@ -102,7 +98,7 @@ public:
     // Initialisiert und startet das Spiel
     void StartGame(const unsigned random_init);
     /// Wird aufgerufen, wenn das GUI fertig mit Laden ist und es losgehen kann
-    void RealStart();
+    void GameStarted();
 
     /// Beendet das Spiel, zerstört die Spielstrukturen
     void ExitGame();
@@ -134,20 +130,20 @@ public:
     void SetReplayPause(bool pause);
     void ToggleReplayPause() { SetReplayPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
-    void ToggleReplayFOW() { replayinfo.all_visible = !replayinfo.all_visible; }
+    void ToggleReplayFOW();
     /// Prüft, ob FoW im Replaymodus ausgeschalten ist
-    bool IsReplayFOWDisabled() const { return replayinfo.all_visible; }
+    bool IsReplayFOWDisabled() const;
     /// Gibt Replay-Ende (GF) zurück
-    unsigned GetLastReplayGF() const { return replayinfo.replay.lastGF_; }
+    unsigned GetLastReplayGF() const;
     /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
     std::string FormatGFTime(const unsigned gf) const;
 
     /// Gibt Replay-Dateiname zurück
-    const std::string& GetReplayFileName() const { return replayinfo.filename; }
+    const std::string& GetReplayFileName() const;
     /// Wird ein Replay abgespielt?
-    bool IsReplayModeOn() const { return replay_mode; }
+    bool IsReplayModeOn() const { return replayMode; }
 
-    Replay& GetReplay() { return replayinfo.replay; }
+    Replay& GetReplay();
 
     /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
     unsigned GetTournamentModeDuration() const;
@@ -197,9 +193,6 @@ private:
     /// Checks if its time for autosaving (if enabled) and does it
     void HandleAutosave();
 
-    /// Führt für alle Spieler einen Statistikschritt aus, wenn die Zeit es verlangt
-    void StatisticStep();
-
     //  Netzwerknachrichten
     bool OnGameMessage(const GameMessage_Ping& msg) override;
 
@@ -244,7 +237,7 @@ private:
     // Replaymethoden
 
     /// Schreibt den Header der Replaydatei
-    void WriteReplayHeader(const unsigned random_init);
+    void StartReplayRecording(const unsigned random_init);
     void WritePlayerInfo(SavedFile& file);
 
 public:
@@ -257,18 +250,16 @@ public:
 private:
     /// Spieler-ID dieses Clients
     unsigned playerId_;
-    /// Globale Spieleinstellungen (TODO: Remove. Should be either game state or game lobby state)
-    GlobalGameSettings ggs;
 
     MessageQueue recv_queue, send_queue;
     Socket socket;
 
     ClientState state;
+
     /// Gameworld and event manager (valid during LOADING and GAME state)
-    boost::interprocess::unique_ptr<GameWorld, Deleter<GameWorld> > gw;
-    boost::interprocess::unique_ptr<EventManager, Deleter<EventManager> > em;
+    boost::shared_ptr<Game> game;
     /// Game lobby (valid during CONFIG state)
-    boost::interprocess::unique_ptr<GameLobby, Deleter<GameLobby> > gameLobby;
+    boost::shared_ptr<GameLobby> gameLobby;
 
     class ClientConfig
     {
@@ -288,15 +279,6 @@ private:
 
     FramesInfoClient framesinfo;
 
-    class RandCheckInfo
-    {
-    public:
-        RandCheckInfo() { Clear(); }
-        void Clear();
-
-        unsigned rand;
-    } randcheckinfo;
-
     ClientInterface* ci;
 
     boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > human_ai;
@@ -304,30 +286,8 @@ private:
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;
 
-    struct ReplayInfo
-    {
-    public:
-        ReplayInfo() { Clear(); }
-        void Clear();
-
-        /// Replaydatei
-        Replay replay;
-        /// Replay asynchron (Meldung nur einmal ausgeben!)
-        int async;
-        bool end;
-        // Nächster Replay-Command-Zeitpunkt (in GF)
-        unsigned next_gf;
-        /// Replay-Dateiname
-        std::string filename;
-        /// Alles sichtbar (FoW deaktiviert)
-        bool all_visible;
-    } replayinfo;
-
-    /// Replaymodus an oder aus?
-    bool replay_mode;
-
-    /// Spiel-Log für Asyncs
-    FILE* game_log;
+    boost::interprocess::unique_ptr<ReplayInfo, Deleter<ReplayInfo> > replayinfo;
+    bool replayMode;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

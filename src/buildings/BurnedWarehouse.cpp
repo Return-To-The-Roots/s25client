@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "BurnedWarehouse.h"
 
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "figures/nofPassiveWorker.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 
 /// Anzahl der Rausgeh-Etappen

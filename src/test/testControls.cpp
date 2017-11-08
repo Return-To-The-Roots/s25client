@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
+#include "PointOutput.h"
 #include "controls/ctrlPreviewMinimap.h"
-#include "test/PointOutput.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ArchivItem_Raw.h"
 #include <boost/test/unit_test.hpp>
@@ -30,7 +30,7 @@ void resizeMap(glArchivItem_Map& glMap, const Extent& size)
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header;
     header->setWidth(size.x);
     header->setHeight(size.y);
-    header->setPlayer(2);
+    header->setNumPlayers(2);
     map.push(header);
     for(int i = 0; i <= MAP_TYPE; i++)
         map.push(new libsiedler2::ArchivItem_Raw(std::vector<uint8_t>(prodOfComponents(size))));

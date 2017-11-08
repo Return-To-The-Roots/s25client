@@ -15,45 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
-#ifndef defines_h__
-#define defines_h__
+#include "rttrDefines.h" // IWYU pragma: keep
+#include "DefaultLCG.h"
+#include "libutil/Serializer.h"
+#include <iostream>
 
-// IWYU pragma: begin_exports
-
-#include "commonDefines.h"
-#include "macros.h"
-
-// IWYU pragma: end_exports
-
-/**
- *  konvertiert einen void*-Pointer zu einem function-Pointer mithilfe einer
- *  Union. GCC meckert da sonst wegen "type punned pointer" bzw
- *  "iso c++ forbids conversion".
- */
-template<typename F>
-inline F pto2ptf(void* o)
+void DefaultLCG::discard(uint64_t j)
 {
-    union
-    {
-        F f;
-        void* o;
-    } U;
-    U.o = o;
-
-    return U.f;
+    for(uint64_t i = 0; i < j; i++)
+        (*this)();
 }
 
-template<typename T>
-inline T min(T a, T b)
+void DefaultLCG::deserialize(Serializer& ser)
 {
-    return (a < b) ? a : b;
+    state_ = ser.PopUnsignedInt();
 }
 
-template<typename T>
-inline T max(T a, T b)
+void DefaultLCG::serialize(Serializer& ser) const
 {
-    return (a < b) ? b : a;
+    ser.PushUnsignedInt(state_);
 }
 
-#endif // defines_h__
+std::ostream& operator<<(std::ostream& os, const DefaultLCG& obj)
+{
+    return os << obj.state_;
+}
+
+std::istream& operator>>(std::istream& is, DefaultLCG& obj)
+{
+    return is >> obj.state_;
+}

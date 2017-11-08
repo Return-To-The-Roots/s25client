@@ -19,6 +19,7 @@
 #define LuaInterfaceBase_h__
 
 #include <kaguya/kaguya.hpp>
+#include <map>
 #include <string>
 #include <utility>
 
@@ -58,9 +59,17 @@ protected:
     /// Shows a message with a custom icon. Image with iconIdx must exist in iconFile and iconFile must be loaded!
     void MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx);
     void MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY);
+    void RegisterTranslations(const kaguya::LuaRef& luaTranslations);
+
+    std::string Translate(const std::string& key);
 
     static void ErrorHandler(int status, const char* message);
     static void ErrorHandlerThrow(int status, const char* message);
+
+private:
+    std::map<std::string, std::string> translations_;
+
+    static std::map<std::string, std::string> GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);
 };
 
 #endif // LuaInterfaceBase_h__

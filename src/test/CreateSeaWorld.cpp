@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "CreateSeaWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
@@ -148,7 +148,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         RTTR_Assert(harborsPlaced == 2);
     }
 
-    MapLoader::InitSeasAndHarbors(world, harbors);
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 
     if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
         return false;
@@ -201,7 +201,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
             node.t1 = node.t2 = TT_MEADOW1;
         }
     }
-    MapLoader::PlaceHQs(world, hqPositions, playerNations_, false);
+    BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations_, false));
 
     std::vector<MapPoint> harbors;
     BOOST_FOREACH(MapPoint hqPos, hqPositions)
@@ -212,6 +212,6 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
         BOOST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos + Position(0, landRadius)), world, harbors));
     }
     RTTR_Assert(harbors.size() == hqPositions.size() * 4u);
-    MapLoader::InitSeasAndHarbors(world, harbors);
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
     return true;
 }

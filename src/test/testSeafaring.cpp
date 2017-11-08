@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "SeaWorldWithGCExecution.h"
@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().back(), harbor);
     std::vector<nobHarborBuilding*> harbors;
     BOOST_REQUIRE_EQUAL(world.GetNode(MapPoint(0, 0)).seaId, seaId);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), seaId);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), seaId);
     player.GetHarborsAtSea(harbors, seaId);
     BOOST_REQUIRE_EQUAL(harbors.size(), 1u);
     BOOST_REQUIRE_EQUAL(harbors.front(), harbor);
@@ -121,10 +121,11 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(player.GetShipID(ship), 0u);
 }
 
-template<unsigned T_hbId = 1, unsigned T_width = SeaWorldDefault::width, unsigned T_height = SeaWorldDefault::height>
-struct ShipReadyFixture : public SeaWorldWithGCExecution<T_width, T_height>
+template<unsigned T_numPlayers = 3, unsigned T_hbId = 1, unsigned T_width = SeaWorldDefault::width,
+         unsigned T_height = SeaWorldDefault::height>
+struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, T_height>
 {
-    typedef SeaWorldWithGCExecution<T_width, T_height> Parent;
+    typedef SeaWorldWithGCExecution<T_numPlayers, T_width, T_height> Parent;
     using Parent::curPlayer;
     using Parent::world;
 
@@ -260,6 +261,63 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     RTTR_EXEC_TILL(2 * 200 + 5, ship->IsIdling());
 }
 
+BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
+{
+    initGameRNG();
+
+    curPlayer = 0;
+    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const noShip* ship = player.GetShipByID(0);
+    const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
+    const MapPoint hbPos = harbor.GetPos();
+    const unsigned hbId = world.GetHarborPointID(hbPos);
+    unsigned numScouts = player.GetInventory().people[JOB_SCOUT];
+    BOOST_REQUIRE(ship->IsIdling());
+
+    // We want the ship to only scout unexplored harbors, so set all but one to visible
+    world.GetPlayer(curPlayer).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(curPlayer).MakeStartPacts();
+    world.GetPlayer(1).MakeStartPacts();
+
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[1].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = VIS_VISIBLE;
+    unsigned targetHbId = 8u;
+    this->StartExplorationExpedition(hbPos);
+
+    // Start it
+    RTTR_EXEC_TILL(600, ship->IsOnExplorationExpedition() && ship->IsMoving());
+    // Incorporate recruitment
+    BOOST_REQUIRE_GE(player.GetInventory().people[JOB_SCOUT], numScouts);
+    numScouts = player.GetInventory().people[JOB_SCOUT];
+
+    BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), hbId);
+    BOOST_REQUIRE_EQUAL(ship->GetTargetHarbor(), targetHbId);
+
+    // Run till ship is coming back
+    RTTR_EXEC_TILL(1000, ship->GetTargetHarbor() == hbId);
+    // Avoid that it goes back to that point
+    world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[1].visibility = VIS_VISIBLE;
+
+    // Destroy home harbor
+    world.DestroyNO(hbPos);
+    RTTR_EXEC_TILL(2000, ship->IsLost());
+    BOOST_REQUIRE(!ship->IsMoving());
+
+    MapPoint newHbPos = world.GetHarborPoint(6);
+    nobHarborBuilding* newHarbor =
+      dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, newHbPos, curPlayer, NAT_ROMANS));
+
+    BOOST_REQUIRE(!ship->IsLost());
+    BOOST_REQUIRE(ship->IsMoving());
+    RTTR_EXEC_TILL(1200, ship->IsIdling());
+    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_SCOUT], numScouts);
+    BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT), newHarbor->GetVisualFiguresCount(JOB_SCOUT));
+    BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT)
+                          + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetRealFiguresCount(JOB_SCOUT),
+                        numScouts);
+}
+
 BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
 {
     initGameRNG();
@@ -373,7 +431,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetBuildingRegister().GetHarbors().size(), 2u);
 }
 
-typedef ShipReadyFixture<2, 64, 800> ShipReadyFixtureBig;
+typedef ShipReadyFixture<1, 2, 64, 800> ShipReadyFixtureBig;
 
 BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
 {

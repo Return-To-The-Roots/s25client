@@ -37,7 +37,7 @@ protected:
     /// Arbeitsplatz wurde erreicht
     void WorkplaceReached() override;
 
-    bool AreWaresAvailable() override;
+    bool AreWaresAvailable() const override;
 
 public:
     nofScout_LookoutTower(const MapPoint pt, const unsigned char player, nobUsual* workplace);

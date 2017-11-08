@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
+#include "PointOutput.h"
 #include "helpers/containerUtils.h"
 #include "helpers/setTraits.h"
 #include "world/TerritoryRegion.h"
 #include "test/CreateEmptyWorld.h"
-#include "test/PointOutput.h"
 #include "test/WorldFixture.h"
 #include <boost/assign/std/set.hpp>
 #include <boost/assign/std/vector.hpp>

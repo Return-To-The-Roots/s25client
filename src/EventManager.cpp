@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GameEvent.h"
 #include "SerializedGameData.h"
@@ -95,11 +95,14 @@ void EventManager::DestroyCurrentObjects()
 
 void EventManager::ExecuteCurrentEvents()
 {
-    RTTR_Assert(events.empty() || events.begin()->first >= currentGF);
+    if(events.empty())
+        return;
+    // Get list of events to be executed next
+    EventMap::iterator itCurEvents = events.begin();
 
-    // Get list of events for current GF
-    EventMap::iterator itCurEvents = events.find(currentGF);
-    if(itCurEvents != events.end())
+    RTTR_Assert(itCurEvents->first >= currentGF);
+
+    if(itCurEvents->first == currentGF)
         ExecuteEvents(itCurEvents);
 }
 

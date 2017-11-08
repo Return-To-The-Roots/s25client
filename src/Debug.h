@@ -17,7 +17,7 @@
 #ifndef DEBUG_H_
 #define DEBUG_H_
 
-#include "Random.h"
+#include "random/Random.h"
 #include "libutil/Socket.h"
 
 // This is for catching crashes and reporting bugs, it does not slow down anything.

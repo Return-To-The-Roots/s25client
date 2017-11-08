@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "GameManager.h"
 #include "GlobalVars.h"
-#include "ProgramInitHelpers.h"
 #include "QuickStartGame.h"
 #include "RTTR_AssertError.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "SignalHandler.h"
 #include "files.h"
@@ -32,7 +32,6 @@
 #include "libutil/Log.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
-#include "libutil/fileFuncs.h"
 
 #ifdef _WIN32
 #include "../win32/resource.h"
@@ -250,7 +249,8 @@ void SetAppSymbol()
 {
 #ifdef _WIN32
     // set console window icon
-    SendMessage(GetConsoleWindow(), WM_SETICON, (WPARAM)TRUE, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
+    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_BIG, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
+    SendMessage(GetConsoleWindow(), WM_SETICON, ICON_SMALL, (LPARAM)LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_SYMBOL)));
 #endif // _WIN32
 }
 
@@ -261,15 +261,15 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    boost::array<unsigned, 7> dirs = {{94, 47, 48, 51, 85, 98, 99}}; // settingsdir muss zuerst angelegt werden (94)
+    boost::array<unsigned, 8> dirs = {{94, 41, 47, 48, 51, 85, 98, 99}}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
-    const std::string newSettingsDir = GetFilePath(FILE_PATHS[94]);
+    const std::string newSettingsDir = RTTRCONFIG.ExpandPath(FILE_PATHS[94]);
 
 #ifdef _WIN32
-    oldSettingsDir = GetFilePath("~/Siedler II.5 RttR");
+    oldSettingsDir = RTTRCONFIG.ExpandPath("~/Siedler II.5 RttR");
 #elif defined(__APPLE__)
-    oldSettingsDir = GetFilePath("~/.s25rttr");
+    oldSettingsDir = RTTRCONFIG.ExpandPath("~/.s25rttr");
 #endif
     if(!oldSettingsDir.empty() && bfs::is_directory(oldSettingsDir))
     {
@@ -292,7 +292,7 @@ bool InitDirectories()
 
     BOOST_FOREACH(unsigned dirIdx, dirs)
     {
-        std::string dir = GetFilePath(FILE_PATHS[dirIdx]);
+        std::string dir = RTTRCONFIG.ExpandPath(FILE_PATHS[dirIdx]);
         boost::system::error_code ec;
         bfs::create_directories(dir, ec);
         if(ec != boost::system::errc::success)
@@ -311,7 +311,7 @@ bool InitDirectories()
         }
     }
     // Write this to file too, after folders are created
-    LOG.setLogFilepath(GetFilePath(FILE_PATHS[47]));
+    LOG.setLogFilepath(RTTRCONFIG.ExpandPath(FILE_PATHS[47]));
     try
     {
         LOG.open();
@@ -350,7 +350,7 @@ int RunProgram(po::variables_map& options)
 {
     if(!LocaleHelper::init())
         return 1;
-    if(!InitWorkingDirectory())
+    if(!RTTRCONFIG.Init())
         return 1;
     SetAppSymbol();
     InstallSignalHandlers();

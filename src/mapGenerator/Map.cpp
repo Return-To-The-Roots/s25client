@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/Map.h"
 #include "gameData/MaxPlayers.h"
 #include "libsiedler2/enumTypes.h"
@@ -53,7 +53,7 @@ libsiedler2::Archiv* Map::CreateArchiv()
     header->setAuthor(author);
     header->setWidth(size.x);
     header->setHeight(size.y);
-    header->setPlayer(players);
+    header->setNumPlayers(players);
     header->setGfxSet(type);
 
     for(unsigned i = 0; i < positions.size(); i++)

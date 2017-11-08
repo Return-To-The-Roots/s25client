@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
@@ -267,7 +268,7 @@ Point<int> GameWorldBase::GetNodePos(const MapPoint pt) const
     return result;
 }
 
-void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player)
+void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)
 {
     GetNotifications().publish(PlayerNodeNote(PlayerNodeNote::Visibility, pt, player));
 }
@@ -411,25 +412,6 @@ unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned
     using boost::lambda::_1;
     using boost::lambda::bind;
     return GetHarborInDir(pt, origin_harborId, dir, player, bind(&GameWorldBase::IsHarborPointFree, this, _1, player));
-}
-
-/// Berechnet die Entfernung zwischen 2 Hafenpunkten
-unsigned GameWorldBase::CalcHarborDistance(const unsigned habor_id1, const unsigned harborId2) const
-{
-    if(habor_id1 == harborId2) // special case: distance to self
-        return 0;
-    for(unsigned i = 0; i < 6; ++i)
-    {
-        const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(habor_id1, ShipDirection::fromInt(i));
-        for(unsigned z = 0; z < neighbors.size(); ++z)
-        {
-            const HarborPos::Neighbor& n = neighbors[z];
-            if(n.id == harborId2)
-                return n.distance;
-        }
-    }
-
-    return 0xffffffff;
 }
 
 /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt

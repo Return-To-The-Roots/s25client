@@ -50,7 +50,8 @@ public:
     unsigned GetPlayerCount();
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
-    void MissionStatementWithImg(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
+    void MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
+    void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause);
     void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
     void PostMessageLua(unsigned playerIdx, const std::string& msg);
     void PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y);

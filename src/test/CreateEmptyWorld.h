@@ -18,7 +18,9 @@
 #ifndef CreateEmptyWorld_h__
 #define CreateEmptyWorld_h__
 
+#include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include "gameTypes/Nation.h"
 #include <vector>
 
@@ -44,5 +46,8 @@ struct CreateUninitWorld
 private:
     MapExtent size_;
 };
+
+void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t);
+void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t);
 
 #endif // CreateEmptyWorld_h__

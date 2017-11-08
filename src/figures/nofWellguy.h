@@ -36,7 +36,8 @@ protected:
     /// Der Arbeiter erzeugt eine Ware
     GoodType ProduceWare() override;
 
-    bool AreWaresAvailable() override;
+    bool AreWaresAvailable() const override;
+    bool StartWorking() override;
 
 public:
     /// Ctor for sending the figure to its workplace

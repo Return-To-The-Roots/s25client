@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
 #include "GameClient.h"
@@ -134,11 +134,11 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
     ADD_LUA_CONST(GD_MEAT);
     ADD_LUA_CONST(GD_HAM);
 
-    ADD_LUA_CONST(RES_IRON);
-    ADD_LUA_CONST(RES_GOLD);
-    ADD_LUA_CONST(RES_COAL);
-    ADD_LUA_CONST(RES_GRANITE);
-    ADD_LUA_CONST(RES_WATER);
+    lua["RES_IRON"] = Resource::Iron;
+    lua["RES_GOLD"] = Resource::Gold;
+    lua["RES_COAL"] = Resource::Coal;
+    lua["RES_GRANITE"] = Resource::Granite;
+    lua["RES_WATER"] = Resource::Water;
 
 #undef ADD_LUA_CONST
 #define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name
@@ -175,19 +175,19 @@ KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMis
 
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
-    state["RTTRGame"].setClass(
-      kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
-        .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
-        .addFunction("GetGF", &LuaInterfaceGame::GetGF)
-        .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
-        .addFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
-        .addFunction("Chat", &LuaInterfaceGame::Chat)
-        .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement, &LuaInterfaceGame::MissionStatementWithImg)
-        .addFunction("SetMissionGoal", SetMissionGoalWrapper())
-        .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
-        .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
-        .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
-        .addFunction("GetWorld", &LuaInterfaceGame::GetWorld));
+    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
+                                 .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
+                                 .addFunction("GetGF", &LuaInterfaceGame::GetGF)
+                                 .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
+                                 .addFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
+                                 .addFunction("Chat", &LuaInterfaceGame::Chat)
+                                 .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement,
+                                                         &LuaInterfaceGame::MissionStatement2, &LuaInterfaceGame::MissionStatement3)
+                                 .addFunction("SetMissionGoal", SetMissionGoalWrapper())
+                                 .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
+                                 .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
+                                 .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
+                                 .addFunction("GetWorld", &LuaInterfaceGame::GetWorld));
     state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
                                         .addFunction("PushInt", &Serializer::PushSignedInt)
                                         .addFunction("PopInt", &Serializer::PopSignedInt)
@@ -280,15 +280,20 @@ void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 
 void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
 {
-    MissionStatementWithImg(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
+    MissionStatement2(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
 }
 
-void LuaInterfaceGame::MissionStatementWithImg(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx)
+void LuaInterfaceGame::MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx)
+{
+    MissionStatement3(playerIdx, title, msg, imgIdx, true);
+}
+
+void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx, bool pause)
 {
     if(playerIdx >= 0 && GAMECLIENT.GetPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer(), iwMissionStatement::HelpImage(imgIdx)));
+    WINDOWMANAGER.Show(new iwMissionStatement(_(title), msg, gw.IsSinglePlayer() && pause, iwMissionStatement::HelpImage(imgIdx)));
 }
 
 void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)

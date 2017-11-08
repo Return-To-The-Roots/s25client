@@ -18,13 +18,14 @@
 #define NOSIGN_H_INCLUDED
 
 #include "noDisappearingEnvObject.h"
+#include "gameTypes/Resource.h"
 class SerializedGameData;
 
 /// Stellt ein Ressourcen-Schild dar
 class noSign : public noDisappearingEnvObject
 {
 public:
-    noSign(const MapPoint pt, const unsigned char type, const unsigned char quantity);
+    noSign(const MapPoint pt, Resource resource);
     noSign(SerializedGameData& sgd, const unsigned obj_id);
 
     /// Serialisierungsfunktionen
@@ -39,13 +40,10 @@ public:
     /// An x,y zeichnen.
     void Draw(DrawPoint drawPt) override;
 
-    unsigned char GetSignType() const { return type; }
+    Resource::Type GetSignType() const { return resource.getType(); }
 
 private:
-    /// Typ der Ressource (0 = Erz, 1 = Gold, 2 = Kohle, 3 = Granit, 4 = Wasser, 5 = nix)
-    const unsigned char type;
-    /// Häufigkeit der Ressource
-    const unsigned char quantity;
+    Resource resource;
 };
 
 #endif // !NOSIGN_H_INCLUDED

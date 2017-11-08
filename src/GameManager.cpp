@@ -15,35 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameManager.h"
-
-#include "GlobalVars.h"
-#include "Settings.h"
-
-#include "SoundManager.h"
-#include "WindowManager.h"
-#include "drivers/AudioDriverWrapper.h"
-#include "drivers/VideoDriverWrapper.h"
-
 #include "GameClient.h"
 #include "GameServer.h"
-#include "liblobby/LobbyClient.h"
-
+#include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "Settings.h"
+#include "SoundManager.h"
+#include "WindowManager.h"
 #include "desktops/dskLobby.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskSplash.h"
+#include "drivers/AudioDriverWrapper.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/GameConsts.h"
+#include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 #include "libutil/error.h"
-
+#include <cstdio>
 #include <ctime>
 
 GameManager::GameManager()
@@ -89,7 +85,6 @@ bool GameManager::Start()
     LOG.write("\nStarte das Spiel\n");
     if(!StartMenu())
         return false;
-    return true;
 
     std::string playlist = iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist);
     if(MUSICPLAYER.Load(playlist))

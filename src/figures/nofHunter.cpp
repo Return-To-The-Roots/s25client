@@ -15,20 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofHunter.h"
 
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noAnimal.h"
 #include "gameData/GameConsts.h"
@@ -207,14 +207,14 @@ void nofHunter::TryStartHunting()
         // Anfangen zu laufen (erstmal aus dem Haus raus!)
         StartWalking(Direction::SOUTHEAST);
 
-        StopNotWorking();
+        workplace->StopNotWorking();
     } else
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
         current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
         gwg->GetNotifications().publish(
           BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
-        StartNotWorking();
+        workplace->StartNotWorking();
     }
 
     was_sounding = false;

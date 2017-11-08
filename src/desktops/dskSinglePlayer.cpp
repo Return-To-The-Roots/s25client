@@ -15,15 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSinglePlayer.h"
-
 #include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "Savegame.h"
 #include "WindowManager.h"
-
 #include "controls/ctrlButton.h"
 #include "dskMainMenu.h"
 #include "dskSelectMap.h"
@@ -32,7 +31,6 @@
 #include "ingameWindows/iwPlayReplay.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 
 /** @class dskSinglePlayer
@@ -65,10 +63,10 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case 3: // "Letztes Spiel fortsetzen"
         {
-            std::vector<std::string> savFiles = ListDir(GetFilePath(FILE_PATHS[85]), "sav");
+            std::vector<std::string> savFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[85]), "sav");
 
             bfs::path path;
-            unser_time_t recent = 0;
+            s25util::time64_t recent = 0;
             for(std::vector<std::string>::iterator it = savFiles.begin(); it != savFiles.end(); ++it)
             {
                 Savegame save;
@@ -77,9 +75,9 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
                 if(!save.Load(*it, false, false))
                     continue;
 
-                if(save.save_time > recent)
+                if(save.GetSaveTime() > recent)
                 {
-                    recent = save.save_time;
+                    recent = save.GetSaveTime();
                     path = *it;
                 }
             }

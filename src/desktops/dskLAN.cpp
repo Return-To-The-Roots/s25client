@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskLAN.h"
 #include "RTTR_Version.h"
 
@@ -154,7 +154,7 @@ bool dskLAN::ConnectToSelectedGame()
         return false;
 
     ctrlTable* table = GetCtrl<ctrlTable>(ID_tblServer);
-    unsigned selection = atoi(table->GetItemText(table->GetSelection(), 0).c_str());
+    unsigned selection = boost::lexical_cast<unsigned>(table->GetItemText(table->GetSelection(), 0).c_str());
     if(selection >= openGames.size())
         return false;
 

@@ -62,7 +62,7 @@ public:
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
-    bool ChangeTools(const ToolSettings& data, const signed char* order_delta = NULL);
+    bool ChangeTools(const ToolSettings& data, const int8_t* order_delta = NULL);
     /// Calls a geologist to a flag
     bool CallGeologist(const MapPoint pt);
     bool CallScout(const MapPoint pt);

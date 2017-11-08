@@ -15,13 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GameInterface.h"
 #include "GlobalGameSettings.h"
-#include "Random.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "TradePathCache.h"
@@ -38,6 +37,7 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostManager.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "world/TradeRoute.h"
 #include "nodeObjs/noFlag.h"
@@ -175,6 +175,8 @@ void GamePlayer::Serialize(SerializedGameData& sgd)
     if(!(ps == PS_OCCUPIED || ps == PS_AI))
         return;
 
+    sgd.PushBool(isDefeated);
+
     buildings.Serialize(sgd);
 
     sgd.PushObjectContainer(roads, true);
@@ -275,6 +277,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     if(!(origin_ps == PS_OCCUPIED || origin_ps == PS_AI))
         return;
 
+    isDefeated = sgd.PopBool();
     buildings.Deserialize(sgd);
 
     sgd.PopObjectContainer(roads, GOT_ROADSEGMENT);
@@ -294,14 +297,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     sgd.PopObjectContainer(flagworkers, GOT_UNKNOWN);
     sgd.PopObjectContainer(ships, GOT_SHIP);
 
-    if(sgd.GetGameDataVersion() < 1u)
-    {
-        // Reverse as we use pop_back
-        for(unsigned i = 0; i < 5; ++i)
-            shouldSendDefenderList.insert(shouldSendDefenderList.begin(), sgd.PopBool());
-        shouldSendDefenderList.resize(shouldSendDefenderList.size() - sgd.PopUnsignedShort());
-    } else
-        sgd.PopContainer(shouldSendDefenderList);
+    sgd.PopContainer(shouldSendDefenderList);
 
     hqPos = sgd.PopMapPoint();
 
@@ -782,7 +778,6 @@ bool GamePlayer::ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const
     if(newOrderAmount < 0 || newOrderAmount > 100)
         return false;
     tools_ordered_delta[toolIdx] += changeAmount;
-    gwg->GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
     return true;
 }
 
@@ -1332,10 +1327,12 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<signed char, TOOL_COUNT>& orderChanges)
+void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, TOOL_COUNT>& orderChanges)
 {
-    this->toolsSettings_ = tools_settings;
-    gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
+    const bool settingsChanged = toolsSettings_ != tools_settings;
+    toolsSettings_ = tools_settings;
+    if(settingsChanged)
+        gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
 
     for(unsigned i = 0; i < TOOL_COUNT; ++i)
     {

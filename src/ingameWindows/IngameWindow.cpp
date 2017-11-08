@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "IngameWindow.h"
 
 #include "CollisionDetection.h"
@@ -36,6 +36,7 @@ const DrawPoint IngameWindow::posCenter(std::numeric_limits<DrawPoint::ElementTy
 const DrawPoint IngameWindow::posAtMouse(std::numeric_limits<DrawPoint::ElementType>::max() - 1,
                                          std::numeric_limits<DrawPoint::ElementType>::max() - 1);
 
+const Extent IngameWindow::borderSize(1, 1);
 IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, glArchivItem_Bitmap* background,
                            bool modal, bool closeOnRightClick, Window* parent)
     : Window(parent, id, pos, size), title_(title), background(background), lastMousePos(0, 0), last_down(false), last_down2(false),
@@ -99,6 +100,11 @@ DrawPoint IngameWindow::GetRightBottomBoundary()
     return DrawPoint(GetSize() - contentOffsetEnd);
 }
 
+void IngameWindow::Close()
+{
+    closeme = true;
+}
+
 void IngameWindow::SetMinimized(bool minimized)
 {
     Extent fullSize = GetSize();
@@ -106,6 +112,13 @@ void IngameWindow::SetMinimized(bool minimized)
         fullSize.y = iwHeight + contentOffset.y + contentOffsetEnd.y;
     this->isMinimized_ = minimized;
     Resize(fullSize);
+}
+
+void IngameWindow::SetModal(bool modal)
+{
+    isModal_ = modal;
+    if(isModal_ && closeme)
+        closeme = false;
 }
 
 void IngameWindow::MouseLeftDown(const MouseCoords& mc)
@@ -192,13 +205,21 @@ void IngameWindow::MouseMove(const MouseCoords& mc)
 
 void IngameWindow::Draw_()
 {
-    if(isModal_)
-    {
-        if(!IsActive())
-            SetActive(true);
-        if(closeme)
-            Close(false);
-    }
+    if(isModal_ && !IsActive())
+        SetActive(true);
+
+    // Black border
+    // TODO: It would be better if this was included in the windows size. But the controls are added with absolute positions so adding the
+    // border to the size would move the border imgs inward into the content.
+    //
+    // Solution 1: Use contentOffset for adding controls
+    //
+    // Solution 2: Define that all controls added to an ingame window have positions relative to the contentOffset.
+    //  This needs a change in GetDrawPos to add this offset and also change all control-add-calls but would be much cleaner (no more hard
+    //  coded offsets and we could restyle the ingame windows easily)
+    //
+    Rect drawRect = GetDrawRect();
+    DrawRectangle(Rect(drawRect.getOrigin() - borderSize, drawRect.getSize() + borderSize * 2u), COLOR_BLACK);
 
     // Linkes oberes Teil
     glArchivItem_Bitmap* leftUpperImg = LOADER.GetImageN("resource", 36);
@@ -245,15 +266,14 @@ void IngameWindow::Draw_()
     NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_,
                      glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
 
+    glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
+    glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
+
+    // Side bars
     if(!isMinimized_)
     {
-        // Seitenleisten
-
-        // Höhe
-        glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
         unsigned side_height = GetSize().y - leftUpperImg->getHeight() - bottomBorderSideImg->getHeight();
 
-        // Wieviel mal nebeneinanderzeichnen?
         glArchivItem_Bitmap* leftSideImg = LOADER.GetImageN("resource", 38);
         glArchivItem_Bitmap* rightSideImg = LOADER.GetImageN("resource", 39);
         title_count = side_height / leftSideImg->getHeight();
@@ -274,29 +294,26 @@ void IngameWindow::Draw_()
             leftSideImg->DrawPart(Rect(leftImgPos, leftSideImg->getWidth(), rest));
             rightSideImg->DrawPart(Rect(rightImgPos, rightSideImg->getWidth(), rest));
         }
+    }
 
-        // Untere Leiste
+    // Untere Leiste
+    unsigned side_width = GetSize().x - bottomBorderSideImg->getWidth() * 2;
+    title_count = side_width / bottomBarImg->getWidth();
+    DrawPoint bottomImgPos = GetPos() + DrawPoint(bottomBorderSideImg->getWidth(), GetRightBottomBoundary().y);
+    for(unsigned short i = 0; i < title_count; ++i)
+    {
+        bottomBarImg->DrawFull(bottomImgPos);
+        bottomImgPos.x += bottomBarImg->getWidth();
+    }
 
-        unsigned side_width = GetSize().x - bottomBorderSideImg->getWidth() * 2;
+    rest = side_width % bottomBarImg->getWidth();
 
-        // Wieviel mal nebeneinanderzeichnen?
-        glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
-        title_count = side_width / bottomBarImg->getWidth();
-        DrawPoint bottomImgPos = GetPos() + DrawPoint(bottomBorderSideImg->getWidth(), GetRightBottomBoundary().y);
-        for(unsigned short i = 0; i < title_count; ++i)
-        {
-            bottomBarImg->DrawFull(bottomImgPos);
-            bottomImgPos.x += bottomBarImg->getWidth();
-        }
+    if(rest)
+        bottomBarImg->DrawPart(Rect(bottomImgPos, rest, bottomBarImg->getHeight()));
 
-        rest = side_width % bottomBarImg->getWidth();
-
-        if(rest)
-            bottomBarImg->DrawPart(Rect(bottomImgPos, rest, bottomBarImg->getHeight()));
-
-        // Clientbereich
-
-        // überhaupt ne Clienttexture gewnscht?
+    // Client area
+    if(!isMinimized_)
+    {
         if(background)
             background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
 
@@ -304,34 +321,12 @@ void IngameWindow::Draw_()
         Msg_PaintBefore();
 
         DrawControls();
-
-        // Links und rechts unten die 2 kleinen Knäufe
-        bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->DrawFull(
-          GetPos() + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), GetSize().y - bottomBorderSideImg->getHeight()));
-    } else
-    {
-        glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
-        glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
-        unsigned side_width = GetSize().x - bottomBorderSideImg->getWidth() * 2;
-        title_count = side_width / bottomBarImg->getWidth();
-
-        DrawPoint bottomImgPos = GetPos() + DrawPoint(bottomBorderSideImg->getWidth(), 20);
-        for(unsigned short i = 0; i < title_count; ++i)
-        {
-            bottomBarImg->DrawFull(bottomImgPos);
-            bottomImgPos.x += bottomBarImg->getWidth();
-        }
-
-        rest = side_width % bottomBarImg->getWidth();
-
-        if(rest)
-            bottomBarImg->DrawPart(Rect(bottomImgPos, rest, bottomBarImg->getHeight()));
-
-        bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, bottomBorderSideImg->getHeight()));
-        bottomBorderSideImg->DrawFull(GetPos()
-                                      + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), bottomBorderSideImg->getHeight()));
     }
+
+    // Links und rechts unten die 2 kleinen Knäufe
+    bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
+    bottomBorderSideImg->DrawFull(
+      GetPos() + DrawPoint(GetSize().x - bottomBorderSideImg->getWidth(), GetSize().y - bottomBorderSideImg->getHeight()));
 }
 
 /// Verschiebt Fenster in die Bildschirmmitte
@@ -371,5 +366,5 @@ Rect IngameWindow::GetLeftButtonRect() const
 
 Rect IngameWindow::GetRightButtonRect() const
 {
-    return Rect(static_cast<unsigned short>(GetPos().x + GetSize().x - 16), GetPos().y, 16, 16);
+    return Rect(GetPos().x + GetSize().x - 16, GetPos().y, 16, 16);
 }

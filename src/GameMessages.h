@@ -21,7 +21,7 @@
 #include "GameMessageInterface.h"
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
-#include "Random.h"
+#include "random/Random.h"
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/MapType.h"

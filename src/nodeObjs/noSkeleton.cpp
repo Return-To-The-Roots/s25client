@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "noSkeleton.h"
 #include "EventManager.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 
 noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NOP_ENVIRONMENT, pos), type(0)

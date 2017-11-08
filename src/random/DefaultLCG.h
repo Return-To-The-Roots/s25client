@@ -15,10 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef OldLCG_h__
-#define OldLCG_h__
+#ifndef DefaultLCG_h__
+#define DefaultLCG_h__
 
-#include <boost/cstdint.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <iosfwd>
@@ -26,18 +25,19 @@
 class Serializer;
 
 /// Legacy linear congruent (like) generator
-class OldLCG
+class DefaultLCG
 {
 public:
-    typedef unsigned result_type;
+    typedef uint32_t result_type;
 
     static result_type min() { return 0; }
-    static result_type max() { return 32767; }
+    static result_type max() { return 0xFFFF; }
+    static const char* getName() { return "DefaultLCG"; }
 
-    OldLCG() { seed(); }
-    explicit OldLCG(result_type initSeed) { seed(initSeed); }
+    DefaultLCG() { seed(); }
+    explicit DefaultLCG(result_type initSeed) { seed(initSeed); }
     template<class T_SeedSeq>
-    explicit OldLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0)
+    explicit DefaultLCG(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0)
     {
         seed(seedSeq);
     }
@@ -48,38 +48,36 @@ public:
     void seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type* dummy = 0);
 
     /// Return random value in [min, max]
-    result_type operator()() { return (*this)(max()); }
-    /// Return random value in [0, maxVal] for a small maxVal
-    result_type operator()(result_type maxVal);
+    result_type operator()();
 
     void discard(uint64_t j);
 
-    void Serialize(Serializer& ser) const;
-    void Deserialize(Serializer& ser);
+    void serialize(Serializer& ser) const;
+    void deserialize(Serializer& ser);
 
 private:
-    friend std::ostream& operator<<(std::ostream& os, const OldLCG& obj);
-    friend std::istream& operator>>(std::istream& is, OldLCG& obj);
-    friend bool operator==(const OldLCG& lhs, const OldLCG& rhs) { return lhs.state_ == rhs.state_; }
-    friend bool operator!=(const OldLCG& lhs, const OldLCG& rhs) { return !(lhs == rhs); }
+    friend std::ostream& operator<<(std::ostream& os, const DefaultLCG& obj);
+    friend std::istream& operator>>(std::istream& is, DefaultLCG& obj);
+    friend bool operator==(const DefaultLCG& lhs, const DefaultLCG& rhs) { return lhs.state_ == rhs.state_; }
+    friend bool operator!=(const DefaultLCG& lhs, const DefaultLCG& rhs) { return !(lhs == rhs); }
 
     unsigned state_;
 };
 
 template<class T_SeedSeq>
-inline void OldLCG::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type*)
+inline void DefaultLCG::seed(T_SeedSeq& seedSeq, typename boost::disable_if<boost::is_integral<T_SeedSeq> >::type*)
 {
     unsigned seedVal;
     seedSeq.generate(&seedVal, &seedVal + 1);
     seed(seedVal);
 }
 
-inline OldLCG::result_type OldLCG::operator()(OldLCG::result_type maxVal)
+inline DefaultLCG::result_type DefaultLCG::operator()()
 {
-    // Shift range from [0, maxVal) to [0, maxVal]
-    maxVal++;
-    state_ = (state_ * 997 + 1 + maxVal) & 32767;
-    return (state_ * maxVal) / 32768;
+    // Constants taken from 'Numerical Recipes'
+    state_ = state_ * 1664525u + 1013904223u;
+    // Upper bits have higher period
+    return state_ >> 16;
 }
 
-#endif // OldLCG_h__
+#endif // DefaultLCG_h__

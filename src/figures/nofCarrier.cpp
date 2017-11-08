@@ -15,14 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCarrier.h"
 
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
@@ -31,11 +30,13 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
 #include "pathfinding/PathConditionHuman.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/JobConsts.h"
 #include "libutil/Log.h"
+#include "libutil/MyTime.h"
 #include "libutil/colors.h"
 #include <boost/array.hpp>
 #include <boost/assign/std/vector.hpp>
@@ -189,7 +190,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                     // <Silvesteregg>
                     // day of year, 0-365, accuracy about 1/4 day
-                    int doy = (TIME.CurrentTime() % 31556925) / 86400;
+                    int doy = (s25util::Time::CurrentTime() % 31556925) / 86400;
 
                     // last hours of last or first day of year
                     if((doy > 364) || (doy < 1))

@@ -108,10 +108,12 @@ public:
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type GetGOT(const MapPoint pt) const;
     void ReduceResource(const MapPoint pt);
-    void SetResource(const MapPoint pt, const unsigned char newResource) { GetNodeInt(pt).resources = newResource; }
+    void SetResource(const MapPoint pt, Resource newResource) { GetNodeInt(pt).resources = newResource; }
     void SetOwner(const MapPoint pt, const unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
     void SetReserved(const MapPoint pt, const bool reserved);
-    void SetVisibility(const MapPoint pt, const unsigned char player, const Visibility vis, const unsigned curTime);
+    /// Sets the visibility and fires a Visibility Changed event if different
+    /// fowTime is only used if visibility gets changed to FoW
+    void SetVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime = 0);
 
     void ChangeAltitude(const MapPoint pt, const unsigned char altitude);
 
@@ -164,6 +166,8 @@ public:
     /// Return the ID of the harbor point on that node or 0 if there is none
     unsigned GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
     const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(const unsigned harborId, const ShipDirection& dir) const;
+    /// Berechnet die Entfernung zwischen 2 Hafenpunkten
+    unsigned CalcHarborDistance(unsigned habor_id1, unsigned harborId2) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     unsigned short GetSeaFromCoastalPoint(const MapPoint pt) const;
 
@@ -182,7 +186,7 @@ protected:
     /// Notify derived classes of changed altitude
     virtual void AltitudeChanged(const MapPoint pt) = 0;
     /// Notify derived classes of changed visibility
-    virtual void VisibilityChanged(const MapPoint pt, unsigned player) = 0;
+    virtual void VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) = 0;
     /// Sets the road for the given (road) direction
     void SetRoad(const MapPoint pt, unsigned char roadDir, unsigned char type);
     BoundaryStones& GetBoundaryStones(const MapPoint pt) { return GetNodeInt(pt).boundary_stones; }

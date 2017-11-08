@@ -15,14 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBuilder.h"
 #include "EventManager.h"
 #include "GameClient.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "Loader.h"
-#include "Random.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/noBuildingSite.h"
@@ -31,6 +30,7 @@
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
+#include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"

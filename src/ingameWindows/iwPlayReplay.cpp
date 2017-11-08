@@ -15,27 +15,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "iwPlayReplay.h"
-
-#include "Loader.h"
-#include "WindowManager.h"
-#include "drivers/VideoDriverWrapper.h"
-
 #include "BasePlayerInfo.h"
 #include "GameClient.h"
 #include "ListDir.h"
+#include "Loader.h"
+#include "Replay.h"
+#include "RttrConfig.h"
+#include "WindowManager.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlTextButton.h"
 #include "desktops/dskGameLoader.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/converters.h"
 #include "iwMsgbox.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/Log.h"
-#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+#include <boost/format.hpp>
 
 class SwitchOnStart : public ClientInterface
 {
@@ -43,12 +44,12 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameStarted(GameWorldBase& world) override { WINDOWMANAGER.Switch(new dskGameLoader(world)); }
+    void CI_GameStarted(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 std::vector<std::string> GetReplays()
 {
-    return ListDir(GetFilePath(FILE_PATHS[51]), "rpl");
+    return ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[51]), "rpl");
 }
 
 iwPlayReplay::iwPlayReplay()
@@ -91,7 +92,7 @@ void iwPlayReplay::PopulateTable()
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(*it))
+        if(!replay.LoadHeader(*it, false))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
@@ -104,22 +105,16 @@ void iwPlayReplay::PopulateTable()
         }
 
         // Zeitstamp benutzen
-        std::string dateStr = TIME.FormatTime("%d.%m.%Y - %H:%i", &replay.save_time);
+        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", replay.GetSaveTime());
 
         // Spielernamen auslesen
         std::string tmp_players;
-        for(unsigned char i = 0; i < replay.GetPlayerCount(); ++i)
+        BOOST_FOREACH(const std::string& playerName, replay.GetPlayerNames())
         {
-            // Was für ein State, wenn es nen KI Spieler oder ein normaler ist, muss das Zeug ausgelesen werden
-            const BasePlayerInfo& curPlayer = replay.GetPlayer(i);
-            if(curPlayer.isUsed())
-            {
-                // und in unsere "Namensliste" hinzufügen (beim ersten Spieler muss kein Komma hin)
-                if(!tmp_players.empty())
-                    tmp_players += ", ";
+            if(!tmp_players.empty())
+                tmp_players += ", ";
 
-                tmp_players += curPlayer.name;
-            }
+            tmp_players += playerName;
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
@@ -127,7 +122,7 @@ void iwPlayReplay::PopulateTable()
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
-        std::string lastGF = helpers::toString(replay.lastGF_);
+        std::string lastGF = helpers::toString(replay.GetLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
         table->AddRow(0, fileName.c_str(), dateStr.c_str(), tmp_players.c_str(), lastGF.c_str(), it->c_str());
@@ -142,9 +137,7 @@ void iwPlayReplay::PopulateTable()
     else
     {
         btDelInvalid->SetVisible(true);
-        char text[255];
-        snprintf(text, 255, _("Delete Invalid (%u)"), numInvalid);
-        btDelInvalid->SetText(text);
+        btDelInvalid->SetText((boost::format(_("Delete Invalid (%u)")) % numInvalid).str());
     }
     loadedOnce = true;
 }
@@ -215,9 +208,9 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         for(std::vector<std::string>::iterator it = replays.begin(); it != replays.end(); ++it)
         {
             Replay replay;
-            if(!replay.LoadHeader(*it))
+            if(!replay.LoadHeader(*it, false))
             {
-                replay.StopRecording();
+                replay.Close();
                 boost::system::error_code ec;
                 bfs::remove(*it, ec);
             }

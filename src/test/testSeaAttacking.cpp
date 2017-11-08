@@ -15,8 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
+#include "PointOutput.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
@@ -32,7 +33,6 @@
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
-#include "test/PointOutput.h"
 #include "test/SeaWorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
@@ -42,9 +42,9 @@
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
 
 // Size is chosen based on current maximum attacking distances!
-struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
+struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 {
-    typedef SeaWorldWithGCExecution<62, 64> Parent;
+    typedef SeaWorldWithGCExecution<3, 62, 64> Parent;
     using Parent::curPlayer;
     using Parent::ggs;
     using Parent::world;
@@ -63,7 +63,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<62, 64>
         // Make sure attacking is not limited by visibility
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
-            world.SetVisibility(pt, 2, VIS_VISIBLE, this->em.GetCurrentGF());
+            world.SetVisibility(pt, 2, VIS_VISIBLE);
         }
 
         // Block diagonals with granite so no human path is possible
@@ -405,7 +405,7 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
     world.SetVisibility(hqPos[0], 2, VIS_FOW, em.GetCurrentGF());
     TestFailingSeaAttack(hqPos[0]);
     // Visible for ally
-    world.SetVisibility(hqPos[0], 1, VIS_VISIBLE, em.GetCurrentGF());
+    world.SetVisibility(hqPos[0], 1, VIS_VISIBLE);
 
     // Attackable
     BOOST_REQUIRE_EQUAL(gwv.GetNumSoldiersForSeaAttack(hqPos[0]), 5u);
@@ -614,14 +614,14 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     BOOST_REQUIRE(world.IsWaterPoint(world.GetNeighbour(ptNW, Direction::NORTHWEST)));
     BOOST_REQUIRE(world.IsWaterPoint(seaPtN));
     // Re-init seas/harbors
-    MapLoader::InitSeasAndHarbors(world);
+    BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
 
     // Still have our harbor
     const unsigned hbId = world.GetHarborPointID(harborPos[1]);
     BOOST_REQUIRE(hbId);
-    // Should have coast to both north points
+    // Should have coast at NE (NW is skipped)
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::WEST), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), 1u);
+    BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHWEST), 0u);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::NORTHEAST), 1u);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::EAST), 0u);
     BOOST_REQUIRE_EQUAL(world.GetSeaId(hbId, Direction::SOUTHEAST), 0u);

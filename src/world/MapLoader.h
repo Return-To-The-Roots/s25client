@@ -58,7 +58,7 @@ public:
 
     static void InitShadows(World& world);
     static void SetMapExplored(World& world, unsigned numPlayers);
-    static void InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
+    static bool InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
     static bool PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations,
                          bool randomStartPos);
 };

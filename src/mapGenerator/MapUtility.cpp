@@ -17,7 +17,7 @@
 
 #define _USE_MATH_DEFINES
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/MapUtility.h"
 #include "mapGenerator/Map.h"
 #include "mapGenerator/ObjectGenerator.h"

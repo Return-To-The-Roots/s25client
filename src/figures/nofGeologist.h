@@ -40,7 +40,7 @@ private:
     /// maximaler Radius wie weit die Geologen sich von der Flagge entfernen würde
     static const unsigned short MAX_RADIUS = 10;
 
-    boost::array<bool, RES_TYPES_COUNT> resAlreadyFound;
+    boost::array<bool, Resource::TypeCount> resAlreadyFound;
 
 private:
     void GoalReached() override;
@@ -60,9 +60,9 @@ private:
     /// oder es keinen Punkt mehr gibt
     void GoToNextNode();
     /// Setzt das Schild, wenn noch was frei ist
-    void SetSign(const unsigned char resources);
+    void SetSign(Resource resources);
 
-    bool IsSignInArea(unsigned char type) const;
+    bool IsSignInArea(Resource::Type type) const;
 
 public:
     nofGeologist(const MapPoint pt, const unsigned char player, noRoadNode* goal);

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "GameCommandFactory.h"
 #include "GameCommands.h"
 #include <stdexcept>
@@ -85,7 +85,7 @@ bool GameCommandFactory::ChangeMilitary(const MilitarySettings& data)
     return AddGC(new gc::ChangeMilitary(data));
 }
 
-bool GameCommandFactory::ChangeTools(const ToolSettings& data, const signed char* order_delta /* = NULL*/)
+bool GameCommandFactory::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
 {
     return AddGC(new gc::ChangeTools(data, order_delta));
 }

@@ -34,7 +34,9 @@ protected:
     /// Der Arbeiter erzeugt eine Ware
     GoodType ProduceWare() override;
 
-    bool AreWaresAvailable() override;
+    bool AreWaresAvailable() const override;
+    bool StartWorking() override;
+    Resource::Type GetRequiredResType() const;
 
 public:
     nofMiner(const MapPoint pt, const unsigned char player, nobUsual* workplace);

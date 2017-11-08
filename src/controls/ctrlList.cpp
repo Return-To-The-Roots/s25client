@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlList.h"
 #include "CollisionDetection.h"
 #include "ctrlScrollBar.h"
@@ -226,10 +226,11 @@ void ctrlList::DeleteAllItems()
  */
 const std::string& ctrlList::GetItemText(unsigned short line) const
 {
+    static const std::string EMPTY;
     if(line < lines.size())
-        return lines.at(line);
+        return lines[line];
 
-    return EMPTY_STRING;
+    return EMPTY;
 }
 
 /**

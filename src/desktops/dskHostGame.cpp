@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "defines.h" // IWYU pragma: keep
+#include "rttrDefines.h" // IWYU pragma: keep
 #include "dskHostGame.h"
 #include "GameClient.h"
 #include "GameLobby.h"
@@ -52,6 +52,7 @@
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
+#include "libutil/MyTime.h"
 #include <set>
 #include <sstream>
 
@@ -409,7 +410,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
 
         // Bereit (nicht bei KIs und Host)
         if(player.ps == PS_OCCUPIED && !player.isHost)
-            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, EMPTY_STRING, NULL, (localPlayerId_ != row));
+            group->AddCheckBox(6, DrawPoint(450, cy), Extent(22, 22), tc, "", NULL, (localPlayerId_ != row));
 
         // Ping ( "%d" )
         ctrlVarDeepening* ping =
@@ -914,10 +915,10 @@ void dskHostGame::CI_PlayerLeft(const unsigned playerId)
         lua->EventPlayerLeft(playerId);
 }
 
-void dskHostGame::CI_GameStarted(GameWorldBase& world)
+void dskHostGame::CI_GameStarted(boost::shared_ptr<Game> game)
 {
     // Desktop wechseln
-    WINDOWMANAGER.Switch(new dskGameLoader(world));
+    WINDOWMANAGER.Switch(new dskGameLoader(game));
 }
 
 void dskHostGame::CI_PSChanged(const unsigned playerId, const PlayerState ps)
@@ -990,7 +991,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 {
     if((playerId != 0xFFFFFFFF) && !IsSinglePlayer())
     {
-        std::string time = TIME.FormatTime("(%H:%i:%s)");
+        std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
 
         gameChat->AddMessage(time, gameLobby.getPlayer(playerId).name, gameLobby.getPlayer(playerId).color, msg, 0xFFFFFF00);
         if(!gameChat->IsVisible())
