@@ -2,6 +2,8 @@
 * text=auto
 
 #sources
+*.txt text
+*.cmake text
 *.c text
 *.cc text
 *.cxx text
