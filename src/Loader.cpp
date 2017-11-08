@@ -191,7 +191,7 @@ bool Loader::LoadLsts(unsigned dir)
     unsigned files_count;
     unsigned files[2] = {dir, dir + 3};
 
-    if(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]) == RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3]))
+    if(bfs::equivalent(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]), RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3])))
         files_count = 1;
     else
         files_count = 2;
@@ -421,7 +421,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     if(!LoadFilesFromArray(files.size(), &files.front(), true))
         return false;
 
-    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier/"), 0, true))
+    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), 0, true))
         return false;
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
@@ -830,7 +830,7 @@ void Loader::fillCaches()
 bool Loader::LoadFilesFromAddon(const AddonId id)
 {
     std::stringstream s;
-    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
+    s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
 
     return LoadFileOrDir(s.str(), 96, false);
 }
