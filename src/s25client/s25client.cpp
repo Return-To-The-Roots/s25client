@@ -34,7 +34,7 @@
 #include "libutil/error.h"
 
 #ifdef _WIN32
-#include "../win32/resource.h"
+#include "../win32/s25clientResources.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "libutil/ucString.h"
 #endif

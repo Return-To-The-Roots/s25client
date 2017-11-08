@@ -18,7 +18,7 @@
 #include "driverDefines.h" // IWYU pragma: keep
 #include "WinAPI.h"
 
-#include "../../../../win32/resource.h"
+#include "../../../../win32/s25clientResources.h"
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
 #include "helpers/containerUtils.h"

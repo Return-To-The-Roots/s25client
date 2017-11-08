@@ -25,7 +25,7 @@
 #include <algorithm>
 
 #ifdef _WIN32
-#include "../../../../win32/resource.h"
+#include "../../../../win32/s25clientResources.h"
 #include "libutil/ucString.h"
 #include <SDL_syswm.h>
 #endif // _WIN32
