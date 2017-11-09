@@ -88,7 +88,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                     continue;
 
                 bool failed = false;
-                status = addon->getGuiStatus(this, 10 + 20 * (ggs.getNumAddons() - i - 1), failed);
+                status = addon->getGuiStatus(this, 10 + 20 * i, failed);
                 if(!failed)
                     ggs.setSelection(addon->getId(), status);
             }
@@ -130,7 +130,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                 if(policy == HOSTGAME_WHITELIST && !helpers::contains(addonIds, addon->getId()))
                     continue;
 
-                addon->setGuiStatus(this, 10 + 20 * (ggs.getNumAddons() - i - 1), addon->getDefaultStatus());
+                addon->setGuiStatus(this, 10 + 20 * i, addon->getDefaultStatus());
             }
         }
         break;
@@ -145,7 +145,7 @@ void iwAddons::UpdateView(const unsigned short selection)
     unsigned short numAddonsInCurCategory = 0;
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
-        unsigned id = 10 + 20 * (ggs.getNumAddons() - i - 1);
+        unsigned id = 10 + 20 * i;
         unsigned status;
         const Addon* addon = ggs.getAddon(i, status);
 
