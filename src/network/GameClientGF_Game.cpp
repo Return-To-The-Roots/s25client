@@ -33,7 +33,7 @@ void GameClient::ExecuteNWF()
     AsyncChecksum checksum = AsyncChecksum::create(*game);
     const unsigned curGF = GetGFNumber();
 
-    BOOST_FOREACH(ClientPlayer& player, networkPlayers->players)
+    BOOST_FOREACH(ClientPlayer& player, clientPlayers->players)
     {
         PlayerGameCommands& currentGCs = player.gcsToExecute.front();
 
@@ -57,7 +57,7 @@ void GameClient::ExecuteNWF()
     }
 
     // Send GC message for this NWF
-    send_queue.push(new GameMessage_GameCommand(playerId_, checksum, gameCommands_));
+    mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, checksum, gameCommands_));
     // LOG.writeToFile("CLIENT >>> GC %u\n") % playerId_;
 
     // alles gesendet --> Liste löschen

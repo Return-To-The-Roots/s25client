@@ -89,6 +89,8 @@ struct LobbyFixture
 
 BOOST_FIXTURE_TEST_SUITE(Lobby, LobbyFixture)
 
+void deleteNoting(void*) {}
+
 BOOST_AUTO_TEST_CASE(LobbyChat)
 {
     initGUITests();
@@ -106,7 +108,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     player.name = "TestName";
     player.isHost = true;
 
-    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, gameLobby, 0);
+    dskHostGame* desktop = new dskHostGame(ServerType::LOBBY, boost::shared_ptr<GameLobby>(&gameLobby, &deleteNoting), 0);
     ClientInterface* ci = static_cast<ClientInterface*>(desktop);
     std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
     BOOST_REQUIRE_EQUAL(chatTab.size(), 1u);

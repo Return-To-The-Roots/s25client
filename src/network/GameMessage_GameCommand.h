@@ -32,11 +32,11 @@ public:
     PlayerGameCommands gcs;
 
     GameMessage_GameCommand(); //-V730
-    GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
+    GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
 
     void Serialize(Serializer& ser) const override;
     void Deserialize(Serializer& ser) override;
-    bool Run(GameMessageInterface* callback) override;
+    bool Run(GameMessageInterface* callback) const override;
 };
 
 #endif // GameMessage_GameCommand_h__

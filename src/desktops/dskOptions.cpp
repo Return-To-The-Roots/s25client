@@ -117,12 +117,12 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 302 : 303));
 
     // ipv6-feld ggf (de-)aktivieren
-    ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.typ != 4 && SETTINGS.proxy.typ != 40); //-V807
+    ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.typ != 4); //-V807
 
     // Proxyserver
     groupAllgemein->AddText(36, DrawPoint(80, 280), _("Proxyserver:"), COLOR_YELLOW, 0, NormalFont);
     ctrlEdit* proxy = groupAllgemein->AddEdit(37, DrawPoint(280, 275), Extent(190, 22), TC_GREY, NormalFont);
-    proxy->SetText(SETTINGS.proxy.proxy);
+    proxy->SetText(SETTINGS.proxy.ip);
     proxy = groupAllgemein->AddEdit(371, DrawPoint(480, 275), Extent(50, 22), TC_GREY, NormalFont, 5);
     proxy->SetText(SETTINGS.proxy.port);
 
@@ -569,7 +569,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
             // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()
-            SETTINGS.proxy.proxy = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
+            SETTINGS.proxy.ip = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
             SETTINGS.proxy.port = boost::lexical_cast<unsigned>(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
 
             SETTINGS.Save();

@@ -64,7 +64,6 @@
 #include "ingameWindows/iwTrade.h"
 #include "network/ClientPlayers.h"
 #include "network/GameClient.h"
-#include "network/GameServer.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
 #include "ogl/SoundEffectItem.h"
@@ -782,10 +781,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
-            if(GAMECLIENT.IsHost())
-                GAMESERVER.SetPaused(!GAMECLIENT.IsPaused());
-            else if(GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ToggleReplayPause();
+            GAMECLIENT.TogglePause();
             return true;
         case 'q': // Spiel verlassen
             if(ke.alt)
@@ -1115,9 +1111,10 @@ void dskGameInterface::CI_Error(const ClientError ce)
     {
         default: break;
 
-        case CE_CONNECTIONLOST: { messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to server!"), COLOR_RED);
-        }
-        break;
+        case CE_CONNECTIONLOST:
+            messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to server!"), COLOR_RED);
+            GAMECLIENT.SetPause(true);
+            break;
     }
 }
 

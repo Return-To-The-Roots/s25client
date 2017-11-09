@@ -20,6 +20,7 @@
 #include "FramesInfo.h"
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
+#include "NetworkPlayer.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/ChatDestination.h"
@@ -27,9 +28,7 @@
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
-#include "libutil/MessageQueue.h"
 #include "libutil/Singleton.h"
-#include "libutil/Socket.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <queue>
@@ -81,7 +80,7 @@ public:
     bool IsHost() const { return clientconfig.isHost; }
     std::string GetGameName() const { return clientconfig.gameName; }
 
-    unsigned GetPlayerId() const { return playerId_; }
+    unsigned GetPlayerId() const { return mainPlayer.playerId; }
     /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
     AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
@@ -97,7 +96,6 @@ public:
     /// Gibt Map-Typ zurück
     const MapType GetMapType() const { return mapinfo.type; }
     const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
-    GameLobby& GetGameLobby();
 
     // Initialisiert und startet das Spiel
     void StartGame(const unsigned random_init);
@@ -110,6 +108,7 @@ public:
     ClientState GetState() const { return state; }
     Replay& GetReplay();
     boost::shared_ptr<const ClientPlayers> GetPlayers() const;
+    boost::shared_ptr<GameLobby> GetGameLobby();
 
     unsigned GetGFNumber() const;
     unsigned GetGFLength() const { return framesinfo.gf_length; }
@@ -134,8 +133,8 @@ public:
     /// Replay-Geschwindigkeit erhöhen/verringern
     void IncreaseReplaySpeed();
     void DecreaseReplaySpeed();
-    void SetReplayPause(bool pause);
-    void ToggleReplayPause() { SetReplayPause(!framesinfo.isPaused); }
+    void SetPause(bool pause);
+    void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
     void ToggleReplayFOW();
     /// Prüft, ob FoW im Replaymodus ausgeschalten ist
@@ -249,18 +248,14 @@ public:
     unsigned skiptogf;
 
 private:
-    /// Spieler-ID dieses Clients
-    unsigned playerId_;
-
-    MessageQueue recv_queue, send_queue;
-    Socket socket;
+    NetworkPlayer mainPlayer;
 
     ClientState state;
 
     /// Game state itself (valid during LOADING and GAME state)
     boost::shared_ptr<Game> game;
     /// Game commands to execute per player
-    boost::shared_ptr<ClientPlayers> networkPlayers;
+    boost::shared_ptr<ClientPlayers> clientPlayers;
     /// Game lobby (valid during CONFIG state)
     boost::shared_ptr<GameLobby> gameLobby;
 

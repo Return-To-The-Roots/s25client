@@ -26,8 +26,7 @@
 
 GameMessage_GameCommand::GameMessage_GameCommand() : GameMessage(NMS_GAMECOMMANDS) {}
 
-GameMessage_GameCommand::GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum,
-                                                 const std::vector<gc::GameCommandPtr>& gcs)
+GameMessage_GameCommand::GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs)
     : GameMessage(NMS_GAMECOMMANDS, player), gcs(checksum, gcs)
 {}
 
@@ -43,7 +42,7 @@ void GameMessage_GameCommand::Deserialize(Serializer& ser)
     gcs.Deserialize(ser);
 }
 
-bool GameMessage_GameCommand::Run(GameMessageInterface* callback)
+bool GameMessage_GameCommand::Run(GameMessageInterface* callback) const
 {
     return callback->OnGameMessage(*this);
 }

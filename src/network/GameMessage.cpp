@@ -20,6 +20,13 @@
 #include "GameMessage_GameCommand.h"
 #include "GameMessages.h"
 
+bool GameMessage::run(MessageInterface* callback, unsigned playerId)
+{
+    if(playerId != 0xFFFFFFFF)
+        player = playerId;
+    return Run(checkedCast<GameMessageInterface*>(callback));
+}
+
 Message* GameMessage::create_game(unsigned short id)
 {
     Message* msg = NULL;

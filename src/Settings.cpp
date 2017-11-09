@@ -109,7 +109,7 @@ bool Settings::LoadDefaults()
 
     // proxy
     // {
-    proxy.proxy.clear();
+    proxy.ip.clear();
     proxy.port = 0;
     proxy.typ = 0;
     // }
@@ -244,18 +244,18 @@ bool Settings::Load()
 
         // proxy
         // {
-        proxy.proxy = iniProxy->getValue("proxy");
+        proxy.ip = iniProxy->getValue("proxy");
         proxy.port = iniProxy->getValueI("port");
         proxy.typ = iniProxy->getValueI("typ");
         // }
 
         // leere proxyadresse deaktiviert proxy komplett
-        if(proxy.proxy.empty())
+        if(proxy.ip.empty())
             proxy.typ = 0;
 
         // deaktivierter proxy entfernt proxyadresse
         if(proxy.typ == 0)
-            proxy.proxy.clear();
+            proxy.ip.clear();
 
         // aktivierter Socks v4 deaktiviert ipv6
         else if(proxy.typ == 4 && server.ipv6)
@@ -375,12 +375,12 @@ void Settings::Save()
     // }
 
     // leere proxyadresse deaktiviert proxy komplett
-    if(proxy.proxy.empty())
+    if(proxy.ip.empty())
         proxy.typ = 0;
 
     // deaktivierter proxy entfernt proxyadresse
     if(proxy.typ == 0)
-        proxy.proxy.clear();
+        proxy.ip.clear();
 
     // aktivierter Socks v4 deaktiviert ipv6
     else if(proxy.typ == 4 && server.ipv6)
@@ -388,7 +388,7 @@ void Settings::Save()
 
     // proxy
     // {
-    iniProxy->setValue("proxy", proxy.proxy);
+    iniProxy->setValue("proxy", proxy.ip);
     iniProxy->setValue("port", proxy.port);
     iniProxy->setValue("typ", proxy.typ);
     // }

@@ -151,7 +151,7 @@ void captureBacktrace(std::vector<void*>& stacktrace)
 
 DebugInfo::DebugInfo()
 {
-    sock.Connect("debug.rttr.info", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.proxy, SETTINGS.proxy.port); //-V807
+    sock.Connect("debug.rttr.info", 4123, false, (Socket::PROXY_TYPE)SETTINGS.proxy.typ, SETTINGS.proxy.ip, SETTINGS.proxy.port); //-V807
 
     Send("RTTRDBG", 7);
 

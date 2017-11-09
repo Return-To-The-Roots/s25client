@@ -93,9 +93,9 @@ public:
         bool ipv6;           /// listen/connect on ipv6 as default or not
     } server;
 
-    struct
+    struct Proxy
     {
-        std::string proxy; /// Serveradresse / Hostname
+        std::string ip;    /// Serveradresse / Hostname
         unsigned port;     /// Port
         unsigned char typ; /// Socks 4 oder 5
     } proxy;

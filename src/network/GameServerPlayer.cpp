@@ -19,81 +19,74 @@
 #include "GameServerPlayer.h"
 #include "GameMessage_GameCommand.h"
 #include "GameMessages.h"
-#include "drivers/VideoDriverWrapper.h"
-
 #include <algorithm>
 
-GameServerPlayer::GameServerPlayer()
-    : connecttime(0), last_command_timeout(0), pinging(false), send_queue(&GameMessage::create_game), recv_queue(&GameMessage::create_game),
-      lastping(0)
-{}
+using boost::chrono::seconds;
+
+GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
+    : NetworkPlayer(id), isConnecting(true), pinging(false), isLagging(false)
+{
+    connectTime = Clock::now();
+    this->socket = socket;
+}
 
 GameServerPlayer::~GameServerPlayer() {}
 
-///////////////////////////////////////////////////////////////////////////////
-/// pingt ggf den Spieler
 void GameServerPlayer::doPing()
 {
-    if((ps == PS_OCCUPIED) && (!pinging) && ((VIDEODRIVER.GetTickCount() - lastping) > 1000))
+    if(!isConnecting && !pinging && (Clock::now() - lastPingTime) > seconds(PING_RATE))
     {
         pinging = true;
-
-        lastping = VIDEODRIVER.GetTickCount();
-
-        // Ping Nachricht senden
-        send_queue.push(new GameMessage_Ping(0xFF));
+        lastPingTime = Clock::now();
+        sendQueue.push(new GameMessage_Ping(0xFF));
     }
+}
+
+unsigned GameServerPlayer::calcPingTime()
+{
+    if(!pinging)
+        return 0u;
+    pinging = false;
+    TimePoint now = Clock::now();
+    int result = boost::chrono::duration_cast<boost::chrono::duration<int> >(now - lastPingTime).count();
+    lastPingTime = now;
+    return result > 0 ? static_cast<unsigned>(result) : 0u;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// prüft auf Ping-Timeout beim verbinden
-void GameServerPlayer::checkConnectTimeout()
+bool GameServerPlayer::hasConnectTimedOut() const
 {
-    if((ps == PS_RESERVED) && ((VIDEODRIVER.GetTickCount() - connecttime) > PING_TIMEOUT))
+    if(isConnecting && (Clock::now() - connectTime) > seconds(CONNECT_TIMEOUT))
+        return true;
+    else
+        return false;
+}
+
+void GameServerPlayer::closeConnection(bool flushMsgsFirst)
+{
+    NetworkPlayer::closeConnection(flushMsgsFirst);
+    checksumOfNextNWF = std::queue<AsyncChecksum>();
+}
+
+unsigned GameServerPlayer::getLagTimeOut() const
+{
+    const int timeout =
+      boost::chrono::duration_cast<boost::chrono::duration<int> >(lagStartTime + seconds(LAG_TIMEOUT) - Clock::now()).count();
+    return static_cast<unsigned>(std::max(0, timeout));
+}
+
+void GameServerPlayer::setLagging()
+{
+    /// Start lagging time if we are not yet lagging
+    if(!isLagging)
     {
-        LOG.write("SERVER: Reserved slot freed due to ping timeout\n");
-        CloseConnections();
+        isLagging = true;
+        lagStartTime = Clock::now();
     }
 }
 
-void GameServerPlayer::reserve(const Socket& sock)
+void GameServerPlayer::setNotLagging()
 {
-    ps = PS_RESERVED;
-    so = sock;
-    connecttime = VIDEODRIVER.GetTickCount();
-    pinging = false;
-}
-
-void GameServerPlayer::CloseConnections()
-{
-    // Free slot
-    ps = PS_FREE;
-    // Close socket and clear queues
-    so.Close();
-    send_queue.clear();
-    recv_queue.clear();
-    gc_queue.clear();
-}
-
-unsigned GameServerPlayer::GetTimeOut() const
-{
-    // Nach 35 Sekunden kicken
-    const int timeout = 35 - int(s25util::Time::CurrentTime() - last_command_timeout) / 1000;
-    return (timeout >= 0 ? timeout : 0);
-}
-
-/// Spieler laggt
-void GameServerPlayer::Lagging()
-{
-    // Laggt neu?
-    if(!last_command_timeout)
-        // Anfangs des Laggens merken
-        last_command_timeout = s25util::Time::CurrentTime();
-}
-
-/// Spieler laggt nicht (mehr)
-void GameServerPlayer::NotLagging()
-{
-    /// Laggt nicht mehr
-    last_command_timeout = 0;
+    isLagging = false;
 }

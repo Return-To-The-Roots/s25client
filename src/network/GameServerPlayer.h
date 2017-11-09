@@ -19,50 +19,59 @@
 
 #pragma once
 
-#include "JoinPlayerInfo.h"
-#include "libutil/MessageQueue.h"
-#include "libutil/MyTime.h"
-#include "libutil/Socket.h"
-#include <vector>
+#include "AsyncChecksum.h"
+#include "NetworkPlayer.h"
+#include <boost/chrono.hpp>
+#include <queue>
 
-class GameMessage_GameCommand;
 class Serializer;
 
-// GamePlayerInfo für die PlayerSlots des Servers
-class GameServerPlayer : public JoinPlayerInfo
+/// Player connected to the server
+class GameServerPlayer : public NetworkPlayer
 {
+    typedef boost::chrono::high_resolution_clock Clock;
+    typedef boost::chrono::time_point<Clock> TimePoint;
+
 public:
-    GameServerPlayer();
+    GameServerPlayer(unsigned id, const Socket& socket);
     ~GameServerPlayer();
 
-    /// Gibt Sekunden bis zum TimeOut (Rausschmiss) zurück
-    unsigned GetTimeOut() const;
-
+    void setConnected() { isConnecting = false; }
+    bool isConnected() const { return !isConnecting; }
+    /// Get seconds till the player gets kicked due to lag
+    unsigned getLagTimeOut() const;
+    /// Ping the player if required
     void doPing();
-    void checkConnectTimeout();
-    void reserve(const Socket& sock);
-    void CloseConnections();
+    /// Called when a ping response was received. Return the ping in ms
+    unsigned calcPingTime();
+    /// Check if the connect has timed out.
+    bool hasConnectTimedOut() const;
+    void closeConnection(bool flushMsgsFirst) override;
 
-    /// Spieler laggt
-    void Lagging();
-    /// Spieler laggt nicht (mehr)
-    void NotLagging();
+    /// Set player is lagging
+    void setLagging();
+    /// Set player not lagging (anymore)
+    void setNotLagging();
 
 private:
-    unsigned connecttime;
-    /// Zeitpunkt, ab dem kein Kommando mehr vom Spieler kommt
-    s25util::time64_t last_command_timeout;
+    /// True if the player is just connecting (reserved slot) or false if he really is connected
+    bool isConnecting;
+    /// Are we waiting for a ping reply
+    bool pinging;
+    /// Is the player currently lagging
+    bool isLagging;
+    /// Time the player connected
+    TimePoint connectTime;
+    /// Time the last ping command was sent or received
+    TimePoint lastPingTime;
+    /// Time at which the player started lagging
+    TimePoint lagStartTime;
 
 public:
-    Socket so;
-    bool pinging;
-
-    MessageQueue send_queue;
-    MessageQueue recv_queue;
-
-    std::vector<GameMessage_GameCommand> gc_queue;
-
-    unsigned lastping;
+    /// Store the Checksum for following NetWorkFrames from this player.
+    /// We don't need the actual GCs on the server. We can also have more than 1 here (next NWF and 2nd next NWF) but never more.
+    /// TODO: Double check if we can even have 2 here.
+    std::queue<AsyncChecksum> checksumOfNextNWF;
 };
 
 #endif // GAMESERVERPLAYER_H_INCLUDED

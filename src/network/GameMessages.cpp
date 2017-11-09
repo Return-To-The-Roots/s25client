@@ -47,7 +47,7 @@ void GameMessage_Player_List::Deserialize(Serializer& ser)
         playerInfos.push_back(JoinPlayerInfo(ser));
 }
 
-bool GameMessage_Player_List::Run(GameMessageInterface* callback)
+bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
 {
     LOG.writeToFile("<<< NMS_PLAYER_LIST(%d)\n") % playerInfos.size();
     for(unsigned i = 0; i < playerInfos.size(); ++i)

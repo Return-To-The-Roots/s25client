@@ -19,6 +19,26 @@
 #include "ClientPlayers.h"
 #include <boost/foreach.hpp>
 
+const ClientPlayer* ClientPlayers::get(unsigned playerId) const
+{
+    BOOST_FOREACH(const ClientPlayer& player, players)
+    {
+        if(player.id == playerId)
+            return &player;
+    }
+    return NULL;
+}
+
+ClientPlayer* ClientPlayers::get(unsigned playerId)
+{
+    BOOST_FOREACH(ClientPlayer& player, players)
+    {
+        if(player.id == playerId)
+            return &player;
+    }
+    return NULL;
+}
+
 bool ClientPlayers::checkForLaggingPlayers()
 {
     bool isLagging = false;

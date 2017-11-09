@@ -28,8 +28,8 @@ struct ClientPlayer;
 struct ClientPlayers
 {
     void add(unsigned playerId) { players.push_back(ClientPlayer(playerId)); }
-    const ClientPlayer& get(unsigned idx) const { return players[idx]; }
-    ClientPlayer& get(unsigned idx) { return players[idx]; }
+    const ClientPlayer* get(unsigned playerId) const;
+    ClientPlayer* get(unsigned playerId);
     unsigned getNumPlayers() const { return static_cast<unsigned>(players.size()); }
     std::vector<ClientPlayer> players;
 
