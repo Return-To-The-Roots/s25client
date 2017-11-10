@@ -52,7 +52,7 @@ void CatapultStone::Serialize_CatapultStone(SerializedGameData& sgd) const
     sgd.PushPoint<int>(startPos);
     sgd.PushPoint<int>(destPos);
     sgd.PushBool(explode);
-    sgd.PushObject(event, true);
+    sgd.PushEvent(event);
 }
 
 void CatapultStone::Destroy() {}

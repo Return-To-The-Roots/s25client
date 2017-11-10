@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_REQUIRE_EQUAL(worldEvs.size(), loadEvs.size());
             for(unsigned j = 0; j < worldEvs.size(); ++j)
             {
-                BOOST_REQUIRE_EQUAL(worldEvs[j]->GetObjId(), loadEvs[j]->GetObjId());
+                BOOST_REQUIRE_EQUAL(worldEvs[j]->GetInstanceId(), loadEvs[j]->GetInstanceId());
                 BOOST_REQUIRE_EQUAL(worldEvs[j]->startGF, loadEvs[j]->startGF);
                 BOOST_REQUIRE_EQUAL(worldEvs[j]->length, loadEvs[j]->length);
                 BOOST_REQUIRE_EQUAL(worldEvs[j]->id, loadEvs[j]->id);

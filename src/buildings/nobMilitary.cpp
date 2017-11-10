@@ -142,8 +142,8 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
     sgd.PushBool(capturing);
     sgd.PushUnsignedInt(capturing_soldiers);
-    sgd.PushObject(goldorder_event, true);
-    sgd.PushObject(upgrade_event, true);
+    sgd.PushEvent(goldorder_event);
+    sgd.PushEvent(upgrade_event);
 
     sgd.PushObjectContainer(ordered_troops, true);
     sgd.PushObjectContainer(ordered_coins, true);

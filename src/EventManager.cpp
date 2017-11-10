@@ -18,22 +18,34 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "EventManager.h"
 #include "GameEvent.h"
+#include "GameObject.h"
 #include "SerializedGameData.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mapTraits.h"
 #include "libutil/Log.h"
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 
-EventManager::EventManager(unsigned startGF) : currentGF(startGF), curActiveEvent(NULL) {}
+EventManager::EventManager(unsigned startGF) : numActiveEvents(0), eventInstanceCtr(1), currentGF(startGF), curActiveEvent(NULL) {}
 
 EventManager::~EventManager()
+{
+    Clear();
+}
+
+void EventManager::Clear()
 {
     for(EventMap::iterator it = events.begin(); it != events.end(); ++it)
     {
         BOOST_FOREACH(GameEvent* ev, it->second)
+        {
             delete ev;
+            RTTR_Assert(numActiveEvents > 0u);
+            numActiveEvents--;
+        }
     }
     events.clear();
+    RTTR_Assert(numActiveEvents == 0u);
 
     for(GameObjList::iterator it = killList.begin(); it != killList.end(); ++it)
     {
@@ -42,15 +54,19 @@ EventManager::~EventManager()
         delete obj;
     }
     killList.clear();
+
+    // Reset counters (next should already be 0 but just to be sure)
+    numActiveEvents = 0u;
+    // 0 == unused -> start at 1
+    eventInstanceCtr = 1u;
 }
 
 GameEvent* EventManager::AddEventToQueue(GameEvent* event)
 {
     // Should be in the future!
     RTTR_Assert(event->GetTargetGF() > currentGF);
-    // Make sure the linked object is not an event itself
-    RTTR_Assert(!dynamic_cast<GameEvent*>(event->obj));
     events[event->GetTargetGF()].push_back(event);
+    ++numActiveEvents;
     return event;
 }
 
@@ -59,7 +75,7 @@ const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, uns
     RTTR_Assert(obj);
     RTTR_Assert(gf_length);
 
-    return AddEventToQueue(new GameEvent(obj, currentGF, gf_length, id));
+    return AddEventToQueue(new GameEvent(GetNextEventInstanceId(), obj, currentGF, gf_length, id));
 }
 
 const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, unsigned id, unsigned gf_elapsed)
@@ -67,7 +83,15 @@ const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, uns
     RTTR_Assert(gf_length > gf_elapsed);
     // Anfang des Events in die Vergangenheit zurückverlegen
     RTTR_Assert(currentGF >= gf_elapsed);
-    return AddEventToQueue(new GameEvent(obj, currentGF - gf_elapsed, gf_length, id));
+    return AddEventToQueue(new GameEvent(GetNextEventInstanceId(), obj, currentGF - gf_elapsed, gf_length, id));
+}
+
+unsigned EventManager::GetNextEventInstanceId()
+{
+    unsigned result = eventInstanceCtr++;
+    // Overflow detection. Highly unlikely
+    RTTR_Assert(eventInstanceCtr != 0u);
+    return result;
 }
 
 void EventManager::ExecuteNextGF()
@@ -122,6 +146,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
         ev->obj->HandleEvent(ev->id);
 
         delete ev;
+        --numActiveEvents;
     }
     curActiveEvent = NULL;
     events.erase(itEvents);
@@ -129,34 +154,63 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
 
 void EventManager::Serialize(SerializedGameData& sgd) const
 {
+    static boost::format eventCtError("Event count mismatch. Found events: %1%. Expected: %2%.\n");
+
     // Kill list must be empty (do not store to-be-killed objects)
     RTTR_Assert(killList.empty());
 
     // Gather all events, that are not yet serialized
+    unsigned numEvents = 0;
     std::vector<const GameEvent*> save_events;
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
         BOOST_FOREACH(const GameEvent* ev, it->second)
         {
-            if(!sgd.IsObjectSerialized(ev->GetObjId()))
+            numEvents++;
+            if(!sgd.IsEventSerialized(ev->GetInstanceId()))
                 save_events.push_back(ev);
         }
     }
+    if(numEvents != numActiveEvents)
+        throw SerializedGameData::Error((eventCtError % numEvents % numActiveEvents).str());
 
-    sgd.PushObjectContainer(save_events, true);
+    sgd.PushUnsignedInt(save_events.size());
+    BOOST_FOREACH(const GameEvent* ev, save_events)
+        sgd.PushEvent(ev);
+    sgd.PushUnsignedInt(eventInstanceCtr);
+    sgd.PushUnsignedInt(numActiveEvents);
 }
 
 void EventManager::Deserialize(SerializedGameData& sgd)
 {
-    unsigned size = sgd.PopUnsignedInt();
+    static boost::format eventCtError("Event count mismatch. Found events: %1%. Expected: %2%.\n");
+    static boost::format eventIdError("Invalid event instance id. Found: %1%. Expected less than %2%.\n");
+
+    // This are just the not yet deserialized events
+    unsigned numEvents = sgd.PopUnsignedInt();
     // Pop all events, but do NOT add them. Deserialization will already do so
-    for(unsigned i = 0; i < size; ++i)
+    for(unsigned i = 0; i < numEvents; ++i)
         sgd.PopEvent();
+
+    eventInstanceCtr = sgd.PopUnsignedInt();
+
+    // Validation
+    unsigned expectedNumActiveEvents = sgd.PopUnsignedInt();
+    if(expectedNumActiveEvents != numActiveEvents)
+        throw SerializedGameData::Error((eventCtError % numActiveEvents % expectedNumActiveEvents).str());
+    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+    {
+        BOOST_FOREACH(const GameEvent* ev, it->second)
+        {
+            if(ev->GetInstanceId() >= eventInstanceCtr)
+                throw SerializedGameData::Error((eventIdError % ev->GetInstanceId() % eventInstanceCtr).str());
+        }
+    }
 }
 
-GameEvent* EventManager::AddEvent(SerializedGameData& sgd, unsigned obj_id)
+const GameEvent* EventManager::AddEvent(SerializedGameData& sgd, unsigned instanceId)
 {
-    return AddEventToQueue(new GameEvent(sgd, obj_id));
+    return AddEventToQueue(new GameEvent(sgd, instanceId));
 }
 
 bool EventManager::ObjectHasEvents(const GameObject& obj)
@@ -204,6 +258,7 @@ void EventManager::RemoveEventFromQueue(const GameEvent& event)
         if(e_it != eventsAtTime.end())
         {
             eventsAtTime.erase(e_it);
+            --numActiveEvents;
             RTTR_Assert(!helpers::contains(eventsAtTime, &event)); // Event existed multiple times?
         } else
         {

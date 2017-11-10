@@ -59,7 +59,7 @@ void noFire::Serialize_noFire(SerializedGameData& sgd) const
     Serialize_noCoordBase(sgd);
 
     sgd.PushUnsignedChar(size);
-    sgd.PushObject(dead_event, true);
+    sgd.PushEvent(dead_event);
 }
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)

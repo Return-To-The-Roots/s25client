@@ -116,10 +116,10 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData& sgd) const
     sgd.PushBool(fetch_double_protection);
     sgd.PushObjectContainer(dependent_figures, false);
     sgd.PushObjectContainer(dependent_wares, true);
-    sgd.PushObject(producinghelpers_event, true);
-    sgd.PushObject(recruiting_event, true);
-    sgd.PushObject(empty_event, true);
-    sgd.PushObject(store_event, true);
+    sgd.PushEvent(producinghelpers_event);
+    sgd.PushEvent(recruiting_event);
+    sgd.PushEvent(empty_event);
+    sgd.PushEvent(store_event);
 
     for(unsigned i = 0; i < 5; ++i)
     {

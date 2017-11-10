@@ -84,8 +84,8 @@ void nobUsual::Serialize_nobUsual(SerializedGameData& sgd) const
     sgd.PushUnsignedShort(productivity);
     sgd.PushBool(disable_production);
     sgd.PushUnsignedChar(last_ordered_ware);
-    sgd.PushObject(orderware_ev, true);
-    sgd.PushObject(productivity_ev, true);
+    sgd.PushEvent(orderware_ev);
+    sgd.PushEvent(productivity_ev);
     sgd.PushUnsignedShort(numGfNotWorking);
     sgd.PushUnsignedInt(since_not_working);
     sgd.PushBool(outOfRessourcesMsgSent);

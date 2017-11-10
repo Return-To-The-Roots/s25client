@@ -22,16 +22,6 @@
 #include "GameProtocol.h"
 #include "libutil/Serializer.h"
 
-AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0) {}
-
-AsyncChecksum::AsyncChecksum(unsigned randChecksum)
-    : randChecksum(randChecksum), objCt(GameObject::GetObjCount()), objIdCt(GameObject::GetObjIDCounter())
-{}
-
-AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt)
-    : randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt)
-{}
-
 //////////////////////////////////////////////////////////////////////////
 
 GameMessage_GameCommand::GameMessage_GameCommand() : GameMessage(NMS_GAMECOMMANDS) {}

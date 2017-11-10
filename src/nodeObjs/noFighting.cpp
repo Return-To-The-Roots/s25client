@@ -70,7 +70,7 @@ void noFighting::Serialize_noFighting(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(turn);
     sgd.PushUnsignedChar(defending_animation);
-    sgd.PushObject(current_ev, true);
+    sgd.PushEvent(current_ev);
     sgd.PushUnsignedChar(player_won);
 
     for(unsigned i = 0; i < 2; ++i)

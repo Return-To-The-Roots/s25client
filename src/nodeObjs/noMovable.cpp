@@ -36,7 +36,7 @@ void noMovable::Serialize_noMovable(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(curMoveDir.toUInt());
     sgd.PushUnsignedChar(ascent);
-    sgd.PushObject(current_ev, true);
+    sgd.PushEvent(current_ev);
     sgd.PushUnsignedInt(pause_walked_gf);
     sgd.PushUnsignedInt(pause_event_length);
     sgd.PushBool(moving);

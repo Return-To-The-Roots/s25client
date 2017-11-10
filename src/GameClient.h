@@ -184,7 +184,7 @@ private:
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
     void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC(int checksum = -1);
+    void SendNothingNC();
     /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
     bool IsPlayerLagging();
 

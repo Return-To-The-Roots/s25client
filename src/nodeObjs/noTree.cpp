@@ -75,8 +75,8 @@ void noTree::Serialize_noTree(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(size);
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
-    sgd.PushObject(event, true);
-    sgd.PushObject(produce_animal_event, true);
+    sgd.PushEvent(event);
+    sgd.PushEvent(produce_animal_event);
     sgd.PushBool(produce_animals);
 }
 

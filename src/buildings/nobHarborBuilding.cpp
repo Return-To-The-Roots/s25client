@@ -169,7 +169,7 @@ void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
     Serialize_nobBaseWarehouse(sgd);
     expedition.Serialize(sgd);
     exploration_expedition.Serialize(sgd);
-    sgd.PushObject(orderware_ev, true);
+    sgd.PushEvent(orderware_ev);
     for(unsigned i = 0; i < 6; ++i)
         sgd.PushUnsignedShort(seaIds[i]);
     sgd.PushObjectContainer(wares_for_ships, true);

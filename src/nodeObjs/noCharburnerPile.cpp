@@ -65,7 +65,7 @@ void noCharburnerPile::Serialize_noCharburnerPile(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
     sgd.PushUnsignedShort(step);
     sgd.PushUnsignedShort(sub_step);
-    sgd.PushObject(event, true);
+    sgd.PushEvent(event);
 }
 
 noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id)

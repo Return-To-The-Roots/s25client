@@ -90,7 +90,7 @@ public:
     ~GamePlayer();
 
     /// Serialisieren
-    void Serialize(SerializedGameData& sgd);
+    void Serialize(SerializedGameData& sgd) const;
     // Deserialisieren
     void Deserialize(SerializedGameData& sgd);
 
@@ -418,7 +418,7 @@ private:
 
         Pact() : duration(0), start(0), accepted(false), want_cancel(false) {}
         Pact(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd);
+        void Serialize(SerializedGameData& sgd) const;
     };
     /// Bündnisse dieses Spielers mit anderen Spielern
     helpers::MultiArray<Pact, MAX_PLAYERS, PACTS_COUNT> pacts;

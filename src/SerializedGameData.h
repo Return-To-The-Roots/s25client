@@ -40,7 +40,7 @@ class GameEvent;
 class SerializedGameData : public Serializer
 {
 public:
-    /// Exception that is thrown if an error during (de)serialization occured
+    /// Exception that is thrown if an error during (de)serialization occurred
     class Error : public std::runtime_error
     {
     public:
@@ -50,7 +50,7 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(GameWorld& gw);
+    void MakeSnapshot(const GameWorld& gw);
     /// Liest den Buffer aus einer Datei
     void ReadFromFile(BinaryFile& file) override;
 
@@ -63,24 +63,24 @@ public:
     // Write methods
     //////////////////////////////////////////////////////////////////////////
 
-    /// Objekt(referenzen) kopieren
+    /// Write a GameObject
     template<class T>
     void PushObject(const T* go, const bool known)
     {
         /* The assert below basically checks the virtual function table.
-           If the dynamic_cast failes, we tried to push an object of another type or it was deleted */
+           If the dynamic_cast fails, we tried to push an object of another type or it was deleted */
         const GameObject* goTmp = static_cast<const GameObject*>(go);
         RTTR_Assert(dynamic_cast<const T*>(goTmp) == go);
         PushObject_(goTmp, known);
     }
 
-    void PushObject(const GameEvent* event, const bool known);
+    void PushEvent(const GameEvent* event);
 
-    /// Copies a container of GameObjects
+    /// Write a container of GameObjects
     template<typename T>
     void PushObjectContainer(const T& gos, const bool known);
 
-    /// Pushes a container of values
+    /// Push a container of values
     template<typename T>
     void PushContainer(const T& container);
 
@@ -97,7 +97,7 @@ public:
     // Read methods
     //////////////////////////////////////////////////////////////////////////
 
-    /// Objekt(referenzen) lesen
+    /// Read a GameObject
     template<typename T>
     T* PopObject(GO_Type got)
     {
@@ -109,11 +109,11 @@ public:
     /// FoW-Objekt
     FOWObject* PopFOWObject();
 
-    /// Liest einen Vektor von GameObjects
+    /// Read a container of GameObjects
     template<typename T>
     void PopObjectContainer(T& gos, GO_Type got);
 
-    /// Reads a container of values, param NOT used. Only for automatic type deduction
+    /// Read a container of values, param NOT used. Only for automatic type deduction
     template<typename T>
     T PopContainer(const T& = T());
 
@@ -125,30 +125,33 @@ public:
 
     /// Adds a deserialized object to the storage. Must be called exactly once per read GameObject
     void AddObject(GameObject* go);
-
-    /// Returns whether the object with the given id was already serialized (only valid during writing)
-    bool IsObjectSerialized(const unsigned obj_id) const;
-
+    /// Adds a deserialized event to the storage. Return instanceId. Must be called exactly once per read event
+    unsigned AddEvent(unsigned instanceId, GameEvent* ev);
+    /// Only valid during writing
+    bool IsEventSerialized(unsigned evInstanceid) const;
     bool debugMode;
 
 private:
     static unsigned short GetSafetyCode(const GameObject& go);
+    static unsigned short GetSafetyCode(const GameEvent& ev);
 
-    // Version of the game data that is read. Gets set to the current version for writing
+    /// Version of the game data that is read. Gets set to the current version for writing
     unsigned gameDataVersion;
 
     /// Stores the ids of all written objects (-> only valid during writing)
     std::set<unsigned> writtenObjIds;
+    std::set<unsigned> writtenEventIds;
     /// Maps already read object ids to GameObjects (-> only valid during reading)
     std::map<unsigned, GameObject*> readObjects;
+    std::map<unsigned, GameEvent*> readEvents;
 
-    /// Aktuelle Anzahl an Objekten
-    unsigned objectsCount;
     /// Expected number of objects to be read/written
-    unsigned expectedObjectsCount;
+    unsigned expectedObjectCount;
 
     /// EventManager, used during deserialization to add events, NULL otherwise
     EventManager* em;
+    /// EventManager, used during serialization to add events, NULL otherwise
+    const EventManager* writeEm;
     /// Is set to true when currently in read mode
     bool isReading;
 
@@ -163,8 +166,10 @@ private:
     /// Objekt(referenzen) lesen
     GameObject* PopObject_(GO_Type got);
 
-    /// Returns the object with the given id when it was read, NULL otherwhise (only valid during reading)
+    /// Returns the object with the given id when it was read, NULL otherwise (only valid during reading)
     GameObject* GetReadGameObject(const unsigned obj_id) const;
+    /// Returns whether the object with the given id was already serialized (only valid during writing)
+    bool IsObjectSerialized(unsigned obj_id) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

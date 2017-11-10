@@ -44,7 +44,7 @@ void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
     Serialize_noCoordBase(sgd);
 
     sgd.PushBool(disappearing);
-    sgd.PushObject(dead_event, true);
+    sgd.PushEvent(dead_event);
 }
 
 noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id)
