@@ -26,6 +26,7 @@
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskSelectMap.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 
@@ -146,7 +147,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                 edtPw->SetFocus(false);
                 break;
             }
-            int iPort = atoi(edtPort->GetText().c_str());
+            int iPort = helpers::fromString(edtPort->GetText(), 0);
             if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
             {
                 SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);

@@ -31,6 +31,7 @@
 #include "files.h"
 #include "iwMsgbox.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
@@ -309,9 +310,9 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
             else
             {
                 // Evtl ein Siedlerstück ("sNN")?
-                if(msg.length() == 3)
+                if(msg.length() == 3 && msg[0] == 's')
                 {
-                    if(atoi(msg.substr(1).c_str()) <= 14)
+                    if(s25util::fromStringClassicDef(msg.substr(1), 999u) <= 14u)
                         valid = true;
                 }
             }

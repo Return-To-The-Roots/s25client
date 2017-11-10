@@ -26,6 +26,7 @@
 #include "controls/ctrlImage.h"
 #include "controls/ctrlText.h"
 #include "factories/GameCommandFactory.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
@@ -109,9 +110,9 @@ void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
     const std::string number_str = GetCtrl<ctrlEdit>(6)->GetText();
 
     // Start trading
-    if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->IsVisible() && atoi(number_str.c_str()) > 0)
+    if(!GetCtrl<ctrlComboBox>(4)->GetCtrl<ctrlList>(0)->IsVisible() && helpers::fromString(number_str, 0) > 0)
     {
-        gcFactory.TradeOverLand(wh.GetPos(), gt, job, atoi(number_str.c_str()));
+        gcFactory.TradeOverLand(wh.GetPos(), gt, job, helpers::fromString(number_str, 0));
         this->Close();
     }
 }

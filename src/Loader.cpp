@@ -46,6 +46,7 @@
 #include "libsiedler2/PixelBufferPaletted.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
+#include "libutil/StringConversion.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -278,60 +279,6 @@ bool Loader::LoadSounds()
     }
 
     return true;
-}
-
-/**
- *  sortiert einen string nach Startzahl, Namen oder Länge (in dieser Reihenfolge).
- *  Wird für das Sortieren der Dateien benutzt.
- */
-bool Loader::SortFilesHelper(const std::string& lhs, const std::string& rhs)
-{
-    int a, b;
-
-    std::stringstream aa;
-    aa << bfs::path(lhs).filename().string();
-    std::stringstream bb;
-    bb << bfs::path(rhs).filename().string();
-
-    if(!(aa >> a) || !(bb >> b))
-    {
-        for(std::string::const_iterator lit = lhs.begin(), rit = rhs.begin(); lit != lhs.end() && rit != rhs.end(); ++lit, ++rit)
-            if(tolower(*lit) < tolower(*rit))
-                return true;
-            else if(tolower(*lit) > tolower(*rit))
-                return false;
-        if(lhs.size() < rhs.size())
-            return true;
-    } else
-    {
-        if(a < b)
-            return true;
-    }
-
-    return false;
-}
-
-/**
- *  zerlegt einen String in Einzelteile
- *  Wird für das richtige Laden der Dateien benutzt.
- */
-std::vector<std::string> Loader::ExplodeString(std::string const& line, const char delim, const unsigned max)
-{
-    std::istringstream in(line);
-    std::vector<std::string> result;
-    std::string token;
-
-    unsigned len = 0;
-    while(std::getline(in, token, delim) && result.size() < max - 1)
-    {
-        len += token.size() + 1;
-        result.push_back(token);
-    }
-
-    if(len < in.str().length())
-        result.push_back(in.str().substr(len));
-
-    return result;
 }
 
 void Loader::LoadDummyGUIFiles()
@@ -1132,138 +1079,15 @@ bool Loader::LoadFile(const std::string& filePath, const libsiedler2::ArchivItem
     }
 
     LOG.write(_("Loading directory %s\n")) % filePath;
-    std::vector<std::string> lst = ListDir(filePath, "bmp");
-    lst = ListDir(filePath, "txt", false, &lst);
-    lst = ListDir(filePath, "ger", false, &lst);
-    lst = ListDir(filePath, "eng", false, &lst);
-    lst = ListDir(filePath, "fon", false, &lst);
-    lst = ListDir(filePath, "empty", false, &lst);
-
-    std::sort(lst.begin(), lst.end(), SortFilesHelper);
-
-    std::vector<unsigned char> buffer(1000 * 1000 * 4);
-    for(std::vector<std::string>::iterator itFile = lst.begin(); itFile != lst.end(); ++itFile)
+    unsigned startTime = VIDEODRIVER.GetTickCount();
+    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
+    LOG.write(_("  Loading %1% entries: ")) % files.size();
+    if(int ec = libsiedler2::LoadFolder(files, to, palette))
     {
-        // read file number, to set the index correctly
-        const std::string filename = bfs::path(*itFile).filename().string();
-        std::stringstream nrs;
-        int nr = -1;
-        nrs << filename;
-        if(!(nrs >> nr))
-            nr = -1;
-
-        // Dateiname zerlegen
-        std::vector<std::string> wf = ExplodeString(*itFile, '.');
-
-        libsiedler2::BobType bobtype = libsiedler2::BOBTYPE_BITMAP_RAW;
-        short nx = 0;
-        short ny = 0;
-        unsigned char dx = 0;
-        unsigned char dy = 0;
-        libsiedler2::ArchivItem* item = NULL;
-
-        // Common
-        for(std::vector<std::string>::iterator it = wf.begin(); it != wf.end(); ++it)
-        {
-            if(*it == "rle")
-                bobtype = libsiedler2::BOBTYPE_BITMAP_RLE;
-            else if(*it == "player")
-                bobtype = libsiedler2::BOBTYPE_BITMAP_PLAYER;
-            else if(*it == "shadow")
-                bobtype = libsiedler2::BOBTYPE_BITMAP_SHADOW;
-
-            else if(it->substr(0, 2) == "nx")
-                nx = atoi(it->substr(2).c_str());
-            else if(it->substr(0, 2) == "ny")
-                ny = atoi(it->substr(2).c_str());
-            else if(it->substr(0, 2) == "dx")
-                dx = atoi(it->substr(2).c_str());
-            else if(it->substr(0, 2) == "dy")
-                dy = atoi(it->substr(2).c_str());
-        }
-
-        if(wf.back() == "empty") // Placeholder
-        {
-            LOG.write(_("Skipping %s\n")) % *itFile;
-            to.alloc_inc(1);
-            continue;
-        } else if(wf.back() == "bmp") // Bitmap
-        {
-            libsiedler2::Archiv temp;
-            if(!LoadArchiv(*itFile, palette, temp))
-                return false;
-
-            // Nun Daten abhängig der Typen erstellen, nur erstes Element wird bei Bitmaps konvertiert
-
-            glArchivItem_Bitmap* in = dynamic_cast<glArchivItem_Bitmap*>(temp.get(0));
-            glArchivItem_BitmapBase* out = dynamic_cast<glArchivItem_BitmapBase*>(libsiedler2::getAllocator().create(bobtype));
-
-            if(!out)
-            {
-                LOG.write("unbekannter bobtype: %d\n") % bobtype;
-                return false;
-            }
-
-            out->setName(filename);
-            out->setNx(nx);
-            out->setNy(ny);
-
-            std::fill(buffer.begin(), buffer.end(), 0);
-            in->print(&buffer.front(), 1000, 1000, libsiedler2::FORMAT_BGRA, palette);
-
-            switch(bobtype)
-            {
-                case libsiedler2::BOBTYPE_BITMAP_RLE:
-                case libsiedler2::BOBTYPE_BITMAP_SHADOW:
-                case libsiedler2::BOBTYPE_BITMAP_RAW:
-                {
-                    dynamic_cast<glArchivItem_Bitmap*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000,
-                                                                    libsiedler2::FORMAT_BGRA, palette);
-                }
-                break;
-                case libsiedler2::BOBTYPE_BITMAP_PLAYER:
-                {
-                    dynamic_cast<glArchivItem_Bitmap_Player*>(out)->create(in->getWidth(), in->getHeight(), &buffer.front(), 1000, 1000,
-                                                                           libsiedler2::FORMAT_BGRA, palette, 128);
-                }
-                break;
-                default: throw std::logic_error("Invalid Bitmap type");
-            }
-
-            item = out;
-        } else if((wf.back() == "bbm") || (wf.back() == "act")) // Palettes
-        {
-            libsiedler2::Archiv temp;
-            if(!LoadArchiv(*itFile, palette, temp))
-                return false;
-            item = temp[0]->clone();
-        } else if(wf.back() == "fon") // Font
-        {
-            glArchivItem_Font* font = new glArchivItem_Font();
-            font->setName(filename);
-            font->setDx(dx);
-            font->setDy(dy);
-
-            if(!LoadFile(*itFile, palette, *font))
-                return false;
-            else
-                delete font;
-
-            item = font;
-        }
-
-        if(item)
-        {
-            // had the filename a number? then set it to the corresponding item.
-            if(nr >= 0)
-            {
-                if(nr >= (int)to.size())
-                    to.alloc_inc(nr - to.size() + 1);
-                to.set(nr, item);
-            } else
-                to.push(item);
-        }
+        LOG.write(_("failed: %1%\n")) % libsiedler2::getErrorString(ec);
+        return false;
     }
+    LOG.write(_("done in %ums\n")) % (VIDEODRIVER.GetTickCount() - startTime);
 
     return true;
 }

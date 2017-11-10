@@ -31,8 +31,8 @@
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
-#include "test/initTestHelpers.h"
 #include "test/helperFuncs.h"
+#include "test/initTestHelpers.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>

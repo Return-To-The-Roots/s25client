@@ -99,9 +99,6 @@ private:
     bool LoadLsts(unsigned dir);
     bool LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal);
 
-    static bool SortFilesHelper(const std::string& lhs, const std::string& rhs);
-    static std::vector<std::string> ExplodeString(std::string const& line, const char delim, const unsigned max = 0xFFFFFFFF);
-
 public:
     glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
     glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);

@@ -30,6 +30,7 @@
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
+#include "libutil/StringConversion.h"
 
 namespace {
 enum
@@ -173,8 +174,8 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
             ReadFromEditAndSaveLobbyData(user, pass, email);
 
             // Einloggen
-            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1).c_str()), user, pass,
-                                  SETTINGS.server.ipv6))
+            if(!LOBBYCLIENT.Login(LOADER.GetTextN("client", 0), s25util::fromStringClassic<unsigned>(LOADER.GetTextN("client", 1)), user,
+                                  pass, SETTINGS.server.ipv6))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;
@@ -202,7 +203,8 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
                 break; // raus
             }
 
-            if(!LOBBYCLIENT.Register(LOADER.GetTextN("client", 0), atoi(LOADER.GetTextN("client", 1)), user, pass, email))
+            if(!LOBBYCLIENT.Register(LOADER.GetTextN("client", 0), helpers::fromStringClassic<unsigned>(LOADER.GetTextN("client", 1)), user,
+            pass, email))
             {
                 SetText(_("Connection failed!"), COLOR_RED, true);
                 break;
