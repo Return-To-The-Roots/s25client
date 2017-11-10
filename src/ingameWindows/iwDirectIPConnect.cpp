@@ -122,7 +122,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
             ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
 
-            int iPort = atoi(edtPort->GetText().c_str());
+            int iPort = helpers::fromString(edtPort->GetText(), 0);
             if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
             {
                 SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);

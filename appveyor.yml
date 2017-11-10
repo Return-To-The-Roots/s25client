@@ -22,9 +22,8 @@ environment:
 install:
   - dir C:\Libraries
   - appveyor-retry git submodule update --init
-  - appveyor-retry cinst --allow-empty-checksums -y unrar
   - cd contrib
-  - unrar x full-contrib-msvc.rar
+  - 7z x full-contrib-msvc.rar
   - cd ..
 
 before_build:

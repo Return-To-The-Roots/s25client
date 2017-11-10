@@ -25,6 +25,7 @@
 #include "libsiedler2/ArchivItem.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
+#include "libutil/StringConversion.h"
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 #include <sstream>
@@ -223,9 +224,9 @@ void MusicPlayer::PlayNext()
     }
 
     // Evtl ein Siedlerstück ("sNN")?
-    if(song.length() == 3)
+    if(song.length() == 3 && song[0] == 's')
     {
-        unsigned nr = atoi(song.substr(1).c_str());
+        unsigned nr = s25util::fromStringClassicDef(song.substr(1), 999u);
         if(nr <= 14)
         {
             // Siedlerstück abspielen (falls es geladen wurde)

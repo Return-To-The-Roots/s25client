@@ -31,6 +31,7 @@
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
 #include "test/GameWorldWithLuaAccess.h"
+#include "test/helperFuncs.h"
 #include "test/initTestHelpers.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
@@ -110,13 +111,6 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
 
     // TODO: Add test for message box
 }
-
-struct LocaleResetter
-{
-    const std::string oldLoc;
-    LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, NULL)) { mysetlocale(LC_ALL, newLoc); }
-    ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc.c_str()); }
-};
 
 BOOST_AUTO_TEST_CASE(Translations)
 {

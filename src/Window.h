@@ -304,11 +304,10 @@ template<typename T>
 inline T* Window::AddCtrl(T* ctrl)
 {
     RTTR_Assert(childIdToWnd_.find(ctrl->GetID()) == childIdToWnd_.end());
-    // ID auf control mappen
     childIdToWnd_.insert(std::make_pair(ctrl->GetID(), ctrl));
 
-    // scale-Eigenschaft weitervererben
     ctrl->scale_ = scale_;
+    ctrl->SetActive(active_);
 
     return ctrl;
 }

@@ -18,17 +18,40 @@
 #ifndef converters_h__
 #define converters_h__
 
-#include <sstream>
+#include <boost/lexical_cast.hpp>
 #include <string>
 
 namespace helpers {
 
+/// Locale dependent string conversion
 template<typename T>
-inline std::string toString(const T& val)
+inline std::string toString(const T& value)
 {
-    std::stringstream ss;
-    ss << val;
-    return ss.str();
+    return boost::lexical_cast<std::string>(value);
+}
+
+/// Convert to number and return true on success
+template<typename T>
+inline bool tryFromString(const std::string& value, T& outValue)
+{
+    try
+    {
+        outValue = boost::lexical_cast<T>(value);
+        return true;
+    } catch(boost::bad_lexical_cast&)
+    {
+        return false;
+    }
+}
+
+/// Convert to number or return defaultValue
+template<typename T>
+inline T fromString(const std::string& value, T defaultValue)
+{
+    T result;
+    if(!tryFromString(value, result))
+        result = defaultValue;
+    return result;
 }
 
 } // namespace helpers
