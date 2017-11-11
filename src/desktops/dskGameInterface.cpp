@@ -896,7 +896,7 @@ void dskGameInterface::GI_CancelRoadBuilding()
         return;
     road.mode = RM_DISABLED;
     worldViewer.RemoveVisualRoad(road.start, road.route);
-    GAMEMANAGER.SetCursor(isScrolling ? CURSOR_SCROLL : CURSOR_RM);
+    GAMEMANAGER.SetCursor(isScrolling ? CURSOR_SCROLL : CURSOR_HAND);
 }
 
 bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
