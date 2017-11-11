@@ -23,6 +23,8 @@ chmod 0755 ../rttr.command ../bin/RTTR/s25update ../bin/s25client ../bin/RTTR/so
 RTTR_TEST_FILEA="share/s25rttr/S2/DATA/CREDITS.LST"
 RTTR_TEST_FILEB="share/s25rttr/S2/GFX/PALETTE/PAL5.BBM"
 
+unset LANG
+
 if [ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]; then
 	
 	while [ ! -d /Volumes/S2_GOLD ] && ([ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]); do
