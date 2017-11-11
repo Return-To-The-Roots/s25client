@@ -181,8 +181,9 @@ void GlobalGameSettings::registerAddon(Addon* addon)
     if(helpers::contains(addons, addon->getId()))
         throw std::runtime_error("Addon already registered");
 
-    addons.push_back(AddonWithState(addon));
-    std::sort(addons.begin(), addons.end());
+    // Insert sorted
+    AddonWithState newItem(addon);
+    addons.insert(std::upper_bound(addons.begin(), addons.end(), newItem), newItem);
 }
 
 /**
