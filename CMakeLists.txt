@@ -36,6 +36,12 @@ INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
 include(CheckStructHasMember)
 INCLUDE(CheckIncludeFile)
 
+IF(APPLE)
+	SET(CMAKE_INSTALL_RPATH "@executable_path" "@executable_path/.." "@executable_path/../Frameworks")
+ELSEIF(NOT WIN32)
+	SET(CMAKE_INSTALL_RPATH "\$ORIGIN" "\$ORIGIN/../lib")
+ENDIF()
+
 ################################################################################
 # Include platform specific config files
 ################################################################################
