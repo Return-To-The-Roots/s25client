@@ -5,6 +5,7 @@ SET_CCACHE(CMAKE_C_COMPILER i386-apple-darwin15-gcc)
 SET_CCACHE(CMAKE_CXX_COMPILER i386-apple-darwin15-g++)
 SET(CMAKE_RANLIB i386-apple-darwin15-ranlib CACHE STRING "" FORCE)
 SET(CMAKE_LIPO i386-apple-darwin15-lipo CACHE STRING "" FORCE)
+SET(CMAKE_INSTALL_NAME_TOOL i386-apple-darwin15-install_name_tool CACHE STRING "" FORCE)
 
 SET(OSX1011_SDK "/usr/lib/apple/SDKs/MacOSX10.11.sdk")
 
