@@ -56,7 +56,7 @@ IF ( NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "ppc" AND NOT "${CMAKE_OSX_ARCHITE
     ADD_FLAGS(APPLE_CFLAGS -mtune=core2)
 ENDIF ( NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "ppc" AND NOT "${CMAKE_OSX_ARCHITECTURES}" MATCHES "i386" )
 
-ADD_FLAGS(APPLE_CFLAGS -fexceptions -ffast-math -msse -fomit-frame-pointer)
+ADD_FLAGS(APPLE_CFLAGS -fexceptions -msse -fomit-frame-pointer)
 ADD_FLAGS(APPLE_LDFLAGS -fexceptions)
 
 # set compiler flags
