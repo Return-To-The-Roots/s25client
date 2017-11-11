@@ -450,7 +450,11 @@ add_subdirectory(common)
 ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(rttrConfig)
 ADD_SUBDIRECTORY(src)
-add_subdirectory(s25edit)
+
+option(RTTR_BUILD_EDITOR "Build editor." ON)
+if(RTTR_BUILD_EDITOR)
+	add_subdirectory(s25edit)
+endif()
 
 if(ClangFormat_FOUND)
     add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
