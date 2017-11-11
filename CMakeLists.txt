@@ -205,13 +205,20 @@ IF (WIN32)
 	SET(RTTR_DOCDIR "." CACHE INTERNAL "")
 	SET(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
 ELSEIF(APPLE)
-	# Apple wants an Apple Bundle
-	SET(RTTR_BINDIR "./s25client.app/Contents/MacOS/bin" CACHE INTERNAL "")
-	SET(RTTR_DATADIR "./s25client.app/Contents/MacOS/share/s25rttr" CACHE INTERNAL "")
-	SET(RTTR_GAMEDIR "./s25client.app/Contents/MacOS/share/s25rttr/S2" CACHE INTERNAL "")
-	SET(RTTR_LIBDIR "./s25client.app/Contents/MacOS" CACHE INTERNAL "")
-	SET(RTTR_DOCDIR "./s25client.app/Contents/MacOS/share/doc" CACHE INTERNAL "")
-	SET(RTTR_DRIVERDIR "./s25client.app/Contents/MacOS/share/s25rttr/driver" CACHE INTERNAL "")
+	OPTION(RTTR_OSX_BUNDLE "Create an Apple/OSX bundle directory (=clickable application)" ON)
+
+	# Create an OSX Bundle
+	IF(RTTR_OSX_BUNDLE)
+		SET(RTTR_DIR_CONTENTS "${PROJECT_NAME}.app/Contents" CACHE INTERNAL "")
+		SET(RTTR_DIR_MACOS "${RTTR_DIR_CONTENTS}/MacOS" CACHE INTERNAL "")
+		SET(RTTR_DIR_FRAMEWORKS "${RTTR_DIR_MACOS}/Frameworks" CACHE INTERNAL "")
+		SET(RTTR_BINDIR "${RTTR_DIR_MACOS}/bin" CACHE INTERNAL "")
+		SET(RTTR_DATADIR "${RTTR_DIR_MACOS}/share/s25rttr" CACHE INTERNAL "")
+		SET(RTTR_GAMEDIR "${RTTR_DIR_MACOS}/share/s25rttr/S2" CACHE INTERNAL "")
+		SET(RTTR_LIBDIR "${RTTR_DIR_MACOS}" CACHE INTERNAL "")
+		SET(RTTR_DOCDIR "${RTTR_DIR_MACOS}/share/doc" CACHE INTERNAL "")
+		SET(RTTR_DRIVERDIR "${RTTR_DIR_MACOS}/driver" CACHE INTERNAL "")
+	ENDIF()
 ELSE()
 	include(GNUInstallDirs)
 	SET(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
@@ -495,30 +502,31 @@ endif()
 IF (WIN32)
 	install(PROGRAMS "release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
 ELSEIF(APPLE)
-	install(PROGRAMS "release/bin/macos/rttr.command" DESTINATION "${RTTR_LIBDIR}")
-	install(PROGRAMS "release/bin/macos/rttr.terminal" DESTINATION "${RTTR_LIBDIR}")
-	install(FILES "release/bin/macos/icon.icns" DESTINATION "${RTTR_LIBDIR}/../Resources")
-	install(FILES "release/bin/macos/PkgInfo" DESTINATION "${RTTR_LIBDIR}/..")
-	install(FILES "release/bin/macos/Info.plist" DESTINATION "${RTTR_LIBDIR}/..")
-	IF (CMAKE_CROSSCOMPILING)
-		# copy Frameworks
-		LIST(GET SDL_LIBRARY 0 SDL_FRAMEWORK)
-		install(DIRECTORY ${SDL_FRAMEWORK} DESTINATION "${RTTR_LIBDIR}/Frameworks"
-				PATTERN "Headers" EXCLUDE
-		)
-		LIST(GET SDL_MIXER_LIBRARY 0 SDL_mixer_FRAMEWORK)
-		install(DIRECTORY ${SDL_mixer_FRAMEWORK} DESTINATION "${RTTR_LIBDIR}/Frameworks"
-				PATTERN "Headers" EXCLUDE
-		)
+	IF(RTTR_OSX_BUNDLE)
+		install(PROGRAMS "release/bin/macos/rttr.command" DESTINATION "${RTTR_DIR_MACOS}")
+		install(PROGRAMS "release/bin/macos/rttr.terminal" DESTINATION "${RTTR_DIR_MACOS}")
+		install(FILES "release/bin/macos/icon.icns" DESTINATION "${RTTR_DIR_CONTENTS}/Resources")
+		install(FILES "release/bin/macos/PkgInfo" DESTINATION "${RTTR_DIR_CONTENTS}")
+		install(FILES "release/bin/macos/Info.plist" DESTINATION "${RTTR_DIR_CONTENTS}")
+		IF (CMAKE_CROSSCOMPILING)
+			# copy Frameworks
+			LIST(GET SDL_LIBRARY 0 SDL_FRAMEWORK)
+			install(DIRECTORY ${SDL_FRAMEWORK} DESTINATION "${RTTR_DIR_FRAMEWORKS}"
+					PATTERN "Headers" EXCLUDE
+			)
+			LIST(GET SDL_MIXER_LIBRARY 0 SDL_mixer_FRAMEWORK)
+			install(DIRECTORY ${SDL_mixer_FRAMEWORK} DESTINATION "${RTTR_DIR_FRAMEWORKS}"
+					PATTERN "Headers" EXCLUDE
+			)
 
-		# copy miniupnpc
-		get_filename_component(MINIUPNPC_DIR ${MINIUPNPC_LIBRARY} DIRECTORY)
-		get_filename_component(MINIUPNPC_NAME ${MINIUPNPC_LIBRARY} NAME_WE)
-		FILE(GLOB MINIUPNPC_DYLIBS ${MINIUPNPC_DIR}/${MINIUPNPC_NAME}*.dylib)
-		FOREACH(DYLIB ${MINIUPNPC_DYLIBS} )
-		MESSAGE(STATUS ${DYLIB})
-			install(FILES ${DYLIB} DESTINATION "${RTTR_LIBDIR}/")
-		ENDFOREACH()
+			# copy miniupnpc
+			get_filename_component(MINIUPNPC_DIR ${MINIUPNPC_LIBRARY} DIRECTORY)
+			get_filename_component(MINIUPNPC_NAME ${MINIUPNPC_LIBRARY} NAME_WE)
+			FILE(GLOB MINIUPNPC_DYLIBS ${MINIUPNPC_DIR}/${MINIUPNPC_NAME}*.dylib)
+			FOREACH(DYLIB ${MINIUPNPC_DYLIBS} )
+				install(FILES ${DYLIB} DESTINATION "${RTTR_LIBDIR}")
+			ENDFOREACH()
+		ENDIF()
 	ENDIF()
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
 	install(PROGRAMS "release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
