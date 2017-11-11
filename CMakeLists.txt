@@ -53,6 +53,23 @@ INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(CheckCCompilerFlag)
 INCLUDE(CheckIncludeFile)
 
+SET (RTTR_RPATH "")
+IF(WIN32)
+	# empty RPATH
+ELSEIF(APPLE)
+	SET(RTTR_RPATH "@executable_path/.." "@executable_path/../Frameworks" "@executable_path")
+ELSE()
+	SET(RTTR_RPATH "\$ORIGIN/../lib" "\$ORIGIN")
+ENDIF()
+
+IF( RTTR_RPATH )
+	FOREACH(RPATH ${RTTR_RPATH})
+		FORCE_ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -Wl,-rpath,${RPATH} )
+		FORCE_ADD_FLAGS(CMAKE_MODULE_LINKER_FLAGS -Wl,-rpath,${RPATH} )
+		FORCE_ADD_FLAGS(CMAKE_SHARED_LINKER_FLAGS -Wl,-rpath,${RPATH} )
+	ENDFOREACH()
+ENDIF()
+
 ################################################################################
 # Unify variables:
 #   PLATFORM_NAME in lowercase (windows, linux,...)
