@@ -69,7 +69,7 @@ IF(WIN32)
 	ELSEIF (CMAKE_SIZEOF_VOID_P EQUAL 4)
 		SET(PLATFORM_ARCH "i386")
     ELSE()
-		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")    
+		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")
 	ENDIF ()
 ELSE()
 	IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
@@ -187,6 +187,14 @@ IF (WIN32)
 	SET(RTTR_LIBDIR "." CACHE INTERNAL "")
 	SET(RTTR_DOCDIR "." CACHE INTERNAL "")
 	SET(RTTR_DRIVERDIR "./driver" CACHE INTERNAL "")
+ELSEIF(APPLE)
+	# Apple wants an Apple Bundle
+	SET(RTTR_BINDIR "./s25client.app/Contents/MacOS/bin" CACHE INTERNAL "")
+	SET(RTTR_DATADIR "./s25client.app/Contents/MacOS/share/s25rttr" CACHE INTERNAL "")
+	SET(RTTR_GAMEDIR "./s25client.app/Contents/MacOS/share/s25rttr/S2" CACHE INTERNAL "")
+	SET(RTTR_LIBDIR "./s25client.app/Contents/MacOS" CACHE INTERNAL "")
+	SET(RTTR_DOCDIR "./s25client.app/Contents/MacOS/share/doc" CACHE INTERNAL "")
+	SET(RTTR_DRIVERDIR "./s25client.app/Contents/MacOS/share/s25rttr/driver" CACHE INTERNAL "")
 ELSE()
 	include(GNUInstallDirs)
 	SET(RTTR_BINDIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Directory for the binaries")
@@ -305,7 +313,7 @@ ELSE ()
     else()
     	ADD_DEFINITIONS(-Doverride=)
     ENDIF(COMPILER_IN_CXX11_MODE)
-    
+
     # Variadic macros are part of C99 but supported by all big compilers in C++03
     CheckAndAddFlag("-Wno-variadic-macros")
     CheckAndAddFlag("-Wno-c99-extensions")
@@ -373,7 +381,7 @@ file(COPY ${CMAKE_BINARY_DIR}/CMakeFiles/prepareRelease.sh
 	DESTINATION "."
 	FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 	GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/copyDepsToBuildDir.cmake CMakeFiles @ONLY)
 
 IF (NOT WIN32)
@@ -429,7 +437,7 @@ ADD_CUSTOM_TARGET(updateversion ALL
 				  DEPENDS version
 				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
-	
+
 # And the rest
 
 ADD_SUBDIRECTORY(libendian)
@@ -469,9 +477,28 @@ endif()
 # Start script
 IF (WIN32)
 	install(PROGRAMS "release/bin/rttr.bat" DESTINATION "${RTTR_BINDIR}")
+ELSEIF(APPLE)
+	install(PROGRAMS "release/bin/macos/rttr.command" DESTINATION "${RTTR_LIBDIR}")
+	install(PROGRAMS "release/bin/macos/rttr.terminal" DESTINATION "${RTTR_LIBDIR}")
+	install(FILES "release/bin/macos/icon.icns" DESTINATION "${RTTR_LIBDIR}/../Resources")
+	install(FILES "release/bin/macos/PkgInfo" DESTINATION "${RTTR_LIBDIR}/..")
+	install(FILES "release/bin/macos/Info.plist" DESTINATION "${RTTR_LIBDIR}/..")
+	IF (CMAKE_CROSSCOMPILING)
+		# copy Frameworks
+		LIST(GET SDL_LIBRARY 0 SDL_FRAMEWORK)
+		install(DIRECTORY ${SDL_FRAMEWORK} DESTINATION "${RTTR_LIBDIR}/Frameworks"
+				PATTERN "Headers" EXCLUDE
+		)
+		LIST(GET SDL_MIXER_LIBRARY 0 SDL_mixer_FRAMEWORK)
+		install(DIRECTORY ${SDL_mixer_FRAMEWORK} DESTINATION "${RTTR_LIBDIR}/Frameworks"
+				PATTERN "Headers" EXCLUDE
+		)
+
+		#install(FILES ${MINIUPNPC_LIBRARY} DESTINATION "${RTTR_LIBDIR}/")
+	ENDIF()
 ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
 	install(PROGRAMS "release/bin/rttr.sh" DESTINATION "${RTTR_BINDIR}")
-ELSEIF(NOT APPLE)
+ELSE()
 	message(FATAL_ERROR "${CMAKE_SYSTEM_NAME} not supported")
 ENDIF()
 
