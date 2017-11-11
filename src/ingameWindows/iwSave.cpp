@@ -116,12 +116,10 @@ void iwSaveLoad::FillSaveTable(const std::string& filePath, void* param) {}
 void iwSave::SaveLoad()
 {
     // Speichern
-    std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]);
-    tmp += GetCtrl<ctrlEdit>(1)->GetText();
-    tmp += ".sav";
+    std::string savePath = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + GetCtrl<ctrlEdit>(1)->GetText() + ".sav";
 
     // Speichern
-    GAMECLIENT.SaveToFile(tmp);
+    GAMECLIENT.SaveToFile(savePath);
 
     // Aktualisieren
     RefreshTable();

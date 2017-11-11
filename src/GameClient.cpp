@@ -1246,18 +1246,17 @@ void GameClient::HandleAutosave()
     // Alle .... GF
     if(GetGFNumber() % SETTINGS.interface.autosave_interval == 0)
     {
-        std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]);
+        std::string tmp = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/";
 
-        if(this->mapinfo.title.length())
-        {
-            tmp += this->mapinfo.title;
-            tmp += " (";
-            tmp += _("Auto-Save");
-            tmp += ").sav";
-        } else
+        if(mapinfo.title.empty())
         {
             tmp += _("Auto-Save");
             tmp += ".sav";
+        } else
+        {
+            tmp += mapinfo.title + " (";
+            tmp += _("Auto-Save");
+            tmp += ").sav";
         }
 
         SaveToFile(tmp);
