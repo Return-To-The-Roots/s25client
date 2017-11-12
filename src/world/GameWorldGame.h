@@ -49,7 +49,7 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
                             bool allowdestructionofmilbuildings = true);
 
     /// Return if there are deco-objects that can be removed when building roads
-    bool IsObjectionableForRoad(const MapPoint pt);
+    bool HasRemovableObjForRoad(const MapPoint pt) const;
 
     bool IsPointCompletelyVisible(const MapPoint& pt, unsigned char player, const noBaseBuilding* exception) const;
     /// Return if there is a scout (or an attacking soldier) of this player at that node with a visual range of at most the given distance.
@@ -58,7 +58,7 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
     /// Return true, if the point is explored by any ship of the player
     bool IsPointScoutedByShip(const MapPoint& pt, unsigned player) const;
     /// Berechnet die Sichtbarkeit eines Punktes neu für den angegebenen Spieler
-    /// exception ist ein Gebäude (Spähturm, Militärgebäude), was nicht mit in die Berechnugn einbezogen
+    /// exception ist ein Gebäude (Spähturm, Militärgebäude), was nicht mit in die Berechnung einbezogen
     /// werden soll, z.b. weil es abgerissen wird
     void RecalcVisibility(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception);
     /// Setzt Punkt auf jeden Fall auf sichtbar

@@ -257,10 +257,10 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                     obj = new noStaticObject(pt, 0, 0);
                 // gate
                 else if(lc == 0x16)
-                    obj = new noStaticObject(pt, 560, 0xFFFF);
+                    obj = new noStaticObject(pt, 560);
                 // open gate
                 else if(lc == 0x17)
-                    obj = new noStaticObject(pt, 561, 0xFFFF);
+                    obj = new noStaticObject(pt, 561);
                 // Stalagmiten (mis1bobs)
                 else if(lc >= 0x18 && lc <= 0x1E)
                     obj = new noStaticObject(pt, (lc - 0x18) * 2, 1);
@@ -271,11 +271,8 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc == 0x21)
                     obj = new noStaticObject(pt, 30, 1);
                 // Objekte aus der map.lst
-                else if(lc >= 0x22 && lc <= 0x27)
+                else if(lc >= 0x22 && lc <= 0x2B)
                     obj = new noEnvObject(pt, 550 + lc - 0x22);
-                // Objekte aus der map.lst
-                else if(lc >= 0x28 && lc <= 0x2B)
-                    obj = new noEnvObject(pt, 556 + lc - 0x28);
                 // tent and ruin of guardhouse
                 else if(lc >= 0x2C && lc <= 0x2D)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
