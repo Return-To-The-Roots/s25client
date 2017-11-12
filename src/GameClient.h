@@ -160,7 +160,7 @@ public:
     /// Spiel pausiert?
     bool IsPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
-    unsigned SaveToFile(const std::string& filename);
+    bool SaveToFile(const std::string& filename);
     /// Visuelle Einstellungen aus den richtigen ableiten
     void ResetVisualSettings();
     void SystemChat(const std::string& text, unsigned char player = 0xFF);

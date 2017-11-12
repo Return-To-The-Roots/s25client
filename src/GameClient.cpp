@@ -1526,7 +1526,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char player)
     ci->CI_Chat(player, CD_SYSTEM, text);
 }
 
-unsigned GameClient::SaveToFile(const std::string& filename)
+bool GameClient::SaveToFile(const std::string& filename)
 {
     GameMessage_System_Chat saveAnnouncement = GameMessage_System_Chat(playerId_, "Saving game...");
     send_queue.sendMessage(socket, saveAnnouncement);
@@ -1553,10 +1553,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     save.sgd.MakeSnapshot(game->world);
 
     // Und alles speichern
-    if(!save.Save(filename, mapinfo.title))
-        return 1;
-    else
-        return 0;
+    return save.Save(filename, mapinfo.title);
 }
 
 void GameClient::ResetVisualSettings()
