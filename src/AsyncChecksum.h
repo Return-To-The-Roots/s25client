@@ -19,14 +19,17 @@
 #ifndef AsyncChecksum_h__
 #define AsyncChecksum_h__
 
+class Game;
+
 struct AsyncChecksum
 {
     unsigned randChecksum;
-    unsigned objCt;
-    unsigned objIdCt;
+    unsigned objCt, objIdCt;
+    unsigned eventCt, evInstanceCt;
     AsyncChecksum();
-    explicit AsyncChecksum(unsigned randChecksum);
-    AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt);
+    AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt, unsigned evInstanceCt);
+
+    static AsyncChecksum create(const Game& game);
 
     bool operator==(const AsyncChecksum& rhs) const;
     bool operator!=(const AsyncChecksum& rhs) const;
@@ -34,7 +37,8 @@ struct AsyncChecksum
 
 inline bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const
 {
-    return randChecksum == rhs.randChecksum && objCt == rhs.objCt && objIdCt == rhs.objIdCt;
+    return randChecksum == rhs.randChecksum && objCt == rhs.objCt && objIdCt == rhs.objIdCt && eventCt == rhs.eventCt
+           && evInstanceCt == rhs.evInstanceCt;
 }
 
 inline bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const

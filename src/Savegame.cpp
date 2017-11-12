@@ -29,7 +29,7 @@ std::string Savegame::GetSignature() const
 uint16_t Savegame::GetVersion() const
 {
     // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
-    return 1; // SaveGameVersion -- Updater signature, do NOT remove
+    return 2; // SaveGameVersion -- Updater signature, do NOT remove
 }
 
 //////////////////////////////////////////////////////////////////////////

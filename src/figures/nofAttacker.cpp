@@ -95,7 +95,7 @@ void nofAttacker::Serialize_nofAttacker(SerializedGameData& sgd) const
         sgd.PushUnsignedShort(radius);
 
         if(state == STATE_ATTACKING_WAITINGFORDEFENDER)
-            sgd.PushObject(blocking_event, true);
+            sgd.PushEvent(blocking_event);
 
         sgd.PushMapPoint(harborPos);
         sgd.PushMapPoint(shipPos);

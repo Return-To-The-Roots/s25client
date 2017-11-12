@@ -52,7 +52,7 @@ void nofPassiveSoldier::Serialize_nofPassiveSoldier(SerializedGameData& sgd) con
 {
     Serialize_nofSoldier(sgd);
 
-    sgd.PushObject(healing_event, true);
+    sgd.PushEvent(healing_event);
 }
 
 nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id)

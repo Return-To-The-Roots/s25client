@@ -18,10 +18,12 @@
 #ifndef GameEvent_h__
 #define GameEvent_h__
 
-#include "GameObject.h"
+class GameObject;
+class SerializedGameData;
 
-class GameEvent : public GameObject
+class GameEvent
 {
+    const unsigned instanceId; /// unique ID
 public:
     /// Object that will handle this event
     GameObject* obj;
@@ -32,20 +34,13 @@ public:
     /// ID of the event (meaning dependent on object)
     unsigned id;
 
-    GameEvent(GameObject* obj, unsigned startGF, unsigned length, unsigned id) : obj(obj), startGF(startGF), length(length), id(id)
-    {
-        RTTR_Assert(length > 0); // Events cannot be executed in the same GF as they are added
-        RTTR_Assert(obj);        // Events without an object are pointless
-    }
+    GameEvent(unsigned instanceId, GameObject* obj, unsigned startGF, unsigned length, unsigned id);
+    GameEvent(SerializedGameData& sgd, unsigned instanceId);
+    void Serialize(SerializedGameData& sgd) const;
 
-    GameEvent(SerializedGameData& sgd, const unsigned obj_id);
-    void Serialize(SerializedGameData& sgd) const override;
-
-    void Destroy() override {}
-
-    GO_Type GetGOT() const override { return GOT_EVENT; }
     /// Return GF at which this event will be executed
     unsigned GetTargetGF() const { return startGF + length; }
+    unsigned GetInstanceId() const { return instanceId; }
 };
 
 #endif // GameEvent_h__

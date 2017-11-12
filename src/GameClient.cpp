@@ -328,7 +328,7 @@ void GameClient::GameStarted()
 
     // Send empty GC for first NWF
     if(!replayMode)
-        SendNothingNC(0);
+        SendNothingNC();
 
     GAMEMANAGER.ResetAverageFPS();
     game->Start(mapinfo.savegame);
@@ -1284,15 +1284,9 @@ void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
         gc->Execute(game->world, playerId);
 }
 
-/**
- *  Sendet ein NC-Paket ohne Befehle.
- */
-void GameClient::SendNothingNC(int checksum)
+void GameClient::SendNothingNC()
 {
-    if(checksum == -1)
-        checksum = RANDOM.GetChecksum();
-
-    send_queue.push(new GameMessage_GameCommand(playerId_, AsyncChecksum(checksum), std::vector<gc::GameCommandPtr>()));
+    send_queue.push(new GameMessage_GameCommand(playerId_, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WritePlayerInfo(SavedFile& file)
@@ -1526,7 +1520,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char player)
     ci->CI_Chat(player, CD_SYSTEM, text);
 }
 
-unsigned GameClient::SaveToFile(const std::string& filename)
+bool GameClient::SaveToFile(const std::string& filename)
 {
     GameMessage_System_Chat saveAnnouncement = GameMessage_System_Chat(playerId_, "Saving game...");
     send_queue.sendMessage(socket, saveAnnouncement);
@@ -1553,10 +1547,7 @@ unsigned GameClient::SaveToFile(const std::string& filename)
     save.sgd.MakeSnapshot(game->world);
 
     // Und alles speichern
-    if(!save.Save(filename, mapinfo.title))
-        return 1;
-    else
-        return 0;
+    return save.Save(filename, mapinfo.title);
 }
 
 void GameClient::ResetVisualSettings()

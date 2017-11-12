@@ -57,7 +57,7 @@ void noGrainfield::Serialize_noGrainfield(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(static_cast<unsigned char>(state));
     sgd.PushUnsignedChar(size);
-    sgd.PushObject(event, true);
+    sgd.PushEvent(event);
 }
 
 noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id)

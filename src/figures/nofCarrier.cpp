@@ -138,7 +138,7 @@ void nofCarrier::Serialize_nofCarrier(SerializedGameData& sgd) const
     sgd.PushBool(fat);
     sgd.PushObject(workplace, true);
     sgd.PushObject(carried_ware, true);
-    sgd.PushObject(productivity_ev, true);
+    sgd.PushEvent(productivity_ev);
     sgd.PushUnsignedInt(productivity);
     sgd.PushUnsignedInt(worked_gf);
     sgd.PushUnsignedInt(since_working_gf);

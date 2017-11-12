@@ -28,13 +28,13 @@
 #include "gameData/BuildingProperties.h"
 #include <boost/foreach.hpp>
 
-void BuildingRegister::Serialize(SerializedGameData& sgd)
+void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushObjectContainer(warehouses, false);
     sgd.PushObjectContainer(harbors, true);
 }
 
-void BuildingRegister::Serialize2(SerializedGameData& sgd)
+void BuildingRegister::Serialize2(SerializedGameData& sgd) const
 {
     for(unsigned i = 0; i < 30; ++i)
         sgd.PushObjectContainer(buildings[i], true);

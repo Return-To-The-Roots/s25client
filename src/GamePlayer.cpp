@@ -166,7 +166,7 @@ void GamePlayer::LoadStandardDistribution()
 
 GamePlayer::~GamePlayer() {}
 
-void GamePlayer::Serialize(SerializedGameData& sgd)
+void GamePlayer::Serialize(SerializedGameData& sgd) const
 {
     // PlayerStatus speichern, ehemalig
     sgd.PushUnsignedChar(static_cast<unsigned char>(ps));
@@ -1529,7 +1529,7 @@ GamePlayer::Pact::Pact(SerializedGameData& sgd)
     : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel(sgd.PopBool())
 {}
 
-void GamePlayer::Pact::Serialize(SerializedGameData& sgd)
+void GamePlayer::Pact::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(duration);
     sgd.PushUnsignedInt(start);

@@ -33,6 +33,12 @@ public:
     explicit EventManager(unsigned startGF);
     ~EventManager();
 
+    /// Deletes all events and objects to be killed. Then resets counters
+    void Clear();
+
+    unsigned GetNumActiveEvents() const { return numActiveEvents; }
+    unsigned GetEventInstanceCtr() const { return eventInstanceCtr; }
+
     /// Increase the GF# and execute all events of that GF
     void ExecuteNextGF();
     /// Add an event for the given object
@@ -50,7 +56,9 @@ public:
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);
     /// Deserializes an event and adds it. TODO: Should return a const event
-    GameEvent* AddEvent(SerializedGameData& sgd, unsigned obj_id);
+    const GameEvent* AddEvent(SerializedGameData& sgd, unsigned instanceId);
+
+    unsigned GetNextEventInstanceId();
 
     unsigned GetCurrentGF() const { return currentGF; }
 
@@ -65,6 +73,9 @@ protected:
     typedef std::map<unsigned, EventList> EventMap;
     // Use list to allow adding events while iterating (Destroying 1 object may lead to destruction of another)
     typedef std::list<GameObject*> GameObjList;
+    unsigned numActiveEvents;
+    /// Instances created. Must be != 0
+    unsigned eventInstanceCtr;
     unsigned currentGF;
     EventMap events;      /// Mapping of GF to Events to be executed in this GF
     GameObjList killList; /// Objects that will be killed after current GF

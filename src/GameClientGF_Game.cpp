@@ -20,7 +20,6 @@
 #include "GameMessage_GameCommand.h"
 #include "GamePlayer.h"
 #include "ReplayInfo.h"
-#include "random/Random.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 
@@ -28,7 +27,7 @@ void GameClient::ExecuteNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
-    AsyncChecksum checksum(RANDOM.GetChecksum());
+    AsyncChecksum checksum = AsyncChecksum::create(*game);
     const unsigned curGF = GetGFNumber();
 
     for(unsigned i = 0; i < GetPlayerCount(); ++i)

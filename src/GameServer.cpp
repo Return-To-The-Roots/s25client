@@ -849,6 +849,15 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
     // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier
     framesinfo.lastTime += framesinfo.gf_length;
 
+    /// Handle AI
+    BOOST_FOREACH(AIPlayer* ai, ai_players)
+    {
+        if(!ai)
+            continue;
+        SendToAll(GameMessage_GameCommand(ai->GetPlayerId(), AsyncChecksum(), ai->GetGameCommands()));
+        ai->FetchGameCommands();
+    }
+
     // We take the checksum of the first human player as the reference
     unsigned char referencePlayerIdx = 0xFF;
     AsyncChecksum referenceChecksum;
@@ -864,7 +873,7 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
         if(player.ps == PS_AI)
         {
             // LOG.writeToFile("SERVER >>> GC %u\n") % playerId;
-            SendToAll(GameMessage_GameCommand(playerId, AsyncChecksum(0), ai_players[playerId]->GetGameCommands()));
+            SendToAll(GameMessage_GameCommand(playerId, AsyncChecksum(), ai_players[playerId]->GetGameCommands()));
             ai_players[playerId]->FetchGameCommands();
             RTTR_Assert(player.gc_queue.empty());
             continue; // No GCs in the queue for KIs
@@ -972,7 +981,7 @@ unsigned char GameServer::GetLaggingPlayer() const
  */
 void GameServer::SendNothingNC(const unsigned& id)
 {
-    SendToAll(GameMessage_GameCommand(id, AsyncChecksum(0), std::vector<gc::GameCommandPtr>()));
+    SendToAll(GameMessage_GameCommand(id, AsyncChecksum(), std::vector<gc::GameCommandPtr>()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

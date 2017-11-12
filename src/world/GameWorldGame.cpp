@@ -258,7 +258,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     }
 
     // Evtl Zierobjekte abreißen (Anfangspunkt)
-    if(IsObjectionableForRoad(start))
+    if(HasRemovableObjForRoad(start))
         DestroyNO(start);
 
     MapPoint end(start);
@@ -269,7 +269,7 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
         end = GetNeighbour(end, route[i]);
 
         // Evtl Zierobjekte abreißen
-        if(IsObjectionableForRoad(end))
+        if(HasRemovableObjForRoad(end))
             DestroyNO(end);
     }
 
@@ -284,62 +284,50 @@ void GameWorldGame::BuildRoad(const unsigned char playerId, const bool boat_road
     GetNotifications().publish(RoadNote(RoadNote::Constructed, playerId, start, route));
 }
 
-bool GameWorldGame::IsObjectionableForRoad(const MapPoint pt)
+bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
 {
-    if(GetNO(pt)->GetGOT() == GOT_ENVOBJECT)
+    const noStaticObject* obj = GetSpecObj<noStaticObject>(pt);
+    if(obj && obj->GetSize() == 0)
+        return true;
+    return false;
+    /*if(GetNO(pt)->GetGOT() == GOT_ENVOBJECT)
     {
-        noEnvObject* no = GetSpecObj<noEnvObject>(pt);
+        const noEnvObject* no = GetSpecObj<noEnvObject>(pt);
         unsigned short type = no->GetItemID();
         switch(no->GetItemFile())
         {
             case 0xFFFF: // map_?_z.lst
-            {
                 if(type == 505 || type == 506 || type == 507 || type == 508 || type == 510 || (type >= 542 && type <= 546) || type == 512
                    || type == 513 ||           // Kakteen
                    type == 536 || type == 541) // abgeerntete Getreidefelder
                     return true;
-            }
-            break;
+                break;
             case 0:
-            {
                 // todo:
-            }
-            break;
+                break;
             case 1:
-            {
                 if(type <= 12)
                     return true;
                 // todo:
-            }
-            break;
+                break;
             case 2:
-            {
                 // todo:
-            }
-            break;
+                break;
             case 3:
-            {
                 // todo:
-            }
-            break;
+                break;
             case 4:
-            {
                 // todo:
-            }
-            break;
+                break;
             case 5:
-            {
                 // todo:
-            }
-            break;
+                break;
             // Charburner rests
-            case 6: { return true;
-            }
-            break;
+            case 6: return true; break;
         }
     }
 
-    return false;
+    return false;*/
 }
 
 // When defined the game tries to remove "blocks" of border stones that look ugly (TODO: Example?)

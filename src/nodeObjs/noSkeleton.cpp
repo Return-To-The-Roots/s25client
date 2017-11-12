@@ -47,7 +47,7 @@ void noSkeleton::Serialize_noSkeleton(SerializedGameData& sgd) const
     Serialize_noCoordBase(sgd);
 
     sgd.PushUnsignedChar(type);
-    sgd.PushObject(current_event, true);
+    sgd.PushEvent(current_event);
 }
 
 noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id)

@@ -277,8 +277,7 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 void dskSelectMap::CreateRandomMap()
 {
     // setup filepath for the random map
-    std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]);
-    mapPath.append("Random.swd");
+    std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/Random.swd";
 
     // create a random map and save filepath
     MapGenerator::Create(mapPath, rndMapSettings);

@@ -24,6 +24,8 @@
 #include "Savegame.h"
 #include "SerializedGameData.h"
 #include "WorldFixture.h"
+#include "buildings/nobUsual.h"
+#include "factories/BuildingFactory.h"
 #include "initTestHelpers.h"
 #include "gameTypes/MapInfo.h"
 #include "libutil/tmpFile.h"
@@ -126,7 +128,13 @@ BOOST_AUTO_TEST_SUITE(Serialization)
 
 BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
-    for(unsigned i = 0; i < 10; i++)
+    MapPoint hqPos = world.GetPlayer(0).GetHQPos();
+    MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
+    nobUsual* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
+    world.BuildRoad(0, false, world.GetNeighbour(hqPos, Direction::SOUTHEAST), std::vector<Direction>(3, Direction::EAST));
+    usualBld->is_working = true;
+
+    for(unsigned i = 0; i < 100; i++)
         em.ExecuteNextGF();
 
     Savegame save;
@@ -203,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_REQUIRE_EQUAL(worldEvs.size(), loadEvs.size());
             for(unsigned j = 0; j < worldEvs.size(); ++j)
             {
-                BOOST_REQUIRE_EQUAL(worldEvs[j]->GetObjId(), loadEvs[j]->GetObjId());
+                BOOST_REQUIRE_EQUAL(worldEvs[j]->GetInstanceId(), loadEvs[j]->GetInstanceId());
                 BOOST_REQUIRE_EQUAL(worldEvs[j]->startGF, loadEvs[j]->startGF);
                 BOOST_REQUIRE_EQUAL(worldEvs[j]->length, loadEvs[j]->length);
                 BOOST_REQUIRE_EQUAL(worldEvs[j]->id, loadEvs[j]->id);
@@ -212,6 +220,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             {
                 const MapNode& worldNode = world.GetNode(pt);
                 const MapNode& loadNode = newWorld.GetNode(pt);
+                RTTR_REQUIRE_EQUAL_COLLECTIONS(loadNode.roads, worldNode.roads);
                 BOOST_REQUIRE_EQUAL(loadNode.altitude, worldNode.altitude);
                 BOOST_REQUIRE_EQUAL(loadNode.shadow, worldNode.shadow);
                 BOOST_REQUIRE_EQUAL(loadNode.t1, worldNode.t1);
@@ -224,6 +233,11 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 BOOST_REQUIRE_EQUAL(loadNode.harborId, worldNode.harborId);
                 BOOST_REQUIRE_EQUAL(loadNode.obj != NULL, worldNode.obj != NULL);
             }
+            const nobUsual* newUsual = newWorld.GetSpecObj<nobUsual>(usualBldPos);
+            BOOST_REQUIRE(newUsual);
+            BOOST_REQUIRE_EQUAL(newUsual->is_working, usualBld->is_working);
+            BOOST_REQUIRE_EQUAL(newUsual->HasWorker(), usualBld->HasWorker());
+            BOOST_REQUIRE_EQUAL(newUsual->GetProductivity(), usualBld->GetProductivity());
         }
     }
 }

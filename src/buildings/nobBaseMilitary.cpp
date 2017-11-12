@@ -107,7 +107,7 @@ void nobBaseMilitary::Serialize_nobBaseMilitary(SerializedGameData& sgd) const
     Serialize_noBuilding(sgd);
 
     sgd.PushObjectContainer(leave_house, false);
-    sgd.PushObject(leaving_event, true);
+    sgd.PushEvent(leaving_event);
     sgd.PushBool(go_out);
     sgd.PushUnsignedInt(0); // former age, compatibility with 0.7, remove it in furher versions
     sgd.PushObjectContainer(troops_on_mission, false);

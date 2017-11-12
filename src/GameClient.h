@@ -160,7 +160,7 @@ public:
     /// Spiel pausiert?
     bool IsPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
-    unsigned SaveToFile(const std::string& filename);
+    bool SaveToFile(const std::string& filename);
     /// Visuelle Einstellungen aus den richtigen ableiten
     void ResetVisualSettings();
     void SystemChat(const std::string& text, unsigned char player = 0xFF);
@@ -184,7 +184,7 @@ private:
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
     void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC(int checksum = -1);
+    void SendNothingNC();
     /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
     bool IsPlayerLagging();
 
