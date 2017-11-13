@@ -13,6 +13,8 @@
 *.h text
 *.h++ text
 *.hh text
+*.sh text
+*.md text
 
 # Compiled Object files
 *.slo binary
