@@ -18,7 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/TerritoryRegion.h"
 #include "GamePlayer.h"
-#include "buildings/nobMilitary.h"
+#include "buildings/noBaseBuilding.h"
 #include "world/GameWorldBase.h"
 
 TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb)
@@ -141,15 +141,7 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     if(radius == 0u)
         return;
 
-    const std::vector<MapPoint>* allowedArea;
-    if(building.GetGOT() == GOT_NOB_MILITARY && static_cast<const nobMilitary&>(building).WasCapturedOnce())
-    {
-        // Don't restrict area for captured buildings
-        // TODO: Maybe just say: If the building itself is on disallowed area, then we allow all area hold by it?
-        // This will remove the case where the enemy captures one of our buildings, we recapture it can suddenly have more allowed area
-        allowedArea = NULL;
-    } else
-        allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
+    const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
 
     // Punkt, auf dem das Militärgebäude steht
     MapPoint bldPos = building.GetPos();

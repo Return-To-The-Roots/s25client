@@ -51,9 +51,8 @@
 #include <stdexcept>
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), new_built(true), captured_not_built(false), numCoins(0), coinsDisabled(false),
-      coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL),
-      is_regulating_troops(false)
+    : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false), coinsDisabledVirtual(false),
+      capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL), is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetMilitarySquares().Add(this);
@@ -135,7 +134,6 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
     sgd.PushBool(new_built);
-    sgd.PushBool(captured_not_built);
     sgd.PushUnsignedChar(numCoins);
     sgd.PushBool(coinsDisabled);
     sgd.PushUnsignedChar(frontier_distance);
@@ -152,10 +150,9 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
-    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), captured_not_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
-      coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.PopUnsignedChar()),
-      size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()),
-      upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
+    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()), coinsDisabled(sgd.PopBool()),
+      coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()),
+      capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
 {
     sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
     sgd.PopObjectContainer(ordered_coins, GOT_WARE);
@@ -906,8 +903,6 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 void nobMilitary::Capture(const unsigned char new_owner)
 {
     RTTR_Assert(IsBeingCaptured());
-
-    captured_not_built = true;
 
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
     gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
