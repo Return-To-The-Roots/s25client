@@ -165,7 +165,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 {
                     case JOB_STONEMASON:
                     case JOB_FISHER: workplace->OnOutOfResources(); break;
-                    case BLD_WOODCUTTER:
+                    case JOB_WOODCUTTER:
                         gwg->GetNotifications().publish(
                           BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;

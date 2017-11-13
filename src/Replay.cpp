@@ -32,12 +32,12 @@ std::string Replay::GetSignature() const
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
-    return 1;
+    return 2;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-Replay::Replay() : random_init(0), isRecording(false), lastGF_(0), last_gf_file_pos(0) {}
+Replay::Replay() : random_init(0), isRecording(false), lastGF_(0), last_gf_file_pos(0), mapType_(MAPTYPE_OLDMAP) {}
 
 Replay::~Replay()
 {
@@ -87,23 +87,21 @@ bool Replay::StartRecording(const std::string& filename, const MapInfo& mapInfo)
 
     // Game data
     file.WriteUnsignedInt(random_init);
+    file.WriteLongString(mapInfo.filepath);
 
     switch(mapType_)
     {
         default: return false;
         case MAPTYPE_OLDMAP:
             RTTR_Assert(!mapInfo.savegame);
-            file.WriteLongString(mapInfo.filepath);
             // Map-Daten
             file.WriteUnsignedInt(mapInfo.mapData.length);
             file.WriteUnsignedInt(mapInfo.mapData.data.size());
             file.WriteRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
             file.WriteUnsignedInt(mapInfo.luaData.length);
-            if(mapInfo.luaData.length)
-            {
-                file.WriteUnsignedInt(mapInfo.luaData.data.size());
+            file.WriteUnsignedInt(mapInfo.luaData.data.size());
+            if(!mapInfo.luaData.data.empty())
                 file.WriteRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
-            }
             break;
         case MAPTYPE_SAVEGAME: mapInfo.savegame->Save(file, GetMapName()); break;
     }
@@ -157,22 +155,20 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
     mapInfo.Clear();
     mapInfo.type = mapType_;
     mapInfo.title = GetMapName();
+    mapInfo.filepath = file.ReadLongString();
     switch(mapType_)
     {
         default: return false;
         case MAPTYPE_OLDMAP:
         {
-            mapInfo.filepath = file.ReadLongString();
             // Map-Daten
             mapInfo.mapData.length = file.ReadUnsignedInt();
             mapInfo.mapData.data.resize(file.ReadUnsignedInt());
             file.ReadRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
             mapInfo.luaData.length = file.ReadUnsignedInt();
-            if(mapInfo.luaData.length)
-            {
-                mapInfo.luaData.data.resize(file.ReadUnsignedInt());
+            mapInfo.luaData.data.resize(file.ReadUnsignedInt());
+            if(!mapInfo.luaData.data.empty())
                 file.ReadRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
-            }
             break;
         }
         case MAPTYPE_SAVEGAME:

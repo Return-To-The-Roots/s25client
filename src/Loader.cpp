@@ -167,9 +167,6 @@ bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* file
     // load the files or directorys
     for(unsigned i = 0; i < files_count; ++i)
     {
-        if(files[i] == 0xFFFFFFFF)
-            continue;
-
         std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[files[i]]);
         if(!LoadFileOrDir(filePath, files[i], isOriginal))
         {
@@ -525,7 +522,7 @@ void Loader::fillCaches()
                             if(nation < NATIVE_NAT_COUNT)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
-                            } else if(nation == NAT_BABYLONIANS)
+                            } else if(nation == NAT_BABYLONIANS) //-V547
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                                 /* TODO: change this once we have own job pictures for babylonians
@@ -926,7 +923,8 @@ glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
 
 const libsiedler2::ArchivItem_Palette* Loader::GetTexPalette()
 {
-    return dynamic_cast<const libsiedler2::ArchivItem_Palette*>(GetTexImageN(0)->getPalette());
+    glArchivItem_Bitmap* texImageN = GetTexImageN(0);
+    return texImageN ? dynamic_cast<const libsiedler2::ArchivItem_Palette*>(texImageN->getPalette()) : NULL;
 }
 
 glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame /* = 0*/)
@@ -936,7 +934,7 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
         libsiedler2::Archiv* archive = terrainTexturesAnim[t];
         if(!archive)
             throw std::runtime_error("Invalid terrain texture requested");
-        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
+        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame)); //-V522
     } else
     {
         glArchivItem_Bitmap* bmp = terrainTextures[t];
@@ -953,6 +951,8 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
+    if(!image)
+        return NULL;
 
     libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
 
@@ -982,6 +982,8 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
 {
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
+    if(!image)
+        return NULL;
 
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
     libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, start_index);
@@ -989,7 +991,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
 
     image->print(buffer, palette, 0, 0, rect.left, rect.top);
 
-    libsiedler2::Archiv* destination = new libsiedler2::Archiv();
+    boost::interprocess::unique_ptr<libsiedler2::Archiv, Deleter<libsiedler2::Archiv> > destination(new libsiedler2::Archiv());
     for(unsigned char i = 0; i < color_count; ++i)
     {
         BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
@@ -1021,7 +1023,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
 
         destination->push(bitmap.release());
     }
-    return destination;
+    return destination.release();
 }
 
 /**

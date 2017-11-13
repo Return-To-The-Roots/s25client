@@ -54,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     nobHarborBuilding* harbor =
       dynamic_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(world, BLD_HARBORBUILDING, hbPos, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(harbor);
-    BOOST_REQUIRE_EQUAL(buildings.GetHarbors().size(), 1u);
+    BOOST_REQUIRE_EQUAL(buildings.GetHarbors().size(), 1u); //-V807
     BOOST_REQUIRE_EQUAL(buildings.GetHarbors().front(), harbor);
     // A harbor is also a storehouse
     BOOST_REQUIRE_EQUAL(buildings.GetStorehouses().size(), 2u);
@@ -101,7 +101,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     road = FindRoadPath(hqFlagPos, world.GetNeighbour(shipyardPos, Direction::SOUTHEAST), world);
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
-    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS); //-V522
     this->ToggleShipYardMode(shipyardPos);
     BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
 
@@ -206,7 +206,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(ship->GetHomeHarbor(), 0u);
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
-    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE;
+    world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE; //-V807
     // Team visibility, so set one to own team
     world.GetPlayer(curPlayer).team = TM_TEAM1;
     world.GetPlayer(1).team = TM_TEAM1;
@@ -271,7 +271,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     const nobHarborBuilding& harbor = *player.GetBuildingRegister().GetHarbors().front();
     const MapPoint hbPos = harbor.GetPos();
     const unsigned hbId = world.GetHarborPointID(hbPos);
-    unsigned numScouts = player.GetInventory().people[JOB_SCOUT];
+    unsigned numScouts = player.GetInventory().people[JOB_SCOUT]; //-V807
     BOOST_REQUIRE(ship->IsIdling());
 
     // We want the ship to only scout unexplored harbors, so set all but one to visible
@@ -312,7 +312,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     BOOST_REQUIRE(ship->IsMoving());
     RTTR_EXEC_TILL(1200, ship->IsIdling());
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_SCOUT], numScouts);
-    BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT), newHarbor->GetVisualFiguresCount(JOB_SCOUT));
+    BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT), newHarbor->GetVisualFiguresCount(JOB_SCOUT)); //-V522
     BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT)
                           + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetRealFiguresCount(JOB_SCOUT),
                         numScouts);
@@ -365,7 +365,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(postBox->GetNumMsgs(), 1u);
     const ShipPostMsg* msg = dynamic_cast<const ShipPostMsg*>(postBox->GetMsg(0));
     BOOST_REQUIRE(msg);
-    BOOST_REQUIRE_EQUAL(msg->GetPos(), ship->GetPos());
+    BOOST_REQUIRE_EQUAL(msg->GetPos(), ship->GetPos()); //-V522
 
     // Harbor pos taken by other player
     this->TravelToNextSpot(ShipDirection::SOUTHEAST, player.GetShipID(ship));
@@ -427,7 +427,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE(newHarbor);
     BOOST_REQUIRE(world.IsHarborBuildingSiteFromSea(newHarbor));
     // And it should be completed after some time
-    RTTR_EXEC_TILL(5000, player.GetBuildingRegister().GetHarbors().size() > 1);
+    RTTR_EXEC_TILL(5000, player.GetBuildingRegister().GetHarbors().size() > 1); //-V807
     BOOST_REQUIRE_EQUAL(player.GetBuildingRegister().GetHarbors().size(), 2u);
 }
 

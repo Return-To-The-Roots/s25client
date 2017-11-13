@@ -59,27 +59,25 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     {
         for(unsigned x = 0; x < 2; ++x)
         {
-            if(y * 2 + x < BUILDINGS_COUNT)
+            if(y * 2 + x >= BUILDINGS_COUNT) //-V547
+                break;
+            ;
+            unsigned imgId = (y * 2 + x) * 2;
+            DrawPoint imgPos(x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y + percentSize.y / 2);
+            imgPos = imgPos + bldProdContentOffset;
+            if(player.IsBuildingEnabled(bts[y * 2 + x]))
             {
-                unsigned imgId = (y * 2 + x) * 2;
-                DrawPoint imgPos(x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y + percentSize.y / 2);
-                imgPos = imgPos + bldProdContentOffset;
-                if(player.IsBuildingEnabled(bts[y * 2 + x]))
-                {
-                    glArchivItem_Bitmap* img;
-                    if(bts[y * 2 + x] != BLD_CHARBURNER)
-                        img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 2 + x]);
-                    else
-                        img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
-                    AddImage(imgId, imgPos, img, _(BUILDING_NAMES[bts[y * 2 + x]]));
-                    DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y);
-                    AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont,
-                               &percents[bts[y * 2 + x]]);
-                } else
-                {
-                    AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
-                }
-            }
+                glArchivItem_Bitmap* img;
+                if(bts[y * 2 + x] != BLD_CHARBURNER)
+                    img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 2 + x]);
+                else
+                    img = LOADER.GetImageN("charburner", playerNation * 8 + 8);
+                AddImage(imgId, imgPos, img, _(BUILDING_NAMES[bts[y * 2 + x]]));
+                DrawPoint percentPos(image_percent_x + x * (percent_image_x + percentSize.x + image_percent_x), distance_y * y);
+                AddPercent(imgId + 1, percentPos + bldProdContentOffset, percentSize, TC_GREY, COLOR_YELLOW, SmallFont,
+                           &percents[bts[y * 2 + x]]);
+            } else
+                AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
         }
     }
 

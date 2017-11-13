@@ -52,10 +52,10 @@ public:
     GameMessage_Ping() : GameMessage(NMS_PING) {}
     GameMessage_Ping(const unsigned char player) : GameMessage(NMS_PING, player) {}
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         // LOG.writeToFile("<<< NMS_PING\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -65,10 +65,10 @@ class GameMessage_Pong : public GameMessage
 public:
     GameMessage_Pong() : GameMessage(NMS_PONG) {}
     GameMessage_Pong(const unsigned char player) : GameMessage(NMS_PONG, player) {}
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         // LOG.writeToFile("<<< NMS_PONG\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -100,10 +100,10 @@ public:
         revision = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_Type(%d, %s)\n") % boost::underlying_cast<int>(type) % revision;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -128,7 +128,7 @@ public:
         err_code = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override { return GetInterface(callback)->OnGameMessage(*this); }
+    bool Run(GameMessageInterface* callback) override { return callback->OnGameMessage(*this); }
 };
 
 /// ein/ausgehende Server-Password-Nachricht
@@ -152,10 +152,10 @@ public:
         password = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_PASSWORD(%s)\n") % "********";
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -181,10 +181,10 @@ public:
         name = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_NAME(%s)\n") % name;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -215,10 +215,10 @@ public:
         nwf_length = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_START(%d, %d)\n") % random_init % nwf_length;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -244,10 +244,10 @@ public:
         countdown = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_COUNTDOWN(%d)\n") % countdown;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -257,10 +257,10 @@ class GameMessage_Server_CancelCountdown : public GameMessage
 public:
     GameMessage_Server_CancelCountdown() : GameMessage(NMS_SERVER_CANCELCOUNTDOWN) {}
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_CANCELCOUNTDOWN\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -292,10 +292,10 @@ public:
         text = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -319,7 +319,7 @@ public:
         text = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override { return GetInterface(callback)->OnGameMessage(*this); }
+    bool Run(GameMessageInterface* callback) override { return callback->OnGameMessage(*this); }
 };
 
 /// eingehende Server-Async-Nachricht
@@ -351,10 +351,10 @@ public:
             checksums[i] = ser.PopSignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_ASYNC(%d)\n") % checksums.size();
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -382,10 +382,10 @@ public:
         playerId = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_ID(%d)\n") % playerId;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -414,10 +414,10 @@ public:
         playername = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_NAME(%s)\n") % playername;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -433,7 +433,7 @@ public:
 
     void Serialize(Serializer& ser) const override;
     void Deserialize(Serializer& ser) override;
-    bool Run(MessageInterface* callback) override;
+    bool Run(GameMessageInterface* callback) override;
 };
 
 /// gehende -Nachricht
@@ -443,7 +443,7 @@ public:
     PlayerState ps;
     AI::Info aiInfo;
 
-    GameMessage_Player_Set_State() : GameMessage(NMS_PLAYER_SETSTATE) {}
+    GameMessage_Player_Set_State() : GameMessage(NMS_PLAYER_SETSTATE) {} //-V730
     GameMessage_Player_Set_State(const unsigned char player, PlayerState ps, AI::Info aiInfo)
         : GameMessage(NMS_PLAYER_SETSTATE, player), ps(ps), aiInfo(aiInfo)
     {
@@ -466,10 +466,10 @@ public:
         aiInfo.type = AI::Type(ser.PopUnsignedChar());
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_SETSTATE(%d)\n") % unsigned(player);
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -499,10 +499,10 @@ public:
         nation = Nation(ser.PopUnsignedChar());
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_SET_NATION\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -530,10 +530,10 @@ public:
         team = Team(ser.PopUnsignedChar());
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_SET_TEAM\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -560,10 +560,10 @@ public:
         color = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_SET_COLOR\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -593,10 +593,10 @@ public:
         param = ser.PopUnsignedShort();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_KICKED\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -621,10 +621,10 @@ public:
         ping = ser.PopUnsignedShort();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         // LOG.writeToFile("<<< NMS_PLAYER_PING\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -653,10 +653,10 @@ public:
         name = ser.PopString();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_NEW\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -685,10 +685,10 @@ public:
         ready = ser.PopBool();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_READY\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -717,10 +717,10 @@ public:
         player2 = ser.PopUnsignedChar();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PLAYER_SWAP\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -765,10 +765,10 @@ public:
         luaCompressedLen = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_MAP_INFO\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -807,10 +807,10 @@ public:
         ser.PopRawData(&data.front(), data.size());
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_MAP_DATA\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -841,10 +841,10 @@ public:
         luaChecksum = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_MAP_CHECKSUM\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -870,7 +870,7 @@ public:
         correct = ser.PopBool();
     }
 
-    bool Run(MessageInterface* callback) override { return GetInterface(callback)->OnGameMessage(*this); }
+    bool Run(GameMessageInterface* callback) override { return callback->OnGameMessage(*this); }
 };
 
 class GameMessage_GGSChange : public GameMessage
@@ -897,10 +897,10 @@ public:
         ggs.Deserialize(ser);
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_GGS_CHANGE\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -909,7 +909,7 @@ class GameMessage_RemoveLua : public GameMessage
 public:
     GameMessage_RemoveLua() : GameMessage(NMS_REMOVE_LUA, 0xFF) {}
 
-    bool Run(MessageInterface* callback) override { return GetInterface(callback)->OnGameMessage(*this); }
+    bool Run(GameMessageInterface* callback) override { return callback->OnGameMessage(*this); }
 };
 
 class GameMessage_Server_Speed : public GameMessage
@@ -935,10 +935,10 @@ public:
         gf_length = ser.PopUnsignedInt();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SERVER_SPEED(%d)\n") % gf_length;
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -972,10 +972,10 @@ public:
         first = ser.PopBool();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -1003,10 +1003,10 @@ public:
         paused = ser.PopBool();
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_PAUSE(%d)\n") % (paused ? 1 : 0);
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -1019,10 +1019,10 @@ public:
     {
         LOG.writeToFile(">>> NMS_GET_ASYNC_LOG\n");
     }
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_GET_ASYNC_LOG\n");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 
@@ -1066,10 +1066,10 @@ public:
         }
     }
 
-    bool Run(MessageInterface* callback) override
+    bool Run(GameMessageInterface* callback) override
     {
         LOG.writeToFile("<<< NMS_SEND_ASYNC_LOG: %u [%s]\n") % entries.size() % (last ? "last" : "non-last");
-        return GetInterface(callback)->OnGameMessage(*this);
+        return callback->OnGameMessage(*this);
     }
 };
 

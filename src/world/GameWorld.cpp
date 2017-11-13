@@ -46,7 +46,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
         return false;
 
-    const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
+    const glArchivItem_Map& map = *static_cast<glArchivItem_Map*>(mapArchiv[0]);
 
     BuildingProperties::Init();
 

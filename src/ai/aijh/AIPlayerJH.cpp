@@ -1222,16 +1222,16 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
         case BLD_HARBORBUILDING:
         {
             // destroy all other buildings around the harborspot in range 2 so we can rebuild the harbor ...
-            BOOST_FOREACH(const MapPoint pt, gwb.GetPointsInRadius(pt, 2))
+            BOOST_FOREACH(const MapPoint curPt, gwb.GetPointsInRadius(pt, 2))
             {
-                const noBaseBuilding* const bb = gwb.GetSpecObj<noBaseBuilding>(pt);
+                const noBaseBuilding* const bb = gwb.GetSpecObj<noBaseBuilding>(curPt);
                 if(bb)
-                    aii.DestroyBuilding(pt);
+                    aii.DestroyBuilding(curPt);
                 else
                 {
-                    const noBuildingSite* const bs = gwb.GetSpecObj<noBuildingSite>(pt);
+                    const noBuildingSite* const bs = gwb.GetSpecObj<noBuildingSite>(curPt);
                     if(bs)
-                        aii.DestroyFlag(gwb.GetNeighbour(pt, Direction::SOUTHEAST));
+                        aii.DestroyFlag(gwb.GetNeighbour(curPt, Direction::SOUTHEAST));
                 }
             }
             break;
@@ -1575,11 +1575,9 @@ void AIPlayerJH::CheckExpeditions()
     const std::list<nobHarborBuilding*>& harbors = aii.GetHarbors();
     BOOST_FOREACH(const nobHarborBuilding* harbor, harbors)
     {
-        if((harbor->IsExpeditionActive() && !HarborPosRelevant(harbor->GetHarborPosID(), true))
-           || (!harbor->IsExpeditionActive()
-               && HarborPosRelevant(
-                    harbor->GetHarborPosID(),
-                    true))) // harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
+        if(harbor->IsExpeditionActive()
+           != HarborPosRelevant(harbor->GetHarborPosID(),
+                                true)) // harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
         {
             aii.StartExpedition(harbor->GetPos()); // command is more of a toggle despite it's name
         }
@@ -1989,7 +1987,7 @@ void AIPlayerJH::CheckForUnconnectedBuildingSites()
 {
     if(construction->GetConnectJobNum() > 0 || construction->GetBuildJobNum() > 0)
         return;
-    BOOST_FOREACH(noBuildingSite* bldSite, player.GetBuildingRegister().GetBuildingSites())
+    BOOST_FOREACH(noBuildingSite* bldSite, player.GetBuildingRegister().GetBuildingSites()) //-V807
     {
         noFlag* flag = bldSite->GetFlag();
         bool foundRoute = false;

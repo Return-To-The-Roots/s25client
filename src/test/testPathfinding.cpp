@@ -58,7 +58,7 @@ void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, TerrainType t
     // curPt stores the current point on the path
     world.GetNodeWriteable(world.GetNeighbour(startPt, Direction::NORTHWEST)).t2 = tWhite;
     MapPoint curPt = world.GetNeighbour(startPt, Direction::NORTHEAST);
-    world.GetNodeWriteable(curPt).t2 = tWhite;
+    world.GetNodeWriteable(curPt).t2 = tWhite; //-V807
     curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);
     world.GetNodeWriteable(curPt).t1 = tWhite;
     curPt = world.GetNeighbour(curPt, Direction::SOUTHEAST);

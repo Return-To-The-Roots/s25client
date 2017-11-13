@@ -143,7 +143,7 @@ BOOST_FIXTURE_TEST_CASE(BuildRoadTest, WorldWithGCExecution2P)
     BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(1, 0))->GetType(), NOP_NOTHING);
     // d) middle -> ok
     this->SetFlag(flagPt + MapPoint(2, 0));
-    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);
+    BOOST_REQUIRE_EQUAL(world.GetNO(flagPt + MapPoint(2, 0))->GetType(), NOP_FLAG);                            //-V807
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHWEST).bq, BQ_CASTLE);  // Flag could be build
     BOOST_REQUIRE_EQUAL(world.GetNeighbourNode(flagPt + MapPoint(2, 0), Direction::NORTHEAST).bq, BQ_NOTHING); // no more flag possible
     // f) destroy middle flag -> Road destroyed
@@ -357,7 +357,7 @@ BOOST_FIXTURE_TEST_CASE(BuildBuilding, WorldWithGCExecution2P)
     const MapPoint okMilPt = hqPos - MapPoint(5, 0);
     // Wrong BQ (blocked by HQ)
     this->SetBuildingSite(closePt, BLD_FARM);
-    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_NOTHING);
+    BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_NOTHING); //-V807
     // OK
     this->SetBuildingSite(closePt, BLD_WOODCUTTER);
     BOOST_REQUIRE_EQUAL(world.GetNO(closePt)->GetType(), NOP_BUILDINGSITE);
@@ -413,7 +413,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     GamePlayer& player = world.GetPlayer(curPlayer);
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
-    BOOST_REQUIRE_EQUAL(wh->GetInventory().people[JOB_GENERAL], 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetInventory().people[JOB_GENERAL], 0u); //-V522
     Inventory goods;
     goods.Add(JOB_PRIVATEFIRSTCLASS, 1);
     goods.Add(JOB_SERGEANT, 1);
@@ -434,8 +434,8 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     unsigned numGFtillAllArrive = 30 * 6 + 20 * (milPt.x - hqPos.x + 2) + 30;
     RTTR_SKIP_GFS(numGFtillAllArrive);
     // Now we should have 1 each of ranks 0-3 and 2 rank 4s
-    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);
-    SortedTroops::const_iterator itTroops = bld->GetTroops().begin();
+    BOOST_REQUIRE_EQUAL(bld->GetTroopsCount(), 6u);                   //-V522
+    SortedTroops::const_iterator itTroops = bld->GetTroops().begin(); //-V807
     for(unsigned i = 0; i < 4; i++, ++itTroops)
         BOOST_REQUIRE_EQUAL((*itTroops)->GetRank(), i);
     for(unsigned i = 0; i < 2; i++, ++itTroops)
@@ -507,7 +507,6 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     BOOST_REQUIRE(wh);
     // Set all military stuff to max
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
-    GlobalGameSettings& ggs = const_cast<GlobalGameSettings&>(world.GetGGS());
     ggs.setSelection(AddonId::MAX_RANK, MAX_MILITARY_RANK);
     // Build a watchtower and connect it
     nobMilitary* bld = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milPt, curPlayer, player.nation));
@@ -524,7 +523,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
     BOOST_REQUIRE(soldier);
     // Let soldiers out and walk a bit
     MapPoint sldTestPos = world.GetNeighbour(world.GetNeighbour(hqPos, Direction::SOUTHEAST), Direction::EAST);
-    RTTR_EXEC_TILL(30 * 2 + 20 * 2 + 10, soldier->GetPos() == sldTestPos);
+    RTTR_EXEC_TILL(30 * 2 + 20 * 2 + 10, soldier->GetPos() == sldTestPos); //-V522
     BOOST_REQUIRE_EQUAL(soldier->GetGoal(), bld);
     this->OrderNewSoldiers(milPt);
     // Soldier must still have this goal!
@@ -546,7 +545,7 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
 
-    const unsigned startFigureCt = wh->GetRealFiguresCount(workerJob);
+    const unsigned startFigureCt = wh->GetRealFiguresCount(workerJob); //-V522
     const unsigned startToolsCt = wh->GetRealWaresCount(toolType);
     // We need some of them!
     BOOST_REQUIRE_GT(startFigureCt, 0u);
@@ -555,7 +554,7 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     // No flag -> Nothing happens
     callWorker(flagPt);
     BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(workerJob), startFigureCt);
-    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u); //-V807
 
     worldFixture.SetFlag(flagPt);
     // Unconnected flag -> Nothing happens
@@ -614,7 +613,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     nobMilitary* bld = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
-    BOOST_REQUIRE(!bld->IsGoldDisabled());
+    BOOST_REQUIRE(!bld->IsGoldDisabled()); //-V522
 
     // Enable (already is)
     this->SetCoinsAllowed(bldPt, true);
@@ -640,7 +639,7 @@ BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     nobUsual* bld = dynamic_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_FORESTER, bldPt, curPlayer, NAT_ROMANS));
     BOOST_REQUIRE(bld);
-    BOOST_REQUIRE(!bld->IsProductionDisabled());
+    BOOST_REQUIRE(!bld->IsProductionDisabled()); //-V522
 
     // Enable (already is)
     this->SetProductionEnabled(bldPt, true);
@@ -681,51 +680,52 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     // At first there are no teams
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
         BOOST_REQUIRE_EQUAL(world.GetPlayer(i).team, TM_NOTEAM);
+    PostManager& postMgr = world.GetPostMgr();
     // Add postbox for each player
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
-        world.GetPostMgr().AddPostBox(i);
+        postMgr.AddPostBox(i);
     // Choose middle player so we can observe side effects and off-by-one errors
     curPlayer = 1;
 
     // No ally -> no messages
     this->NotifyAlliesOfLocation(hqPos);
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
-        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+        BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(i)->GetNumMsgs(), 0u); //-V807
     // Still no allies
-    world.GetPlayer(1).team = TM_TEAM1;
+    world.GetPlayer(1).team = TM_TEAM1; //-V807
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     for(unsigned i = 0; i < world.GetPlayerCount(); i++)
-        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+        BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(i)->GetNumMsgs(), 0u);
 
     // First 2 players are allied -> Message received by player 0 only
-    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(0).team = TM_TEAM1; //-V807
     world.GetPlayer(1).team = TM_TEAM1;
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
-    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(0u)->GetNumMsgs(), 1u);
+    BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(0u)->GetNumMsgs(), 1u); //-V807
     for(unsigned i = 1; i < world.GetPlayerCount(); i++)
-        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+        BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(i)->GetNumMsgs(), 0u);
 
     // Same if player 2 is in another team
-    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(0).team = TM_TEAM1; //-V525
     world.GetPlayer(1).team = TM_TEAM1;
-    world.GetPlayer(2).team = TM_TEAM2;
+    world.GetPlayer(2).team = TM_TEAM2; //-V807
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
-    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(0u)->GetNumMsgs(), 1u);
+    BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(0u)->GetNumMsgs(), 1u);
     for(unsigned i = 1; i < world.GetPlayerCount(); i++)
-        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+        BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(i)->GetNumMsgs(), 0u);
 
     // player 2 is in same team
-    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(0).team = TM_TEAM1; //-V525
     world.GetPlayer(1).team = TM_TEAM2;
     world.GetPlayer(2).team = TM_TEAM2;
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
-    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(2u)->GetNumMsgs(), 1u);
+    BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(2u)->GetNumMsgs(), 1u);
     for(unsigned i = 0; i < 2; i++)
-        BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(i)->GetNumMsgs(), 0u);
+        BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(i)->GetNumMsgs(), 0u);
 
     // All are in same team
     world.GetPlayer(0).team = TM_TEAM3;
@@ -733,9 +733,9 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     world.GetPlayer(2).team = TM_TEAM3;
     InitPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
-    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(0u)->GetNumMsgs(), 1u);
-    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(1u)->GetNumMsgs(), 0u);
-    BOOST_REQUIRE_EQUAL(world.GetPostMgr().GetPostBox(2u)->GetNumMsgs(), 1u);
+    BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(0u)->GetNumMsgs(), 1u);
+    BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(1u)->GetNumMsgs(), 0u);
+    BOOST_REQUIRE_EQUAL(postMgr.GetPostBox(2u)->GetNumMsgs(), 1u);
 }
 
 BOOST_AUTO_TEST_CASE(InventorySettingType)
@@ -789,7 +789,7 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
     InventorySetting expectedSetting;
-    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting);
+    BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting); //-V522
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(JOB_PRIVATE), expectedSetting);
     expectedSetting.Toggle(EInventorySetting::STOP);
     expectedSetting.Toggle(EInventorySetting::SEND);
@@ -836,7 +836,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     // Add enough soldiers per rank
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
         goods.Add(SOLDIER_JOBS[i], 50);
-    wh->AddGoods(goods, true);
+    wh->AddGoods(goods, true); //-V522
 
     // Use more
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)

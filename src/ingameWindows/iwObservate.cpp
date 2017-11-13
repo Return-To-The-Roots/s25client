@@ -40,8 +40,7 @@ const Extent BigWndSize(340, 310);
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, Extent(260, 190), _("Observation window"), NULL),
       parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Point<int>(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
-      selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0),
-      followMovableId(GameObject::INVALID_ID)
+      selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0), followMovableId(0)
 {
     view->MoveToMapPt(selectedPt);
     view->SetZoomFactor(1.9f, false);
@@ -83,8 +82,8 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
             break;
         case 2:
         {
-            if(followMovableId != GameObject::INVALID_ID)
-                followMovableId = GameObject::INVALID_ID;
+            if(followMovableId)
+                followMovableId = 0;
             else
             {
                 const DrawPoint centerDrawPt = DrawPoint(view->GetSize() / 2u);
@@ -173,10 +172,10 @@ void iwObservate::Draw_()
         lastWindowPos = GetPos();
     }
 
-    if(followMovableId != GameObject::INVALID_ID)
+    if(followMovableId)
     {
         if(!MoveToFollowedObj())
-            followMovableId = GameObject::INVALID_ID;
+            followMovableId = 0;
     }
 
     if(!IsMinimized())
@@ -186,7 +185,7 @@ void iwObservate::Draw_()
 
         view->Draw(road, parentView.GetSelectedPt(), false);
         // Draw indicator for center point
-        if(followMovableId == GameObject::INVALID_ID)
+        if(!followMovableId)
             LOADER.GetMapImageN(23)->DrawFull(view->GetPos() + view->GetSize() / 2u);
     }
 
@@ -196,8 +195,9 @@ void iwObservate::Draw_()
 bool iwObservate::MoveToFollowedObj()
 {
     // First look around the center (figure is normally still there)
-    const MapPoint centerPt = view->GetWorld().MakeMapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
-    const std::vector<MapPoint> centerPts = view->GetWorld().GetPointsInRadiusWithCenter(centerPt, 2);
+    const GameWorldBase& world = view->GetWorld();
+    const MapPoint centerPt = world.MakeMapPoint((view->GetFirstPt() + view->GetLastPt()) / 2);
+    const std::vector<MapPoint> centerPts = world.GetPointsInRadiusWithCenter(centerPt, 2);
     BOOST_FOREACH(const MapPoint& curPt, centerPts)
     {
         if(MoveToFollowedObj(curPt))
@@ -209,7 +209,7 @@ bool iwObservate::MoveToFollowedObj()
     {
         for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
         {
-            const MapPoint curPt = view->GetWorld().MakeMapPoint(Point<int>(x, y));
+            const MapPoint curPt = world.MakeMapPoint(Point<int>(x, y));
             if(MoveToFollowedObj(curPt))
                 return true;
         }
@@ -266,7 +266,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
         scrollOrigin = mc.GetPos();
 
         isScrolling = true;
-        followMovableId = GameObject::INVALID_ID;
+        followMovableId = 0;
     } else
     {
         Close();

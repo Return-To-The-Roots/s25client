@@ -72,7 +72,7 @@ void ctrlMinimap::SetMapSize(const Extent& newMapSize)
 
         // Find out scale factors to due a box fit while retaining aspect ratio
         RTTR_Assert(mapSize.y != 0);
-        RTTR_Assert(scaled_map_width != 0.);
+        RTTR_Assert(scaled_map_width != 0.); //-V550
         double x_scale = double(drawnMapSize.x) / scaled_map_width;
         double y_scale = double(drawnMapSize.y) / double(mapSize.y);
 

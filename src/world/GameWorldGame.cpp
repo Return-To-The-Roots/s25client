@@ -668,9 +668,9 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             {
                 const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
                 if(noCheckMil->GetGOT() == GOT_NOB_HQ || noCheckMil->GetGOT() == GOT_NOB_HARBORBUILDING
-                   || (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !dynamic_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
+                   || (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
                    || (noCheckMil->GetType() == NOP_BUILDINGSITE
-                       && dynamic_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
+                       && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
                 {
                     // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type,
                     // %i \n", x, y, no->GetType());
@@ -1075,7 +1075,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     }
 
     // Sichtbereich von Spähtürmen
-    BOOST_FOREACH(const nobUsual* bld, GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER))
+    BOOST_FOREACH(const nobUsual* bld, GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER)) //-V807
     {
         // Ist Späturm überhaupt besetzt?
         if(!bld->HasWorker())

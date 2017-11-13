@@ -156,7 +156,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->AddTextButton(72, DrawPoint(480, 355), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(73, DrawPoint(280, 355), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
-    optiongroup->SetSelection(((SETTINGS.global.submit_debug_data == 1) ? 72 : 73));
+    optiongroup->SetSelection(((SETTINGS.global.submit_debug_data == 1) ? 72 : 73)); //-V807
 
     // qx:upnp switch
     groupAllgemein->AddText(9999, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, 0, NormalFont);
@@ -574,7 +574,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
 
             SETTINGS.Save();
 
-            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize())
+            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize()) //-V807
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
                 Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;

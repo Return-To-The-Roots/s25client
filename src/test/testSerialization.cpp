@@ -50,11 +50,11 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
         }
         world.InitAfterLoad();
         world.GetPlayer(0).name = "Human";
-        world.GetPlayer(1).ps = PS_AI;
+        world.GetPlayer(1).ps = PS_AI; //-V807
         world.GetPlayer(1).aiInfo = AI::Info(AI::DEFAULT, AI::MEDIUM);
         world.GetPlayer(1).name = "PlAI";
         world.GetPlayer(2).ps = PS_LOCKED;
-        world.GetPlayer(3).ps = PS_AI;
+        world.GetPlayer(3).ps = PS_AI; //-V807
         world.GetPlayer(3).aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
         world.GetPlayer(3).name = "PlAI2";
 
@@ -109,7 +109,8 @@ void CheckReplayCmds(Replay& loadReplay)
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
     BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_GAME);
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(loadReplay.ReadGameCommand(), data);
+    const std::vector<unsigned char> readGameCommand = loadReplay.ReadGameCommand();
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(readGameCommand, data);
 
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
@@ -250,7 +251,9 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
     map.mapData.data = std::vector<char>(42, 0x42);
+    map.mapData.length = 50;
     map.luaData.data = std::vector<char>(21, 0x21);
+    map.luaData.length = 40;
     std::vector<BasePlayerInfo> players(4);
     players[0].ps = PS_OCCUPIED;
     players[0].name = "Human";
@@ -293,7 +296,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     BOOST_REQUIRE(!replay.IsValid());
     BOOST_REQUIRE(!replay.IsRecording());
 
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < 2; i++)
     {
         Replay loadReplay;
         BOOST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath, i > 0));
@@ -310,7 +313,6 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
             BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 0u);
             continue;
         }
-        BOOST_REQUIRE_EQUAL(loadReplay.random_init, replay.random_init);
         BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 4u);
         for(unsigned j = 0; j < 4; j++)
         {
@@ -328,7 +330,8 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
         }
         BOOST_REQUIRE_EQUAL(loadReplay.ggs.speed, replay.ggs.speed);
         MapInfo newMap;
-        BOOST_REQUIRE(replay.LoadGameData(newMap));
+        BOOST_REQUIRE(loadReplay.LoadGameData(newMap));
+        BOOST_REQUIRE_EQUAL(loadReplay.random_init, replay.random_init);
         BOOST_REQUIRE_EQUAL(newMap.type, map.type);
         BOOST_REQUIRE_EQUAL(newMap.title, map.title);
         BOOST_REQUIRE_EQUAL(newMap.filepath, map.filepath);
@@ -391,7 +394,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_REQUIRE(!replay.IsValid());
     BOOST_REQUIRE(!replay.IsRecording());
 
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < 2; i++)
     {
         Replay loadReplay;
         BOOST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath, i > 0));
@@ -408,7 +411,6 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
             BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 0u);
             continue;
         }
-        BOOST_REQUIRE_EQUAL(loadReplay.random_init, replay.random_init);
         BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 4u);
         for(unsigned j = 0; j < 4; j++)
         {
@@ -426,12 +428,14 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
         }
         BOOST_REQUIRE_EQUAL(loadReplay.ggs.speed, replay.ggs.speed);
         MapInfo newMap;
-        BOOST_REQUIRE(replay.LoadGameData(newMap));
+        BOOST_REQUIRE(loadReplay.LoadGameData(newMap));
+        BOOST_REQUIRE_EQUAL(loadReplay.random_init, replay.random_init);
         BOOST_REQUIRE_EQUAL(newMap.type, map.type);
         BOOST_REQUIRE_EQUAL(newMap.title, map.title);
         BOOST_REQUIRE_EQUAL(newMap.filepath, map.filepath);
 
-        BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.GetData(), newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(),
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.GetData(),                                    //-V807
+                                        newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(), //-V807
                                         map.savegame->sgd.GetData(), map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
 
         CheckReplayCmds(loadReplay);

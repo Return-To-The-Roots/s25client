@@ -70,7 +70,7 @@ private:
      */
     void CreateRandomMap();
 
-    void OnMapCreated(std::string mapPath);
+    void OnMapCreated(const std::string& mapPath);
 
     CreateServerInfo csi;
     MapSettings rndMapSettings;

@@ -335,7 +335,7 @@ void nobHarborBuilding::StartExpedition()
         expedition.builder = false;
         // got a builder in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses())
+        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses()) //-V807
         {
             if(wh->GetRealFiguresCount(JOB_BUILDER))
             {
@@ -411,7 +411,7 @@ void nobHarborBuilding::StartExplorationExpedition()
         unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
         // got scouts in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses())
+        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses()) //-V807
         {
             const unsigned numScouts = wh->GetRealFiguresCount(JOB_SCOUT);
             if(numScouts >= missing)
@@ -1049,7 +1049,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
         else if(!(*it)->HasNoGoal())
         {
             unsigned char nextDir;
-            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir);
+            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir); //-V821
 
             if(nextDir == 4)
             {

@@ -236,7 +236,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
-        dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds();
+        dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(BuildingProperties::IsMine(GetBuildingType()) && worker && nation == NAT_AFRICANS)
@@ -582,10 +582,10 @@ unsigned short nobUsual::CalcProductivity()
     }
 
     // Produktivität ausrechnen
-    unsigned short productivity = (400 - numGfNotWorking) / 4;
+    unsigned short curProductivity = (400 - numGfNotWorking) / 4;
 
     // Zähler zurücksetzen
     numGfNotWorking = 0;
 
-    return productivity;
+    return curProductivity;
 }

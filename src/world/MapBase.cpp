@@ -92,10 +92,10 @@ MapPoint MapBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
     return MakeMapPoint(::GetNeighbour2(Position(pt), dir));
 }
 
-unsigned MapBase::CalcDistance(Position p1, Position p2) const
+unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
 {
     int dx = ((p1.x - p2.x) * 2) + (p1.y & 1) - (p2.y & 1);
-    int dy = ((p1.y > p2.y) ? (p1.y - p2.y) : (p2.y - p1.y)) * 2;
+    int dy = safeDiff(p1.y, p2.y) * 2;
 
     if(dx < 0)
         dx = -dx;

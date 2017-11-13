@@ -158,7 +158,6 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
             // Goto
             if(!ValidateMessages())
                 return;
-            const PostMsg* curMsg = GetMsg(curMsgId);
             if(curMsg && curMsg->GetPos().isValid())
                 gwv.MoveToMapPt(curMsg->GetPos());
         }
@@ -167,9 +166,8 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_DELETE: // Delete
         case ID_DENY:   // Cross (Deny)
         {
-            if(!ValidateMessages())
+            if(!ValidateMessages() || !curMsg)
                 return;
-            const PostMsg* curMsg = GetMsg(curMsgId);
             const DiplomacyPostQuestion* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
             if(dcurMsg)
             {
@@ -244,9 +242,9 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 // Zeigt Nachricht an, passt Steuerelemente an
 void iwPostWindow::DisplayPostMessage()
 {
-    const DrawPoint imgBottomCenter(127, 210);
+    const DrawPoint imgBottomCenter(127, 210); //-V821
     // todo: koordinaten abschmecken
-    const DrawPoint textTopCenter(127, 110);
+    const DrawPoint textTopCenter(127, 110); //-V821
     const DrawPoint textCenter(126, 151);
 
     // Hide everything

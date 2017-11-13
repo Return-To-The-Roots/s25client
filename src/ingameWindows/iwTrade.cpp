@@ -59,8 +59,8 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
         // Only add one shield type
         if(GoodType(i) != ConvertShields(GoodType(i)))
             continue;
-        // Don't add nothing or empty water
-        if(i == GD_NOTHING || i == GD_WATEREMPTY)
+        // Don't add empty water
+        if(i == GD_WATEREMPTY)
             continue;
         wares.push_back(GoodType(i));
     }

@@ -35,7 +35,6 @@
 
 struct iwDistribution::DistributionGroup
 {
-    DistributionGroup() {}
     DistributionGroup(const std::string& name, glArchivItem_Bitmap* img) : name(name), img(img) {}
     std::string name;
     glArchivItem_Bitmap* img;

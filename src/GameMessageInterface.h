@@ -66,10 +66,4 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
 
                                 GameMessage_GetAsyncLog, GameMessage_SendAsyncLog)
 
-/// Casts the general MessageInterface to GameMessageInterface
-inline GameMessageInterface* GetInterface(MessageInterface* callback)
-{
-    return dynamic_cast<GameMessageInterface*>(callback);
-}
-
 #endif //! GAMEMESSAGEINTERFACE_H_INCLUDED

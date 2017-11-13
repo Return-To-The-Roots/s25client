@@ -30,7 +30,7 @@ void GameClient::ExecuteGameFrame_Replay()
     AsyncChecksum checksum = AsyncChecksum::create(*game);
 
     const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF());
+    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
 
     // Execute all commands from the replay for the current GF
     while(replayinfo->next_gf == curGF)

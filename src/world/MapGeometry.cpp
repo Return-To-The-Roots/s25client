@@ -62,10 +62,7 @@ Position GetNeighbour2(Position pt, unsigned dir)
         case 8: pt.x += 1; break;
         case 9: break;
         case 10: pt.x -= 1; break;
-        default:
-            RTTR_Assert(dir == 11);
-            pt.x -= 2 - ((pt.y & 1) ? 1 : 0);
-            break;
+        default: pt.x -= 2 - ((pt.y & 1) ? 1 : 0); break;
     }
     pt.y += ADD_Y[dir];
     return pt;

@@ -20,6 +20,7 @@
 #pragma once
 
 #include "libutil/Message.h"
+class GameMessageInterface;
 class MessageInterface;
 class Serializer;
 
@@ -37,13 +38,13 @@ public:
     void Deserialize(Serializer& ser) override;
 
     /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
-    virtual bool Run(MessageInterface* callback) = 0;
+    virtual bool Run(GameMessageInterface* callback) = 0;
 
     bool run(MessageInterface* callback, unsigned id) override
     {
         if(id != 0xFFFFFFFF)
             player = static_cast<uint8_t>(id);
-        return Run(callback);
+        return Run(checkedCast<GameMessageInterface*>(callback));
     }
 
     static Message* create_game(unsigned short id);

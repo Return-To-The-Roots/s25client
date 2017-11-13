@@ -793,8 +793,7 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
         if(rs_dir == workplace->GetNodeID(*rn) && state == CARRS_WAITFORWARE)
         {
             rs_dir = !rs_dir;
-            // wenn wir zur Mitte laufen, müssen noch 2 von der pos abgezogen werden wegen dem Laufen
-            rs_pos = cur_rs->GetLength() - rs_pos - ((state == CARRS_GOTOMIDDLEOFROAD) ? 2 : 0);
+            rs_pos = cur_rs->GetLength() - rs_pos;
         }
         // beim Gehen in die Mitte nicht sofort umdrehen!
         else if(rs_dir == workplace->GetNodeID(*rn))

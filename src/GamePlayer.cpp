@@ -383,7 +383,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 {
     nobBaseWarehouse* best = NULL;
 
-    unsigned tlength = 0xFFFFFFFF, best_length = 0xFFFFFFFF;
+    unsigned best_length = std::numeric_limits<unsigned>::max();
 
     BOOST_FOREACH(nobBaseWarehouse* wh, buildings.GetStorehouses())
     {
@@ -405,6 +405,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
             continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll start <-> ziel tauschen
         // bei der wegfindung
+        unsigned tlength;
         if(gwg->GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length, forbidden, &tlength))
         {
             if(tlength < best_length || !best)
@@ -686,15 +687,16 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
     // Array für die Gebäudtypen erstellen
 
-    distribution[ware].goals.clear();
-    distribution[ware].goals.reserve(goal_count);
+    std::vector<BuildingType>& wareGoals = distribution[ware].goals;
+    wareGoals.clear();
+    wareGoals.reserve(goal_count);
 
     // just drop them in the list, the distribution will be handled by going through this list using a prime as step (see
     // GameClientPlayer::FindClientForWare)
     BOOST_FOREACH(const BldEntry& bldEntry, bldPercentageMap)
     {
         for(unsigned char i = 0; i < bldEntry.second; ++i)
-            distribution[ware].goals.push_back(bldEntry.first);
+            wareGoals.push_back(bldEntry.first);
     }
 
     distribution[ware].selected_goal = 0;
@@ -847,7 +849,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
         }
     } else // no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
     {
-        unsigned bestLength = 0xFFFFFFFF;
+        unsigned bestLength = std::numeric_limits<unsigned>::max();
         Ware* bestWare = NULL;
         BOOST_FOREACH(Ware* curWare, ware_list)
         {
@@ -913,9 +915,9 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode* start, noRoadNode** goal)
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
-                current_best_goal = (isF2Reachable) ? roadSeg->GetF2() : 0;
+                current_best_goal = (isF2Reachable) ? roadSeg->GetF2() : NULL;
             else if(!isF2Reachable)
-                current_best_goal = (isF1Reachable) ? roadSeg->GetF1() : 0;
+                current_best_goal = roadSeg->GetF1();
             else
             {
                 // ansonsten die kürzeste von beiden

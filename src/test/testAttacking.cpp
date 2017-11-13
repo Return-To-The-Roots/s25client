@@ -335,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
 
     // Attack it
     node.fow[0].visibility = VIS_VISIBLE;
-    std::vector<nofPassiveSoldier*> soldiers(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end());
+    std::vector<nofPassiveSoldier*> soldiers(attackSrc.GetTroops().begin(), attackSrc.GetTroops().end()); //-V807
     BOOST_REQUIRE_EQUAL(soldiers.size(), 6u);
     for(int i = 0; i < 3; i++)
         BOOST_REQUIRE_EQUAL(soldiers[i]->GetRank(), 0u);
@@ -441,7 +441,7 @@ typedef AttackFixture<4, 32> AttackFixture4P;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {
     initGameRNG();
-    world.GetPlayer(0).team = TM_TEAM1;
+    world.GetPlayer(0).team = TM_TEAM1; //-V525
     world.GetPlayer(1).team = TM_NOTEAM;
     world.GetPlayer(2).team = TM_TEAM1; // Allied to 0
     world.GetPlayer(3).team = TM_TEAM2; // Hostile to 0
@@ -459,15 +459,15 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     // Once enemy is defeated we walk in with another soldier of the enemy who wants to occupy its building.
     // The other soldier is faster -> we have to fight him
     this->Attack(milBld1Pos, 1, true);
-    BOOST_REQUIRE_EQUAL(milBld0->GetLeavingFigures().size(), 1u);
+    BOOST_REQUIRE_EQUAL(milBld0->GetLeavingFigures().size(), 1u); //-V807
     nofAttacker* attacker = dynamic_cast<nofAttacker*>(milBld0->GetLeavingFigures().front());
     BOOST_REQUIRE(attacker);
     // Move him directly out
     const_cast<std::list<noFigure*>&>(milBld0->GetLeavingFigures()).pop_front();
-    moveObjTo(world, *attacker, milBld1FlagPos);
+    moveObjTo(world, *attacker, milBld1FlagPos); //-V522
     BOOST_REQUIRE(!milBld1->IsDoorOpen());
     const std::list<noBase*>& flagFigs = world.GetFigures(milBld1FlagPos);
-    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING);
+    RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.front()->GetGOT() == GOT_FIGHTING); //-V807
     BOOST_REQUIRE(!milBld1->IsDoorOpen());
     // Speed up fight by reducing defenders HP to 1
     nofDefender* defender = const_cast<nofDefender*>(milBld1->GetDefender());
@@ -500,14 +500,16 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     this->Attack(milBld0Pos, 1, false);
     BOOST_REQUIRE_EQUAL(milBld1->GetLeavingFigures().size(), 1u);
     nofAttacker* attackerFromPl0 = dynamic_cast<nofAttacker*>(milBld1->GetLeavingFigures().front());
+    BOOST_REQUIRE(attackerFromPl0);
     // 2.
     curPlayer = 0;
     this->Attack(milBld1Pos, 1, true);
     // Move him directly out
     BOOST_REQUIRE_EQUAL(milBld0->GetLeavingFigures().size(), 1u);
     nofAttacker* secAttacker = dynamic_cast<nofAttacker*>(milBld0->GetLeavingFigures().front());
+    BOOST_REQUIRE(secAttacker);
     const_cast<std::list<noFigure*>&>(milBld0->GetLeavingFigures()).pop_front();
-    moveObjTo(world, *secAttacker, world.MakeMapPoint(milBld1FlagPos - Position(15, 0)));
+    moveObjTo(world, *secAttacker, world.MakeMapPoint(milBld1FlagPos - Position(15, 0))); //-V522
     nofAggressiveDefender* aggDefender = milBld1->SendAggressiveDefender(secAttacker);
     BOOST_REQUIRE(aggDefender);
     secAttacker->LetsFight(aggDefender);
@@ -520,6 +522,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     this->Attack(milBld1Pos, 1, false);
     BOOST_REQUIRE_EQUAL(alliedBld->GetLeavingFigures().size(), 1u);
     nofAttacker* alliedAttacker = dynamic_cast<nofAttacker*>(alliedBld->GetLeavingFigures().front());
+    BOOST_REQUIRE(alliedAttacker);
     // 4.
     curPlayer = 3;
     bldPos = hqPos[curPlayer] + MapPoint(3, 0);
@@ -529,16 +532,17 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     this->Attack(milBld1Pos, 1, false);
     BOOST_REQUIRE_EQUAL(hostileBld->GetLeavingFigures().size(), 1u);
     nofAttacker* hostileAttacker = dynamic_cast<nofAttacker*>(hostileBld->GetLeavingFigures().front());
+    BOOST_REQUIRE(hostileAttacker);
 
     // Make sure all other soldiers left their buildings (<=30GFs each + 20 for walking to flag and a bit further.
     // We got 2 from milBld1):
     RTTR_SKIP_GFS(2 * 30 + 20 + 10);
     // And suspend them to inspect them later on
-    rescheduleWalkEvent(em, *attackerFromPl0, 10000);
+    rescheduleWalkEvent(em, *attackerFromPl0, 10000); //-V522
     rescheduleWalkEvent(em, *secAttacker, 10000);
     rescheduleWalkEvent(em, *aggDefender, 10000);
-    rescheduleWalkEvent(em, *alliedAttacker, 10000);
-    rescheduleWalkEvent(em, *hostileAttacker, 10000);
+    rescheduleWalkEvent(em, *alliedAttacker, 10000);  //-V522
+    rescheduleWalkEvent(em, *hostileAttacker, 10000); //-V522
     // Let defenders (2!) die
     defender = const_cast<nofDefender*>(milBld1->GetDefender());
     while(defender->GetHitpoints() > 1u)
@@ -674,7 +678,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     BOOST_REQUIRE(attacker);
     // Move him directly out
     const_cast<std::list<noFigure*>&>(milBld0->GetLeavingFigures()).pop_front();
-    moveObjTo(world, *attacker, milBld1FlagPos);
+    moveObjTo(world, *attacker, milBld1FlagPos); //-V522
     const std::list<noBase*>& flagFigs = world.GetFigures(milBld1FlagPos);
     RTTR_EXEC_TILL(20, attacker->GetPos() == milBld1FlagPos);
     // Carriers on pos or to pos get send away as soon as soldier arrives

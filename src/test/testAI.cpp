@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
     AIPointer ai(AIFactory::Create(AI::Info(AI::DEFAULT, AI::HARD), curPlayer, world));
     const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
         BOOST_REQUIRE_EQUAL(world.GetBQ(pt, curPlayer), aijh.GetAINode(pt).bq);
     }

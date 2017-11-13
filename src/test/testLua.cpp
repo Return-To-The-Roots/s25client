@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(MissionGoal)
     initWorld();
 
     const PostBox& postBox = *world.GetPostMgr().AddPostBox(1);
-    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty()); //-V807
 
     // Set goal for non-existing or other player
     executeLua("rttr:SetMissionGoal(99, 'Goal')");
@@ -384,17 +384,18 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
                "people = {[JOB_HELPER] = 30,[JOB_WOODCUTTER] = 6,[JOB_FISHER] = 0,[JOB_FORESTER] = 2}");
     executeLua("assert(player:AddWares(wares))");
-    BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_HAMMER], 8u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_AXE], 6u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_SAW], 3u);
+    const Inventory& inv = player.GetInventory();
+    BOOST_REQUIRE_EQUAL(inv.goods[GD_HAMMER], 8u);
+    BOOST_REQUIRE_EQUAL(inv.goods[GD_AXE], 6u);
+    BOOST_REQUIRE_EQUAL(inv.goods[GD_SAW], 3u);
     BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_HAMMER), 8u);
     BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_AXE), 6u);
     BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_SAW), 3u);
     executeLua("assert(player:AddPeople(people))");
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_HELPER], 30u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_WOODCUTTER], 6u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FISHER], 0u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FORESTER], 2u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_HELPER], 30u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_WOODCUTTER], 6u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_FISHER], 0u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_FORESTER], 2u);
     BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_HELPER), 30u);
     BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_WOODCUTTER), 6u);
     BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_FISHER), 0u);
@@ -484,7 +485,7 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
     std::vector<MapPoint> expectedRestrictedArea;
     expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea); //-V807
     executeLua("assert(not player:IsInRestrictedArea(1, 2))");
     executeLua("assert(not player:IsInRestrictedArea(0, 0))");
     executeLua("assert(player:IsInRestrictedArea(6, 8))");
@@ -593,7 +594,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(figs.size(), 1u);
     const noAnimal* animal = dynamic_cast<noAnimal*>(figs.front());
     BOOST_REQUIRE(animal);
-    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_DEER);
+    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_DEER); //-V522
     executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_FOX)") % animalPos.x % animalPos.y);
     BOOST_REQUIRE_EQUAL(figs.size(), 2u);
     animal = dynamic_cast<noAnimal*>(figs.back());

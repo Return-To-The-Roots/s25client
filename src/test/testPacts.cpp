@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P) //, *utf::depends_
     BOOST_REQUIRE_EQUAL(postbox2.GetNumMsgs(), 1u);
     const DiplomacyPostQuestion* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox2.GetMsg(0));
     BOOST_REQUIRE(msg);
-    BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT);
+    BOOST_REQUIRE_EQUAL(msg->GetPactType(), NON_AGGRESSION_PACT); //-V522
     BOOST_REQUIRE_EQUAL(msg->GetPlayerId(), curPlayer);
     BOOST_REQUIRE_EQUAL(msg->IsAccept(), true);
     // should be in progress for player1

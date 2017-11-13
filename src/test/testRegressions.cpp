@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(ProdOfComponents)
 
 BOOST_AUTO_TEST_CASE(DirectionCmp)
 {
-    Direction east(Direction::EAST);
+    Direction east(Direction::EAST); //-V525
     Direction east2(Direction::EAST);
     Direction west(Direction::WEST);
     // All variations: Dir-Dir, Dir-Type, Type-Dir
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_REQUIRE_GT(oldSize.y, 50u);
     // Window should reduce height (only)
     wnd.SetMinimized(true);
-    BOOST_REQUIRE_EQUAL(wnd.GetSize().x, oldSize.x);
+    BOOST_REQUIRE_EQUAL(wnd.GetSize().x, oldSize.x); //-V807
     BOOST_REQUIRE_GT(wnd.GetSize().y, 0u);
     BOOST_REQUIRE_LT(wnd.GetSize().y, oldSize.y);
     // And fully expand to old size
@@ -136,7 +136,7 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>
         GamePlayer& player = world.GetPlayer(0);
         // Don't keep any reserve
         for(unsigned i = 0; i <= this->ggs.GetMaxMilitaryRank(); ++i)
-            player.GetFirstWH()->SetRealReserve(i, 0);
+            player.GetFirstWH()->SetRealReserve(i, 0); //-V522
         numPeople = numPeoplePlayer = player.GetInventory().people;
         numGoods = numGoodsPlayer = player.GetInventory().goods;
     }

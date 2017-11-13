@@ -199,7 +199,7 @@ void Animation::finish(Window* parent, bool finishImmediately)
         return;
     }
     // Finish immediately if we are at the start/end
-    if(repeat_ == RPT_OscillateOnce && curFrame_ == 0u && hasStarted_)
+    if(repeat_ == RPT_OscillateOnce && curFrame_ == 0u)
         countUp_ = false;
     if(!finishImmediately || isFinished())
         return;

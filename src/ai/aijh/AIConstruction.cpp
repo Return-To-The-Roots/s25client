@@ -113,8 +113,8 @@ void AIConstruction::AddBuildJob(BuildJob* job, bool front)
 void AIConstruction::ExecuteJobs(unsigned limit)
 {
     unsigned i = 0; // count up to limit
-    unsigned initconjobs = connectJobs.size() < 5 ? connectJobs.size() : 5;
-    unsigned initbuildjobs = buildJobs.size() < 5 ? buildJobs.size() : 5;
+    unsigned initconjobs = std::min<unsigned>(connectJobs.size(), 5);
+    unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
     for(; i < limit && !connectJobs.empty() && i < initconjobs;
         i++) // go through list, until limit is reached or list empty or when every entry has been checked
     {
@@ -240,7 +240,8 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         if(flag)
         {
             std::vector<const noFlag*>::iterator it = std::find(flags.begin(), flags.end(), flag);
-            flags.erase(it);
+            if(it != flags.end())
+                flags.erase(it);
         }
     }
 
@@ -310,7 +311,6 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     const noFlag* shortest = NULL;
     unsigned shortestLength = 99999;
     std::vector<Direction> tmpRoute;
-    bool found = false;
 
     // Jede Flagge testen...
     BOOST_FOREACH(const noFlag* curFlag, flags)
@@ -357,9 +357,6 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         if(aii.FindPathOnRoads(*curFlag, *flag))
             continue;
 
-        // Ansonsten haben wir einen Pfad!
-        found = true;
-
         // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
         if(2 * length + distance + 10 * maxNonFlagPts < shortestLength)
@@ -370,7 +367,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         }
     }
 
-    if(found)
+    if(shortest)
     {
         // LOG.write(("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
         if(!MinorRoadImprovements(flag, shortest, route))
@@ -387,13 +384,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
 {
     return BuildRoad(start, target, route);
-    // bool done=false;
-    MapPoint pStart = start->GetPos();
-    /*for(unsigned i=0;i<route.size();i++)
-    {
-        LOG.write((" %i",route[i]);
-    }
-    LOG.write(("\n");*/
+    MapPoint pStart = start->GetPos(); //-V779
     for(unsigned i = 0; i + 1 < route.size(); i++)
     {
         if((route[i] + 1u == route[i + 1])
@@ -420,21 +411,11 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
                         --route[i];
                         ++route[i + 1];
                     }
-                    // done=true;
                 }
             }
         } else
             pStart = aii.gwb.GetNeighbour(pStart, route[i]);
     }
-    /*if(done)
-    {
-        LOG.write(("final road\n");
-        for(unsigned i=0;i<route.size();i++)
-        {
-            LOG.write((" %i",route[i]);
-        }
-        LOG.write(("\n");
-    }*/
     return BuildRoad(start, target, route);
 }
 

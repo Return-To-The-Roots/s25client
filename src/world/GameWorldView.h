@@ -69,7 +69,7 @@ class GameWorldView
     const GameWorldViewer& gwv;
 
     /// Top-Left position of the view (window)
-    Point<int> pos;
+    Point<int> origin_;
     /// Size of the view
     Extent size_;
 
@@ -85,8 +85,8 @@ public:
     const GameWorldViewer& GetViewer() const { return gwv; }
     const GameWorldBase& GetWorld() const;
 
-    void SetPos(const Point<int>& newPos) { pos = newPos; }
-    Point<int> GetPos() const { return pos; }
+    void SetPos(const Point<int>& newPos) { origin_ = newPos; }
+    Point<int> GetPos() const { return origin_; }
     Extent GetSize() const { return size_; }
 
     void SetZoomFactor(float zoomFactor, bool smoothTransition = true);

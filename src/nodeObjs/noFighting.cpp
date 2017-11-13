@@ -167,12 +167,13 @@ void noFighting::Draw(DrawPoint drawPt)
                     {
                         // Verteidigungsanimation
                         LOADER
-                          .GetPlayerImage("rom_bobs",
-                                          FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i]
-                                            .defending[defending_animation][animation])
+                          .GetPlayerImage(
+                            "rom_bobs",
+                            FIGHT_ANIMATIONS[gwg->GetPlayer(soldiers[i]->GetPlayer()).nation][soldiers[i]->GetRank()][i] //-V781
+                              .defending[defending_animation][animation])
                           ->DrawFull(drawPt, COLOR_WHITE, gwg->GetPlayer(soldiers[i]->GetPlayer()).color);
 
-                        // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) und stärkere sich mit den Schwertern schützen (Ani 0)
+                        // Wenn schwache Soldaten Schild hinhalten (Ani 0 und 1) oder stärkere sich mit den Schwertern schützen (Ani 0)
                         // dann Schwert-aneinanderklirr-Sound abspielen
                         if((animation == 5)
                            && ((soldiers[i]->GetRank() < 2 && (defending_animation < 2))

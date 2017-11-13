@@ -536,14 +536,15 @@ void nobMilitary::SendSoldiersHome()
 // used by the ai to refill the upgradebuilding with low rank soldiers! - normal orders for soldiers are done in RegulateTroops!
 void nobMilitary::OrderNewSoldiers()
 {
+    const GlobalGameSettings& ggs = gwg->GetGGS();
     // No other ranks -> Don't send soldiers back
-    if(gwg->GetGGS().GetMaxMilitaryRank() == 0)
+    if(ggs.GetMaxMilitaryRank() == 0)
         return;
     // cancel all max ranks on their way to this building
     std::vector<nofPassiveSoldier*> noNeed;
     for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end();)
     {
-        if((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() >= ggs.GetMaxMilitaryRank())
         {
             nofPassiveSoldier* soldier = *it;
             it = helpers::erase(ordered_troops, it);
@@ -559,7 +560,7 @@ void nobMilitary::OrderNewSoldiers()
         // Zu wenig Truppen
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if(IsUnderAttack() && gwg->GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
+        if(IsUnderAttack() && ggs.getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).GetMilitarySetting(2) * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -874,17 +875,16 @@ bool nobMilitary::HasMaxRankSoldier() const
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 {
-    // Überhaupos Soldaten da?
-    if(troops.empty())
+    nofPassiveSoldier* soldier = ChooseSoldier();
+    if(!soldier)
     {
         /// Soldaten, die noch auf Mission gehen wollen, canceln und für die Verteidigung mit einziehen
         CancelJobs();
         // Nochmal versuchen
-        if(troops.empty())
+        soldier = ChooseSoldier();
+        if(!soldier)
             return NULL;
     }
-
-    nofPassiveSoldier* soldier = ChooseSoldier();
 
     // neuen Verteidiger erzeugen
     nofDefender* defender = new nofDefender(soldier, attacker);

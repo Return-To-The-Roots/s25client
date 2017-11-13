@@ -21,6 +21,7 @@
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
 #include "oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
 
@@ -88,12 +89,12 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
             // list to store bitmaps we could not fit in our current texture
             std::vector<glSmartBitmap*> left;
 
-            std::vector<uint32_t> buffer(curSize.x * curSize.y);
+            libsiedler2::PixelBufferARGB buffer(curSize.x, curSize.y);
 
             // try storing bitmaps in the big texture
             BOOST_FOREACH(glSmartBitmap* bmp, list)
             {
-                if(!root->insert(bmp, buffer, curSize, tmpVec))
+                if(!root->insert(bmp, buffer, tmpVec))
                 {
                     // inserting this bitmap failed? just remember it for next texture
                     left.push_back(bmp);
@@ -128,14 +129,14 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
 
             if(left.empty()) // nothing left, just generate texture and return success
             {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
                 return parTexWidth != 0;
             } else if(maxTex) // maximum texture size reached and something still left
             {
                 // generate this texture and release the buffer
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curSize.x, curSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &parTexWidth);
 
                 if(parTexWidth == 0)

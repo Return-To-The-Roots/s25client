@@ -39,19 +39,17 @@
 #define WIN32_LEAN_AND_MEAN
 #ifdef _MSC_VER
 // Visual Studio
+#ifdef _DEBUG
 #include <crtdbg.h>
+#endif              // _DEBUG
 #include <stdlib.h> // Required for crtdbg.h
 #if !defined(snprintf) && _MSC_VER < 1900
 #define snprintf _snprintf
 #endif
 extern void __cdecl __debugbreak();
 #define RTTR_BREAKPOINT __debugbreak()
-#ifndef assert
-#define assert _ASSERT
-#endif
 #else
 // Not Visual Studio
-#include <assert.h>
 #define RTTR_BREAKPOINT
 #endif
 
@@ -77,7 +75,6 @@ typedef int socklen_t;
 #define GetProcAddressW GetProcAddress
 #define GetProcAddressA GetProcAddress
 #define FreeLibrary(lib) dlclose(lib)
-#include <cassert>
 #endif // !_WIN32
 
 #include "RTTR_Assert.h"
@@ -124,11 +121,19 @@ inline void deletePtr(T*& ptr)
     ptr = 0;
 }
 
-/// Berechnet Differenz von 2 (unsigned!) Werten
+/// Calculate |a-b| of 2 unsigned values
 template<typename T>
 inline T safeDiff(T a, T b)
 {
     return (a > b) ? a - b : b - a;
+}
+
+/// Same as static_cast<T> but assert that it actually can be casted via dynamic_cast
+template<typename T, typename T_Src>
+inline T checkedCast(T_Src src)
+{
+    RTTR_Assert(dynamic_cast<T>(src));
+    return static_cast<T>(src);
 }
 
 // Fwd decl
@@ -143,5 +148,8 @@ namespace nowide {
 namespace bfs = boost::filesystem;
 /// Shortcut for boost::nowide
 namespace bnw = boost::nowide;
+
+// Suppress uninitialized v_
+//-V:BOOST_SCOPED_ENUM_DECLARE_BEGIN:730,801
 
 #endif // commonDefines_h__

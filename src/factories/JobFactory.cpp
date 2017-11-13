@@ -102,9 +102,8 @@ noFigure* JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsig
                     return new nofWellguy(pt, player, goalBld);
                 else if(goalBld->GetBuildingType() == BLD_CATAPULT)
                     return new nofCatapultMan(pt, player, goalBld);
-            } else
-                throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job "
-                                         + helpers::toString(job_id));
+            }
+            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal->GetGOT()) + " for job " + helpers::toString(job_id));
         case JOB_GEOLOGIST: RTTR_Assert(dynamic_cast<noFlag*>(goal)); return new nofGeologist(pt, player, static_cast<noFlag*>(goal));
         case JOB_SCOUT:
             // Im Spähturm arbeitet ein anderer Späher-Typ

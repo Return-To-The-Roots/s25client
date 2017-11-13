@@ -66,35 +66,35 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[10][walkdirection[wpNation][0]][now_id % 8][false].draw(walkOutPos, COLOR_WHITE, plColor);
-    } else if((now_id >= 2) && (now_id < 4)) // laufen 2
+    } else if(now_id < 4) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[10][walkdirection[wpNation][1]][now_id % 8][false].draw(walkOutPos, COLOR_WHITE, plColor);
-    } else if((now_id >= 4) && (now_id < 8)) // laufen 3
+    } else if(now_id < 8) // laufen 3
     {
         LOADER.carrier_cache[10][walkdirection[wpNation][2]][now_id % 8][false].draw(walkOutPos, COLOR_WHITE, plColor);
-    } else if((now_id >= 8) && (now_id < 16)) // eimer runter lassen
+    } else if(now_id < 16) // eimer runter lassen
     {
         if(now_id == 8)
             LOADER.GetPlayerImage("rom_bobs", 346)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
         else
             LOADER.GetPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    } else if((now_id >= 16) && (now_id < max_id - 16)) // kurbeln
+    } else if(now_id < max_id - 16) // kurbeln
     {
         LOADER.GetPlayerImage("rom_bobs", 330 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    } else if((now_id >= max_id - 16) && (now_id < max_id - 8)) // eimer rauf kurbeln
+    } else if(now_id < max_id - 8) // eimer rauf kurbeln
     {
         LOADER.GetPlayerImage("rom_bobs", 338 + (now_id % 8))->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    } else if((now_id >= max_id - 8) && (now_id < max_id - 4)) // laufen 3
+    } else if(now_id < max_id - 4) // laufen 3
     {
         LOADER.carrier_cache[11][walkdirection[wpNation][3]][now_id % 8][false].draw(walkInPos, COLOR_WHITE, plColor);
-    } else if((now_id >= max_id - 4) && (now_id < max_id - 2)) // laufen 2
+    } else if(now_id < max_id - 2) // laufen 2
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);
         LOADER.carrier_cache[11][walkdirection[wpNation][4]][now_id % 8][false].draw(walkInPos, COLOR_WHITE, plColor);
-    } else if(now_id >= max_id - 2) // laufen 1
+    } else // laufen 1
     {
         if(wpNation == NAT_ROMANS)
             LOADER.GetNationImage(wpNation, 250 + 5 * BLD_WELL + 4)->DrawFull(drawPt);

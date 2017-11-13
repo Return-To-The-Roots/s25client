@@ -97,12 +97,10 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         {
             default: // Passiert eh nicht, nur zur Sicherheit
                 activePlayers[i] = false;
-
+                break;
             case 0: // Alle sehen alles
-            {
                 activePlayers[i] = true;
-            }
-            break;
+                break;
             case 1: // Nur Verbündete teilen Sicht
             {
                 const bool visible = gwv.GetPlayer().IsAlly(i);
@@ -304,8 +302,8 @@ void iwStatistics::DrawStatistic(StatisticType type)
             {
                 max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }
-            if(SETTINGS.ingame.scale_statistics
-               && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) //-V807
+            if(SETTINGS.ingame.scale_statistics //-V807
+               && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
             {
                 min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
             }

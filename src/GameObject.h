@@ -32,9 +32,6 @@ class PostMsg;
 class GameObject
 {
 public:
-    /// ID for an invalid GameObject
-    static const unsigned INVALID_ID = 0xFFFFFFFF;
-
     GameObject();
     GameObject(SerializedGameData& sgd, const unsigned obj_id);
     GameObject(const GameObject& go);
@@ -46,7 +43,7 @@ public:
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
     virtual void HandleEvent(const unsigned /*id*/) {}
 
-    /// Gibt Objekt-ID zurück.
+    /// Return the unique ID of an object. Always non-zero!
     unsigned GetObjId() const { return objId; }
 
     /// Serialisierungsfunktion.
@@ -65,7 +62,9 @@ protected:
     void SendPostMessage(unsigned player, PostMsg* msg);
 
 private:
-    unsigned objId; /// eindeutige Objekt-ID
+    unsigned objId; /// unique ID
+
+    BOOST_DELETED_FUNCTION(GameObject& operator=(const GameObject&))
 
     // Static members
 public:

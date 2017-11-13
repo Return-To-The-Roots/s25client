@@ -99,7 +99,7 @@ bool GameServer::CountDown::Update(unsigned curTime)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::GameServer() : lanAnnouncer(LAN_DISCOVERY_CFG)
+GameServer::GameServer() : currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG)
 {
     status = SS_STOPPED;
 
@@ -151,11 +151,10 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
                 LOG.write("GameServer::Start: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
                 return false;
             }
-            const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
-            RTTR_Assert(header);
+            const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
-            config.playercount = header->getNumPlayers();
-            mapinfo.title = cvStringToUTF8(header->getName());
+            config.playercount = header.getNumPlayers();
+            mapinfo.title = cvStringToUTF8(header.getName());
         }
         break;
         // Gespeichertes Spiel
@@ -496,7 +495,7 @@ bool GameServer::StartGame()
     lanAnnouncer.Stop();
 
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
-    unsigned random_init = (mapinfo.type == MAPTYPE_SAVEGAME) ? 0xFFFFFFFF : VIDEODRIVER.GetTickCount();
+    unsigned random_init = (mapinfo.type == MAPTYPE_SAVEGAME) ? 0 : VIDEODRIVER.GetTickCount();
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;

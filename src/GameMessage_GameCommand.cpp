@@ -43,7 +43,7 @@ void GameMessage_GameCommand::Deserialize(Serializer& ser)
     gcs.Deserialize(ser);
 }
 
-bool GameMessage_GameCommand::Run(MessageInterface* callback)
+bool GameMessage_GameCommand::Run(GameMessageInterface* callback)
 {
-    return GetInterface(callback)->OnGameMessage(*this);
+    return callback->OnGameMessage(*this);
 }

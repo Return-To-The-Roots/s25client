@@ -669,8 +669,8 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     if(ke.alt && (ke.kt == KT_RETURN))
     {
         // Switch Fullscreen/Windowed
-        Extent screenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-        VIDEODRIVER.ResizeScreen(screenSize.x, screenSize.y, !SETTINGS.video.fullscreen);
+        Extent newScreenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
+        VIDEODRIVER.ResizeScreen(newScreenSize.x, newScreenSize.y, !SETTINGS.video.fullscreen);
         SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
     } else
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
@@ -765,7 +765,7 @@ void WindowManager::Close(const IngameWindow* window)
             --tmp;
 
             // Activate window or desktop if window invalid
-            (*tmp)->SetActive(true);
+            (*tmp)->SetActive(true); //-V783
         } else
         {
             // nein, also Desktop aktivieren

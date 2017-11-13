@@ -36,7 +36,7 @@ public:
 
     void Serialize(Serializer& ser) const override;
     void Deserialize(Serializer& ser) override;
-    bool Run(MessageInterface* callback) override;
+    bool Run(GameMessageInterface* callback) override;
 };
 
 #endif // GameMessage_GameCommand_h__

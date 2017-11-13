@@ -18,12 +18,13 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "helpers/mathFuncs.h"
 #include <algorithm>
+#include <cstdlib>
 
 namespace helpers {
 int gcd(int a, int b)
 {
-    a = abs(a);
-    b = abs(b);
+    a = std::abs(a);
+    b = std::abs(b);
     using std::swap;
     if(a < b)
         swap(a, b);

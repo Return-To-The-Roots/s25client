@@ -22,7 +22,7 @@
 #include "DrawPoint.h"
 #include "libsiedler2/ArchivItem_Bitmap.h"
 
-class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase
+class glArchivItem_BitmapBase : public virtual libsiedler2::ArchivItem_BitmapBase //-V690
 {
 public:
     glArchivItem_BitmapBase();

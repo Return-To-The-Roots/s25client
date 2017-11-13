@@ -72,12 +72,12 @@ BOOST_AUTO_TEST_CASE(IndexOf)
 
     // Pointer vector
     std::vector<int*> ptrVec;
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), -1);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), -1);
-    ptrVec.push_back((int*)1336);
-    ptrVec.push_back((int*)1337);
-    ptrVec.push_back((int*)1338);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), 1);
-    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), 1);
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), -1);       //-V566
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), -1); //-V566
+    ptrVec.push_back((int*)1336);                                        //-V566
+    ptrVec.push_back((int*)1337);                                        //-V566
+    ptrVec.push_back((int*)1338);                                        //-V566
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (int*)1337), 1);        //-V566
+    BOOST_REQUIRE_EQUAL(helpers::indexOf(ptrVec, (const int*)1337), 1);  //-V566
 }
 BOOST_AUTO_TEST_SUITE_END()

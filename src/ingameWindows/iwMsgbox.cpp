@@ -112,13 +112,14 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     if(icon)
     {
         icon->SetPos(elMax(pos, DrawPoint(0, 0)));
-        DrawPoint iconPos(icon->GetPos() - icon->GetImage()->GetOrigin());
+        const glArchivItem_Bitmap* iconImg = icon->GetImage();
+        DrawPoint iconPos(icon->GetPos() - iconImg->GetOrigin());
         DrawPoint textPos = contentOffset + DrawPoint(paddingX, 5);
         Extent textMaxSize;
         if(iconPos.x < 100)
         {
             // icon left
-            textPos.x = iconPos.x + icon->GetImage()->getWidth() + paddingX;
+            textPos.x = iconPos.x + iconImg->getWidth() + paddingX;
             textMaxSize.x = std::max<int>(minTextWidth, 400 - textPos.x - paddingX);
             textMaxSize.y = maxTextHeight;
         } else if(iconPos.x > 300)
@@ -126,17 +127,17 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             // icon right
             textMaxSize.x = iconPos.x - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
-        } else if(iconPos.y + icon->GetImage()->getHeight() < 50)
+        } else if(iconPos.y + iconImg->getHeight() < 50)
         {
             // icon top
-            textPos.y = iconPos.y + icon->GetImage()->getHeight() + paddingX;
+            textPos.y = iconPos.y + iconImg->getHeight() + paddingX;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         } else if(iconPos.y > 150)
         {
             // icon bottom
             textMaxSize.x = 400 - 2 * paddingX;
-            textMaxSize.y = iconPos.y - paddingX - textPos.y;
+            textMaxSize.y = iconPos.y - textPos.y;
         } else
         {
             // Icon middle -> Overlay text
@@ -148,7 +149,7 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
         multiline->Resize(textMaxSize);
         multiline->Resize(multiline->GetContentSize());
 
-        DrawPoint newSize = iconPos + DrawPoint(icon->GetImage()->GetSize());
+        DrawPoint newSize = iconPos + DrawPoint(iconImg->GetSize());
         newSize = elMax(newSize, multiline->GetPos() + DrawPoint(multiline->GetSize()) + DrawPoint::all(paddingX));
         newSize += DrawPoint(0, 10 + btSize.y * 2) + DrawPoint(contentOffsetEnd);
         DrawPoint btMoveDelta(newSize - GetSize());

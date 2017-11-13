@@ -63,7 +63,7 @@ boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const s
     {
         BuildingQuality bqReq;
         if(helpers::contains(reducedBQs, pt))
-            bqReq = reducedBQs.find(pt)->second;
+            bqReq = reducedBQs.find(pt)->second; //-V783
         else
             bqReq = BQ_CASTLE;
         const BuildingQuality isBQ = world.GetNode(pt).bq;
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     reducedBQs[world.GetNeighbour(flagPos, Direction::WEST)] = BQ_NOTHING;
     reducedBQs[world.GetNeighbour(flagPos, Direction::NORTHEAST)] = BQ_NOTHING;
     // Can build houses but not castles
-    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir)
+    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir) //-V621
         reducedBQs[world.GetNeighbour(flagPos, dir)] = BQ_HOUSE;
     // Flag to bld is blocked by flag
     for(Direction dir = Direction::WEST; dir != Direction::EAST; ++dir)
@@ -110,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     // Place hut -> Addionally to changes by flag we can't place blds in range 1
     // and no large blds in range 2
     world.SetBuildingSite(BLD_WOODCUTTER, bldPos, 0);
-    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_HUT);
+    BOOST_REQUIRE_EQUAL(world.GetSpecObj<noBaseBuilding>(bldPos)->GetSize(), BQ_HUT); //-V807
     reducedBQs[bldPos] = BQ_NOTHING;
     // Every bq with distance==2 has BQ_HOUSE
     for(unsigned i = 0; i < 12; i++)
@@ -402,7 +402,7 @@ BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
     reducedBQs[objPos] = BQ_NOTHING;
     reducedBQs[world.GetNeighbour(objPos, Direction::NORTHWEST)] = BQ_FLAG;
     // Can build houses but not castles
-    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir)
+    for(Direction dir = Direction::EAST; dir != Direction::WEST; ++dir) //-V621
         reducedBQs[world.GetNeighbour(objPos, dir)] = BQ_HOUSE;
     BOOST_REQUIRE(checkBQs(world, ptsAroundObj, reducedBQs));
     BOOST_REQUIRE(!world.IsRoadAvailable(false, objPos));

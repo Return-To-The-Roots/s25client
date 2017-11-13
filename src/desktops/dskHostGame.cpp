@@ -993,7 +993,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
     {
         std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
 
-        gameChat->AddMessage(time, gameLobby.getPlayer(playerId).name, gameLobby.getPlayer(playerId).color, msg, 0xFFFFFF00);
+        gameChat->AddMessage(time, gameLobby.getPlayer(playerId).name, gameLobby.getPlayer(playerId).color, msg, 0xFFFFFF00); //-V810
         if(!gameChat->IsVisible())
         {
             Window* tab = GetCtrl<Window>(ID_CHAT_TAB);

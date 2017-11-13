@@ -57,7 +57,7 @@ int BasePlayerInfo::GetColorIdx() const
     return GetColorIdx(color);
 }
 
-int BasePlayerInfo::GetColorIdx(unsigned color)
+int BasePlayerInfo::GetColorIdx(unsigned color) //-V688
 {
     for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
     {

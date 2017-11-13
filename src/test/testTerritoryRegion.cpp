@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         else
             boost::push_back(fullArea, fullMapAreaReversed);
         fullArea += MapPoint(0, 0);
-        if(i / 2 < 2)
+        if(i % 2 == 0)
             boost::push_back(fullArea, rectAreas[1]);
         else
             boost::push_back(fullArea, rectAreas[3]);

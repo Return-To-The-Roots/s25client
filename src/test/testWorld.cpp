@@ -171,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     hbPos.push_back(MapPoint(20, 10));
     hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NORTHWEST));
 
-    hbPos.push_back(MapPoint(10, 20));
+    hbPos.push_back(MapPoint(10, 20)); //-V525
     hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NORTHEAST));
 
     hbPos.push_back(MapPoint(0, 10));

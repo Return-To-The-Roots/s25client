@@ -355,7 +355,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw zoom level indicator icon
-    if(gwv.GetCurrentTargetZoomFactor() != 1.f)
+    if(gwv.GetCurrentTargetZoomFactor() != 1.f) //-V550
     {
         glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
         const DrawPoint drawPos(iconPos);
@@ -534,7 +534,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {
-                const noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel);
+                const noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled

@@ -390,7 +390,7 @@ BOOST_FIXTURE_TEST_CASE(AttackWithTeams, SeaAttackFixture)
     // Enemy harbor blocks
     TestFailingSeaAttack(hqPos[1]);
 
-    world.GetPlayer(0).team = TM_TEAM2;
+    world.GetPlayer(0).team = TM_TEAM2; //-V525
     world.GetPlayer(1).team = TM_TEAM1;
     world.GetPlayer(2).team = TM_TEAM1;
     for(unsigned i = 0; i < 3; i++)
@@ -464,7 +464,7 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
     // min. 2 soldiers, or attack success is not save. Place ship further away if required
     BOOST_REQUIRE_GE(numSoldiersForAttack, 2u);
     // Note: This might be off by one if the ship arrived in the same GF a soldier arrived. But this is unlikely
-    BOOST_REQUIRE_EQUAL(ship.GetFigures().size(), numSoldiersForAttack);
+    BOOST_REQUIRE_EQUAL(ship.GetFigures().size(), numSoldiersForAttack); //-V807
     BOOST_FOREACH(const noFigure* attacker, ship.GetFigures())
     {
         BOOST_REQUIRE(!dynamic_cast<const nofAttacker&>(*attacker).IsSeaAttackCompleted());

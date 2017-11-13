@@ -264,7 +264,6 @@ bool InitDirectories()
     boost::array<unsigned, 8> dirs = {{94, 41, 47, 48, 51, 85, 98, 99}}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
-    const std::string newSettingsDir = RTTRCONFIG.ExpandPath(FILE_PATHS[94]);
 
 #ifdef _WIN32
     oldSettingsDir = RTTRCONFIG.ExpandPath("~/Siedler II.5 RttR");
@@ -273,6 +272,7 @@ bool InitDirectories()
 #endif
     if(!oldSettingsDir.empty() && bfs::is_directory(oldSettingsDir))
     {
+        const std::string newSettingsDir = RTTRCONFIG.ExpandPath(FILE_PATHS[94]);
         if(bfs::exists(newSettingsDir))
         {
             s25Util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")
@@ -389,8 +389,8 @@ int RunProgram(po::variables_map& options)
         {
             LOG.writeToFile(error.what());
         } catch(...)
-        {
-        } //-V565
+        { //-V565
+        }
         return 42;
     }
     return 0;

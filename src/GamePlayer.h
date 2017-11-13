@@ -357,7 +357,7 @@ private:
     /// Access to the world. Pointer used only for vector-compatibility till C++11, always set, non-owning
     GameWorldGame* gwg;
     /// List of all buildings
-    BuildingRegister buildings;
+    BuildingRegister buildings; //-V730_NOINIT
 
     /// Lister aller Straßen von dem Spieler
     std::list<RoadSegment*> roads;

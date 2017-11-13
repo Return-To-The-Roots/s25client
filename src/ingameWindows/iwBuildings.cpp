@@ -67,10 +67,12 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 {
     const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
-    for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
+    for(unsigned y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
     {
-        for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
+        for(unsigned x = 0; x < 4; ++x)
         {
+            if(y * 4 + x >= BUILDINGS_COUNT) //-V547
+                break;
             glArchivItem_Bitmap* img;
             if(bts[y * 4 + x] != BLD_CHARBURNER)
                 img = LOADER.GetImageN(NATION_ICON_IDS[playerNation], bts[y * 4 + x]);
@@ -95,11 +97,13 @@ void iwBuildings::Msg_PaintAfter()
 
     // Anzahlen unter die Gebäude schreiben
     DrawPoint rowPos = GetDrawPos() + iconPadding + DrawPoint(0, font_distance_y);
-    for(unsigned short y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
+    for(unsigned y = 0; y < BUILDINGS_COUNT / 4 + (BUILDINGS_COUNT % 4 > 0 ? 1 : 0); ++y)
     {
         DrawPoint curPos = rowPos;
-        for(unsigned short x = 0; x < ((y == BUILDINGS_COUNT / 4) ? BUILDINGS_COUNT % 4 : 4); ++x)
+        for(unsigned x = 0; x < 4; ++x)
         {
+            if(y * 4 + x >= BUILDINGS_COUNT) //-V547
+                break;
             char txt[64];
             sprintf(txt, "%u/%u", bc.buildings[bts[y * 4 + x]], bc.buildingSites[bts[y * 4 + x]]);
             NormalFont->Draw(curPos, txt, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);

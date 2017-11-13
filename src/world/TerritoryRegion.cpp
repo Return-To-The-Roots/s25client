@@ -34,15 +34,15 @@ TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, con
 
 TerritoryRegion::~TerritoryRegion() {}
 
-bool TerritoryRegion::IsPointInPolygon(const std::vector<Point<int> >& polygon, const Point<int> pt)
+bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt)
 {
     // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
     // The site contains a lot of details and information.
 
     bool inside = false;
 
-    std::vector<Point<int> >::const_iterator it = polygon.begin();
-    std::vector<Point<int> >::const_iterator prev = polygon.end() - 1;
+    std::vector<Position>::const_iterator it = polygon.begin();
+    std::vector<Position>::const_iterator prev = polygon.end() - 1;
     // Check each edge if a ray from the point to the right crosses the edge
     for(; it != polygon.end(); prev = it, ++it)
     {

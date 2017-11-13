@@ -36,7 +36,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     Inventory inv;
     inv.Add(JOB_HELPER, 1);
     wh->AddGoods(inv, true);
-    const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[JOB_HELPER];
+    const unsigned numHelpers = world.GetPlayer(curPlayer).GetInventory().people[JOB_HELPER]; //-V807
     MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SOUTHEAST);
     // Build a road -> Requests a worker
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));

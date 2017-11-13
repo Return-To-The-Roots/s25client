@@ -146,10 +146,10 @@ BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution<>)
     // Now just test some assumptions: 2 harbor spots per possible HQ.
     // Square land, 1 HQ on each side, harbors top and bottom or left and right of it
     // 1) Compare those around each HQ
-    BOOST_REQUIRE_LT(world.GetHarborPoint(1).y, world.GetHarborPoint(2).y);
+    BOOST_REQUIRE_LT(world.GetHarborPoint(1).y, world.GetHarborPoint(2).y); //-V807
     BOOST_REQUIRE_LT(world.GetHarborPoint(7).y, world.GetHarborPoint(8).y);
     BOOST_REQUIRE_LT(world.GetHarborPoint(3).x, world.GetHarborPoint(4).x);
-    BOOST_REQUIRE_LT(world.GetHarborPoint(5).x, world.GetHarborPoint(6).x);
+    BOOST_REQUIRE_LT(world.GetHarborPoint(5).x, world.GetHarborPoint(6).x); //-V807
     // 2) Compare between them
     BOOST_REQUIRE_LT(world.GetHarborPoint(2).y, world.GetHarborPoint(7).y);
     BOOST_REQUIRE_LT(world.GetHarborPoint(4).x, world.GetHarborPoint(5).x);

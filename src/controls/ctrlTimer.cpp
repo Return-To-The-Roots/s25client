@@ -40,7 +40,7 @@ ctrlTimer::ctrlTimer(Window* parent, unsigned id, unsigned timeout) : Window(par
  */
 void ctrlTimer::Start(unsigned timeout)
 {
-    this->timeout = timeout;
+    this->timeout_ = timeout;
 
     // timer initialisieren
     timer = VIDEODRIVER.GetTickCount();
@@ -62,7 +62,7 @@ void ctrlTimer::Msg_PaintBefore()
         return;
 
     // Bei Timeout weiterschalten
-    if(VIDEODRIVER.GetTickCount() - timer > timeout)
+    if(VIDEODRIVER.GetTickCount() - timer > timeout_)
     {
         GetParent()->Msg_Timer(GetID());
 

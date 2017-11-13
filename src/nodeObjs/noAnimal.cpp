@@ -195,7 +195,7 @@ void noAnimal::StandardWalking()
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
         // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
-        if(hunter)
+        if(hunter) //-V779
         {
             hunter->AnimalLost();
             hunter = NULL;

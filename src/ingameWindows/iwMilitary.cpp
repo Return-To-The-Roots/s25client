@@ -84,10 +84,11 @@ void iwMilitary::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        for(unsigned char i = 0; i < GAMECLIENT.visual_settings.military_settings.size(); ++i)
-            GAMECLIENT.visual_settings.military_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
+        MilitarySettings& milSettings = GAMECLIENT.visual_settings.military_settings;
+        for(unsigned char i = 0; i < milSettings.size(); ++i)
+            milSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        gcFactory.ChangeMilitary(GAMECLIENT.visual_settings.military_settings);
+        gcFactory.ChangeMilitary(milSettings);
         settings_changed = false;
     }
 }

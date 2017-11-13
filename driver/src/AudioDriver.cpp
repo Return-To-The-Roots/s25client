@@ -60,7 +60,7 @@ void AudioDriver::UnloadSound(AudioDriver& driver, SoundDesc* sound)
         RTTR_Assert(it != driver.sounds_.end());
         driver.DoUnloadSound(*sound);
         RTTR_Assert(!sound->isValid());
-        driver.sounds_.erase(it);
+        driver.sounds_.erase(it); //-V783
     }
     delete sound;
 }

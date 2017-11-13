@@ -46,7 +46,7 @@
 #include <stdexcept>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size)
-    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), pos(pos),
+    : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
       size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     MoveTo(0, 0);
@@ -61,7 +61,7 @@ const GameWorldBase& GameWorldView::GetWorld() const
 
 void GameWorldView::SetNextZoomFactor()
 {
-    if(zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step
+    if(zoomFactor_ == targetZoomFactor_) // == with float is ok here, is explicitly set in last step //-V550
         return;
 
     float remainingZoomDiff = targetZoomFactor_ - zoomFactor_;
@@ -124,10 +124,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     int shortestDistToMouse = 100000;
     Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
-    mousePos -= Point<int>(pos);
+    mousePos -= Point<int>(origin_);
 
-    glScissor(pos.x, VIDEODRIVER.GetScreenSize().y - pos.y - size_.y, size_.x, size_.y);
-    if(zoomFactor_ != 1.f)
+    glScissor(origin_.x, VIDEODRIVER.GetScreenSize().y - origin_.y - size_.y, size_.x, size_.y);
+    if(zoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
@@ -141,7 +141,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         glMatrixMode(GL_MODELVIEW);
     }
 
-    glTranslatef(static_cast<GLfloat>(pos.x) / zoomFactor_, static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
+    glTranslatef(static_cast<GLfloat>(origin_.x) / zoomFactor_, static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     const TerrainRenderer& terrainRenderer = gwv.GetTerrainRenderer();
@@ -210,13 +210,13 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
             (*it)->Draw(offset);
     }
 
-    if(zoomFactor_ != 1.f)
+    if(zoomFactor_ != 1.f) //-V550
     {
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);
     }
-    glTranslatef(-static_cast<GLfloat>(pos.x) / zoomFactor_, -static_cast<GLfloat>(pos.y) / zoomFactor_, 0.0f);
+    glTranslatef(-static_cast<GLfloat>(origin_.x) / zoomFactor_, -static_cast<GLfloat>(origin_.y) / zoomFactor_, 0.0f);
 
     glScissor(0, 0, VIDEODRIVER.GetScreenSize().x, VIDEODRIVER.GetScreenSize().y);
 }
@@ -482,16 +482,8 @@ void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos)
     return;
     // TODO: military aid - display icon overlay of attack possibility
 
-    noBuilding* building = dynamic_cast<noBuilding*>(obj);
-    if(!building || gwv.GetPlayer().IsAlly(building->GetPlayer()))
-        return;
-
-    BuildingType bt = building->GetBuildingType();
-    if(BuildingProperties::IsMilitary(bt) || bt == BLD_HEADQUARTERS || bt == BLD_HARBORBUILDING) // is it a military building?
-    {
-        if(gwv.GetNumSoldiersForAttack(building->GetPos())) // soldiers available for attack?
-            LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
-    }
+    if(gwv.GetNumSoldiersForAttack(pt) > 0) // soldiers available for attack?
+        LOADER.GetImageN("map_new", 20000)->DrawFull(curPos + DrawPoint(1, -5));
 }
 
 void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
@@ -607,7 +599,7 @@ void GameWorldView::CalcFxLx()
     lastPt.x = (offset.x + size_.x) / TR_W + 1;
     lastPt.y = (offset.y + size_.y + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
 
-    if(zoomFactor_ != 1.f)
+    if(zoomFactor_ != 1.f) //-V550
     {
         // Calc pixels we can remove from sides, as they are not drawn due to zoom
         Point<float> diff(size_.x - size_.x / zoomFactor_, size_.y - size_.y / zoomFactor_);

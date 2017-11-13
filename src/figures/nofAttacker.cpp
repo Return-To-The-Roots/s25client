@@ -444,12 +444,12 @@ void nofAttacker::WonFighting()
 /// Doesn't find a defender at the flag -> Send defenders or capture it
 void nofAttacker::ContinueAtFlag()
 {
+    RTTR_Assert(attacked_goal);
     // Greifen wir grad ein Gebäude an?
-    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER
-       || (attacked_goal && state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos() == pos))
+    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || (state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos() == pos))
     {
         // Dann neuen Verteidiger rufen
-        if(attacked_goal->CallDefender(this))
+        if(attacked_goal->CallDefender(this)) //-V522
         {
             // Verteidiger gefunden --> hinstellen und auf ihn warten
             SwitchStateAttackingWaitingForDefender();

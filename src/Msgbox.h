@@ -41,7 +41,7 @@ enum MsgboxResult
     MSR_CANCEL,
     MSR_YES,
     MSR_NO,
-    MSR_NOTHING = 0xFFFFFFFF
+    MSR_NOTHING
 };
 
 #endif //! MSGBOX_H_INCLUDED

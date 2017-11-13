@@ -34,7 +34,7 @@ struct TradeFixture : public WorldWithGCExecution3P
     TradeFixture()
     {
         curPlayer = 1;
-        world.GetPlayer(0).team = TM_TEAM1;
+        world.GetPlayer(0).team = TM_TEAM1; //-V525
         world.GetPlayer(1).team = TM_TEAM1;
         world.GetPlayer(2).team = TM_TEAM2;
         for(unsigned i = 0; i < world.GetPlayerCount(); i++)
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     this->ggs.setSelection(AddonId::TRADE, 1);
 
     // Trade self -> Wrong
-    this->TradeOverLand(players[1]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
+    this->TradeOverLand(players[1]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2); //-V525
     testExpectedWares();
     // Trade enemy -> Wrong
     this->TradeOverLand(players[2]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);

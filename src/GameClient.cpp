@@ -276,17 +276,17 @@ void GameClient::StartGame(const unsigned random_init)
     // Get standard settings before they get overwritten
     GetPlayer(playerId_).FillVisualSettings(default_settings);
 
+    GameWorld& gameWorld = game->world;
     if(mapinfo.savegame)
-    {
-        mapinfo.savegame->sgd.ReadSnapshot(game->world);
-    } else
+        mapinfo.savegame->sgd.ReadSnapshot(gameWorld);
+    else
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
         /// Startbündnisse setzen
-        for(unsigned i = 0; i < game->world.GetPlayerCount(); ++i)
-            game->world.GetPlayer(i).MakeStartPacts();
+        for(unsigned i = 0; i < gameWorld.GetPlayerCount(); ++i)
+            gameWorld.GetPlayer(i).MakeStartPacts();
 
-        game->world.LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
+        gameWorld.LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
 
         /// Evtl. Goldvorkommen ändern
         Resource::Type target; // löschen
@@ -299,9 +299,9 @@ void GameClient::StartGame(const unsigned random_init)
             case 3: target = Resource::Coal; break;
             case 4: target = Resource::Granite; break;
         }
-        game->world.ConvertMineResourceTypes(Resource::Gold, target);
+        gameWorld.ConvertMineResourceTypes(Resource::Gold, target);
     }
-    game->world.InitAfterLoad();
+    gameWorld.InitAfterLoad();
 
     // Update visual settings
     ResetVisualSettings();
@@ -874,12 +874,11 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                     return true;
                 }
 
-                const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
-                RTTR_Assert(header);
+                const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
                 RTTR_Assert(!gameLobby);
-                gameLobby.reset(new GameLobby(false, IsHost(), header->getNumPlayers()));
-                mapinfo.title = cvStringToUTF8(header->getName());
+                gameLobby.reset(new GameLobby(false, IsHost(), header.getNumPlayers()));
+                mapinfo.title = cvStringToUTF8(header.getName());
             }
             break;
             case MAPTYPE_SAVEGAME:
@@ -962,7 +961,7 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 {
     if(state != CS_LOADING && state != CS_GAME)
         return true;
-    if(msg.player >= game->world.GetPlayerCount())
+    if(msg.player >= game->world.GetPlayerCount()) //-V807
         return true;
     // LOG.writeToFile("CLIENT <<< GC %u\n") % unsigned(msg.player);
     // Nachricht in Queue einhängen
@@ -1320,7 +1319,7 @@ bool GameClient::StartReplay(const std::string& path)
     mapinfo.Clear();
     replayinfo.reset(new ReplayInfo);
 
-    if(!replayinfo->replay.LoadHeader(path, true) || !replayinfo->replay.LoadGameData(mapinfo))
+    if(!replayinfo->replay.LoadHeader(path, true) || !replayinfo->replay.LoadGameData(mapinfo)) //-V807
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
           % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());

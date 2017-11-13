@@ -80,7 +80,7 @@ public:
     bool CheckPointsInRadius(const MapPoint pt, const unsigned radius, T_IsValidPt isValid, bool includePt) const;
 
     /// Return the distance between 2 points on the map (includes wrapping around map borders)
-    unsigned CalcDistance(const Position p1, const Position p2) const;
+    unsigned CalcDistance(const Position& p1, const Position& p2) const;
     unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const { return CalcDistance(Position(p1), Position(p2)); }
     /// Return the direction for ships for going from one point to another
     ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;

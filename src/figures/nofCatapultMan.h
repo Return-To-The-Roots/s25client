@@ -53,10 +53,6 @@ private:
     /// Fragt die abgeleitete Klasse um die ID in JOBS.BOB, wenn der Beruf Waren rausträgt (bzw rein)
     unsigned short GetCarryID() const override { return 0; }
 
-    /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen ausführen
-    void HandleStateTargetBuilding();
-    void HandleStateBackOff();
-
 public:
     nofCatapultMan(const MapPoint pt, const unsigned char player, nobUsual* workplace);
     nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id);

@@ -64,7 +64,7 @@ struct WindowFixture
 struct TestAnimation : public Animation
 {
     TestAnimation(WindowFixture& parent, Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
-        : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false)
+        : Animation(element, numFrames, frameRate, repeat), parent(parent), updateCalled(false), lastNextFramepartTime(0)
     {}
     WindowFixture& parent;
     bool updateCalled;
@@ -100,7 +100,7 @@ PredRes WindowFixture::testAdvanceTime(TestAnimation* anim, unsigned time, bool 
         result.message() << "CurFrame: " << anim->getCurFrame() << " != " << reqCurFrame;
         return result;
     }
-    if(anim->lastNextFramepartTime != reqFramepartTime)
+    if(anim->lastNextFramepartTime != reqFramepartTime) //-V550
     {
         PredRes result(false);
         result.message() << "lastNextFramepartTime: " << anim->lastNextFramepartTime << " != " << reqFramepartTime;

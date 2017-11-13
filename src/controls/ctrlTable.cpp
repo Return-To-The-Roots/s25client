@@ -384,7 +384,7 @@ void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool visible)
         for(unsigned i = 0; i < columns.size(); ++i)
         {
             ctrlButton* bt = GetCtrl<ctrlButton>(i + 1);
-            if(bt->GetSize().x > x_col_minus)
+            if(bt->GetSize().x > x_col_minus) //-V807
 
                 bt->SetWidth(bt->GetSize().x - x_col_minus);
             else

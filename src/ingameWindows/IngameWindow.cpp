@@ -340,15 +340,16 @@ void IngameWindow::MoveNextToMouse()
 {
     // Center vertically and move slightly right
     DrawPoint newPos = VIDEODRIVER.GetMousePos() - DrawPoint(-20, GetSize().y / 2);
+    const Extent screenSize = VIDEODRIVER.GetScreenSize();
     // To far right?
-    if(newPos.x + GetSize().x > VIDEODRIVER.GetScreenSize().x)
-        newPos.x = VIDEODRIVER.GetScreenSize().x - GetSize().x;
+    if(newPos.x + GetSize().x > screenSize.x)
+        newPos.x = screenSize.x - GetSize().x;
 
     // To high or low?
     if(newPos.y < 0)
         newPos.y = 0;
-    else if(newPos.y + GetSize().y > VIDEODRIVER.GetScreenSize().y)
-        newPos.y = VIDEODRIVER.GetScreenSize().y - GetSize().y;
+    else if(newPos.y + GetSize().y > screenSize.y)
+        newPos.y = screenSize.y - GetSize().y;
     SetPos(newPos);
 }
 

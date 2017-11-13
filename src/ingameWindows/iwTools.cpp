@@ -162,6 +162,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
             case 12:
                 WINDOWMANAGER.Show(new iwHelp(GUI_ID(CGI_HELP), _("These settings control the tool production of your metalworks. "
                                                                   "The higher the value, the more likely this tool is to be produced.")));
+                break;
             case 13: // Standard
                 GAMECLIENT.visual_settings.tools_settings = GAMECLIENT.default_settings.tools_settings;
                 UpdateSettings();

@@ -38,7 +38,7 @@
 #endif
 #endif // !RTTR_SETTINGSDIR
 
-bfs::path RttrConfig::GetPrefixPath() const
+bfs::path RttrConfig::GetPrefixPath()
 {
     // Determine install prefix
     // Get path to current executable (at least for checks)
@@ -91,7 +91,7 @@ bfs::path RttrConfig::GetPrefixPath() const
 std::string RttrConfig::ExpandPath(const std::string& path) const
 {
     if(path.empty())
-        return prefixPath.string();
+        return prefixPath_.string();
     bfs::path outPath;
     if(path[0] == '<')
     {
@@ -112,7 +112,7 @@ std::string RttrConfig::ExpandPath(const std::string& path) const
     if(*outPath.begin() == "~")
         outPath = homePath / outPath.string().substr(2);
 
-    outPath = bfs::absolute(outPath, prefixPath);
+    outPath = bfs::absolute(outPath, prefixPath_);
     if(bfs::exists(outPath))
         outPath = bfs::canonical(outPath);
     return outPath.make_preferred().string();
@@ -120,11 +120,11 @@ std::string RttrConfig::ExpandPath(const std::string& path) const
 
 bool RttrConfig::Init()
 {
-    prefixPath = GetPrefixPath();
-    if(prefixPath.empty())
+    prefixPath_ = GetPrefixPath();
+    if(prefixPath_.empty())
         return false;
     // Make the prefix path our working directory as all other paths are relative to that
-    bfs::current_path(prefixPath);
+    bfs::current_path(prefixPath_);
     homePath = System::getHomePath();
     pathMappings.clear();
     pathMappings["BIN"] = RTTR_BINDIR;

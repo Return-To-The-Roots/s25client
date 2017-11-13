@@ -35,7 +35,7 @@ protected:
     void Draw_() override{};
 
 private:
-    unsigned timeout;
+    unsigned timeout_;
     unsigned timer;
 };
 

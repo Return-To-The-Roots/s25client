@@ -182,7 +182,9 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
     }
 }
 
-SerializedGameData::SerializedGameData() : debugMode(false), expectedObjectCount(0), em(NULL), isReading(false) {}
+SerializedGameData::SerializedGameData()
+    : debugMode(false), gameDataVersion(0), expectedObjectCount(0), em(NULL), writeEm(NULL), isReading(false)
+{}
 
 void SerializedGameData::Prepare(bool reading)
 {
@@ -428,6 +430,7 @@ GameObject* SerializedGameData::PopObject_(GO_Type got)
     if(safety_code != GetSafetyCode(*go))
     {
         LOG.write("SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n") % objId % got;
+        delete go;
         throw Error("Invalid safety code after PopObject");
     }
 
