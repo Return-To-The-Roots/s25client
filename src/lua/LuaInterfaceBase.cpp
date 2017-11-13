@@ -48,7 +48,7 @@ unsigned LuaInterfaceBase::GetVersion()
 
 unsigned LuaInterfaceBase::GetFeatureLevel()
 {
-    return 2;
+    return 3;
 }
 
 LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())

@@ -53,7 +53,7 @@ private:
     kaguya::LuaRef GetAllowedChanges();
 
     // Callable from Lua
-    unsigned GetPlayerCount();
+    unsigned GetPlayerCount() const;
     LuaServerPlayer GetPlayer(unsigned idx);
     void SetAddon(AddonId id, unsigned value);
     void SetBoolAddon(AddonId id, bool enabled); // Alias

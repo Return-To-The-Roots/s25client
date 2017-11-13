@@ -260,12 +260,12 @@ void LuaInterfaceGame::ClearResources()
         GetPlayer(p).ClearResources();
 }
 
-unsigned LuaInterfaceGame::GetGF()
+unsigned LuaInterfaceGame::GetGF() const
 {
     return gw.GetEvMgr().GetCurrentGF();
 }
 
-unsigned LuaInterfaceGame::GetPlayerCount()
+unsigned LuaInterfaceGame::GetPlayerCount() const
 {
     return gw.GetPlayerCount();
 }

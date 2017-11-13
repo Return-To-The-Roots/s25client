@@ -58,7 +58,7 @@ public:
             case 5: data = helpers::toString(static_cast<unsigned>(node.owner)); break;
             case 6:
             {
-                bool isAllowed = TerritoryRegion::IsPointValid(gw, gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
+                bool isAllowed = TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
                 coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
                 if(!showCoords)
                     data = isAllowed ? 'y' : 'n';

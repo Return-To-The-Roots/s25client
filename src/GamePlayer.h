@@ -95,6 +95,7 @@ public:
     void Deserialize(SerializedGameData& sgd);
 
     GameWorldGame& GetGameWorld() { return *gwg; }
+    const GameWorldGame& GetGameWorld() const { return *gwg; }
 
     const MapPoint& GetHQPos() const { return hqPos; }
     void AddBuilding(noBuilding* bld, BuildingType bldType);

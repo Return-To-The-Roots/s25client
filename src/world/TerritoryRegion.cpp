@@ -65,12 +65,12 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<Point<int> >& polygon, 
     return (inside);
 }
 
-bool TerritoryRegion::IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt)
+bool TerritoryRegion::IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt)
 {
     typedef Point<int> PointI;
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
-    PointI pt2(pt.x + gwb.GetWidth(), pt.y), pt3(pt.x, pt.y + gwb.GetHeight()), pt4(pt.x + gwb.GetWidth(), pt.y + gwb.GetHeight());
+    PointI pt2(pt.x + mapSize.x, pt.y), pt3(pt.x, pt.y + mapSize.y), pt4(pt + mapSize);
     const std::vector<PointI> polygonInt(polygon.begin(), polygon.end());
     return (polygon.empty() || IsPointInPolygon(polygonInt, PointI(pt)) || IsPointInPolygon(polygonInt, pt2)
             || IsPointInPolygon(polygonInt, pt3) || IsPointInPolygon(polygonInt, pt4));
@@ -84,7 +84,7 @@ void TerritoryRegion::AdjustNode(MapPoint pt, unsigned char player, unsigned cha
         return;
 
     // check whether this node is within the area we may have territory in
-    if(allowedArea && !IsPointValid(world, *allowedArea, pt))
+    if(allowedArea && !IsPointValid(world.GetSize(), *allowedArea, pt))
         return;
 
     /// If the new distance is less then the old, then we claim this point.

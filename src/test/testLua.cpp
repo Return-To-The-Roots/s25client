@@ -485,6 +485,10 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     std::vector<MapPoint> expectedRestrictedArea;
     expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    executeLua("assert(not player:IsInRestrictedArea(1, 2))");
+    executeLua("assert(not player:IsInRestrictedArea(0, 0))");
+    executeLua("assert(player:IsInRestrictedArea(6, 8))");
+    executeLua("assert(player:IsInRestrictedArea(11, 11))");
 
     // Polygon with hole
     executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");

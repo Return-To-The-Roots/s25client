@@ -81,7 +81,7 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 }
 
-unsigned LuaInterfaceSettings::GetPlayerCount()
+unsigned LuaInterfaceSettings::GetPlayerCount() const
 {
     RTTR_Assert(gameServer_.IsRunning());
     return gameServer_.GetMaxPlayerCount();

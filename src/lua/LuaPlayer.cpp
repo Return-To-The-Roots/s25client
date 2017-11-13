@@ -26,6 +26,7 @@
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
+#include "world/TerritoryRegion.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
 #include "libutil/Log.h"
@@ -45,6 +46,7 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
                                .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
                                .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
+                               .addFunction("IsInRestrictedArea", &LuaPlayer::IsInRestrictedArea)
                                .addFunction("ClearResources", &LuaPlayer::ClearResources)
                                .addFunction("AddWares", &LuaPlayer::AddWares)
                                .addFunction("AddPeople", &LuaPlayer::AddPeople)
@@ -164,6 +166,14 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
     player.GetRestrictedArea() = pts;
 }
 
+bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
+{
+    const GameWorldGame& world = player.GetGameWorld();
+    lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
+    lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
+    return TerritoryRegion::IsPointValid(world.GetSize(), player.GetRestrictedArea(), MapPoint(x, y));
+}
+
 void LuaPlayer::ClearResources()
 {
     const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
@@ -213,27 +223,27 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
     return true;
 }
 
-unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
+unsigned LuaPlayer::GetBuildingCount(BuildingType bld) const
 {
     lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
     return player.GetBuildingRegister().GetBuildingCount().buildings[bld];
 }
 
-unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld)
+unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld) const
 {
     lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
 
     return player.GetBuildingRegister().GetBuildingCount().buildingSites[bld];
 }
 
-unsigned LuaPlayer::GetWareCount(GoodType ware)
+unsigned LuaPlayer::GetWareCount(GoodType ware) const
 {
     lua::assertTrue(unsigned(ware) < WARE_TYPES_COUNT, "Invalid ware");
     return player.GetInventory().goods[ware];
 }
 
-unsigned LuaPlayer::GetPeopleCount(Job job)
+unsigned LuaPlayer::GetPeopleCount(Job job) const
 {
     lua::assertTrue(unsigned(job) < JOB_TYPES_COUNT, "Invalid ware");
     return player.GetInventory().people[job];
@@ -263,7 +273,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     }
 }
 
-bool LuaPlayer::IsDefeated()
+bool LuaPlayer::IsDefeated() const
 {
     return player.IsDefeated();
 }
@@ -275,7 +285,7 @@ void LuaPlayer::Surrender(bool destroyBlds)
         player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
-kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
+kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
 {
     return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
 }
