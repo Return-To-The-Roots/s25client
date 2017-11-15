@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Point.h"
+#include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"
 #include <map>
 #include <string>
@@ -93,12 +94,7 @@ public:
         bool ipv6;           /// listen/connect on ipv6 as default or not
     } server;
 
-    struct Proxy
-    {
-        std::string ip;    /// Serveradresse / Hostname
-        unsigned port;     /// Port
-        unsigned char typ; /// Socks 4 oder 5
-    } proxy;
+    ProxySettings proxy;
 
     struct
     {

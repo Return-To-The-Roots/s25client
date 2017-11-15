@@ -108,8 +108,7 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     clientconfig.isHost = host;
 
     // Verbinden
-    const Settings::Proxy& proxy = SETTINGS.proxy;
-    if(!mainPlayer.socket.Connect(server, port, use_ipv6, (Socket::PROXY_TYPE)proxy.typ, proxy.ip, proxy.port))
+    if(!mainPlayer.socket.Connect(server, port, use_ipv6, SETTINGS.proxy))
     {
         LOG.write("GameClient::Connect: ERROR: Connect failed!\n");
         return false;
@@ -1623,7 +1622,6 @@ Replay& GameClient::GetReplay()
 
 boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
 {
-    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
     return clientPlayers;
 }
 

@@ -87,7 +87,7 @@ void dskLAN::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btBack: WINDOWMANAGER.Switch(new dskMultiPlayer); break;
         case ID_btConnect: ConnectToSelectedGame(); break;
         case ID_btAddServer:
-            if(SETTINGS.proxy.typ != 0)
+            if(SETTINGS.proxy.type != PROXY_NONE)
                 WINDOWMANAGER.Show(new iwMsgbox(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));

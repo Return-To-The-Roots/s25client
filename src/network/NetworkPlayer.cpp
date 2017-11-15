@@ -20,7 +20,7 @@
 #include "GameMessage.h"
 
 NetworkPlayer::NetworkPlayer(unsigned playerId)
-    : playerId(playerId), sendQueue(GameMessage::create_game), recvQueue(GameMessage::create_game)
+    : playerId(playerId), recvQueue(GameMessage::create_game), sendQueue(GameMessage::create_game)
 {}
 
 void NetworkPlayer::closeConnection(bool flushMsgsFirst)

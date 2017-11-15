@@ -107,12 +107,7 @@ bool Settings::LoadDefaults()
     server.ipv6 = false;
     // }
 
-    // proxy
-    // {
-    proxy.ip.clear();
-    proxy.port = 0;
-    proxy.typ = 0;
-    // }
+    proxy = ProxySettings();
 
     // interface
     // {
@@ -244,21 +239,20 @@ bool Settings::Load()
 
         // proxy
         // {
-        proxy.ip = iniProxy->getValue("proxy");
+        proxy.hostname = iniProxy->getValue("proxy");
         proxy.port = iniProxy->getValueI("port");
-        proxy.typ = iniProxy->getValueI("typ");
+        proxy.type = ProxyType(iniProxy->getValueI("typ"));
         // }
 
         // leere proxyadresse deaktiviert proxy komplett
-        if(proxy.ip.empty())
-            proxy.typ = 0;
-
         // deaktivierter proxy entfernt proxyadresse
-        if(proxy.typ == 0)
-            proxy.ip.clear();
-
+        if(proxy.hostname.empty() || (proxy.type != PROXY_SOCKS4 && proxy.type != PROXY_SOCKS5))
+        {
+            proxy.type = PROXY_NONE;
+            proxy.hostname.clear();
+        }
         // aktivierter Socks v4 deaktiviert ipv6
-        else if(proxy.typ == 4 && server.ipv6)
+        else if(proxy.type == PROXY_SOCKS4 && server.ipv6)
             server.ipv6 = false;
 
         // interface
@@ -374,23 +368,11 @@ void Settings::Save()
     iniServer->setValue("ipv6", (server.ipv6 ? 1 : 0));
     // }
 
-    // leere proxyadresse deaktiviert proxy komplett
-    if(proxy.ip.empty())
-        proxy.typ = 0;
-
-    // deaktivierter proxy entfernt proxyadresse
-    if(proxy.typ == 0)
-        proxy.ip.clear();
-
-    // aktivierter Socks v4 deaktiviert ipv6
-    else if(proxy.typ == 4 && server.ipv6)
-        server.ipv6 = false;
-
     // proxy
     // {
-    iniProxy->setValue("proxy", proxy.ip);
+    iniProxy->setValue("proxy", proxy.hostname);
     iniProxy->setValue("port", proxy.port);
-    iniProxy->setValue("typ", proxy.typ);
+    iniProxy->setValue("typ", proxy.type);
     // }
 
     // interface
