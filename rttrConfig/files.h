@@ -25,7 +25,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Konstanten
-const boost::array<const char*, 105> FILE_PATHS = {{
+const boost::array<const char*, 104> FILE_PATHS = {{
   /*  0 */ "<RTTR_CONFIG>/CONFIG.INI",         // die Einstellungsdatei
   /*  1 */ "",                                 // unused
   /*  2 */ "",                                 // unused
@@ -129,8 +129,7 @@ const boost::array<const char*, 105> FILE_PATHS = {{
   /*100 */ "",                                  // unused
   /*101 */ "",                                  // unused
   /*102 */ "<RTTR_GAME>/GFX/PICS/SETUP013.LBM", // Optionen
-  /*103 */ "<RTTR_GAME>/GFX/PICS/SETUP015.LBM", // Freies Spiel
-  /*104 */ "<RTTR_RTTR>/splash.bmp"             // Splash
+  /*103 */ "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"  // Freies Spiel
 }};
 
 BOOST_CONSTEXPR_OR_CONST unsigned FILE_SPLASH_ID = 104;

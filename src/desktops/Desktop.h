@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Window.h"
+
 class IngameWindow;
 class glArchivItem_Bitmap;
 struct ScreenResizeEvent;
@@ -29,9 +30,16 @@ class Desktop : public Window
 {
 public:
     Desktop(glArchivItem_Bitmap* background);
+    ~Desktop();
     void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
     /// Callback when a window was closed
     virtual void Msg_WindowClosed(IngameWindow& wnd){};
+    /// Show or hide the fps
+    void SetFpsDisplay(bool show);
+    void UpdateFps(unsigned newFps);
+
+    /// ID of the fps display text
+    static const unsigned fpsDisplayId;
 
 protected:
     void Draw_() override;

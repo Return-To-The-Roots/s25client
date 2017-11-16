@@ -82,7 +82,9 @@ public:
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
+    /// Load a file and save it into the loader repo
     bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal);
+    /// Load a file into the archiv
     bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& archiv);
 
 protected:
@@ -95,9 +97,9 @@ private:
     libsiedler2::Archiv* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
                                                 uint32_t colorShift = 0);
 
-    bool LoadFilesFromArray(const unsigned files_count, const unsigned* files, bool isOriginal);
+    bool LoadFilesFromArray(const std::vector<unsigned>& files, bool isOriginal);
     bool LoadLsts(unsigned dir);
-    bool LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal);
+    bool LoadFileOrDir(const std::string& file, bool isOriginal);
 
 public:
     glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);

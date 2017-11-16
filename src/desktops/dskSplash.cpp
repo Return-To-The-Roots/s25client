@@ -19,34 +19,68 @@
 #include "dskSplash.h"
 
 #include "GameManager.h"
+#include "GlobalVars.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "controls/ctrlTimer.h"
 #include "dskMainMenu.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
+#include "libutil/error.h"
 
-dskSplash::dskSplash() : Desktop(LOADER.GetImageN("splash", 0))
+dskSplash::dskSplash(glArchivItem_Bitmap* splashImg) : Desktop(splashImg), isLoading(false), isLoaded(false)
 {
     background->setFilter(GL_LINEAR);
     GAMEMANAGER.SetCursor(CURSOR_NONE);
-    AddTimer(0, 5000);
 }
 
 dskSplash::~dskSplash()
 {
+    // We took ownership!
+    delete background;
     GAMEMANAGER.SetCursor();
 }
 
-void dskSplash::Msg_Timer(const unsigned /*ctrl_id*/)
+void dskSplash::SetActive(bool activate)
 {
-    // Hauptmenü zeigen
-    WINDOWMANAGER.Switch(new dskMainMenu);
+    Desktop::SetActive(activate);
+    if(activate && !GetCtrl<ctrlTimer>(0))
+        AddTimer(0, 1);
+}
+
+void dskSplash::Msg_Timer(const unsigned ctrl_id)
+{
+    GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    if(ctrl_id == 0)
+        AddTimer(1, 1);
+    else if(ctrl_id == 1 && !isLoaded && !isLoading)
+    {
+        isLoading = true;
+        LoadFiles();
+    } else if(isLoaded)
+        WINDOWMANAGER.Switch(new dskMainMenu);
 }
 
 bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 {
-    // Hauptmenü zeigen
-    WINDOWMANAGER.Switch(new dskMainMenu);
+    if(isLoaded)
+        WINDOWMANAGER.Switch(new dskMainMenu);
 
     return true;
+}
+
+void dskSplash::LoadFiles()
+{
+    if(LOADER.LoadFilesAtStart())
+    {
+        isLoaded = true;
+        AddTimer(2, 5000);
+        SetFpsDisplay(true);
+    } else
+    {
+        s25Util::error(_("Some files failed to load.\n"
+                         "Please ensure that the Settlers 2 Gold-Edition is installed \n"
+                         "in the same directory as Return to the Roots."));
+        GLOBALVARS.notdone = false;
+    }
 }

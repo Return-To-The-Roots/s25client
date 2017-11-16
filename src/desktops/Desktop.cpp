@@ -17,10 +17,17 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Desktop.h"
-
+#include "Loader.h"
+#include "controls/ctrlText.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/converters.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include "ogl/glArchivItem_Font.h"
+#include <limits>
+
+// Set to highest possible so it is drawn last
+const unsigned Desktop::fpsDisplayId = std::numeric_limits<unsigned>::max();
 
 /**
  *  Konstruktor für einen Spieldesktop
@@ -30,7 +37,10 @@
 Desktop::Desktop(glArchivItem_Bitmap* background) : Window(NULL, 0, DrawPoint::all(0), VIDEODRIVER.GetScreenSize()), background(background)
 {
     SetScale(true);
+    SetFpsDisplay(true);
 }
+
+Desktop::~Desktop() {}
 
 /**
  *  Zeichenmethode zum Zeichnen des Desktops
@@ -54,4 +64,19 @@ void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
     Window::Msg_ScreenResize(sr);
     // Resize to new screen size
     Resize(sr.newSize);
+}
+
+void Desktop::SetFpsDisplay(bool show)
+{
+    if(!show)
+        DeleteCtrl(fpsDisplayId);
+    else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
+        AddText(fpsDisplayId, DrawPoint(800, 0), "", COLOR_YELLOW, glArchivItem_Font::DF_RIGHT, SmallFont);
+}
+
+void Desktop::UpdateFps(unsigned newFps)
+{
+    ctrlText* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    if(fpsDisplay)
+        fpsDisplay->SetText(helpers::toString(newFps) + " fps");
 }

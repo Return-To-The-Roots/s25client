@@ -79,12 +79,11 @@ bool Loader::LoadFilesAtStart()
     std::vector<unsigned> files;
 
     files += 5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
-      FILE_SPLASH_ID,               // Splashscreen: splash.bmp
       11, 12,                       // Menüdateien:  resource.dat, io.dat
       102, 103,                     // Hintergründe: setup013.lbm, setup015.lbm
       64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
 
-    if(!LoadFilesFromArray(files.size(), &files.front(), true))
+    if(!LoadFilesFromArray(files, true))
         return false;
 
     if(!LoadSounds())
@@ -102,7 +101,7 @@ bool Loader::LoadFilesAtStart()
  *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are
  * removed/overwritten first
  */
-bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal)
+bool Loader::LoadFileOrDir(const std::string& file, bool isOriginal)
 {
     if(file.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + file);
@@ -141,15 +140,6 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
         // no, only single file specified
         if(!LoadFile(file, GetPaletteN("pal5"), isOriginal))
             return false;
-
-        // ggf Splash anzeigen
-        if(file_id == FILE_SPLASH_ID)
-        {
-            glArchivItem_Bitmap* image = GetImageN("splash", 0);
-            image->setFilter(GL_LINEAR);
-            image->DrawFull(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()));
-            VIDEODRIVER.SwapBuffers();
-        }
     }
     return true;
 }
@@ -162,13 +152,13 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* files, bool isOriginal)
+bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files, bool isOriginal)
 {
     // load the files or directorys
-    for(unsigned i = 0; i < files_count; ++i)
+    BOOST_FOREACH(unsigned curFileIdx, files)
     {
-        std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[files[i]]);
-        if(!LoadFileOrDir(filePath, files[i], isOriginal))
+        std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[curFileIdx]);
+        if(!LoadFileOrDir(filePath, isOriginal))
         {
             LOG.write(_("Failed to load %s\n")) % filePath;
             return false;
@@ -186,15 +176,12 @@ bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* file
 bool Loader::LoadLsts(unsigned dir)
 {
     // systemweite lsts laden
-    unsigned files_count;
-    unsigned files[2] = {dir, dir + 3};
+    std::vector<unsigned> files(1, dir);
 
-    if(bfs::equivalent(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]), RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3])))
-        files_count = 1;
-    else
-        files_count = 2;
+    if(!bfs::equivalent(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]), RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3])))
+        files.push_back(dir + 3);
 
-    return LoadFilesFromArray(files_count, files, false);
+    return LoadFilesFromArray(files, false);
 }
 
 /**
@@ -362,10 +349,10 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     lastgfx = 0xFF;
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
-    if(!LoadFilesFromArray(files.size(), &files.front(), true))
+    if(!LoadFilesFromArray(files, true))
         return false;
 
-    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), 0, true))
+    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
         return false;
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
@@ -776,7 +763,7 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
     std::stringstream s;
     s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
 
-    return LoadFileOrDir(s.str(), 96, false);
+    return LoadFileOrDir(s.str(), false);
 }
 
 void Loader::ClearTerrainTextures()

@@ -26,12 +26,17 @@ class MouseCoords;
 class dskSplash : public Desktop
 {
 public:
-    dskSplash();
+    dskSplash(glArchivItem_Bitmap* splashImg);
     ~dskSplash() override;
+
+    void SetActive(bool activate) override;
 
 private:
     void Msg_Timer(const unsigned ctrl_id) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
+    void LoadFiles();
+
+    bool isLoading, isLoaded;
 };
 
 #endif // !dskSPLASH_H_INCLUDED
