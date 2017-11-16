@@ -23,6 +23,7 @@
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
+#include "GlobalGameSettings.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "notifications/ResourceNote.h"
@@ -34,6 +35,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noSign.h"
 #include "gameData/GameConsts.h"
+#include "addons/Addon.h"
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal), signs(0), node_goal(0, 0)
@@ -448,7 +450,11 @@ void nofGeologist::SetSign(Resource resources)
             case Resource::Water: msg = _("Found water"); break;
             default: RTTR_Assert(false); return;
         }
-        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
+
+        if (resources.getType() != Resource::Water || gwg->GetGGS().isEnabled(AddonId::EXHAUSTIBLE_WELLS)) {
+            SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
+        }
+
         gwg->GetNotifications().publish(ResourceNote(player, pos, resources));
         if(gwg->HasLua())
             gwg->GetLua().EventResourceFound(this->player, pos, resources.getType(), resources.getAmount());
