@@ -150,7 +150,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                                                                      /* 2 */ BLD_COALMINE,
                                                                      /* 3 */ BLD_GRANITEMINE}};
 
-        const unsigned TABS_COUNT[5] = {1, 2, 3, 1, 3};
+        const unsigned NUM_TABSS[5] = {1, 2, 3, 1, 3};
 
         /// Flexible what-buildings-are-available handling
         bool building_available[4][building_count_max];
@@ -200,7 +200,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
             building_available[2][3] = false;
 
-        for(unsigned char i = 0; i < TABS_COUNT[tabs.build_tabs]; ++i)
+        for(unsigned char i = 0; i < NUM_TABSS[tabs.build_tabs]; ++i)
         {
             unsigned char k = 0;
             Tabs::BuildTab bt = (tabs.build_tabs == Tabs::BT_MINE) ? Tabs::BT_MINE : Tabs::BuildTab(i);

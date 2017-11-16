@@ -36,7 +36,7 @@ const unsigned Settings::SETTINGS_SECTIONS = 11;
 const std::string Settings::SETTINGS_SECTION_NAMES[] = {"global", "video", "language",  "driver", "sound", "lobby",
                                                         "server", "proxy", "interface", "ingame", "addons"};
 
-const unsigned char Settings::SCREEN_REFRESH_RATES_COUNT = 14;
+const unsigned char Settings::NUM_SCREEN_REFRESH_RATESS = 14;
 const unsigned short Settings::SCREEN_REFRESH_RATES[] = {0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240};
 
 Settings::Settings() //-V730

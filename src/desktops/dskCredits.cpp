@@ -149,7 +149,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Thank you!"));
     entries.push_back(entry);
 
-    bool nations[NAT_COUNT] = {true, true, true, true, false};
+    bool nations[NUM_NATS] = {true, true, true, true, false};
 
     LOADER.LoadFilesAtGame(0, nations);
 
@@ -247,7 +247,7 @@ void dskCredits::DrawBobs()
         // exclude "headless" bobs
         if(job == 8 || job == 9 || job == 12 || job == 18)
         {
-            job = rand() % (WARE_TYPES_COUNT - 1);
+            job = rand() % (NUM_WARE_TYPES - 1);
             b.hasWare = true;
         } else
         {

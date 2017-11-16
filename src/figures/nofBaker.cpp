@@ -33,14 +33,14 @@ nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(
 
 void nofBaker::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit workOffset[NAT_COUNT] = {{40, -4}, {-16, 8}, {-5, 9}, {-8, 7}, {-16, 8}};
-    static const DrawPointInit walkOffsets[NAT_COUNT][8] = // nation, schrit, x-y
+    static const DrawPointInit workOffset[NUM_NATS] = {{40, -4}, {-16, 8}, {-5, 9}, {-8, 7}, {-16, 8}};
+    static const DrawPointInit walkOffsets[NUM_NATS][8] = // nation, schrit, x-y
       {{{10, 10}, {17, 12}, {24, 14}, {32, 14}, {34, 9}, {36, 4}, {38, -1}, {40, -4}},
        {{9, 11}, {11, 13}, {7, 17}, {3, 20}, {-1, 17}, {-5, 14}, {-9, 12}, {-13, 10}},
        {{9, 9}, {11, 11}, {9, 13}, {7, 15}, {4, 13}, {1, 11}, {-2, 9}, {-5, 9}},
        {{9, 11}, {11, 13}, {9, 15}, {7, 17}, {4, 15}, {1, 13}, {-2, 11}, {-5, 9}},
        {{9, 11}, {11, 13}, {7, 17}, {3, 20}, {-1, 17}, {-5, 14}, {-9, 12}, {-13, 10}}};
-    static const signed char walkdirection[NAT_COUNT][6] = {
+    static const signed char walkdirection[NUM_NATS][6] = {
       {3, 3, 2, 5, 0, 0}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}};
 
     unsigned max_id = 120;

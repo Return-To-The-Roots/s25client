@@ -78,7 +78,7 @@ const Language& Languages::getLanguage(unsigned i)
     return languages.at(i);
 }
 
-unsigned Languages::getCount()
+unsigned Languages::size()
 {
     if(!loaded)
         loadLanguages();

@@ -32,7 +32,7 @@
 // 167, 416
 iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const std::string& title, bool allow_outhousing,
                  glArchivItem_Font* font, const Inventory& inventory, const GamePlayer& player)
-    : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player), curPage_(0), pageCount(0)
+    : IngameWindow(id, pos, size, title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player), curPage_(0), numPages(0)
 {
     if(!font)
         font = SmallFont;
@@ -220,7 +220,7 @@ void iwWares::SetPage(unsigned page)
         group->SetVisible(false);
 
     // neue Page setzen
-    curPage_ = page % pageCount;
+    curPage_ = page % numPages;
 
     // neue Page anzeigen
     group = GetCtrl<ctrlGroup>(100 + curPage_);
@@ -230,8 +230,8 @@ void iwWares::SetPage(unsigned page)
 
 ctrlGroup& iwWares::AddPage()
 {
-    ctrlGroup& grp = *AddGroup(100 + pageCount);
-    pageCount++;
+    ctrlGroup& grp = *AddGroup(100 + numPages);
+    numPages++;
     grp.SetVisible(false);
     return grp;
 }

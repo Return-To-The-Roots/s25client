@@ -56,7 +56,7 @@ void Ware::Destroy()
     RTTR_Assert(!goal);
     RTTR_Assert(!location);
 #if RTTR_ENABLE_ASSERTS
-    for(unsigned p = 0; p < gwg->GetPlayerCount(); p++)
+    for(unsigned p = 0; p < gwg->GetNumPlayers(); p++)
     {
         RTTR_Assert(!gwg->GetPlayer(p).IsWareRegistred(this));
         RTTR_Assert(!gwg->GetPlayer(p).IsWareDependent(this));

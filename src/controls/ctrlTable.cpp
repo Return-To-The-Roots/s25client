@@ -206,7 +206,7 @@ void ctrlTable::SortRows(int column, bool* direction)
         sort_direction = true;
     sort_column = column;
 
-    if(sort_column < 0 || sort_column >= GetColumnCount())
+    if(sort_column < 0 || sort_column >= GetNumColumns())
         return;
 
     bool done;
@@ -250,7 +250,7 @@ void ctrlTable::Draw_()
     for(int i = 0; i < lines; ++i)
     {
         const int curRow = i + scroll->GetScrollPos();
-        RTTR_Assert(curRow >= 0 && curRow < GetRowCount());
+        RTTR_Assert(curRow >= 0 && curRow < GetNumRows());
         bool isSelected = selection_ == curRow;
         if(isSelected)
         {

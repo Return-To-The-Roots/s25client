@@ -44,7 +44,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     // Spieler zählen
     numPlayingPlayers = 0;
     const GameWorldBase& world = gwv.GetWorld();
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         if(world.GetPlayer(i).isUsed())
             numPlayingPlayers++;
@@ -54,7 +54,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     unsigned short startX = 126 - (numPlayingPlayers - 1) * 17;
     unsigned pos = 0;
 
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         // nicht belegte Spielplätze rauswerfen
         const GamePlayer& curPlayer = world.GetPlayer(i);
@@ -88,7 +88,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                                curPlayer.name)
                   ->SetBorder(false);
                 break;
-            case NAT_COUNT:
+            case NUM_NATS:
             case NAT_INVALID: break;
         }
 
@@ -167,7 +167,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
     // Standardansicht: 15min / Landesgröße
     statChanger->SetSelection(11);
-    currentView = STAT_COUNTRY;
+    currentView = NUM_STATSRY;
     timeChanger->SetSelection(21);
     currentTime = STAT_15M;
 
@@ -209,7 +209,7 @@ void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const int selec
             switch(selection)
             {
                 case 11:
-                    currentView = STAT_COUNTRY;
+                    currentView = NUM_STATSRY;
                     headline->SetText(_("Size of country"));
                     break;
                 case 12:
@@ -259,7 +259,7 @@ void iwStatistics::Msg_PaintAfter()
     // Die farbigen Boxen unter den Spielerportraits malen
     unsigned short startX = 126 - numPlayingPlayers * 17;
     DrawPoint drawPt = GetDrawPos() + DrawPoint(startX, 68);
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
         if(!player.isUsed())
@@ -281,7 +281,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
 {
     // Ein paar benötigte Werte...
     const Extent size(180, 80);
-    const int stepX = size.x / STAT_STEP_COUNT;
+    const int stepX = size.x / NUM_STAT_STEPS;
 
     unsigned short currentIndex;
     unsigned max = 1;
@@ -289,23 +289,23 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
     // Maximal- und Minimalwert suchen
     const GameWorldBase& world = gwv.GetWorld();
-    for(unsigned p = 0; p < world.GetPlayerCount(); ++p)
+    for(unsigned p = 0; p < world.GetNumPlayers(); ++p)
     {
         if(!activePlayers[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
-        for(unsigned i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
-            if(max < stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
+            if(max < stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)])
             {
-                max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
+                max = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
             }
             if(SETTINGS.ingame.scale_statistics //-V807
-               && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)])
+               && min > stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)])
             {
-                min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
+                min = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
             }
         }
     }
@@ -330,17 +330,17 @@ void iwStatistics::DrawStatistic(StatisticType type)
     const DrawPoint topLeft = GetPos() + DrawPoint(34, 124);
     DrawPoint previousPos(0, 0);
 
-    for(unsigned p = 0; p < world.GetPlayerCount(); ++p)
+    for(unsigned p = 0; p < world.GetNumPlayers(); ++p)
     {
         if(!activePlayers[p])
             continue;
         const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
 
         currentIndex = stat.currentIndex;
-        for(unsigned i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
-            DrawPoint curPos = topLeft + DrawPoint((STAT_STEP_COUNT - i) * stepX, size.y);
-            unsigned curStatVal = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)];
+            DrawPoint curPos = topLeft + DrawPoint((NUM_STAT_STEPS - i) * stepX, size.y);
+            unsigned curStatVal = stat.data[type][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)];
             if(SETTINGS.ingame.scale_statistics)
                 curPos.y -= ((curStatVal - min) * size.y) / (max - min);
             else

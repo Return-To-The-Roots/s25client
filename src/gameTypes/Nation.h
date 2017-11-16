@@ -28,11 +28,11 @@ enum Nation
     NAT_ROMANS,
     NAT_VIKINGS,
     NAT_BABYLONIANS,
-    NAT_COUNT,
+    NUM_NATS,
     NAT_INVALID = 0xFF
 };
 
 /// Number of native notions
-#define NATIVE_NAT_COUNT 4
+#define NUM_NATIVE_NATS 4
 
 #endif // Nation_h__

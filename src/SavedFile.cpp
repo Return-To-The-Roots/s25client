@@ -165,7 +165,7 @@ const BasePlayerInfo& SavedFile::GetPlayer(unsigned idx) const
     return players[idx];
 }
 
-unsigned SavedFile::GetPlayerCount()
+unsigned SavedFile::GetNumPlayers()
 {
     return players.size();
 }

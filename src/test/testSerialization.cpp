@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     Savegame save;
 
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         save.AddPlayer(world.GetPlayer(i));
 
     save.ggs = ggs;
@@ -154,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_REQUIRE(save.Save(tmpFile.filePath, "MapTitle"));
     BOOST_REQUIRE_LE(save.GetSaveTime() - saveTime, 20); // 20s difference max
-    const unsigned origObjNum = GameObject::GetObjCount();
+    const unsigned origObjNum = GameObject::GetNumObjs();
     const unsigned origObjIdNum = GameObject::GetObjIDCounter();
 
     for(int i = 0; i < 3; i++)
@@ -171,10 +171,10 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
         if(i == 0)
         {
             // Not loaded
-            BOOST_REQUIRE_EQUAL(loadSave.GetPlayerCount(), 0u);
+            BOOST_REQUIRE_EQUAL(loadSave.GetNumPlayers(), 0u);
         } else
         {
-            BOOST_REQUIRE_EQUAL(loadSave.GetPlayerCount(), 4u);
+            BOOST_REQUIRE_EQUAL(loadSave.GetNumPlayers(), 4u);
             for(unsigned j = 0; j < 4; j++)
             {
                 const BasePlayerInfo& loadPlayer = loadSave.GetPlayer(j);
@@ -205,7 +205,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());
-            BOOST_REQUIRE_EQUAL(GameObject::GetObjCount(), origObjNum);
+            BOOST_REQUIRE_EQUAL(GameObject::GetNumObjs(), origObjNum);
             BOOST_REQUIRE_EQUAL(GameObject::GetObjIDCounter(), origObjIdNum);
             std::vector<const GameEvent*> worldEvs = em.GetEvents();
             std::vector<const GameEvent*> loadEvs = newEm.GetEvents();
@@ -310,10 +310,10 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
         if(i == 0)
         {
             // Not loaded
-            BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 0u);
+            BOOST_REQUIRE_EQUAL(loadReplay.GetNumPlayers(), 0u);
             continue;
         }
-        BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 4u);
+        BOOST_REQUIRE_EQUAL(loadReplay.GetNumPlayers(), 4u);
         for(unsigned j = 0; j < 4; j++)
         {
             const BasePlayerInfo& loadPlayer = loadReplay.GetPlayer(j);
@@ -351,7 +351,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
     map.savegame.reset(new Savegame);
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         map.savegame->AddPlayer(world.GetPlayer(i));
     // We can change players
     std::vector<BasePlayerInfo> players(4);
@@ -408,10 +408,10 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
         if(i == 0)
         {
             // Not loaded
-            BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 0u);
+            BOOST_REQUIRE_EQUAL(loadReplay.GetNumPlayers(), 0u);
             continue;
         }
-        BOOST_REQUIRE_EQUAL(loadReplay.GetPlayerCount(), 4u);
+        BOOST_REQUIRE_EQUAL(loadReplay.GetNumPlayers(), 4u);
         for(unsigned j = 0; j < 4; j++)
         {
             const BasePlayerInfo& loadPlayer = loadReplay.GetPlayer(j);

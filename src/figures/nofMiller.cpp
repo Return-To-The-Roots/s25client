@@ -42,8 +42,8 @@ nofMiller::nofMiller(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofMiller::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = {{20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8}};
-    const DrawPointInit offsets_sitdown[NAT_COUNT] = {{23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8}};
+    const DrawPointInit offsets[NUM_NATS] = {{20, 8}, {20, 8}, {20, 8}, {20, 8}, {20, 8}};
+    const DrawPointInit offsets_sitdown[NUM_NATS] = {{23, 8}, {23, 8}, {23, 8}, {23, 8}, {23, 8}};
     const DrawPointInit walkoffsets[8] = {{8, 8}, {10, 9}, {12, 10}, {14, 11}, {16, 10}, {18, 9}, {20, 8}, {22, 8}};
 
     unsigned max_id = 120;

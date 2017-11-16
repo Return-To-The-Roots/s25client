@@ -94,7 +94,7 @@ void GameClient::ExecuteGameFrame_Replay()
         char text[256];
         sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF,
                 GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60,
-                GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+                GameManager::inst().GetNumFrames(), GameManager::inst().GetAverageFPS());
 
         if(ci)
             ci->CI_ReplayEndReached(text);

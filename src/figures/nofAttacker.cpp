@@ -45,7 +45,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
       shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -56,7 +56,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
       shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -131,7 +131,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     {
         attacked_goal = NULL;
         mayBeHunted = false;
-        canPlayerSendAggDefender.resize(gwg->GetPlayerCount(), 2);
+        canPlayerSendAggDefender.resize(gwg->GetNumPlayers(), 2);
         huntingDefender = NULL;
         radius = 0;
         blocking_event = NULL;

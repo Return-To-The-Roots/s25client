@@ -40,15 +40,15 @@ nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofWellguy::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = {{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}};
+    const DrawPointInit offsets[NUM_NATS] = {{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}};
 
-    const DrawPointInit walkoffsets[NAT_COUNT][8] = // nation, schritt
+    const DrawPointInit walkoffsets[NUM_NATS][8] = // nation, schritt
       {{{7, 7}, {9, 9}, {5, 12}, {2, 14}, {-1, 17}, {-4, 17}, {-7, 17}, {-10, 17}},
        {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}},
        {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 13}, {-4, 13}, {-7, 13}, {-10, 13}},
        {{5, 5}, {8, 8}, {5, 10}, {2, 13}, {-1, 15}, {-4, 15}, {-7, 15}, {-10, 15}},
        {{4, 4}, {8, 8}, {5, 12}, {2, 14}, {-1, 17}, {-3, 19}, {-6, 19}, {-8, 19}}};
-    signed char walkdirection[NAT_COUNT][6] = {
+    signed char walkdirection[NUM_NATS][6] = {
       {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}, {4, 5, 0, 3, 2, 1}};
 
     unsigned max_id = 112;

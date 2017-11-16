@@ -174,7 +174,7 @@ private:
     /// ist)
     bool AddGC(gc::GameCommand* gc) override;
 
-    unsigned GetPlayerCount() const;
+    unsigned GetNumPlayers() const;
     /// Liefert einen Player zurück
     GamePlayer& GetPlayer(const unsigned id);
 

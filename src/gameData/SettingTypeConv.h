@@ -24,7 +24,7 @@
 /// Scaling (max values) of each military setting
 extern const MilitarySettings MILITARY_SETTINGS_SCALE;
 /// Standard priority of each ware
-extern const boost::array<unsigned char, WARE_TYPES_COUNT> STD_TRANSPORT_PRIO;
+extern const boost::array<unsigned char, NUM_WARE_TYPES> STD_TRANSPORT_PRIO;
 
 /// Get the priority of a given good from the ordering of goods (good categories)
 unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good);

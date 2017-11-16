@@ -37,7 +37,7 @@ struct LocaleFixture
     {
         std::vector<std::string> codes;
         codes.push_back("C");
-        const unsigned numLanguages = LANGUAGES.getCount();
+        const unsigned numLanguages = LANGUAGES.size();
         for(unsigned i = 0; i < numLanguages; i++)
             codes.push_back(LANGUAGES.getLanguage(i).code);
         return codes;

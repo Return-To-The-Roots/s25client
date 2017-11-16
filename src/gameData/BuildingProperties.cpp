@@ -18,12 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "BuildingProperties.h"
 
-boost::container::static_vector<BuildingType, BUILDING_TYPES_COUNT / 4u> BuildingProperties::militaryBldTypes;
+boost::container::static_vector<BuildingType, NUM_BUILDING_TYPES / 4u> BuildingProperties::militaryBldTypes;
 
 void BuildingProperties::Init()
 {
     militaryBldTypes.clear();
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; i++)
+    for(unsigned i = 0; i < NUM_BUILDING_TYPES; i++)
     {
         BuildingType bld = BuildingType(i);
         if(IsMilitary(bld))

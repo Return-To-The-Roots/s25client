@@ -201,7 +201,7 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
     if(LOBBYCLIENT.IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
-        for(unsigned i = 0; i < TOURNAMENT_MODES_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOURNAMENT_MODESS; ++i)
         {
             char str[512];
             sprintf(str, _("Tournament: %u minutes"), TOURNAMENT_MODES_DURATION[i]);
@@ -432,7 +432,7 @@ void dskHostGame::UpdatePlayerRow(const unsigned row)
                 {
                     combo->AddString(gameLobby->getPlayer(i).originName);
                     if(i == row)
-                        combo->SetSelection(combo->GetCount() - 1);
+                        combo->SetSelection(combo->GetNumItems() - 1);
                 }
             }
         }
@@ -485,7 +485,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_)
             {
                 JoinPlayerInfo& localPlayer = gameLobby->getPlayer(playerId);
-                localPlayer.nation = Nation((unsigned(localPlayer.nation) + 1) % NAT_COUNT);
+                localPlayer.nation = Nation((unsigned(localPlayer.nation) + 1) % NUM_NATS);
                 GAMECLIENT.Command_SetNation(localPlayer.nation);
                 ChangeNation(playerId, localPlayer.nation);
             }
@@ -539,9 +539,9 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
             if(playerId == localPlayerId_)
             {
                 JoinPlayerInfo& player = gameLobby->getPlayer(playerId);
-                if(player.team >= TM_TEAM1 && player.team < Team(TEAM_COUNT)) // team: 1->2->3->4->0 //-V807
+                if(player.team >= TM_TEAM1 && player.team < Team(NUM_TEAMS)) // team: 1->2->3->4->0 //-V807
                 {
-                    player.team = Team((player.team + 1) % TEAM_COUNT);
+                    player.team = Team((player.team + 1) % NUM_TEAMS);
                 } else
                 {
                     if(player.team == TM_NOTEAM) // 0(noteam)->randomteam(1-4)

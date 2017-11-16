@@ -25,8 +25,8 @@
 /// Struct for wares and people (for HQs, warehouses etc)
 struct Inventory
 {
-    boost::array<unsigned, WARE_TYPES_COUNT> goods;
-    boost::array<unsigned, JOB_TYPES_COUNT> people;
+    boost::array<unsigned, NUM_WARE_TYPES> goods;
+    boost::array<unsigned, NUM_JOB_TYPES> people;
 
     Inventory() { clear(); }
     unsigned operator[](GoodType good) const { return goods[good]; }

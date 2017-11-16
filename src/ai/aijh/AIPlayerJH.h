@@ -72,7 +72,7 @@ public:
     /// military & tool production settings
     void AdjustSettings();
     /// return number of seaIds with at least 2 harbor spots
-    unsigned GetCountofAIRelevantSeaIds() const;
+    unsigned GetNumAIRelevantSeaIds() const;
 
     bool IsInvalidShipyardPosition(const MapPoint pt);
 

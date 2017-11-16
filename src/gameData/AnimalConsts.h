@@ -39,7 +39,7 @@ struct AnimalConst
 
 // 0 bedeutet --> kein Bild!
 
-const AnimalConst ANIMALCONSTS[SPEC_COUNT] = {
+const AnimalConst ANIMALCONSTS[NUM_SPECS] = {
   {1600, 0, 1648, 1649, 8, 20}, // Polarbär
   {1700, 0, 1736, 1737, 6, 20}, // Hase hell
   {1740, 0, 1776, 1777, 6, 20}, // Hase dunkel

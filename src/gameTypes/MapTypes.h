@@ -46,7 +46,7 @@ enum TerrainType
 };
 
 // Keep this in sync with TerrainType
-static const unsigned char TT_COUNT = TT_LAVA4 + 1;
+static const unsigned char NUM_TTS = TT_LAVA4 + 1;
 
 enum EdgeType
 {

@@ -56,7 +56,7 @@ const unsigned short TREATIE_BUTTON_SPACE = 20;
 
 iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter,
-                   Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetPlayerCount() * (CELL_HEIGHT + SPACE_HEIGHT) + 20), _("Diplomacy"),
+                   Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetNumPlayers() * (CELL_HEIGHT + SPACE_HEIGHT) + 20), _("Diplomacy"),
                    LOADER.GetImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
@@ -67,7 +67,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
             NormalFont);
 
     DrawPoint curTxtPos(LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + CELL_HEIGHT / 2 - CELL_HEIGHT - SPACE_HEIGHT);
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
         curTxtPos.y += CELL_HEIGHT + SPACE_HEIGHT;
@@ -116,7 +116,7 @@ void iwDiplomacy::Msg_PaintBefore()
     // Die farbigen Zeilen malen
     DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
     Rect curRect(curPos, Extent(GetSize().x - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT));
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
         DrawRectangle(curRect, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
@@ -129,7 +129,7 @@ void iwDiplomacy::Msg_PaintAfter()
     // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
     const unsigned PACT_COLORS[3] = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
 
-    for(unsigned i = 0; i < gwv.GetWorld().GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
     {
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
@@ -206,16 +206,16 @@ void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
 /////////////////////////////
 
 /// Titel für die Fenster für unterschiedliche Bündnistypen
-const char* const PACT_TITLES[PACTS_COUNT] = {gettext_noop("Suggest treaty of alliance"), gettext_noop("Suggest non-aggression pact")};
+const char* const PACT_TITLES[NUM_PACTS] = {gettext_noop("Suggest treaty of alliance"), gettext_noop("Suggest non-aggression pact")};
 
 /// Anzahl der unterschiedlich möglichen Längen ("für immer" nicht mit eingerechnet!)
-const unsigned DURATION_COUNT = 3;
+const unsigned NUM_DURATIONS = 3;
 
 /// Längen für die Dauer des Vertrages (kurz-, mittel- und langfristig)
-const unsigned DURATIONS[DURATION_COUNT] = {5000, 30000, 100000};
+const unsigned DURATIONS[NUM_DURATIONS] = {5000, 30000, 100000};
 
 /// Namen für diese Vertragsdauern
-const char* const DURATION_NAMES[DURATION_COUNT] = {gettext_noop("Short-run"), gettext_noop("Medium-term"), gettext_noop("Long-run")};
+const char* const DURATION_NAMES[NUM_DURATIONS] = {gettext_noop("Short-run"), gettext_noop("Medium-term"), gettext_noop("Long-run")};
 
 iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]), LOADER.GetImageN("resource", 41)),
@@ -242,7 +242,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(100, 125), Extent(190, 22), TC_GREEN2, NormalFont, 100);
 
     // Zeiten zur Combobox hinzufügen
-    for(unsigned i = 0; i < DURATION_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_DURATIONS; ++i)
     {
         char str[256];
         sprintf(str, "%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i]).c_str());
@@ -259,9 +259,9 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
 
 void iwSuggestPact::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
-    /// Dauer auswählen (wenn id == DURATION_COUNT, dann "für alle Ewigkeit" ausgewählt)
+    /// Dauer auswählen (wenn id == NUM_DURATIONS, dann "für alle Ewigkeit" ausgewählt)
     unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection();
-    unsigned duration = (selected_id == DURATION_COUNT) ? 0xFFFFFFFF : DURATIONS[selected_id];
+    unsigned duration = (selected_id == NUM_DURATIONS) ? 0xFFFFFFFF : DURATIONS[selected_id];
     gcFactory.SuggestPact(player.GetPlayerId(), this->pt, duration);
     Close();
 }

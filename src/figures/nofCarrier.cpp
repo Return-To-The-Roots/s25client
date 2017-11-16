@@ -232,7 +232,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 if(!animation)
                 {
-                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir().toUInt()][2].draw(
+                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? NUM_JOB_TYPES : 0][GetCurMoveDir().toUInt()][2].draw(
                       drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 } else
                     // Steht und wartet (ohne Ware)
@@ -248,7 +248,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 if(carried_ware)
                     DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
                 else
-                    DrawWalkingBobJobs(drawPt, fat ? JOB_TYPES_COUNT : 0);
+                    DrawWalkingBobJobs(drawPt, fat ? NUM_JOB_TYPES : 0);
             }
         }
         break;

@@ -208,8 +208,8 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     // Check if this works
     BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
     // All harbors valid
-    BOOST_REQUIRE_EQUAL(world.GetHarborPointCount(), hbPos.size());
-    for(unsigned startHb = 1; startHb < world.GetHarborPointCount(); startHb++)
+    BOOST_REQUIRE_EQUAL(world.GetNumHarborPoints(), hbPos.size());
+    for(unsigned startHb = 1; startHb < world.GetNumHarborPoints(); startHb++)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
@@ -218,7 +218,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
                 continue;
             MapPoint startPt = world.GetCoastalPoint(startHb, seaId);
             BOOST_REQUIRE_EQUAL(startPt, world.GetNeighbour(world.GetHarborPoint(startHb), Direction::fromInt(dir)));
-            for(unsigned targetHb = 1; targetHb < world.GetHarborPointCount(); targetHb++)
+            for(unsigned targetHb = 1; targetHb < world.GetNumHarborPoints(); targetHb++)
             {
                 MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);
                 if(!destPt.isValid())

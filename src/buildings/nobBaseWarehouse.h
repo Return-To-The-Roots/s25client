@@ -51,8 +51,8 @@ class SetAllInventorySettings;
 /// Ein/Auslagereinstellungsstruktur
 struct InventorySettings
 {
-    boost::array<InventorySetting, WARE_TYPES_COUNT> wares;
-    boost::array<InventorySetting, JOB_TYPES_COUNT> figures;
+    boost::array<InventorySetting, NUM_WARE_TYPES> wares;
+    boost::array<InventorySetting, NUM_JOB_TYPES> figures;
 };
 
 /// Grundlegende Warenhausklasse, die alle Funktionen vereint, die für Warenhäuser (HQ, Lagerhaus, Häfen) wichtig sind.
@@ -158,10 +158,10 @@ public:
     void AddGoods(const Inventory& goods, bool addToPlayer);
 
     /// Gibt Anzahl der Waren bzw. Figuren zurück
-    unsigned GetRealWaresCount(GoodType type) const { return inventory.real.goods[type]; }
-    unsigned GetRealFiguresCount(Job type) const { return inventory.real.people[type]; }
-    unsigned GetVisualWaresCount(GoodType type) const { return inventory.visual.goods[type]; }
-    unsigned GetVisualFiguresCount(Job type) const { return inventory.visual.people[type]; }
+    unsigned GetNumRealWares(GoodType type) const { return inventory.real[type]; }
+    unsigned GetNumRealFigures(Job job) const { return inventory.real[job]; }
+    unsigned GetNumVisualWares(GoodType type) const { return inventory.visual[type]; }
+    unsigned GetNumVisualFigures(Job job) const { return inventory.visual[job]; }
 
     /// Gibt Ein/Auslagerungseinstellungen zurück
     InventorySetting GetInventorySettingVisual(const Job job) const;
@@ -252,10 +252,10 @@ public:
     /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
     void AddActiveSoldier(nofActiveSoldier* soldier) override;
     /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
-    unsigned GetSoldiersCount() const
+    unsigned GetNumSoldiers() const
     {
-        return GetRealFiguresCount(JOB_PRIVATE) + GetRealFiguresCount(JOB_PRIVATEFIRSTCLASS) + GetRealFiguresCount(JOB_SERGEANT)
-               + GetRealFiguresCount(JOB_OFFICER) + GetRealFiguresCount(JOB_GENERAL);
+        return GetNumRealFigures(JOB_PRIVATE) + GetNumRealFigures(JOB_PRIVATEFIRSTCLASS) + GetNumRealFigures(JOB_SERGEANT)
+               + GetNumRealFigures(JOB_OFFICER) + GetNumRealFigures(JOB_GENERAL);
     }
     /// Bestellt Soldaten
     void OrderTroops(nobMilitary* goal, unsigned count, bool ignoresettingsendweakfirst = false);

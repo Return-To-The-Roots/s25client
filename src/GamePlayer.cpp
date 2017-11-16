@@ -86,7 +86,7 @@ void GamePlayer::LoadStandardToolSettings()
     // metalwork tool request
 
     // manually
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         tools_ordered[i] = 0;
         tools_ordered_delta[i] = 0;
@@ -126,7 +126,7 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
 
     // Baureihenfolge füllen
     unsigned curPrio = 0;
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
         BuildingType bld = BuildingType(i);
         if(bld == BLD_HEADQUARTERS || !BuildingProperties::IsValid(bld))
@@ -151,7 +151,7 @@ void GamePlayer::LoadStandardDistribution()
     distribution[GD_STONES].client_buildings.push_back(BLD_CATAPULT);
 
     // Waren mit mehreren möglichen Zielen erstmal nullen, kann dann im Fenster eingestellt werden
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         std::fill(distribution[i].percent_buildings.begin(), distribution[i].percent_buildings.end(), 0);
         distribution[i].selected_goal = 0;
@@ -225,40 +225,40 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedChar(toolsSettings_[i]);
 
     // qx:tools
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
         sgd.PushUnsignedChar(tools_ordered[i]);
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         sgd.PushUnsignedInt(global_inventory.goods[i]);
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         sgd.PushUnsignedInt(global_inventory.people[i]);
 
     // für Statistik
-    for(unsigned i = 0; i < STAT_TIME_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_TIMES; ++i)
     {
         // normale Statistik
-        for(unsigned j = 0; j < STAT_TYPE_COUNT; ++j)
-            for(unsigned k = 0; k < STAT_STEP_COUNT; ++k)
+        for(unsigned j = 0; j < NUM_STAT_TYPES; ++j)
+            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
                 sgd.PushUnsignedInt(statistic[i].data[j][k]);
 
         // Warenstatistik
-        for(unsigned j = 0; j < STAT_MERCHANDISE_TYPE_COUNT; ++j)
-            for(unsigned k = 0; k < STAT_STEP_COUNT; ++k)
+        for(unsigned j = 0; j < NUM_STAT_MERCHANDISE_TYPES; ++j)
+            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
                 sgd.PushUnsignedShort(statistic[i].merchandiseData[j][k]);
 
         sgd.PushUnsignedShort(statistic[i].currentIndex);
         sgd.PushUnsignedShort(statistic[i].counter);
     }
-    for(unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
         sgd.PushUnsignedInt(statisticCurrentData[i]);
 
-    for(unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
         sgd.PushUnsignedShort(statisticCurrentMerchandiseData[i]);
 
     // Serialize Pacts:
     for(unsigned i = 0; i < MAX_PLAYERS; ++i)
     {
-        for(unsigned u = 0; u < PACTS_COUNT; ++u)
+        for(unsigned u = 0; u < NUM_PACTS; ++u)
         {
             pacts[i][u].Serialize(sgd);
         }
@@ -301,9 +301,9 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     hqPos = sgd.PopMapPoint();
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
-        for(unsigned bldType = 0; bldType < BUILDING_TYPES_COUNT; ++bldType)
+        for(unsigned bldType = 0; bldType < NUM_BUILDING_TYPES; ++bldType)
         {
             distribution[i].percent_buildings[bldType] = sgd.PopUnsignedChar();
         }
@@ -331,44 +331,44 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         toolsSettings_[i] = sgd.PopUnsignedChar();
 
     // qx:tools
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
         tools_ordered[i] = sgd.PopUnsignedChar();
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
         tools_ordered_delta[i] = 0;
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         global_inventory.goods[i] = sgd.PopUnsignedInt();
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         global_inventory.people[i] = sgd.PopUnsignedInt();
 
     // Visuelle Einstellungen festlegen
 
     // für Statistik
-    for(unsigned i = 0; i < STAT_TIME_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_TIMES; ++i)
     {
         // normale Statistik
-        for(unsigned j = 0; j < STAT_TYPE_COUNT; ++j)
-            for(unsigned k = 0; k < STAT_STEP_COUNT; ++k)
+        for(unsigned j = 0; j < NUM_STAT_TYPES; ++j)
+            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
                 statistic[i].data[j][k] = sgd.PopUnsignedInt();
 
         // Warenstatistik
-        for(unsigned j = 0; j < STAT_MERCHANDISE_TYPE_COUNT; ++j)
-            for(unsigned k = 0; k < STAT_STEP_COUNT; ++k)
+        for(unsigned j = 0; j < NUM_STAT_MERCHANDISE_TYPES; ++j)
+            for(unsigned k = 0; k < NUM_STAT_STEPS; ++k)
                 statistic[i].merchandiseData[j][k] = sgd.PopUnsignedShort();
 
         statistic[i].currentIndex = sgd.PopUnsignedShort();
         statistic[i].counter = sgd.PopUnsignedShort();
     }
-    for(unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
         statisticCurrentData[i] = sgd.PopUnsignedInt();
 
-    for(unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
         statisticCurrentMerchandiseData[i] = sgd.PopUnsignedShort();
 
     // Deserialize Pacts:
     for(unsigned i = 0; i < MAX_PLAYERS; ++i)
     {
-        for(unsigned u = 0; u < PACTS_COUNT; ++u)
+        for(unsigned u = 0; u < NUM_PACTS; ++u)
         {
             pacts[i][u] = GamePlayer::Pact(sgd);
         }
@@ -672,7 +672,7 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
 
     unsigned goal_count = 0;
 
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
         uint8_t percentForCurBld = distribution[ware].percent_buildings[i];
         if(percentForCurBld)
@@ -1177,7 +1177,7 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 
 void GamePlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         transportPrio[i] = GetTransportPrioFromOrdering(transport_data, GoodType(i));
 }
 
@@ -1209,7 +1209,7 @@ void GamePlayer::OrderTroops(nobMilitary* goal, unsigned count, bool ignoresetti
         wh = FindWarehouse(*goal, FW::HasMinSoldiers(1), false, false);
         if(wh)
         {
-            unsigned order_count = std::min(wh->GetSoldiersCount(), count);
+            unsigned order_count = std::min(wh->GetNumSoldiers(), count);
             count -= order_count;
             wh->OrderTroops(goal, order_count, ignoresettingsendweakfirst);
         }
@@ -1329,14 +1329,14 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
 }
 
 /// Setzt neue Werkzeugeinstellungen
-void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, TOOL_COUNT>& orderChanges)
+void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, NUM_TOOLS>& orderChanges)
 {
     const bool settingsChanged = toolsSettings_ != tools_settings;
     toolsSettings_ = tools_settings;
     if(settingsChanged)
         gwg->GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
 
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         tools_ordered[i] = std::max(std::min(tools_ordered[i] + orderChanges[i], 99), 0);
         tools_ordered_delta[i] -= orderChanges[i];
@@ -1456,12 +1456,12 @@ void GamePlayer::CalcStatistics()
 {
     // Waren aus der Inventur zählen
     statisticCurrentData[STAT_MERCHANDISE] = 0;
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         statisticCurrentData[STAT_MERCHANDISE] += global_inventory.goods[i];
 
     // Bevölkerung aus der Inventur zählen
     statisticCurrentData[STAT_INHABITANTS] = 0;
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         statisticCurrentData[STAT_INHABITANTS] += global_inventory.people[i];
 
     // Militär aus der Inventur zählen
@@ -1481,11 +1481,11 @@ void GamePlayer::StatisticStep()
     CalcStatistics();
 
     // 15-min-Statistik ein Feld weiterschieben
-    for(unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
     {
         statistic[STAT_15M].data[i][incrStatIndex(statistic[STAT_15M].currentIndex)] = statisticCurrentData[i];
     }
-    for(unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
     {
         statistic[STAT_15M].merchandiseData[i][incrStatIndex(statistic[STAT_15M].currentIndex)] = statisticCurrentMerchandiseData[i];
     }
@@ -1501,13 +1501,13 @@ void GamePlayer::StatisticStep()
         if(statistic[t].counter == 4)
         {
             statistic[t].counter = 0;
-            for(unsigned i = 0; i < STAT_TYPE_COUNT; ++i)
+            for(unsigned i = 0; i < NUM_STAT_TYPES; ++i)
             {
                 statistic[t + 1].data[i][incrStatIndex(statistic[t + 1].currentIndex)] = statisticCurrentData[i];
             }
 
             // Summe für den Zeitraum berechnen (immer 4 Zeitschritte der jeweils kleineren Statistik)
-            for(unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+            for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
             {
                 statistic[t + 1].merchandiseData[i][incrStatIndex(statistic[t + 1].currentIndex)] =
                   statisticCurrentMerchandiseData[i] + statistic[t].merchandiseData[i][decrStatIndex(statistic[t].currentIndex, 1)]
@@ -1521,7 +1521,7 @@ void GamePlayer::StatisticStep()
     }
 
     // Warenstatistikzähler nullen
-    for(unsigned i = 0; i < STAT_MERCHANDISE_TYPE_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_STAT_MERCHANDISE_TYPES; ++i)
     {
         statisticCurrentMerchandiseData[i] = 0;
     }
@@ -1612,7 +1612,7 @@ GamePlayer::PactState GamePlayer::GetPactState(const PactType pt, const unsigned
 /// all allied players get a letter with the location
 void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {
-    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         if(i != GetPlayerId() && IsAlly(i))
             gwg->GetPlayer(i).SendPostMessage(new PostMsg(
@@ -1684,9 +1684,9 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
 void GamePlayer::MakeStartPacts()
 {
     // Reset pacts
-    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
-        for(unsigned z = 0; z < PACTS_COUNT; ++z)
+        for(unsigned z = 0; z < NUM_PACTS; ++z)
             pacts[i][z] = Pact();
     }
 
@@ -1698,11 +1698,11 @@ void GamePlayer::MakeStartPacts()
     RTTR_Assert(ownTeam >= TM_TEAM1 && ownTeam <= TM_TEAM4);
 
     // Create ally- and non-aggression-pact for all players of same team
-    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         if(ownTeam != GetFixedTeam(gwg->GetPlayer(i).team))
             continue;
-        for(unsigned z = 0; z < PACTS_COUNT; ++z)
+        for(unsigned z = 0; z < NUM_PACTS; ++z)
         {
             pacts[i][z].duration = 0xFFFFFFFF;
             pacts[i][z].start = 0;
@@ -1774,7 +1774,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     std::vector<ShipForHarbor> sfh;
 
     // we need more ships than those that are already on their way? limit search to idle ships
-    if(GetShipsToHarbor(hb) < hb.GetNeededShipsCount())
+    if(GetShipsToHarbor(hb) < hb.GetNumNeededShips())
     {
         BOOST_FOREACH(noShip* ship, ships)
         {
@@ -1878,14 +1878,14 @@ void GamePlayer::GetJobForShip(noShip* ship)
     BOOST_FOREACH(nobHarborBuilding* harbor, buildings.GetHarbors())
     {
         // Braucht der Hafen noch Schiffe?
-        if(harbor->GetNeededShipsCount() == 0)
+        if(harbor->GetNumNeededShips() == 0)
             continue;
 
         // Anzahl der Schiffe ermitteln, die diesen Hafen bereits anfahren
         unsigned ships_coming = GetShipsToHarbor(*harbor);
 
         // Evtl. kommen schon genug?
-        if(harbor->GetNeededShipsCount() <= ships_coming)
+        if(harbor->GetNumNeededShips() <= ships_coming)
             continue;
 
         // liegen wir am gleichen Meer?
@@ -2056,12 +2056,12 @@ void GamePlayer::TestForEmergencyProgramm()
 /// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GamePlayer::TestPacts()
 {
-    for(unsigned i = 0; i < gwg->GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gwg->GetNumPlayers(); ++i)
     {
         if(i == GetPlayerId())
             continue;
 
-        for(unsigned pactId = 0; pactId < PACTS_COUNT; pactId++)
+        for(unsigned pactId = 0; pactId < NUM_PACTS; pactId++)
         {
             // Pact not running
             if(pacts[i][pactId].duration == 0)
@@ -2087,7 +2087,7 @@ bool GamePlayer::CanBuildCatapult() const
     if(!gwg->GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
-    BuildingCount bc = buildings.GetBuildingCount();
+    BuildingCount bc = buildings.GetBuildingNums();
 
     unsigned max = 0;
     // proportional?

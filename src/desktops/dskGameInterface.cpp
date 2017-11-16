@@ -729,7 +729,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 unsigned oldPlayerId = worldViewer.GetPlayerId();
                 GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
-            } else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
+            } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
                 const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
                 if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
@@ -1270,7 +1270,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerId)
     unsigned winnercount = 0;
     char winners[5];
     const GameWorldBase& world = worldViewer.GetWorld();
-    for(unsigned i = 0; i < world.GetPlayerCount() && winnercount < 5; i++)
+    for(unsigned i = 0; i < world.GetNumPlayers() && winnercount < 5; i++)
     {
         winners[winnercount] = i;
         winnercount += playerId & (1 << i) ? 1 : 0;

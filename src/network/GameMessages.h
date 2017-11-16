@@ -225,12 +225,12 @@ class GameMessage_Server_Countdown : public GameMessage
 public:
     unsigned countdown;
 
-    GameMessage_Server_Countdown() : GameMessage(NMS_SERVER_COUNTDOWN) {} //-V730
-    GameMessage_Server_Countdown(unsigned countdown) : GameMessage(NMS_SERVER_COUNTDOWN), countdown(countdown) {}
+    GameMessage_Server_Countdown() : GameMessage(NMS_SERVERCOUNTDOWN) {} //-V730
+    GameMessage_Server_Countdown(unsigned countdown) : GameMessage(NMS_SERVERCOUNTDOWN), countdown(countdown) {}
 
     void Serialize(Serializer& ser) const override
     {
-        LOG.writeToFile(">>> NMS_SERVER_COUNTDOWN(%d)\n") % countdown;
+        LOG.writeToFile(">>> NUM_NMS_SERVERSDOWN(%d)\n") % countdown;
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(countdown);
     }
@@ -243,7 +243,7 @@ public:
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_SERVER_COUNTDOWN(%d)\n") % countdown;
+        LOG.writeToFile("<<< NUM_NMS_SERVERSDOWN(%d)\n") % countdown;
         return callback->OnGameMessage(*this);
     }
 };

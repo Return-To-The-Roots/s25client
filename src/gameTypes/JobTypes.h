@@ -58,7 +58,7 @@ enum Job
 };
 
 // Anzahl an unterschiedlichen Berufstypen
-const unsigned JOB_TYPES_COUNT = JOB_NOTHING;
+const unsigned NUM_JOB_TYPES = JOB_NOTHING;
 /// Job types of soldiers, weak ones first
 static const boost::array<Job, 5> SUPPRESS_UNUSED SOLDIER_JOBS = {
   {JOB_PRIVATE, JOB_PRIVATEFIRSTCLASS, JOB_SERGEANT, JOB_OFFICER, JOB_GENERAL}};

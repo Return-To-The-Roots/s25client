@@ -79,7 +79,7 @@ public:
     std::string GetGameName() const { return config.gamename; }
     bool HasPwd() const { return !config.password.empty(); }
     unsigned short GetPort() const { return config.port; }
-    unsigned GetMaxPlayerCount() const override { return config.playercount; }
+    unsigned GetNumMaxPlayers() const override { return config.playercount; }
     bool IsRunning() const override { return status != SS_STOPPED; }
 
     const GlobalGameSettings& GetGGS() const override { return ggs_; }

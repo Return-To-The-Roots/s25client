@@ -166,7 +166,7 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
                 return false;
 
             // Spieleranzahl
-            config.playercount = save.GetPlayerCount();
+            config.playercount = save.GetNumPlayers();
             mapinfo.title = save.GetMapName();
         }
         break;
@@ -304,7 +304,7 @@ void GameServer::AnnounceStatusChange()
         lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
     } else if(config.servertype == ServerType::LOBBY)
     {
-        LOBBYCLIENT.UpdateServerPlayerCount(GetNumFilledSlots(), playerInfos.size());
+        LOBBYCLIENT.UpdateServerNumPlayers(GetNumFilledSlots(), playerInfos.size());
     }
 }
 
@@ -344,7 +344,7 @@ void GameServer::Run()
             } else
             {
                 SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
-                LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_COUNTDOWN(%d)\n") % countdown.GetRemainingSecs();
+                LOG.writeToFile("SERVER >>> BROADCAST: NUM_NMS_SERVERSDOWN(%d)\n") % countdown.GetRemainingSecs();
             }
         }
     }
@@ -402,7 +402,7 @@ void GameServer::Stop()
  */
 bool GameServer::StartCountdown()
 {
-    int playerCount = 0;
+    int numPlayers = 0;
 
     // Alle Spieler da?
     BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
@@ -413,7 +413,7 @@ bool GameServer::StartCountdown()
         else if(player.isHuman() && !player.isReady)
             return false;
         if(player.isHuman())
-            playerCount++;
+            numPlayers++;
     }
 
     std::set<unsigned> takenColors;
@@ -430,7 +430,7 @@ bool GameServer::StartCountdown()
     }
 
     // Start countdown (except its single player)
-    if(playerCount > 1)
+    if(numPlayers > 1)
     {
         countdown.Start(3, VIDEODRIVER.GetTickCount());
         SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
@@ -632,7 +632,7 @@ void GameServer::ToggleAITeam(unsigned char playerId)
         else
             newTeam = Team(TM_RANDOMTEAM2 + randomTeamNum - 1);
     } else
-        newTeam = Team((player.team + 1) % TEAM_COUNT);
+        newTeam = Team((player.team + 1) % NUM_TEAMS);
     OnGameMessage(GameMessage_Player_Set_Team(playerId, newTeam));
 }
 
@@ -660,7 +660,7 @@ void GameServer::ToggleAINation(unsigned char playerId)
         return;
 
     // Nation wechseln
-    OnGameMessage(GameMessage_Player_Set_Nation(playerId, Nation((player.nation + 1) % NAT_COUNT)));
+    OnGameMessage(GameMessage_Player_Set_Nation(playerId, Nation((player.nation + 1) % NUM_NATS)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1031,7 +1031,7 @@ void GameServer::FillPlayerQueues()
 // pongnachricht
 bool GameServer::OnGameMessage(const GameMessage_Pong& msg)
 {
-    if(msg.player >= GetMaxPlayerCount())
+    if(msg.player >= GetNumMaxPlayers())
         return true;
 
     GameServerPlayer* player = GetNetworkPlayer(msg.player);
@@ -1150,7 +1150,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 // Nation weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 {
-    if(msg.player >= GetMaxPlayerCount())
+    if(msg.player >= GetNumMaxPlayers())
         return true;
 
     JoinPlayerInfo& player = playerInfos[msg.player];
@@ -1166,7 +1166,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
 // Team weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 {
-    if(msg.player >= GetMaxPlayerCount())
+    if(msg.player >= GetNumMaxPlayers())
         return true;
 
     JoinPlayerInfo& player = playerInfos[msg.player];
@@ -1181,7 +1181,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
 // Farbe weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
 {
-    if(msg.player >= GetMaxPlayerCount())
+    if(msg.player >= GetNumMaxPlayers())
         return true;
 
     LOG.writeToFile("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n") % unsigned(msg.player) % msg.color;
@@ -1194,7 +1194,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
  */
 bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
-    if(msg.player >= GetMaxPlayerCount())
+    if(msg.player >= GetNumMaxPlayers())
         return true;
 
     JoinPlayerInfo& player = playerInfos[msg.player];
@@ -1440,7 +1440,7 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 
 bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
-    if(msg.player >= GetMaxPlayerCount() || msg.player2 >= GetMaxPlayerCount())
+    if(msg.player >= GetNumMaxPlayers() || msg.player2 >= GetNumMaxPlayers())
         return true;
 
     if(status != SS_GAME)

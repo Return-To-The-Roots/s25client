@@ -53,7 +53,7 @@ public:
     const GamePlayer& GetPlayer() const;
     /// Get the ID of the views player
     unsigned GetPlayerId() const { return playerId_; }
-    unsigned GetPlayerCount() const;
+    unsigned GetNumPlayers() const;
 
     /// Get number of soldiers that can attack bld at that point
     unsigned GetNumSoldiersForAttack(const MapPoint pt) const;

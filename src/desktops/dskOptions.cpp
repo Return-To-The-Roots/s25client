@@ -90,7 +90,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     combo = groupAllgemein->AddComboBox(33, DrawPoint(280, 125), Extent(190, 20), TC_GREY, NormalFont, 100);
 
     bool selected = false;
-    for(unsigned i = 0; i < LANGUAGES.getCount(); ++i)
+    for(unsigned i = 0; i < LANGUAGES.size(); ++i)
     {
         const Language& l = LANGUAGES.getLanguage(i);
 
@@ -201,7 +201,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     {
         combo->AddString(it->GetName());
         if(it->GetName() == SETTINGS.driver.video)
-            combo->SetSelection(combo->GetCount() - 1);
+            combo->SetSelection(combo->GetNumItems() - 1);
     }
 
     groupGrafik->AddText(74, DrawPoint(80, 320), _("Optimized Textures:"), COLOR_YELLOW, 0, NormalFont);
@@ -220,7 +220,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     {
         combo->AddString(it->GetName());
         if(it->GetName() == SETTINGS.driver.audio)
-            combo->SetSelection(combo->GetCount() - 1);
+            combo->SetSelection(combo->GetNumItems() - 1);
     }
 
     // Musik
@@ -270,7 +270,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
         // Ist das die aktuelle Auflösung? Dann selektieren
         if(*it == VideoMode(SETTINGS.video.fullscreenSize.x, SETTINGS.video.fullscreenSize.y)) //-V807
-            cbVideoModes.SetSelection(cbVideoModes.GetCount() - 1);
+            cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
 
     // "Vollbild" setzen
@@ -279,7 +279,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Limit Framerate" füllen
     ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
-    for(unsigned char i = 0; i < Settings::SCREEN_REFRESH_RATES_COUNT; ++i)
+    for(unsigned char i = 0; i < Settings::NUM_SCREEN_REFRESH_RATESS; ++i)
     {
         switch(Settings::SCREEN_REFRESH_RATES[i])
         {

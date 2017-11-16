@@ -29,10 +29,10 @@ BOOST_AUTO_TEST_SUITE(PactTestSuite)
 BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)
 {
     // No pacts at start
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
     {
         const GamePlayer& player = world.GetPlayer(i);
-        for(unsigned j = 0; j < world.GetPlayerCount(); j++)
+        for(unsigned j = 0; j < world.GetNumPlayers(); j++)
         {
             // Self is always an ally and not attackable
             if(i == j)
@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)
                 BOOST_REQUIRE(!player.IsAlly(j));
                 BOOST_REQUIRE(player.IsAttackable(j));
             }
-            for(unsigned p = 0; p < PACTS_COUNT; p++)
+            for(unsigned p = 0; p < NUM_PACTS; p++)
             {
                 BOOST_REQUIRE_EQUAL(player.GetPactState(PactType(p), j), GamePlayer::NO_PACT);
                 BOOST_REQUIRE_EQUAL(player.GetRemainingPactTime(PactType(p), j), 0u);
@@ -92,7 +92,7 @@ void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned 
 
 BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P) //, *utf::depends_on("PactTestSuite/TestInitialPactStates"))
 {
-    for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         world.GetPostMgr().AddPostBox(i);
     // Use middle player for off-by-one detection
     curPlayer = 1;
@@ -148,7 +148,7 @@ struct PactCreatedFixture : public WorldWithGCExecution3P
     const DiplomacyPostQuestion* msg;
     PactCreatedFixture()
     {
-        for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
             world.GetPostMgr().AddPostBox(i);
         // Use middle player for off-by-one detection
         curPlayer = 1;

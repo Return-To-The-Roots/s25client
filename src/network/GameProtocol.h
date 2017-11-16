@@ -35,7 +35,7 @@ enum
     NMS_SERVER_START,           //
     NMS_SERVER_CHAT,            // 1 destination, x text | 1 source, x text
     NMS_SERVER_ASYNC,           // playercount*4 int (Checksummen)
-    NMS_SERVER_COUNTDOWN,       // 4 countdown
+    NMS_SERVERCOUNTDOWN,        // 4 countdown
     NMS_SERVER_CANCELCOUNTDOWN, // 0
 
     NMS_PLAYER_ID = 0x0201, // 1 playerId

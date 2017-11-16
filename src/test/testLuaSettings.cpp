@@ -40,7 +40,7 @@ struct LuaSettingsTestsFixture : public GameServerInterface
     StringStreamWriter& logWriter;
 
     bool IsRunning() const override { return true; }
-    unsigned GetMaxPlayerCount() const override { return players.size(); }
+    unsigned GetNumMaxPlayers() const override { return players.size(); }
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
     void KickPlayer(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_FREE; }
 

@@ -82,14 +82,14 @@ void nofForester::WorkFinished()
         gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
-        const unsigned char AVAILABLE_TREES_COUNT[3] = {6, 3, 4};
+        const unsigned char NUM_AVAILABLE_TREESS[3] = {6, 3, 4};
         const unsigned char AVAILABLE_TREES[3][8] = {
           {0, 1, 2, 6, 7, 8, 0xFF, 0xFF}, {0, 1, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF, 0xFF, 0xFF}};
 
         // jungen Baum einsetzen
         gwg->SetNO(pos, new noTree(pos,
                                    AVAILABLE_TREES[gwg->GetLandscapeType()][RANDOM.Rand(__FILE__, __LINE__, GetObjId(),
-                                                                                        AVAILABLE_TREES_COUNT[gwg->GetLandscapeType()])],
+                                                                                        NUM_AVAILABLE_TREESS[gwg->GetLandscapeType()])],
                                    0));
 
         // BQ drumherum neu berechnen

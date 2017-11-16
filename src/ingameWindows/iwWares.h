@@ -48,8 +48,8 @@ protected:
     unsigned GetCurPage() const { return curPage_; }
 
 private:
-    unsigned curPage_;  /// aktuelle Seite des Inventurfensters.
-    unsigned pageCount; /// maximale Seite des Inventurfensters.
+    unsigned curPage_; /// aktuelle Seite des Inventurfensters.
+    unsigned numPages; /// maximale Seite des Inventurfensters.
 };
 
 #endif // !iwINVENTORY_H_INCLUDED

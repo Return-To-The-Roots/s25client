@@ -26,6 +26,6 @@ enum LandscapeType
 };
 
 // Keep this in sync with LandscapeType
-static const unsigned char LT_COUNT = LT_WINTERWORLD + 1;
+static const unsigned char NUM_LTS = LT_WINTERWORLD + 1;
 
 #endif // LandscapeType_h__

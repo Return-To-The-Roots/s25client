@@ -183,7 +183,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
             ctrlTable* table = GetCtrl<ctrlTable>(1);
 
             // is the selection valid?
-            if(selection < table->GetRowCount())
+            if(selection < table->GetNumRows())
             {
                 // get path to map from table
                 std::string path = table->GetItemText(selection, 5);
@@ -298,7 +298,7 @@ void dskSelectMap::OnMapCreated(const std::string& mapPath)
 
     // search for the random map entry and select it in the table
     ctrlTable* table = GetCtrl<ctrlTable>(1);
-    for(int i = 0; i < table->GetRowCount(); i++)
+    for(int i = 0; i < table->GetNumRows(); i++)
     {
         std::string entryPath = table->GetItemText(i, 5);
 
@@ -317,7 +317,7 @@ void dskSelectMap::StartServer()
     unsigned short selection = table->GetSelection();
 
     // Ist die Auswahl gültig?
-    if(selection < table->GetRowCount())
+    if(selection < table->GetNumRows())
     {
         // Kartenpfad aus Tabelle holen
         std::string mapPath = table->GetItemText(selection, 5);

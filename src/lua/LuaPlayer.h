@@ -47,10 +47,10 @@ public:
     void ClearResources();
     bool AddWares(const std::map<GoodType, unsigned>& wares);
     bool AddPeople(const std::map<Job, unsigned>& people);
-    unsigned GetBuildingCount(BuildingType bld) const;
-    unsigned GetBuildingSitesCount(BuildingType bld) const;
-    unsigned GetWareCount(GoodType ware) const;
-    unsigned GetPeopleCount(Job job) const;
+    unsigned GetNumBuildings(BuildingType bld) const;
+    unsigned GetNumBuildingSites(BuildingType bld) const;
+    unsigned GetNumWares(GoodType ware) const;
+    unsigned GetNumPeople(Job job) const;
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
     void ModifyHQ(bool isTent);
     bool IsDefeated() const;

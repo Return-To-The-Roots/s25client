@@ -63,9 +63,9 @@ public:
     struct Statistic
     {
         // 30 Datensätze pro Typ
-        helpers::MultiArray<unsigned, STAT_TYPE_COUNT, STAT_STEP_COUNT> data;
+        helpers::MultiArray<unsigned, NUM_STAT_TYPES, NUM_STAT_STEPS> data;
         // und das gleiche für die Warenstatistik
-        helpers::MultiArray<uint16_t, STAT_MERCHANDISE_TYPE_COUNT, STAT_STEP_COUNT> merchandiseData;
+        helpers::MultiArray<uint16_t, NUM_STAT_MERCHANDISE_TYPES, NUM_STAT_STEPS> merchandiseData;
         // Index, der gerade 'vorne' (rechts im Statistikfenster) ist
         uint16_t currentIndex;
         // Counter, bei jedem vierten Update jeweils Daten zu den längerfristigen Statistiken kopieren
@@ -76,7 +76,7 @@ public:
     struct Distribution
     {
         /// Mapping of Building to percentage of ware the building gets
-        boost::array<uint8_t, BUILDING_TYPES_COUNT> percent_buildings;
+        boost::array<uint8_t, NUM_BUILDING_TYPES> percent_buildings;
         /// Buildings that get this ware
         std::vector<BuildingType> client_buildings;
         /// Possible preferred buildings (each building is n times in here with n=percentage)
@@ -188,7 +188,7 @@ public:
     /// Setzt neue Militäreinstellungen
     void ChangeMilitarySettings(const MilitarySettings& military_settings);
     /// Setzt neue Werkzeugeinstellungen
-    void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, TOOL_COUNT>& orderChanges);
+    void ChangeToolsSettings(const ToolSettings& tools_settings, const boost::array<int8_t, NUM_TOOLS>& orderChanges);
     /// Setzt neue Verteilungseinstellungen
     void ChangeDistribution(const Distributions& distribution_settings);
     /// Setzt neue Baureihenfolge-Einstellungen
@@ -240,7 +240,7 @@ public:
     /// Gibt ein Schiff anhand der ID zurück bzw. NULL, wenn keines mit der ID existiert
     noShip* GetShipByID(const unsigned ship_id) const;
     /// Gibt die Gesamtanzahl von Schiffen zurück
-    unsigned GetShipCount() const { return ships.size(); }
+    unsigned GetNumShips() const { return ships.size(); }
     /// Gibt liste der Schiffe zurück
     const std::vector<noShip*>& GetShips() const { return ships; }
     /// Gibt eine Liste mit allen Häfen dieses Spieler zurück, die an ein bestimmtes Meer angrenzen
@@ -331,7 +331,7 @@ public:
     const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
     const unsigned GetStatisticCurrentValue(unsigned idx) const
     {
-        RTTR_Assert(idx < STAT_TYPE_COUNT);
+        RTTR_Assert(idx < NUM_STAT_TYPES);
         return (statisticCurrentData[idx]);
     }
 
@@ -384,7 +384,7 @@ private:
     /// Koordinaten des HQs des Spielers
     MapPoint hqPos;
 
-    boost::array<Distribution, WARE_TYPES_COUNT> distribution;
+    boost::array<Distribution, NUM_WARE_TYPES> distribution;
 
     /// Art der Reihenfolge (false = nach Auftraggebung, ansonsten nach build_order)
     bool useCustomBuildOrder_;
@@ -397,7 +397,7 @@ private:
     /// Werkzeugeinstellungen (in der Reihenfolge wie im Fenster!)
     ToolSettings toolsSettings_;
     // qx:tools
-    boost::array<unsigned char, TOOL_COUNT> tools_ordered;
+    boost::array<unsigned char, NUM_TOOLS> tools_ordered;
 
     /// Bündnisse mit anderen Spielern
     struct Pact
@@ -416,14 +416,14 @@ private:
         void Serialize(SerializedGameData& sgd) const;
     };
     /// Bündnisse dieses Spielers mit anderen Spielern
-    helpers::MultiArray<Pact, MAX_PLAYERS, PACTS_COUNT> pacts;
+    helpers::MultiArray<Pact, MAX_PLAYERS, NUM_PACTS> pacts;
 
     // Statistikdaten
-    boost::array<Statistic, STAT_TIME_COUNT> statistic;
+    boost::array<Statistic, NUM_STAT_TIMES> statistic;
 
     // Die Statistikwerte die 'aktuell' gemessen werden
-    boost::array<int, STAT_TYPE_COUNT> statisticCurrentData;
-    boost::array<int, STAT_MERCHANDISE_TYPE_COUNT> statisticCurrentMerchandiseData;
+    boost::array<int, NUM_STAT_TYPES> statisticCurrentData;
+    boost::array<int, NUM_STAT_MERCHANDISE_TYPES> statisticCurrentMerchandiseData;
 
     // Notfall-Programm aktiviert ja/nein (Es gehen nur noch Res an Holzfäller- und Sägewerk-Baustellen raus)
     bool emergency;
@@ -449,10 +449,10 @@ private:
      *  -http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
      */
     std::vector<MapPoint> restricted_area;
-    boost::array<bool, BUILDING_TYPES_COUNT> building_enabled;
+    boost::array<bool, NUM_BUILDING_TYPES> building_enabled;
 
     // TODO: Move to viewer. Mutable as a work-around
-    mutable boost::array<int8_t, TOOL_COUNT> tools_ordered_delta;
+    mutable boost::array<int8_t, NUM_TOOLS> tools_ordered_delta;
 };
 
 #endif

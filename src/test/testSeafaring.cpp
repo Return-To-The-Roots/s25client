@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 1u);
     const ShipPostMsg* msg = dynamic_cast<const ShipPostMsg*>(postBox.GetMsg(0));
     BOOST_REQUIRE(msg);
-    BOOST_REQUIRE_EQUAL(player.GetShipCount(), 1u);
+    BOOST_REQUIRE_EQUAL(player.GetNumShips(), 1u);
     BOOST_REQUIRE_EQUAL(player.GetShips().size(), 1u);
     noShip* ship = player.GetShipByID(0);
     BOOST_REQUIRE(ship);
@@ -161,7 +161,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         world.AddFigure(ship->GetPos(), ship);
         player.RegisterShip(ship);
 
-        BOOST_REQUIRE_EQUAL(player.GetShipCount(), 1u);
+        BOOST_REQUIRE_EQUAL(player.GetNumShips(), 1u);
         postBox->Clear();
     }
 };
@@ -191,12 +191,12 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 1u);
 
     // No available scouts
-    BOOST_REQUIRE_EQUAL(harbor.GetRealFiguresCount(JOB_SCOUT), 0u);
+    BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(JOB_SCOUT), 0u);
     // Stop it
     this->StartExplorationExpedition(hbPos);
     BOOST_REQUIRE(!harbor.IsExplorationExpeditionActive());
     // Scouts available again
-    BOOST_REQUIRE_EQUAL(harbor.GetRealFiguresCount(JOB_SCOUT), 3u);
+    BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(JOB_SCOUT), 3u);
 
     // Let ship arrive
     RTTR_EXEC_TILL(180, ship->IsIdling());
@@ -312,9 +312,9 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     BOOST_REQUIRE(ship->IsMoving());
     RTTR_EXEC_TILL(1200, ship->IsIdling());
     BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_SCOUT], numScouts);
-    BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT), newHarbor->GetVisualFiguresCount(JOB_SCOUT)); //-V522
-    BOOST_REQUIRE_EQUAL(newHarbor->GetRealFiguresCount(JOB_SCOUT)
-                          + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetRealFiguresCount(JOB_SCOUT),
+    BOOST_REQUIRE_EQUAL(newHarbor->GetNumRealFigures(JOB_SCOUT), newHarbor->GetNumVisualFigures(JOB_SCOUT)); //-V522
+    BOOST_REQUIRE_EQUAL(newHarbor->GetNumRealFigures(JOB_SCOUT)
+                          + world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos())->GetNumRealFigures(JOB_SCOUT),
                         numScouts);
 }
 
@@ -341,12 +341,12 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 1u);
 
     // No available boards
-    BOOST_REQUIRE_EQUAL(harbor.GetRealWaresCount(GD_BOARDS), 0u);
+    BOOST_REQUIRE_EQUAL(harbor.GetNumRealWares(GD_BOARDS), 0u);
     // Stop it
     this->StartExpedition(hbPos);
     BOOST_REQUIRE(!harbor.IsExpeditionActive());
     // Boards available again
-    BOOST_REQUIRE_GT(harbor.GetRealWaresCount(GD_BOARDS), 0u);
+    BOOST_REQUIRE_GT(harbor.GetNumRealWares(GD_BOARDS), 0u);
 
     // Let ship arrive
     RTTR_EXEC_TILL(180, ship->IsIdling());
@@ -499,7 +499,7 @@ public:
         world.AddFigure(ship->GetPos(), ship);
         player.RegisterShip(ship);
 
-        BOOST_REQUIRE_EQUAL(player.GetShipCount(), 1u);
+        BOOST_REQUIRE_EQUAL(player.GetNumShips(), 1u);
     }
 };
 

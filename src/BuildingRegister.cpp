@@ -121,14 +121,14 @@ const std::list<nobUsual*>& BuildingRegister::GetBuildings(const BuildingType ty
 }
 
 /// Liefert die Anzahl aller Gebäude einzeln
-BuildingCount BuildingRegister::GetBuildingCount() const
+BuildingCount BuildingRegister::GetBuildingNums() const
 {
     BuildingCount bc;
     std::fill(bc.buildings.begin(), bc.buildings.end(), 0);
     std::fill(bc.buildingSites.begin(), bc.buildingSites.end(), 0);
 
     // Normale Gebäude zählen
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT - FIRST_USUAL_BUILDING; ++i)
+    for(unsigned i = 0; i < NUM_BUILDING_TYPES - FIRST_USUAL_BUILDING; ++i)
         bc.buildings[i + FIRST_USUAL_BUILDING] = buildings[i].size();
     // Lagerhäuser zählen
     BOOST_FOREACH(const nobBaseWarehouse* bld, warehouses)
@@ -144,9 +144,9 @@ BuildingCount BuildingRegister::GetBuildingCount() const
 
 void BuildingRegister::CalcProductivities(std::vector<unsigned short>& productivities) const
 {
-    RTTR_Assert(productivities.size() == BUILDING_TYPES_COUNT);
+    RTTR_Assert(productivities.size() == NUM_BUILDING_TYPES);
 
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
         productivities[i] = static_cast<unsigned short>(CalcAverageProductivity(BuildingType(i)));
 }
 
@@ -169,7 +169,7 @@ unsigned short BuildingRegister::CalcAverageProductivity() const
 {
     unsigned totalProductivity = 0;
     unsigned numBlds = 0;
-    for(unsigned i = 0; i < BUILDING_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_BUILDING_TYPES; ++i)
     {
         BuildingType bldType = BuildingType(i);
         if(BLD_WORK_DESC[bldType].producedWare == GD_NOTHING)

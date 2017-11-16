@@ -48,14 +48,14 @@ void LuaServerPlayer::Register(kaguya::State& state)
 
 void LuaServerPlayer::SetNation(Nation nat)
 {
-    lua::assertTrue(unsigned(nat) < NAT_COUNT, "Invalid Nation");
+    lua::assertTrue(unsigned(nat) < NUM_NATS, "Invalid Nation");
     player.nation = nat;
     gameServer_.SendToAll(GameMessage_Player_Set_Nation(playerId, nat));
 }
 
 void LuaServerPlayer::SetTeam(Team team)
 {
-    lua::assertTrue(unsigned(team) < TEAM_COUNT, "Invalid team");
+    lua::assertTrue(unsigned(team) < NUM_TEAMS, "Invalid team");
     player.team = team;
     gameServer_.SendToAll(GameMessage_Player_Set_Team(playerId, team));
 }

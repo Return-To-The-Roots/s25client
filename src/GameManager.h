@@ -55,7 +55,7 @@ public:
 
     unsigned GetRuntime() { return run_time; }
 
-    unsigned GetFrameCount() { return frame_count; }
+    unsigned GetNumFrames() { return frame_count; }
 
     unsigned GetAverageFPS()
     {

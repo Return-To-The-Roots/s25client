@@ -169,7 +169,7 @@ void noFlag::AddWare(Ware*& ware)
 /**
  *  Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
  */
-unsigned noFlag::GetWareCount() const
+unsigned noFlag::GetNumWares() const
 {
     unsigned count = 0;
     for(unsigned i = 0; i < wares.size(); ++i)
@@ -259,7 +259,7 @@ Ware* noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const n
     return best_ware;
 }
 
-unsigned noFlag::GetWaresCountForRoad(const Direction dir) const
+unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
 {
     unsigned ret = 0;
 
@@ -278,7 +278,7 @@ unsigned noFlag::GetWaresCountForRoad(const Direction dir) const
 unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 {
     // Waren zählen, die in diese Richtung transportiert werden müssen
-    unsigned points = GetWaresCountForRoad(dir) * 2;
+    unsigned points = GetNumWaresForRoad(dir) * 2;
 
     // Wenn kein Träger auf der Straße ist, gibts nochmal extra satte Strafpunkte
     const RoadSegment* routeInDir = routes[dir.toUInt()];

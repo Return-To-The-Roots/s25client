@@ -40,11 +40,11 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
     MapPoint whFlagPos = world.GetNeighbour(whPos, Direction::SOUTHEAST);
     // Build a road -> Requests a worker
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(JOB_HELPER), 0u);
+    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(JOB_HELPER), 0u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
     // Destroy Road
     this->DestroyFlag(whFlagPos - MapPoint(2, 0));
-    BOOST_REQUIRE_EQUAL(wh->GetRealFiguresCount(JOB_HELPER), 1u);
+    BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(JOB_HELPER), 1u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(2, Direction::WEST));
@@ -80,7 +80,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     this->SetInventorySetting(whPos, GD_WOOD, EInventorySetting::COLLECT);
     this->SetInventorySetting(whPos, JOB_WOODCUTTER, EInventorySetting::COLLECT);
     noFlag* flag = world.GetSpecObj<noFlag>(flagPos);
-    RTTR_EXEC_TILL(200, flag->GetWareCount() > 0);
+    RTTR_EXEC_TILL(200, flag->GetNumWares() > 0);
     // Destroy wh -> Cancel wares and figures
     this->DestroyFlag(whFlagPos);
 }

@@ -200,7 +200,7 @@ void nofDefender::LostFighting()
         {
             // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));
-            if(static_cast<nobMilitary*>(building)->GetTroopsCount())
+            if(static_cast<nobMilitary*>(building)->GetNumTroops())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
         building = NULL;

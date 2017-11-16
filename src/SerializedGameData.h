@@ -146,7 +146,7 @@ private:
     std::map<unsigned, GameEvent*> readEvents;
 
     /// Expected number of objects to be read/written
-    unsigned expectedObjectCount;
+    unsigned expectedNumObjects;
 
     /// EventManager, used during deserialization to add events, NULL otherwise
     EventManager* em;

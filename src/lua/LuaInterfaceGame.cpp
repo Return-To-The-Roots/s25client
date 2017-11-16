@@ -179,7 +179,7 @@ void LuaInterfaceGame::Register(kaguya::State& state)
                                  .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
                                  .addFunction("GetGF", &LuaInterfaceGame::GetGF)
                                  .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
-                                 .addFunction("GetPlayerCount", &LuaInterfaceGame::GetPlayerCount)
+                                 .addFunction("GetNumPlayers", &LuaInterfaceGame::GetNumPlayers)
                                  .addFunction("Chat", &LuaInterfaceGame::Chat)
                                  .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement,
                                                          &LuaInterfaceGame::MissionStatement2, &LuaInterfaceGame::MissionStatement3)
@@ -187,7 +187,9 @@ void LuaInterfaceGame::Register(kaguya::State& state)
                                  .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
                                  .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
                                  .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
-                                 .addFunction("GetWorld", &LuaInterfaceGame::GetWorld));
+                                 .addFunction("GetWorld", &LuaInterfaceGame::GetWorld)
+                                 // Old name
+                                 .addFunction("GetPlayerCount", &LuaInterfaceGame::GetNumPlayers));
     state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
                                         .addFunction("PushInt", &Serializer::PushSignedInt)
                                         .addFunction("PopInt", &Serializer::PopSignedInt)
@@ -256,7 +258,7 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
 
 void LuaInterfaceGame::ClearResources()
 {
-    for(unsigned p = 0; p < gw.GetPlayerCount(); p++)
+    for(unsigned p = 0; p < gw.GetNumPlayers(); p++)
         GetPlayer(p).ClearResources();
 }
 
@@ -265,9 +267,9 @@ unsigned LuaInterfaceGame::GetGF() const
     return gw.GetEvMgr().GetCurrentGF();
 }
 
-unsigned LuaInterfaceGame::GetPlayerCount() const
+unsigned LuaInterfaceGame::GetNumPlayers() const
 {
-    return gw.GetPlayerCount();
+    return gw.GetNumPlayers();
 }
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
@@ -315,7 +317,7 @@ void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::st
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
 {
-    if(playerIdx >= gw.GetPlayerCount())
+    if(playerIdx >= gw.GetNumPlayers())
         throw std::runtime_error("Invalid player idx");
     return LuaPlayer(gw.GetPlayer(playerIdx));
 }

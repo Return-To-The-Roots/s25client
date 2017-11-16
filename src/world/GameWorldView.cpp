@@ -398,7 +398,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
     } else if(got == GOT_NOB_MILITARY)
     {
         // Display amount of soldiers
-        unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetTroopsCount();
+        unsigned soldiers_count = static_cast<const nobMilitary&>(no).GetNumTroops();
         std::string sSoldiers;
         if(soldiers_count == 1)
             sSoldiers = _("(1 soldier)");

@@ -72,7 +72,7 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
     if(carried_ware)
         DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
     else
-        DrawWalkingBobJobs(drawPt, fat ? JOB_TYPES_COUNT : 0);
+        DrawWalkingBobJobs(drawPt, fat ? NUM_JOB_TYPES : 0);
 }
 
 void nofWarehouseWorker::GoalReached()
@@ -83,7 +83,7 @@ void nofWarehouseWorker::GoalReached()
         // Ware an der Fahne ablegen ( wenn noch genug Platz ist, 8 max pro Flagge!)
         // außerdem ggf. Waren wieder mit reinnehmen, deren Zi­el zerstört wurde
         // ( dann ist goal = location )
-        if(gwg->GetSpecObj<noFlag>(pos)->GetWareCount() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation()
+        if(gwg->GetSpecObj<noFlag>(pos)->GetNumWares() < 8 && carried_ware->GetGoal() != carried_ware->GetLocation()
            && carried_ware->GetGoal() != wh)
         {
             carried_ware->WaitAtFlag(gwg->GetSpecObj<noFlag>(pos));

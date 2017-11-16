@@ -124,13 +124,13 @@ public:
     unsigned char GetFrontierDistance() const { return frontier_distance; }
 
     /// Berechnet die gewünschte Besatzung je nach Grenznähe
-    unsigned CalcRequiredTroopsCount() const;
+    unsigned CalcRequiredNumTroops() const;
     /// Calculate the required troop count for the given setting
-    unsigned CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue) const;
+    unsigned CalcRequiredNumTroops(unsigned assumedFrontierDistance, unsigned settingValue) const;
     /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
     void RegulateTroops();
     /// Gibt aktuelle Besetzung zurück
-    unsigned GetTroopsCount() const { return troops.size(); }
+    unsigned GetNumTroops() const { return troops.size(); }
     const SortedTroops& GetTroops() const { return troops; }
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
@@ -216,7 +216,7 @@ public:
     void HitOfCatapultStone();
 
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
-    bool DefendersAvailable() const override { return (GetTroopsCount() > 0); }
+    bool DefendersAvailable() const override { return (GetNumTroops() > 0); }
 
     /// send all soldiers of the highest rank home (if highest=lowest keep 1)
     void SendSoldiersHome();

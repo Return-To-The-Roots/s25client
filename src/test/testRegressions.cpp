@@ -129,8 +129,8 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
 
 struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>
 {
-    boost::array<unsigned, JOB_TYPES_COUNT> numPeople, numPeoplePlayer;
-    boost::array<unsigned, WARE_TYPES_COUNT> numGoods, numGoodsPlayer;
+    boost::array<unsigned, NUM_JOB_TYPES> numPeople, numPeoplePlayer;
+    boost::array<unsigned, NUM_WARE_TYPES> numGoods, numGoodsPlayer;
     AddGoodsFixture()
     {
         GamePlayer& player = world.GetPlayer(0);
@@ -142,27 +142,27 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>
     }
 
     /// Asserts that the expected and actual good count match for the HQ
-    void testGoodsCountHQ()
+    void testNumGoodsHQ()
     {
         nobBaseWarehouse& hq = *world.GetSpecObj<nobBaseWarehouse>(world.GetPlayer(0).GetHQPos());
-        for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+        for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
         {
-            BOOST_REQUIRE_EQUAL(hq.GetVisualFiguresCount(Job(i)), numPeople[i]);
-            BOOST_REQUIRE_EQUAL(hq.GetRealFiguresCount(Job(i)), numPeople[i]);
+            BOOST_REQUIRE_EQUAL(hq.GetNumVisualFigures(Job(i)), numPeople[i]);
+            BOOST_REQUIRE_EQUAL(hq.GetNumRealFigures(Job(i)), numPeople[i]);
         }
-        for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+        for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
         {
-            BOOST_REQUIRE_EQUAL(hq.GetVisualWaresCount(GoodType(i)), numGoods[i]);
-            BOOST_REQUIRE_EQUAL(hq.GetRealWaresCount(GoodType(i)), numGoods[i]);
+            BOOST_REQUIRE_EQUAL(hq.GetNumVisualWares(GoodType(i)), numGoods[i]);
+            BOOST_REQUIRE_EQUAL(hq.GetNumRealWares(GoodType(i)), numGoods[i]);
         }
     }
     /// Asserts that the expected and actual good count match for the player
-    void testGoodsCountPlayer()
+    void testNumGoodsPlayer()
     {
         GamePlayer& player = world.GetPlayer(0);
-        for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+        for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
             BOOST_REQUIRE_EQUAL(player.GetInventory().people[i], numPeoplePlayer[i]);
-        for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+        for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
             BOOST_REQUIRE_EQUAL(player.GetInventory().goods[i], numGoodsPlayer[i]);
     }
 };
@@ -171,16 +171,16 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 {
     GamePlayer& player = world.GetPlayer(0);
     nobBaseWarehouse& hq = *world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
-    testGoodsCountHQ();
+    testNumGoodsHQ();
 
     // Add nothing -> nothing changed
     Inventory newGoods;
     hq.AddGoods(newGoods, true);
-    testGoodsCountHQ();
-    testGoodsCountPlayer();
+    testNumGoodsHQ();
+    testNumGoodsPlayer();
 
     // Add jobs
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
     {
         // Boat carrier gets divided upfront
         if(Job(i) == JOB_BOATCARRIER)
@@ -190,19 +190,19 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     }
     numPeoplePlayer = numPeople;
     hq.AddGoods(newGoods, true);
-    testGoodsCountHQ();
-    testGoodsCountPlayer();
+    testNumGoodsHQ();
+    testNumGoodsPlayer();
 
     // Add only to hq but not to player
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
         numPeople[i] += newGoods.people[i];
     hq.AddGoods(newGoods, false);
-    testGoodsCountHQ();
-    testGoodsCountPlayer();
+    testNumGoodsHQ();
+    testNumGoodsPlayer();
 
     // Add wares
     newGoods.clear();
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
     {
         // Only romand shields get added
         if(ConvertShields(GoodType(i)) == GD_SHIELDROMANS && GoodType(i) != GD_SHIELDROMANS)
@@ -212,15 +212,15 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     }
     numGoodsPlayer = numGoods;
     hq.AddGoods(newGoods, true);
-    testGoodsCountHQ();
-    testGoodsCountPlayer();
+    testNumGoodsHQ();
+    testNumGoodsPlayer();
 
     // Add only to hq but not to player
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
         numGoods[i] += newGoods.goods[i];
     hq.AddGoods(newGoods, false);
-    testGoodsCountHQ();
-    testGoodsCountPlayer();
+    testNumGoodsHQ();
+    testNumGoodsPlayer();
 
 #if RTTR_ENABLE_ASSERTS
     RTTR_AssertEnableBreak = false;

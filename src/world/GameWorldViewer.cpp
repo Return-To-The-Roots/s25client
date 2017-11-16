@@ -77,9 +77,9 @@ const GamePlayer& GameWorldViewer::GetPlayer() const
     return GetWorld().GetPlayer(playerId_);
 }
 
-unsigned GameWorldViewer::GetPlayerCount() const
+unsigned GameWorldViewer::GetNumPlayers() const
 {
-    return GetWorld().GetPlayerCount();
+    return GetWorld().GetNumPlayers();
 }
 
 unsigned GameWorldViewer::GetNumSoldiersForAttack(const MapPoint pt) const
@@ -313,7 +313,7 @@ const FoWNode& GameWorldViewer::GetYoungestFOWNode(const MapPoint pos) const
     {
         const GamePlayer& player = GetWorld().GetPlayer(playerId_);
         // Then check if team members have a better (="younger", see our economy) fow object
-        for(unsigned i = 0; i < GetWorld().GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GetWorld().GetNumPlayers(); ++i)
         {
             if(!player.IsAlly(i))
                 continue;

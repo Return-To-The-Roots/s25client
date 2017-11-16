@@ -307,12 +307,12 @@ unsigned nobMilitary::GetMilitaryRadius() const
 
 unsigned nobMilitary::GetMaxCoinCt() const
 {
-    return GOLD_COUNT[nation][size];
+    return NUM_GOLDS[nation][size];
 }
 
 unsigned nobMilitary::GetMaxTroopsCt() const
 {
-    return TROOPS_COUNT[nation][size];
+    return NUM_TROOPSS[nation][size];
 }
 
 void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
@@ -413,7 +413,7 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = true;
 
     // Zu viele oder zu wenig Truppen?
-    int diff = static_cast<int>(CalcRequiredTroopsCount()) - static_cast<int>(GetTotalSoldiers());
+    int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     if(diff < 0)
     {
         // Zu viel --> überflüssige Truppen nach Hause schicken
@@ -499,12 +499,12 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = false;
 }
 
-unsigned nobMilitary::CalcRequiredTroopsCount() const
+unsigned nobMilitary::CalcRequiredNumTroops() const
 {
-    return CalcRequiredTroopsCount(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
+    return CalcRequiredNumTroops(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
 }
 
-unsigned nobMilitary::CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue) const
+unsigned nobMilitary::CalcRequiredNumTroops(unsigned assumedFrontierDistance, unsigned settingValue) const
 {
     return (GetMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + assumedFrontierDistance] + 1;
 }
@@ -553,7 +553,7 @@ void nobMilitary::OrderNewSoldiers()
             ++it;
     }
 
-    int diff = static_cast<int>(CalcRequiredTroopsCount()) - static_cast<int>(GetTotalSoldiers());
+    int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     // order new troops now
     if(diff > 0)
     {
@@ -795,8 +795,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
     // Militäreinstellungen zum Angriff eingestellt wurden
 
     unsigned short soldiers_count =
-      (GetTroopsCount() > 1) ? ((GetTroopsCount() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) :
-                               0;
+      (GetNumTroops() > 1) ? ((GetNumTroops() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) : 0;
 
     unsigned distance = gwg->CalcDistance(pos, dest);
 
@@ -1002,7 +1001,7 @@ void nobMilitary::NeedOccupyingTroops()
     nofAttacker* best_attacker = NULL;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
 
-    unsigned needed_soldiers = CalcRequiredTroopsCount();
+    unsigned needed_soldiers = CalcRequiredNumTroops();
     unsigned currentSoldiers = troops.size() + capturing_soldiers + troops_on_mission.size();
 
     if(needed_soldiers > currentSoldiers)

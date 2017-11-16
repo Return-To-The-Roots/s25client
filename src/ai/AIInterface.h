@@ -50,7 +50,7 @@ public:
     TerrainType GetTerrain(MapPoint pt) const { return gwb.GetNode(pt).t1; }
 
     unsigned char GetPlayerId() const { return playerID_; }
-    unsigned GetPlayerCount() const { return gwb.GetPlayerCount(); }
+    unsigned GetNumPlayers() const { return gwb.GetNumPlayers(); }
 
     bool IsDefeated() const { return player_.IsDefeated(); }
     /// Return the resource buried on a given spot (gold, coal, ironore, granite (sub), fish, nothing)
@@ -124,7 +124,7 @@ public:
     /// Return the inventory of the AI player
     const Inventory& GetInventory() const { return player_.GetInventory(); }
     /// Return the number of ships
-    unsigned GetShipCount() const { return player_.GetShipCount(); }
+    unsigned GetNumShips() const { return player_.GetNumShips(); }
     /// Return the list of ships
     const std::vector<noShip*>& GetShips() const { return player_.GetShips(); }
     /// Return the ID of a given ship

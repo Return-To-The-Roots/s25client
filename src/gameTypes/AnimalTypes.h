@@ -32,6 +32,6 @@ enum Species
     SPEC_NOTHING
 };
 
-const unsigned SPEC_COUNT = SPEC_NOTHING;
+const unsigned NUM_SPECS = SPEC_NOTHING;
 
 #endif // AnimalTypes_h__

@@ -335,18 +335,18 @@ class ChangeTools : public GameCommand
     /// Daten der Distribution (einzelne Prozente der Waren in Gebäuden)
     ToolSettings data;
 
-    boost::array<int8_t, TOOL_COUNT> orders;
+    boost::array<int8_t, NUM_TOOLS> orders;
 
 protected:
     ChangeTools(const ToolSettings& data, const int8_t* order_delta = 0) : GameCommand(CHANGETOOLS), data(data)
     {
         if(order_delta != 0)
         {
-            for(unsigned i = 0; i < TOOL_COUNT; ++i)
+            for(unsigned i = 0; i < NUM_TOOLS; ++i)
                 orders[i] = order_delta[i];
         } else
         {
-            for(unsigned i = 0; i < TOOL_COUNT; ++i)
+            for(unsigned i = 0; i < NUM_TOOLS; ++i)
                 orders[i] = 0;
         }
     }
@@ -356,7 +356,7 @@ protected:
         for(unsigned i = 0; i < data.size(); ++i)
             data[i] = ser.PopUnsignedChar();
 
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
             orders[i] = ser.PopSignedChar();
     }
 
@@ -366,7 +366,7 @@ public:
         for(unsigned i = 0; i < data.size(); ++i)
             ser.PushUnsignedChar(data[i]);
 
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
             ser.PushSignedChar(orders[i]);
     }
 
@@ -561,7 +561,7 @@ protected:
     {}
     SetAllInventorySettings(Serializer& ser) : Coords(SET_ALL_INVENTORY_SETTINGS, ser), isJob(ser.PopBool())
     {
-        const unsigned numStates = (isJob ? JOB_TYPES_COUNT : WARE_TYPES_COUNT);
+        const unsigned numStates = (isJob ? NUM_JOB_TYPES : NUM_WARE_TYPES);
         states.reserve(numStates);
         for(unsigned i = 0; i < numStates; i++)
             states.push_back(static_cast<InventorySetting>(ser.PopUnsignedChar()));
@@ -573,7 +573,7 @@ public:
         Coords::Serialize(ser);
 
         ser.PushBool(isJob);
-        RTTR_Assert(states.size() == (isJob ? JOB_TYPES_COUNT : WARE_TYPES_COUNT));
+        RTTR_Assert(states.size() == (isJob ? NUM_JOB_TYPES : NUM_WARE_TYPES));
         for(std::vector<InventorySetting>::const_iterator it = states.begin(); it != states.end(); ++it)
             ser.PushUnsignedChar(it->ToUnsignedChar());
     }

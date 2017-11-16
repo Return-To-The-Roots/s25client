@@ -112,7 +112,7 @@ public:
         std::map<unsigned, unsigned> configuration;
     } addons;
 
-    static const unsigned char SCREEN_REFRESH_RATES_COUNT;
+    static const unsigned char NUM_SCREEN_REFRESH_RATESS;
     static const unsigned short SCREEN_REFRESH_RATES[];
 
 private:

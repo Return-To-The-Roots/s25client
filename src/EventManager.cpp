@@ -140,7 +140,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
     {
         GameEvent* ev = (*e_it);
         RTTR_Assert(ev->obj);
-        RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
+        RTTR_Assert(ev->obj->GetObjId() <= GameObject::GetObjIDCounter());
 
         curActiveEvent = ev;
         ev->obj->HandleEvent(ev->id);

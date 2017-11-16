@@ -46,14 +46,14 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
       isReplay(GAMECLIENT.IsReplayModeOn())
 {
     // Einzelne Balken
-    for(unsigned i = 0; i < TOOL_COUNT; i++)
+    for(unsigned i = 0; i < NUM_TOOLS; i++)
         AddToolSettingSlider(i, TOOLS[i]);
 
     const GlobalGameSettings& settings = gwv.GetWorld().GetGGS();
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
     {
         // qx:tools
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
             Extent btSize = Extent(20, 13);
             ctrlButton* bt = AddImageButton(100 + i * 2, DrawPoint(174, 25 + i * 28), btSize, TC_GREY, LOADER.GetImageN("io", 33), "+1");
@@ -102,7 +102,7 @@ void iwTools::TransmitSettings()
     {
         // Einstellungen speichern
         ToolSettings newSettings;
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
             newSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
         if(gcFactory.ChangeTools(newSettings, ordersChanged ? gwv.GetPlayer().GetToolOrderDelta() : NULL))
@@ -119,7 +119,7 @@ void iwTools::UpdateTexts()
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
         const GamePlayer& localPlayer = gwv.GetPlayer();
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
             ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + i);
             field->SetText(helpers::toString(isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i)));
@@ -143,7 +143,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
     if(isReplay)
         return;
     // qx:tools
-    if(ctrl_id >= 100 && ctrl_id < (100 + 2 * TOOL_COUNT))
+    if(ctrl_id >= 100 && ctrl_id < (100 + 2 * NUM_TOOLS))
     {
         unsigned tool = (ctrl_id - 100) / 2;
         const GamePlayer& me = gwv.GetPlayer();
@@ -197,11 +197,11 @@ void iwTools::UpdateSettings()
     if(isReplay)
     {
         const GamePlayer& localPlayer = gwv.GetPlayer();
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
             GetCtrl<ctrlProgress>(i)->SetPosition(localPlayer.GetToolPriority(i));
     } else
     {
-        for(unsigned i = 0; i < TOOL_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_TOOLS; ++i)
             GetCtrl<ctrlProgress>(i)->SetPosition(GAMECLIENT.visual_settings.tools_settings[i]);
     }
 }

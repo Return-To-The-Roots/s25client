@@ -45,8 +45,8 @@ void World::Init(const MapExtent& mapSize, LandscapeType lt)
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     Resize(mapSize);
     this->lt = lt;
+    GameObject::ResetCounters();
     noTree::ResetInstanceCounter();
-    GameObject::ResetCounter();
 
     // Dummy so that the harbor "0" might be used for ships with no particular destination
     harbor_pos.push_back(MapPoint::Invalid());

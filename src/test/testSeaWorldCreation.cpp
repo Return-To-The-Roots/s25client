@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE(world.IsWaterPoint(MapPoint(0, 0)));
     BOOST_REQUIRE(world.IsSeaPoint(MapPoint(0, 0)));
     // 2 harbors for each of the 4 player spots
-    BOOST_REQUIRE_EQUAL(world.GetHarborPointCount(), 8u);
+    BOOST_REQUIRE_EQUAL(world.GetNumHarborPoints(), 8u);
     // 2 seas: 1 outside, 1 inside
     BOOST_REQUIRE_EQUAL(world.GetNumSeas(), 2u);
 // Harbor ID 0 is means invalid harbor
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE(!world.GetHarborPoint(0).isValid());
 #endif
     // Note: Dummy harbor not counted
-    for(unsigned curHarborId = 1; curHarborId <= world.GetHarborPointCount(); curHarborId++)
+    for(unsigned curHarborId = 1; curHarborId <= world.GetNumHarborPoints(); curHarborId++)
     {
         const MapPoint curHarborPt = world.GetHarborPoint(curHarborId);
         BOOST_REQUIRE(curHarborPt.isValid());

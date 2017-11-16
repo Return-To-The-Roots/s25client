@@ -161,7 +161,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
             if(gwv.GetViewer().GetPlayer().isHost)
             {
                 std::vector<const AIPlayer*> ais;
-                for(unsigned i = 0; i < gwv.GetViewer().GetPlayerCount(); ++i)
+                for(unsigned i = 0; i < gwv.GetViewer().GetNumPlayers(); ++i)
                 {
                     const AIPlayer* ai = GAMESERVER.GetAIPlayer(i);
                     if(ai)

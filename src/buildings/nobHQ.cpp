@@ -366,7 +366,7 @@ void nobHQ::Draw(DrawPoint drawPt)
 
         // Draw at most 4 flags
         const unsigned numSoldiers =
-          std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetSoldiersCount());
+          std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetNumSoldiers());
         DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
         for(unsigned i = min<unsigned>(numSoldiers, 4); i; --i)
         {

@@ -66,7 +66,7 @@ enum BuildingType
 };
 
 /// Number of building types
-const unsigned BUILDING_TYPES_COUNT = BLD_NOTHING;
+const unsigned NUM_BUILDING_TYPES = BLD_NOTHING;
 /// Number of NOTHING entries (currently unused buildings)
 const unsigned NUM_UNUSED_BLD_TYPES = 7;
 /// First usual building (building that produces something)

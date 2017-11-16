@@ -76,7 +76,7 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         return;
 
     // ID auch innerhalb der Spielerzahl?
-    if(playerId2 >= GetPlayerCount() || playerId1 >= GetPlayerCount())
+    if(playerId2 >= GetNumPlayers() || playerId1 >= GetNumPlayers())
         return;
 
     if(IsReplayModeOn())

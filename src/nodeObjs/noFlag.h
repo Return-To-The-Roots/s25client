@@ -39,7 +39,7 @@ public:
     inline GO_Type GetGOT() const override { return GOT_FLAG; }
     inline FlagType GetFlagType() const { return flagtype; }
     /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
-    inline bool IsSpaceForWare() const { return GetWareCount() < wares.size(); }
+    inline bool IsSpaceForWare() const { return GetNumWares() < wares.size(); }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -50,11 +50,11 @@ public:
     /// Legt eine Ware an der Flagge ab.
     void AddWare(Ware*& ware) override;
     /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
-    unsigned GetWareCount() const;
+    unsigned GetNumWares() const;
     /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie zurück.
     Ware* SelectWare(const Direction dir, const bool swap_wares, const noFigure* const carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
-    unsigned GetWaresCountForRoad(const Direction dir) const;
+    unsigned GetNumWaresForRoad(const Direction dir) const;
     /// Gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine bestimmte Richtung noch transportiert werden müssen.
     unsigned GetPunishmentPoints(const Direction dir) const override;
     /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.

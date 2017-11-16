@@ -120,7 +120,7 @@ void nofBuildingWorker::Walked()
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
                 state = STATE_WAITFORWARESPACE;
-                if(workplace->GetFlag()->GetWareCount() < 8)
+                if(workplace->GetFlag()->GetNumWares() < 8)
                     FreePlaceAtFlag();
                 // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
                 workplace->StartNotWorking();
@@ -151,7 +151,7 @@ void nofBuildingWorker::WorkingReady()
     {
         noFlag* flag = workplace->GetFlag();
         // Ist noch Platz an der Fahne?
-        if(flag->GetWareCount() < 8)
+        if(flag->GetNumWares() < 8)
         {
             // Ware erzeugen
             Ware* real_ware = new Ware(ware, 0, flag);

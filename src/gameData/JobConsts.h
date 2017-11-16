@@ -23,7 +23,7 @@
 #include "gameTypes/JobTypes.h"
 #include <boost/array.hpp>
 
-extern const boost::array<std::string, JOB_TYPES_COUNT> JOB_NAMES;
+extern const boost::array<std::string, NUM_JOB_TYPES> JOB_NAMES;
 
 /// Berufsstruktur
 struct JobConst
@@ -39,7 +39,7 @@ struct JobConst
 };
 
 // Welcher Beruf welches Werkzeug braucht
-const JobConst JOB_CONSTS[JOB_TYPES_COUNT] = {
+const JobConst JOB_CONSTS[NUM_JOB_TYPES] = {
   {GD_NOTHING, false, 0, 385, 190, 5},     // JOB_HELPER
   {GD_AXE, false, 5, 148, 789, 5},         // JOB_WOODCUTTER
   {GD_RODANDLINE, false, 12, 129, 825, 5}, // JOB_FISHER

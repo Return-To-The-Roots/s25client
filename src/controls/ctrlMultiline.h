@@ -38,7 +38,7 @@ public:
     void AddString(const std::string& str, unsigned color, bool scroll = true);
     /// Deletes all lines
     void Clear();
-    unsigned GetLineCount() { return unsigned(lines.size()); }
+    unsigned GetNumLines() { return unsigned(lines.size()); }
     /// Gibt den index-ten Eintrag zurück
     const std::string& GetLine(const unsigned index) const { return lines[index].str; }
     void SetLine(const unsigned index, const std::string& str, unsigned color);

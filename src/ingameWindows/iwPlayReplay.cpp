@@ -154,7 +154,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
         case 3:
         {
             ctrlTable* table = GetCtrl<ctrlTable>(0);
-            if(table->GetSelection() < table->GetRowCount())
+            if(table->GetSelection() < table->GetNumRows())
                 WINDOWMANAGER.Show(new iwMsgbox(_("Delete selected"), _("Are you sure you want to remove the selected replay?"), this,
                                                 MSB_YESNO, MSB_QUESTIONRED, 2));
             break;
@@ -180,7 +180,7 @@ void iwPlayReplay::StartReplay()
     VIDEODRIVER.SwapBuffers();
 
     ctrlTable* table = GetCtrl<ctrlTable>(0);
-    if(table->GetSelection() < table->GetRowCount())
+    if(table->GetSelection() < table->GetNumRows())
     {
         SwitchOnStart switchOnStart;
         if(!GAMECLIENT.StartReplay(table->GetItemText(table->GetSelection(), 4)))
@@ -220,7 +220,7 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     } else if(msgbox_id == 2 && mbr == MSR_YES)
     {
         ctrlTable* table = GetCtrl<ctrlTable>(0);
-        if(table->GetSelection() < table->GetRowCount())
+        if(table->GetSelection() < table->GetNumRows())
         {
             boost::system::error_code ec;
             bfs::remove(table->GetItemText(table->GetSelection(), 4), ec);

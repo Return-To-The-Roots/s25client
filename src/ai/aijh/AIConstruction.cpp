@@ -51,7 +51,7 @@
 namespace AIJH {
 
 AIConstruction::AIConstruction(AIPlayerJH& aijh)
-    : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(BUILDING_TYPES_COUNT)
+    : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(NUM_BUILDING_TYPES)
 {}
 
 AIConstruction::~AIConstruction()
@@ -501,7 +501,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 
     const Inventory& inventory = aii.GetInventory();
     if(((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15)
-       && (inventory.goods[GD_STONES] > 6 || bldPlanner.GetBuildingCount(BLD_QUARRY) > 0))
+       && (inventory.goods[GD_STONES] > 6 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
     if(aijh.HarborPosClose(pt, 20) && rand() % 10 != 0 && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
     {
@@ -511,8 +511,8 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     }
     if(biggestBld == BLD_WATCHTOWER || biggestBld == BLD_FORTRESS)
     {
-        if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetBuildingSitesCount(biggestBld) < 1
-           && (inventory.goods[GD_STONES] > 20 || bldPlanner.GetBuildingCount(BLD_QUARRY) > 0) && rand() % 10 != 0)
+        if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
+           && (inventory.goods[GD_STONES] > 20 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0) && rand() % 10 != 0)
         {
             return biggestBld;
         }
@@ -590,9 +590,9 @@ bool AIConstruction::Wanted(BuildingType type) const
         return false;
     if(BuildingProperties::IsMilitary(type) || type == BLD_STOREHOUSE)
         return bldPlanner.WantMoreMilitaryBlds(aijh);
-    if(type == BLD_SAWMILL && bldPlanner.GetBuildingCount(BLD_SAWMILL) > 1)
+    if(type == BLD_SAWMILL && bldPlanner.GetNumBuildings(BLD_SAWMILL) > 1)
     {
-        if(aijh.AmountInStorage(GD_WOOD) < 15 * (bldPlanner.GetBuildingSitesCount(BLD_SAWMILL) + 1))
+        if(aijh.AmountInStorage(GD_WOOD) < 15 * (bldPlanner.GetNumBuildingSites(BLD_SAWMILL) + 1))
             return false;
     }
     return constructionorders[type] < bldPlanner.GetNumAdditionalBuildingsWanted(type);

@@ -183,7 +183,7 @@ FOWObject* SerializedGameData::Create_FOWObject(const FOW_Type fowtype)
 }
 
 SerializedGameData::SerializedGameData()
-    : debugMode(false), gameDataVersion(0), expectedObjectCount(0), em(NULL), writeEm(NULL), isReading(false)
+    : debugMode(false), gameDataVersion(0), expectedNumObjects(0), em(NULL), writeEm(NULL), isReading(false)
 {}
 
 void SerializedGameData::Prepare(bool reading)
@@ -205,7 +205,7 @@ void SerializedGameData::Prepare(bool reading)
     }
     writtenObjIds.clear();
     readObjects.clear();
-    expectedObjectCount = 0;
+    expectedNumObjects = 0;
     isReading = reading;
 }
 
@@ -215,16 +215,16 @@ void SerializedGameData::MakeSnapshot(const GameWorld& gw)
 
     writeEm = &gw.GetEvMgr();
 
-    // Anzahl Objekte reinschreiben
-    expectedObjectCount = GameObject::GetObjCount();
-    PushUnsignedInt(expectedObjectCount);
+    // Anzahl Objekte reinschreiben (used for safety checks only)
+    expectedNumObjects = GameObject::GetNumObjs();
+    PushUnsignedInt(expectedNumObjects);
 
     // World and objects
     gw.Serialize(*this);
     // EventManager
     writeEm->Serialize(*this);
     // Spieler serialisieren
-    for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Serialize(*this);
 
     static boost::format evCtError("Event count mismatch. Expected: %1%, written: %2%");
@@ -233,8 +233,8 @@ void SerializedGameData::MakeSnapshot(const GameWorld& gw)
     if(writtenEventIds.size() != writeEm->GetNumActiveEvents())
         throw Error((evCtError % writeEm->GetNumActiveEvents() % writtenEventIds.size()).str());
     // If this check fails, we missed some objects or some objects were destroyed without decreasing the obj count
-    if(expectedObjectCount != writtenObjIds.size() + 1) // "Nothing" nodeObj does not get serialized
-        throw Error((objCtError % expectedObjectCount % (writtenObjIds.size() + 1)).str());
+    if(expectedNumObjects != writtenObjIds.size() + 1) // "Nothing" nodeObj does not get serialized
+        throw Error((objCtError % expectedNumObjects % (writtenObjIds.size() + 1)).str());
 
     writeEm = NULL;
     writtenObjIds.clear();
@@ -247,12 +247,11 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
 
     em = &gw.GetEvMgr();
 
-    expectedObjectCount = PopUnsignedInt();
-    GameObject::SetObjCount(0);
+    expectedNumObjects = PopUnsignedInt();
 
     gw.Deserialize(*this);
     em->Deserialize(*this);
-    for(unsigned i = 0; i < gw.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);
 
     static boost::format evCtError("Event count mismatch. Expected: %1%, read: %2%");
@@ -262,10 +261,10 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
     // If this check fails, we did not serialize all objects or there was an async
     if(readEvents.size() != em->GetNumActiveEvents())
         throw Error((evCtError % em->GetNumActiveEvents() % readEvents.size()).str());
-    if(expectedObjectCount != GameObject::GetObjCount())
-        throw Error((objCtError % expectedObjectCount % GameObject::GetObjCount()).str());
-    if(expectedObjectCount != readObjects.size() + 1) // "Nothing" nodeObj does not get serialized
-        throw Error((objCtError % expectedObjectCount % (readObjects.size() + 1)).str());
+    if(expectedNumObjects != GameObject::GetNumObjs())
+        throw Error((objCtError % expectedNumObjects % GameObject::GetNumObjs()).str());
+    if(expectedNumObjects != readObjects.size() + 1) // "Nothing" nodeObj does not get serialized
+        throw Error((objCtError2 % expectedNumObjects % (readObjects.size() + 1)).str());
 
     em = NULL;
     readObjects.clear();
@@ -291,8 +290,8 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     const unsigned objId = go->GetObjId();
 
-    RTTR_Assert(objId < GameObject::GetObjIDCounter());
-    if(objId >= GameObject::GetObjIDCounter())
+    RTTR_Assert(objId <= GameObject::GetObjIDCounter());
+    if(objId > GameObject::GetObjIDCounter())
     {
         LOG.write("%s\n") % _("An error occured while saving which was suppressed!");
         PushUnsignedInt(0);
@@ -315,7 +314,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     // Objekt merken
     writtenObjIds.insert(objId);
 
-    RTTR_Assert(writtenObjIds.size() < GameObject::GetObjCount());
+    RTTR_Assert(writtenObjIds.size() < GameObject::GetNumObjs());
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
@@ -452,7 +451,7 @@ void SerializedGameData::AddObject(GameObject* go)
     RTTR_Assert(isReading);
     RTTR_Assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
     readObjects[go->GetObjId()] = go;
-    RTTR_Assert(readObjects.size() < expectedObjectCount);
+    RTTR_Assert(readObjects.size() < expectedNumObjects);
 }
 
 unsigned SerializedGameData::AddEvent(unsigned instanceId, GameEvent* ev)
@@ -466,7 +465,7 @@ unsigned SerializedGameData::AddEvent(unsigned instanceId, GameEvent* ev)
 bool SerializedGameData::IsObjectSerialized(unsigned obj_id) const
 {
     RTTR_Assert(!isReading);
-    RTTR_Assert(obj_id < GameObject::GetObjIDCounter());
+    RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
     return helpers::contains(writtenObjIds, obj_id);
 }
 
@@ -480,7 +479,7 @@ bool SerializedGameData::IsEventSerialized(unsigned evInstanceid) const
 GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
 {
     RTTR_Assert(isReading);
-    RTTR_Assert(obj_id < GameObject::GetObjIDCounter());
+    RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
     std::map<unsigned, GameObject*>::const_iterator foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return NULL;

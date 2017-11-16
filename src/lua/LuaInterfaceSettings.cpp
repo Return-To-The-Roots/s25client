@@ -39,12 +39,14 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 {
     state["RTTRSettings"].setClass(
       kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
-        .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetPlayerCount)
+        .addFunction("GetNumPlayers", &LuaInterfaceSettings::GetNumPlayers)
         .addFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
         .addOverloadedFunctions("SetAddon", &LuaInterfaceSettings::SetAddon, &LuaInterfaceSettings::SetBoolAddon)
         .addFunction("ResetAddons", &LuaInterfaceSettings::ResetAddons)
         .addFunction("ResetGameSettings", &LuaInterfaceSettings::ResetGameSettings)
-        .addFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings));
+        .addFunction("SetGameSettings", &LuaInterfaceSettings::SetGameSettings)
+        // Old name
+        .addFunction("GetPlayerCount", &LuaInterfaceSettings::GetNumPlayers));
 
     state["AddonId"].setClass(kaguya::UserdataMetatable<AddonId>());
 
@@ -81,16 +83,16 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 }
 
-unsigned LuaInterfaceSettings::GetPlayerCount() const
+unsigned LuaInterfaceSettings::GetNumPlayers() const
 {
     RTTR_Assert(gameServer_.IsRunning());
-    return gameServer_.GetMaxPlayerCount();
+    return gameServer_.GetNumMaxPlayers();
 }
 
 LuaServerPlayer LuaInterfaceSettings::GetPlayer(unsigned idx)
 {
     RTTR_Assert(gameServer_.IsRunning());
-    lua::assertTrue(idx < GetPlayerCount(), "Invalid player idx");
+    lua::assertTrue(idx < GetNumPlayers(), "Invalid player idx");
     return LuaServerPlayer(gameServer_, idx);
 }
 

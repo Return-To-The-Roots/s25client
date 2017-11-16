@@ -55,7 +55,7 @@ public:
     const std::list<nobBaseWarehouse*>& GetStorehouses() const { return warehouses; }
 
     /// Liefert die Anzahl aller Gebäude einzeln
-    BuildingCount GetBuildingCount() const;
+    BuildingCount GetBuildingNums() const;
     /// Calculate and fill the average productivities for all buildings. Vector must hold 1 entry per building type
     void CalcProductivities(std::vector<unsigned short>& productivities) const;
     /// Calculate the average productivity for a building type

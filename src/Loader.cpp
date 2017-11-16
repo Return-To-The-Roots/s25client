@@ -352,11 +352,11 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
       23u + gfxset,              // map_?_z.lst
       20u + gfxset;              // tex?.lbm
 
-    for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
+    for(unsigned char i = 0; i < NUM_NATIVE_NATS; ++i)
     {
         // ggf. Völker-Grafiken laden
         if(nations[i] || (i == NAT_ROMANS && nations[NAT_BABYLONIANS]))
-            files += 27 + i + (gfxset == LT_WINTERWORLD) * NATIVE_NAT_COUNT;
+            files += 27 + i + (gfxset == LT_WINTERWORLD) * NUM_NATIVE_NATS;
     }
 
     lastgfx = 0xFF;
@@ -373,7 +373,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     lastgfx = gfxset;
 
-    for(unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
         nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
 
     map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
@@ -388,7 +388,7 @@ void Loader::fillCaches()
     stp = new glTexturePacker();
 
     // Animals
-    for(unsigned species = 0; species < SPEC_COUNT; ++species)
+    for(unsigned species = 0; species < NUM_SPECS; ++species)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
@@ -434,10 +434,10 @@ void Loader::fillCaches()
 
     glArchivItem_Bob* bob_jobs = GetBobN("jobs");
 
-    for(unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
     {
         // BUILDINGS
-        for(unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
+        for(unsigned type = 0; type < NUM_BUILDING_TYPES; ++type)
         {
             glSmartBitmap& bmp = building_cache[nation][type][0];
             glSmartBitmap& skel = building_cache[nation][type][1];
@@ -493,8 +493,8 @@ void Loader::fillCaches()
             }
         }
 
-        // Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
-        for(unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
+        // Bobs from jobs.bob. Job = NUM_JOB_TYPES is used for fat carriers. See below.
+        for(unsigned job = 0; job < NUM_JOB_TYPES + 1; ++job)
         {
             for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
@@ -508,7 +508,7 @@ void Loader::fillCaches()
 
                     bmp.reset();
 
-                    if(job == JOB_TYPES_COUNT) // used for fat carrier, so that we do not need an additional sub-array
+                    if(job == NUM_JOB_TYPES) // used for fat carrier, so that we do not need an additional sub-array
                     {
                         fat = true;
                         id = 0;
@@ -519,7 +519,7 @@ void Loader::fillCaches()
 
                         if((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
                         {
-                            if(nation < NATIVE_NAT_COUNT)
+                            if(nation < NUM_NATIVE_NATS)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                             } else if(nation == NAT_BABYLONIANS) //-V547
@@ -530,7 +530,7 @@ void Loader::fillCaches()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
-                                                                overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
+                                                                overlayOffset += (nation - NUM_NATIVE_NATS) * (8 * 6 * 6);
                                 */
                             } else
                                 throw std::runtime_error("Wrong nation");
@@ -666,7 +666,7 @@ void Loader::fillCaches()
     // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBobN("carrier");
 
-    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
+    for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
@@ -817,11 +817,11 @@ bool Loader::CreateTerrainTextures()
       Rect(242, 0, 50, 16), Rect(242, 16, 50, 16), Rect(242, 32, 50, 16), Rect(242, 160, 50, 16),
     };
 
-    for(unsigned char i = 0; i < TT_COUNT; ++i)
+    for(unsigned char i = 0; i < NUM_TTS; ++i)
     {
         TerrainType t = TerrainType(i);
         if(TerrainData::IsAnimated(t))
-            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t),
+            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetNumFrames(t),
                                                             TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
         else
             terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));

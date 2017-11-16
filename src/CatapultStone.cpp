@@ -118,7 +118,7 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
             {
                 milBld->HitOfCatapultStone();
                 // If there are no troops left, destroy it
-                if(milBld->GetTroopsCount() == 0)
+                if(milBld->GetNumTroops() == 0)
                     gwg->DestroyNO(milBld->GetPos());
             }
         } else

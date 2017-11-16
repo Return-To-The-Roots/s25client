@@ -30,6 +30,6 @@ AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned obj
 
 AsyncChecksum AsyncChecksum::create(const Game& game)
 {
-    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetObjCount(), GameObject::GetObjIDCounter(), game.em->GetNumActiveEvents(),
+    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(), game.em->GetNumActiveEvents(),
                          game.em->GetEventInstanceCtr());
 }

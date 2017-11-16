@@ -456,7 +456,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Set to true, where owner has changed (initially all false)
     std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
 
-    std::vector<int> sizeChanges(GetPlayerCount());
+    std::vector<int> sizeChanges(GetNumPlayers());
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
 
@@ -505,9 +505,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         }
     }
 
-    for(unsigned i = 0; i < GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
-        GetPlayer(i).ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
+        GetPlayer(i).ChangeStatisticValue(NUM_STATSRY, sizeChanges[i]);
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
@@ -1356,7 +1356,7 @@ bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_s
 std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId, unsigned playerId) const
 {
     std::vector<unsigned> hps;
-    for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
+    for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
     {
         if(i == hbIdToSkip || !IsHarborAtSea(i, seaId))
             continue;

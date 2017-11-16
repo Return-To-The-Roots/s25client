@@ -25,10 +25,10 @@
 #include "libutil/colors.h"
 
 /// Anzahl der angezeigten Gebäude
-const unsigned BUILDINGS_COUNT = 24;
+const unsigned NUM_BUILDINGSS = 24;
 
 /// Reihenfolge der Gebäude
-const BuildingType bts[BUILDINGS_COUNT] = {
+const BuildingType bts[NUM_BUILDINGSS] = {
   BLD_GRANITEMINE,    BLD_COALMINE, BLD_IRONMINE, BLD_GOLDMINE, BLD_WOODCUTTER, BLD_FISHERY,     BLD_QUARRY,        BLD_FORESTER,
   BLD_SLAUGHTERHOUSE, BLD_HUNTER,   BLD_BREWERY,  BLD_ARMORY,   BLD_METALWORKS, BLD_IRONSMELTER, BLD_PIGFARM,       BLD_MILL,
   BLD_BAKERY,         BLD_SAWMILL,  BLD_MINT,     BLD_WELL,     BLD_SHIPYARD,   BLD_FARM,        BLD_DONKEYBREEDER, BLD_CHARBURNER};
@@ -49,17 +49,17 @@ const Extent percentSize(100, 18);
 
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posLastOrCenter,
-                   Extent(2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x, (BUILDINGS_COUNT / 2 + 1) * (distance_y + 1))
+                   Extent(2 * percentSize.x + 2 * image_percent_x + percent_image_x + right_x, (NUM_BUILDINGSS / 2 + 1) * (distance_y + 1))
                      + bldProdContentOffset,
                    _("Productivity"), LOADER.GetImageN("resource", 41)),
-      player(player), percents(BUILDING_TYPES_COUNT, 0)
+      player(player), percents(NUM_BUILDING_TYPES, 0)
 {
     const Nation playerNation = player.nation;
-    for(unsigned y = 0; y < BUILDINGS_COUNT / 2 + BUILDINGS_COUNT % 2; ++y)
+    for(unsigned y = 0; y < NUM_BUILDINGSS / 2 + NUM_BUILDINGSS % 2; ++y)
     {
         for(unsigned x = 0; x < 2; ++x)
         {
-            if(y * 2 + x >= BUILDINGS_COUNT) //-V547
+            if(y * 2 + x >= NUM_BUILDINGSS) //-V547
                 break;
             ;
             unsigned imgId = (y * 2 + x) * 2;

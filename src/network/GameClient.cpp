@@ -284,7 +284,7 @@ void GameClient::StartGame(const unsigned random_init)
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
         /// Startbündnisse setzen
-        for(unsigned i = 0; i < gameWorld.GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
         gameWorld.LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
@@ -431,7 +431,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
         gameLobby->getPlayer(msg.player).ping = msg.ping;
     } else if(state == CS_LOADING || state == CS_GAME)
     {
-        if(msg.player >= GetPlayerCount())
+        if(msg.player >= GetNumPlayers())
             return true;
         GetPlayer(msg.player).ping = msg.ping;
     } else
@@ -587,7 +587,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
             ci->CI_PlayersSwapped(msg.player, msg.player2);
     } else
     {
-        if(msg.player >= game->world.GetPlayerCount() || msg.player2 >= game->world.GetPlayerCount())
+        if(msg.player >= game->world.GetNumPlayers() || msg.player2 >= game->world.GetNumPlayers())
             return true;
         ChangePlayerIngame(msg.player, msg.player2);
     }
@@ -696,7 +696,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
     if(state == CS_GAME)
     {
         // Ingame message: Do some checking and logging
-        if(msg.player >= game->world.GetPlayerCount())
+        if(msg.player >= game->world.GetNumPlayers())
             return true;
 
         /// Mit im Replay aufzeichnen
@@ -886,7 +886,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
                 }
 
                 RTTR_Assert(!gameLobby);
-                gameLobby.reset(new GameLobby(true, IsHost(), mapinfo.savegame->GetPlayerCount()));
+                gameLobby.reset(new GameLobby(true, IsHost(), mapinfo.savegame->GetNumPlayers()));
                 mapinfo.title = mapinfo.savegame->GetMapName();
             }
             break;
@@ -1263,7 +1263,7 @@ void GameClient::WritePlayerInfo(SavedFile& file)
 {
     RTTR_Assert(state == CS_LOADING || state == CS_GAME);
     // Spielerdaten
-    for(unsigned i = 0; i < game->world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < game->world.GetNumPlayers(); ++i)
         file.AddPlayer(game->world.GetPlayer(i));
 }
 
@@ -1301,9 +1301,9 @@ bool GameClient::StartReplay(const std::string& path)
     }
     replayinfo->fileName = bfs::path(replayinfo->replay.GetFile().getFilePath()).filename().string();
 
-    gameLobby.reset(new GameLobby(true, true, replayinfo->replay.GetPlayerCount()));
+    gameLobby.reset(new GameLobby(true, true, replayinfo->replay.GetNumPlayers()));
 
-    for(unsigned i = 0; i < replayinfo->replay.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < replayinfo->replay.GetNumPlayers(); ++i)
         gameLobby->getPlayer(i) = JoinPlayerInfo(replayinfo->replay.GetPlayer(i));
 
     bool playerFound = false;
@@ -1567,16 +1567,16 @@ bool GameClient::AddGC(gc::GameCommand* gc)
     return true;
 }
 
-unsigned GameClient::GetPlayerCount() const
+unsigned GameClient::GetNumPlayers() const
 {
     RTTR_Assert(state == CS_LOADING || state == CS_GAME);
-    return game->world.GetPlayerCount();
+    return game->world.GetNumPlayers();
 }
 
 GamePlayer& GameClient::GetPlayer(const unsigned id)
 {
     RTTR_Assert(state == CS_LOADING || state == CS_GAME);
-    RTTR_Assert(id < GetPlayerCount());
+    RTTR_Assert(id < GetNumPlayers());
     return game->world.GetPlayer(id);
 }
 
@@ -1628,8 +1628,8 @@ boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
-    if(unsigned(game->ggs.objective) >= OBJECTIVES_COUNT)
-        return TOURNAMENT_MODES_DURATION[game->ggs.objective - OBJECTIVES_COUNT] * 60 * 1000 / framesinfo.gf_length;
+    if(unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
+        return TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS] * 60 * 1000 / framesinfo.gf_length;
     else
         return 0;
 }

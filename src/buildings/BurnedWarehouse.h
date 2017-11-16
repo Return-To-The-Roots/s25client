@@ -30,10 +30,10 @@ class BurnedWarehouse : public noCoordBase
     /// Aktuelle Rausgeh-Phase
     unsigned go_out_phase;
     // Leute, die noch rauskommen müssen
-    boost::array<unsigned, JOB_TYPES_COUNT> people;
+    boost::array<unsigned, NUM_JOB_TYPES> people;
 
 public:
-    typedef boost::array<unsigned, JOB_TYPES_COUNT> PeopleArray;
+    typedef boost::array<unsigned, NUM_JOB_TYPES> PeopleArray;
 
     BurnedWarehouse(const MapPoint pt, const unsigned char player, const PeopleArray& people);
     BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id);

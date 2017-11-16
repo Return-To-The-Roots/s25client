@@ -44,7 +44,7 @@ void Game::RunGF()
     //  EventManager Bescheid sagen
     em->ExecuteNextGF();
     // Notfallprogramm durchlaufen lassen
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         GamePlayer& player = world.GetPlayer(i);
         if(player.isUsed())
@@ -64,7 +64,7 @@ void Game::RunGF()
 
 void Game::StatisticStep()
 {
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
         world.GetPlayer(i).StatisticStep();
 
     CheckObjective();
@@ -80,7 +80,7 @@ void Game::CheckObjective()
     unsigned max = 0, sum = 0, best = 0xFFFF, maxteam = 0, bestteam = 0xFFFF;
 
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         GamePlayer& player = world.GetPlayer(i);
         if(ggs.lockedTeams) // in games with locked team settings check for team victory
@@ -89,7 +89,7 @@ void Game::CheckObjective()
                 continue;
             unsigned curteam = 0;
             unsigned teampoints = 0;
-            for(unsigned j = 0; j < world.GetPlayerCount(); ++j)
+            for(unsigned j = 0; j < world.GetNumPlayers(); ++j)
             {
                 if(i == j || !player.IsAlly(j))
                     continue;
@@ -97,18 +97,18 @@ void Game::CheckObjective()
                 if(!teamPlayer.IsDefeated())
                 {
                     curteam = curteam | (1 << j);
-                    teampoints += teamPlayer.GetStatisticCurrentValue(STAT_COUNTRY);
+                    teampoints += teamPlayer.GetStatisticCurrentValue(NUM_STATSRY);
                 }
             }
-            teampoints += player.GetStatisticCurrentValue(STAT_COUNTRY);
+            teampoints += player.GetStatisticCurrentValue(NUM_STATSRY);
             curteam = curteam | (1 << i);
-            if(teampoints > maxteam && teampoints > player.GetStatisticCurrentValue(STAT_COUNTRY))
+            if(teampoints > maxteam && teampoints > player.GetStatisticCurrentValue(NUM_STATSRY))
             {
                 maxteam = teampoints;
                 bestteam = curteam;
             }
         }
-        unsigned v = player.GetStatisticCurrentValue(STAT_COUNTRY);
+        unsigned v = player.GetStatisticCurrentValue(NUM_STATSRY);
         if(v > max)
         {
             max = v;
