@@ -348,6 +348,11 @@ void SerializedGameData::PushEvent(const GameEvent* event)
 
 const GameEvent* SerializedGameData::PopEvent()
 {
+    return PopEventNonConst();
+}
+
+GameEvent* SerializedGameData::PopEventNonConst()
+{
     unsigned instanceId = PopUnsignedInt();
     if(!instanceId)
         return NULL;
@@ -356,7 +361,7 @@ const GameEvent* SerializedGameData::PopEvent()
     std::map<unsigned, GameEvent*>::const_iterator foundObj = readEvents.find(instanceId);
     if(foundObj != readEvents.end())
         return foundObj->second;
-    const GameEvent* ev = em->AddEvent(*this, instanceId);
+    GameEvent* ev = new GameEvent(*this, instanceId);
 
     unsigned short safety_code = PopUnsignedShort();
 

@@ -27,6 +27,7 @@
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "initTestHelpers.h"
+#include "nodeObjs/noFire.h"
 #include "gameTypes/MapInfo.h"
 #include "libutil/tmpFile.h"
 #include <boost/filesystem/operations.hpp>
@@ -134,6 +135,17 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     nobUsual* usualBld = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_WOODCUTTER, usualBldPos, 0, NAT_VIKINGS));
     world.BuildRoad(0, false, world.GetNeighbour(hqPos, Direction::SOUTHEAST), std::vector<Direction>(3, Direction::EAST));
     usualBld->is_working = true;
+
+    // Add 3 fires with first between the others to have a mixed event order in the same GF
+    std::vector<MapPoint> firePositions;
+    firePositions.push_back(world.MakeMapPoint(hqPos + Position(8, 0)));
+    firePositions.push_back(world.MakeMapPoint(hqPos + Position(7, 0)));
+    firePositions.push_back(world.MakeMapPoint(hqPos + Position(9, 0)));
+    BOOST_FOREACH(const MapPoint& pt, firePositions)
+    {
+        BOOST_REQUIRE(!world.GetNode(pt).obj);
+        world.SetNO(pt, new noFire(pt, false));
+    }
 
     for(unsigned i = 0; i < 100; i++)
         em.ExecuteNextGF();

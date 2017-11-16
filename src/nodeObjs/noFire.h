@@ -27,7 +27,7 @@ class GameEvent;
 class noFire : public noCoordBase
 {
     /// Größe des Feuers: klein (0) oder groß (1)
-    unsigned char size;
+    bool isBig;
     /// "Todesevent" (also bis es abgebrannt ist) speichern, damit dann interpoliert wird
     const GameEvent* dead_event;
     /// Wurden Feuersounds abgespielt
@@ -38,7 +38,7 @@ class noFire : public noCoordBase
     unsigned next_interval;
 
 public:
-    noFire(const MapPoint pt, const unsigned char size);
+    noFire(const MapPoint pt, bool isBig);
     noFire(SerializedGameData& sgd, const unsigned obj_id);
 
     ~noFire() override;

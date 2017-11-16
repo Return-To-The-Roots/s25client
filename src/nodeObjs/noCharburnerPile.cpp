@@ -135,7 +135,7 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
     {
         // selfdestruct!
         event = NULL;
-        gwg->SetNO(pos, new noFire(pos, 0), true);
+        gwg->SetNO(pos, new noFire(pos, false), true);
         gwg->RecalcBQAroundPoint(pos);
         GetEvMgr().AddToKillList(this);
     }

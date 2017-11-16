@@ -35,7 +35,7 @@ void noBuilding::Destroy()
 {
     // First we have to remove the building from the map and the player
     // Replace by fire (huts and mines become small fire, rest big)
-    gwg->SetNO(pos, new noFire(pos, (GetSize() == BQ_HUT || GetSize() == BQ_MINE) ? 0 : 1), true);
+    gwg->SetNO(pos, new noFire(pos, GetSize() != BQ_HUT && GetSize() != BQ_MINE), true);
     gwg->GetPlayer(player).RemoveBuilding(this, bldType_);
     // Destroy derived buildings
     DestroyBuilding();

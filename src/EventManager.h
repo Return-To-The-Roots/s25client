@@ -55,8 +55,6 @@ public:
 
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);
-    /// Deserializes an event and adds it. TODO: Should return a const event
-    const GameEvent* AddEvent(SerializedGameData& sgd, unsigned instanceId);
 
     unsigned GetNextEventInstanceId();
 
@@ -89,6 +87,8 @@ protected:
     void ExecuteEvents(const EventMap::iterator& itEvents);
     /// Destroy all objects in the kill list
     void DestroyCurrentObjects();
+    /// Get all events in the order they will be processed
+    std::vector<const GameEvent*> GetEvents() const;
 };
 
 #endif // !EVENTMANAGER_H_INCLUDED
