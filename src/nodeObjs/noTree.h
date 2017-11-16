@@ -65,8 +65,6 @@ class noTree : public noCoordBase
 
     /// Produziert dieser Baum Tiere?
     bool produce_animals;
-    /// Zählt Instanzen der Bäume (jeder so und so vielte Baum produziert Tiere)
-    static unsigned INSTANCE_COUNTER;
     /// Zählt gezeichnete Bäume innerhalb eines Zeichenvorgangs (so und soviel Vogelgezwitscher muss dann abgespielt werden)
     static unsigned short DRAW_COUNTER;
 
@@ -118,8 +116,6 @@ public:
     /// Vom Holzfäller aufgerufen: Der Holzfäller hat seine Arbeit unterbrochen und der Baum soll doch nicht umfallen
     void DontFall();
 
-    /// Setzt Instance-Counter auf 0
-    static void ResetInstanceCounter() { INSTANCE_COUNTER = 0; }
     /// Setzt Draw-Counter auf 0
     static void ResetDrawCounter() { DRAW_COUNTER = 0; }
     /// Liest Draw-Counter aus

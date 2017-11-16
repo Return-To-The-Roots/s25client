@@ -33,7 +33,6 @@
 #include "world/GameWorldGame.h"
 #include <boost/array.hpp>
 
-unsigned noTree::INSTANCE_COUNTER = 0;
 unsigned short noTree::DRAW_COUNTER = 0;
 
 noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char size)
@@ -47,13 +46,10 @@ noTree::noTree(const MapPoint pos, const unsigned char type, const unsigned char
     } else
         state = STATE_NOTHING;
 
-    // neuer Baum, neue Instanz
-    ++INSTANCE_COUNTER;
-
-    // Jeder 20. Baum produziert Tiere, aber keine Palmen und Ananas!
+    // Every nth tree produces animals, but no palm and pineapple trees
     const unsigned TREESPERANIMALSPAWN[] = {20, 13, 10, 6, 4, 2};
     produce_animals =
-      (type < 3 || type > 5) && (INSTANCE_COUNTER % TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)] == 0);
+      (type < 3 || type > 5) && (RANDOM_RAND(GetObjId(), TREESPERANIMALSPAWN[gwg->GetGGS().getSelection(AddonId::MORE_ANIMALS)]) == 0);
 
     // Falls das der Fall ist, dann wollen wir doch gleich mal eins produzieren
     if(produce_animals)
