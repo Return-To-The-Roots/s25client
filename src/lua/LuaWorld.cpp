@@ -87,7 +87,7 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
 
 void LuaWorld::AddAnimal(int x, int y, Species species)
 {
-    lua::assertTrue(static_cast<unsigned>(species) < SPEC_COUNT, "Invalid animal species");
+    lua::assertTrue(static_cast<unsigned>(species) < NUM_SPECS, "Invalid animal species");
     MapPoint pos = gw.MakeMapPoint(Point<int>(x, y));
     noAnimal* animal = new noAnimal(species, pos);
     gw.AddFigure(pos, animal);

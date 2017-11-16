@@ -59,7 +59,7 @@ void ctrlComboBox::Resize(const Extent& newSize)
     Extent listSize(newSize.x, 4);
 
     // Langsam die Höhe der maximalen annähern
-    for(unsigned i = 0; i < list->GetLineCount(); ++i)
+    for(unsigned i = 0; i < list->GetNumLines(); ++i)
     {
         // zu große geworden?
         listSize.y += font->getHeight();
@@ -175,7 +175,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
     if(IsPointInRect(mc.GetPos(), GetDrawRect()))
     {
         // Scrolled without list opened
-        if(list->GetSelection() + 1 < list->GetLineCount())
+        if(list->GetSelection() + 1 < list->GetNumLines())
             Msg_ListSelectItem(GetID(), list->GetSelection() + 1);
         return true;
     }
@@ -198,7 +198,7 @@ void ctrlComboBox::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
     ctrlList* list = GetCtrl<ctrlList>(0);
 
     // ist in der Liste überhaupt was drin?
-    if(selection != selectionOnListOpen && list->GetLineCount() > 0)
+    if(selection != selectionOnListOpen && list->GetNumLines() > 0)
     {
         // Nachricht an übergeordnetes Fenster verschicken
         GetParent()->Msg_ComboSelectItem(GetID(), selection);
@@ -244,7 +244,7 @@ void ctrlComboBox::Draw_()
     Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
 
     // Namen des selektierten Strings in der Box anzeigen
-    if(liste->GetLineCount() > 0)
+    if(liste->GetNumLines() > 0)
         font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0,
                    GetSize().x - 2 - GetSize().y, "");
 

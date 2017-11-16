@@ -19,7 +19,6 @@
 #include "dskGameLoader.h"
 
 #include "Game.h"
-#include "GameClient.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -32,6 +31,7 @@
 #include "dskLobby.h"
 #include "files.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"
@@ -41,7 +41,7 @@
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % FILE_LOAD_IDS_COUNT], 0)), position(0), game(game)
+    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % NUM_FILE_LOAD_IDS], 0)), position(0), game(game)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
@@ -78,7 +78,7 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
 
 void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    static bool load_nations[NAT_COUNT];
+    static bool load_nations[NUM_NATS];
 
     ctrlTimer* timer = GetCtrl<ctrlTimer>(1);
     ctrlText* text = GetCtrl<ctrlText>(10 + position);
@@ -104,8 +104,8 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
         case 2: // Nationen ermitteln
         {
-            memset(load_nations, 0, sizeof(bool) * NAT_COUNT);
-            for(unsigned char i = 0; i < game->world.GetPlayerCount(); ++i)
+            memset(load_nations, 0, sizeof(bool) * NUM_NATS);
+            for(unsigned char i = 0; i < game->world.GetNumPlayers(); ++i)
                 load_nations[game->world.GetPlayer(i).nation] = true;
 
             text->SetText(_("Tribal chiefs assembled around the table..."));

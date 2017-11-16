@@ -26,7 +26,8 @@ FramesInfo::FramesInfo()
 
 void FramesInfo::Clear()
 {
-    gf_length = 0;
+    // Default GF len of 20
+    gf_length = 20;
     gfLenghtNew = 0;
     gfLenghtNew2 = 0;
     nwf_length = 0;

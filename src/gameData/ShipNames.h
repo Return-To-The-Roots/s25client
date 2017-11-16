@@ -19,9 +19,9 @@
 
 #include "gameTypes/Nation.h"
 
-const unsigned SHIP_NAMES_COUNT = 55;
+const unsigned NUM_SHIP_NAMESS = 55;
 
-const char* const ship_names[NAT_COUNT][SHIP_NAMES_COUNT] = {
+const char* const ship_names[NUM_NATS][NUM_SHIP_NAMESS] = {
   /* Nubier */ {"Aica",    "Aida",   "Ainra",  "Alayna", "Alisha",  "Alma",    "Amila",        "Anina",   "Armina",   "Banu",     "Baya",
                 "Bea",     "Bia",    "Bisa",   "Cheche", "Dafina",  "Daria",   "Dina",         "Do",      "Dofi",     "Efia",     "Erin",
                 "Esi",     "Esra",   "Fahari", "Faraya", "Fujo",    "Ghiday",  "Habiaba",      "Hajunza", "Ina",      "Layla",    "Lenia",

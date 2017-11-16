@@ -55,7 +55,7 @@ public:
     void SetStartSong(const unsigned id);
 
 protected:
-    unsigned current;
+    int current;
     unsigned repeats;               /// Anzahl der Wiederholungen
     bool random;                    /// Zufallswiedergabe?
     std::vector<std::string> songs; /// Dateinamen der abzuspielenden Titel

@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CollisionDetection.h"
-#include "GameClient.h"
-#include "GameMessages.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
@@ -26,6 +24,8 @@
 #include "controls/ctrlMultiline.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 #include "ogl/glArchivItem_Font.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include <boost/assign/std/vector.hpp>
@@ -142,15 +142,17 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     const ctrlImage* img = wnd->GetCtrls<ctrlImage>().front();
-    BOOST_REQUIRE_EQUAL(img->GetImage(), LOADER.GetImageN("io", 101));
-    BOOST_REQUIRE_EQUAL(img->GetPos().x, 500);
-    BOOST_REQUIRE_EQUAL(img->GetPos().y, 200);
+    const glArchivItem_Bitmap* actImg = img->GetImage();
+    const Position imgPos = img->GetPos();
+    BOOST_REQUIRE_EQUAL(actImg, LOADER.GetImageN("io", 101));
+    BOOST_REQUIRE_EQUAL(imgPos.x, 500);
+    BOOST_REQUIRE_EQUAL(imgPos.y, 200);
     // Window must be bigger than image pos+size
-    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), img->GetPos().x + img->GetImage()->getWidth() - img->GetImage()->getNx());
-    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), img->GetPos().y + img->GetImage()->getHeight() - img->GetImage()->getNy());
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgPos.x + actImg->getWidth() - actImg->getNx()); //-V807
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgPos.y + actImg->getHeight() - actImg->getNy());
     const ctrlButton* bt = wnd->GetCtrls<ctrlButton>().front();
     // button must be below start of image
-    BOOST_REQUIRE_GT(bt->GetPos().y, img->GetPos().y - img->GetImage()->getNy());
+    BOOST_REQUIRE_GT(bt->GetPos().y, imgPos.y - actImg->getNy()); //-V807
     // and centered
     BOOST_REQUIRE_LE(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2));
     BOOST_REQUIRE_GT(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2 - bt->GetSize().x));
@@ -162,8 +164,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     for(unsigned i = 0; i < imgPts.size(); i++)
     {
         const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i]);
-        Rect imgRect(img->GetPos().x - img->GetImage()->getNx(), img->GetPos().y - img->GetImage()->getNy(), img->GetImage()->getWidth(),
-                     img->GetImage()->getHeight());
+        Rect imgRect(img->GetPos().x - actImg->getNx(), img->GetPos().y - actImg->getNy(), actImg->getWidth(), actImg->getHeight());
         // Image must be in wnd
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgRect.right);
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgRect.bottom);

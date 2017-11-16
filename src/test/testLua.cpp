@@ -16,13 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientInterface.h"
-#include "GameClient.h"
-#include "GameMessages.h"
 #include "PointOutput.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
 #include "helpers/Deleter.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "true"));
     BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, false, false));
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
-    BOOST_CHECK(isLuaEqual("rttr:GetPlayerCount()", "3"));
+    BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
     // Set Player ID
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
@@ -186,20 +186,20 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
     hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
 
-    BOOST_REQUIRE_GT(hqs[0]->GetRealWaresCount(GD_BOARDS), 0u);
+    BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GD_BOARDS), 0u);
 
     executeLua("rttr:ClearResources()");
     for(unsigned i = 0; i < hqs.size(); i++)
     {
-        for(unsigned gd = 0; gd < WARE_TYPES_COUNT; gd++)
+        for(unsigned gd = 0; gd < NUM_WARE_TYPES; gd++)
         {
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetRealWaresCount(GoodType(gd)), 0u);
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetVisualWaresCount(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumRealWares(GoodType(gd)), 0u);
+            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumVisualWares(GoodType(gd)), 0u);
         }
-        for(unsigned job = 0; job < JOB_TYPES_COUNT; job++)
+        for(unsigned job = 0; job < NUM_JOB_TYPES; job++)
         {
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetRealFiguresCount(Job(job)), 0u);
-            BOOST_REQUIRE_EQUAL(hqs[i]->GetVisualFiguresCount(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumRealFigures(Job(job)), 0u);
+            BOOST_REQUIRE_EQUAL(hqs[i]->GetNumVisualFigures(Job(job)), 0u);
         }
     }
 
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(MissionGoal)
     initWorld();
 
     const PostBox& postBox = *world.GetPostMgr().AddPostBox(1);
-    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty());
+    BOOST_REQUIRE(postBox.GetCurrentMissionGoal().empty()); //-V807
 
     // Set goal for non-existing or other player
     executeLua("rttr:SetMissionGoal(99, 'Goal')");
@@ -362,61 +362,62 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_REQUIRE_EQUAL(postBox.GetNumMsgs(), 1u);
 
     executeLua("player:DisableAllBuildings()");
-    for(unsigned bld = 0; bld < BUILDING_TYPES_COUNT; bld++)
+    for(unsigned bld = 0; bld < NUM_BUILDING_TYPES; bld++)
         BOOST_REQUIRE(!player.IsBuildingEnabled(BuildingType(bld)));
 
     executeLua("player:EnableAllBuildings()");
-    for(unsigned bld = 0; bld < BUILDING_TYPES_COUNT; bld++)
+    for(unsigned bld = 0; bld < NUM_BUILDING_TYPES; bld++)
         BOOST_REQUIRE(player.IsBuildingEnabled(BuildingType(bld)));
 
     executeLua("player:ClearResources()");
-    for(unsigned gd = 0; gd < WARE_TYPES_COUNT; gd++)
+    for(unsigned gd = 0; gd < NUM_WARE_TYPES; gd++)
     {
-        BOOST_REQUIRE_EQUAL(hq->GetRealWaresCount(GoodType(gd)), 0u);
-        BOOST_REQUIRE_EQUAL(hq->GetVisualWaresCount(GoodType(gd)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetNumRealWares(GoodType(gd)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetNumVisualWares(GoodType(gd)), 0u);
     }
-    for(unsigned job = 0; job < JOB_TYPES_COUNT; job++)
+    for(unsigned job = 0; job < NUM_JOB_TYPES; job++)
     {
-        BOOST_REQUIRE_EQUAL(hq->GetRealFiguresCount(Job(job)), 0u);
-        BOOST_REQUIRE_EQUAL(hq->GetVisualFiguresCount(Job(job)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetNumRealFigures(Job(job)), 0u);
+        BOOST_REQUIRE_EQUAL(hq->GetNumVisualFigures(Job(job)), 0u);
     }
 
     executeLua("wares = {[GD_HAMMER]=8,[GD_AXE]=6,[GD_SAW]=3}\n"
                "people = {[JOB_HELPER] = 30,[JOB_WOODCUTTER] = 6,[JOB_FISHER] = 0,[JOB_FORESTER] = 2}");
     executeLua("assert(player:AddWares(wares))");
-    BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_HAMMER], 8u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_AXE], 6u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().goods[GD_SAW], 3u);
-    BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_HAMMER), 8u);
-    BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_AXE), 6u);
-    BOOST_CHECK_EQUAL(hq->GetRealWaresCount(GD_SAW), 3u);
+    const Inventory& inv = player.GetInventory();
+    BOOST_REQUIRE_EQUAL(inv.goods[GD_HAMMER], 8u);
+    BOOST_REQUIRE_EQUAL(inv.goods[GD_AXE], 6u);
+    BOOST_REQUIRE_EQUAL(inv.goods[GD_SAW], 3u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_HAMMER), 8u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_AXE), 6u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealWares(GD_SAW), 3u);
     executeLua("assert(player:AddPeople(people))");
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_HELPER], 30u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_WOODCUTTER], 6u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FISHER], 0u);
-    BOOST_REQUIRE_EQUAL(player.GetInventory().people[JOB_FORESTER], 2u);
-    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_HELPER), 30u);
-    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_WOODCUTTER), 6u);
-    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_FISHER), 0u);
-    BOOST_CHECK_EQUAL(hq->GetRealFiguresCount(JOB_FORESTER), 2u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_HELPER], 30u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_WOODCUTTER], 6u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_FISHER], 0u);
+    BOOST_REQUIRE_EQUAL(inv.people[JOB_FORESTER], 2u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_HELPER), 30u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_WOODCUTTER), 6u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FISHER), 0u);
+    BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FORESTER), 2u);
 
-    BOOST_CHECK(isLuaEqual("player:GetWareCount(GD_HAMMER)", "8"));
-    BOOST_CHECK(isLuaEqual("player:GetWareCount(GD_AXE)", "6"));
+    BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_HAMMER)", "8"));
+    BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_AXE)", "6"));
 
-    BOOST_CHECK(isLuaEqual("player:GetPeopleCount(JOB_HELPER)", "30"));
-    BOOST_CHECK(isLuaEqual("player:GetPeopleCount(JOB_FORESTER)", "2"));
+    BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "30"));
+    BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_FORESTER)", "2"));
 
     // Invalid ware/player throws
     BOOST_CHECK_THROW(executeLua("player:AddWares({[9999]=8})"), std::runtime_error);
     BOOST_CHECK_THROW(executeLua("player:AddPeople({[9999]=8})"), std::runtime_error);
 
-    BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_WOODCUTTER)", "0"));
-    BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_HEADQUARTERS)", "1"));
-    BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_HEADQUARTERS)", "0"));
-    BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_WOODCUTTER)", "0"));
+    BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
+    BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_HEADQUARTERS)", "1"));
+    BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_HEADQUARTERS)", "0"));
+    BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "0"));
     world.SetNO(hq->GetPos() + MapPoint(4, 0), new noBuildingSite(BLD_WOODCUTTER, hq->GetPos() + MapPoint(4, 0), 1));
-    BOOST_CHECK(isLuaEqual("player:GetBuildingCount(BLD_WOODCUTTER)", "0"));
-    BOOST_CHECK(isLuaEqual("player:GetBuildingSitesCount(BLD_WOODCUTTER)", "1"));
+    BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
+    BOOST_CHECK(isLuaEqual("player:GetNumBuildingSites(BLD_WOODCUTTER)", "1"));
 
     CatchConstructionNote note(world);
     // Closed or non-AI player
@@ -484,7 +485,11 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12)");
     std::vector<MapPoint> expectedRestrictedArea;
     expectedRestrictedArea += MapPoint(5, 7), MapPoint(5, 12), MapPoint(15, 12);
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea); //-V807
+    executeLua("assert(not player:IsInRestrictedArea(1, 2))");
+    executeLua("assert(not player:IsInRestrictedArea(0, 0))");
+    executeLua("assert(player:IsInRestrictedArea(6, 8))");
+    executeLua("assert(player:IsInRestrictedArea(11, 11))");
 
     // Polygon with hole
     executeLua("player:SetRestrictedArea(0,0, 1,1, 10,1, 10,10, 1,10, 1,1, 0,0, 5,5, 7,5, 7,7, 5,5, 0,0)");
@@ -589,7 +594,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(figs.size(), 1u);
     const noAnimal* animal = dynamic_cast<noAnimal*>(figs.front());
     BOOST_REQUIRE(animal);
-    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_DEER);
+    BOOST_REQUIRE_EQUAL(animal->GetSpecies(), SPEC_DEER); //-V522
     executeLua(boost::format("world:AddAnimal(%1%, %2%, SPEC_FOX)") % animalPos.x % animalPos.y);
     BOOST_REQUIRE_EQUAL(figs.size(), 2u);
     animal = dynamic_cast<noAnimal*>(figs.back());

@@ -64,9 +64,9 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
     altitude = sgd.PopUnsignedChar();
     shadow = sgd.PopUnsignedChar();
     t1 = TerrainType(sgd.PopUnsignedChar());
-    RTTR_Assert(t1 < TT_COUNT);
+    RTTR_Assert(t1 < NUM_TTS);
     t2 = TerrainType(sgd.PopUnsignedChar());
-    RTTR_Assert(t2 < TT_COUNT);
+    RTTR_Assert(t2 < NUM_TTS);
     resources = Resource(sgd.PopUnsignedChar());
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();

@@ -36,13 +36,13 @@ public:
     void Update(unsigned gf, AIPlayerJH& aijh);
 
     /// Return the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetBuildingCount(BuildingType type) const;
+    unsigned GetNumBuildings(BuildingType type) const;
     /// Return the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetBuildingSitesCount(BuildingType type) const;
+    unsigned GetNumBuildingSites(BuildingType type) const;
     /// Get amount of (completed) military buildings
-    unsigned GetMilitaryBldCount() const;
+    unsigned GetNumMilitaryBlds() const;
     /// Get amount of construction sites of military buildings
-    unsigned GetMilitaryBldSiteCount() const;
+    unsigned GetNumMilitaryBldSites() const;
 
     void InitBuildingsWanted(const AIPlayerJH& aijh);
     void UpdateBuildingsWanted(const AIPlayerJH& aijh);
@@ -55,12 +55,12 @@ public:
 
 private:
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())
-    BuildingCount buildingCounts;
+    BuildingCount buildingNums;
     /// Contains how many buildings of every type is wanted
     std::vector<unsigned> buildingsWanted;
     bool expansionRequired;
 
-    void RefreshBuildingCount(const AIPlayerJH& aijh);
+    void RefreshBuildingNums(const AIPlayerJH& aijh);
     bool CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;
 };
 } // namespace AIJH

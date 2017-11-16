@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofArmorer.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -26,6 +25,7 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 #include "gameData/JobConsts.h"
@@ -46,7 +46,7 @@ nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofArmorer::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = {{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}};
+    const DrawPointInit offsets[NUM_NATS] = {{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}};
 
     unsigned max_id = 280;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);

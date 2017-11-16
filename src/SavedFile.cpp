@@ -62,7 +62,7 @@ void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
 
 bool SavedFile::ReadFileHeader(BinaryFile& file)
 {
-    lastErrorMsg = "";
+    lastErrorMsg.clear();
 
     const std::string signature = GetSignature();
     boost::array<char, 32> read_signature;
@@ -165,7 +165,7 @@ const BasePlayerInfo& SavedFile::GetPlayer(unsigned idx) const
     return players[idx];
 }
 
-unsigned SavedFile::GetPlayerCount()
+unsigned SavedFile::GetNumPlayers()
 {
     return players.size();
 }

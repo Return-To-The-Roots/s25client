@@ -17,9 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDemolishBuilding.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "buildings/noBaseBuilding.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"

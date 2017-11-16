@@ -28,12 +28,12 @@
 /**
  *  Objekt-ID-Counter.
  */
-unsigned GameObject::objIdCounter_ = 1;
+unsigned GameObject::objIdCounter_ = 0;
 unsigned GameObject::objCounter_ = 0;
 
 GameWorldGame* GameObject::gwg = NULL;
 
-GameObject::GameObject() : objId(objIdCounter_++)
+GameObject::GameObject() : objId(++objIdCounter_)
 {
     // ein Objekt mehr
     ++objCounter_;

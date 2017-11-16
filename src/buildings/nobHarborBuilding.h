@@ -180,7 +180,7 @@ public:
     void WareDontWantToTravelByShip(Ware* ware);
 
     /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
-    unsigned GetNeededShipsCount() const;
+    unsigned GetNumNeededShips() const;
     /// Gibt die Wichtigkeit an, dass ein Schiff kommen muss (0 -> keine Bedürftigkeit)
     int GetNeedForShip(unsigned ships_coming) const;
 

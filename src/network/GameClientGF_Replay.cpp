@@ -16,12 +16,13 @@
 // along with Siedler II.5 RTTR. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientInterface.h"
-#include "GameClient.h"
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "PlayerGameCommands.h"
 #include "ReplayInfo.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "random/Random.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 
@@ -30,7 +31,7 @@ void GameClient::ExecuteGameFrame_Replay()
     AsyncChecksum checksum = AsyncChecksum::create(*game);
 
     const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF());
+    RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
 
     // Execute all commands from the replay for the current GF
     while(replayinfo->next_gf == curGF)
@@ -93,7 +94,7 @@ void GameClient::ExecuteGameFrame_Replay()
         char text[256];
         sprintf(text, _("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"), curGF,
                 GAMEMANAGER.GetRuntime() / 3600, ((GAMEMANAGER.GetRuntime()) % 3600) / 60, (GameManager::inst().GetRuntime()) % 3600 % 60,
-                GameManager::inst().GetFrameCount(), GameManager::inst().GetAverageFPS());
+                GameManager::inst().GetNumFrames(), GameManager::inst().GetAverageFPS());
 
         if(ci)
             ci->CI_ReplayEndReached(text);

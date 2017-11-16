@@ -20,8 +20,7 @@
 #include "helpers/containerUtils.h"
 #include "helpers/setTraits.h"
 #include "world/TerritoryRegion.h"
-#include "test/CreateEmptyWorld.h"
-#include "test/WorldFixture.h"
+#include <boost/array.hpp>
 #include <boost/assign/std/set.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/bind.hpp>
@@ -32,9 +31,6 @@
 #include <string>
 #include <vector>
 
-// Max tested point is (20, 20) -> size > 20
-typedef WorldFixture<CreateUninitWorld, 0, 24, 22> EmptyWorldFixture0P;
-
 using namespace boost::assign;
 
 struct MapPointComp
@@ -44,8 +40,10 @@ struct MapPointComp
 
 BOOST_AUTO_TEST_SUITE(TerritoryRegionTestSuite)
 
-BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
+BOOST_AUTO_TEST_CASE(IsPointValid)
 {
+    // Max tested point is (20, 20) -> size > 20
+    MapExtent worldSize(24, 22);
     std::vector<MapPoint> hole, hole_reversed;
     std::vector<MapPoint> outer, outer_reversed;
 
@@ -110,11 +108,11 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
     for(int i = 0; i < 8; ++i)
     {
         // check the whole area
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, worldSize)
         {
             // Result for this particular point
             bool result = helpers::contains(results, pt);
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, polygon[i], pt), result);
+            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, polygon[i], pt), result);
         }
     }
 
@@ -147,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
                     pt.x += y - 10;
                 else if(y >= 13)
                     pt.x += 15 - y;
-                BOOST_REQUIRE(TerritoryRegion::IsPointValid(world, rectAreas[i], pt));
+                BOOST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
                 if(i == 0)
                     results.insert(pt);
             }
@@ -179,22 +177,22 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
         // Those must be outside
         BOOST_FOREACH(MapPoint pt, outsidePts)
         {
-            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(world, rectAreas[i], pt));
+            BOOST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
         }
     }
     // Border points are unspecified, but must be consistently either inside or outside
     BOOST_FOREACH(MapPoint pt, borderPts)
     {
-        const bool isValid = TerritoryRegion::IsPointValid(world, rectAreas[0], pt);
+        const bool isValid = TerritoryRegion::IsPointValid(worldSize, rectAreas[0], pt);
         if(isValid)
             results.insert(pt);
         for(unsigned i = 1; i < rectAreas.size(); i++)
-            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(world, rectAreas[i], pt), isValid);
+            BOOST_REQUIRE_EQUAL(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt), isValid);
     }
 
     std::vector<MapPoint> fullMapArea;
     // Note the usage of width and height to include the border points
-    fullMapArea += MapPoint(0, 0), MapPoint(0, world.GetHeight()), MapPoint(world.GetSize()), MapPoint(world.GetWidth(), 0), MapPoint(0, 0);
+    fullMapArea += MapPoint(0, 0), MapPoint(0, worldSize.y), MapPoint(worldSize), MapPoint(worldSize.x, 0), MapPoint(0, 0);
     std::vector<MapPoint> fullMapAreaReversed(fullMapArea.size());
     std::reverse_copy(fullMapArea.begin(), fullMapArea.end(), fullMapAreaReversed.begin());
 
@@ -207,18 +205,18 @@ BOOST_FIXTURE_TEST_CASE(IsPointValid, EmptyWorldFixture0P)
         else
             boost::push_back(fullArea, fullMapAreaReversed);
         fullArea += MapPoint(0, 0);
-        if(i / 2 < 2)
+        if(i % 2 == 0)
             boost::push_back(fullArea, rectAreas[1]);
         else
             boost::push_back(fullArea, rectAreas[3]);
         fullArea += MapPoint(0, 0);
 
         // check the whole area
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, worldSize)
         {
             // If the point is in the set, it is in the small rect and should not be in the big rect with this as a hole
             const bool result = !helpers::contains(results, pt);
-            const bool isValid = TerritoryRegion::IsPointValid(world, fullArea, pt);
+            const bool isValid = TerritoryRegion::IsPointValid(worldSize, fullArea, pt);
             BOOST_REQUIRE_MESSAGE(isValid == result, isValid << "!=" << result << " at " << pt << " (iteration " << i << ")");
         }
     }

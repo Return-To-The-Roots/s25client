@@ -117,6 +117,14 @@ void EventManager::DestroyCurrentObjects()
     killList.clear();
 }
 
+std::vector<const GameEvent*> EventManager::GetEvents() const
+{
+    std::vector<const GameEvent*> nextEv;
+    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+        nextEv.insert(nextEv.end(), it->second.begin(), it->second.end());
+    return nextEv;
+}
+
 void EventManager::ExecuteCurrentEvents()
 {
     if(events.empty())
@@ -140,7 +148,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
     {
         GameEvent* ev = (*e_it);
         RTTR_Assert(ev->obj);
-        RTTR_Assert(ev->obj->GetObjId() < GameObject::GetObjIDCounter());
+        RTTR_Assert(ev->obj->GetObjId() <= GameObject::GetObjIDCounter());
 
         curActiveEvent = ev;
         ev->obj->HandleEvent(ev->id);
@@ -154,63 +162,51 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
 
 void EventManager::Serialize(SerializedGameData& sgd) const
 {
-    static boost::format eventCtError("Event count mismatch. Found events: %1%. Expected: %2%.\n");
-
     // Kill list must be empty (do not store to-be-killed objects)
     RTTR_Assert(killList.empty());
 
-    // Gather all events, that are not yet serialized
-    unsigned numEvents = 0;
-    std::vector<const GameEvent*> save_events;
-    for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
+    // Gather all events in the correct order
+    std::vector<const GameEvent*> saveEvents = GetEvents();
+    if(saveEvents.size() != numActiveEvents)
     {
-        BOOST_FOREACH(const GameEvent* ev, it->second)
-        {
-            numEvents++;
-            if(!sgd.IsEventSerialized(ev->GetInstanceId()))
-                save_events.push_back(ev);
-        }
+        boost::format eventCtError(_("Event count mismatch. Found events: %1%. Expected: %2%.\n"));
+        throw SerializedGameData::Error((eventCtError % saveEvents.size() % numActiveEvents).str());
     }
-    if(numEvents != numActiveEvents)
-        throw SerializedGameData::Error((eventCtError % numEvents % numActiveEvents).str());
 
-    sgd.PushUnsignedInt(save_events.size());
-    BOOST_FOREACH(const GameEvent* ev, save_events)
+    sgd.PushUnsignedInt(saveEvents.size());
+    BOOST_FOREACH(const GameEvent* ev, saveEvents)
         sgd.PushEvent(ev);
     sgd.PushUnsignedInt(eventInstanceCtr);
-    sgd.PushUnsignedInt(numActiveEvents);
 }
 
 void EventManager::Deserialize(SerializedGameData& sgd)
 {
-    static boost::format eventCtError("Event count mismatch. Found events: %1%. Expected: %2%.\n");
-    static boost::format eventIdError("Invalid event instance id. Found: %1%. Expected less than %2%.\n");
+    if(numActiveEvents != 0)
+        throw SerializedGameData::Error(_("Cannot deserialize event manager when there are still events active!"));
 
-    // This are just the not yet deserialized events
     unsigned numEvents = sgd.PopUnsignedInt();
-    // Pop all events, but do NOT add them. Deserialization will already do so
     for(unsigned i = 0; i < numEvents; ++i)
-        sgd.PopEvent();
+        AddEventToQueue(sgd.PopEventNonConst());
 
     eventInstanceCtr = sgd.PopUnsignedInt();
 
     // Validation
-    unsigned expectedNumActiveEvents = sgd.PopUnsignedInt();
-    if(expectedNumActiveEvents != numActiveEvents)
-        throw SerializedGameData::Error((eventCtError % numActiveEvents % expectedNumActiveEvents).str());
+    if(numEvents != numActiveEvents)
+    {
+        boost::format eventCtError(_("Event count mismatch. Read events: %1%. Expected: %2%.\n"));
+        throw SerializedGameData::Error((eventCtError % numActiveEvents % numEvents).str());
+    }
     for(EventMap::const_iterator it = events.begin(); it != events.end(); ++it)
     {
         BOOST_FOREACH(const GameEvent* ev, it->second)
         {
             if(ev->GetInstanceId() >= eventInstanceCtr)
+            {
+                boost::format eventIdError(_("Invalid event instance id. Found: %1%. Expected less than %2%.\n"));
                 throw SerializedGameData::Error((eventIdError % ev->GetInstanceId() % eventInstanceCtr).str());
+            }
         }
     }
-}
-
-const GameEvent* EventManager::AddEvent(SerializedGameData& sgd, unsigned instanceId)
-{
-    return AddEventToQueue(new GameEvent(sgd, instanceId));
 }
 
 bool EventManager::ObjectHasEvents(const GameObject& obj)

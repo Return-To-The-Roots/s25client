@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwHQ.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "controls/ctrlGroup.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 
 iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh) : iwBaseWarehouse(gwv, gcFactory, wh)

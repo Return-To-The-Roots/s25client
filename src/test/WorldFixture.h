@@ -113,7 +113,7 @@ struct WorldFixture
         // Explored area stays explored. Avoids fow creation
         ggs.exploration = EXP_CLASSIC;
         BOOST_REQUIRE(worldCreator(world));
-        BOOST_REQUIRE_EQUAL(world.GetPlayerCount(), T_numPlayers);
+        BOOST_REQUIRE_EQUAL(world.GetNumPlayers(), T_numPlayers);
     }
     static PlayerInfo GetPlayer()
     {

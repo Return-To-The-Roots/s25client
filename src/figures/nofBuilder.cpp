@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBuilder.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "Loader.h"
@@ -27,6 +26,7 @@
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"

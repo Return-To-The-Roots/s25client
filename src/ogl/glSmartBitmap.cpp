@@ -23,6 +23,7 @@
 #include "oglIncludes.h"
 #include "libsiedler2/ArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
 #include <climits>
@@ -102,7 +103,7 @@ void glSmartBitmap::calcDimensions()
     size_ = Extent(origin_ + maxPos);
 }
 
-void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize, const Extent& bufOffset /*= Extent(0, 0)*/) const
+void glSmartBitmap::drawTo(libsiedler2::PixelBufferARGB& buffer, const Extent& bufOffset) const
 {
     libsiedler2::ArchivItem_Palette* p_colors = LOADER.GetPaletteN("colors");
     libsiedler2::ArchivItem_Palette* p_5 = LOADER.GetPaletteN("pal5");
@@ -116,20 +117,19 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
 
         if(bmpItem.type == TYPE_ARCHIVITEM_BITMAP_SHADOW)
         {
-            std::vector<uint32_t> tmp(size_.x * size_.y);
+            libsiedler2::PixelBufferARGB tmp(size_.x, size_.y);
 
-            dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-              ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_BGRA, p_5, offset.x, offset.y,
-                      bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
+            dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp) //-V522
+              ->print(tmp, p_5, offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
 
             unsigned tmpIdx = 0;
             for(unsigned y = 0; y < size_.y; ++y)
             {
-                unsigned idx = (bufOffset.y + y) * bufSize.x + bufOffset.x;
+                unsigned idx = buffer.calcIdx(bufOffset.x, bufOffset.y + y);
                 for(unsigned x = 0; x < size_.x; ++x)
                 {
-                    if(GetAlpha(tmp[tmpIdx]) != 0x00 && GetAlpha(buffer[idx]) == 0x00)
-                        buffer[idx] = MakeColor(0x40, 0, 0, 0);
+                    if(tmp.get(tmpIdx).getAlpha() != 0x00 && buffer.get(idx).getAlpha() == 0x00)
+                        buffer.set(idx, libsiedler2::ColorARGB(0x40, 0, 0, 0));
                     idx++;
                     tmpIdx++;
                 }
@@ -139,22 +139,20 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             // No player bitmap -> Just (over)write the data
             RTTR_Assert(bmpItem.type == TYPE_ARCHIVITEM_BITMAP);
             dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-              ->print(reinterpret_cast<unsigned char*>(&buffer.front()), bufSize.x, bufSize.y, libsiedler2::FORMAT_BGRA, p_5,
-                      offset.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
+              ->print(buffer, p_5, offset.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x,
+                      bmpItem.size.y);
         } else
         {
             // There is a player bitmap -> First write to temp buffer
-            std::vector<uint32_t> tmp(size_.x * size_.y);
+            libsiedler2::PixelBufferARGB tmp(size_.x, size_.y);
             if(bmpItem.type == TYPE_ARCHIVITEM_BITMAP)
             {
                 dynamic_cast<libsiedler2::baseArchivItem_Bitmap*>(bmpItem.bmp)
-                  ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_BGRA, p_5, offset.x,
-                          offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
+                  ->print(tmp, p_5, offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y);
             } else
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(bmpItem.bmp)
-                  ->print(reinterpret_cast<unsigned char*>(&tmp.front()), size_.x, size_.y, libsiedler2::FORMAT_BGRA, p_colors, 128,
-                          offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y, false);
+                  ->print(tmp, p_colors, 128, offset.x, offset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x, bmpItem.size.y, false);
             }
             // Now copy temp buffer to real buffer, but we need to reset all player colors that would be overwritten
             // so it looks like, the first bitmap is fully drawn (including player colors) and then the next
@@ -162,17 +160,17 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             unsigned tmpIdx = 0;
             for(unsigned y = 0; y < size_.y; ++y)
             {
-                unsigned idx = (bufOffset.y + y) * bufSize.x + bufOffset.x + offset.x;
+                unsigned idx = buffer.calcIdx(bufOffset.x + offset.x, bufOffset.y + y);
                 tmpIdx += offset.x;
                 for(unsigned x = offset.x; x < size_.x; x++)
                 {
                     // Check for non-transparent pixels
-                    if(tmp[tmpIdx])
+                    if(tmp.get(tmpIdx).getAlpha())
                     {
                         // Copy to buffer
-                        buffer[idx] = tmp[tmpIdx];
+                        buffer.set(idx, tmp.get(tmpIdx));
                         // Reset player color to transparent
-                        buffer[idx + size_.x] = 0;
+                        buffer.set(idx + size_.x, libsiedler2::ColorARGB(0));
                     }
                     ++idx;
                     ++tmpIdx;
@@ -182,9 +180,8 @@ void glSmartBitmap::drawTo(std::vector<uint32_t>& buffer, const Extent& bufSize,
             if(bmpItem.type == TYPE_ARCHIVITEM_BITMAP_PLAYER)
             {
                 dynamic_cast<libsiedler2::ArchivItem_Bitmap_Player*>(bmpItem.bmp)
-                  ->print(reinterpret_cast<unsigned char*>(&buffer.front()), bufSize.x, bufSize.y, libsiedler2::FORMAT_BGRA, p_colors, 128,
-                          offset.x + size_.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y, bmpItem.size.x,
-                          bmpItem.size.y, true);
+                  ->print(buffer, p_colors, 128, offset.x + size_.x + bufOffset.x, offset.y + bufOffset.y, bmpItem.pos.x, bmpItem.pos.y,
+                          bmpItem.size.x, bmpItem.size.y, true);
             }
         }
     }
@@ -207,17 +204,17 @@ void glSmartBitmap::generateTexture()
 
     size_ = VIDEODRIVER.calcPreferredTextureSize(size_);
 
-    Extent bufSize = getTexSize();
+    const Extent bufSize = getTexSize();
 
-    std::vector<uint32_t> buffer(bufSize.x * bufSize.y);
-    drawTo(buffer, bufSize);
+    libsiedler2::PixelBufferARGB buffer(bufSize.x, bufSize.y);
+    drawTo(buffer);
 
     VIDEODRIVER.BindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufSize.x, bufSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, &buffer.front());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufSize.x, bufSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 
     texCoords[0].x = texCoords[1].x = 0.0f;
     texCoords[2].x = texCoords[3].x = hasPlayer ? 0.5f : 1.0f;

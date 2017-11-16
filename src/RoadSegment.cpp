@@ -211,9 +211,9 @@ bool RoadSegment::AreWareJobs(const bool flag, unsigned ct, const bool take_ware
 
     // Anzahl der Waren, die getragen werden wollen, ermitteln
     if(flag)
-        jobs_count = static_cast<noFlag*>(f2)->GetWaresCountForRoad((route.back() + 3u));
+        jobs_count = static_cast<noFlag*>(f2)->GetNumWaresForRoad((route.back() + 3u));
     else
-        jobs_count = static_cast<noFlag*>(f1)->GetWaresCountForRoad(route.front());
+        jobs_count = static_cast<noFlag*>(f1)->GetNumWaresForRoad(route.front());
 
     // Nur eine Ware da --> evtl läuft schon ein anderer Träger/Esel hin, nur wo Esel und Träger da sind
     // Wenn der Träger nun natürlich schon da ist, kann er die mitnehmen

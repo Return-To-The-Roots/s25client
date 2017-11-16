@@ -26,7 +26,7 @@ struct LanGameInfo
     std::string name;
     bool hasPwd;
     std::string map;
-    uint8_t curPlayer, maxPlayer;
+    uint8_t curNumPlayers, maxNumPlayers;
     uint16_t port;
     bool isIPv6;
     std::string version;

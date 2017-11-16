@@ -19,13 +19,13 @@
 #include "nofCarrier.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "Ware.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glSmartBitmap.h"
@@ -232,7 +232,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
 
                 if(!animation)
                 {
-                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? JOB_TYPES_COUNT : 0][GetCurMoveDir().toUInt()][2].draw(
+                    LOADER.bob_jobs_cache[gwg->GetPlayer(player).nation][fat ? NUM_JOB_TYPES : 0][GetCurMoveDir().toUInt()][2].draw(
                       drawPt, COLOR_WHITE, gwg->GetPlayer(player).color);
                 } else
                     // Steht und wartet (ohne Ware)
@@ -248,7 +248,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
                 if(carried_ware)
                     DrawWalkingBobCarrier(drawPt, carried_ware->type, fat);
                 else
-                    DrawWalkingBobJobs(drawPt, fat ? JOB_TYPES_COUNT : 0);
+                    DrawWalkingBobJobs(drawPt, fat ? NUM_JOB_TYPES : 0);
             }
         }
         break;
@@ -793,8 +793,7 @@ bool nofCarrier::AddWareJob(const noRoadNode* rn)
         if(rs_dir == workplace->GetNodeID(*rn) && state == CARRS_WAITFORWARE)
         {
             rs_dir = !rs_dir;
-            // wenn wir zur Mitte laufen, müssen noch 2 von der pos abgezogen werden wegen dem Laufen
-            rs_pos = cur_rs->GetLength() - rs_pos - ((state == CARRS_GOTOMIDDLEOFROAD) ? 2 : 0);
+            rs_pos = cur_rs->GetLength() - rs_pos;
         }
         // beim Gehen in die Mitte nicht sofort umdrehen!
         else if(rs_dir == workplace->GetNodeID(*rn))

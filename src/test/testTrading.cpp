@@ -34,10 +34,10 @@ struct TradeFixture : public WorldWithGCExecution3P
     TradeFixture()
     {
         curPlayer = 1;
-        world.GetPlayer(0).team = TM_TEAM1;
+        world.GetPlayer(0).team = TM_TEAM1; //-V525
         world.GetPlayer(1).team = TM_TEAM1;
         world.GetPlayer(2).team = TM_TEAM2;
-        for(unsigned i = 0; i < world.GetPlayerCount(); i++)
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
         {
             world.GetPlayer(i).MakeStartPacts();
             players[i] = &world.GetPlayer(i);
@@ -47,12 +47,12 @@ struct TradeFixture : public WorldWithGCExecution3P
         curWh = world.GetSpecObj<nobBaseWarehouse>(players[1]->GetHQPos());
         BOOST_REQUIRE(curWh);
         // Get start count and check that we have some
-        numHelpers = curWh->GetRealFiguresCount(JOB_HELPER);
-        numWoodcutters = curWh->GetRealFiguresCount(JOB_WOODCUTTER);
-        numDonkeys = curWh->GetRealFiguresCount(JOB_PACKDONKEY);
-        numBoards = curWh->GetRealWaresCount(GD_BOARDS);
-        numSaws = curWh->GetRealWaresCount(GD_SAW);
-        numSwords = curWh->GetRealWaresCount(GD_SWORD);
+        numHelpers = curWh->GetNumRealFigures(JOB_HELPER);
+        numWoodcutters = curWh->GetNumRealFigures(JOB_WOODCUTTER);
+        numDonkeys = curWh->GetNumRealFigures(JOB_PACKDONKEY);
+        numBoards = curWh->GetNumRealWares(GD_BOARDS);
+        numSaws = curWh->GetNumRealWares(GD_SAW);
+        numSwords = curWh->GetNumRealWares(GD_SWORD);
         BOOST_REQUIRE_GT(numHelpers, 10u);
         BOOST_REQUIRE_GT(numDonkeys, 5u);
         BOOST_REQUIRE_GT(numBoards, 10u);
@@ -65,11 +65,11 @@ struct TradeFixture : public WorldWithGCExecution3P
 
     void testExpectedWares()
     {
-        BOOST_REQUIRE_EQUAL(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
-        BOOST_REQUIRE_EQUAL(curWh->GetRealFiguresCount(JOB_WOODCUTTER), numWoodcutters);
-        BOOST_REQUIRE_EQUAL(curWh->GetRealFiguresCount(JOB_PACKDONKEY), numDonkeys);
-        BOOST_REQUIRE_EQUAL(curWh->GetRealWaresCount(GD_BOARDS), numBoards);
-        BOOST_REQUIRE_EQUAL(curWh->GetRealWaresCount(GD_SAW), numSaws);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(JOB_WOODCUTTER), numWoodcutters);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumRealFigures(JOB_PACKDONKEY), numDonkeys);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumRealWares(GD_BOARDS), numBoards);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumRealWares(GD_SAW), numSaws);
     }
 
     void testAfterLeaving(unsigned numTradeItems)
@@ -78,15 +78,15 @@ struct TradeFixture : public WorldWithGCExecution3P
         RTTR_EXEC_TILL(30 * (numTradeItems + 1), curWh->GetLeavingFigures().size() == 0u);
         // Real count should not be changed
         // But helpers can be produced in the meantime
-        BOOST_REQUIRE_GE(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
-        numHelpers = curWh->GetRealFiguresCount(JOB_HELPER);
+        BOOST_REQUIRE_GE(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
+        numHelpers = curWh->GetNumRealFigures(JOB_HELPER);
         testExpectedWares();
         // Visual count should match real count
-        BOOST_REQUIRE_EQUAL(curWh->GetVisualFiguresCount(JOB_HELPER), numHelpers);
-        BOOST_REQUIRE_EQUAL(curWh->GetVisualFiguresCount(JOB_WOODCUTTER), numWoodcutters);
-        BOOST_REQUIRE_EQUAL(curWh->GetVisualFiguresCount(JOB_PACKDONKEY), numDonkeys);
-        BOOST_REQUIRE_EQUAL(curWh->GetVisualWaresCount(GD_BOARDS), numBoards);
-        BOOST_REQUIRE_EQUAL(curWh->GetVisualWaresCount(GD_SAW), numSaws);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualFigures(JOB_HELPER), numHelpers);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualFigures(JOB_WOODCUTTER), numWoodcutters);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualFigures(JOB_PACKDONKEY), numDonkeys);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualWares(GD_BOARDS), numBoards);
+        BOOST_REQUIRE_EQUAL(curWh->GetNumVisualWares(GD_SAW), numSaws);
     }
 };
 
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     this->ggs.setSelection(AddonId::TRADE, 1);
 
     // Trade self -> Wrong
-    this->TradeOverLand(players[1]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
+    this->TradeOverLand(players[1]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2); //-V525
     testExpectedWares();
     // Trade enemy -> Wrong
     this->TradeOverLand(players[2]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
@@ -145,8 +145,8 @@ BOOST_FIXTURE_TEST_CASE(TradeWares, TradeFixture)
     numDonkeys += 2 * 2;
     numHelpers += 2 * 1;
     // helpers can be produced in the meantime
-    BOOST_REQUIRE_GE(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
-    numHelpers = curWh->GetRealFiguresCount(JOB_HELPER);
+    BOOST_REQUIRE_GE(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
+    numHelpers = curWh->GetNumRealFigures(JOB_HELPER);
     testExpectedWares();
 }
 
@@ -186,8 +186,8 @@ BOOST_FIXTURE_TEST_CASE(TradeFigures, TradeFixture)
     numWoodcutters += 2 * 2;
     numHelpers += 2 * 1;
     // helpers can be produced in the meantime
-    BOOST_REQUIRE_GE(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
-    numHelpers = curWh->GetRealFiguresCount(JOB_HELPER);
+    BOOST_REQUIRE_GE(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
+    numHelpers = curWh->GetNumRealFigures(JOB_HELPER);
     testExpectedWares();
 }
 
@@ -263,8 +263,8 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     numHelpers += 1 + 1;
     numWoodcutters += 2;
     // helpers can be produced in the meantime
-    BOOST_REQUIRE_GE(curWh->GetRealFiguresCount(JOB_HELPER), numHelpers);
-    numHelpers = curWh->GetRealFiguresCount(JOB_HELPER);
+    BOOST_REQUIRE_GE(curWh->GetNumRealFigures(JOB_HELPER), numHelpers);
+    numHelpers = curWh->GetNumRealFigures(JOB_HELPER);
     testExpectedWares();
 }
 

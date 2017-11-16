@@ -20,9 +20,7 @@
 #include "AIConstruction.h"
 #include "BuildingPlanner.h"
 #include "FindWhConditions.h"
-#include "GameMessages.h"
 #include "GamePlayer.h"
-#include "GameServer.h"
 #include "Jobs.h"
 #include "addons/const_addons.h"
 #include "ai/AIEvents.h"
@@ -33,6 +31,8 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "helpers/containerUtils.h"
+#include "network/GameMessages.h"
+#include "network/GameServer.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/NodeNote.h"
@@ -260,7 +260,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
                                                  BLD_COALMINE,       BLD_GRANITEMINE,    BLD_HUNTER,     BLD_CHARBURNER,   BLD_IRONSMELTER,
                                                  BLD_MINT,           BLD_ARMORY,         BLD_METALWORKS, BLD_BREWERY,      BLD_MILL,
                                                  BLD_PIGFARM,        BLD_SLAUGHTERHOUSE, BLD_BAKERY,     BLD_DONKEYBREEDER}};
-    const unsigned resGatherBldCount = 14; /* The first n buildings in the above list, that gather resources */
+    const unsigned numResGatherBlds = 14; /* The first n buildings in the above list, that gather resources */
 
     // LOG.write(("new buildorders %i whs and %i mil for player %i
     // \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
@@ -307,7 +307,7 @@ void AIPlayerJH::PlanNewBuildings(const unsigned gf)
     MapPoint bldPos = (*it2)->GetPos();
     UpdateNodesAround(bldPos, 15);
     // resource gathering buildings only around military; processing only close to warehouses
-    for(unsigned i = 0; i < resGatherBldCount; i++)
+    for(unsigned i = 0; i < numResGatherBlds; i++)
     {
         if(construction->Wanted(bldToTest[i]))
         {
@@ -885,7 +885,7 @@ void AIPlayerJH::DistributeGoodsByBlocking(const GoodType good, unsigned limit)
         bool allWHsHaveLimit = true;
         BOOST_FOREACH(const nobBaseWarehouse* wh, whGroup)
         {
-            if(wh->GetVisualWaresCount(good) <= limit)
+            if(wh->GetNumVisualWares(good) <= limit)
             {
                 allWHsHaveLimit = false;
                 break;
@@ -904,7 +904,7 @@ void AIPlayerJH::DistributeGoodsByBlocking(const GoodType good, unsigned limit)
             // At least 1 WH needs wares
             BOOST_FOREACH(const nobBaseWarehouse* wh, whGroup)
             {
-                if(wh->GetVisualWaresCount(good) <= limit) // not at limit - unblock it
+                if(wh->GetNumVisualWares(good) <= limit) // not at limit - unblock it
                 {
                     if(wh->IsInventorySetting(good, EInventorySetting::STOP)) // not unblocked then issue command to unblock
                         aii.SetInventorySetting(wh->GetPos(), good, wh->GetInventorySetting(good).Toggle(EInventorySetting::STOP));
@@ -1067,13 +1067,13 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         case BLD_HUNTER:
         {
             // check if there are any animals in range
-            if(HuntablesinRange(around, (2 << GetBldPlanner().GetBuildingCount(BLD_HUNTER))))
+            if(HuntablesinRange(around, (2 << GetBldPlanner().GetNumBuildings(BLD_HUNTER))))
                 foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
             break;
         }
         case BLD_QUARRY:
         {
-            unsigned numQuarries = GetBldPlanner().GetBuildingCount(BLD_QUARRY);
+            unsigned numQuarries = GetBldPlanner().GetNumBuildings(BLD_QUARRY);
             foundPos = FindBestPosition(around, AIResource::STONES, BUILDING_SIZE[type], std::min(40u, 1 + numQuarries * 10), 11);
             if(foundPos.isValid() && !ValidStoneinRange(foundPos))
             {
@@ -1222,16 +1222,16 @@ void AIPlayerJH::HandleBuilingDestroyed(MapPoint pt, BuildingType bld)
         case BLD_HARBORBUILDING:
         {
             // destroy all other buildings around the harborspot in range 2 so we can rebuild the harbor ...
-            BOOST_FOREACH(const MapPoint pt, gwb.GetPointsInRadius(pt, 2))
+            BOOST_FOREACH(const MapPoint curPt, gwb.GetPointsInRadius(pt, 2))
             {
-                const noBaseBuilding* const bb = gwb.GetSpecObj<noBaseBuilding>(pt);
+                const noBaseBuilding* const bb = gwb.GetSpecObj<noBaseBuilding>(curPt);
                 if(bb)
-                    aii.DestroyBuilding(pt);
+                    aii.DestroyBuilding(curPt);
                 else
                 {
-                    const noBuildingSite* const bs = gwb.GetSpecObj<noBuildingSite>(pt);
+                    const noBuildingSite* const bs = gwb.GetSpecObj<noBuildingSite>(curPt);
                     if(bs)
-                        aii.DestroyFlag(gwb.GetNeighbour(pt, Direction::SOUTHEAST));
+                        aii.DestroyFlag(gwb.GetNeighbour(curPt, Direction::SOUTHEAST));
                 }
             }
             break;
@@ -1438,15 +1438,15 @@ void AIPlayerJH::HandleShipBuilt(const MapPoint pt)
     // Stop building ships if reached a maximum (TODO: make variable)
     const std::list<nobUsual*>& shipyards = aii.GetBuildings(BLD_SHIPYARD);
     bool wantMoreShips;
-    unsigned numRelevantSeas = GetCountofAIRelevantSeaIds();
+    unsigned numRelevantSeas = GetNumAIRelevantSeaIds();
     if(numRelevantSeas == 0)
         wantMoreShips = false;
     else if(numRelevantSeas == 1)
-        wantMoreShips = aii.GetShipCount() <= gwb.GetHarborPointCount();
+        wantMoreShips = aii.GetNumShips() <= gwb.GetNumHarborPoints();
     else
     {
         unsigned wantedShipCt = std::min<unsigned>(7, 3 * shipyards.size());
-        wantMoreShips = aii.GetShipCount() < wantedShipCt;
+        wantMoreShips = aii.GetNumShips() < wantedShipCt;
     }
     if(!wantMoreShips)
     {
@@ -1514,7 +1514,7 @@ void AIPlayerJH::MilUpgradeOptim()
                    && (((unsigned)count + GetNumPlannedConnectedInlandMilitaryBlds())
                        < militaryBuildings.size())) // send out troops until 1 private is left, then cancel road
                 {
-                    if(milBld->GetTroopsCount() > 1) // more than 1 soldier remaining? -> send out order
+                    if(milBld->GetNumTroops() > 1) // more than 1 soldier remaining? -> send out order
                     {
                         aii.SendSoldiersHome(milBld->GetPos());
                     } else if(!milBld
@@ -1547,8 +1547,8 @@ void AIPlayerJH::MilUpgradeOptim()
             }
             if(milBld->HasMaxRankSoldier()) // has max rank soldier? send it/them out!
                 aii.SendSoldiersHome(milBld->GetPos());
-            if(SoldierAvailable(0) && milBld->GetTroopsCount() < milBld->GetMaxTroopsCt()) // building not full and privates in a warehouse?
-                aii.OrderNewSoldiers(milBld->GetPos());                                    // order new!
+            if(SoldierAvailable(0) && milBld->GetNumTroops() < milBld->GetMaxTroopsCt()) // building not full and privates in a warehouse?
+                aii.OrderNewSoldiers(milBld->GetPos());                                  // order new!
         }
         count++;
     }
@@ -1575,11 +1575,9 @@ void AIPlayerJH::CheckExpeditions()
     const std::list<nobHarborBuilding*>& harbors = aii.GetHarbors();
     BOOST_FOREACH(const nobHarborBuilding* harbor, harbors)
     {
-        if((harbor->IsExpeditionActive() && !HarborPosRelevant(harbor->GetHarborPosID(), true))
-           || (!harbor->IsExpeditionActive()
-               && HarborPosRelevant(
-                    harbor->GetHarborPosID(),
-                    true))) // harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
+        if(harbor->IsExpeditionActive()
+           != HarborPosRelevant(harbor->GetHarborPosID(),
+                                true)) // harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
         {
             aii.StartExpedition(harbor->GetPos()); // command is more of a toggle despite it's name
         }
@@ -1698,7 +1696,7 @@ void AIPlayerJH::TryToAttack()
         if((level == AI::HARD) && (target->GetGOT() == GOT_NOB_MILITARY))
         {
             const nobMilitary* enemyTarget = static_cast<const nobMilitary*>(target);
-            if(attackersStrength <= enemyTarget->GetSoldiersStrength() || enemyTarget->GetTroopsCount() == 0)
+            if(attackersStrength <= enemyTarget->GetSoldiersStrength() || enemyTarget->GetNumTroops() == 0)
                 continue;
         }
 
@@ -1709,7 +1707,7 @@ void AIPlayerJH::TryToAttack()
 
 void AIPlayerJH::TrySeaAttack()
 {
-    if(aii.GetShipCount() < 1)
+    if(aii.GetNumShips() < 1)
         return;
     if(aii.GetHarbors().empty())
         return;
@@ -1744,7 +1742,7 @@ void AIPlayerJH::TrySeaAttack()
             LOG.write(("attackers at sea ids for player %i, sea id %i, count %i \n",playerId, seaidswithattackers[i], attackersatseaid[i]);
     }*/
     // first check all harbors there might be some undefended ones - start at 1 to skip the harbor dummy
-    for(unsigned i = 1; i < gwb.GetHarborPointCount(); i++)
+    for(unsigned i = 1; i < gwb.GetNumHarborPoints(); i++)
     {
         const nobHarborBuilding* hb;
         if((hb = gwb.GetSpecObj<nobHarborBuilding>(gwb.GetHarborPoint(i))))
@@ -1989,7 +1987,7 @@ void AIPlayerJH::CheckForUnconnectedBuildingSites()
 {
     if(construction->GetConnectJobNum() > 0 || construction->GetBuildJobNum() > 0)
         return;
-    BOOST_FOREACH(noBuildingSite* bldSite, player.GetBuildingRegister().GetBuildingSites())
+    BOOST_FOREACH(noBuildingSite* bldSite, player.GetBuildingRegister().GetBuildingSites()) //-V807
     {
         noFlag* flag = bldSite->GetFlag();
         bool foundRoute = false;
@@ -2321,7 +2319,7 @@ bool AIPlayerJH::BuildingNearby(const MapPoint pt, BuildingType bldType, unsigne
 bool AIPlayerJH::HarborPosClose(const MapPoint pt, unsigned range, bool onlyempty) const
 {
     // skip harbordummy
-    for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
+    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
     {
         if(gwb.CalcDistance(pt, gwb.GetHarborPoint(i)) < range
            && HarborPosRelevant(i)) // in range and valid for ai - as in actually at a sea with more than 1 harbor spot
@@ -2382,7 +2380,7 @@ unsigned AIPlayerJH::BQsurroundcheck(const MapPoint pt, unsigned range, bool inc
 
 bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
 {
-    if(harborid < 1 || harborid > gwb.GetHarborPointCount()) // not a real harbor - shouldnt happen...
+    if(harborid < 1 || harborid > gwb.GetNumHarborPoints()) // not a real harbor - shouldnt happen...
     {
         RTTR_Assert(false);
         return false;
@@ -2394,7 +2392,7 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
         if(!seaId)
             continue;
 
-        for(unsigned curHarborId = 1; curHarborId <= gwb.GetHarborPointCount(); curHarborId++) // start at 1 harbor dummy yadayada :>
+        for(unsigned curHarborId = 1; curHarborId <= gwb.GetNumHarborPoints(); curHarborId++) // start at 1 harbor dummy yadayada :>
         {
             if(curHarborId != harborid && gwb.IsHarborAtSea(curHarborId, seaId))
             {
@@ -2412,7 +2410,7 @@ bool AIPlayerJH::HarborPosRelevant(unsigned harborid, bool onlyempty) const
 
 bool AIPlayerJH::NoEnemyHarbor()
 {
-    for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
+    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
     {
         if(aii.IsBuildingOnNode(gwb.GetHarborPoint(i), BLD_HARBORBUILDING) && !aii.IsOwnTerritory(gwb.GetHarborPoint(i)))
         {
@@ -2470,11 +2468,11 @@ bool AIPlayerJH::ValidFishInRange(const MapPoint pt)
     return false;
 }
 
-unsigned AIPlayerJH::GetCountofAIRelevantSeaIds() const
+unsigned AIPlayerJH::GetNumAIRelevantSeaIds() const
 {
     std::list<unsigned short> validseaids;
     std::list<unsigned short> onetimeuseseaids;
-    for(unsigned i = 1; i <= gwb.GetHarborPointCount(); i++)
+    for(unsigned i = 1; i <= gwb.GetNumHarborPoints(); i++)
     {
         for(unsigned r = 0; r < 6; r++)
         {
@@ -2511,14 +2509,13 @@ void AIPlayerJH::AdjustSettings()
     toolsettings[4] = (inventory.goods[GD_HAMMER] < 1) ? 1 : 0;
     // Crucible
     toolsettings[6] =
-      (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < bldPlanner->GetBuildingCount(BLD_IRONSMELTER) + 1) ? 1 : 0;
+      (inventory.goods[GD_CRUCIBLE] + inventory.people[JOB_IRONFOUNDER] < bldPlanner->GetNumBuildings(BLD_IRONSMELTER) + 1) ? 1 : 0;
     // Scythe
     toolsettings[8] =
       (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SCYTHE] < 1)) ? 1 :
                                                                                                                                        0;
     // Rollingpin
-    toolsettings[10] =
-      (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < bldPlanner->GetBuildingCount(BLD_BAKERY) + 1) ? 1 : 0;
+    toolsettings[10] = (inventory.goods[GD_ROLLINGPIN] + inventory.people[JOB_BAKER] < bldPlanner->GetNumBuildings(BLD_BAKERY) + 1) ? 1 : 0;
     // Shovel
     toolsettings[5] =
       (toolsettings[4] < 1 && toolsettings[3] < 1 && toolsettings[6] < 1 && toolsettings[2] < 1 && (inventory.goods[GD_SHOVEL] < 1)) ? 1 :
@@ -2533,7 +2530,7 @@ void AIPlayerJH::AdjustSettings()
       0; //(toolsettings[4]<1&&toolsettings[3]<1&&toolsettings[6]<1&&toolsettings[2]<1&&(aii.GetInventory().goods[GD_TONGS]<1))?1:0;
     // cleaver
     toolsettings[9] =
-      0; //(aii.GetInventory().goods[GD_CLEAVER]+aii.GetInventory().people[JOB_BUTCHER]<construction->GetBuildingCount(BLD_SLAUGHTERHOUSE)+1)?1:0;
+      0; //(aii.GetInventory().goods[GD_CLEAVER]+aii.GetInventory().people[JOB_BUTCHER]<construction->GetNumBuildings(BLD_SLAUGHTERHOUSE)+1)?1:0;
     // rod & line
     toolsettings[7] = 0;
     // bow
@@ -2571,9 +2568,9 @@ unsigned AIPlayerJH::CalcMilSettings()
 {
     unsigned InlandTroops[5] = {0, 0, 0, 0, 0}; // how many troops are required to fill inland buildings at settings 4,5,6,7,8
     /// first sum up all soldiers we have
-    unsigned soldierCount = 0;
+    unsigned numSoldiers = 0;
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
-        soldierCount += aii.GetInventory().people[SOLDIER_JOBS[i]];
+        numSoldiers += aii.GetInventory().people[SOLDIER_JOBS[i]];
 
     // now add up all counts of soldiers that are fixed in use and those that depend on whatever we have as a result
     const unsigned numShouldStayConnected = GetNumPlannedConnectedInlandMilitaryBlds();
@@ -2587,11 +2584,11 @@ unsigned AIPlayerJH::CalcMilSettings()
            || (milBld->GetFrontierDistance() == 0
                && (militaryBuildings.size() < (unsigned)count + numShouldStayConnected || count == uun))) // front or connected interior
         {
-            soldierInUseFixed += milBld->CalcRequiredTroopsCount(1, 8);
+            soldierInUseFixed += milBld->CalcRequiredNumTroops(1, 8);
         } else if(milBld->GetFrontierDistance() == 1) // 1 bar (inland)
         {
             for(int i = 0; i < 5; i++)
-                InlandTroops[i] += milBld->CalcRequiredTroopsCount(1, 4 + i);
+                InlandTroops[i] += milBld->CalcRequiredNumTroops(1, 4 + i);
         } else // setting should be 0 so add 1 soldier
             soldierInUseFixed++;
 
@@ -2604,8 +2601,8 @@ unsigned AIPlayerJH::CalcMilSettings()
     {
         // have more than enough soldiers for this setting or just enough and this is the current setting? -> return it else try the next
         // lower setting down to 4 (50%)
-        if(soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount * 10 / 11
-           || (player.GetMilitarySetting(5) >= returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < soldierCount))
+        if(soldierInUseFixed + InlandTroops[returnValue - 4] < numSoldiers * 10 / 11
+           || (player.GetMilitarySetting(5) >= returnValue && soldierInUseFixed + InlandTroops[returnValue - 4] < numSoldiers))
             break;
         returnValue--;
     }

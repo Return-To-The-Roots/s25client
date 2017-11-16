@@ -33,9 +33,9 @@ const unsigned char INVALID_DIR = 0xFF;
 const unsigned SUPPRESS_UNUSED NO_MAX_LEN = std::numeric_limits<unsigned>::max();
 
 /// Number of "classical" objectives in a friendly match
-const unsigned OBJECTIVES_COUNT = 3;
+const unsigned NUM_OBJECTIVESS = 3;
 /// tournament modes
-const unsigned TOURNAMENT_MODES_COUNT = 5;
-const boost::array<unsigned, TOURNAMENT_MODES_COUNT> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {{30, 60, 90, 120, 240}};
+const unsigned NUM_TOURNAMENT_MODESS = 5;
+const boost::array<unsigned, NUM_TOURNAMENT_MODESS> SUPPRESS_UNUSED TOURNAMENT_MODES_DURATION = {{30, 60, 90, 120, 240}};
 
 #endif

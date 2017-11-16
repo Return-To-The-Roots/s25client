@@ -19,18 +19,18 @@
 #include "noFire.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldGame.h"
 
-noFire::noFire(const MapPoint pos, const unsigned char size)
-    : noCoordBase(NOP_FIRE, pos), size(size), was_sounding(false), last_sound(0), next_interval(0)
+noFire::noFire(const MapPoint pos, bool isBig)
+    : noCoordBase(NOP_FIRE, pos), isBig(isBig), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Bestimmte Zeit lang brennen
     const unsigned FIREDURATION[] = {3700, 2775, 1850, 925, 370, 5550, 7400};
@@ -58,13 +58,12 @@ void noFire::Serialize_noFire(SerializedGameData& sgd) const
 {
     Serialize_noCoordBase(sgd);
 
-    sgd.PushUnsignedChar(size);
+    sgd.PushBool(isBig);
     sgd.PushEvent(dead_event);
 }
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), size(sgd.PopUnsignedChar()), dead_event(sgd.PopEvent()), was_sounding(false), last_sound(0),
-      next_interval(0)
+    : noCoordBase(sgd, obj_id), isBig(sgd.PopBool()), dead_event(sgd.PopEvent()), was_sounding(false), last_sound(0), next_interval(0)
 {}
 
 void noFire::Draw(DrawPoint drawPt)
@@ -76,8 +75,8 @@ void noFire::Draw(DrawPoint drawPt)
     if(id < FIREANIMATIONDURATION[gwg->GetGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)
     {
         // Loderndes Feuer
-        LOADER.GetMapImageN(2500 + size * 8 + id % 8)->DrawFull(drawPt);
-        LOADER.GetMapImageN(2530 + size * 8 + id % 8)->DrawFull(drawPt, 0xC0101010);
+        LOADER.GetMapImageN(2500 + (isBig ? 8 : 0) + id % 8)->DrawFull(drawPt);
+        LOADER.GetMapImageN(2530 + (isBig ? 8 : 0) + id % 8)->DrawFull(drawPt, 0xC0101010);
 
         // Feuersound abspielen in zufälligen Intervallen
         if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
@@ -91,7 +90,7 @@ void noFire::Draw(DrawPoint drawPt)
     } else
     {
         // Schutt
-        LOADER.GetMapImageN(2524 + size)->DrawFull(drawPt);
+        LOADER.GetMapImageN(2524 + (isBig ? 1 : 0))->DrawFull(drawPt);
     }
 }
 

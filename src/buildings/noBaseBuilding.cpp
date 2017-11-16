@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "noBaseBuilding.h"
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -25,6 +24,7 @@
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "addons/const_addons.h"
+#include "network/GameClient.h"
 #include "nobBaseWarehouse.h"
 #include "notifications/BuildingNote.h"
 #include "world/GameWorldGame.h"
@@ -253,12 +253,12 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
     return GetBuildingImage(bldType_, nation, gwg->GetLandscapeType());
 }
 
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation)
+glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
 {
     return GetBuildingImage(type, nation, LandscapeType(LOADER.GetLastGFX()));
 }
 
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt)
+glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt) //-V688
 {
     if(type == BLD_CHARBURNER)
         return LOADER.GetImageN("charburner", nation * 8 + ((lt == LT_WINTERWORLD) ? 6 : 1));

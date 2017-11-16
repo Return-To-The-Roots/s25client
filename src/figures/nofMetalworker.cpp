@@ -19,7 +19,6 @@
 #include "nofMetalworker.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -28,6 +27,7 @@
 #include "SoundManager.h"
 #include "addons/const_addons.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
 #include "notifications/ToolNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -77,7 +77,7 @@ void nofMetalworker::Serialize(SerializedGameData& sgd) const
 
 void nofMetalworker::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = {{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}};
+    const DrawPointInit offsets[NUM_NATS] = {{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}};
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
@@ -105,11 +105,11 @@ void nofMetalworker::DrawWorking(DrawPoint drawPt)
 }
 
 // Zuordnungnen Richtige IDs - Trage-IDs in der JOBS.BOB
-const unsigned short CARRYTOOLS_IDS[TOOL_COUNT] = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90};
+const unsigned short CARRYTOOLS_IDS[NUM_TOOLS] = {78, 79, 80, 91, 81, 82, 83, 84, 85, 87, 88, 90};
 
 unsigned short nofMetalworker::GetCarryID() const
 {
-    for(unsigned i = 0; i < TOOL_COUNT; i++)
+    for(unsigned i = 0; i < NUM_TOOLS; i++)
         if(TOOLS[i] == ware)
             return CARRYTOOLS_IDS[i];
     return 0;
@@ -118,7 +118,7 @@ unsigned short nofMetalworker::GetCarryID() const
 bool nofMetalworker::HasToolOrder() const
 {
     const GamePlayer& owner = gwg->GetPlayer(player);
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         if(owner.GetToolsOrdered(i) > 0u)
             return true;
@@ -138,7 +138,7 @@ bool nofMetalworker::AreWaresAvailable() const
         return true;
     // Any non-zero priority?
     const GamePlayer& owner = gwg->GetPlayer(player);
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         if(owner.GetToolPriority(i) > 0u)
             return true;
@@ -169,7 +169,7 @@ GoodType nofMetalworker::GetOrderedTool()
     int tool = -1;
 
     GamePlayer& owner = gwg->GetPlayer(player);
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         if(owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > maxPrio)
         {
@@ -199,7 +199,7 @@ GoodType nofMetalworker::GetRandomTool()
     // desto höher jeweils die Wahrscheinlichkeit
     unsigned short all_size = 0;
 
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
         all_size += owner.GetToolPriority(i);
 
     // if they're all zero
@@ -217,7 +217,7 @@ GoodType nofMetalworker::GetRandomTool()
     std::vector<unsigned char> random_array(all_size);
     unsigned curIdx = 0;
 
-    for(unsigned i = 0; i < TOOL_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
         for(unsigned g = 0; g < owner.GetToolPriority(i); ++g)
             random_array[curIdx++] = i;

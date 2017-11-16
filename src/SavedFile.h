@@ -63,7 +63,7 @@ public:
     void ReadGGS(BinaryFile& file);
 
     const BasePlayerInfo& GetPlayer(unsigned idx) const;
-    unsigned GetPlayerCount();
+    unsigned GetNumPlayers();
     void AddPlayer(const BasePlayerInfo& player);
     void ClearPlayers();
 

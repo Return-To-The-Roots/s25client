@@ -54,7 +54,7 @@ private:
     std::vector<TRNode> nodes;
 
     /// Check whether the point is part of the polygon
-    static bool IsPointInPolygon(const std::vector<Point<int> >& polygon, const Point<int> pt);
+    static bool IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
     void AdjustNode(MapPoint pt, unsigned char player, unsigned char radius, const std::vector<MapPoint>* allowedArea);
     TRNode& GetNode(const PointI& pt) { return nodes[GetIdx(pt)]; }
@@ -66,7 +66,7 @@ public:
     TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
-    static bool IsPointValid(const GameWorldBase& gwb, const std::vector<MapPoint>& polygon, const MapPoint pt);
+    static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt);
 
     /// Berechnet ein Militärgebäude mit ein
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);

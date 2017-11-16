@@ -452,7 +452,8 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint
  */
 void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool illuminated, bool drawContent, unsigned color)
 {
-    if(rect.getSize().x < 4 || rect.getSize().y < 4 || tc == TC_INVISIBLE)
+    const Extent rectSize = rect.getSize();
+    if(rectSize.x < 4 || rectSize.y < 4 || tc == TC_INVISIBLE)
         return;
 
     DrawPoint origin = rect.getOrigin();
@@ -464,20 +465,20 @@ void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool
     {
         // For deepened effect the img border is at bottom and right
         // else it stays top and left
-        horImgBorderPos += DrawPoint(0, rect.getSize().y - 2);
-        vertImgBorderPos += DrawPoint(rect.getSize().x - 2, 0);
+        horImgBorderPos += DrawPoint(0, rectSize.y - 2);
+        vertImgBorderPos += DrawPoint(rectSize.x - 2, 0);
     }
     // Draw img borders
     glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + tc);
-    borderImg->DrawPart(Rect(horImgBorderPos, Extent(rect.getSize().x, 2)));
-    borderImg->DrawPart(Rect(vertImgBorderPos, Extent(2, rect.getSize().y)));
+    borderImg->DrawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
+    borderImg->DrawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
 
     // Draw black borders over the img borders
     glDisable(GL_TEXTURE_2D);
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_TRIANGLE_STRIP);
     // Left lower point
-    DrawPoint lbPt = rect.getOrigin() + DrawPoint(rect.getSize());
+    DrawPoint lbPt = rect.getOrigin() + DrawPoint(rectSize);
     if(type <= 1)
     {
         // Bottom line with edge in left top and right line with little edge on left top
@@ -511,7 +512,7 @@ void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool
     }
 
     DrawPoint contentPos = origin + DrawPoint(2, 2);
-    Extent contentSize(rect.getSize() - Extent(4, 4));
+    Extent contentSize(rectSize - Extent(4, 4));
     DrawPoint contentOffset(0, 0);
     if(type <= 1)
     {

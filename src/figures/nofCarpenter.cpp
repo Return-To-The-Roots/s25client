@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofCarpenter.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
@@ -33,7 +33,7 @@ nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nof
 
 void nofCarpenter::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = {{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}};
+    static const DrawPointInit offsets[NUM_NATS] = {{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}};
 
     unsigned now_id;
 

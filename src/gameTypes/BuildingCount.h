@@ -24,8 +24,8 @@
 /// Number of buildings and building sites per type
 struct BuildingCount
 {
-    boost::array<unsigned, BUILDING_TYPES_COUNT> buildings;
-    boost::array<unsigned, BUILDING_TYPES_COUNT> buildingSites;
+    boost::array<unsigned, NUM_BUILDING_TYPES> buildings;
+    boost::array<unsigned, NUM_BUILDING_TYPES> buildingSites;
 };
 
 #endif // BuildingCount_h__

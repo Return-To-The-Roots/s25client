@@ -294,21 +294,21 @@ void EventJob::ExecuteJob() // for now it is assumed that all these will be fini
     {
         case AIEvent::BuildingConquered:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleNewMilitaryBuilingOccupied(evb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingLost:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleMilitaryBuilingLost(evb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::LostLand:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleLostLand(evb->GetPos());
             status = JOB_FINISHED;
         }
@@ -316,77 +316,77 @@ void EventJob::ExecuteJob() // for now it is assumed that all these will be fini
         case AIEvent::BuildingDestroyed:
         {
             // todo maybe do sth about it?
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleBuilingDestroyed(evb->GetPos(), evb->GetBuildingType());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::NoMoreResourcesReachable:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleNoMoreResourcesReachable(evb->GetPos(), evb->GetBuildingType());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::BorderChanged:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleBorderChanged(evb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::BuildingFinished:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.HandleBuildingFinished(evb->GetPos(), evb->GetBuildingType());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::ExpeditionWaiting:
         {
-            AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
+            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleExpedition(lvb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::TreeChopped:
         {
-            AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
+            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleTreeChopped(lvb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::NewColonyFounded:
         {
-            AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
+            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleNewColonyFounded(lvb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::ShipBuilt:
         {
-            AIEvent::Location* lvb = dynamic_cast<AIEvent::Location*>(ev);
+            AIEvent::Location* lvb = checkedCast<AIEvent::Location*>(ev);
             aijh.HandleShipBuilt(lvb->GetPos());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionComplete:
         {
-            AIEvent::Direction* dvb = dynamic_cast<AIEvent::Direction*>(ev);
+            AIEvent::Direction* dvb = checkedCast<AIEvent::Direction*>(ev);
             aijh.HandleRoadConstructionComplete(dvb->GetPos(), dvb->GetDirection());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::RoadConstructionFailed:
         {
-            AIEvent::Direction* dvb = dynamic_cast<AIEvent::Direction*>(ev);
+            AIEvent::Direction* dvb = checkedCast<AIEvent::Direction*>(ev);
             aijh.HandleRoadConstructionFailed(dvb->GetPos(), dvb->GetDirection());
             status = JOB_FINISHED;
         }
         break;
         case AIEvent::LuaConstructionOrder:
         {
-            AIEvent::Building* evb = dynamic_cast<AIEvent::Building*>(ev);
+            AIEvent::Building* evb = checkedCast<AIEvent::Building*>(ev);
             aijh.ExecuteLuaConstructionOrder(evb->GetPos(), evb->GetBuildingType(), true);
             status = JOB_FINISHED;
         }

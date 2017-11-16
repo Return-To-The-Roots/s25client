@@ -22,8 +22,8 @@
 #include "Desktop.h"
 #include "mapGenerator/MapSettings.h"
 
-#include "ClientInterface.h"
 #include "ingameWindows/iwDirectIPCreate.h"
+#include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
 #include <string>
 #include <vector>
@@ -70,7 +70,7 @@ private:
      */
     void CreateRandomMap();
 
-    void OnMapCreated(std::string mapPath);
+    void OnMapCreated(const std::string& mapPath);
 
     CreateServerInfo csi;
     MapSettings rndMapSettings;

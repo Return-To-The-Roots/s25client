@@ -47,8 +47,8 @@ public:
     void SortRows(int column, bool* direction = NULL);
     int GetSortColumn() const { return sort_column; }
     bool GetSortDirection() const { return sort_direction; }
-    unsigned short GetRowCount() const { return static_cast<unsigned short>(rows.size()); }
-    unsigned short GetColumnCount() const { return static_cast<unsigned short>(columns.size()); }
+    unsigned short GetNumRows() const { return static_cast<unsigned short>(rows.size()); }
+    unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns.size()); }
     int GetSelection() const { return selection_; }
     void SetSelection(int selection);
 

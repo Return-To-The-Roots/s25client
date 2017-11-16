@@ -243,7 +243,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         {
             unsigned short selection = GetCtrl<ctrlList>(0)->GetSelection();
 
-            if(selection < GetCtrl<ctrlList>(0)->GetLineCount() - 1 && selection != 0xFFFF)
+            if(selection < GetCtrl<ctrlList>(0)->GetNumLines() - 1 && selection != 0xFFFF)
                 GetCtrl<ctrlList>(0)->Swap(selection + 1, selection);
         }
         break;
@@ -393,7 +393,7 @@ void iwMusicPlayer::SetCurrentSong(const unsigned selection)
 std::vector<std::string> iwMusicPlayer::GetSegments() const
 {
     std::vector<std::string> segments;
-    for(unsigned i = 0; i < GetCtrl<ctrlList>(0)->GetLineCount(); ++i)
+    for(unsigned i = 0; i < GetCtrl<ctrlList>(0)->GetNumLines(); ++i)
         segments.push_back(GetCtrl<ctrlList>(0)->GetItemText(i));
     return segments;
 }

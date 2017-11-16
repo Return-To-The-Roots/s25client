@@ -33,7 +33,7 @@
 #include <vector>
 
 /// Klasse für GL-Fontfiles.
-class glArchivItem_Font : public libsiedler2::ArchivItem_Font
+class glArchivItem_Font : public libsiedler2::ArchivItem_Font //-V690
 {
 public:
     glArchivItem_Font();

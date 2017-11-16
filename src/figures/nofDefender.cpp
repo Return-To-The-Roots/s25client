@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofDefender.h"
 
-#include "GameClient.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "addons/const_addons.h"
 #include "buildings/nobMilitary.h"
+#include "network/GameClient.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
 #include "random/Random.h"
@@ -200,7 +200,7 @@ void nofDefender::LostFighting()
         {
             // Wenn ich nicht der lezte Soldat da drinnen war, dann können noch neue kommen..
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(building));
-            if(static_cast<nobMilitary*>(building)->GetTroopsCount())
+            if(static_cast<nobMilitary*>(building)->GetNumTroops())
                 static_cast<nobMilitary*>(building)->RegulateTroops();
         }
         building = NULL;

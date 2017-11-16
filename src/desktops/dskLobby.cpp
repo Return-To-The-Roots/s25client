@@ -16,7 +16,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskLobby.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "RTTR_Version.h"
 #include "Settings.h"
@@ -32,6 +31,7 @@
 #include "ingameWindows/iwLobbyRanking.h"
 #include "ingameWindows/iwLobbyServerInfo.h"
 #include "ingameWindows/iwMsgbox.h"
+#include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
@@ -130,7 +130,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 6: // GameServer hinzufügen
         {
-            if(SETTINGS.proxy.typ != 0)
+            if(SETTINGS.proxy.type != PROXY_NONE)
                 WINDOWMANAGER.Show(new iwMsgbox(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));
@@ -311,7 +311,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 void dskLobby::LC_ServerList(const LobbyServerList& servers)
 {
     ctrlTable* servertable = GetCtrl<ctrlTable>(10);
-    bool first = servertable->GetRowCount() == 0;
+    bool first = servertable->GetNumRows() == 0;
 
     unsigned selection = servertable->GetSelection();
     if(selection == 0xFFFF)
@@ -352,9 +352,9 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
 void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
 {
     ctrlTable* playertable = GetCtrl<ctrlTable>(11);
-    bool first = playertable->GetRowCount() == 0;
+    bool first = playertable->GetNumRows() == 0;
 
-    if((playertable->GetRowCount() > 0) && (playertable->GetRowCount() < players.getCount()))
+    if((playertable->GetNumRows() > 0) && (playertable->GetNumRows() < players.size()))
     {
         LOADER.GetSoundN("sound", 114)->Play(255, false);
     }

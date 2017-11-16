@@ -36,7 +36,7 @@ bool RTTR_IsBreakOnAssertFailureEnabled()
         if(envVarVal == "1" || envVarVal == "yes")
             assertBreakDisabled = true;
     } catch(...)
-    {
+    { //-V565
     }
     return !assertBreakDisabled && RTTR_AssertEnableBreak;
 }

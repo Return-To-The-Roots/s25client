@@ -29,11 +29,6 @@ struct AreaDesc
 {
     /**
      * Creates a new area description.
-     */
-    AreaDesc();
-
-    /**
-     * Creates a new area description.
      * @param center center of the area (unit: 0.0 and 1.0 is the edge of the map)
      * @param minDist minimum distance to the area center (unit: 1.0 equals length of the map)
      * @param maxDist maximum distance to the area center (unit: 1.0 equals length of the map)

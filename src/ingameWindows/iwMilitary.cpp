@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMilitary.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -25,6 +24,7 @@
 #include "addons/const_addons.h"
 #include "controls/ctrlProgress.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/SettingTypeConv.h"
@@ -84,10 +84,11 @@ void iwMilitary::TransmitSettings()
     if(settings_changed)
     {
         // Einstellungen speichern
-        for(unsigned char i = 0; i < GAMECLIENT.visual_settings.military_settings.size(); ++i)
-            GAMECLIENT.visual_settings.military_settings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
+        MilitarySettings& milSettings = GAMECLIENT.visual_settings.military_settings;
+        for(unsigned char i = 0; i < milSettings.size(); ++i)
+            milSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
 
-        gcFactory.ChangeMilitary(GAMECLIENT.visual_settings.military_settings);
+        gcFactory.ChangeMilitary(milSettings);
         settings_changed = false;
     }
 }

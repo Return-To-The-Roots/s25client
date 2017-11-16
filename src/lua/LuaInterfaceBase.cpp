@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
-#include "GameClient.h"
 #include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "mygettext/mygettext.h"
+#include "network/GameClient.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
 #include <boost/nowide/fstream.hpp>
@@ -48,7 +48,7 @@ unsigned LuaInterfaceBase::GetVersion()
 
 unsigned LuaInterfaceBase::GetFeatureLevel()
 {
-    return 2;
+    return 3;
 }
 
 LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())

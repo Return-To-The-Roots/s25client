@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nobHarborBuilding.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -28,6 +27,7 @@
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "nobMilitary.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -218,18 +218,18 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
 }
 
 // Relative Position des Bauarbeiters
-const Point<int> BUILDER_POS[NAT_COUNT] = {Point<int>(-20, 18), Point<int>(-28, 17), Point<int>(-20, 15), Point<int>(-38, 17),
-                                           Point<int>(-38, 17)};
+const Point<int> BUILDER_POS[NUM_NATS] = {Point<int>(-20, 18), Point<int>(-28, 17), Point<int>(-20, 15), Point<int>(-38, 17),
+                                          Point<int>(-38, 17)};
 /// Relative Position der Brettertürme
-const Point<int> BOARDS_POS[NAT_COUNT] = {Point<int>(-75, -5), Point<int>(-60, -5), Point<int>(-55, -5), Point<int>(-65, -5),
-                                          Point<int>(-65, -5)};
+const Point<int> BOARDS_POS[NUM_NATS] = {Point<int>(-75, -5), Point<int>(-60, -5), Point<int>(-55, -5), Point<int>(-65, -5),
+                                         Point<int>(-65, -5)};
 /// Relative Position der Steintürme
-const Point<int> STONES_POS[NAT_COUNT] = {Point<int>(-65, 10), Point<int>(-52, 10), Point<int>(-42, 10), Point<int>(-52, 10),
-                                          Point<int>(-52, 10)};
+const Point<int> STONES_POS[NUM_NATS] = {Point<int>(-65, 10), Point<int>(-52, 10), Point<int>(-42, 10), Point<int>(-52, 10),
+                                         Point<int>(-52, 10)};
 /// Relative Postion der inneren Hafenfeuer
-const Point<int> FIRE_POS[NAT_COUNT] = {Point<int>(36, -51), Point<int>(0, 0), Point<int>(0, 0), Point<int>(5, -80), Point<int>(0, 0)};
+const Point<int> FIRE_POS[NUM_NATS] = {Point<int>(36, -51), Point<int>(0, 0), Point<int>(0, 0), Point<int>(5, -80), Point<int>(0, 0)};
 /// Relative Postion der äußeren Hafenfeuer
-const Point<int> EXTRAFIRE_POS[NAT_COUNT] = {Point<int>(0, 0), Point<int>(0, 0), Point<int>(8, -115), Point<int>(0, 0), Point<int>(0, 0)};
+const Point<int> EXTRAFIRE_POS[NUM_NATS] = {Point<int>(0, 0), Point<int>(0, 0), Point<int>(8, -115), Point<int>(0, 0), Point<int>(0, 0)};
 
 void nobHarborBuilding::Draw(DrawPoint drawPt)
 {
@@ -335,9 +335,9 @@ void nobHarborBuilding::StartExpedition()
         expedition.builder = false;
         // got a builder in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses())
+        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses()) //-V807
         {
-            if(wh->GetRealFiguresCount(JOB_BUILDER))
+            if(wh->GetNumRealFigures(JOB_BUILDER))
             {
                 convert = false;
                 break;
@@ -411,9 +411,9 @@ void nobHarborBuilding::StartExplorationExpedition()
         unsigned missing = numScoutsRequired - inventory[JOB_SCOUT];
         // got scouts in ANY storehouse?
         GamePlayer& owner = gwg->GetPlayer(player);
-        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses())
+        BOOST_FOREACH(const nobBaseWarehouse* wh, owner.GetBuildingRegister().GetStorehouses()) //-V807
         {
-            const unsigned numScouts = wh->GetRealFiguresCount(JOB_SCOUT);
+            const unsigned numScouts = wh->GetNumRealFigures(JOB_SCOUT);
             if(numScouts >= missing)
             {
                 missing = 0;
@@ -887,7 +887,7 @@ void nobHarborBuilding::AddWareForShip(Ware*& ware)
 }
 
 /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
-unsigned nobHarborBuilding::GetNeededShipsCount() const
+unsigned nobHarborBuilding::GetNumNeededShips() const
 {
     unsigned count = 0;
 
@@ -976,7 +976,7 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 // try to order any ship that might be needed and is not ordered yet
 void nobHarborBuilding::OrderShip()
 {
-    unsigned needed = GetNeededShipsCount();
+    unsigned needed = GetNumNeededShips();
     GamePlayer& owner = gwg->GetPlayer(player);
 
     // Order (possibly) remaining ships
@@ -1049,7 +1049,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<noFigure*>& figures, std:
         else if(!(*it)->HasNoGoal())
         {
             unsigned char nextDir;
-            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir);
+            MapPoint next_harbor = (*it)->ExamineRouteBeforeShipping(nextDir); //-V821
 
             if(nextDir == 4)
             {

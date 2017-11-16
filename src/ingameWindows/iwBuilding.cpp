@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -28,6 +27,7 @@
 #include "controls/ctrlText.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"

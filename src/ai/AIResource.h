@@ -21,6 +21,8 @@
 #include <boost/array.hpp>
 #include <boost/core/scoped_enum.hpp>
 
+// Suppress uninitialized v_
+//-V:AIResource:730,801
 BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(AIResource, unsigned){WOOD, STONES, GOLD, IRONORE, COAL, GRANITE, PLANTSPACE, BORDERLAND, FISH, MULTIPLE,
                                                          // special:
                                                          BLOCKED = 254, NOTHING = 255} BOOST_SCOPED_ENUM_DECLARE_END(AIResource)

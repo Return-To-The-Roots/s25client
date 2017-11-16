@@ -27,13 +27,13 @@
 
 class RttrConfig : public Singleton<RttrConfig>
 {
-    boost::filesystem::path prefixPath, homePath;
+    boost::filesystem::path prefixPath_, homePath;
     std::map<std::string, std::string> pathMappings;
 
 public:
     bool Init();
     /// Return the prefix path for the installation
-    boost::filesystem::path GetPrefixPath() const;
+    static boost::filesystem::path GetPrefixPath();
     /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
     std::string ExpandPath(const std::string& path) const;
 };

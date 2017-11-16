@@ -33,7 +33,7 @@
 class iwMapDebug::DebugPrinter : public IDrawNodeCallback
 {
 public:
-    DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), gw(gwb), font(NormalFont) {}
+    DebugPrinter(const GameWorldBase& gwb) : showCoords(true), showDataIdx(0), playerIdx(0), gw(gwb), font(NormalFont) {}
 
     void onDraw(const MapPoint& pt, const DrawPoint& displayPt) override
     {
@@ -58,10 +58,10 @@ public:
             case 5: data = helpers::toString(static_cast<unsigned>(node.owner)); break;
             case 6:
             {
-                bool isAllowed = TerritoryRegion::IsPointValid(gw, gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
+                bool isAllowed = TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
                 coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
                 if(!showCoords)
-                    data = isAllowed ? 'y' : 'n';
+                    data = isAllowed ? "y" : "n";
                 break;
             }
             default: return;
@@ -103,7 +103,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         data->AddString(_("Restricted area"));
         data->SetSelection(1);
         ctrlComboBox* players = AddComboBox(2, DrawPoint(15, 75), Extent(200, 20), TC_GREY, NormalFont, 100);
-        for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetPlayerCount(); pIdx++)
+        for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
         {
             const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
             if(!p.isUsed())

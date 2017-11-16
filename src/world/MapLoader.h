@@ -29,11 +29,11 @@ class glArchivItem_Map;
 
 class MapLoader
 {
-    World& world;
-    const std::vector<Nation> playerNations;
-    std::vector<MapPoint> hqPositions;
+    World& world_;
+    const std::vector<Nation> playerNations_;
+    std::vector<MapPoint> hqPositions_;
 
-    /// Inititalize the nodes according to the map data
+    /// Initialize the nodes according to the map data
     void InitNodes(const glArchivItem_Map& map, Exploration exploration);
     /// Place all objects on the nodes according to the map data.
     void PlaceObjects(const glArchivItem_Map& map);
@@ -54,7 +54,7 @@ public:
     bool PlaceHQs(GameWorldBase& world, bool randomStartPos);
 
     /// Return the position of the players HQ (only valid after successful load)
-    MapPoint GetHQPos(unsigned player) const { return hqPositions[player]; }
+    MapPoint GetHQPos(unsigned player) const { return hqPositions_[player]; }
 
     static void InitShadows(World& world);
     static void SetMapExplored(World& world, unsigned numPlayers);

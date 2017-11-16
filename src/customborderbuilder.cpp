@@ -356,18 +356,19 @@ void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigne
     unsigned char numUsedFillers = 0;
     for(unsigned char i = 1; i < T_numFillers; i++)
         numUsedFillers += numFillersToUse[i];
+    const Extent fillers0Size = fillers[0].size;
     for(unsigned char i = T_numFillers - 1; (i >= 1); i--) //
     {
         for(unsigned char j = 0; j < numFillersToUse[i]; j++)
         {
             // Vor jedem großen zuerst ein paar der kleinsten Füller, damit die großen nicht so aneinander gequetscht sind.
-            for(unsigned char j = 0; j < numFillersToUse[0] / (numUsedFillers + 1); j++)
+            for(unsigned char k = 0; k < numFillersToUse[0] / (numUsedFillers + 1); k++)
             {
                 if(direction)
                     outBorder.put(ImgPos(pos.x, emptyFromPixel), fillers[0]);
                 else
                     outBorder.put(ImgPos(emptyFromPixel, pos.y), fillers[0]);
-                emptyFromPixel += direction ? fillers[0].size.y : fillers[0].size.x;
+                emptyFromPixel += direction ? fillers0Size.y : fillers0Size.x;
             }
             if(direction)
                 outBorder.put(ImgPos(pos.x, emptyFromPixel), fillers[i]);
@@ -397,10 +398,10 @@ CustomBorderBuilder::BdrBitmap::BdrBitmap(const Extent& size) : size(size)
     values.resize(prodOfComponents(size));
 }
 
-CustomBorderBuilder::BdrBitmap CustomBorderBuilder::BdrBitmap::get(const ImgPos& srcOffset, const Extent& size) const
+CustomBorderBuilder::BdrBitmap CustomBorderBuilder::BdrBitmap::get(const ImgPos& srcOffset, const Extent& targetSize) const
 {
-    BdrBitmap pic(size);
-    RTTR_FOREACH_PT(ImgPos, size)
+    BdrBitmap pic(targetSize);
+    RTTR_FOREACH_PT(ImgPos, targetSize)
     {
         pic.put(pt, get(pt + srcOffset));
     }

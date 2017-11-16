@@ -18,10 +18,10 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofFarmhand.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -165,7 +165,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 {
                     case JOB_STONEMASON:
                     case JOB_FISHER: workplace->OnOutOfResources(); break;
-                    case BLD_WOODCUTTER:
+                    case JOB_WOODCUTTER:
                         gwg->GetNotifications().publish(
                           BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
                         break;

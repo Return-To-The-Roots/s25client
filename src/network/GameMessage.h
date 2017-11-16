@@ -14,29 +14,35 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+#ifndef GAMEMESSAGE_H_INCLUDED
+#define GAMEMESSAGE_H_INCLUDED
 
-#ifndef GameMessage_GameCommand_h__
-#define GameMessage_GameCommand_h__
+#pragma once
 
-#include "AsyncChecksum.h"
-#include "GameCommand.h"
-#include "GameMessage.h"
-#include "PlayerGameCommands.h"
-#include <vector>
-
+#include "libutil/Message.h"
+class GameMessageInterface;
+class MessageInterface;
 class Serializer;
 
-class GameMessage_GameCommand : public GameMessage
+class GameMessage : public Message
 {
 public:
-    PlayerGameCommands gcs;
+    /// Spieler-ID, von dem diese Nachricht stammt
+    uint8_t player;
 
-    GameMessage_GameCommand(); //-V730
-    GameMessage_GameCommand(const unsigned char player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
+    GameMessage(uint16_t id, uint8_t player = 0xFF) : Message(id), player(player) {}
 
     void Serialize(Serializer& ser) const override;
+
     void Deserialize(Serializer& ser) override;
-    bool Run(MessageInterface* callback) override;
+
+    /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
+    virtual bool Run(GameMessageInterface* callback) const = 0;
+
+    bool run(MessageInterface* callback, unsigned playerId) override;
+
+    static Message* create_game(unsigned short id);
+    Message* create(unsigned short id) const override { return create_game(id); }
 };
 
-#endif // GameMessage_GameCommand_h__
+#endif // GAMEMESSAGE_H_INCLUDED

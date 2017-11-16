@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(RectIntersect)
     BOOST_REQUIRE(DoRectsIntersect(rect2, rect1));
     // Just in and out on each line
     // Right
-    rect2.move(Point<int>(rect1.getSize().x, 0));
+    rect2.move(Point<int>(rect1.getSize().x, 0)); //-V807
     BOOST_REQUIRE(!DoRectsIntersect(rect1, rect2));
     BOOST_REQUIRE(!DoRectsIntersect(rect2, rect1));
     rect2.move(-Point<int>(1, 0));

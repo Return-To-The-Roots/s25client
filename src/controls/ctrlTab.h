@@ -72,7 +72,7 @@ private:
     unsigned short tab_count;
     unsigned short tab_selection;
 
-    boost::array<unsigned, 20> tabs;
+    boost::array<unsigned, 20> tabs; //-V730_NOINIT
 };
 
 #endif // !CTRLTAB_H_INCLUDED

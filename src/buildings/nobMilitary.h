@@ -38,8 +38,6 @@ class nobMilitary : public nobBaseMilitary
 {
     /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
     bool new_built;
-    /// This building was captured by its current owner. This flag is set once and never to be changed again
-    bool captured_not_built;
     /// Anzahl der Goldmünzen im Gebäude
     unsigned char numCoins;
     /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
@@ -126,13 +124,13 @@ public:
     unsigned char GetFrontierDistance() const { return frontier_distance; }
 
     /// Berechnet die gewünschte Besatzung je nach Grenznähe
-    unsigned CalcRequiredTroopsCount() const;
+    unsigned CalcRequiredNumTroops() const;
     /// Calculate the required troop count for the given setting
-    unsigned CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue) const;
+    unsigned CalcRequiredNumTroops(unsigned assumedFrontierDistance, unsigned settingValue) const;
     /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
     void RegulateTroops();
     /// Gibt aktuelle Besetzung zurück
-    unsigned GetTroopsCount() const { return troops.size(); }
+    unsigned GetNumTroops() const { return troops.size(); }
     const SortedTroops& GetTroops() const { return troops; }
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (in dem Fall nur Goldstücke)
@@ -218,7 +216,7 @@ public:
     void HitOfCatapultStone();
 
     /// Sind noch Truppen drinne, die dieses Gebäude verteidigen können
-    bool DefendersAvailable() const override { return (GetTroopsCount() > 0); }
+    bool DefendersAvailable() const override { return (GetNumTroops() > 0); }
 
     /// send all soldiers of the highest rank home (if highest=lowest keep 1)
     void SendSoldiersHome();
@@ -227,8 +225,6 @@ public:
 
     /// Darf das Militärgebäude abgerissen werden (Abriss-Verbot berücksichtigen)?
     bool IsDemolitionAllowed() const;
-
-    bool WasCapturedOnce() const { return (captured_not_built); }
 
     void UnlinkAggressor(nofAttacker* soldier) override;
 };

@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     BuildingFactory::CreateBuilding(world, BLD_METALWORKS, bldPos2, curPlayer, NAT_AFRICANS);
     this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SOUTHEAST), false, std::vector<Direction>(2, Direction::EAST));
 
-    boost::array<signed char, TOOL_COUNT> toolOrder;
+    boost::array<signed char, NUM_TOOLS> toolOrder;
     ToolSettings toolSettings;
     std::fill(toolOrder.begin(), toolOrder.end(), 0);
     std::fill(toolSettings.begin(), toolSettings.end(), 0);

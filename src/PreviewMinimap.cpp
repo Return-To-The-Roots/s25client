@@ -36,7 +36,7 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     mapSize.y = header.getHeight();
 
     unsigned char gfxSet = header.getGfxSet();
-    RTTR_Assert(gfxSet < LT_COUNT);
+    RTTR_Assert(gfxSet < NUM_LTS);
     lt = LandscapeType(gfxSet);
     objects = s2map.GetLayer(MAP_TYPE);
     terrain1 = s2map.GetLayer(MAP_TERRAIN1);

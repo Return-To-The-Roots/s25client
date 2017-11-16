@@ -121,7 +121,7 @@ void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
 
 void iwMapGenerator::Apply()
 {
-    mapSettings.players = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->GetSelection() + 2;
+    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER)->GetSelection() + 2;
     mapSettings.ratioGold = GetCtrl<ctrlProgress>(CTRL_RATIO_GOLD)->GetPosition();
     mapSettings.ratioIron = GetCtrl<ctrlProgress>(CTRL_RATIO_IRON)->GetPosition();
     mapSettings.ratioCoal = GetCtrl<ctrlProgress>(CTRL_RATIO_COAL)->GetPosition();
@@ -151,7 +151,7 @@ void iwMapGenerator::Apply()
     {
         case 0:
             mapSettings.minPlayerRadius = 0.19;
-            mapSettings.maxPlayerRadius = 0.3;
+            mapSettings.maxPlayerRadius = 0.3; //-V525
             break;
         case 1:
             mapSettings.minPlayerRadius = 0.29;
@@ -187,7 +187,7 @@ void iwMapGenerator::Apply()
 void iwMapGenerator::Reset()
 {
     ctrlComboBox* combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_NUMBER);
-    const uint16_t playersSelection = mapSettings.players - 2;
+    const uint16_t playersSelection = mapSettings.numPlayers - 2;
     if(playersSelection < MAX_PLAYERS - 2)
     {
         combo->SetSelection(playersSelection);
@@ -223,7 +223,7 @@ void iwMapGenerator::Reset()
     }
 
     combo = GetCtrl<ctrlComboBox>(CTRL_PLAYER_RADIUS);
-    if(mapSettings.minPlayerRadius == 0.5)
+    if(mapSettings.minPlayerRadius == 0.5) //-V550
         combo->SetSelection(5);
     else if(mapSettings.minPlayerRadius <= 0.2)
         combo->SetSelection(0);

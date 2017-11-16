@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(PreviewMinimap)
     glArchivItem_Map map;
     resizeMap(map, size);
     mm.SetMap(&map);
-    BOOST_REQUIRE_LE(mm.GetBoundaryRect().getSize().x, size.x);
+    BOOST_REQUIRE_LE(mm.GetBoundaryRect().getSize().x, size.x); //-V807
     BOOST_REQUIRE_LE(mm.GetBoundaryRect().getSize().y, size.y);
     const Extent origBoundary = mm.GetBoundaryRect().getSize();
     // Width smaller -> Don't go over width

@@ -51,7 +51,7 @@
 namespace AIJH {
 
 AIConstruction::AIConstruction(AIPlayerJH& aijh)
-    : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(BUILDING_TYPES_COUNT)
+    : aijh(aijh), aii(aijh.GetInterface()), bldPlanner(aijh.GetBldPlanner()), constructionorders(NUM_BUILDING_TYPES)
 {}
 
 AIConstruction::~AIConstruction()
@@ -113,8 +113,8 @@ void AIConstruction::AddBuildJob(BuildJob* job, bool front)
 void AIConstruction::ExecuteJobs(unsigned limit)
 {
     unsigned i = 0; // count up to limit
-    unsigned initconjobs = connectJobs.size() < 5 ? connectJobs.size() : 5;
-    unsigned initbuildjobs = buildJobs.size() < 5 ? buildJobs.size() : 5;
+    unsigned initconjobs = std::min<unsigned>(connectJobs.size(), 5);
+    unsigned initbuildjobs = std::min<unsigned>(buildJobs.size(), 5);
     for(; i < limit && !connectJobs.empty() && i < initconjobs;
         i++) // go through list, until limit is reached or list empty or when every entry has been checked
     {
@@ -240,7 +240,8 @@ std::vector<const noFlag*> AIConstruction::FindFlags(const MapPoint pt, unsigned
         if(flag)
         {
             std::vector<const noFlag*>::iterator it = std::find(flags.begin(), flags.end(), flag);
-            flags.erase(it);
+            if(it != flags.end())
+                flags.erase(it);
         }
     }
 
@@ -310,7 +311,6 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
     const noFlag* shortest = NULL;
     unsigned shortestLength = 99999;
     std::vector<Direction> tmpRoute;
-    bool found = false;
 
     // Jede Flagge testen...
     BOOST_FOREACH(const noFlag* curFlag, flags)
@@ -357,9 +357,6 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         if(aii.FindPathOnRoads(*curFlag, *flag))
             continue;
 
-        // Ansonsten haben wir einen Pfad!
-        found = true;
-
         // Kürzer als der letzte? Nehmen! Existierende Strecke höher gewichten (2), damit möglichst kurze Baustrecken
         // bevorzugt werden bei ähnlich langen Wegmöglichkeiten
         if(2 * length + distance + 10 * maxNonFlagPts < shortestLength)
@@ -370,7 +367,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
         }
     }
 
-    if(found)
+    if(shortest)
     {
         // LOG.write(("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
         if(!MinorRoadImprovements(flag, shortest, route))
@@ -387,13 +384,7 @@ bool AIConstruction::ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route)
 {
     return BuildRoad(start, target, route);
-    // bool done=false;
-    MapPoint pStart = start->GetPos();
-    /*for(unsigned i=0;i<route.size();i++)
-    {
-        LOG.write((" %i",route[i]);
-    }
-    LOG.write(("\n");*/
+    MapPoint pStart = start->GetPos(); //-V779
     for(unsigned i = 0; i + 1 < route.size(); i++)
     {
         if((route[i] + 1u == route[i + 1])
@@ -420,21 +411,11 @@ bool AIConstruction::MinorRoadImprovements(const noRoadNode* start, const noRoad
                         --route[i];
                         ++route[i + 1];
                     }
-                    // done=true;
                 }
             }
         } else
             pStart = aii.gwb.GetNeighbour(pStart, route[i]);
     }
-    /*if(done)
-    {
-        LOG.write(("final road\n");
-        for(unsigned i=0;i<route.size();i++)
-        {
-            LOG.write((" %i",route[i]);
-        }
-        LOG.write(("\n");
-    }*/
     return BuildRoad(start, target, route);
 }
 
@@ -520,7 +501,7 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
 
     const Inventory& inventory = aii.GetInventory();
     if(((rand() % 3) == 0 || inventory.people[JOB_PRIVATE] < 15)
-       && (inventory.goods[GD_STONES] > 6 || bldPlanner.GetBuildingCount(BLD_QUARRY) > 0))
+       && (inventory.goods[GD_STONES] > 6 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0))
         bld = BLD_GUARDHOUSE;
     if(aijh.HarborPosClose(pt, 20) && rand() % 10 != 0 && aijh.ggs.getSelection(AddonId::SEA_ATTACK) != 2)
     {
@@ -530,8 +511,8 @@ BuildingType AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
     }
     if(biggestBld == BLD_WATCHTOWER || biggestBld == BLD_FORTRESS)
     {
-        if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetBuildingSitesCount(biggestBld) < 1
-           && (inventory.goods[GD_STONES] > 20 || bldPlanner.GetBuildingCount(BLD_QUARRY) > 0) && rand() % 10 != 0)
+        if(aijh.UpdateUpgradeBuilding() < 0 && bldPlanner.GetNumBuildingSites(biggestBld) < 1
+           && (inventory.goods[GD_STONES] > 20 || bldPlanner.GetNumBuildings(BLD_QUARRY) > 0) && rand() % 10 != 0)
         {
             return biggestBld;
         }
@@ -609,9 +590,9 @@ bool AIConstruction::Wanted(BuildingType type) const
         return false;
     if(BuildingProperties::IsMilitary(type) || type == BLD_STOREHOUSE)
         return bldPlanner.WantMoreMilitaryBlds(aijh);
-    if(type == BLD_SAWMILL && bldPlanner.GetBuildingCount(BLD_SAWMILL) > 1)
+    if(type == BLD_SAWMILL && bldPlanner.GetNumBuildings(BLD_SAWMILL) > 1)
     {
-        if(aijh.AmountInStorage(GD_WOOD) < 15 * (bldPlanner.GetBuildingSitesCount(BLD_SAWMILL) + 1))
+        if(aijh.AmountInStorage(GD_WOOD) < 15 * (bldPlanner.GetNumBuildingSites(BLD_SAWMILL) + 1))
             return false;
     }
     return constructionorders[type] < bldPlanner.GetNumAdditionalBuildingsWanted(type);

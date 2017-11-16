@@ -27,7 +27,7 @@ struct ColorARGB;
 }
 
 /// Klasse für GL-Direct-Bitmaps.
-class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap
+class glArchivItem_Bitmap_Direct : public glArchivItem_Bitmap //-V690
 {
 public:
     glArchivItem_Bitmap_Direct();

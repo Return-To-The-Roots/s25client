@@ -160,7 +160,7 @@ public:
     /// Return the coast pt for a given harbor (where ships can land) if any
     MapPoint GetCoastalPoint(const unsigned harborId, const unsigned short seaId) const;
     /// Return the number of harbor points
-    unsigned GetHarborPointCount() const { return harbor_pos.size() - 1; }
+    unsigned GetNumHarborPoints() const { return harbor_pos.size() - 1; }
     /// Return the coordinates for a given harbor point
     MapPoint GetHarborPoint(const unsigned harborId) const;
     /// Return the ID of the harbor point on that node or 0 if there is none

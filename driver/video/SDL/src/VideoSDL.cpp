@@ -20,6 +20,7 @@
 #include "VideoDriverLoaderInterface.h"
 #include "VideoInterface.h"
 #include "helpers/containerUtils.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <SDL.h>
 #include <algorithm>
@@ -28,6 +29,21 @@
 #include "../../../../win32/s25clientResources.h"
 #include "libutil/ucString.h"
 #include <SDL_syswm.h>
+namespace {
+struct DeleterReleaseDC
+{
+    typedef HDC pointer;
+    HWND wnd;
+    DeleterReleaseDC(HWND wnd) : wnd(wnd) {}
+    void operator()(HDC dc) const { ReleaseDC(wnd, dc); }
+};
+struct DeleterDeleteRC
+{
+    typedef HGLRC pointer;
+    void operator()(HGLRC rc) const { wglDeleteContext(rc); }
+};
+
+} // namespace
 #endif // _WIN32
 
 /**
@@ -198,11 +214,11 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     }
 
     // get device context handle
-    HDC tempDC = GetDC(info.window);
+    boost::interprocess::unique_ptr<HDC, DeleterReleaseDC> tempDC(GetDC(info.window), DeleterReleaseDC(info.window));
 
     // create temporary context
-    HGLRC tempRC = wglCreateContext(tempDC);
-    if(tempRC == NULL)
+    boost::interprocess::unique_ptr<HGLRC, DeleterDeleteRC> tempRC(wglCreateContext(tempDC.get()));
+    if(!tempRC)
     {
         PrintError("wglCreateContext failed");
         return false;
@@ -210,7 +226,7 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
 
     // share resources to temporary context
     SetLastError(0);
-    if(!wglShareLists(info.hglrc, tempRC))
+    if(!wglShareLists(info.hglrc, tempRC.get()))
     {
         PrintError("wglShareLists #1 failed");
         return false;
@@ -229,18 +245,12 @@ bool VideoSDL::ResizeScreen(const VideoMode& newSize, bool fullscreen)
     }
 
     // share resources to new SDL-created context
-    if(!wglShareLists(tempRC, info.hglrc))
+    if(!wglShareLists(tempRC.get(), info.hglrc))
     {
         PrintError("wglShareLists #2 failed\n");
         return false;
     }
 
-    // we no longer need our temporary context
-    if(!wglDeleteContext(tempRC))
-    {
-        PrintError("wglDeleteContext failed\n");
-        return false;
-    }
     // success
     return true;
 #else

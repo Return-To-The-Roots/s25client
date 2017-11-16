@@ -26,7 +26,8 @@
 
 ctrlMultiline::ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                              glArchivItem_Font* font, unsigned format)
-    : Window(parent, id, pos, size), tc_(tc), font(font), format_(format), showBackground_(true), cachedContentWidth(0)
+    : Window(parent, id, pos, size), tc_(tc), font(font), format_(format), showBackground_(true), scrollbarAllowed_(true),
+      cachedContentWidth(0)
 {
     RecalcVisibleLines();
     AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc, maxNumVisibleLines);

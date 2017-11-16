@@ -24,12 +24,12 @@ namespace FW {
 
 bool HasMinWares::operator()(const nobBaseWarehouse& wh) const
 {
-    return wh.GetRealWaresCount(type) >= count;
+    return wh.GetNumRealWares(type) >= count;
 }
 
 bool HasFigure::operator()(const nobBaseWarehouse& wh) const
 {
-    if(wh.GetRealFiguresCount(type) > 0)
+    if(wh.GetNumRealFigures(type) > 0)
         return true;
     else if(recruitingAllowed && type != JOB_PACKDONKEY)
         return wh.CanRecruit(type);
@@ -44,7 +44,7 @@ bool HasWareAndFigure::operator()(const nobBaseWarehouse& wh) const
 
 bool HasMinSoldiers::operator()(const nobBaseWarehouse& wh) const
 {
-    return wh.GetSoldiersCount() >= count;
+    return wh.GetNumSoldiers() >= count;
 }
 
 bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const

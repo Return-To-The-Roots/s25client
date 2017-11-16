@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofButcher.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
@@ -33,7 +33,7 @@ nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWork
 
 void nofButcher::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = {{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}};
+    static const DrawPointInit offsets[NUM_NATS] = {{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}};
 
     unsigned now_id;
 

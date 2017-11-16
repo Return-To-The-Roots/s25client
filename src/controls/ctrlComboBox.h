@@ -37,7 +37,7 @@ public:
 
     void SetSelection(unsigned short selection);
     unsigned short GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
-    unsigned short GetCount() const { return GetCtrl<ctrlList>(0)->GetLineCount(); }
+    unsigned short GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
     const std::string& GetText(unsigned short item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
 
     void Msg_PaintAfter() override;

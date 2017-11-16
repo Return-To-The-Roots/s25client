@@ -19,12 +19,12 @@
 #include "nofCatapultMan.h"
 #include "CatapultStone.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -247,14 +247,14 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 destMap = gwg->GetNeighbour(target.pos, Direction::fromInt(d));
             }
 
-            unsigned char shooting_dir = (7 + wheel_steps) % 6;
+            unsigned shooting_dir = (7 + wheel_steps) % 6;
 
             // Größe der Welt in Pixeln bestimmen
             int worldWidth = gwg->GetWidth() * TR_W;
             int worldHeight = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Point<int> start = gwg->GetNodePos(pos) + STONE_STARTS[shooting_dir];
+            Point<int> start = gwg->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
             // (Visuellen) Aufschlagpunkt bestimmen
             Point<int> dest = gwg->GetNodePos(destMap);
 

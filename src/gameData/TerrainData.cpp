@@ -119,7 +119,7 @@ bool TerrainData::IsAnimated(TerrainType t)
     return IsWater(t) || IsLava(t);
 }
 
-unsigned TerrainData::GetFrameCount(TerrainType t)
+unsigned TerrainData::GetNumFrames(TerrainType t)
 {
     switch(t)
     {
@@ -335,7 +335,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
 /// 0: Nothing is drawn above each other (hard edge)
 /// 1: T1 draws over T2 (If T1 is inside T2 then you'd get a "circle")
 /// -1: T2 draws over T1 (If T1 is inside T2 then you'd get a dented shape)
-const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] = {
+const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
   // Greenland
   {/*TT_SNOW*/ {},
    /*TT_DESERT*/ {-1},
@@ -408,13 +408,13 @@ const signed char TERRAIN_DRAW_PRIORITY[LT_COUNT][TT_COUNT][TT_COUNT] = {
 
 unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, TerrainType t2)
 {
-    static boost::array<boost::array<boost::array<unsigned char, TT_COUNT>, TT_COUNT>, LT_COUNT> EDGE_TABLE;
+    static boost::array<boost::array<boost::array<unsigned char, NUM_TTS>, NUM_TTS>, NUM_LTS> EDGE_TABLE;
     static bool isInitialized = false;
     if(!isInitialized)
     {
         // Init table for faster access
-        for(int lt = 0; lt < LT_COUNT; ++lt)
-            for(int iT1 = 0; iT1 < TT_COUNT; ++iT1)
+        for(int lt = 0; lt < NUM_LTS; ++lt)
+            for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
                 for(int iT2 = 0; iT2 <= iT1; ++iT2)
                 {
                     EdgeType et1 = GetEdgeType(LandscapeType(lt), TerrainType(iT1));

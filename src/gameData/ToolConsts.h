@@ -22,7 +22,7 @@
 #include <boost/array.hpp>
 
 /// List of all tools (correspond to buttons at IO:140-163)
-const boost::array<GoodType, TOOL_COUNT> SUPPRESS_UNUSED TOOLS = {{
+const boost::array<GoodType, NUM_TOOLS> SUPPRESS_UNUSED TOOLS = {{
   GD_TONGS,      // Zange
   GD_HAMMER,     // Hammer
   GD_AXE,        // Axt,

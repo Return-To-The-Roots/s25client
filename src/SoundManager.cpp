@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "SoundManager.h"
 
-#include "GameClient.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 
 SoundManager::SoundManager() : last_bird(0), bird_interval(0), ocean_play_id(-1) {}

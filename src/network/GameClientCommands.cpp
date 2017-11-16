@@ -16,10 +16,11 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientInterface.h"
-#include "GameClient.h"
-#include "GameMessages.h"
+#include "ClientPlayers.h"
 #include "GamePlayer.h"
+#include "network/ClientInterface.h"
+#include "network/GameClient.h"
+#include "network/GameMessages.h"
 
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
@@ -33,17 +34,17 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
     if(GAMECLIENT.IsReplayModeOn() || text.length() == 0)
         return;
 
-    send_queue.push(new GameMessage_Server_Chat(playerId_, cd, text));
+    mainPlayer.sendMsgAsync(new GameMessage_Server_Chat(0xff, cd, text));
 }
 
 void GameClient::Command_SetNation(Nation newNation)
 {
-    send_queue.push(new GameMessage_Player_Set_Nation(0xff, newNation));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Set_Nation(0xff, newNation));
 }
 
 void GameClient::Command_SetTeam(Team newTeam)
 {
-    send_queue.push(new GameMessage_Player_Set_Team(0xff, newTeam));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Set_Team(0xff, newTeam));
 }
 
 /**
@@ -51,12 +52,12 @@ void GameClient::Command_SetTeam(Team newTeam)
  */
 void GameClient::Command_SetReady(bool isReady)
 {
-    send_queue.push(new GameMessage_Player_Ready(0xFF, isReady));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Ready(0xFF, isReady));
 }
 
 void GameClient::Command_SetColor(unsigned newColor)
 {
-    send_queue.push(new GameMessage_Player_Set_Color(0xFF, newColor));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Set_Color(0xFF, newColor));
 }
 
 /**
@@ -65,44 +66,44 @@ void GameClient::Command_SetColor(unsigned newColor)
  *  @param[in] old_id Alte Spieler-ID
  *  @param[in] new_id Neue Spieler-ID
  */
-void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned char player2)
+void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigned char playerId2)
 {
     RTTR_Assert(state == CS_GAME); // Must be ingame
 
-    LOG.write("GameClient::ChangePlayer %i - %i \n") % player1 % player2;
+    LOG.write("GameClient::ChangePlayer %i - %i \n") % static_cast<unsigned>(playerId1) % static_cast<unsigned>(playerId2);
     // Gleiche ID - wäre unsinnig zu wechseln
-    if(player1 == player2)
+    if(playerId1 == playerId2)
         return;
 
     // ID auch innerhalb der Spielerzahl?
-    if(player2 >= GetPlayerCount() || player1 >= GetPlayerCount())
+    if(playerId2 >= GetNumPlayers() || playerId1 >= GetNumPlayers())
         return;
 
     if(IsReplayModeOn())
     {
-        RTTR_Assert(player1 == playerId_);
+        RTTR_Assert(playerId1 == mainPlayer.playerId);
         // There must be someone at this slot
-        if(!GetPlayer(player2).isUsed())
+        if(!GetPlayer(playerId2).isUsed())
             return;
 
         // In replay mode we don't touch the player
     } else
     {
         // old_id must be a player
-        if(GetPlayer(player1).ps != PS_OCCUPIED)
+        if(GetPlayer(playerId1).ps != PS_OCCUPIED)
             return;
         // new_id must be an AI
-        if(GetPlayer(player2).ps != PS_AI)
+        if(GetPlayer(playerId2).ps != PS_AI)
             return;
 
-        GetPlayer(player1).ps = PS_AI;
-        GetPlayer(player2).ps = PS_OCCUPIED;
+        GetPlayer(playerId1).ps = PS_AI;
+        GetPlayer(playerId2).ps = PS_OCCUPIED;
     }
 
     // Wenn wir betroffen waren, unsere ID neu setzen
-    if(playerId_ == player1)
+    if(mainPlayer.playerId == playerId1)
     {
-        playerId_ = player2;
+        mainPlayer.playerId = playerId2;
 
         if(!IsReplayModeOn())
         {
@@ -111,9 +112,14 @@ void GameClient::ChangePlayerIngame(const unsigned char player1, const unsigned 
         }
     }
 
-    using std::swap;
-    swap(GetPlayer(player1).gc_queue, GetPlayer(player2).gc_queue);
+    // Swap ids
+    ClientPlayer* player1 = clientPlayers->get(playerId1);
+    ClientPlayer* player2 = clientPlayers->get(playerId2);
+    if(player1)
+        player1->id = playerId2;
+    if(player2)
+        player2->id = playerId1;
 
     if(ci)
-        ci->CI_PlayersSwapped(player1, player2);
+        ci->CI_PlayersSwapped(playerId1, playerId2);
 }

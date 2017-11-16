@@ -19,13 +19,13 @@
 #include "iwTransport.h"
 
 #include "DrawPointInit.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
 

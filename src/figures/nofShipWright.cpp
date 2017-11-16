@@ -18,12 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofShipWright.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "buildings/nobShipYard.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -34,7 +34,9 @@
 
 nofShipWright::nofShipWright(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(JOB_SHIPWRIGHT, pos, player, workplace), dest(MapPoint::Invalid())
-{}
+{
+    RTTR_Assert(!workplace || dynamic_cast<nobShipYard*>(workplace));
+}
 
 const unsigned SHIPWRIGHT_RADIUS = 8;
 const unsigned SHIPWRIGHT_WALKING_DISTANCE = 15;
@@ -65,7 +67,7 @@ void nofShipWright::HandleDerivedEvent(const unsigned /*id*/)
         case STATE_WAITING1:
         {
             // Herausfinden, was der Schiffsbauer als nächstes bauen soll
-            if(dynamic_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::BOATS)
+            if(static_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::BOATS)
                 // in Handwerksmanier Boote herstellen
                 nofWorkman::HandleStateWaiting1();
             else

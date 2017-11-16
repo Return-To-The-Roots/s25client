@@ -30,7 +30,7 @@ class GameServerInterface
 public:
     virtual ~GameServerInterface() {}
     virtual bool IsRunning() const = 0;
-    virtual unsigned GetMaxPlayerCount() const = 0;
+    virtual unsigned GetNumMaxPlayers() const = 0;
     virtual JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) = 0;
     virtual void KickPlayer(unsigned playerIdx) = 0;
     virtual void CheckAndSetColor(unsigned playerIdx, unsigned newColor) = 0;

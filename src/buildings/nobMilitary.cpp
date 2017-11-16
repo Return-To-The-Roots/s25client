@@ -19,7 +19,6 @@
 #include "nobMilitary.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -33,6 +32,7 @@
 #include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -51,9 +51,8 @@
 #include <stdexcept>
 
 nobMilitary::nobMilitary(const BuildingType type, const MapPoint pos, const unsigned char player, const Nation nation)
-    : nobBaseMilitary(type, pos, player, nation), new_built(true), captured_not_built(false), numCoins(0), coinsDisabled(false),
-      coinsDisabledVirtual(false), capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL),
-      is_regulating_troops(false)
+    : nobBaseMilitary(type, pos, player, nation), new_built(true), numCoins(0), coinsDisabled(false), coinsDisabledVirtual(false),
+      capturing(false), capturing_soldiers(0), goldorder_event(NULL), upgrade_event(NULL), is_regulating_troops(false)
 {
     // Gebäude entsprechend als Militärgebäude registrieren und in ein Militärquadrat eintragen
     gwg->GetMilitarySquares().Add(this);
@@ -135,7 +134,6 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 {
     Serialize_nobBaseMilitary(sgd);
     sgd.PushBool(new_built);
-    sgd.PushBool(captured_not_built);
     sgd.PushUnsignedChar(numCoins);
     sgd.PushBool(coinsDisabled);
     sgd.PushUnsignedChar(frontier_distance);
@@ -152,10 +150,9 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
-    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), captured_not_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
-      coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.PopUnsignedChar()),
-      size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()),
-      upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
+    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()), coinsDisabled(sgd.PopBool()),
+      coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()),
+      capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
 {
     sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
     sgd.PopObjectContainer(ordered_coins, GOT_WARE);
@@ -310,12 +307,12 @@ unsigned nobMilitary::GetMilitaryRadius() const
 
 unsigned nobMilitary::GetMaxCoinCt() const
 {
-    return GOLD_COUNT[nation][size];
+    return NUM_GOLDS[nation][size];
 }
 
 unsigned nobMilitary::GetMaxTroopsCt() const
 {
-    return TROOPS_COUNT[nation][size];
+    return NUM_TROOPSS[nation][size];
 }
 
 void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
@@ -416,7 +413,7 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = true;
 
     // Zu viele oder zu wenig Truppen?
-    int diff = static_cast<int>(CalcRequiredTroopsCount()) - static_cast<int>(GetTotalSoldiers());
+    int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     if(diff < 0)
     {
         // Zu viel --> überflüssige Truppen nach Hause schicken
@@ -502,12 +499,12 @@ void nobMilitary::RegulateTroops()
     is_regulating_troops = false;
 }
 
-unsigned nobMilitary::CalcRequiredTroopsCount() const
+unsigned nobMilitary::CalcRequiredNumTroops() const
 {
-    return CalcRequiredTroopsCount(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
+    return CalcRequiredNumTroops(frontier_distance, gwg->GetPlayer(player).GetMilitarySetting(4 + frontier_distance));
 }
 
-unsigned nobMilitary::CalcRequiredTroopsCount(unsigned assumedFrontierDistance, unsigned settingValue) const
+unsigned nobMilitary::CalcRequiredNumTroops(unsigned assumedFrontierDistance, unsigned settingValue) const
 {
     return (GetMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + assumedFrontierDistance] + 1;
 }
@@ -539,14 +536,15 @@ void nobMilitary::SendSoldiersHome()
 // used by the ai to refill the upgradebuilding with low rank soldiers! - normal orders for soldiers are done in RegulateTroops!
 void nobMilitary::OrderNewSoldiers()
 {
+    const GlobalGameSettings& ggs = gwg->GetGGS();
     // No other ranks -> Don't send soldiers back
-    if(gwg->GetGGS().GetMaxMilitaryRank() == 0)
+    if(ggs.GetMaxMilitaryRank() == 0)
         return;
     // cancel all max ranks on their way to this building
     std::vector<nofPassiveSoldier*> noNeed;
     for(SortedTroops::iterator it = ordered_troops.begin(); it != ordered_troops.end();)
     {
-        if((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() >= ggs.GetMaxMilitaryRank())
         {
             nofPassiveSoldier* soldier = *it;
             it = helpers::erase(ordered_troops, it);
@@ -555,14 +553,14 @@ void nobMilitary::OrderNewSoldiers()
             ++it;
     }
 
-    int diff = static_cast<int>(CalcRequiredTroopsCount()) - static_cast<int>(GetTotalSoldiers());
+    int diff = static_cast<int>(CalcRequiredNumTroops()) - static_cast<int>(GetTotalSoldiers());
     // order new troops now
     if(diff > 0)
     {
         // Zu wenig Truppen
         // Gebäude wird angegriffen und
         // Addon aktiv, nur soviele Leute zum Nachbesetzen schicken wie Verteidiger eingestellt
-        if(IsUnderAttack() && gwg->GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
+        if(IsUnderAttack() && ggs.getSelection(AddonId::DEFENDER_BEHAVIOR) == 2)
         {
             diff = (gwg->GetPlayer(player).GetMilitarySetting(2) * diff) / MILITARY_SETTINGS_SCALE[2];
         }
@@ -797,8 +795,7 @@ unsigned nobMilitary::GetNumSoldiersForAttack(const MapPoint dest) const
     // Militäreinstellungen zum Angriff eingestellt wurden
 
     unsigned short soldiers_count =
-      (GetTroopsCount() > 1) ? ((GetTroopsCount() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) :
-                               0;
+      (GetNumTroops() > 1) ? ((GetNumTroops() - 1) * gwg->GetPlayer(GetPlayer()).GetMilitarySetting(3) / MILITARY_SETTINGS_SCALE[3]) : 0;
 
     unsigned distance = gwg->CalcDistance(pos, dest);
 
@@ -877,17 +874,16 @@ bool nobMilitary::HasMaxRankSoldier() const
 
 nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 {
-    // Überhaupos Soldaten da?
-    if(troops.empty())
+    nofPassiveSoldier* soldier = ChooseSoldier();
+    if(!soldier)
     {
         /// Soldaten, die noch auf Mission gehen wollen, canceln und für die Verteidigung mit einziehen
         CancelJobs();
         // Nochmal versuchen
-        if(troops.empty())
+        soldier = ChooseSoldier();
+        if(!soldier)
             return NULL;
     }
-
-    nofPassiveSoldier* soldier = ChooseSoldier();
 
     // neuen Verteidiger erzeugen
     nofDefender* defender = new nofDefender(soldier, attacker);
@@ -906,8 +902,6 @@ nofDefender* nobMilitary::ProvideDefender(nofAttacker* const attacker)
 void nobMilitary::Capture(const unsigned char new_owner)
 {
     RTTR_Assert(IsBeingCaptured());
-
-    captured_not_built = true;
 
     // Goldmünzen in der Inventur vom alten Spieler abziehen und dem neuen hinzufügen
     gwg->GetPlayer(player).DecreaseInventoryWare(GD_COINS, numCoins);
@@ -1007,7 +1001,7 @@ void nobMilitary::NeedOccupyingTroops()
     nofAttacker* best_attacker = NULL;
     unsigned best_radius = std::numeric_limits<unsigned>::max();
 
-    unsigned needed_soldiers = CalcRequiredTroopsCount();
+    unsigned needed_soldiers = CalcRequiredNumTroops();
     unsigned currentSoldiers = troops.size() + capturing_soldiers + troops_on_mission.size();
 
     if(needed_soldiers > currentSoldiers)

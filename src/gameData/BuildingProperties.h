@@ -32,7 +32,7 @@ class BuildingProperties
 public:
     static void Init();
     /// Stores the bld types that are military blds as a cache. Assumes that at most 1/4 of the blds are military
-    static boost::container::static_vector<BuildingType, BUILDING_TYPES_COUNT / 4u> militaryBldTypes;
+    static boost::container::static_vector<BuildingType, NUM_BUILDING_TYPES / 4u> militaryBldTypes;
 
     /// True iff the building type is used (not nothing)
     static bool IsValid(BuildingType bld);

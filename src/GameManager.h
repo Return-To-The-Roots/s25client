@@ -43,7 +43,6 @@ public:
     void Stop();
     bool Run();
 
-    bool StartMenu();
     bool ShowMenu();
 
     /// Average FPS Zähler zurücksetzen.
@@ -55,7 +54,7 @@ public:
 
     unsigned GetRuntime() { return run_time; }
 
-    unsigned GetFrameCount() { return frame_count; }
+    unsigned GetNumFrames() { return frame_count; }
 
     unsigned GetAverageFPS()
     {
@@ -69,9 +68,9 @@ public:
     void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
 
 private:
+    bool ShowSplashscreen();
     void DrawCursor();
 
-private:
     unsigned frames;
     unsigned frame_count;
     unsigned framerate;

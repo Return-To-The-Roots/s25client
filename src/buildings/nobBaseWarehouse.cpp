@@ -20,7 +20,6 @@
 #include "BurnedWarehouse.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
@@ -34,6 +33,7 @@
 #include "figures/nofTradeLeader.h"
 #include "figures/nofWarehouseWorker.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "nobMilitary.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -99,7 +99,7 @@ void nobBaseWarehouse::DestroyBuilding()
     waiting_wares.clear();
 
     // restliche Warenbestände von der Inventur wieder abziehen
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
@@ -128,13 +128,13 @@ void nobBaseWarehouse::Serialize_nobBaseWarehouse(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(reserve_soldiers_claimed_real[i]);
     }
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         sgd.PushUnsignedInt(inventory.visual.goods[i]);
         sgd.PushUnsignedInt(inventory.real.goods[i]);
         sgd.PushUnsignedChar(inventorySettings.wares[i].ToUnsignedChar());
     }
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         sgd.PushUnsignedInt(inventory.visual.people[i]);
         sgd.PushUnsignedInt(inventory.real.people[i]);
@@ -160,13 +160,13 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.PopUnsignedInt();
     }
 
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         inventory.visual.goods[i] = sgd.PopUnsignedInt();
         inventory.real.goods[i] = sgd.PopUnsignedInt();
         inventorySettings.wares[i] = inventorySettingsVisual.wares[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
     }
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         inventory.visual.people[i] = sgd.PopUnsignedInt();
         inventory.real.people[i] = sgd.PopUnsignedInt();
@@ -176,10 +176,10 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
 
 void nobBaseWarehouse::Clear()
 {
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         gwg->GetPlayer(player).DecreaseInventoryJob(Job(i), inventory[Job(i)]);
 
     inventory.clear();
@@ -305,7 +305,7 @@ void nobBaseWarehouse::HandleCollectEvent()
     bool storing_wanted = false;
 
     // Untersuchen, welche Waren und Figuren eingelagert werden sollen
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         // Soll Ware eingeliefert werden?
         if(!GetInventorySetting(GoodType(i)).IsSet(EInventorySetting::COLLECT))
@@ -332,7 +332,7 @@ void nobBaseWarehouse::HandleCollectEvent()
     // Menschen "bestellen" wenn noch keine Ware bestellt wurde
     if(!storing_done)
     {
-        for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         {
             // Soll dieser Typ von Mensch bestellt werden?
             if(!GetInventorySetting(Job(i)).IsSet(EInventorySetting::COLLECT))
@@ -372,18 +372,18 @@ void nobBaseWarehouse::HandleSendoutEvent()
     // Wenn keine Platz an Flagge, dann keine Waren raus
     if(GetFlag()->IsSpaceForWare())
     {
-        for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         {
             if(GetInventorySetting(GoodType(i)).IsSet(EInventorySetting::SEND) && inventory[GoodType(i)])
                 possibleIds.push_back(i);
         }
     }
 
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         // Figuren, die noch nicht implementiert sind, nicht nehmen!
         if(GetInventorySetting(Job(i)).IsSet(EInventorySetting::SEND) && inventory[Job(i)])
-            possibleIds.push_back(WARE_TYPES_COUNT + i);
+            possibleIds.push_back(NUM_WARE_TYPES + i);
     }
 
     // Gibts überhaupt welche?
@@ -394,7 +394,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     // Eine ID zufällig auswählen
     unsigned selectedId = possibleIds[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), possibleIds.size())];
 
-    if(selectedId < WARE_TYPES_COUNT)
+    if(selectedId < NUM_WARE_TYPES)
     {
         // Ware
         Ware* ware = new Ware(GoodType(selectedId), NULL, this);
@@ -422,7 +422,7 @@ void nobBaseWarehouse::HandleSendoutEvent()
     } else
     {
         // Figur
-        selectedId -= WARE_TYPES_COUNT;
+        selectedId -= NUM_WARE_TYPES;
 
         nobBaseWarehouse* wh = gwg->GetPlayer(player).FindWarehouse(*this, FW::AcceptsFigureButNoSend(Job(selectedId)), true, false);
         if(wh != this)
@@ -631,7 +631,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
     } else
     {
         // Ist noch Platz an der Flagge?
-        if(GetFlag()->GetWareCount() < 8)
+        if(GetFlag()->GetNumWares() < 8)
         {
             // Dann Ware raustragen lassen
             Ware* ware = waiting_wares.front();
@@ -1113,7 +1113,7 @@ const Inventory& nobBaseWarehouse::GetInventory() const
 void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 {
     GamePlayer& owner = gwg->GetPlayer(player);
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         if(!goods.goods[i])
             continue;
@@ -1126,7 +1126,7 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
         CheckUsesForNewWare(GoodType(i));
     }
 
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         if(!goods.people[i])
             continue;
@@ -1143,10 +1143,10 @@ void nobBaseWarehouse::AddGoods(const Inventory& goods, bool addToPlayer)
 void nobBaseWarehouse::AddToInventory()
 {
     GamePlayer& owner = gwg->GetPlayer(player);
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         owner.IncreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         owner.IncreaseInventoryJob(Job(i), inventory[Job(i)]);
 }
 
@@ -1293,14 +1293,14 @@ bool nobBaseWarehouse::AreWaresToEmpty() const
 {
     // Prüfen, ob Warentyp ausgelagert werden soll und ob noch Waren davon vorhanden sind
     // Waren überprüfen
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         if(GetInventorySetting(GoodType(i)).IsSet(EInventorySetting::SEND) && inventory[GoodType(i)])
             return true;
     }
 
     // Figuren überprüfen
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         if(GetInventorySetting(Job(i)).IsSet(EInventorySetting::SEND) && inventory[Job(i)])
             return true;

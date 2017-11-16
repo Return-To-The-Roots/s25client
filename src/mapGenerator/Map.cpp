@@ -18,10 +18,10 @@
 #include "gameData/MaxPlayers.h"
 #include "libsiedler2/enumTypes.h"
 
-Map::Map() : size(0, 0) {}
+Map::Map() : size(0, 0), type(0), numPlayers(0) {}
 
 Map::Map(const MapExtent& size, const std::string& name, const std::string& author)
-    : size(size), name(name), author(author), positions(MAX_PLAYERS, Point<uint16_t>(0xFF, 0xFF))
+    : size(size), name(name), author(author), type(0), numPlayers(0), hqPositions(MAX_PLAYERS, MapPoint::Invalid())
 {
     const unsigned numNodes = size.x * size.y;
 
@@ -46,19 +46,19 @@ libsiedler2::Archiv* Map::CreateArchiv()
     libsiedler2::Archiv* info = new libsiedler2::Archiv();
     libsiedler2::ArchivItem_Map* map = new libsiedler2::ArchivItem_Map();
     libsiedler2::ArchivItem_Map_Header* header = new libsiedler2::ArchivItem_Map_Header();
-    std::vector<unsigned char> data;
 
     // create header information for the archiv
     header->setName(name);
     header->setAuthor(author);
     header->setWidth(size.x);
     header->setHeight(size.y);
-    header->setNumPlayers(players);
+    header->setNumPlayers(numPlayers);
     header->setGfxSet(type);
 
-    for(unsigned i = 0; i < positions.size(); i++)
+    // First 7 players go into the header
+    for(unsigned i = 0; i < std::min<unsigned>(hqPositions.size(), 7); i++)
     {
-        header->setPlayerHQ(i, positions[i].x, positions[i].y);
+        header->setPlayerHQ(i, hqPositions[i].x, hqPositions[i].y);
     }
 
     map->push(header);

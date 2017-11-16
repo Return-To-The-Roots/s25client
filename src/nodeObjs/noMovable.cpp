@@ -19,9 +19,9 @@
 #include "noMovable.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameEvent.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MapConsts.h"
 #include "libutil/Log.h"

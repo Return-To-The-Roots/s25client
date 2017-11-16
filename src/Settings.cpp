@@ -36,7 +36,7 @@ const unsigned Settings::SETTINGS_SECTIONS = 11;
 const std::string Settings::SETTINGS_SECTION_NAMES[] = {"global", "video", "language",  "driver", "sound", "lobby",
                                                         "server", "proxy", "interface", "ingame", "addons"};
 
-const unsigned char Settings::SCREEN_REFRESH_RATES_COUNT = 14;
+const unsigned char Settings::NUM_SCREEN_REFRESH_RATESS = 14;
 const unsigned short Settings::SCREEN_REFRESH_RATES[] = {0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240};
 
 Settings::Settings() //-V730
@@ -107,12 +107,7 @@ bool Settings::LoadDefaults()
     server.ipv6 = false;
     // }
 
-    // proxy
-    // {
-    proxy.proxy.clear();
-    proxy.port = 0;
-    proxy.typ = 0;
-    // }
+    proxy = ProxySettings();
 
     // interface
     // {
@@ -244,21 +239,20 @@ bool Settings::Load()
 
         // proxy
         // {
-        proxy.proxy = iniProxy->getValue("proxy");
+        proxy.hostname = iniProxy->getValue("proxy");
         proxy.port = iniProxy->getValueI("port");
-        proxy.typ = iniProxy->getValueI("typ");
+        proxy.type = ProxyType(iniProxy->getValueI("typ"));
         // }
 
         // leere proxyadresse deaktiviert proxy komplett
-        if(proxy.proxy.empty())
-            proxy.typ = 0;
-
         // deaktivierter proxy entfernt proxyadresse
-        if(proxy.typ == 0)
-            proxy.proxy.clear();
-
+        if(proxy.hostname.empty() || (proxy.type != PROXY_SOCKS4 && proxy.type != PROXY_SOCKS5))
+        {
+            proxy.type = PROXY_NONE;
+            proxy.hostname.clear();
+        }
         // aktivierter Socks v4 deaktiviert ipv6
-        else if(proxy.typ == 4 && server.ipv6)
+        else if(proxy.type == PROXY_SOCKS4 && server.ipv6)
             server.ipv6 = false;
 
         // interface
@@ -374,23 +368,11 @@ void Settings::Save()
     iniServer->setValue("ipv6", (server.ipv6 ? 1 : 0));
     // }
 
-    // leere proxyadresse deaktiviert proxy komplett
-    if(proxy.proxy.empty())
-        proxy.typ = 0;
-
-    // deaktivierter proxy entfernt proxyadresse
-    if(proxy.typ == 0)
-        proxy.proxy.clear();
-
-    // aktivierter Socks v4 deaktiviert ipv6
-    else if(proxy.typ == 4 && server.ipv6)
-        server.ipv6 = false;
-
     // proxy
     // {
-    iniProxy->setValue("proxy", proxy.proxy);
+    iniProxy->setValue("proxy", proxy.hostname);
     iniProxy->setValue("port", proxy.port);
-    iniProxy->setValue("typ", proxy.typ);
+    iniProxy->setValue("typ", proxy.type);
     // }
 
     // interface

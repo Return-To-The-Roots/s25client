@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwHarborBuilding.h"
 
-#include "GameClient.h"
 #include "Loader.h"
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImageButton.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb) : iwHQ(gwv, gcFactory, hb)

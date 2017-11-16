@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
     settings.size = MapExtent(38, 30);
-    settings.players = 1;
+    settings.numPlayers = 1;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
     RandomConfig config(MapStyle::Random, 0x1337);
     MapSettings settings;
     settings.size = MapExtent(30u, 32u);
-    settings.players = 2;
+    settings.numPlayers = 2;
     settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
@@ -65,14 +65,14 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
     RandomMapGenerator generator(config);
 
     boost::interprocess::unique_ptr<Map, Deleter<Map> > map(generator.Create(settings));
-    BOOST_REQUIRE_EQUAL(map->players, settings.players);
+    BOOST_REQUIRE_EQUAL(map->numPlayers, settings.numPlayers);
 
-    unsigned minSize = std::min(map->size.x, map->size.y) / 2;
-    for(unsigned i = 0; i < settings.players; i++)
+    unsigned minSize = std::min(map->size.x, map->size.y) / 2; //-V807
+    for(unsigned i = 0; i < settings.numPlayers; i++)
     {
-        Point<uint16_t> p = map->positions[i];
-        BOOST_REQUIRE_NE(p.x, 0xFF);
-        BOOST_REQUIRE_NE(p.y, 0xFF);
+        Point<uint16_t> p = map->hqPositions[i];
+        BOOST_REQUIRE_LT(p.x, map->size.x);
+        BOOST_REQUIRE_LT(p.y, map->size.y);
 
         BOOST_REQUIRE_EQUAL(map->objectType[p.y * settings.size.x + p.x], i);
         BOOST_REQUIRE_EQUAL(map->objectInfo[p.y * settings.size.x + p.x], libsiedler2::OI_HeadquarterMask);
@@ -82,11 +82,8 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
         BOOST_REQUIRE_LE(distance, settings.maxPlayerRadius * minSize);
     }
 
-    for(unsigned i = settings.players; i < MAX_PLAYERS; i++)
-    {
-        BOOST_REQUIRE_EQUAL(map->positions[i].x, 0xFF);
-        BOOST_REQUIRE_EQUAL(map->positions[i].y, 0xFF);
-    }
+    for(unsigned i = settings.numPlayers; i < MAX_PLAYERS; i++)
+        BOOST_REQUIRE(!map->hqPositions[i].isValid());
 }
 
 BOOST_AUTO_TEST_CASE(InvalidConfig)
@@ -96,33 +93,33 @@ BOOST_AUTO_TEST_CASE(InvalidConfig)
 
     MapSettings settings;
     settings.size = MapExtent(30u, 20u);
-    settings.players = 0;
+    settings.numPlayers = 0;
     settings.type = LT_WASTELAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
     boost::interprocess::unique_ptr<Map, Deleter<Map> > map(generator.Create(settings));
-    BOOST_REQUIRE_GE(map->players, 1);
+    BOOST_REQUIRE_GE(map->numPlayers, 1);
 
-    settings.players = 99;
+    settings.numPlayers = 99;
     map.reset(generator.Create(settings));
-    BOOST_REQUIRE_LT(map->players, 99);
+    BOOST_REQUIRE_LT(map->numPlayers, 99);
 
-    settings.players = 2;
+    settings.numPlayers = 2;
     settings.minPlayerRadius = -1;
     settings.maxPlayerRadius = 100;
     map.reset(generator.Create(settings));
-    BOOST_REQUIRE_NE(map->positions[1].x, 0xFF);
+    BOOST_REQUIRE(map->hqPositions[1].isValid());
 
     settings.minPlayerRadius = 1;
     settings.maxPlayerRadius = 1;
     map.reset(generator.Create(settings));
-    BOOST_REQUIRE_NE(map->positions[1].x, 0xFF);
+    BOOST_REQUIRE(map->hqPositions[1].isValid());
 
     settings.minPlayerRadius = 1;
     settings.maxPlayerRadius = 0.5;
     map.reset(generator.Create(settings));
-    BOOST_REQUIRE_NE(map->positions[1].x, 0xFF);
+    BOOST_REQUIRE(map->hqPositions[1].isValid());
 
     settings.ratioCoal = 0;
     settings.ratioGold = 0;

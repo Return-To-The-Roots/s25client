@@ -50,7 +50,7 @@ bool TestServer::run()
         RTTR_Assert(set.InSet(socket));
         Socket newSocket = socket.Accept();
 
-        if(socket.isValid())
+        if(newSocket.isValid())
         {
             Connection con = acceptConnection(connections.size(), newSocket);
             if(con.so.isValid())

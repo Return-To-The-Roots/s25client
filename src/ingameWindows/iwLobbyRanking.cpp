@@ -29,13 +29,13 @@
 void iwLobbyRanking::UpdateRankings(const LobbyPlayerList& rankinglist)
 {
     ctrlTable* rankingtable = GetCtrl<ctrlTable>(0);
-    bool first = rankingtable->GetRowCount() == 0;
+    bool first = rankingtable->GetNumRows() == 0;
 
     rankingtable->DeleteAllItems();
 
-    if(rankinglist.getCount() > 0)
+    if(rankinglist.size() > 0)
     {
-        for(unsigned i = 0; i < rankinglist.getCount() && i < 10; ++i)
+        for(unsigned i = 0; i < rankinglist.size() && i < 10; ++i)
         {
             const LobbyPlayerInfo& rankInfo = *rankinglist.getElement(i);
             std::string points = boost::lexical_cast<std::string>(rankInfo.getPunkte());

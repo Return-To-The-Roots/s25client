@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwShip.h"
 #include "DrawPointInit.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -27,6 +26,7 @@
 #include "controls/ctrlButton.h"
 #include "figures/noFigure.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
@@ -90,7 +90,7 @@ void iwShip::Msg_PaintAfter()
     NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
-    sprintf(str, "%u/%u", ship_id + 1, owner.GetShipCount());
+    sprintf(str, "%u/%u", ship_id + 1, owner.GetNumShips());
     NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE,
                      COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
@@ -155,7 +155,7 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
         case 4:
         {
             if(ship_id == 0)
-                ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
+                ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips() - 1;
             else
                 --ship_id;
         }
@@ -164,12 +164,12 @@ void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
         case 5:
         {
             ++ship_id;
-            if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount())
+            if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips())
                 ship_id = 0;
         }
         break;
         // Letztes Schiff
-        case 6: { ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetShipCount() - 1;
+        case 6: { ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips() - 1;
         }
         break;
         case 7: // "Gehe Zu Ort"
@@ -185,8 +185,8 @@ void iwShip::DrawCargo()
     const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
     noShip* ship = owner.GetShipByID(ship_id);
 
-    std::vector<unsigned short> orderedWares = std::vector<unsigned short>(WARE_TYPES_COUNT);
-    std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(JOB_TYPES_COUNT);
+    std::vector<unsigned short> orderedWares = std::vector<unsigned short>(NUM_WARE_TYPES);
+    std::vector<unsigned short> orderedFigures = std::vector<unsigned short>(NUM_JOB_TYPES);
 
     // Alle Figuren in Gruppen zählen
     const std::list<noFigure*> figures = ship->GetFigures();

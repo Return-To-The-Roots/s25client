@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMissionStatement.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "Loader.h"
 #include "controls/ctrlMultiline.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/foreach.hpp>

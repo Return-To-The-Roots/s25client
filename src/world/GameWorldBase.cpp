@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "addons/const_addons.h"
@@ -27,6 +26,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
 #include "notifications/NodeNote.h"
 #include "notifications/PlayerNodeNote.h"
 #include "pathfinding/FreePathFinder.h"
@@ -64,17 +64,17 @@ void GameWorldBase::InitAfterLoad()
 
 GamePlayer& GameWorldBase::GetPlayer(const unsigned id)
 {
-    RTTR_Assert(id < GetPlayerCount());
+    RTTR_Assert(id < GetNumPlayers());
     return players[id];
 }
 
 const GamePlayer& GameWorldBase::GetPlayer(const unsigned id) const
 {
-    RTTR_Assert(id < GetPlayerCount());
+    RTTR_Assert(id < GetNumPlayers());
     return players[id];
 }
 
-unsigned GameWorldBase::GetPlayerCount() const
+unsigned GameWorldBase::GetNumPlayers() const
 {
     return players.size();
 }
@@ -309,7 +309,7 @@ Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsig
     {
         const GamePlayer& curPlayer = GetPlayer(player);
         // Dann prüfen, ob Teammitglieder evtl. eine bessere Sicht auf diesen Punkt haben
-        for(unsigned i = 0; i < GetPlayerCount(); ++i)
+        for(unsigned i = 0; i < GetNumPlayers(); ++i)
         {
             if(i != player && curPlayer.IsAlly(i))
             {
@@ -327,7 +327,7 @@ bool GameWorldBase::IsCoastalPointToSeaWithHarbor(const MapPoint pt) const
     unsigned short sea = GetSeaFromCoastalPoint(pt);
     if(sea)
     {
-        const unsigned numHarborPts = GetHarborPointCount();
+        const unsigned numHarborPts = GetNumHarborPoints();
         for(unsigned i = 1; i <= numHarborPts; i++)
         {
             if(IsHarborAtSea(i, sea))
@@ -418,7 +418,7 @@ unsigned GameWorldBase::GetNextFreeHarborPoint(const MapPoint pt, const unsigned
 unsigned GameWorldBase::CalcDistanceToNearestHarbor(const MapPoint pos) const
 {
     unsigned min_distance = 0xffffffff;
-    for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
+    for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
         min_distance = std::min(min_distance, this->CalcDistance(pos, GetHarborPoint(i)));
 
     return min_distance;
@@ -427,7 +427,7 @@ unsigned GameWorldBase::CalcDistanceToNearestHarbor(const MapPoint pos) const
 /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
 bool GameWorldBase::IsAHarborInSeaAttackDistance(const MapPoint pos) const
 {
-    for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
+    for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
     {
         if(CalcDistance(pos, GetHarborPoint(i)) < SEAATTACK_DISTANCE)
         {
@@ -446,7 +446,7 @@ std::vector<unsigned> GameWorldBase::GetUsableTargetHarborsForAttack(const MapPo
     const MapPoint flagPt = GetNeighbour(targetPt, Direction::SOUTHEAST);
     std::vector<unsigned> harbor_points;
     // Check each possible harbor
-    for(unsigned curHbId = 1; curHbId <= GetHarborPointCount(); ++curHbId)
+    for(unsigned curHbId = 1; curHbId <= GetNumHarborPoints(); ++curHbId)
     {
         const MapPoint harborPt = GetHarborPoint(curHbId);
 
@@ -507,7 +507,7 @@ std::vector<unsigned short> GameWorldBase::GetFilteredSeaIDsForAttack(const MapP
     const MapPoint flagPt = GetNeighbour(targetPt, Direction::SOUTHEAST);
     std::vector<unsigned short> confirmedSeaIds;
     // Check each possible harbor
-    for(unsigned curHbId = 1; curHbId <= GetHarborPointCount(); ++curHbId)
+    for(unsigned curHbId = 1; curHbId <= GetNumHarborPoints(); ++curHbId)
     {
         const MapPoint harborPt = GetHarborPoint(curHbId);
 
@@ -565,7 +565,7 @@ std::vector<unsigned> GameWorldBase::GetHarborPointsAroundMilitaryBuilding(const
     std::vector<unsigned> harbor_points;
     // Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
     // Alle unsere Häfen durchgehen
-    for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
+    for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
     {
         const MapPoint harborPt = GetHarborPoint(i);
 

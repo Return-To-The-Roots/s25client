@@ -18,10 +18,10 @@
 #ifndef WP_HOSTGAME_H_
 #define WP_HOSTGAME_H_
 
-#include "ClientInterface.h"
 #include "Desktop.h"
 #include "GlobalGameSettings.h"
 #include "helpers/Deleter.h"
+#include "network/ClientInterface.h"
 #include "gameTypes/ServerType.h"
 #include "liblobby/LobbyInterface.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -35,7 +35,7 @@ class LuaInterfaceSettings;
 class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
 {
 public:
-    dskHostGame(ServerType serverType, GameLobby& gameLobby, unsigned playerId);
+    dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gameLobby, unsigned playerId);
     ~dskHostGame();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
@@ -97,7 +97,7 @@ private:
 
 private:
     const ServerType serverType;
-    GameLobby& gameLobby;
+    boost::shared_ptr<GameLobby> gameLobby;
     unsigned localPlayerId_;
     bool hasCountdown_;
     boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;

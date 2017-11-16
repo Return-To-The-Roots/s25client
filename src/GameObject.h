@@ -32,9 +32,6 @@ class PostMsg;
 class GameObject
 {
 public:
-    /// ID for an invalid GameObject
-    static const unsigned INVALID_ID = 0xFFFFFFFF;
-
     GameObject();
     GameObject(SerializedGameData& sgd, const unsigned obj_id);
     GameObject(const GameObject& go);
@@ -46,7 +43,7 @@ public:
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
     virtual void HandleEvent(const unsigned /*id*/) {}
 
-    /// Gibt Objekt-ID zurück.
+    /// Return the unique ID of an object. Always non-zero!
     unsigned GetObjId() const { return objId; }
 
     /// Serialisierungsfunktion.
@@ -65,34 +62,38 @@ protected:
     void SendPostMessage(unsigned player, PostMsg* msg);
 
 private:
-    unsigned objId; /// eindeutige Objekt-ID
+    unsigned objId; /// unique ID
+
+    BOOST_DELETED_FUNCTION(GameObject& operator=(const GameObject&))
 
     // Static members
 public:
     /// Setzt Pointer auf GameWorld und EventManager
     static void SetPointers(GameWorldGame* const gameWorld) { GameObject::gwg = gameWorld; }
-    /// setzt den Objekt und Objekt-ID-Counter zurück
-    static void ResetCounter()
-    {
-        objIdCounter_ = 1;
-        objCounter_ = 0;
-    };
-    /// Gibt Anzahl Objekte zurück.
-    static unsigned GetObjCount() { return objCounter_; }
-    /// Setzt Anzahl der Objekte (NUR FÜR DAS LADEN!)
-    static void SetObjCount(const unsigned obj_count) { objCounter_ = obj_count; }
-    /// Gibt Obj-ID-Counter zurück (NUR FÜR DAS SPEICHERN!)
+    /// Return the number of objects alive
+    static unsigned GetNumObjs() { return objCounter_; }
+    /// Gibt Obj-ID-Counter zurück
     static unsigned GetObjIDCounter() { return objIdCounter_; }
-    /// Setzt Counter (NUR FÜR DAS LADEN!)
-    static void SetObjIDCounter(const unsigned obj_id_counter) { objIdCounter_ = obj_id_counter; }
+    /// Reset the object counter and the object ID counter to 0
+    static void ResetCounters()
+    {
+        objIdCounter_ = 0;
+        objCounter_ = 0;
+    }
+    /// Set the objIdCounter to the given value and resets the object counter to 1 (noNodeObj)
+    static void ResetCounters(unsigned objIdCounter)
+    {
+        objIdCounter_ = objIdCounter;
+        objCounter_ = 1;
+    }
 
 protected:
     /// Zugriff auf übrige Spielwelt
     static GameWorldGame* gwg;
 
 private:
-    static unsigned objIdCounter_; /// Objekt-ID-Counter
-    static unsigned objCounter_;   /// Objekt-Counter
+    static unsigned objIdCounter_; /// Objekt-ID-Counter (number of objects created)
+    static unsigned objCounter_;   /// Objekt-Counter (number of objects alive)
 };
 
 /// Calls destroy on a GameObject and then deletes it setting the ptr to NULL

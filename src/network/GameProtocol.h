@@ -35,7 +35,7 @@ enum
     NMS_SERVER_START,           //
     NMS_SERVER_CHAT,            // 1 destination, x text | 1 source, x text
     NMS_SERVER_ASYNC,           // playercount*4 int (Checksummen)
-    NMS_SERVER_COUNTDOWN,       // 4 countdown
+    NMS_SERVERCOUNTDOWN,        // 4 countdown
     NMS_SERVER_CANCELCOUNTDOWN, // 0
 
     NMS_PLAYER_ID = 0x0201, // 1 playerId
@@ -152,8 +152,12 @@ enum
     NP_ASYNC           // asynchron
 };
 
-// Wie lange maximal warten, bis Rausschmiss des Spielers (in milliseconds)
-const unsigned PING_TIMEOUT = 2 * 60 * 1000; // 2min
+/// How long till we kick a connecting player (in seconds)
+const unsigned CONNECT_TIMEOUT = 2 * 60; // 2min
+/// How long till we kick a lagging player (in seconds)
+const unsigned LAG_TIMEOUT = 35 * 60;
+/// How often we send pings (in seconds)
+const unsigned PING_RATE = 1;
 
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!

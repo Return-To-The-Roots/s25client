@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
 #include "ExtensionList.h"
-#include "GameClient.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 #include "world/GameWorldBase.h"
@@ -177,7 +177,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     GenerateVertices(gwv);
 
     // Add extra vertices for borders
-    unsigned triangleCount = gl_vertices.size();
+    unsigned numTriangles = gl_vertices.size();
     const LandscapeType lt = world.GetLandscapeType();
     for(MapCoord y = 0; y < size_.y; ++y)
     {
@@ -191,25 +191,25 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
             const TerrainType t4 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::SOUTHWEST))][1]);
 
             if((borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)))
-                borders[pos].left_right_offset[0] = triangleCount++;
+                borders[pos].left_right_offset[0] = numTriangles++;
             if((borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)))
-                borders[pos].left_right_offset[1] = triangleCount++;
+                borders[pos].left_right_offset[1] = numTriangles++;
 
             if((borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t3, t2)))
-                borders[pos].right_left_offset[0] = triangleCount++;
+                borders[pos].right_left_offset[0] = numTriangles++;
             if((borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t3)))
-                borders[pos].right_left_offset[1] = triangleCount++;
+                borders[pos].right_left_offset[1] = numTriangles++;
 
             if((borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t4, t1)))
-                borders[pos].top_down_offset[0] = triangleCount++;
+                borders[pos].top_down_offset[0] = numTriangles++;
             if((borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t4)))
-                borders[pos].top_down_offset[1] = triangleCount++;
+                borders[pos].top_down_offset[1] = numTriangles++;
         }
     }
 
-    gl_vertices.resize(triangleCount);
-    gl_texcoords.resize(triangleCount);
-    gl_colors.resize(triangleCount);
+    gl_vertices.resize(numTriangles);
+    gl_texcoords.resize(numTriangles);
+    gl_colors.resize(numTriangles);
 
     // Normales Terrain erzeugen
     for(MapCoord y = 0; y < size_.y; ++y)
@@ -627,7 +627,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     RTTR_Assert(!borders.empty());
 
     // nach Texture in Listen sortieren
-    boost::array<std::vector<MapTile>, TT_COUNT> sorted_textures;
+    boost::array<std::vector<MapTile>, NUM_TTS> sorted_textures;
     boost::array<std::vector<BorderTile>, 5> sorted_borders;
     PreparedRoads sorted_roads;
 
@@ -707,7 +707,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     {
         unsigned water_count = 0;
 
-        for(unsigned char t = 0; t < TT_COUNT; ++t)
+        for(unsigned char t = 0; t < NUM_TTS; ++t)
         {
             if(!TerrainData::IsWater(TerrainType(t)))
                 continue;
@@ -754,16 +754,16 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     glDisable(GL_BLEND);
 
     glPushMatrix();
-    for(unsigned char t = 0; t < TT_COUNT; ++t)
+    for(unsigned char t = 0; t < NUM_TTS; ++t)
     {
         if(sorted_textures[t].empty())
             continue;
         unsigned animationFrame;
         TerrainType tt = TerrainType(t);
         if(TerrainData::IsLava(tt))
-            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetFrameCount(tt), 5, 4, 0);
+            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetNumFrames(tt), 5, 4, 0);
         else if(TerrainData::IsWater(tt))
-            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetFrameCount(tt), 5, 2, 0);
+            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetNumFrames(tt), 5, 2, 0);
         else
             animationFrame = 0;
 

@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofBrewer.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
@@ -32,7 +32,7 @@ nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofBrewer::DrawWorking(DrawPoint drawPt)
 {
-    static const DrawPointInit offsets[NAT_COUNT] = {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}};
+    static const DrawPointInit offsets[NUM_NATS] = {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}};
 
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 

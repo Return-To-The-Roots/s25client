@@ -18,8 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofScout_LookoutTower.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "gameData/MilitaryConsts.h"

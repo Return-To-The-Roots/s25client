@@ -21,7 +21,6 @@
 enum PlayerState
 {
     PS_FREE = 0,
-    PS_RESERVED,
     PS_OCCUPIED,
     PS_LOCKED,
     PS_AI

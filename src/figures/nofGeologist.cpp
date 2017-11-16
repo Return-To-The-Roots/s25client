@@ -19,12 +19,12 @@
 #include "nofGeologist.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
 #include "notifications/ResourceNote.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "pathfinding/PathConditionHuman.h"

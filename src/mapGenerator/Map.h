@@ -66,12 +66,12 @@ struct Map
     /**
      * Number of players.
      */
-    uint8_t players;
+    uint8_t numPlayers;
 
     /**
      * Positions of the players' headquarters.
      */
-    std::vector<Point<uint16_t> > positions;
+    std::vector<MapPoint> hqPositions;
 
     /**
      * Height for each vertex of the map.

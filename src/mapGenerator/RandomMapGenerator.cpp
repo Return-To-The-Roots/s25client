@@ -57,13 +57,13 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
     const double rnd = config.DRand(settings.minPlayerRadius * length, settings.maxPlayerRadius * length);
 
     // player headquarters for the players
-    for(unsigned i = 0; i < settings.players; i++)
+    for(unsigned i = 0; i < settings.numPlayers; i++)
     {
         // compute headquarter position
-        Position position = helper.ComputePointOnCircle(i, settings.players, center, rnd);
+        Position position = helper.ComputePointOnCircle(i, settings.numPlayers, center, rnd);
 
         // store headquarter position
-        map.positions[i] = MapPoint(position);
+        map.hqPositions[i] = MapPoint(position);
 
         // create headquarter
         ObjectGenerator::CreateHeadquarter(map, VertexUtility::GetIndexOf(position, map.size), i);
@@ -73,11 +73,11 @@ void RandomMapGenerator::PlacePlayers(const MapSettings& settings, Map& map)
 void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& map)
 {
     ObjectGenerator objGen(config);
-    for(unsigned i = 0; i < settings.players; i++)
+    for(unsigned i = 0; i < settings.numPlayers; i++)
     {
         int offset1 = config.Rand(0, 180);
         int offset2 = config.Rand(180, 360);
-        const Position p(map.positions[i]);
+        const Position p(map.hqPositions[i]);
 
         helper.SetStones(map, objGen, helper.ComputePointOnCircle(offset1, 360, p, 12), 2.0F);
         helper.SetStones(map, objGen, helper.ComputePointOnCircle(offset2, 360, p, 12), 2.7F);
@@ -86,7 +86,7 @@ void RandomMapGenerator::PlacePlayerResources(const MapSettings& settings, Map& 
 
 void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
 {
-    const int players = settings.players;
+    const int players = settings.numPlayers;
     std::vector<AreaDesc> areas = config.areas;
     std::vector<TerrainType> textures = config.textures;
 
@@ -99,7 +99,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
 
             for(int i = 0; i < players; i++)
             {
-                distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.positions[i]), map.size));
+                distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(tile, Position(map.hqPositions[i]), map.size));
             }
 
             for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
@@ -126,7 +126,7 @@ void RandomMapGenerator::CreateHills(const MapSettings& settings, Map& map)
 
 void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& map)
 {
-    const int players = settings.players;
+    const int players = settings.numPlayers;
     std::vector<AreaDesc> areas = config.areas;
     std::vector<TerrainType> textures = config.textures;
 
@@ -156,7 +156,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
 
         for(int i = 0; i < players; i++)
         {
-            distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.positions[i]), map.size));
+            distanceToPlayer = std::min(distanceToPlayer, VertexUtility::Distance(pt, Position(map.hqPositions[i]), map.size));
         }
 
         for(std::vector<AreaDesc>::iterator it = areas.begin(); it != areas.end(); ++it)
@@ -184,9 +184,9 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
         const int index = VertexUtility::GetIndexOf(pt, map.size);
 
         // under certain circumstances replace dessert texture by harbor position
-        Position water(0, 0);
         if(ObjectGenerator::IsTexture(map, index, TT_DESERT))
         {
+            Position water(0, 0);
             // ensure there's water close to the dessert texture
             bool waterNeighbor = false;
             std::vector<int> neighbors = VertexUtility::GetNeighbors(pt, map.size, 1);
@@ -272,7 +272,7 @@ Map* RandomMapGenerator::Create(MapSettings settings)
 
     // configuration of the map settings
     map->type = settings.type;
-    map->players = settings.players;
+    map->numPlayers = settings.numPlayers;
 
     // the actual map generation
     PlacePlayers(settings, *map);

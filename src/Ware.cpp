@@ -19,7 +19,6 @@
 #include "Ware.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
@@ -27,6 +26,7 @@
 #include "buildings/noBuilding.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
+#include "network/GameClient.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
@@ -56,7 +56,7 @@ void Ware::Destroy()
     RTTR_Assert(!goal);
     RTTR_Assert(!location);
 #if RTTR_ENABLE_ASSERTS
-    for(unsigned p = 0; p < gwg->GetPlayerCount(); p++)
+    for(unsigned p = 0; p < gwg->GetNumPlayers(); p++)
     {
         RTTR_Assert(!gwg->GetPlayer(p).IsWareRegistred(this));
         RTTR_Assert(!gwg->GetPlayer(p).IsWareDependent(this));

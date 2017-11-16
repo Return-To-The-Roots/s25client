@@ -79,12 +79,11 @@ bool Loader::LoadFilesAtStart()
     std::vector<unsigned> files;
 
     files += 5, 6, 7, 8, 9, 10, 17, // Paletten:     pal5.bbm, pal6.bbm, pal7.bbm, paletti0.bbm, paletti1.bbm, paletti8.bbm, colors.act
-      FILE_SPLASH_ID,               // Splashscreen: splash.bmp
       11, 12,                       // Menüdateien:  resource.dat, io.dat
       102, 103,                     // Hintergründe: setup013.lbm, setup015.lbm
       64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84; // Die ganzen Spielladescreens.
 
-    if(!LoadFilesFromArray(files.size(), &files.front(), true))
+    if(!LoadFilesFromArray(files, true))
         return false;
 
     if(!LoadSounds())
@@ -102,7 +101,7 @@ bool Loader::LoadFilesAtStart()
  *  @param isOriginal If this is set to true, the file is considered to be the base archiv so all possibly loaded overrides are
  * removed/overwritten first
  */
-bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal)
+bool Loader::LoadFileOrDir(const std::string& file, bool isOriginal)
 {
     if(file.at(0) == '~')
         throw std::logic_error("You must use resolved pathes: " + file);
@@ -141,15 +140,6 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
         // no, only single file specified
         if(!LoadFile(file, GetPaletteN("pal5"), isOriginal))
             return false;
-
-        // ggf Splash anzeigen
-        if(file_id == FILE_SPLASH_ID)
-        {
-            glArchivItem_Bitmap* image = GetImageN("splash", 0);
-            image->setFilter(GL_LINEAR);
-            image->DrawFull(Rect(DrawPoint(0, 0), VIDEODRIVER.GetScreenSize()));
-            VIDEODRIVER.SwapBuffers();
-        }
     }
     return true;
 }
@@ -162,16 +152,13 @@ bool Loader::LoadFileOrDir(const std::string& file, const unsigned file_id, bool
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* files, bool isOriginal)
+bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files, bool isOriginal)
 {
     // load the files or directorys
-    for(unsigned i = 0; i < files_count; ++i)
+    BOOST_FOREACH(unsigned curFileIdx, files)
     {
-        if(files[i] == 0xFFFFFFFF)
-            continue;
-
-        std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[files[i]]);
-        if(!LoadFileOrDir(filePath, files[i], isOriginal))
+        std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[curFileIdx]);
+        if(!LoadFileOrDir(filePath, isOriginal))
         {
             LOG.write(_("Failed to load %s\n")) % filePath;
             return false;
@@ -189,15 +176,12 @@ bool Loader::LoadFilesFromArray(const unsigned files_count, const unsigned* file
 bool Loader::LoadLsts(unsigned dir)
 {
     // systemweite lsts laden
-    unsigned files_count;
-    unsigned files[2] = {dir, dir + 3};
+    std::vector<unsigned> files(1, dir);
 
-    if(bfs::equivalent(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]), RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3])))
-        files_count = 1;
-    else
-        files_count = 2;
+    if(!bfs::equivalent(RTTRCONFIG.ExpandPath(FILE_PATHS[dir]), RTTRCONFIG.ExpandPath(FILE_PATHS[dir + 3])))
+        files.push_back(dir + 3);
 
-    return LoadFilesFromArray(files_count, files, false);
+    return LoadFilesFromArray(files, false);
 }
 
 /**
@@ -355,20 +339,20 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
       23u + gfxset,              // map_?_z.lst
       20u + gfxset;              // tex?.lbm
 
-    for(unsigned char i = 0; i < NATIVE_NAT_COUNT; ++i)
+    for(unsigned char i = 0; i < NUM_NATIVE_NATS; ++i)
     {
         // ggf. Völker-Grafiken laden
         if(nations[i] || (i == NAT_ROMANS && nations[NAT_BABYLONIANS]))
-            files += 27 + i + (gfxset == LT_WINTERWORLD) * NATIVE_NAT_COUNT;
+            files += 27 + i + (gfxset == LT_WINTERWORLD) * NUM_NATIVE_NATS;
     }
 
     lastgfx = 0xFF;
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
-    if(!LoadFilesFromArray(files.size(), &files.front(), true))
+    if(!LoadFilesFromArray(files, true))
         return false;
 
-    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), 0, true))
+    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
         return false;
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
@@ -376,7 +360,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
 
     lastgfx = gfxset;
 
-    for(unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
         nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
 
     map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
@@ -391,7 +375,7 @@ void Loader::fillCaches()
     stp = new glTexturePacker();
 
     // Animals
-    for(unsigned species = 0; species < SPEC_COUNT; ++species)
+    for(unsigned species = 0; species < NUM_SPECS; ++species)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
@@ -437,10 +421,10 @@ void Loader::fillCaches()
 
     glArchivItem_Bob* bob_jobs = GetBobN("jobs");
 
-    for(unsigned nation = 0; nation < NAT_COUNT; ++nation)
+    for(unsigned nation = 0; nation < NUM_NATS; ++nation)
     {
         // BUILDINGS
-        for(unsigned type = 0; type < BUILDING_TYPES_COUNT; ++type)
+        for(unsigned type = 0; type < NUM_BUILDING_TYPES; ++type)
         {
             glSmartBitmap& bmp = building_cache[nation][type][0];
             glSmartBitmap& skel = building_cache[nation][type][1];
@@ -496,8 +480,8 @@ void Loader::fillCaches()
             }
         }
 
-        // Bobs from jobs.bob. Job = JOB_TYPES_COUNT is used for fat carriers. See below.
-        for(unsigned job = 0; job < JOB_TYPES_COUNT + 1; ++job)
+        // Bobs from jobs.bob. Job = NUM_JOB_TYPES is used for fat carriers. See below.
+        for(unsigned job = 0; job < NUM_JOB_TYPES + 1; ++job)
         {
             for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
@@ -511,7 +495,7 @@ void Loader::fillCaches()
 
                     bmp.reset();
 
-                    if(job == JOB_TYPES_COUNT) // used for fat carrier, so that we do not need an additional sub-array
+                    if(job == NUM_JOB_TYPES) // used for fat carrier, so that we do not need an additional sub-array
                     {
                         fat = true;
                         id = 0;
@@ -522,10 +506,10 @@ void Loader::fillCaches()
 
                         if((job == JOB_SCOUT) || ((job >= JOB_PRIVATE) && (job <= JOB_GENERAL)))
                         {
-                            if(nation < NATIVE_NAT_COUNT)
+                            if(nation < NUM_NATIVE_NATS)
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
-                            } else if(nation == NAT_BABYLONIANS)
+                            } else if(nation == NAT_BABYLONIANS) //-V547
                             {
                                 id += NATION_RTTR_TO_S2[nation] * 6;
                                 /* TODO: change this once we have own job pictures for babylonians
@@ -533,7 +517,7 @@ void Loader::fillCaches()
                                                                 overlayOffset = (job == JOB_SCOUT) ? 1740 : 1655;
 
                                                                 //8 Frames * 6 Directions * 6 Types
-                                                                overlayOffset += (nation - NATIVE_NAT_COUNT) * (8 * 6 * 6);
+                                                                overlayOffset += (nation - NUM_NATIVE_NATS) * (8 * 6 * 6);
                                 */
                             } else
                                 throw std::runtime_error("Wrong nation");
@@ -669,7 +653,7 @@ void Loader::fillCaches()
     // carrier_cache[ware][direction][animation_step][fat]
     glArchivItem_Bob* bob_carrier = GetBobN("carrier");
 
-    for(unsigned ware = 0; ware < WARE_TYPES_COUNT; ++ware)
+    for(unsigned ware = 0; ware < NUM_WARE_TYPES; ++ware)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
         {
@@ -779,7 +763,7 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
     std::stringstream s;
     s << RTTRCONFIG.ExpandPath(FILE_PATHS[96]) << "/Addon_0x" << std::setw(8) << std::setfill('0') << std::hex << id << "/";
 
-    return LoadFileOrDir(s.str(), 96, false);
+    return LoadFileOrDir(s.str(), false);
 }
 
 void Loader::ClearTerrainTextures()
@@ -820,11 +804,11 @@ bool Loader::CreateTerrainTextures()
       Rect(242, 0, 50, 16), Rect(242, 16, 50, 16), Rect(242, 32, 50, 16), Rect(242, 160, 50, 16),
     };
 
-    for(unsigned char i = 0; i < TT_COUNT; ++i)
+    for(unsigned char i = 0; i < NUM_TTS; ++i)
     {
         TerrainType t = TerrainType(i);
         if(TerrainData::IsAnimated(t))
-            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetFrameCount(t),
+            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetNumFrames(t),
                                                             TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
         else
             terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
@@ -926,7 +910,8 @@ glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
 
 const libsiedler2::ArchivItem_Palette* Loader::GetTexPalette()
 {
-    return dynamic_cast<const libsiedler2::ArchivItem_Palette*>(GetTexImageN(0)->getPalette());
+    glArchivItem_Bitmap* texImageN = GetTexImageN(0);
+    return texImageN ? dynamic_cast<const libsiedler2::ArchivItem_Palette*>(texImageN->getPalette()) : NULL;
 }
 
 glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame /* = 0*/)
@@ -936,7 +921,7 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
         libsiedler2::Archiv* archive = terrainTexturesAnim[t];
         if(!archive)
             throw std::runtime_error("Invalid terrain texture requested");
-        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame));
+        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame)); //-V522
     } else
     {
         glArchivItem_Bitmap* bmp = terrainTextures[t];
@@ -953,6 +938,8 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
+    if(!image)
+        return NULL;
 
     libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
 
@@ -982,6 +969,8 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
 {
     const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
+    if(!image)
+        return NULL;
 
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
     libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, start_index);
@@ -989,7 +978,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
 
     image->print(buffer, palette, 0, 0, rect.left, rect.top);
 
-    libsiedler2::Archiv* destination = new libsiedler2::Archiv();
+    boost::interprocess::unique_ptr<libsiedler2::Archiv, Deleter<libsiedler2::Archiv> > destination(new libsiedler2::Archiv());
     for(unsigned char i = 0; i < color_count; ++i)
     {
         BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
@@ -1021,7 +1010,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned c
 
         destination->push(bitmap.release());
     }
-    return destination;
+    return destination.release();
 }
 
 /**

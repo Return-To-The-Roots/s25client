@@ -54,17 +54,17 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     this->AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
 
     // Create possible wares, figures
-    for(unsigned i = 0; i < WARE_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
     {
         // Only add one shield type
         if(GoodType(i) != ConvertShields(GoodType(i)))
             continue;
-        // Don't add nothing or empty water
-        if(i == GD_NOTHING || i == GD_WATEREMPTY)
+        // Don't add empty water
+        if(i == GD_WATEREMPTY)
             continue;
         wares.push_back(GoodType(i));
     }
-    for(unsigned i = 0; i < JOB_TYPES_COUNT; ++i)
+    for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
     {
         // Can't trade boat carriers
         if(i == JOB_BOATCARRIER)

@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofAttacker.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
@@ -26,6 +25,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "nofAggressiveDefender.h"
 #include "nofDefender.h"
 #include "nofPassiveSoldier.h"
@@ -45,7 +45,7 @@ const unsigned BLOCK_OFFSET = 10;
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal)
     : nofActiveSoldier(*other, STATE_ATTACKING_WALKINGTOGOAL), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(MapPoint::Invalid()),
       shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -56,7 +56,7 @@ nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attack
 
 nofAttacker::nofAttacker(nofPassiveSoldier* other, nobBaseMilitary* const attacked_goal, const nobHarborBuilding* const harbor)
     : nofActiveSoldier(*other, STATE_SEAATTACKING_GOTOHARBOR), attacked_goal(attacked_goal), mayBeHunted(true),
-      canPlayerSendAggDefender(gwg->GetPlayerCount(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
+      canPlayerSendAggDefender(gwg->GetNumPlayers(), 2), huntingDefender(NULL), blocking_event(NULL), harborPos(harbor->GetPos()),
       shipPos(MapPoint::Invalid()), ship_obj_id(0)
 {
     // Dem Haus Bescheid sagen
@@ -131,7 +131,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     {
         attacked_goal = NULL;
         mayBeHunted = false;
-        canPlayerSendAggDefender.resize(gwg->GetPlayerCount(), 2);
+        canPlayerSendAggDefender.resize(gwg->GetNumPlayers(), 2);
         huntingDefender = NULL;
         radius = 0;
         blocking_event = NULL;
@@ -444,12 +444,12 @@ void nofAttacker::WonFighting()
 /// Doesn't find a defender at the flag -> Send defenders or capture it
 void nofAttacker::ContinueAtFlag()
 {
+    RTTR_Assert(attacked_goal);
     // Greifen wir grad ein Gebäude an?
-    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER
-       || (attacked_goal && state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos() == pos))
+    if(state == STATE_ATTACKING_FIGHTINGVSDEFENDER || (state == STATE_FIGHTING && attacked_goal->GetFlag()->GetPos() == pos))
     {
         // Dann neuen Verteidiger rufen
-        if(attacked_goal->CallDefender(this))
+        if(attacked_goal->CallDefender(this)) //-V522
         {
             // Verteidiger gefunden --> hinstellen und auf ihn warten
             SwitchStateAttackingWaitingForDefender();

@@ -74,7 +74,7 @@ void AIResourceMap::Recalc()
 
 void AIResourceMap::AdjustRatingForBlds(BuildingType bld, unsigned radius, int value)
 {
-    const unsigned playerCt = aii.GetPlayerCount();
+    const unsigned playerCt = aii.GetNumPlayers();
     for(unsigned i = 0; i < playerCt; i++)
     {
         const std::list<nobUsual*>& blds = aii.GetPlayerBuildings(bld, i);

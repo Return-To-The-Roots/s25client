@@ -82,7 +82,9 @@ public:
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
+    /// Load a file and save it into the loader repo
     bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal);
+    /// Load a file into the archiv
     bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& archiv);
 
 protected:
@@ -95,9 +97,9 @@ private:
     libsiedler2::Archiv* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
                                                 uint32_t colorShift = 0);
 
-    bool LoadFilesFromArray(const unsigned files_count, const unsigned* files, bool isOriginal);
+    bool LoadFilesFromArray(const std::vector<unsigned>& files, bool isOriginal);
     bool LoadLsts(unsigned dir);
-    bool LoadFileOrDir(const std::string& file, const unsigned file_id, bool isOriginal);
+    bool LoadFileOrDir(const std::string& file, bool isOriginal);
 
 public:
     glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
@@ -136,7 +138,7 @@ private:
     std::map<TerrainType, libsiedler2::Archiv*> terrainTexturesAnim;
 
     unsigned char lastgfx;
-    boost::array<libsiedler2::Archiv*, NAT_COUNT> nation_gfx;
+    boost::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
     libsiedler2::Archiv* map_gfx;
     libsiedler2::Archiv* tex_gfx;
 
@@ -150,25 +152,25 @@ public:
     glTexturePacker* stp;
 
     /// Animals: Species, Direction, AnimationFrame(Last = Dead)
-    helpers::MultiArray<glSmartBitmap, SPEC_COUNT, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_SPECS, 6, ANIMAL_MAX_ANIMATION_STEPS + 1> animal_cache;
     /// Buildings: Nation, Type, Building/Skeleton
-    helpers::MultiArray<glSmartBitmap, NAT_COUNT, BUILDING_TYPES_COUNT, 2> building_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_NATS, NUM_BUILDING_TYPES, 2> building_cache;
     /// Flags: Nation, Type, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, NAT_COUNT, 3, 8> flag_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_NATS, 3, 8> flag_cache;
     /// Military Flags: AnimationFrame
     // helpers::MultiArray<glSmartBitmap, 8> building_flag_cache;
     /// Trees: Type, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 9, 15> tree_cache;
     /// Jobs: Nation, Job (last is fat carrier), Direction, AnimationFrame
-    helpers::MultiArray<glSmartBitmap, NAT_COUNT, JOB_TYPES_COUNT + 1, 6, 8> bob_jobs_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_NATS, NUM_JOB_TYPES + 1, 6, 8> bob_jobs_cache;
     /// Stone: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 6> granite_cache;
     /// Grainfield: Type, Size
     helpers::MultiArray<glSmartBitmap, 2, 4> grainfield_cache;
     /// Carrier w/ ware: Ware, Direction, Animation, NormalOrFat
-    helpers::MultiArray<glSmartBitmap, WARE_TYPES_COUNT, 6, 8, 2> carrier_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_WARE_TYPES, 6, 8, 2> carrier_cache;
     /// Boundary stones: Nation
-    helpers::MultiArray<glSmartBitmap, NAT_COUNT> boundary_stone_cache;
+    helpers::MultiArray<glSmartBitmap, NUM_NATS> boundary_stone_cache;
     /// BoatCarrier: Direction, AnimationFrame
     helpers::MultiArray<glSmartBitmap, 6, 8> boat_cache;
     /// Donkey: Direction, AnimationFrame

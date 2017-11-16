@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/GameWorldGame.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -32,6 +31,7 @@
 #include "figures/nofScout_Free.h"
 #include "helpers/containerUtils.h"
 #include "lua/LuaInterfaceGame.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/RoadNote.h"
@@ -456,7 +456,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Set to true, where owner has changed (initially all false)
     std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
 
-    std::vector<int> sizeChanges(GetPlayerCount());
+    std::vector<int> sizeChanges(GetNumPlayers());
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
 
@@ -505,9 +505,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         }
     }
 
-    for(unsigned i = 0; i < GetPlayerCount(); ++i)
+    for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
-        GetPlayer(i).ChangeStatisticValue(STAT_COUNTRY, sizeChanges[i]);
+        GetPlayer(i).ChangeStatisticValue(NUM_STATSRY, sizeChanges[i]);
 
         // Negatives Wachstum per Post dem/der jeweiligen Landesherren/dame melden, nur bei neugebauten Gebäuden
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
@@ -668,9 +668,9 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             {
                 const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
                 if(noCheckMil->GetGOT() == GOT_NOB_HQ || noCheckMil->GetGOT() == GOT_NOB_HARBORBUILDING
-                   || (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !dynamic_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
+                   || (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
                    || (noCheckMil->GetType() == NOP_BUILDINGSITE
-                       && dynamic_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
+                       && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
                 {
                     // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type,
                     // %i \n", x, y, no->GetType());
@@ -1075,7 +1075,7 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     }
 
     // Sichtbereich von Spähtürmen
-    BOOST_FOREACH(const nobUsual* bld, GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER))
+    BOOST_FOREACH(const nobUsual* bld, GetPlayer(player).GetBuildingRegister().GetBuildings(BLD_LOOKOUTTOWER)) //-V807
     {
         // Ist Späturm überhaupt besetzt?
         if(!bld->HasWorker())
@@ -1356,7 +1356,7 @@ bool GameWorldGame::IsHarborBuildingSiteFromSea(const noBuildingSite* building_s
 std::vector<unsigned> GameWorldGame::GetUnexploredHarborPoints(const unsigned hbIdToSkip, const unsigned seaId, unsigned playerId) const
 {
     std::vector<unsigned> hps;
-    for(unsigned i = 1; i <= GetHarborPointCount(); ++i)
+    for(unsigned i = 1; i <= GetNumHarborPoints(); ++i)
     {
         if(i == hbIdToSkip || !IsHarborAtSea(i, seaId))
             continue;

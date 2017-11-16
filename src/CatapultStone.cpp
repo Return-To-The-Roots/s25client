@@ -19,10 +19,10 @@
 #include "CatapultStone.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "buildings/nobMilitary.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "random/Random.h"
@@ -118,7 +118,7 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
             {
                 milBld->HitOfCatapultStone();
                 // If there are no troops left, destroy it
-                if(milBld->GetTroopsCount() == 0)
+                if(milBld->GetNumTroops() == 0)
                     gwg->DestroyNO(milBld->GetPos());
             }
         } else

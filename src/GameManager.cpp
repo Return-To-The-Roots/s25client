@@ -17,11 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameManager.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "MusicPlayer.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "SoundManager.h"
 #include "WindowManager.h"
@@ -33,12 +32,15 @@
 #include "helpers/converters.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
 #include "ingameWindows/iwMusicPlayer.h"
-#include "ogl/glArchivItem_Font.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/GameConsts.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 #include "libutil/error.h"
+#include <boost/math/special_functions/round.hpp>
 #include <cstdio>
 #include <ctime>
 
@@ -59,19 +61,19 @@ bool GameManager::Start()
     /// Videotreiber laden
     if(!VIDEODRIVER.LoadDriver())
     {
-        LOG.write("Video driver couldn't be loaded!\n");
+        s25Util::error(_("Video driver couldn't be loaded!\n"));
         return false;
     }
 
     // Fenster erstellen
-    Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
+    Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
     if(!VIDEODRIVER.CreateScreen(screenSize.x, screenSize.y, SETTINGS.video.fullscreen))
         return false;
 
     /// Audiodriver laden
     if(!AUDIODRIVER.LoadDriver())
     {
-        LOG.write("Audio driver couldn't be loaded!\n");
+        s25Util::warning(_("Audio driver couldn't be loaded!\n"));
         // return false;
     }
 
@@ -82,8 +84,8 @@ bool GameManager::Start()
     // Treibereinstellungen abspeichern
     SETTINGS.Save();
 
-    LOG.write("\nStarte das Spiel\n");
-    if(!StartMenu())
+    LOG.write(_("\nStarting the game\n"));
+    if(!ShowSplashscreen())
         return false;
 
     std::string playlist = iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist);
@@ -174,11 +176,11 @@ bool GameManager::Run()
         if(GAMECLIENT.GetGFNumber() > skipgf_last_report_gf)
         {
             if(skipgf_last_time)
-                LOG.write("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n") % GAMECLIENT.skiptogf
+                LOG.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n")) % GAMECLIENT.skiptogf
                   % GAMECLIENT.GetGFNumber() % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 1000)
                   % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 5000);
             else
-                LOG.write("jumping to gf %i, now at gf %i \n") % GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber();
+                LOG.write(_("jumping to gf %i, now at gf %i \n")) % GAMECLIENT.skiptogf % GAMECLIENT.GetGFNumber();
             skipgf_last_time = VIDEODRIVER.GetTickCount();
             skipgf_last_report_gf = GAMECLIENT.GetGFNumber();
         }
@@ -189,11 +191,11 @@ bool GameManager::Run()
         if(skipgf_last_time)
         {
             if((GAMECLIENT.skiptogf - 1) % 5000 > 0)
-                LOG.write("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n") % GAMECLIENT.skiptogf
+                LOG.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n")) % GAMECLIENT.skiptogf
                   % ((GAMECLIENT.skiptogf - 1) % 5000 + 1) % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / 1000)
                   % (static_cast<double>(VIDEODRIVER.GetTickCount() - skipgf_last_time) / ((GAMECLIENT.skiptogf - 1) % 5000));
             else
-                LOG.write("jump to gf %i complete \n") % GAMECLIENT.skiptogf;
+                LOG.write(_("jump to gf %i complete \n")) % GAMECLIENT.skiptogf;
         }
         skipgf_last_time = 0;
         skipgf_last_report_gf = 0;
@@ -203,28 +205,25 @@ bool GameManager::Run()
     // Framerate berechnen
     if(current_time - frame_time >= 1000)
     {
-        // weitere Sekunde vergangen
-        ++run_time;
+        unsigned msSinceLastFrameCalculation = current_time - frame_time;
+
+        run_time += msSinceLastFrameCalculation / 1000;
 
         // Gesamtzahl der gezeichneten Frames erhöhen
         frame_count += frames;
 
         // normale Framerate berechnen
-        framerate = frames;
+        framerate = static_cast<unsigned>(boost::math::iround(frames * 1000. / msSinceLastFrameCalculation));
         frames = 0;
 
         frame_time = current_time;
+        WINDOWMANAGER.UpdateFps(framerate);
     }
 
     // und zeichnen
     // only draw if we dont skip ahead right now
     if(!skipping)
     {
-        char frame_str[64];
-        sprintf(frame_str, "%u fps", framerate);
-
-        SmallFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize().x, 0), frame_str, glArchivItem_Font::DF_RIGHT, COLOR_YELLOW);
-
         // Zeichenpuffer wechseln
         VIDEODRIVER.SwapBuffers();
     }
@@ -237,28 +236,16 @@ bool GameManager::Run()
     return GLOBALVARS.notdone;
 }
 
-/**
- *  Startet und lädt das Menü.
- */
-bool GameManager::StartMenu()
+bool GameManager::ShowSplashscreen()
 {
-    // generelle Daten laden
-    if(!LOADER.LoadFilesAtStart())
-    {
-        s25Util::error("Einige Dateien konnten nicht geladen werden.\n"
-                       "Stellen Sie sicher, dass die Siedler 2 Gold-Edition im gleichen \n"
-                       "Verzeichnis wie Return to the Roots installiert ist.");
-
-        s25Util::error("Some files failed to load.\n"
-                       "Please ensure that the Settlers 2 Gold-Edition is installed \n"
-                       "in the same directory as Return to the Roots.");
-
+    libsiedler2::Archiv arSplash;
+    if(!LOADER.LoadFile(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp"), NULL, arSplash))
         return false;
-    }
-
-    // Splash-Screen anzeigen
-    WINDOWMANAGER.Switch(new dskSplash);
-
+    glArchivItem_Bitmap* image = dynamic_cast<glArchivItem_Bitmap*>(arSplash[0]);
+    if(!image)
+        return false;
+    arSplash.release(0);
+    WINDOWMANAGER.Switch(new dskSplash(image));
     return true;
 }
 

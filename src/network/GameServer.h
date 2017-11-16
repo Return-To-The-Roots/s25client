@@ -24,6 +24,7 @@
 #include "GameMessageInterface.h"
 #include "GameServerInterface.h"
 #include "GlobalGameSettings.h"
+#include "JoinPlayerInfo.h"
 #include "helpers/Deleter.h"
 #include "random/Random.h"
 #include "gameTypes/MapInfo.h"
@@ -78,7 +79,7 @@ public:
     std::string GetGameName() const { return config.gamename; }
     bool HasPwd() const { return !config.password.empty(); }
     unsigned short GetPort() const { return config.port; }
-    unsigned GetMaxPlayerCount() const override { return config.playercount; }
+    unsigned GetNumMaxPlayers() const override { return config.playercount; }
     bool IsRunning() const override { return status != SS_STOPPED; }
 
     const GlobalGameSettings& GetGGS() const override { return ggs_; }
@@ -86,6 +87,7 @@ public:
     GameServerInterface& GetInterface() { return *this; }
 
 private:
+    GameServerPlayer* GetNetworkPlayer(unsigned playerId);
     /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
     void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
@@ -101,7 +103,7 @@ private:
     /// Sendet ein NC-Paket ohne Befehle
     void SendNothingNC(const unsigned& id);
 
-    unsigned GetFilledSlots() const;
+    unsigned GetNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
     void AnnounceStatusChange() override;
 
@@ -129,8 +131,8 @@ private:
     void ExecuteGameFrame();
     void RunGF(bool isNWF);
     void ExecuteNWF(const unsigned currentTime);
-    void CheckAndKickLaggingPlayer(const unsigned char playerIdx);
-    unsigned char GetLaggingPlayer() const;
+    void CheckAndKickLaggingPlayers();
+    bool CheckForLaggingPlayers();
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override;
 
 private:
@@ -163,7 +165,8 @@ private:
     MapInfo mapinfo;
 
     Socket serversocket;
-    std::vector<GameServerPlayer> players;
+    std::vector<JoinPlayerInfo> playerInfos;
+    std::vector<GameServerPlayer> networkPlayers;
     GlobalGameSettings ggs_;
 
     /// der Spielstartcountdown

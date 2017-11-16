@@ -30,7 +30,7 @@
 /// Type for describing a 2D value (position, size, offset...)
 /// Note: Combining a signed with an unsigned point will result in a signed type!
 template<typename T>
-struct Point
+struct Point //-V690
 {
     typedef T ElementType;
 
@@ -55,6 +55,7 @@ struct Point
 typedef Point<int> Position;
 /// Type for describing an extent/size etc. (unsigned type)
 typedef Point<unsigned> Extent;
+//-V:all:810
 
 //////////////////////////////////////////////////////////////////////////
 

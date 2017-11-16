@@ -26,6 +26,7 @@
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
+#include "world/TerritoryRegion.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingConsts.h"
 #include "libutil/Log.h"
@@ -45,23 +46,29 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
                                .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
                                .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
+                               .addFunction("IsInRestrictedArea", &LuaPlayer::IsInRestrictedArea)
                                .addFunction("ClearResources", &LuaPlayer::ClearResources)
                                .addFunction("AddWares", &LuaPlayer::AddWares)
                                .addFunction("AddPeople", &LuaPlayer::AddPeople)
-                               .addFunction("GetBuildingCount", &LuaPlayer::GetBuildingCount)
-                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetBuildingSitesCount)
-                               .addFunction("GetWareCount", &LuaPlayer::GetWareCount)
-                               .addFunction("GetPeopleCount", &LuaPlayer::GetPeopleCount)
+                               .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
+                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
+                               .addFunction("GetWareCount", &LuaPlayer::GetNumWares)
+                               .addFunction("GetPeopleCount", &LuaPlayer::GetNumPeople)
                                .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
                                .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
                                .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
-                               .addFunction("Surrender", &LuaPlayer::Surrender));
+                               .addFunction("Surrender", &LuaPlayer::Surrender)
+                               // Old names
+                               .addFunction("GetNumBuildings", &LuaPlayer::GetNumBuildings)
+                               .addFunction("GetNumBuildingSites", &LuaPlayer::GetNumBuildingSites)
+                               .addFunction("GetNumWares", &LuaPlayer::GetNumWares)
+                               .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople));
 }
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.EnableBuilding(bld);
     if(notify)
     {
@@ -73,19 +80,19 @@ void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
 
 void LuaPlayer::DisableBuilding(BuildingType bld)
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     player.DisableBuilding(bld);
 }
 
 void LuaPlayer::EnableAllBuildings()
 {
-    for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+    for(unsigned building_type = 0; building_type < NUM_BUILDING_TYPES; building_type++)
         player.EnableBuilding(BuildingType(building_type));
 }
 
 void LuaPlayer::DisableAllBuildings()
 {
-    for(unsigned building_type = 0; building_type < BUILDING_TYPES_COUNT; building_type++)
+    for(unsigned building_type = 0; building_type < NUM_BUILDING_TYPES; building_type++)
         player.DisableBuilding(BuildingType(building_type));
 }
 
@@ -164,6 +171,14 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
     player.GetRestrictedArea() = pts;
 }
 
+bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
+{
+    const GameWorldGame& world = player.GetGameWorld();
+    lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
+    lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
+    return TerritoryRegion::IsPointValid(world.GetSize(), player.GetRestrictedArea(), MapPoint(x, y));
+}
+
 void LuaPlayer::ClearResources()
 {
     const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
@@ -182,7 +197,7 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
 
     for(std::map<GoodType, unsigned>::const_iterator it = wares.begin(); it != wares.end(); ++it)
     {
-        if(unsigned(it->first) < WARE_TYPES_COUNT)
+        if(unsigned(it->first) < NUM_WARE_TYPES)
             goods.Add(it->first, it->second);
         else
             throw std::runtime_error((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
@@ -203,7 +218,7 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
 
     for(std::map<Job, unsigned>::const_iterator it = people.begin(); it != people.end(); ++it)
     {
-        if(unsigned(it->first) < JOB_TYPES_COUNT)
+        if(unsigned(it->first) < NUM_JOB_TYPES)
             goods.Add(it->first, it->second);
         else
             throw std::runtime_error((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
@@ -213,29 +228,29 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
     return true;
 }
 
-unsigned LuaPlayer::GetBuildingCount(BuildingType bld)
+unsigned LuaPlayer::GetNumBuildings(BuildingType bld) const
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
 
-    return player.GetBuildingRegister().GetBuildingCount().buildings[bld];
+    return player.GetBuildingRegister().GetBuildingNums().buildings[bld];
 }
 
-unsigned LuaPlayer::GetBuildingSitesCount(BuildingType bld)
+unsigned LuaPlayer::GetNumBuildingSites(BuildingType bld) const
 {
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
 
-    return player.GetBuildingRegister().GetBuildingCount().buildingSites[bld];
+    return player.GetBuildingRegister().GetBuildingNums().buildingSites[bld];
 }
 
-unsigned LuaPlayer::GetWareCount(GoodType ware)
+unsigned LuaPlayer::GetNumWares(GoodType ware) const
 {
-    lua::assertTrue(unsigned(ware) < WARE_TYPES_COUNT, "Invalid ware");
+    lua::assertTrue(unsigned(ware) < NUM_WARE_TYPES, "Invalid ware");
     return player.GetInventory().goods[ware];
 }
 
-unsigned LuaPlayer::GetPeopleCount(Job job)
+unsigned LuaPlayer::GetNumPeople(Job job) const
 {
-    lua::assertTrue(unsigned(job) < JOB_TYPES_COUNT, "Invalid ware");
+    lua::assertTrue(unsigned(job) < NUM_JOB_TYPES, "Invalid ware");
     return player.GetInventory().people[job];
 }
 
@@ -244,7 +259,7 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, BuildingType bld)
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
         return false;
-    lua::assertTrue(unsigned(bld) < BUILDING_TYPES_COUNT, "Invalid building type");
+    lua::assertTrue(unsigned(bld) < NUM_BUILDING_TYPES, "Invalid building type");
     GameWorldGame& world = player.GetGameWorld();
     lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
     lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
@@ -263,7 +278,7 @@ void LuaPlayer::ModifyHQ(bool isTent)
     }
 }
 
-bool LuaPlayer::IsDefeated()
+bool LuaPlayer::IsDefeated() const
 {
     return player.IsDefeated();
 }
@@ -275,7 +290,7 @@ void LuaPlayer::Surrender(bool destroyBlds)
         player.GetGameWorld().Armageddon(player.GetPlayerId());
 }
 
-kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos()
+kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
 {
     return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
 }

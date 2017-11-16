@@ -20,6 +20,7 @@
 #include "FramesInfo.h"
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
+#include "NetworkPlayer.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/Deleter.h"
 #include "gameTypes/ChatDestination.h"
@@ -27,11 +28,11 @@
 #include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "gameTypes/VisualSettings.h"
-#include "libutil/MessageQueue.h"
 #include "libutil/Singleton.h"
-#include "libutil/Socket.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <queue>
+#include <vector>
 
 namespace AI {
 struct Info;
@@ -48,6 +49,8 @@ class Game;
 class Replay;
 class EventManager;
 struct PlayerGameCommands;
+struct ClientPlayers;
+
 struct ReplayInfo;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
@@ -77,7 +80,7 @@ public:
     bool IsHost() const { return clientconfig.isHost; }
     std::string GetGameName() const { return clientconfig.gameName; }
 
-    unsigned GetPlayerId() const { return playerId_; }
+    unsigned GetPlayerId() const { return mainPlayer.playerId; }
     /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
     AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
@@ -93,7 +96,6 @@ public:
     /// Gibt Map-Typ zurück
     const MapType GetMapType() const { return mapinfo.type; }
     const std::string& GetLuaFilePath() const { return mapinfo.luaFilepath; }
-    GameLobby& GetGameLobby();
 
     // Initialisiert und startet das Spiel
     void StartGame(const unsigned random_init);
@@ -104,6 +106,10 @@ public:
     void ExitGame();
 
     ClientState GetState() const { return state; }
+    Replay& GetReplay();
+    boost::shared_ptr<const ClientPlayers> GetPlayers() const;
+    boost::shared_ptr<GameLobby> GetGameLobby();
+
     unsigned GetGFNumber() const;
     unsigned GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
@@ -127,8 +133,8 @@ public:
     /// Replay-Geschwindigkeit erhöhen/verringern
     void IncreaseReplaySpeed();
     void DecreaseReplaySpeed();
-    void SetReplayPause(bool pause);
-    void ToggleReplayPause() { SetReplayPause(!framesinfo.isPaused); }
+    void SetPause(bool pause);
+    void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
     void ToggleReplayFOW();
     /// Prüft, ob FoW im Replaymodus ausgeschalten ist
@@ -143,8 +149,6 @@ public:
     /// Wird ein Replay abgespielt?
     bool IsReplayModeOn() const { return replayMode; }
 
-    Replay& GetReplay();
-
     /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
     unsigned GetTournamentModeDuration() const;
 
@@ -155,8 +159,6 @@ public:
     /// Sends a request to swap places with the requested player. Only for debugging!
     void RequestSwapToPlayer(const unsigned char newId);
 
-    /// Laggt ein bestimmter Spieler gerade?
-    bool IsLagging(const unsigned id);
     /// Spiel pausiert?
     bool IsPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
@@ -172,7 +174,7 @@ private:
     /// ist)
     bool AddGC(gc::GameCommand* gc) override;
 
-    unsigned GetPlayerCount() const;
+    unsigned GetNumPlayers() const;
     /// Liefert einen Player zurück
     GamePlayer& GetPlayer(const unsigned id);
 
@@ -185,8 +187,6 @@ private:
     void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
     void SendNothingNC();
-    /// Findet heraus, ob ein Spieler laggt und setzt bei diesen Spieler den entsprechenden flag
-    bool IsPlayerLagging();
 
     /// Führt notwendige Dinge für nächsten GF aus
     void NextGF();
@@ -248,16 +248,14 @@ public:
     unsigned skiptogf;
 
 private:
-    /// Spieler-ID dieses Clients
-    unsigned playerId_;
-
-    MessageQueue recv_queue, send_queue;
-    Socket socket;
+    NetworkPlayer mainPlayer;
 
     ClientState state;
 
-    /// Gameworld and event manager (valid during LOADING and GAME state)
+    /// Game state itself (valid during LOADING and GAME state)
     boost::shared_ptr<Game> game;
+    /// Game commands to execute per player
+    boost::shared_ptr<ClientPlayers> clientPlayers;
     /// Game lobby (valid during CONFIG state)
     boost::shared_ptr<GameLobby> gameLobby;
 

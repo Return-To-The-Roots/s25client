@@ -19,9 +19,9 @@
 #include "noGrainfield.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"

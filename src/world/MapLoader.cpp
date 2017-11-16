@@ -43,31 +43,31 @@
 class noBase;
 class nobBaseWarehouse;
 
-MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world(world), playerNations(playerNations) {}
+MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world_(world), playerNations_(playerNations) {}
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
-    world.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
+    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
     InitNodes(map, exploration);
     PlaceObjects(map);
     PlaceAnimals(map);
-    if(!InitSeasAndHarbors(world))
+    if(!InitSeasAndHarbors(world_))
         return false;
 
     /// Schatten
-    InitShadows(world);
+    InitShadows(world_);
 
     // If we have explored FoW, create the FoW objects
     if(exploration == EXP_FOGOFWARE_EXPLORED)
-        SetMapExplored(world, playerNations.size());
+        SetMapExplored(world_, playerNations_.size());
 
     return true;
 }
 
 bool MapLoader::PlaceHQs(GameWorldBase& world, bool randomStartPos)
 {
-    return PlaceHQs(world, hqPositions, playerNations, randomStartPos);
+    return PlaceHQs(world, hqPositions_, playerNations_, randomStartPos);
 }
 
 void MapLoader::InitShadows(World& world)
@@ -93,9 +93,9 @@ void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
 void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 {
     // Init node data (everything except the objects and figures)
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
-        MapNode& node = world.GetNodeInt(pt);
+        MapNode& node = world_.GetNodeInt(pt);
 
         std::fill(node.roads.begin(), node.roads.end(), 0);
         node.altitude = map.GetMapDataAt(MAP_ALTITUDE, pt.x, pt.y);
@@ -103,7 +103,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 
         // Hafenplatz?
         if(TerrainData::IsHarborSpot(t1))
-            world.harbor_pos.push_back(pt);
+            world_.harbor_pos.push_back(pt);
 
         // Will be set later
         node.harborId = 0;
@@ -173,9 +173,9 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 
 void MapLoader::PlaceObjects(const glArchivItem_Map& map)
 {
-    hqPositions.clear();
+    hqPositions_.clear();
 
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         unsigned char lc = map.GetMapDataAt(MAP_LANDSCAPE, pt.x, pt.y);
         noBase* obj = NULL;
@@ -187,9 +187,9 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
             {
                 if(lc < MAX_PLAYERS)
                 {
-                    while(hqPositions.size() <= lc)
-                        hqPositions.push_back(MapPoint::Invalid());
-                    hqPositions[lc] = pt;
+                    while(hqPositions_.size() <= lc)
+                        hqPositions_.push_back(MapPoint::Invalid());
+                    hqPositions_[lc] = pt;
                 }
             }
             break;
@@ -247,10 +247,10 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc == 0x0B)
                     obj = new noStaticObject(pt, 500 + lc);
                 // Objekte aus der map_?_z.lst
-                else if(lc >= 0x0C && lc <= 0x0F)
+                else if(lc <= 0x0F)
                     obj = new noEnvObject(pt, 500 + lc);
                 // Objekte aus der map.lst
-                else if(lc >= 0x10 && lc <= 0x14)
+                else if(lc <= 0x14)
                     obj = new noEnvObject(pt, 542 + lc - 0x10);
                 // exists in mis0bobs-mis5bobs -> take stranded ship
                 else if(lc == 0x15)
@@ -262,19 +262,19 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 else if(lc == 0x17)
                     obj = new noStaticObject(pt, 561);
                 // Stalagmiten (mis1bobs)
-                else if(lc >= 0x18 && lc <= 0x1E)
+                else if(lc <= 0x1E)
                     obj = new noStaticObject(pt, (lc - 0x18) * 2, 1);
                 // toter Baum (mis1bobs)
-                else if(lc >= 0x1F && lc <= 0x20)
+                else if(lc <= 0x20)
                     obj = new noStaticObject(pt, 20 + (lc - 0x1F) * 2, 1);
                 // Gerippe (mis1bobs)
                 else if(lc == 0x21)
                     obj = new noStaticObject(pt, 30, 1);
                 // Objekte aus der map.lst
-                else if(lc >= 0x22 && lc <= 0x2B)
+                else if(lc <= 0x2B)
                     obj = new noEnvObject(pt, 550 + lc - 0x22);
                 // tent and ruin of guardhouse
-                else if(lc >= 0x2C && lc <= 0x2D)
+                else if(lc <= 0x2D)
                     obj = new noStaticObject(pt, (lc - 0x2C) * 2, 2);
                 // tower ruin
                 else if(lc == 0x2E)
@@ -337,7 +337,7 @@ void MapLoader::PlaceObjects(const glArchivItem_Map& map)
                 break;
         }
 
-        world.GetNodeInt(pt).obj = obj;
+        world_.GetNodeInt(pt).obj = obj;
     }
 }
 
@@ -345,7 +345,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
 {
     // Tiere auslesen
     MapPoint pt;
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
     {
         Species species;
         switch(map.GetMapDataAt(MAP_ANIMALS, pt.x, pt.y))
@@ -375,7 +375,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
         if(species != SPEC_NOTHING)
         {
             noAnimal* animal = new noAnimal(species, pt);
-            world.AddFigure(pt, animal);
+            world_.AddFigure(pt, animal);
             // Loslaufen
             animal->StartLiving();
         }
@@ -414,7 +414,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 {
     world.harbor_pos.insert(world.harbor_pos.end(), additionalHarbors.begin(), additionalHarbors.end());
     // Clear current harbors and seas
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
     {
         MapNode& node = world.GetNodeInt(pt);
         node.seaId = 0u;

@@ -173,7 +173,7 @@ void MapUtility::SetHarbour(Map& map, const Position& center, int waterLevel)
             int index = VertexUtility::GetIndexOf(Position(x, y), map.size);
             if(!ObjectGenerator::IsTexture(map, index, TT_WATER))
             {
-                if((x - center.x) * (x - center.x) <= 1.7 && (y - center.y) * (y - center.y) <= 1.7)
+                if(VertexUtility::Distance(Position(x, y), center, map.size) <= 1.7)
                 {
                     ObjectGenerator::CreateTexture(map, index, TT_SAVANNAH, true);
                     ObjectGenerator::CreateEmpty(map, index);

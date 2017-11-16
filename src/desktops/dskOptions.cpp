@@ -90,7 +90,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     combo = groupAllgemein->AddComboBox(33, DrawPoint(280, 125), Extent(190, 20), TC_GREY, NormalFont, 100);
 
     bool selected = false;
-    for(unsigned i = 0; i < LANGUAGES.getCount(); ++i)
+    for(unsigned i = 0; i < LANGUAGES.size(); ++i)
     {
         const Language& l = LANGUAGES.getLanguage(i);
 
@@ -117,12 +117,12 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 302 : 303));
 
     // ipv6-feld ggf (de-)aktivieren
-    ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.typ != 4 && SETTINGS.proxy.typ != 40); //-V807
+    ipv6->GetCtrl<ctrlButton>(302)->SetEnabled(SETTINGS.proxy.type != PROXY_SOCKS5); //-V807
 
     // Proxyserver
     groupAllgemein->AddText(36, DrawPoint(80, 280), _("Proxyserver:"), COLOR_YELLOW, 0, NormalFont);
     ctrlEdit* proxy = groupAllgemein->AddEdit(37, DrawPoint(280, 275), Extent(190, 22), TC_GREY, NormalFont);
-    proxy->SetText(SETTINGS.proxy.proxy);
+    proxy->SetText(SETTINGS.proxy.hostname);
     proxy = groupAllgemein->AddEdit(371, DrawPoint(480, 275), Extent(50, 22), TC_GREY, NormalFont, 5);
     proxy->SetText(SETTINGS.proxy.port);
 
@@ -136,17 +136,11 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     // combo->AddString(_("Socks v5"));
 
     // und auswählen
-    switch(SETTINGS.proxy.typ)
+    switch(SETTINGS.proxy.type)
     {
-        default: { combo->SetSelection(0);
-        }
-        break;
-        case 4: { combo->SetSelection(1);
-        }
-        break;
-        case 5: { combo->SetSelection(2);
-        }
-        break;
+        default: combo->SetSelection(0); break;
+        case PROXY_SOCKS4: combo->SetSelection(1); break;
+        case PROXY_SOCKS5: combo->SetSelection(2); break;
     }
 
     // }
@@ -156,7 +150,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     optiongroup->AddTextButton(72, DrawPoint(480, 355), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(73, DrawPoint(280, 355), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
-    optiongroup->SetSelection(((SETTINGS.global.submit_debug_data == 1) ? 72 : 73));
+    optiongroup->SetSelection(((SETTINGS.global.submit_debug_data == 1) ? 72 : 73)); //-V807
 
     // qx:upnp switch
     groupAllgemein->AddText(9999, DrawPoint(80, 390), _("Use UPnP"), COLOR_YELLOW, 0, NormalFont);
@@ -207,7 +201,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     {
         combo->AddString(it->GetName());
         if(it->GetName() == SETTINGS.driver.video)
-            combo->SetSelection(combo->GetCount() - 1);
+            combo->SetSelection(combo->GetNumItems() - 1);
     }
 
     groupGrafik->AddText(74, DrawPoint(80, 320), _("Optimized Textures:"), COLOR_YELLOW, 0, NormalFont);
@@ -226,7 +220,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     {
         combo->AddString(it->GetName());
         if(it->GetName() == SETTINGS.driver.audio)
-            combo->SetSelection(combo->GetCount() - 1);
+            combo->SetSelection(combo->GetNumItems() - 1);
     }
 
     // Musik
@@ -276,7 +270,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
         // Ist das die aktuelle Auflösung? Dann selektieren
         if(*it == VideoMode(SETTINGS.video.fullscreenSize.x, SETTINGS.video.fullscreenSize.y)) //-V807
-            cbVideoModes.SetSelection(cbVideoModes.GetCount() - 1);
+            cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
     }
 
     // "Vollbild" setzen
@@ -285,7 +279,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "Limit Framerate" füllen
     ctrlComboBox* cbFrameRate = groupGrafik->GetCtrl<ctrlComboBox>(51);
-    for(unsigned char i = 0; i < Settings::SCREEN_REFRESH_RATES_COUNT; ++i)
+    for(unsigned char i = 0; i < Settings::NUM_SCREEN_REFRESH_RATESS; ++i)
     {
         switch(Settings::SCREEN_REFRESH_RATES[i])
         {
@@ -394,20 +388,20 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
         {
             switch(selection)
             {
-                case 0: SETTINGS.proxy.typ = 0; break;
-                case 1: SETTINGS.proxy.typ = 4; break;
-                case 2: SETTINGS.proxy.typ = 5; break;
+                case 0: SETTINGS.proxy.type = PROXY_NONE; break;
+                case 1: SETTINGS.proxy.type = PROXY_SOCKS4; break;
+                case 2: SETTINGS.proxy.type = PROXY_SOCKS5; break;
             }
 
             // ipv6 gleich sichtbar deaktivieren
-            if(SETTINGS.proxy.typ == 4 && SETTINGS.server.ipv6)
+            if(SETTINGS.proxy.type == PROXY_SOCKS4 && SETTINGS.server.ipv6)
             {
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->SetSelection(303);
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlButton>(302)->SetEnabled(false);
                 SETTINGS.server.ipv6 = false;
             }
 
-            if(SETTINGS.proxy.typ != 4)
+            if(SETTINGS.proxy.type != PROXY_SOCKS4)
                 GetCtrl<ctrlGroup>(21)->GetCtrl<ctrlOptionGroup>(301)->GetCtrl<ctrlButton>(302)->SetEnabled(true);
         }
         break;
@@ -569,12 +563,12 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
             // Name abspeichern
             SETTINGS.lobby.name = groupAllgemein->GetCtrl<ctrlEdit>(31)->GetText();
             // Proxy abspeichern, überprüfung der einstellung übernimmt SETTINGS.Save()
-            SETTINGS.proxy.proxy = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
+            SETTINGS.proxy.hostname = groupAllgemein->GetCtrl<ctrlEdit>(37)->GetText();
             SETTINGS.proxy.port = boost::lexical_cast<unsigned>(groupAllgemein->GetCtrl<ctrlEdit>(371)->GetText().c_str());
 
             SETTINGS.Save();
 
-            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize())
+            if((SETTINGS.video.fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetScreenSize()) //-V807
                || SETTINGS.video.fullscreen != VIDEODRIVER.IsFullscreen())
             {
                 Extent screenSize = SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;

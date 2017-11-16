@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
     BOOST_REQUIRE_EQUAL(libsiedler2::Load(RTTR_LIBSIEDLER2_TEST_FILES_DIR "/testMono.wav", snd), 0);
     SoundEffectItem* effect = dynamic_cast<SoundEffectItem*>(snd[0]);
     BOOST_REQUIRE(effect);
-    EffectPlayId id = effect->Play(50, false);
+    EffectPlayId id = effect->Play(50, false); //-V522
     BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
     BOOST_REQUIRE_EQUAL(effect->getLoadedType(), SD_EFFECT);
     BOOST_REQUIRE(id >= 0);
@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(PlayFromFile, LoadMockupAudio)
         MusicItem* music = dynamic_cast<MusicItem*>(musicArchiv[0]);
         BOOST_REQUIRE(music);
         BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 1);
-        music->Play(0);
+        music->Play(0); //-V522
         BOOST_REQUIRE_EQUAL(MockupSoundDesc::numAlive, 2);
         BOOST_REQUIRE_EQUAL(music->getLoadedType(), SD_MUSIC);
         AUDIODRIVER.StopMusic();

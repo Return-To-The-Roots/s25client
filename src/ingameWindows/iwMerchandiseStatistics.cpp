@@ -159,7 +159,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     const int sizeX = 180;
     const int sizeY = 80;
     const DrawPoint topLeft = GetPos() + DrawPoint(34, 64);
-    const int stepX = sizeX / STAT_STEP_COUNT; // 6
+    const int stepX = sizeX / NUM_STAT_STEPS; // 6
 
     // Aktive Buttons holen (Achtung ID == BarColor + 1)
     const std::set<unsigned short>& active = GetCtrl<ctrlMultiSelectGroup>(22)->GetSelection();
@@ -171,7 +171,7 @@ void iwMerchandiseStatistics::DrawStatistic()
     unsigned short max = 1;
     for(std::set<unsigned short>::const_iterator it = active.begin(); it != active.end(); ++it)
     {
-        for(unsigned i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
             if(max < stat.merchandiseData[(*it) - 1][i])
             {
@@ -193,13 +193,13 @@ void iwMerchandiseStatistics::DrawStatistic()
         // Testing only:
         // DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
 
-        for(unsigned i = 0; i < STAT_STEP_COUNT; ++i)
+        for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
             DrawPoint drawPos = topLeft;
-            drawPos.x += (STAT_STEP_COUNT - i) * stepX;
+            drawPos.x += (NUM_STAT_STEPS - i) * stepX;
             drawPos.y +=
               sizeY
-              - ((stat.merchandiseData[(*it) - 1][(currentIndex >= i) ? (currentIndex - i) : (STAT_STEP_COUNT - i + currentIndex)]) * sizeY)
+              - ((stat.merchandiseData[(*it) - 1][(currentIndex >= i) ? (currentIndex - i) : (NUM_STAT_STEPS - i + currentIndex)]) * sizeY)
                   / max;
             if(i != 0)
             {

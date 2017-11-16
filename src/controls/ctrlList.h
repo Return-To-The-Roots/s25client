@@ -50,7 +50,7 @@ public:
     /// Löscht ein Element
     void Remove(const unsigned short index);
 
-    unsigned short GetLineCount() const { return static_cast<unsigned short>(lines.size()); }
+    unsigned short GetNumLines() const { return static_cast<unsigned short>(lines.size()); }
     int GetSelection() const { return selection_; };
     void SetSelection(unsigned selection);
 

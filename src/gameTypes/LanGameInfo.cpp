@@ -29,8 +29,8 @@ bool LanGameInfo::Serialize(Serializer& serializer)
     serializer.PushString(name);
     serializer.PushBool(hasPwd);
     serializer.PushString(map);
-    serializer.PushUnsignedChar(curPlayer);
-    serializer.PushUnsignedChar(maxPlayer);
+    serializer.PushUnsignedChar(curNumPlayers);
+    serializer.PushUnsignedChar(maxNumPlayers);
     serializer.PushUnsignedShort(port);
     serializer.PushBool(isIPv6);
     serializer.PushString(version);
@@ -43,8 +43,8 @@ bool LanGameInfo::Deserialize(Serializer& serializer)
     name = serializer.PopString();
     hasPwd = serializer.PopBool();
     map = serializer.PopString();
-    curPlayer = serializer.PopUnsignedChar();
-    maxPlayer = serializer.PopUnsignedChar();
+    curNumPlayers = serializer.PopUnsignedChar();
+    maxNumPlayers = serializer.PopUnsignedChar();
     port = serializer.PopUnsignedShort();
     isIPv6 = serializer.PopBool();
     version = serializer.PopString();

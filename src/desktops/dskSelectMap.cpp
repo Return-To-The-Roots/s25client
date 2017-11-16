@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskSelectMap.h"
-#include "GameClient.h"
-#include "GameServer.h"
 #include "ListDir.h"
 #include "Loader.h"
 #include "RttrConfig.h"
@@ -40,6 +38,8 @@
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
 #include "mapGenerator/MapGenerator.h"
+#include "network/GameClient.h"
+#include "network/GameServer.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "liblobby/LobbyClient.h"
@@ -183,7 +183,7 @@ void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selecti
             ctrlTable* table = GetCtrl<ctrlTable>(1);
 
             // is the selection valid?
-            if(selection < table->GetRowCount())
+            if(selection < table->GetNumRows())
             {
                 // get path to map from table
                 std::string path = table->GetItemText(selection, 5);
@@ -285,7 +285,7 @@ void dskSelectMap::CreateRandomMap()
     newRandMapPath = mapPath;
 }
 
-void dskSelectMap::OnMapCreated(std::string mapPath)
+void dskSelectMap::OnMapCreated(const std::string& mapPath)
 {
     if(waitWnd)
     {
@@ -298,7 +298,7 @@ void dskSelectMap::OnMapCreated(std::string mapPath)
 
     // search for the random map entry and select it in the table
     ctrlTable* table = GetCtrl<ctrlTable>(1);
-    for(int i = 0; i < table->GetRowCount(); i++)
+    for(int i = 0; i < table->GetNumRows(); i++)
     {
         std::string entryPath = table->GetItemText(i, 5);
 
@@ -317,7 +317,7 @@ void dskSelectMap::StartServer()
     unsigned short selection = table->GetSelection();
 
     // Ist die Auswahl gültig?
-    if(selection < table->GetRowCount())
+    if(selection < table->GetNumRows())
     {
         // Kartenpfad aus Tabelle holen
         std::string mapPath = table->GetItemText(selection, 5);
@@ -412,28 +412,27 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         if(libsiedler2::loader::LoadMAP(filePath, map, true) != 0)
             continue;
 
-        const libsiedler2::ArchivItem_Map_Header* header = &(dynamic_cast<const glArchivItem_Map*>(map.get(0))->getHeader());
-        RTTR_Assert(header);
+        const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
-        if(header->getNumPlayers() > MAX_PLAYERS)
+        if(header.getNumPlayers() > MAX_PLAYERS)
             continue;
 
         const bfs::path luaFilepath = bfs::path(filePath).replace_extension("lua");
         const bool hasLua = bfs::is_regular_file(luaFilepath);
 
         // Und Zeilen vorbereiten
-        std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header->getNumPlayers())).str();
-        std::string size = helpers::toString(header->getWidth()) + "x" + helpers::toString(header->getWidth());
+        std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header.getNumPlayers())).str();
+        std::string size = helpers::toString(header.getWidth()) + "x" + helpers::toString(header.getWidth());
 
         // und einfügen
         const std::string landscapes[3] = {_("Greenland"), _("Wasteland"), _("Winter world")};
 
-        std::string name = cvStringToUTF8(header->getName());
+        std::string name = cvStringToUTF8(header.getName());
         if(hasLua)
             name += " (*)";
-        std::string author = cvStringToUTF8(header->getAuthor());
+        std::string author = cvStringToUTF8(header.getAuthor());
 
-        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapes[header->getGfxSet()].c_str(), size.c_str(),
+        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapes[header.getGfxSet()].c_str(), size.c_str(),
                       filePath.c_str());
     }
 }

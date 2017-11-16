@@ -19,9 +19,9 @@
 #include "noCharburnerPile.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "network/GameClient.h"
 #include "noEnvObject.h"
 #include "noFire.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -135,7 +135,7 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
     {
         // selfdestruct!
         event = NULL;
-        gwg->SetNO(pos, new noFire(pos, 0), true);
+        gwg->SetNO(pos, new noFire(pos, false), true);
         gwg->RecalcBQAroundPoint(pos);
         GetEvMgr().AddToKillList(this);
     }

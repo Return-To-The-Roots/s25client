@@ -48,7 +48,7 @@ void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
         case 3: // "Erstellen"
         {
             // Hosten geht nur ohne aktiven Proxy
-            if(SETTINGS.proxy.typ != 0)
+            if(SETTINGS.proxy.type != PROXY_NONE)
                 WINDOWMANAGER.Show(new iwMsgbox(
                   _("Sorry!"), _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"), this,
                   MSB_OK, MSB_EXCLAMATIONGREEN, 1));

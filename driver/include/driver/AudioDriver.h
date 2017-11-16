@@ -63,7 +63,7 @@ private:
     std::vector<SoundDesc*> sounds_;
     unsigned numChannels_;
     /// Which effect is played on which channel
-    boost::array<EffectPlayId, MAX_NUM_CHANNELS> channels_;
+    boost::array<EffectPlayId, MAX_NUM_CHANNELS> channels_; //-V730_NOINIT
 };
 
 #endif // !AUDIODRIVER_H_INCLUDED

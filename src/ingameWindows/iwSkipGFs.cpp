@@ -17,9 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwSkipGFs.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "controls/ctrlEdit.h"
+#include "network/GameClient.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/StringConversion.h"
 #include "libutil/colors.h"

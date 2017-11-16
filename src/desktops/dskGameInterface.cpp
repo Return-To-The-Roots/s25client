@@ -21,10 +21,8 @@
 #include "CollisionDetection.h"
 #include "EventManager.h"
 #include "Game.h"
-#include "GameClient.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
-#include "GameServer.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
@@ -64,6 +62,8 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
+#include "network/ClientPlayers.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
 #include "ogl/SoundEffectItem.h"
@@ -84,6 +84,7 @@
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/if.hpp>
@@ -104,7 +105,7 @@ enum
 }
 
 dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
-    : Desktop(NULL), game_(game), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
+    : Desktop(NULL), game_(game), networkPlayers(GAMECLIENT.GetPlayers()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
       roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -313,12 +314,13 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-    for(unsigned i = 0; i < world.GetPlayerCount(); ++i)
+    BOOST_FOREACH(const ClientPlayer& player, networkPlayers->players)
     {
-        const GamePlayer& player = world.GetPlayer(i);
-        if(player.is_lagging)
-            LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, player.color);
-        snailPos.x -= 40;
+        if(player.isLagging)
+        {
+            LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world.GetPlayer(player.id).color);
+            snailPos.x -= 40;
+        }
     }
 
     // Show icons in the upper right corner of the game interface
@@ -355,7 +357,7 @@ void dskGameInterface::Msg_PaintAfter()
     }
 
     // Draw zoom level indicator icon
-    if(gwv.GetCurrentTargetZoomFactor() != 1.f)
+    if(gwv.GetCurrentTargetZoomFactor() != 1.f) //-V550
     {
         glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
         const DrawPoint drawPos(iconPos);
@@ -534,7 +536,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         {
             if(selObj.GetType() == NOP_BUILDING)
             {
-                const noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel);
+                const noBuilding* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
                 BuildingType bt = building->GetBuildingType();
 
                 // Only if trade is enabled
@@ -727,7 +729,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 unsigned oldPlayerId = worldViewer.GetPlayerId();
                 GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
                 RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
-            } else if(playerIdx < worldViewer.GetWorld().GetPlayerCount())
+            } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
             {
                 const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
                 if(player.ps == PS_AI && player.aiInfo.type == AI::DUMMY)
@@ -779,10 +781,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
             UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
             return true;
         case 'p': // Pause
-            if(GAMECLIENT.IsHost())
-                GAMESERVER.SetPaused(!GAMECLIENT.IsPaused());
-            else if(GAMECLIENT.IsReplayModeOn())
-                GAMECLIENT.ToggleReplayPause();
+            GAMECLIENT.TogglePause();
             return true;
         case 'q': // Spiel verlassen
             if(ke.alt)
@@ -1112,9 +1111,10 @@ void dskGameInterface::CI_Error(const ClientError ce)
     {
         default: break;
 
-        case CE_CONNECTIONLOST: { messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to server!"), COLOR_RED);
-        }
-        break;
+        case CE_CONNECTIONLOST:
+            messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to server!"), COLOR_RED);
+            GAMECLIENT.SetPause(true);
+            break;
     }
 }
 
@@ -1270,7 +1270,7 @@ void dskGameInterface::GI_TeamWinner(const unsigned playerId)
     unsigned winnercount = 0;
     char winners[5];
     const GameWorldBase& world = worldViewer.GetWorld();
-    for(unsigned i = 0; i < world.GetPlayerCount() && winnercount < 5; i++)
+    for(unsigned i = 0; i < world.GetNumPlayers() && winnercount < 5; i++)
     {
         winners[winnercount] = i;
         winnercount += playerId & (1 << i) ? 1 : 0;

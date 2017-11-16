@@ -207,7 +207,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                     MapPoint p = nodes[bestId].mapPt;
 
                     std::vector<MapPoint> evenLocationsOnRoute;
-                    bool alternate = prevStepEven;
+                    bool alternate = false;
                     unsigned back_id = bestId;
                     for(unsigned i = nodes[bestId].way - 1; i > 1;
                         i--) // backtrack the plannend route and check if another "even" position is too close

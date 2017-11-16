@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "noAnimal.h"
 #include "EventManager.h"
-#include "GameClient.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "figures/nofHunter.h"
+#include "network/GameClient.h"
 #include "ogl/SoundEffectItem.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -195,7 +195,7 @@ void noAnimal::StandardWalking()
         // Sterben, weil kein Weg mehr gefunden wurde
         Die();
         // Jäger ggf. Bescheid sagen (falls der es nicht mehr rechtzeitig schafft, bis ich verwest bin)
-        if(hunter)
+        if(hunter) //-V779
         {
             hunter->AnimalLost();
             hunter = NULL;

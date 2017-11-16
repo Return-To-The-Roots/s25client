@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofMinter.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 
@@ -38,7 +38,7 @@ nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkma
 
 void nofMinter::DrawWorking(DrawPoint drawPt)
 {
-    const DrawPointInit offsets[NAT_COUNT] = {{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}};
+    const DrawPointInit offsets[NUM_NATS] = {{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}};
 
     unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 

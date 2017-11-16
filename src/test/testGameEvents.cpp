@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(MultipleEvents)
 {
     EventManager evMgr(0);
     TestEventHandler obj;
-    evMgr.AddEvent(&obj, 5, 42);
+    evMgr.AddEvent(&obj, 5, 42); //-V525
     evMgr.AddEvent(&obj, 5, 43);
     evMgr.AddEvent(&obj, 6, 44);
     // Execute first 2 events

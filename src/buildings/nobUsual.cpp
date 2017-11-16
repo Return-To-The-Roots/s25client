@@ -19,7 +19,6 @@
 #include "nobUsual.h"
 
 #include "EventManager.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
@@ -27,6 +26,7 @@
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
@@ -169,11 +169,11 @@ void nobUsual::Draw(DrawPoint drawPt)
     {
         // Für alle Völker jeweils
         // X-Position der Esel
-        const DrawPointInit DONKEY_OFFSETS[NAT_COUNT][3] = {{{13, -9}, {26, -9}, {39, -9}},
-                                                            {{3, -17}, {16, -17}, {30, -17}},
-                                                            {{2, -21}, {15, -21}, {29, -21}},
-                                                            {{7, -17}, {18, -17}, {30, -17}},
-                                                            {{3, -22}, {16, -22}, {30, -22}}};
+        const DrawPointInit DONKEY_OFFSETS[NUM_NATS][3] = {{{13, -9}, {26, -9}, {39, -9}},
+                                                           {{3, -17}, {16, -17}, {30, -17}},
+                                                           {{2, -21}, {15, -21}, {29, -21}},
+                                                           {{7, -17}, {18, -17}, {30, -17}},
+                                                           {{3, -22}, {16, -22}, {30, -22}}};
         // Animations-IDS des Esels
         const boost::array<unsigned char, 25> DONKEY_ANIMATION = {
           {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 6, 5, 4, 4, 5, 6, 5, 7, 6, 5, 4, 3, 2, 1, 0}};
@@ -207,7 +207,7 @@ void nobUsual::Draw(DrawPoint drawPt)
     else if(bldType_ == BLD_PIGFARM && this->HasWorker())
     {
         // Position der 5 Schweinchen für alle 4 Völker (1. ist das große Schwein)
-        const DrawPointInit PIG_POSITIONS[NAT_COUNT][5] = {
+        const DrawPointInit PIG_POSITIONS[NUM_NATS][5] = {
           //  gr. S. 1.klS 2. klS usw
           {{3, -8}, {17, 3}, {-12, 4}, {-2, 10}, {-22, 11}},    // Afrikaner
           {{-16, 0}, {-37, 0}, {-32, 8}, {-16, 10}, {-22, 18}}, // Japaner
@@ -236,7 +236,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
-        dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds();
+        dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(BuildingProperties::IsMine(GetBuildingType()) && worker && nation == NAT_AFRICANS)
@@ -406,13 +406,13 @@ void nobUsual::ConsumeWares()
     if(!workDesc.useOneWareEach)
     {
         // Use only 1 ware -> Get the one with the most in store
-        unsigned bestNumWares = 0;
+        unsigned numBestWare = 0;
         for(unsigned i = 0; i < numWaresNeeded; ++i)
         {
-            if(numWares[i] > bestNumWares)
+            if(numWares[i] > numBestWare)
             {
                 wareIdxToUse = i;
-                bestNumWares = numWares[i];
+                numBestWare = numWares[i];
             }
         }
         // And tell that we only consume 1
@@ -582,10 +582,10 @@ unsigned short nobUsual::CalcProductivity()
     }
 
     // Produktivität ausrechnen
-    unsigned short productivity = (400 - numGfNotWorking) / 4;
+    unsigned short curProductivity = (400 - numGfNotWorking) / 4;
 
     // Zähler zurücksetzen
     numGfNotWorking = 0;
 
-    return productivity;
+    return curProductivity;
 }

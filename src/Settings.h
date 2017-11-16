@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Point.h"
+#include "libutil/ProxySettings.h"
 #include "libutil/Singleton.h"
 #include <map>
 #include <string>
@@ -93,12 +94,7 @@ public:
         bool ipv6;           /// listen/connect on ipv6 as default or not
     } server;
 
-    struct
-    {
-        std::string proxy; /// Serveradresse / Hostname
-        unsigned port;     /// Port
-        unsigned char typ; /// Socks 4 oder 5
-    } proxy;
+    ProxySettings proxy;
 
     struct
     {
@@ -116,7 +112,7 @@ public:
         std::map<unsigned, unsigned> configuration;
     } addons;
 
-    static const unsigned char SCREEN_REFRESH_RATES_COUNT;
+    static const unsigned char NUM_SCREEN_REFRESH_RATESS;
     static const unsigned short SCREEN_REFRESH_RATES[];
 
 private:

@@ -16,12 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "GameServerInterface.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
+#include "network/GameServerInterface.h"
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
@@ -40,7 +40,7 @@ struct LuaSettingsTestsFixture : public GameServerInterface
     StringStreamWriter& logWriter;
 
     bool IsRunning() const override { return true; }
-    unsigned GetMaxPlayerCount() const override { return players.size(); }
+    unsigned GetNumMaxPlayers() const override { return players.size(); }
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
     void KickPlayer(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_FREE; }
 
@@ -228,12 +228,16 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     BOOST_REQUIRE(!ggs.isEnabled(AddonId::TRADE));
     // Set some random options
     for(unsigned i = 0; i < ggs.getNumAddons(); i++)
-        ggs.setSelection(ggs.getAddon(i)->getId(), rand() % ggs.getAddon(i)->getNumOptions());
+    {
+        const Addon* curAddon = ggs.getAddon(i);
+        ggs.setSelection(curAddon->getId(), rand() % curAddon->getNumOptions());
+    }
     executeLua("rttr:ResetAddons()\n");
     for(unsigned i = 0; i < ggs.getNumAddons(); i++)
     {
-        BOOST_REQUIRE_EQUAL(ggs.getSelection(ggs.getAddon(i)->getId()), ggs.getAddon(i)->getDefaultStatus());
-        BOOST_REQUIRE(!ggs.isEnabled(ggs.getAddon(i)->getId()));
+        const Addon* curAddon = ggs.getAddon(i);
+        BOOST_REQUIRE_EQUAL(ggs.getSelection(curAddon->getId()), curAddon->getDefaultStatus());
+        BOOST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
     }
 
     GlobalGameSettings shouldSettings = ggs;
@@ -242,6 +246,7 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     executeLua("rttr:SetGameSettings({" #setting "=" #value "})"); \
     shouldSettings.setting = value;                                \
     checkSettings(shouldSettings);
+
     SET_AND_CHECK(speed, GS_VERYSLOW);
     SET_AND_CHECK(speed, GS_FAST);
     SET_AND_CHECK(objective, GO_TOTALDOMINATION);
@@ -285,8 +290,9 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     BOOST_REQUIRE_EQUAL(ggs.getNumAddons(), shouldSettings.getNumAddons());
     for(unsigned i = 0; i < ggs.getNumAddons(); i++)
     {
-        BOOST_REQUIRE_EQUAL(ggs.getSelection(ggs.getAddon(i)->getId()), ggs.getAddon(i)->getDefaultStatus());
-        BOOST_REQUIRE(!ggs.isEnabled(ggs.getAddon(i)->getId()));
+        const Addon* curAddon = ggs.getAddon(i);
+        BOOST_REQUIRE_EQUAL(ggs.getSelection(curAddon->getId()), curAddon->getDefaultStatus());
+        BOOST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
     }
 }
 
@@ -333,7 +339,7 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
 
     executeLua("player:SetAI(0)");
     BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
-    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DUMMY);
+    BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DUMMY); //-V807
     executeLua("player:SetAI(1)");
     BOOST_REQUIRE_EQUAL(players[0].ps, PS_AI);
     BOOST_REQUIRE_EQUAL(players[0].aiInfo.type, AI::DEFAULT);

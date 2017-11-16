@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameWorld.h"
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -25,6 +24,7 @@
 #include "buildings/noBuildingSite.h"
 #include "lua/LuaInterfaceGame.h"
 #include "luaIncludes.h"
+#include "network/GameClient.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
@@ -46,7 +46,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
         return false;
 
-    const glArchivItem_Map& map = *dynamic_cast<glArchivItem_Map*>(mapArchiv.get(0));
+    const glArchivItem_Map& map = *static_cast<glArchivItem_Map*>(mapArchiv[0]);
 
     BuildingProperties::Init();
 
@@ -58,7 +58,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     std::vector<Nation> players;
-    for(unsigned i = 0; i < GetPlayerCount(); i++)
+    for(unsigned i = 0; i < GetNumPlayers(); i++)
     {
         GamePlayer& player = GetPlayer(i);
         if(player.isUsed())
@@ -83,10 +83,9 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     sgd.PushPoint(GetSize());
     sgd.PushUnsignedChar(static_cast<unsigned char>(GetLandscapeType()));
 
-    // Obj-ID-Counter reinschreiben
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
-    MapSerializer::Serialize(*this, GetPlayerCount(), sgd);
+    MapSerializer::Serialize(*this, GetNumPlayers(), sgd);
 
     sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
 
@@ -111,12 +110,11 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
 
     // Initialisierungen
     Init(size, lt);
+    GameObject::ResetCounters(sgd.PopUnsignedInt());
+
     BuildingProperties::Init();
 
-    // Obj-ID-Counter setzen
-    GameObject::SetObjIDCounter(sgd.PopUnsignedInt());
-
-    MapSerializer::Deserialize(*this, GetPlayerCount(), sgd);
+    MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
     sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 

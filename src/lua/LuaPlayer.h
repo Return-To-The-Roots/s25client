@@ -43,18 +43,19 @@ public:
     void EnableAllBuildings();
     void DisableAllBuildings();
     void SetRestrictedArea(kaguya::VariadicArgType points);
+    bool IsInRestrictedArea(unsigned x, unsigned y) const;
     void ClearResources();
     bool AddWares(const std::map<GoodType, unsigned>& wares);
     bool AddPeople(const std::map<Job, unsigned>& people);
-    unsigned GetBuildingCount(BuildingType bld);
-    unsigned GetBuildingSitesCount(BuildingType bld);
-    unsigned GetWareCount(GoodType ware);
-    unsigned GetPeopleCount(Job job);
+    unsigned GetNumBuildings(BuildingType bld) const;
+    unsigned GetNumBuildingSites(BuildingType bld) const;
+    unsigned GetNumWares(GoodType ware) const;
+    unsigned GetNumPeople(Job job) const;
     bool AIConstructionOrder(unsigned x, unsigned y, BuildingType bld);
     void ModifyHQ(bool isTent);
-    bool IsDefeated();
+    bool IsDefeated() const;
     void Surrender(bool destroyBlds);
-    kaguya::standard::tuple<unsigned, unsigned> GetHQPos();
+    kaguya::standard::tuple<unsigned, unsigned> GetHQPos() const;
 };
 
 #endif // LuaPlayer_h__

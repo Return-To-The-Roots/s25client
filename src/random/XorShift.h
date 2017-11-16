@@ -63,7 +63,7 @@ private:
     friend bool operator==(const XorShift& lhs, const XorShift& rhs) { return lhs.state_ == rhs.state_; }
     friend bool operator!=(const XorShift& lhs, const XorShift& rhs) { return !(lhs == rhs); }
 
-    uint64_t state_;
+    uint64_t state_; //-V730_NOINIT
 };
 
 template<class T_SeedSeq>

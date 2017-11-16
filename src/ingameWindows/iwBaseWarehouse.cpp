@@ -20,7 +20,6 @@
 
 #include "Loader.h"
 
-#include "GameClient.h"
 #include "GamePlayer.h"
 #include "WindowManager.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -34,6 +33,7 @@
 #include "iwHQ.h"
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
+#include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
@@ -162,16 +162,16 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
                 case ID_STOP: data = EInventorySetting::STOP; break;
                 default: throw std::invalid_argument("iwBaseWarehouse::Optiongroup");
             }
-            const unsigned count = (GetCurPage() == pageWares) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
+            const unsigned count = (GetCurPage() == pageWares) ? NUM_WARE_TYPES : NUM_JOB_TYPES;
             std::vector<InventorySetting> states;
             states.reserve(count);
             if(GetCurPage() == pageWares)
             {
-                for(unsigned i = 0; i < WARE_TYPES_COUNT; i++)
+                for(unsigned i = 0; i < NUM_WARE_TYPES; i++)
                     states.push_back(wh->GetInventorySettingVisual(i == GD_WATEREMPTY ? GD_WATER : GoodType(i)));
             } else
             {
-                for(unsigned i = 0; i < JOB_TYPES_COUNT; i++)
+                for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
                     states.push_back(wh->GetInventorySettingVisual(Job(i)));
             }
             // Check if we need to enable all or disable all
@@ -300,7 +300,7 @@ void iwBaseWarehouse::UpdateOverlays()
     // Ein/Auslager Overlays entsprechend setzen
     for(unsigned char category = 0; category < 2; ++category)
     {
-        unsigned count = (category == 0) ? WARE_TYPES_COUNT : JOB_TYPES_COUNT;
+        unsigned count = (category == 0) ? NUM_WARE_TYPES : NUM_JOB_TYPES;
         for(unsigned i = 0; i < count; ++i)
         {
             UpdateOverlay(i, category == 0);

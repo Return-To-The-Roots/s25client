@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <sstream>
 
-Playlist::Playlist() : repeats(1), random(false) {}
+Playlist::Playlist() : current(-1), repeats(1), random(false) {}
 
 /**
  *  startet das Abspielen der Playlist.
@@ -156,10 +156,8 @@ void Playlist::FillMusicPlayer(iwMusicPlayer* window) const
     window->SetRepeats(repeats);
     window->SetRandomPlayback(random);
 
-    if(current != 0xFFFF)
-    {
+    if(current >= 0)
         window->SetCurrentSong(current);
-    }
 }
 
 /**
@@ -251,14 +249,16 @@ void MusicPlayer::PlayNext()
     }
 
     // Und abspielen
-    dynamic_cast<MusicItem*>(sng[0])->Play(1);
+    MusicItem* curSong = dynamic_cast<MusicItem*>(sng[0]);
+    if(curSong)
+        curSong->Play(1);
 }
 
 /// schaltet einen Song weiter und liefert den Dateinamen des aktuellen Songs
 const std::string Playlist::getNextSong()
 {
     const std::string tmp(getCurrentSong());
-    current = !songs.empty() && !order.empty() ? order[0] : 0xFFFF;
+    current = !songs.empty() && !order.empty() ? static_cast<int>(order[0]) : -1;
     if(!order.empty())
         order.erase(order.begin());
     return tmp;
