@@ -451,7 +451,7 @@ void nofGeologist::SetSign(Resource resources)
             default: RTTR_Assert(false); return;
         }
 
-        if (resources.getType() != Resource::Water || gwg->GetGGS().isEnabled(AddonId::EXHAUSTIBLE_WELLS)) {
+        if (resources.getType() != Resource::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WELLS) != 1) {
             SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
         }
 
