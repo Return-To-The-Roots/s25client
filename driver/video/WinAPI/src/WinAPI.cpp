@@ -439,7 +439,7 @@ bool VideoWinAPI::SwapBuffers()
 bool VideoWinAPI::MessageLoop()
 {
     MSG msg;
-    if(PeekMessage(&msg, screen, 0, 0, PM_REMOVE))
+    if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
         if(msg.message == WM_QUIT)
             return false;
@@ -613,15 +613,8 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
 {
     switch(msg)
     {
-        case WM_PASTE: { pVideoWinAPI->OnWMPaste();
-        }
-        break;
-        case WM_CLOSE:
-        {
-            PostQuitMessage(0);
-            return 0;
-        }
-        break;
+        case WM_PASTE: pVideoWinAPI->OnWMPaste(); break;
+        case WM_CLOSE: PostQuitMessage(0); return 0;
         case WM_SIZE:
         {
             if(wParam == SIZE_MINIMIZED)
@@ -641,7 +634,6 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             break;
         }
         case WM_SYSCOMMAND:
-        {
             switch(wParam)
             {
                 case SC_SCREENSAVE:
@@ -650,49 +642,37 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
                     pVideoWinAPI->OnWMKeyDown(VK_F10, 0); // pretend we got a F10 stroke
                     return 0;
             }
-        }
-        break;
+            break;
         case WM_SETCURSOR:
             // Set no cursor again
             SetCursor(NULL);
             break;
         case WM_MOUSEMOVE:
-        {
             pVideoWinAPI->mouse_xy.x = LOWORD(lParam);
             pVideoWinAPI->mouse_xy.y = HIWORD(lParam);
             pVideoWinAPI->CallBack->Msg_MouseMove(pVideoWinAPI->mouse_xy);
-        }
-        break;
+            break;
         case WM_LBUTTONDOWN:
-        {
             pVideoWinAPI->mouse_l = true;
             pVideoWinAPI->mouse_xy.ldown = true;
             pVideoWinAPI->CallBack->Msg_LeftDown(pVideoWinAPI->mouse_xy);
-        }
-        break;
+            break;
         case WM_LBUTTONUP:
-        {
             pVideoWinAPI->mouse_l = false;
             pVideoWinAPI->mouse_xy.ldown = false;
             pVideoWinAPI->CallBack->Msg_LeftUp(pVideoWinAPI->mouse_xy);
-        }
-        break;
+            break;
         case WM_RBUTTONDOWN:
-        {
             pVideoWinAPI->mouse_r = true;
             pVideoWinAPI->mouse_xy.rdown = true;
             pVideoWinAPI->CallBack->Msg_RightDown(pVideoWinAPI->mouse_xy);
-        }
-        break;
+            break;
         case WM_RBUTTONUP:
-        {
             pVideoWinAPI->mouse_r = false;
             pVideoWinAPI->mouse_xy.rdown = false;
             pVideoWinAPI->CallBack->Msg_RightUp(pVideoWinAPI->mouse_xy);
-        }
-        break;
+            break;
         case WM_MOUSEWHEEL:
-        {
             // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat the wheel like two
             // buttons. One wheel "step" usually produces a mouse_z  of +/- WHEEL_DELTA. But there may exist wheels without "steps" that
             // result in lower values we have to cumulate.
@@ -711,19 +691,14 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
                     pVideoWinAPI->CallBack->Msg_WheelDown(pVideoWinAPI->mouse_xy);
                 }
             }
-        }
-        break;
+            break;
         case WM_KEYDOWN:
             //  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
-            {
-                pVideoWinAPI->OnWMKeyDown((unsigned)wParam, lParam);
-            }
+            pVideoWinAPI->OnWMKeyDown((unsigned)wParam, lParam);
             return 0;
         case WM_CHAR:
         case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
-        {
             pVideoWinAPI->OnWMChar((unsigned)wParam, false, lParam);
-        }
             return 0;
     }
     return DefWindowProcW(window, msg, wParam, lParam);
