@@ -21,6 +21,7 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
+#include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
 #include "lua/LuaInterfaceGame.h"
 #include "luaIncludes.h"
@@ -68,7 +69,8 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     MapLoader loader(*this, players);
-    if(!loader.Load(map, GetGGS().exploration))
+    bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
+    if(!loader.Load(map, GetGGS().exploration, waterEverywhere))
         return false;
     if(!loader.PlaceHQs(*this, GetGGS().randomStartPosition))
         return false;
