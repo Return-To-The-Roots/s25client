@@ -28,10 +28,7 @@ void PlayerGameCommands::Serialize(Serializer& ser) const
     ser.PushUnsignedInt(gcs.size());
 
     BOOST_FOREACH(const gc::GameCommandPtr& gc, gcs)
-    {
-        ser.PushUnsignedChar(gc->GetType());
         gc->Serialize(ser);
-    }
 }
 
 void PlayerGameCommands::Deserialize(Serializer& ser)
@@ -41,8 +38,5 @@ void PlayerGameCommands::Deserialize(Serializer& ser)
     checksum.objIdCt = ser.PopUnsignedInt();
     gcs.resize(ser.PopUnsignedInt());
     BOOST_FOREACH(gc::GameCommandPtr& gc, gcs)
-    {
-        gc::Type type = gc::Type(ser.PopUnsignedChar());
-        gc = gc::GameCommand::Deserialize(type, ser);
-    }
+        gc = gc::GameCommand::Deserialize(ser);
 }

@@ -656,13 +656,13 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
         break;
         case 4: // Geologen rufen
         {
-            GAMECLIENT.CallGeologist(selectedPt);
+            GAMECLIENT.CallSpecialist(selectedPt, JOB_GEOLOGIST);
             Close();
         }
         break;
         case 5: // Späher rufen
         {
-            GAMECLIENT.CallScout(selectedPt);
+            GAMECLIENT.CallSpecialist(selectedPt, JOB_SCOUT);
             Close();
         }
         break;

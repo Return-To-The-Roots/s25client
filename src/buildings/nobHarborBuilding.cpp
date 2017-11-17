@@ -305,15 +305,12 @@ void nobHarborBuilding::HandleEvent(const unsigned id)
     }
 }
 
-/// Startet eine Expedition oder stoppt sie, wenn bereits eine stattfindet
+/// Startet eine Expedition
 void nobHarborBuilding::StartExpedition()
 {
     // Schon eine Expedition gestartet?
     if(expedition.active)
-    {
-        StopExpedition();
         return;
-    }
 
     // Initialisierung
     expedition.active = true;
@@ -395,10 +392,7 @@ void nobHarborBuilding::StartExplorationExpedition()
 {
     // Schon eine Expedition gestartet?
     if(exploration_expedition.active)
-    {
-        StopExplorationExpedition();
         return;
-    }
 
     // Initialisierung
     exploration_expedition.active = true;
@@ -439,6 +433,8 @@ void nobHarborBuilding::StartExplorationExpedition()
 
 void nobHarborBuilding::StopExplorationExpedition()
 {
+    if(!exploration_expedition.active)
+        return;
     // Dann diese stoppen
     exploration_expedition.active = false;
     // cancel order for scouts
@@ -450,6 +446,7 @@ void nobHarborBuilding::StopExplorationExpedition()
     if(exploration_expedition.scouts)
     {
         inventory.real.Add(JOB_SCOUT, exploration_expedition.scouts);
+        exploration_expedition.scouts = 0;
         // Evtl. Abnehmer für die Figur wieder finden
         gwg->GetPlayer(player).FindWarehouseForAllJobs(JOB_SCOUT);
     }
@@ -555,7 +552,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // Aufräumen am Hafen
         expedition.active = false;
         // Expedition starten
-        ship->StartExpedition(GetHarborPosID());
+        ship->StartStopExpedition(GetHarborPosID());
         return;
     }
     // Exploration-Expedition ready?
@@ -564,7 +561,7 @@ void nobHarborBuilding::ShipArrived(noShip* ship)
         // Aufräumen am Hafen
         exploration_expedition.active = false;
         // Expedition starten
-        ship->StartExplorationExpedition(GetHarborPosID());
+        ship->StartStopExplorationExpedition(GetHarborPosID());
         inventory.visual.Remove(JOB_SCOUT, exploration_expedition.scouts);
         return;
     }

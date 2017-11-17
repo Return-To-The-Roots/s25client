@@ -211,7 +211,7 @@ void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
         {
-            if(gcFactory.ToggleShipYardMode(building->GetPos()))
+            if(gcFactory.SetShipYardMode(building->GetPos(), static_cast<const nobShipYard*>(building)->GetMode() == nobShipYard::BOATS))
             {
                 // Auch optisch den Button umstellen
                 ctrlImageButton* button = GetCtrl<ctrlImageButton>(11);

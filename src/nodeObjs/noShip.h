@@ -198,9 +198,9 @@ public:
     /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
     void GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route);
     /// Startet eine Expedition
-    void StartExpedition(unsigned homeHarborId);
+    void StartStopExpedition(unsigned homeHarborId);
     /// Startet eine Erkundungs-Expedition
-    void StartExplorationExpedition(unsigned homeHarborId);
+    void StartStopExplorationExpedition(unsigned homeHarborId);
     /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
     void ContinueExpedition(const ShipDirection dir);
     /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum

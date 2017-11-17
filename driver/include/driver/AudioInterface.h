@@ -42,7 +42,7 @@ public:
     /// Plays an effect at the given volume. If loop is true, effect is looped indefinitely
     virtual EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop) = 0;
     /// Plays the given music. Only 1 music will be played. If Repeats is 0 it will loop indefinitely,
-    /// otherwise it loops the many times. TODO: What about not looping it (e.g. playing to only once?)
+    /// otherwise it loops the many times. TODO: What about not looping it (e.g. playing only once?)
     virtual void PlayMusic(const SoundHandle& sound, unsigned repeats) = 0;
     /// Stop the music
     virtual void StopMusic() = 0;

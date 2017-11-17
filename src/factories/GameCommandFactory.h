@@ -63,9 +63,8 @@ public:
     bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
     bool ChangeTools(const ToolSettings& data, const int8_t* order_delta = NULL);
-    /// Calls a geologist to a flag
-    bool CallGeologist(const MapPoint pt);
-    bool CallScout(const MapPoint pt);
+    /// Calls a specialist to a flag
+    bool CallSpecialist(const MapPoint pt, Job job);
     /// Attacks an enemy building
     bool Attack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers);
     /// Sea-Attacks an enemy building
@@ -89,16 +88,16 @@ public:
     bool AcceptPact(unsigned id, PactType pt, unsigned char player);
     bool CancelPact(PactType pt, unsigned char player);
     /// Toggles the construction mode of the shipyard between boat and ship
-    bool ToggleShipYardMode(const MapPoint pt);
+    bool SetShipYardMode(const MapPoint pt, bool buildShips);
     /// Starts Preparation of an sea expedition in a habor
-    bool StartExpedition(const MapPoint pt);
+    bool StartStopExpedition(const MapPoint pt, bool start);
     /// Lets a ship found a colony
     bool FoundColony(unsigned shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
     bool TravelToNextSpot(ShipDirection direction, unsigned shipID);
     /// Cancels an expedition
     bool CancelExpedition(unsigned shipID);
-    bool StartExplorationExpedition(const MapPoint pt);
+    bool StartStopExplorationExpedition(const MapPoint pt, bool start);
     bool TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count);
 
 protected:

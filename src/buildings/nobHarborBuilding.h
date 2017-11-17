@@ -137,11 +137,11 @@ public:
     /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
     void CancelWareForShip(Ware* ware);
 
-    /// Startet eine Expedition oder stoppt sie, wenn bereits eine stattfindet
+    /// Startet eine Expedition
     void StartExpedition();
     void StopExpedition();
 
-    /// Startet eine Erkundungs-Expedition oder stoppt sie, wenn bereits eine stattfindet
+    /// Startet eine Erkundungs-Expedition
     void StartExplorationExpedition();
     void StopExplorationExpedition();
 

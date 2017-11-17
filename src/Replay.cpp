@@ -32,7 +32,7 @@ std::string Replay::GetSignature() const
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
-    return 2;
+    return 3;
 }
 
 //////////////////////////////////////////////////////////////////////////

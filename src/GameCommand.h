@@ -33,7 +33,7 @@ void intrusive_ptr_release(gc::GameCommand* x);
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 
-// Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. contructor)
+// Macro used by all derived GameCommands to allow specified class access to non-public members (e.g. constructor)
 // Only factory classes should be in here
 #define GC_FRIEND_DECL        \
     friend class GameCommand; \
@@ -41,59 +41,57 @@ void intrusive_ptr_release(gc::GameCommand* x);
 
 namespace gc {
 
-enum Type
-{
-    NOTSEND = 0,
-    NOTHING,
-    SETFLAG,
-    DESTROYFLAG,
-    BUILDROAD,
-    DESTROYROAD,
-    CHANGEDISTRIBUTION,
-    CHANGEBUILDORDER,
-    SETBUILDINGSITE,
-    DESTROYBUILDING,
-    CHANGETRANSPORT,
-    CHANGEMILITARY,
-    CHANGETOOLS,
-    CALLGEOLOGIST,
-    CALLSCOUT,
-    ATTACK,
-    UNUSED,
-    SET_COINS_ALLOWED,
-    SET_PRODUCTION_ENABLED,
-    SET_INVENTORY_SETTING,
-    SET_ALL_INVENTORY_SETTINGS,
-    CHANGERESERVE,
-    SUGGESTPACT,
-    ACCEPTPACT,
-    CANCELPACT,
-    TOGGLESHIPYARDMODE,
-    STARTEXPEDITION,
-    STARTATTACKINGEXPEDITION,
-    EXPEDITION_COMMAND,
-    SEAATTACK,
-    STARTEXPLORATIONEXPEDITION,
-    TRADEOVERLAND,
-    SURRENDER,
-    CHEAT_ARMAGEDDON,
-    DESTROYALL,
-    UPGRADEROAD,
-    SENDSOLDIERSHOME,
-    ORDERNEWSOLDIERS,
-    NOTIFYALLIESOFLOCATION
-};
-
 class GameCommand
 {
+protected:
+    enum Type
+    {
+        SET_FLAG,
+        DESTROY_FLAG,
+        BUILD_ROAD,
+        DESTROY_ROAD,
+        CHANGE_DISTRIBUTION,
+        CHANGE_BUILDORDER,
+        SET_BUILDINGSITE,
+        DESTROY_BUILDING,
+        CHANGE_TRANSPORT,
+        CHANGE_MILITARY,
+        CHANGE_TOOLS,
+        CALL_SPECIALIST,
+        CALL_SCOUT,
+        ATTACK,
+        SET_COINS_ALLOWED,
+        SET_PRODUCTION_ENABLED,
+        SET_INVENTORY_SETTING,
+        SET_ALL_INVENTORY_SETTINGS,
+        CHANGE_RESERVE,
+        SUGGEST_PACT,
+        ACCEPT_PACT,
+        CANCEL_PACT,
+        SET_SHIPYARD_MODE,
+        START_STOP_EXPEDITION,
+        EXPEDITION_COMMAND,
+        SEA_ATTACK,
+        START_STOP_EXPLORATION_EXPEDITION,
+        TRADE,
+        SURRENDER,
+        CHEAT_ARMAGEDDON,
+        DESTROY_ALL,
+        UPGRADE_ROAD,
+        SEND_SOLDIERS_HOME,
+        ORDER_NEW_SOLDIERS,
+        NOTIFY_ALLIES_OF_LOCATION
+    };
+
+private:
     /// Type of this command
-    Type gst;
+    Type gcType;
     unsigned refCounter_;
     friend void ::intrusive_ptr_add_ref(GameCommand* x);
     friend void ::intrusive_ptr_release(GameCommand* x);
 
 public:
-    GameCommand(const GameCommand& obj) : gst(obj.gst), refCounter_(0) // Do not copy refCounter!
+    GameCommand(const GameCommand& obj) : gcType(obj.gcType), refCounter_(0) // Do not copy refCounter!
     {}
     virtual ~GameCommand() {}
 
@@ -101,24 +99,22 @@ public:
     {
         if(this == &obj)
             return *this;
-        gst = obj.gst;
+        gcType = obj.gcType;
         // Do not copy or reset refCounter!
         return *this;
     }
 
     /// Builds a GameCommand depending on Type
-    static GameCommand* Deserialize(const Type gst, Serializer& ser);
+    static GameCommand* Deserialize(Serializer& ser);
 
-    /// Returns the Type
-    Type GetType() const { return gst; }
     /// Serializes this GameCommand
-    virtual void Serialize(Serializer& ser) const = 0;
+    virtual void Serialize(Serializer& ser) const;
 
     /// Execute this GameCommand
-    virtual void Execute(GameWorldGame& gwg, unsigned char playerId) = 0;
+    virtual void Execute(GameWorldGame& gwg, uint8_t playerId) = 0;
 
 protected:
-    GameCommand(const Type gst) : gst(gst), refCounter_(0) {}
+    GameCommand(const Type gcType) : gcType(gcType), refCounter_(0) {}
 };
 
 // Use this for safely using Pointers to GameCommands
