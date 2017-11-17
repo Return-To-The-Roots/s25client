@@ -1297,11 +1297,11 @@ void AIPlayerJH::HandleBuildingFinished(const MapPoint pt, BuildingType bld)
             // if there are positions free start an expedition!
             if(HarborPosRelevant(gwb.GetHarborPointID(pt), true))
             {
-                aii.StartExpedition(pt);
+                aii.StartStopExpedition(pt, true);
             }
             break;
 
-        case BLD_SHIPYARD: aii.ToggleShipYardMode(pt); break;
+        case BLD_SHIPYARD: aii.SetShipYardMode(pt, true); break;
 
         case BLD_STOREHOUSE: break;
         case BLD_WOODCUTTER: AddBuildJob(BLD_SAWMILL, pt); break;
@@ -1575,11 +1575,11 @@ void AIPlayerJH::CheckExpeditions()
     const std::list<nobHarborBuilding*>& harbors = aii.GetHarbors();
     BOOST_FOREACH(const nobHarborBuilding* harbor, harbors)
     {
+        bool isHarborRelevant = HarborPosRelevant(harbor->GetHarborPosID(), true);
         if(harbor->IsExpeditionActive()
-           != HarborPosRelevant(harbor->GetHarborPosID(),
-                                true)) // harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
+           != isHarborRelevant) // harbor is collecting for expedition and shouldnt OR not collecting and should -> toggle expedition
         {
-            aii.StartExpedition(harbor->GetPos()); // command is more of a toggle despite it's name
+            aii.StartStopExpedition(harbor->GetPos(), isHarborRelevant);
         }
     }
     // find lost expedition ships - ai should get a notice and catch them all but just in case some fell through the system

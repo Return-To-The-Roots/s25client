@@ -90,14 +90,10 @@ bool GameCommandFactory::ChangeTools(const ToolSettings& data, const int8_t* ord
     return AddGC(new gc::ChangeTools(data, order_delta));
 }
 
-bool GameCommandFactory::CallGeologist(const MapPoint pt)
+bool GameCommandFactory::CallSpecialist(const MapPoint pt, Job job)
 {
-    return AddGC(new gc::CallGeologist(pt));
-}
-
-bool GameCommandFactory::CallScout(const MapPoint pt)
-{
-    return AddGC(new gc::CallScout(pt));
+    RTTR_Assert(job == JOB_GEOLOGIST || job == JOB_SCOUT);
+    return AddGC(new gc::CallSpecialist(pt, job));
 }
 
 bool GameCommandFactory::Attack(const MapPoint pt, unsigned soldiers_count, bool strong_soldiers)
@@ -180,14 +176,14 @@ bool GameCommandFactory::CancelPact(const PactType pt, unsigned char player)
     return AddGC(new gc::CancelPact(pt, player));
 }
 
-bool GameCommandFactory::ToggleShipYardMode(const MapPoint pt)
+bool GameCommandFactory::SetShipYardMode(const MapPoint pt, bool buildShips)
 {
-    return AddGC(new gc::ToggleShipYardMode(pt));
+    return AddGC(new gc::SetShipYardMode(pt, buildShips));
 }
 
-bool GameCommandFactory::StartExpedition(const MapPoint pt)
+bool GameCommandFactory::StartStopExpedition(const MapPoint pt, bool start)
 {
-    return AddGC(new gc::StartExpedition(pt));
+    return AddGC(new gc::StartStopExpedition(pt, start));
 }
 
 bool GameCommandFactory::FoundColony(unsigned shipID)
@@ -216,9 +212,9 @@ bool GameCommandFactory::CancelExpedition(unsigned shipID)
     return AddGC(new gc::ExpeditionCommand(gc::ExpeditionCommand::CANCELEXPEDITION, shipID));
 }
 
-bool GameCommandFactory::StartExplorationExpedition(const MapPoint pt)
+bool GameCommandFactory::StartStopExplorationExpedition(const MapPoint pt, bool start)
 {
-    return AddGC(new gc::StartExplorationExpedition(pt));
+    return AddGC(new gc::StartStopExplorationExpedition(pt, start));
 }
 
 bool GameCommandFactory::TradeOverLand(const MapPoint pt, GoodType gt, Job job, unsigned count)

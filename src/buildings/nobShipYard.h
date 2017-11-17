@@ -50,7 +50,7 @@ public:
     /// Gibt aktuellen Modus zurück
     Mode GetMode() const { return mode; }
     /// Schaltet Modus entsprechend um
-    void ToggleMode();
+    void SetMode(Mode newMode);
 };
 
 #endif

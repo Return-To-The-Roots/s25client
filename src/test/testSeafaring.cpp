@@ -102,7 +102,15 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     BOOST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS); //-V522
-    this->ToggleShipYardMode(shipyardPos);
+    this->SetShipYardMode(shipyardPos, false);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS);
+    this->SetShipYardMode(shipyardPos, true);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
+    this->SetShipYardMode(shipyardPos, true);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
+    this->SetShipYardMode(shipyardPos, false);
+    BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::BOATS);
+    this->SetShipYardMode(shipyardPos, true);
     BOOST_REQUIRE_EQUAL(shipYard->GetMode(), nobShipYard::SHIPS);
 
     world.GetPostMgr().AddPostBox(curPlayer);
@@ -179,7 +187,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_REQUIRE(ship);
     BOOST_REQUIRE(ship->IsIdling());
     BOOST_REQUIRE(!harbor.IsExplorationExpeditionActive());
-    this->StartExplorationExpedition(hbPos);
+    this->StartStopExplorationExpedition(hbPos, true);
     BOOST_REQUIRE(harbor.IsExplorationExpeditionActive());
     // Expedition not ready, ship still idling
     BOOST_REQUIRE(ship->IsIdling());
@@ -193,7 +201,11 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     // No available scouts
     BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(JOB_SCOUT), 0u);
     // Stop it
-    this->StartExplorationExpedition(hbPos);
+    this->StartStopExplorationExpedition(hbPos, true);
+    BOOST_REQUIRE(harbor.IsExplorationExpeditionActive());
+    this->StartStopExplorationExpedition(hbPos, false);
+    BOOST_REQUIRE(!harbor.IsExplorationExpeditionActive());
+    this->StartStopExplorationExpedition(hbPos, false);
     BOOST_REQUIRE(!harbor.IsExplorationExpeditionActive());
     // Scouts available again
     BOOST_REQUIRE_EQUAL(harbor.GetNumRealFigures(JOB_SCOUT), 3u);
@@ -216,7 +228,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     unsigned targetHbId = 8u;
 
     // Start again (everything is here)
-    this->StartExplorationExpedition(hbPos);
+    this->StartStopExplorationExpedition(hbPos, true);
     // ...so we can start right now
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     // Load and start
@@ -256,7 +268,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
 
     // Now try to start an expedition but all harbors are explored -> Load, Unload, Idle
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[curPlayer].visibility = VIS_VISIBLE;
-    this->StartExplorationExpedition(hbPos);
+    this->StartStopExplorationExpedition(hbPos, true);
     BOOST_REQUIRE(ship->IsOnExplorationExpedition());
     RTTR_EXEC_TILL(2 * 200 + 5, ship->IsIdling());
 }
@@ -283,7 +295,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     world.GetNodeWriteable(world.GetHarborPoint(6)).fow[1].visibility = VIS_VISIBLE;
     world.GetNodeWriteable(world.GetHarborPoint(3)).fow[1].visibility = VIS_VISIBLE;
     unsigned targetHbId = 8u;
-    this->StartExplorationExpedition(hbPos);
+    this->StartStopExplorationExpedition(hbPos, true);
 
     // Start it
     RTTR_EXEC_TILL(600, ship->IsOnExplorationExpedition() && ship->IsMoving());
@@ -329,7 +341,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE(ship);
     BOOST_REQUIRE(ship->IsIdling());
     BOOST_REQUIRE(!harbor.IsExpeditionActive());
-    this->StartExpedition(hbPos);
+    this->StartStopExpedition(hbPos, true);
     BOOST_REQUIRE(harbor.IsExpeditionActive());
     // Expedition not ready, ship still idling
     BOOST_REQUIRE(ship->IsIdling());
@@ -343,7 +355,11 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     // No available boards
     BOOST_REQUIRE_EQUAL(harbor.GetNumRealWares(GD_BOARDS), 0u);
     // Stop it
-    this->StartExpedition(hbPos);
+    this->StartStopExpedition(hbPos, true);
+    BOOST_REQUIRE(harbor.IsExpeditionActive());
+    this->StartStopExpedition(hbPos, false);
+    BOOST_REQUIRE(!harbor.IsExpeditionActive());
+    this->StartStopExpedition(hbPos, false);
     BOOST_REQUIRE(!harbor.IsExpeditionActive());
     // Boards available again
     BOOST_REQUIRE_GT(harbor.GetNumRealWares(GD_BOARDS), 0u);
@@ -354,7 +370,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_REQUIRE_EQUAL(player.GetShipsToHarbor(harbor), 0u);
 
     // Start again (everything is here)
-    this->StartExpedition(hbPos);
+    this->StartStopExpedition(hbPos, true);
     // ...so we can start right now
     BOOST_REQUIRE(ship->IsOnExpedition());
 
@@ -388,7 +404,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     RTTR_EXEC_TILL(gfsToDest + 300, ship->IsIdling());
 
     // Start again (everything is here)
-    this->StartExpedition(hbPos);
+    this->StartStopExpedition(hbPos, true);
     BOOST_REQUIRE(ship->IsOnExpedition());
 
     // Wait for ship to be "loaded"
@@ -454,7 +470,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
         world.GetNodeWriteable(world.GetHarborPoint(i)).fow[curPlayer].visibility = VIS_VISIBLE;
     world.GetNodeWriteable(world.GetHarborPoint(targetHbId)).fow[curPlayer].visibility = VIS_INVISIBLE;
     // Start an exploration expedition
-    this->StartExplorationExpedition(hbPos);
+    this->StartStopExplorationExpedition(hbPos, true);
     BOOST_REQUIRE(harbor.IsExplorationExpeditionActive());
     // Wait till ship has arrived and starts loading
     RTTR_EXEC_TILL(100, ship->IsOnExplorationExpedition());

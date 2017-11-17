@@ -34,10 +34,9 @@ protected:
     {
         // Go through serialization to check if that works too
         Serializer ser;
-        const gc::Type type = gc->GetType();
         gc->Serialize(ser);
         deletePtr(gc);
-        gc = gc::GameCommand::Deserialize(type, ser);
+        gc = gc::GameCommand::Deserialize(ser);
         BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
         Serializer ser2;
         gc->Serialize(ser2);

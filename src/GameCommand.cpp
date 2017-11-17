@@ -24,48 +24,55 @@
 
 namespace gc {
 
-GameCommand* GameCommand::Deserialize(const Type gst, Serializer& ser)
+GameCommand* GameCommand::Deserialize(Serializer& ser)
 {
-    switch(gst)
+    Type gcType = static_cast<Type>(ser.PopUnsignedChar());
+    GameCommand* gc;
+    switch(gcType)
     {
-        case SETFLAG: return new SetFlag(ser);
-        case DESTROYFLAG: return new DestroyFlag(ser);
-        case BUILDROAD: return new BuildRoad(ser);
-        case DESTROYROAD: return new DestroyRoad(ser);
-        case CHANGEDISTRIBUTION: return new ChangeDistribution(ser);
-        case CHANGEBUILDORDER: return new ChangeBuildOrder(ser);
-        case SETBUILDINGSITE: return new SetBuildingSite(ser);
-        case DESTROYBUILDING: return new DestroyBuilding(ser);
-        case CHANGETRANSPORT: return new ChangeTransport(ser);
-        case CHANGEMILITARY: return new ChangeMilitary(ser);
-        case CHANGETOOLS: return new ChangeTools(ser);
-        case CALLGEOLOGIST: return new CallGeologist(ser);
-        case CALLSCOUT: return new CallScout(ser);
-        case ATTACK: return new Attack(ser);
-        case SEAATTACK: return new SeaAttack(ser);
-        case SET_COINS_ALLOWED: return new SetCoinsAllowed(ser);
-        case SET_PRODUCTION_ENABLED: return new SetProductionEnabled(ser);
-        case SET_INVENTORY_SETTING: return new SetInventorySetting(ser);
-        case SET_ALL_INVENTORY_SETTINGS: return new SetAllInventorySettings(ser);
-        case CHANGERESERVE: return new ChangeReserve(ser);
-        case SUGGESTPACT: return new SuggestPact(ser);
-        case ACCEPTPACT: return new AcceptPact(ser);
-        case CANCELPACT: return new CancelPact(ser);
-        case TOGGLESHIPYARDMODE: return new ToggleShipYardMode(ser);
-        case STARTEXPEDITION: return new StartExpedition(ser);
-        case STARTEXPLORATIONEXPEDITION: return new StartExplorationExpedition(ser);
-        case EXPEDITION_COMMAND: return new ExpeditionCommand(ser);
-        case TRADEOVERLAND: return new TradeOverLand(ser);
-        case SURRENDER: return new Surrender(ser);
-        case CHEAT_ARMAGEDDON: return new CheatArmageddon(ser);
-        case DESTROYALL: return new DestroyAll(ser);
-        case UPGRADEROAD: return new UpgradeRoad(ser);
-        case ORDERNEWSOLDIERS: return new OrderNewSoldiers(ser);
-        case SENDSOLDIERSHOME: return new SendSoldiersHome(ser);
-        case NOTIFYALLIESOFLOCATION: return new NotifyAlliesOfLocation(ser);
-        default: break;
+        case SET_FLAG: gc = new SetFlag(ser); break;
+        case DESTROY_FLAG: gc = new DestroyFlag(ser); break;
+        case BUILD_ROAD: gc = new BuildRoad(ser); break;
+        case DESTROY_ROAD: gc = new DestroyRoad(ser); break;
+        case CHANGE_DISTRIBUTION: gc = new ChangeDistribution(ser); break;
+        case CHANGE_BUILDORDER: gc = new ChangeBuildOrder(ser); break;
+        case SET_BUILDINGSITE: gc = new SetBuildingSite(ser); break;
+        case DESTROY_BUILDING: gc = new DestroyBuilding(ser); break;
+        case CHANGE_TRANSPORT: gc = new ChangeTransport(ser); break;
+        case CHANGE_MILITARY: gc = new ChangeMilitary(ser); break;
+        case CHANGE_TOOLS: gc = new ChangeTools(ser); break;
+        case CALL_SPECIALIST: gc = new CallSpecialist(ser); break;
+        case ATTACK: gc = new Attack(ser); break;
+        case SEA_ATTACK: gc = new SeaAttack(ser); break;
+        case SET_COINS_ALLOWED: gc = new SetCoinsAllowed(ser); break;
+        case SET_PRODUCTION_ENABLED: gc = new SetProductionEnabled(ser); break;
+        case SET_INVENTORY_SETTING: gc = new SetInventorySetting(ser); break;
+        case SET_ALL_INVENTORY_SETTINGS: gc = new SetAllInventorySettings(ser); break;
+        case CHANGE_RESERVE: gc = new ChangeReserve(ser); break;
+        case SUGGEST_PACT: gc = new SuggestPact(ser); break;
+        case ACCEPT_PACT: gc = new AcceptPact(ser); break;
+        case CANCEL_PACT: gc = new CancelPact(ser); break;
+        case SET_SHIPYARD_MODE: gc = new SetShipYardMode(ser); break;
+        case START_STOP_EXPEDITION: gc = new StartStopExpedition(ser); break;
+        case START_STOP_EXPLORATION_EXPEDITION: gc = new StartStopExplorationExpedition(ser); break;
+        case EXPEDITION_COMMAND: gc = new ExpeditionCommand(ser); break;
+        case TRADE: gc = new TradeOverLand(ser); break;
+        case SURRENDER: gc = new Surrender(ser); break;
+        case CHEAT_ARMAGEDDON: gc = new CheatArmageddon(ser); break;
+        case DESTROY_ALL: gc = new DestroyAll(ser); break;
+        case UPGRADE_ROAD: gc = new UpgradeRoad(ser); break;
+        case ORDER_NEW_SOLDIERS: gc = new OrderNewSoldiers(ser); break;
+        case SEND_SOLDIERS_HOME: gc = new SendSoldiersHome(ser); break;
+        case NOTIFY_ALLIES_OF_LOCATION: gc = new NotifyAlliesOfLocation(ser); break;
+        default: gc = NULL; throw std::logic_error("Invalid GC Type: " + helpers::toString(gcType));
     }
-
-    throw std::logic_error("Invalid GC Type: " + helpers::toString(gst));
+    RTTR_Assert(gc->gcType == gcType);
+    return gc;
 }
+
+void GameCommand::Serialize(Serializer& ser) const
+{
+    ser.PushUnsignedChar(static_cast<uint8_t>(gcType));
+}
+
 } // namespace gc

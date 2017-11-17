@@ -137,32 +137,32 @@ public:
     bool IsExplorationDirectionPossible(const MapPoint pt, unsigned originHarborID, ShipDirection direction) const;
     unsigned GetNation() { return player_.nation; }
 
-    void SetCoinsAllowed(const nobMilitary* building, const bool enabled);
+    bool SetCoinsAllowed(const nobMilitary* building, const bool enabled);
     using GameCommandFactory::SetCoinsAllowed;
 
-    void StartExpedition(const nobHarborBuilding* harbor);
-    using GameCommandFactory::StartExpedition;
+    bool StartStopExpedition(const nobHarborBuilding* harbor, bool start);
+    using GameCommandFactory::StartStopExpedition;
 
-    void FoundColony(const noShip* ship) { FoundColony(GetShipID(ship)); }
+    bool FoundColony(const noShip* ship) { return FoundColony(GetShipID(ship)); }
     using GameCommandFactory::FoundColony;
 
-    void TravelToNextSpot(ShipDirection direction, const noShip* ship) { TravelToNextSpot(direction, GetShipID(ship)); }
+    bool TravelToNextSpot(ShipDirection direction, const noShip* ship) { return TravelToNextSpot(direction, GetShipID(ship)); }
     using GameCommandFactory::TravelToNextSpot;
 
-    void CancelExpedition(const noShip* ship) { CancelExpedition(GetShipID(ship)); }
+    bool CancelExpedition(const noShip* ship) { return CancelExpedition(GetShipID(ship)); }
     using GameCommandFactory::CancelExpedition;
 
-    void ToggleShipYardMode(const nobShipYard* yard);
-    using GameCommandFactory::ToggleShipYardMode;
+    bool SetShipYardMode(const nobShipYard* yard, bool buildShips);
+    using GameCommandFactory::SetShipYardMode;
 
-    void DestroyBuilding(const noBuilding* building);
+    bool DestroyBuilding(const noBuilding* building);
     using GameCommandFactory::DestroyBuilding;
 
-    void DestroyFlag(const noFlag* flag);
+    bool DestroyFlag(const noFlag* flag);
     using GameCommandFactory::DestroyFlag;
 
-    void CallGeologist(const noFlag* flag);
-    using GameCommandFactory::CallGeologist;
+    bool CallSpecialist(const noFlag* flag, Job job);
+    using GameCommandFactory::CallSpecialist;
 
     /// Pointer to GameWorld, containing all information about the world
     const GameWorldBase& gwb;

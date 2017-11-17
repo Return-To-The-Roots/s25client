@@ -36,10 +36,7 @@ void nobShipYard::Serialize(SerializedGameData& sgd) const
 }
 
 /// Schaltet Modus entsprechend um
-void nobShipYard::ToggleMode()
+void nobShipYard::SetMode(Mode newMode)
 {
-    if(mode == nobShipYard::BOATS)
-        mode = nobShipYard::SHIPS;
-    else
-        mode = nobShipYard::BOATS;
+    mode = newMode;
 }

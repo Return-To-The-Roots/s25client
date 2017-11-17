@@ -108,8 +108,6 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     // Set Player ID
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
-
-    // TODO: Add test for message box
 }
 
 BOOST_AUTO_TEST_CASE(Translations)
@@ -224,8 +222,6 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     executeLua("rttr:Chat(-1, 'Hello All')");
     BOOST_REQUIRE_EQUAL(storeChat.lastMsg, "Hello All");
     BOOST_REQUIRE_EQUAL(storeChat.lastCD, CD_SYSTEM);
-
-    // TODO: Test MissionStatement(player, title, message)
 
     world.GetPostMgr().AddPostBox(1);
     const PostBox& postBox = *world.GetPostMgr().GetPostBox(1);

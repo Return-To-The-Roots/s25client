@@ -208,27 +208,27 @@ bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, unsigned ori
     return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_) > 0;
 }
 
-void AIInterface::SetCoinsAllowed(const nobMilitary* building, const bool enabled)
+bool AIInterface::SetCoinsAllowed(const nobMilitary* building, const bool enabled)
 {
-    SetCoinsAllowed(building->GetPos(), enabled);
+    return SetCoinsAllowed(building->GetPos(), enabled);
 }
-void AIInterface::StartExpedition(const nobHarborBuilding* harbor)
+bool AIInterface::StartStopExpedition(const nobHarborBuilding* hb, bool start)
 {
-    StartExpedition(harbor->GetPos());
+    return StartStopExpedition(hb->GetPos(), start);
 }
-void AIInterface::ToggleShipYardMode(const nobShipYard* yard)
+bool AIInterface::SetShipYardMode(const nobShipYard* shipyard, bool buildShips)
 {
-    ToggleShipYardMode(yard->GetPos());
+    return SetShipYardMode(shipyard->GetPos(), buildShips);
 }
-void AIInterface::DestroyBuilding(const noBuilding* building)
+bool AIInterface::DestroyBuilding(const noBuilding* building)
 {
-    DestroyBuilding(building->GetPos());
+    return DestroyBuilding(building->GetPos());
 }
-void AIInterface::DestroyFlag(const noFlag* flag)
+bool AIInterface::DestroyFlag(const noFlag* flag)
 {
-    DestroyFlag(flag->GetPos());
+    return DestroyFlag(flag->GetPos());
 }
-void AIInterface::CallGeologist(const noFlag* flag)
+bool AIInterface::CallSpecialist(const noFlag* flag, Job job)
 {
-    CallGeologist(flag->GetPos());
+    return CallSpecialist(flag->GetPos(), job);
 }

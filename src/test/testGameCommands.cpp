@@ -35,8 +35,6 @@
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -537,8 +535,7 @@ BOOST_FIXTURE_TEST_CASE(OrderNewSoldiersFailOnMinRank, WorldWithGCExecution2P)
 }
 
 namespace {
-template<typename T_CallWorker>
-void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType, T_CallWorker callWorker)
+void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType)
 {
     const MapPoint flagPt = worldFixture.world.GetNeighbour(worldFixture.hqPos, Direction::SOUTHEAST) + MapPoint(3, 0);
     GamePlayer& player = worldFixture.world.GetPlayer(worldFixture.curPlayer);
@@ -552,13 +549,13 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     BOOST_REQUIRE_GT(startToolsCt, 0u);
 
     // No flag -> Nothing happens
-    callWorker(flagPt);
+    worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(workerJob), startFigureCt);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u); //-V807
 
     worldFixture.SetFlag(flagPt);
     // Unconnected flag -> Nothing happens
-    callWorker(flagPt);
+    worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(workerJob), startFigureCt);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
@@ -569,26 +566,26 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 0u);
 
     // Call one geologist to flag
-    callWorker(flagPt);
+    worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(workerJob) + 1, startFigureCt);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), 1u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().front()->GetJobType(), workerJob);
 
     // Call remaining ones
     for(unsigned i = 1; i < startFigureCt; i++)
-        callWorker(flagPt);
+        worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(workerJob), 0u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt);
 
     // Recruit all possible ones
     BOOST_REQUIRE_EQUAL(wh->GetNumRealWares(toolType), startToolsCt);
     for(unsigned i = 0; i < startToolsCt; i++)
-        callWorker(flagPt);
+        worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(workerJob), 0u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
 
     // And an extra one -> Fail
-    callWorker(flagPt);
+    worldFixture.CallSpecialist(flagPt, workerJob);
     BOOST_REQUIRE_EQUAL(wh->GetNumRealFigures(workerJob), 0u);
     BOOST_REQUIRE_EQUAL(wh->GetLeavingFigures().size(), startFigureCt + startToolsCt);
 }
@@ -598,14 +595,14 @@ BOOST_FIXTURE_TEST_CASE(CallGeologist, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    FlagWorkerTest(*this, JOB_GEOLOGIST, GD_HAMMER, boost::lambda::bind(&GameCommandFactory::CallGeologist, this, boost::lambda::_1));
+    FlagWorkerTest(*this, JOB_GEOLOGIST, GD_HAMMER);
 }
 
 BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    FlagWorkerTest(*this, JOB_SCOUT, GD_BOW, boost::lambda::bind(&GameCommandFactory::CallScout, this, boost::lambda::_1));
+    FlagWorkerTest(*this, JOB_SCOUT, GD_BOW);
 }
 
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)

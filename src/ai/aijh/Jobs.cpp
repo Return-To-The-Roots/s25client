@@ -248,7 +248,7 @@ void BuildJob::BuildMainRoad()
     // Just 4 Fun Gelehrten rufen
     if(BUILDING_SIZE[type] == BQ_MINE)
     {
-        aiInterface.CallGeologist(houseFlag->GetPos());
+        aiInterface.CallSpecialist(houseFlag->GetPos(), JOB_GEOLOGIST);
     }
     if(!BuildingProperties::IsMilitary(type)) // not a military building? -> build secondary road now
     {

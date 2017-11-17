@@ -111,12 +111,13 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsi
         {
             case 1: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartExpedition(wh->GetPos()))
+                if(GAMECLIENT.StartStopExpedition(wh->GetPos(), !static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive()))
                     AdjustExpeditionButton(true);
                 break;
             case 3: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartExplorationExpedition(wh->GetPos()))
+                if(GAMECLIENT.StartStopExplorationExpedition(wh->GetPos(),
+                                                             !static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive()))
                     AdjustExplorationExpeditionButton(true);
                 break;
         }
