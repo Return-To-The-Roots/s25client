@@ -19,19 +19,23 @@
 
 #pragma once
 
-#include "AddonBool.h"
+#include "AddonList.h"
 #include "mygettext/mygettext.h"
 
 /**
  *  Addon for allowing to have unlimited resources.
  */
-class AddonExhaustibleWells : public AddonBool
+class AddonExhaustibleWells : public AddonList
 {
 public:
     AddonExhaustibleWells()
-        : AddonBool(AddonId::EXHAUSTIBLE_WELLS, ADDONGROUP_ECONOMY, _("Exhaustible Wells"),
+        : AddonList(AddonId::EXHAUSTIBLE_WELLS, ADDONGROUP_ECONOMY, _("Exhaustible Wells"),
                     _("Wells will now dry out, limiting the available water"), 0)
-    {}
+    {
+        addOption(_("Disabled"));
+        addOption(_("Disabled and no notification"));
+        addOption(_("Use"));
+    }
 };
 
 #endif // !ADDONEXHAUSTIBLEWELLS_H_INCLUDED
