@@ -124,7 +124,7 @@ bool nofWellguy::StartWorking()
     MapPoint resPt = FindPointWithResource(Resource::Water);
     if(!resPt.isValid())
         return false;
-    if(gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WELLS) == 2)
+    if(gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
         gwg->ReduceResource(resPt);
     return nofWorkman::StartWorking();
 }

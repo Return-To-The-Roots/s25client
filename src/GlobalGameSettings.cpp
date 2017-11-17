@@ -97,7 +97,7 @@ void GlobalGameSettings::clearAddons(bool recreate)
         registerAddon(new AddonLimitCatapults);
         registerAddon(new AddonInexhaustibleMines);
         registerAddon(new AddonRefundMaterials);
-        registerAddon(new AddonExhaustibleWells);
+        registerAddon(new AddonExhaustibleWater);
         registerAddon(new AddonRefundOnEmergency);
         registerAddon(new AddonManualRoadEnlargement);
         registerAddon(new AddonCatapultGraphics);
