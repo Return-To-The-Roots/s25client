@@ -613,17 +613,9 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id >= ID_SWAP_BUTTON && ctrl_id < ID_SWAP_BUTTON + MAX_PLAYERS)
     {
-        LOG.write("dskHostGame: swap button pressed\n");
-        unsigned char p = 0;
-        while(p < MAX_PLAYERS && !gameLobby->getPlayer(p).isHost)
-            p++;
-
-        if(p < MAX_PLAYERS)
-        {
-            GAMESERVER.SwapPlayer(p, ctrl_id - ID_SWAP_BUTTON);
-            CI_PlayersSwapped(p, ctrl_id - ID_SWAP_BUTTON);
-        } else
-            LOG.write("dskHostGame: could not find host\n");
+        unsigned targetPlayer = ctrl_id - ID_SWAP_BUTTON;
+        if(targetPlayer != localPlayerId_)
+            GAMESERVER.SwapPlayer(targetPlayer, localPlayerId_);
         return;
     }
     switch(ctrl_id)
@@ -964,6 +956,10 @@ void dskHostGame::CI_ReadyChanged(const unsigned playerId, const bool ready)
 
 void dskHostGame::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
+    if(player1 == localPlayerId_)
+        localPlayerId_ = player2;
+    else if(localPlayerId_ == player2)
+        localPlayerId_ = player1;
     // Spieler wurden vertauscht, beide Reihen updaten
     UpdatePlayerRow(player1);
     UpdatePlayerRow(player2);

@@ -1455,6 +1455,25 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
     return true;
 }
 
+void GameServer::SwapPlayer(const unsigned char player1, const unsigned char player2)
+{
+    RTTR_Assert(status == SS_CONFIG); // Swap player during match-making
+    SendToAll(GameMessage_Player_Swap(player1, player2));
+    // Swap everything
+    using std::swap;
+    swap(playerInfos[player1], playerInfos[player2]);
+    // Change ids of network players (if any). Get both first!
+    GameServerPlayer* newPlayer = GetNetworkPlayer(player1);
+    GameServerPlayer* oldPlayer = GetNetworkPlayer(player2);
+    if(newPlayer)
+        newPlayer->playerId = player2;
+    if(oldPlayer)
+        oldPlayer->playerId = player1;
+    // In savegames some things cannot be changed
+    if(mapinfo.type == MAPTYPE_SAVEGAME)
+        playerInfos[player1].FixSwappedSaveSlot(playerInfos[player2]);
+}
+
 GameServerPlayer* GameServer::GetNetworkPlayer(unsigned playerId)
 {
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
@@ -1493,25 +1512,6 @@ void GameServer::SetPaused(bool paused)
         return;
     framesinfo.isPaused = paused;
     SendToAll(GameMessage_Pause(framesinfo.isPaused));
-}
-
-void GameServer::SwapPlayer(const unsigned char player1, const unsigned char player2)
-{
-    RTTR_Assert(status == SS_CONFIG); // Swap player during match-making
-    SendToAll(GameMessage_Player_Swap(player1, player2));
-    // Swap everything
-    using std::swap;
-    swap(playerInfos[player1], playerInfos[player2]);
-    // Change ids of network players (if any). Get both first!
-    GameServerPlayer* newPlayer = GetNetworkPlayer(player1);
-    GameServerPlayer* oldPlayer = GetNetworkPlayer(player2);
-    if(newPlayer)
-        newPlayer->playerId = player2;
-    if(oldPlayer)
-        oldPlayer->playerId = player1;
-    // In savegames some things cannot be changed
-    if(mapinfo.type == MAPTYPE_SAVEGAME)
-        playerInfos[player1].FixSwappedSaveSlot(playerInfos[player2]);
 }
 
 JoinPlayerInfo& GameServer::GetJoinPlayer(unsigned playerIdx)

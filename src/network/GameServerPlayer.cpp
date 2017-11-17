@@ -50,7 +50,7 @@ unsigned GameServerPlayer::calcPingTime()
     TimePoint now = Clock::now();
     int result = boost::chrono::duration_cast<boost::chrono::duration<int> >(now - lastPingTime).count();
     lastPingTime = now;
-    return result > 0 ? static_cast<unsigned>(result) : 0u;
+    return result > 0 ? static_cast<unsigned>(result) : 1u;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
