@@ -25,16 +25,16 @@
 /**
  *  Addon for allowing to have unlimited resources.
  */
-class AddonExhaustibleWells : public AddonList
+class AddonExhaustibleWater : public AddonList
 {
 public:
-    AddonExhaustibleWells()
-        : AddonList(AddonId::EXHAUSTIBLE_WELLS, ADDONGROUP_ECONOMY, _("Exhaustible Wells"),
-                    _("Wells will now dry out, limiting the available water"), 0)
+    AddonExhaustibleWater()
+        : AddonList(AddonId::EXHAUSTIBLE_WATER, ADDONGROUP_ECONOMY, _("Exhaustible Water"),
+                    _("If Water is exhaustible wells will now dry out."), 0)
     {
-        addOption(_("Disabled"));
-        addOption(_("Disabled and no notification"));
-        addOption(_("Use"));
+        addOption(_("Inexhaustible"));
+        addOption(_("Inexhaustible and water everywhere"));
+        addOption(_("Exhaustible"));
     }
 };
 
