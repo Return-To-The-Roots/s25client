@@ -18,15 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
 #include "PointOutput.h"
-#include "GlobalGameSettings.h"
-#include "addons/Addon.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
 #include "world/World.h"
-#include "world/GameWorldBase.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGranite.h"
@@ -46,14 +43,13 @@
 class noBase;
 class nobBaseWarehouse;
 
-MapLoader::MapLoader(GameWorldBase& world, const std::vector<Nation>& playerNations) : world_(world), playerNations_(playerNations) {}
+MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world_(world), playerNations_(playerNations) {}
 
-bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
+bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration, bool waterEveryWhere)
 {
     world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
-  
 
-    InitNodes(map, exploration);
+    InitNodes(map, exploration, waterEveryWhere);
     PlaceObjects(map);
     PlaceAnimals(map);
     if(!InitSeasAndHarbors(world_))
@@ -94,7 +90,7 @@ void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
     }
 }
 
-void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
+void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration, bool waterEveryWhere)
 {
     // Init node data (everything except the objects and figures)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
@@ -131,7 +127,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         else
         {
 
-            if (world_.GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1)
+            if (waterEveryWhere)
             { 
                 // if addon inexhaustible water and water everywhere is enabled, put water on every node exect desert/water
                 if ((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))

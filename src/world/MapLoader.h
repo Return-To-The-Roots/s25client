@@ -29,12 +29,12 @@ class glArchivItem_Map;
 
 class MapLoader
 {
-    GameWorldBase& world_;
+    World& world_;
     const std::vector<Nation> playerNations_;
     std::vector<MapPoint> hqPositions_;
 
     /// Initialize the nodes according to the map data
-    void InitNodes(const glArchivItem_Map& map, Exploration exploration);
+    void InitNodes(const glArchivItem_Map& map, Exploration exploration, bool waterEverywhere);
     /// Place all objects on the nodes according to the map data.
     void PlaceObjects(const glArchivItem_Map& map);
     void PlaceAnimals(const glArchivItem_Map& map);
@@ -47,9 +47,9 @@ class MapLoader
 public:
     /// Construct a loader for the given world.
     /// Size of @playerNations must be the player count and unused player spots must be set to NAT_INVALID
-    MapLoader(GameWorldBase& world, const std::vector<Nation>& playerNations);
+    MapLoader(World& world, const std::vector<Nation>& playerNations);
     /// Load the map from the given archive, resetting previous state. Return false on error
-    bool Load(const glArchivItem_Map& map, Exploration exploration);
+    bool Load(const glArchivItem_Map& map, Exploration exploration, bool waterEverywhere);
     /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
     bool PlaceHQs(GameWorldBase& world, bool randomStartPos);
 
