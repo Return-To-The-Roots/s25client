@@ -51,7 +51,7 @@ void noSign::Draw(DrawPoint drawPt)
     switch(resource.getType())
     {
         case Resource::Iron: imgId = 680; break;
-        case Resource::Gold: imgId = 684; break;
+        case Resource::Gold: imgId = 683; break;
         case Resource::Coal: imgId = 686; break;
         case Resource::Granite: imgId = 689; break;
         case Resource::Water: imgId = 692; break;
