@@ -86,7 +86,7 @@ struct LoadWorldFromFileCreator : MapTestFixture
         for(unsigned i = 0; i < numPlayers_; i++)
             nations.push_back(world.GetPlayer(i).nation);
         MapLoader loader(world, nations);
-        if(!loader.Load(map, EXP_FOGOFWAR, false))
+        if(!loader.Load(map, EXP_FOGOFWAR))
             throw std::runtime_error("Could not load map");
         if(!loader.PlaceHQs(world, false))
             throw std::runtime_error("Could not place HQs");
@@ -119,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
 
     std::vector<Nation> nations(0);
     MapLoader loader(world, nations);
-    BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR, false));
+    BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());
 }

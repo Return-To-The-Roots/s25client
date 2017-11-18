@@ -1315,6 +1315,31 @@ void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type
     }
 }
 
+void GameWorldGame::FillWaterEverywhere() 
+{
+    RTTR_FOREACH_PT(MapPoint, GetSize())
+    {
+        MapNode node = GetNode(pt);
+        Resource curNodeResource = node.resources;
+        
+        if (curNodeResource.getType() != Resource::Nothing) {
+            // do not override maps resource.
+            continue;
+        }
+
+        if ((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2) 
+            || TerrainData::IsMountain(node.t1) || TerrainData::IsMountain(node.t2) || TerrainData::IsLava(node.t1) || TerrainData::IsLava(node.t2)) {
+            // Even with water everywhere, dont put it on water, desert, mountains or lava.
+            continue;
+        }
+
+        curNodeResource.setType(Resource::Water);
+        curNodeResource.setAmount(7);
+        SetResource(pt, curNodeResource);
+    }
+}
+
+
 /// Gründet vom Schiff aus eine neue Kolonie
 bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)
 {

@@ -160,6 +160,9 @@ public:
     // Für Spiele ohne Gold.
     void ConvertMineResourceTypes(Resource::Type from, Resource::Type to);
 
+    // Fills water in every resource pile, if addon enabled this function.
+    void FillWaterEverywhere();
+
     /// Gründet vom Schiff aus eine neue Kolonie, gibt true zurück bei Erfolg
     bool FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId);
     /// Registriert eine Baustelle eines Hafens, die vom Schiff aus gesetzt worden ist
