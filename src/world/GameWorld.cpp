@@ -69,8 +69,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     }
 
     MapLoader loader(*this, players);
-    bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
-    if(!loader.Load(map, GetGGS().exploration, waterEverywhere))
+    if(!loader.Load(map, GetGGS().exploration))
         return false;
     if(!loader.PlaceHQs(*this, GetGGS().randomStartPosition))
         return false;

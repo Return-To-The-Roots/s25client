@@ -45,11 +45,11 @@ class nobBaseWarehouse;
 
 MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world_(world), playerNations_(playerNations) {}
 
-bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration, bool waterEveryWhere)
+bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
     world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
 
-    InitNodes(map, exploration, waterEveryWhere);
+    InitNodes(map, exploration);
     PlaceObjects(map);
     PlaceAnimals(map);
     if(!InitSeasAndHarbors(world_))
@@ -90,7 +90,7 @@ void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
     }
 }
 
-void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration, bool waterEveryWhere)
+void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 {
     // Init node data (everything except the objects and figures)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
@@ -113,8 +113,20 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration, 
 
         unsigned char mapResource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
         Resource resource;
-       
-        if(mapResource > 0x40 && mapResource < 0x48)
+        // Wasser?
+        if(mapResource == 0x20 || mapResource == 0x21)
+        {
+            // TODO: Berge hatten komische Wasserbeeinflussung
+            // ggf 0-4 Wasser setzen
+            if((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
+                resource = Resource(0); // No water in water or desert
+            else if((node.t1 == TT_STEPPE || node.t2 == TT_STEPPE))
+                resource = Resource(Resource::Water, 2); // 2 Wasser
+            else if((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
+                resource = Resource(Resource::Water, 4); // 4 Wasser
+            else
+                resource = Resource(Resource::Water, 7); // 7 Wasser
+        } else if(mapResource > 0x40 && mapResource < 0x48)
             resource = Resource(Resource::Coal, mapResource - 0x40);
         else if(mapResource > 0x48 && mapResource < 0x50)
             resource = Resource(Resource::Iron, mapResource - 0x48);
@@ -124,30 +136,6 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration, 
             resource = Resource(Resource::Granite, mapResource - 0x58);
         else if(mapResource > 0x80 && mapResource < 0x90) // fish
             resource = Resource(Resource::Fish, 4);       // Use 4 fish
-        else
-        {
-
-            if (waterEveryWhere)
-            { 
-                // if addon inexhaustible water and water everywhere is enabled, put water on every node exect desert/water
-                if ((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
-                    resource = Resource(0);
-                else
-                    resource = Resource(Resource::Water, 7); 
-            } else if (mapResource == 0x20 || mapResource == 0x21)  // otherwise respect terrain and place different amount of water
-            {
-                // TODO: Berge hatten komische Wasserbeeinflussung
-                // ggf 0-4 Wasser setzen
-                if ((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
-                    resource = Resource(0); // No water in water or desert
-                else if ((node.t1 == TT_STEPPE || node.t2 == TT_STEPPE))
-                    resource = Resource(Resource::Water, 2); // 2 Wasser
-                else if ((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
-                    resource = Resource(Resource::Water, 4); // 4 Wasser
-                else
-                    resource = Resource(Resource::Water, 7); // 7 Wasser
-            }
-        }
         node.resources = resource;
 
         node.reserved = false;

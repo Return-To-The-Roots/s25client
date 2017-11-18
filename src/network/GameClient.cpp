@@ -301,6 +301,11 @@ void GameClient::StartGame(const unsigned random_init)
             case 4: target = Resource::Granite; break;
         }
         gameWorld.ConvertMineResourceTypes(Resource::Gold, target);
+
+        if (game->ggs.getSelection(AddonId::EXHAUSTIBLE_WATER) == 1)         // Water everywhere is enabled.
+        {
+            gameWorld.FillWaterEverywhere();
+        }
     }
     gameWorld.InitAfterLoad();
 
