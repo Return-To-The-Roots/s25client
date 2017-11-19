@@ -27,6 +27,7 @@
 #include <vector>
 
 class MapInfo;
+struct PlayerGameCommands;
 
 /// Holds a replay that is being recorded or was recorded and loaded
 /// It has a header that holds minimal information:
@@ -68,7 +69,7 @@ public:
     /// Fügt ein Chat-Kommando hinzu (schreibt)
     void AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std::string& str);
     /// Fügt ein Spiel-Kommando hinzu (schreibt)
-    void AddGameCommand(unsigned gf, unsigned short length, const unsigned char* data);
+    void AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds);
 
     /// Liest RC-Type aus, liefert false, wenn das Replay zu Ende ist
     bool ReadGF(unsigned* gf);
@@ -76,7 +77,7 @@ public:
     ReplayCommand ReadRCType();
     /// Liest ein Chat-Command aus
     void ReadChatCommand(uint8_t& player, uint8_t& dest, std::string& str);
-    std::vector<unsigned char> ReadGameCommand();
+    void ReadGameCommand(uint8_t& player, PlayerGameCommands& cmds);
 
     /// Aktualisiert den End-GF, schreibt ihn in die Replaydatei (nur beim Spielen bzw. Schreiben verwenden!)
     void UpdateLastGF(unsigned last_gf);

@@ -19,6 +19,7 @@
 #include "Replay.h"
 #include "BasePlayerInfo.h"
 #include "Savegame.h"
+#include "network/PlayerGameCommands.h"
 #include "gameTypes/MapInfo.h"
 #include "libendian/ConvertEndianess.h"
 #include <boost/filesystem.hpp>
@@ -32,7 +33,7 @@ std::string Replay::GetSignature() const
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
-    return 3;
+    return 4;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -203,7 +204,7 @@ void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std
     file.Flush();
 }
 
-void Replay::AddGameCommand(unsigned gf, unsigned short length, const unsigned char* data)
+void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds)
 {
     if(!file.IsValid())
         return;
@@ -211,8 +212,10 @@ void Replay::AddGameCommand(unsigned gf, unsigned short length, const unsigned c
     file.WriteUnsignedInt(gf);
 
     file.WriteUnsignedChar(RC_GAME);
-    file.WriteUnsignedShort(length);
-    file.WriteRawData(data, length);
+    Serializer ser;
+    ser.PushUnsignedChar(player);
+    cmds.Serialize(ser);
+    ser.WriteToFile(file);
 
     // Sofort rein damit
     file.Flush();
@@ -246,11 +249,12 @@ void Replay::ReadChatCommand(uint8_t& player, uint8_t& dest, std::string& str)
     str = file.ReadLongString();
 }
 
-std::vector<unsigned char> Replay::ReadGameCommand()
+void Replay::ReadGameCommand(uint8_t& player, PlayerGameCommands& cmds)
 {
-    std::vector<unsigned char> result(file.ReadUnsignedShort());
-    file.ReadRawData(&result.front(), result.size());
-    return result;
+    Serializer ser;
+    ser.ReadFromFile(file);
+    player = ser.PopUnsignedChar();
+    cmds.Deserialize(ser);
 }
 
 void Replay::UpdateLastGF(unsigned last_gf)

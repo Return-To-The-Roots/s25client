@@ -24,7 +24,6 @@
 #include "network/GameClient.h"
 #include "random/Random.h"
 #include "libutil/Log.h"
-#include "libutil/Serializer.h"
 
 void GameClient::ExecuteGameFrame_Replay()
 {
@@ -49,11 +48,9 @@ void GameClient::ExecuteGameFrame_Replay()
                 ci->CI_Chat(player, ChatDestination(dest), message);
         } else if(rc == Replay::RC_GAME)
         {
-            std::vector<unsigned char> gcData = replayinfo->replay.ReadGameCommand();
-            Serializer ser(&gcData.front(), gcData.size());
             PlayerGameCommands msg;
-            uint8_t gcPlayer = ser.PopUnsignedChar();
-            msg.Deserialize(ser);
+            uint8_t gcPlayer;
+            replayinfo->replay.ReadGameCommand(gcPlayer, msg);
 
             // Execute them
             ExecuteAllGCs(gcPlayer, msg);

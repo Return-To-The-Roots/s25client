@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "CreateEmptyWorld.h"
+#include "GameCommands.h"
 #include "GameEvent.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
@@ -26,7 +27,9 @@
 #include "WorldFixture.h"
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
+#include "factories/GameCommandFactory.h"
 #include "initTestHelpers.h"
+#include "network/PlayerGameCommands.h"
 #include "nodeObjs/noFire.h"
 #include "gameTypes/MapInfo.h"
 #include "libutil/tmpFile.h"
@@ -63,19 +66,39 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
     }
 };
 
-void AddReplayCmds(Replay& replay)
+struct GetTestCommands : public GameCommandFactory
+{
+    PlayerGameCommands result;
+
+    GetTestCommands& create(const Game& game)
+    {
+        result.checksum = AsyncChecksum::create(game);
+        SetFlag(MapPoint(4, 5));
+        SetCoinsAllowed(MapPoint(42, 24), false);
+        return *this;
+    }
+
+protected:
+    bool AddGC(gc::GameCommand* gc) override
+    {
+        result.gcs.push_back(gc);
+        return true;
+    }
+};
+
+void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
 {
     replay.UpdateLastGF(1);
     replay.AddChatCommand(1, 2, 3, "Hello");
     replay.AddChatCommand(1, 3, 1, "Hello2");
     replay.AddChatCommand(2, 2, 2, "Hello3");
-    std::vector<unsigned char> data(2, 42);
-    replay.AddGameCommand(2, data.size(), &data.front());
+
+    replay.AddGameCommand(2, 0, cmds);
     replay.AddChatCommand(2, 2, 3, "Hello4");
     replay.UpdateLastGF(5);
 }
 
-void CheckReplayCmds(Replay& loadReplay)
+void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 {
     std::vector<unsigned char> data(2, 42);
 
@@ -110,8 +133,13 @@ void CheckReplayCmds(Replay& loadReplay)
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
     BOOST_REQUIRE_EQUAL(loadReplay.ReadRCType(), Replay::RC_GAME);
-    const std::vector<unsigned char> readGameCommand = loadReplay.ReadGameCommand();
-    RTTR_REQUIRE_EQUAL_COLLECTIONS(readGameCommand, data);
+    PlayerGameCommands cmds;
+    loadReplay.ReadGameCommand(player, cmds);
+    BOOST_REQUIRE_EQUAL(player, 0u);
+    BOOST_REQUIRE(cmds.checksum == recordedCmds.checksum);
+    BOOST_REQUIRE_EQUAL(cmds.gcs.size(), recordedCmds.gcs.size());
+    BOOST_REQUIRE(dynamic_cast<gc::SetFlag*>(cmds.gcs[0].get()));
+    BOOST_REQUIRE(dynamic_cast<gc::SetCoinsAllowed*>(cmds.gcs[1].get()));
 
     BOOST_REQUIRE(loadReplay.ReadGF(&gf));
     BOOST_REQUIRE_EQUAL(gf, 2u);
@@ -266,7 +294,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     map.mapData.length = 50;
     map.luaData.data = std::vector<char>(21, 0x21);
     map.luaData.length = 40;
-    std::vector<BasePlayerInfo> players(4);
+    std::vector<PlayerInfo> players(4);
     players[0].ps = PS_OCCUPIED;
     players[0].name = "Human";
     players[1].ps = PS_AI;
@@ -303,7 +331,10 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
     BOOST_REQUIRE(replay.IsRecording());
     BOOST_REQUIRE(!replay.IsReplaying());
 
-    AddReplayCmds(replay);
+    GlobalGameSettings ggs;
+    Game game(ggs, 0u, players);
+    PlayerGameCommands cmds = GetTestCommands().create(game).result;
+    AddReplayCmds(replay, cmds);
     replay.StopRecording();
     BOOST_REQUIRE(!replay.IsValid());
     BOOST_REQUIRE(!replay.IsRecording());
@@ -351,7 +382,7 @@ BOOST_AUTO_TEST_CASE(ReplayWithMap)
         RTTR_REQUIRE_EQUAL_COLLECTIONS(newMap.luaData.data, map.luaData.data);
         BOOST_REQUIRE(loadReplay.IsReplaying());
 
-        CheckReplayCmds(loadReplay);
+        CheckReplayCmds(loadReplay, cmds);
     }
 }
 
@@ -401,7 +432,8 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_REQUIRE(replay.IsRecording());
     BOOST_REQUIRE(!replay.IsReplaying());
 
-    AddReplayCmds(replay);
+    PlayerGameCommands cmds = GetTestCommands().create(game).result;
+    AddReplayCmds(replay, cmds);
     replay.StopRecording();
     BOOST_REQUIRE(!replay.IsValid());
     BOOST_REQUIRE(!replay.IsRecording());
@@ -450,7 +482,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
                                         newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(), //-V807
                                         map.savegame->sgd.GetData(), map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
 
-        CheckReplayCmds(loadReplay);
+        CheckReplayCmds(loadReplay, cmds);
     }
 }
 
