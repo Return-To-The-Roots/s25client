@@ -34,9 +34,9 @@ PostMsg::PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPla
 {
     if(acceptedOrCanceled)
     {
-        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been concluded.")) % PACT_NAMES[pt] % otherPlayer.name);
+        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been concluded.")) % _(PACT_NAMES[pt]) % otherPlayer.name);
     } else
     {
-        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been cancelled.")) % PACT_NAMES[pt] % otherPlayer.name);
+        text_ = boost::str(boost::format(_("The %s between player '%s' and you has been cancelled.")) % _(PACT_NAMES[pt]) % otherPlayer.name);
     }
 }
