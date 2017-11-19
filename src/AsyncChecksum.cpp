@@ -21,12 +21,31 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "random/Random.h"
+#include "libutil/Serializer.h"
 
 AsyncChecksum::AsyncChecksum() : randChecksum(0), objCt(0), objIdCt(0), eventCt(0), evInstanceCt(0) {}
 
 AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt, unsigned evInstanceCt)
     : randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt), eventCt(eventCt), evInstanceCt(evInstanceCt)
 {}
+
+void AsyncChecksum::Serialize(Serializer& ser) const
+{
+    ser.PushUnsignedInt(randChecksum);
+    ser.PushUnsignedInt(objCt);
+    ser.PushUnsignedInt(objIdCt);
+    ser.PushUnsignedInt(eventCt);
+    ser.PushUnsignedInt(evInstanceCt);
+}
+
+void AsyncChecksum::Deserialize(Serializer& ser)
+{
+    randChecksum = ser.PopUnsignedInt();
+    objCt = ser.PopUnsignedInt();
+    objIdCt = ser.PopUnsignedInt();
+    eventCt = ser.PopUnsignedInt();
+    evInstanceCt = ser.PopUnsignedInt();
+}
 
 AsyncChecksum AsyncChecksum::create(const Game& game)
 {

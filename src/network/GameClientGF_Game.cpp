@@ -23,7 +23,6 @@
 #include "network/GameClient.h"
 #include "random/Random.h"
 #include "libutil/Log.h"
-#include "libutil/Serializer.h"
 #include <boost/foreach.hpp>
 
 void GameClient::ExecuteNWF()
@@ -43,10 +42,7 @@ void GameClient::ExecuteNWF()
         {
             // Aktuelle Checksumme reinschreiben
             currentGCs.checksum = checksum;
-            Serializer ser;
-            ser.PushUnsignedChar(player.id);
-            currentGCs.Serialize(ser);
-            replayinfo->replay.AddGameCommand(curGF, ser.GetLength(), ser.GetData());
+            replayinfo->replay.AddGameCommand(curGF, player.id, currentGCs);
         }
 
         // Das ganze Zeug soll die andere Funktion ausführen

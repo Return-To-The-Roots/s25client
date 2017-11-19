@@ -20,7 +20,9 @@
 #define AsyncChecksum_h__
 
 class Game;
+class Serializer;
 
+/// Checksum of the game before the game commands of any player is executed
 struct AsyncChecksum
 {
     unsigned randChecksum;
@@ -28,6 +30,8 @@ struct AsyncChecksum
     unsigned eventCt, evInstanceCt;
     AsyncChecksum();
     AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt, unsigned evInstanceCt);
+    void Serialize(Serializer& ser) const;
+    void Deserialize(Serializer& ser);
 
     static AsyncChecksum create(const Game& game);
 

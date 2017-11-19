@@ -22,20 +22,17 @@
 
 void PlayerGameCommands::Serialize(Serializer& ser) const
 {
-    ser.PushUnsignedInt(checksum.randChecksum);
-    ser.PushUnsignedInt(checksum.objCt);
-    ser.PushUnsignedInt(checksum.objIdCt);
-    ser.PushUnsignedInt(gcs.size());
+    checksum.Serialize(ser);
 
+    ser.PushUnsignedInt(gcs.size());
     BOOST_FOREACH(const gc::GameCommandPtr& gc, gcs)
         gc->Serialize(ser);
 }
 
 void PlayerGameCommands::Deserialize(Serializer& ser)
 {
-    checksum.randChecksum = ser.PopUnsignedInt();
-    checksum.objCt = ser.PopUnsignedInt();
-    checksum.objIdCt = ser.PopUnsignedInt();
+    checksum.Deserialize(ser);
+
     gcs.resize(ser.PopUnsignedInt());
     BOOST_FOREACH(gc::GameCommandPtr& gc, gcs)
         gc = gc::GameCommand::Deserialize(ser);
