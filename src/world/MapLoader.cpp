@@ -115,18 +115,8 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         Resource resource;
         // Wasser?
         if(mapResource == 0x20 || mapResource == 0x21)
-        {
-            // TODO: Berge hatten komische Wasserbeeinflussung
-            // ggf 0-4 Wasser setzen
-            if((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2))
-                resource = Resource(0); // No water in water or desert
-            else if((node.t1 == TT_STEPPE || node.t2 == TT_STEPPE))
-                resource = Resource(Resource::Water, 2); // 2 Wasser
-            else if((node.t1 == TT_SAVANNAH || node.t2 == TT_SAVANNAH))
-                resource = Resource(Resource::Water, 4); // 4 Wasser
-            else
-                resource = Resource(Resource::Water, 7); // 7 Wasser
-        } else if(mapResource > 0x40 && mapResource < 0x48)
+            resource = Resource(Resource::Water, 7);
+        else if(mapResource > 0x40 && mapResource < 0x48)
             resource = Resource(Resource::Coal, mapResource - 0x40);
         else if(mapResource > 0x48 && mapResource < 0x50)
             resource = Resource(Resource::Iron, mapResource - 0x48);

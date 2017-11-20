@@ -302,26 +302,37 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
     fow.boundary_stones = GetNode(pt).boundary_stones;
 }
 
-bool World::IsSeaPoint(const MapPoint pt) const
+bool World::IsOfTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) const
 {
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    if (!terrainPredicate)
+        return false;
+
+    for (unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if(!TerrainData::IsUsableByShip(GetRightTerrain(pt, Direction::fromInt(i))))
+        if (!terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
             return false;
     }
-
     return true;
+}
+
+bool World::IsOfTerrain(const MapPoint pt, const TerrainType t) const
+{
+    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    {
+        if (GetRightTerrain(pt, Direction::fromInt(i)) != t)
+            return false;
+    }
+    return true;
+}
+
+bool World::IsSeaPoint(const MapPoint pt) const
+{
+    return World::IsOfTerrain(pt, TerrainData::IsUsableByShip);
 }
 
 bool World::IsWaterPoint(const MapPoint pt) const
 {
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
-    {
-        if(!TerrainData::IsWater(GetRightTerrain(pt, Direction::fromInt(i))))
-            return false;
-    }
-
-    return true;
+    return World::IsOfTerrain(pt, TerrainData::IsWater);
 }
 
 unsigned World::GetSeaSize(const unsigned seaId) const

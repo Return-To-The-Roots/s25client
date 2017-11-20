@@ -21,7 +21,6 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
-#include "addons/const_addons.h"
 #include "buildings/noBuildingSite.h"
 #include "lua/LuaInterfaceGame.h"
 #include "luaIncludes.h"
