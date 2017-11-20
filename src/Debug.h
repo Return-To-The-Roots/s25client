@@ -30,15 +30,14 @@ public:
     ~DebugInfo();
 
     bool Send(const void* buffer, int length);
-    bool SendSigned(signed i);
-    bool SendUnsigned(unsigned i);
+    bool SendSigned(int32_t i);
+    bool SendUnsigned(uint32_t i);
     bool SendString(const char* str, unsigned len = 0);
     bool SendString(const std::string& str);
 
     bool SendStackTrace(void* ctx = NULL);
     bool SendReplay();
-    bool SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
-                      const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical);
+    bool SendAsyncLog(const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical);
 };
 
 #endif

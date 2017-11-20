@@ -32,6 +32,8 @@ struct AsyncChecksum
     AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt, unsigned evInstanceCt);
     void Serialize(Serializer& ser) const;
     void Deserialize(Serializer& ser);
+    /// Get a hash for this checksum
+    unsigned getHash() const;
 
     static AsyncChecksum create(const Game& game);
 

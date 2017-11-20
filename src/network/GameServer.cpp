@@ -47,9 +47,26 @@
 #include "libutil/SocketSet.h"
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
+#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/nowide/fstream.hpp>
+#include <iomanip>
+
+inline std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)
+{
+    return os << "RandCS = " << checksum.randChecksum << ",\tobjects/ID = " << checksum.objCt << "/" << checksum.objIdCt
+              << ",\tevents/ID = " << checksum.eventCt << "/" << checksum.evInstanceCt;
+}
+
+struct GameServer::AsyncLog
+{
+    uint8_t playerId;
+    bool done;
+    AsyncChecksum checksum;
+    std::vector<RandomEntry> randEntries;
+    AsyncLog(uint8_t playerId, AsyncChecksum checksum) : playerId(playerId), done(false), checksum(checksum) {}
+};
 
 GameServer::ServerConfig::ServerConfig()
 {
@@ -103,8 +120,6 @@ GameServer::GameServer() : currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG)
 {
     status = SS_STOPPED;
 
-    async_player1 = async_player2 = -1;
-    async_player1_done = async_player2_done = false;
     framesinfo.Clear();
     config.Clear();
     mapinfo.Clear();
@@ -262,11 +277,6 @@ bool GameServer::Start()
     if(!GAMECLIENT.Connect("localhost", config.password, config.servertype, config.port, true, config.ipv6))
         return false;
 
-    // clear async logs if necessary
-
-    async_player1_log.clear();
-    async_player2_log.clear();
-
     if(config.servertype == ServerType::LAN)
         lanAnnouncer.Start();
     AnnounceStatusChange();
@@ -342,10 +352,7 @@ void GameServer::Run()
                     return;
                 }
             } else
-            {
                 SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
-                LOG.writeToFile("SERVER >>> BROADCAST: NUM_NMS_SERVERSDOWN(%d)\n") % countdown.GetRemainingSecs();
-            }
         }
     }
 
@@ -355,6 +362,14 @@ void GameServer::Run()
         // maximal 10 Pakete verschicken
         player.sendMsgs(10);
         player.executeMsgs(*this, true);
+    }
+
+    for(std::vector<GameServerPlayer>::iterator it = networkPlayers.begin(); it != networkPlayers.end();)
+    {
+        if(!it->socket.isValid())
+            it = networkPlayers.erase(it);
+        else
+            ++it;
     }
 
     lanAnnouncer.Run();
@@ -386,6 +401,9 @@ void GameServer::Stop()
     serversocket.Close();
     // clear jump target
     skiptogf = 0;
+
+    // clear async logs
+    asyncLogs.clear();
 
     lanAnnouncer.Stop();
 
@@ -537,6 +555,9 @@ bool GameServer::StartGame()
 // wechselt Spielerstatus durch
 void GameServer::TogglePlayerState(unsigned char playerId)
 {
+    if(playerId >= playerInfos.size())
+        return;
+
     // oh ein spieler, weg mit ihm!
     if(GetNetworkPlayer(playerId))
     {
@@ -694,28 +715,14 @@ void GameServer::SendToAll(const GameMessage& msg)
     }
 }
 
-struct PlayerIdMatches
-{
-    const unsigned id;
-    explicit PlayerIdMatches(unsigned id) : id(id) {}
-    template<typename T>
-    bool operator()(const T& player) const
-    {
-        return player.playerId == id;
-    }
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// kickt einen spieler und räumt auf
 void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param)
 {
+    if(playerId >= playerInfos.size())
+        return;
     JoinPlayerInfo& playerInfo = playerInfos[playerId];
     GameServerPlayer* player = GetNetworkPlayer(playerId);
     if(player)
-    {
         player->closeConnection(true);
-        networkPlayers.erase(std::remove_if(networkPlayers.begin(), networkPlayers.end(), PlayerIdMatches(playerId)), networkPlayers.end());
-    }
     // Non-existing or connecting player
     if(!playerInfo.isUsed())
         return;
@@ -737,9 +744,9 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % unsigned(playerId) % unsigned(cause) % param;
 }
 
-void GameServer::KickPlayer(unsigned playerIdx)
+void GameServer::KickPlayer(unsigned playerId)
 {
-    KickPlayer(playerIdx, NP_NOCAUSE, 0);
+    KickPlayer(playerId, NP_NOCAUSE, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -756,26 +763,24 @@ void GameServer::ClientWatchDog()
     // auf fehler prüfen
     if(set.Select(0, 2) > 0)
     {
-        for(unsigned i = 0; i < networkPlayers.size(); ++i)
+        BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
         {
-            if(set.InSet(networkPlayers[i].socket))
+            if(set.InSet(player.socket))
             {
-                LOG.write(_("SERVER: Error on socket of player %1%, bye bye!\n")) % networkPlayers[i].playerId;
-                KickPlayer(networkPlayers[i].playerId, NP_CONNECTIONLOST, 0);
-                --i; // Player gets removed!
+                LOG.write(_("SERVER: Error on socket of player %1%, bye bye!\n")) % player.playerId;
+                KickPlayer(player.playerId, NP_CONNECTIONLOST, 0);
             }
         }
     }
 
-    for(unsigned i = 0; i < networkPlayers.size(); ++i)
+    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
     {
-        if(networkPlayers[i].hasConnectTimedOut())
+        if(player.hasConnectTimedOut())
         {
-            LOG.write(_("SERVER: Reserved slot %1% freed due to timeout\n")) % networkPlayers[i].playerId;
-            KickPlayer(networkPlayers[i].playerId);
-            --i; // Player gets removed!
+            LOG.write(_("SERVER: Reserved slot %1% freed due to timeout\n")) % player.playerId;
+            KickPlayer(player.playerId);
         } else
-            networkPlayers[i].doPing();
+            player.doPing();
     }
 }
 
@@ -844,57 +849,31 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
         ai->FetchGameCommands();
     }
 
-    // We take the checksum of the first human player as the reference
-    unsigned char referencePlayerIdx = 0xFF;
-    AsyncChecksum referenceChecksum;
-    std::vector<int> checksums;
-    checksums.reserve(networkPlayers.size());
+    // Check for asyncs
+    if(CheckForAsync())
+    {
+        // Pause game
+        RTTR_Assert(!framesinfo.isPaused);
+        SetPaused(true);
 
-    // Send AI commands and check for asyncs
+        // Notify players
+        std::vector<unsigned> checksumHashes;
+        BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+            checksumHashes.push_back(player.checksumOfNextNWF.front().getHash());
+        SendToAll(GameMessage_Server_Async(checksumHashes));
+
+        // Request async logs
+        BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+        {
+            asyncLogs.push_back(AsyncLog(player.playerId, player.checksumOfNextNWF.front()));
+            player.sendMsgAsync(new GameMessage_GetAsyncLog(player.playerId));
+        }
+    }
+    // Remove first (current) msg
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
     {
-        RTTR_Assert(!player.checksumOfNextNWF.empty()); // Players should not be lagging at this point
-        AsyncChecksum curChecksum = player.checksumOfNextNWF.front();
-        checksums.push_back(curChecksum.randChecksum);
-
-        // Checksumme des ersten Spielers als Richtwert
-        if(referencePlayerIdx == 0xFF)
-        {
-            referenceChecksum = curChecksum;
-            referencePlayerIdx = player.playerId;
-        }
-
-        // Remove first (current) msg
         player.checksumOfNextNWF.pop();
         RTTR_Assert(player.checksumOfNextNWF.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
-
-        // Checksummen nicht gleich?
-        if(curChecksum != referenceChecksum)
-        {
-            LOG.write("Async at GF %u of players %u vs %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % currentGF % player.playerId
-              % referencePlayerIdx % curChecksum.randChecksum % referenceChecksum.randChecksum % curChecksum.objCt % referenceChecksum.objCt
-              % curChecksum.objIdCt % referenceChecksum.objIdCt;
-
-            // AsyncLog der asynchronen Player anfordern
-            if(async_player1 == -1)
-            {
-                GameServerPlayer& refPlayer = *GetNetworkPlayer(referencePlayerIdx);
-                async_player1 = referencePlayerIdx;
-                async_player1_done = false;
-                refPlayer.sendMsgAsync(new GameMessage_GetAsyncLog(async_player1));
-
-                async_player2 = player.playerId;
-                async_player2_done = false;
-                player.sendMsgAsync(new GameMessage_GetAsyncLog(async_player2));
-
-                // Async-Meldung rausgeben.
-                SendToAll(GameMessage_Server_Async(checksums));
-
-                // Spiel pausieren
-                RTTR_Assert(!framesinfo.isPaused);
-                SetPaused(true);
-            }
-        }
     }
 
     if(framesinfo.gfLenghtNew != framesinfo.gf_length)
@@ -912,18 +891,38 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
     SendToAll(GameMessage_Server_NWFDone(0xff, currentGF, framesinfo.gfLenghtNew));
 }
 
+bool GameServer::CheckForAsync()
+{
+    if(networkPlayers.empty())
+        return false;
+    bool isAsync = false;
+    const AsyncChecksum& refChecksum = networkPlayers.front().checksumOfNextNWF.front();
+    BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
+    {
+        RTTR_Assert(!player.checksumOfNextNWF.empty()); // Players should not be lagging at this point
+        const AsyncChecksum& curChecksum = player.checksumOfNextNWF.front();
+
+        // Checksummen nicht gleich?
+        if(curChecksum != refChecksum)
+        {
+            LOG.write(_("Async at GF %1% of player %2% vs %3%. Checksums:\n%4%\n%5%\n\n")) % currentGF % player.playerId
+              % networkPlayers.front().playerId % curChecksum % refChecksum;
+            isAsync = true;
+        }
+    }
+    return isAsync;
+}
+
 void GameServer::CheckAndKickLaggingPlayers()
 {
-    for(unsigned i = 0; i < networkPlayers.size(); i++)
+    BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
     {
-        const unsigned timeOut = networkPlayers[i].getLagTimeOut();
+        const unsigned timeOut = player.getLagTimeOut();
         if(timeOut == 0)
-        {
-            KickPlayer(networkPlayers[i].playerId, NP_PINGTIMEOUT, 0);
-            i--;
-        } else if(timeOut <= 30
-                  && (timeOut % 5 == 0 || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
-            LOG.write(_("SERVER: Kicking player %1% in %2% seconds\n")) % networkPlayers[i].playerId % timeOut;
+            KickPlayer(player.playerId, NP_PINGTIMEOUT, 0);
+        else if(timeOut <= 30
+                && (timeOut % 5 == 0 || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
+            LOG.write(_("SERVER: Kicking player %1% in %2% seconds\n")) % player.playerId % timeOut;
     }
 }
 
@@ -1001,7 +1000,7 @@ void GameServer::FillPlayerQueues()
     do
     {
         // sockets zum set hinzufügen
-        BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+        BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
             set.Add(player.socket);
 
         msgReceived = false;
@@ -1009,16 +1008,15 @@ void GameServer::FillPlayerQueues()
         // ist eines der Sockets im Set lesbar?
         if(set.Select(0, 0) > 0)
         {
-            for(unsigned i = 0; i < networkPlayers.size(); ++i)
+            BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
             {
-                if(set.InSet(networkPlayers[i].socket))
+                if(set.InSet(player.socket))
                 {
                     // nachricht empfangen
-                    if(!networkPlayers[i].receiveMsgs())
+                    if(!player.receiveMsgs())
                     {
-                        LOG.write(_("SERVER: Receiving Message for player %1% failed, kicking...\n")) % networkPlayers[i].playerId;
-                        KickPlayer(networkPlayers[i].playerId, NP_CONNECTIONLOST, 0);
-                        i--;
+                        LOG.write(_("SERVER: Receiving Message for player %1% failed, kicking...\n")) % player.playerId;
+                        KickPlayer(player.playerId, NP_CONNECTIONLOST, 0);
                     } else
                         msgReceived = true;
                 }
@@ -1282,70 +1280,85 @@ bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 {
-    if(msg.player == async_player1)
+    bool foundPlayer = false;
+    BOOST_FOREACH(AsyncLog& log, asyncLogs)
     {
-        async_player1_log.insert(async_player1_log.end(), msg.entries.begin(), msg.entries.end());
-
+        if(log.playerId != msg.player)
+            continue;
+        RTTR_Assert(!log.done);
+        if(log.done)
+            return true;
+        foundPlayer = true;
+        log.randEntries.insert(log.randEntries.end(), msg.entries.begin(), msg.entries.end());
         if(msg.last)
         {
-            LOG.write("Received async logs from %u (%lu entries).\n") % async_player1 % async_player1_log.size();
-            async_player1_done = true;
+            LOG.write(_("Received async logs from %1% (%2% entries).\n")) % unsigned(log.playerId) % log.randEntries.size();
+            log.done = true;
         }
-    } else if(msg.player == async_player2)
+    }
+    if(!foundPlayer)
     {
-        async_player2_log.insert(async_player2_log.end(), msg.entries.begin(), msg.entries.end());
-
-        if(msg.last)
-        {
-            LOG.write("Received async logs from %u (%lu entries).\n") % async_player2 % async_player2_log.size();
-            async_player2_done = true;
-        }
-    } else
-    {
-        LOG.write("Received async log from %u, but did not expect it!\n") % unsigned(msg.player);
+        LOG.write(_("Received async log from %1%, but did not expect it!\n")) % unsigned(msg.player);
         return true;
     }
 
-    // list is not yet complete, keep it coming...
-    if(!async_player1_done || !async_player2_done)
-        return true;
-
-    LOG.write("Async logs received completely.\n");
-
-    std::vector<RandomEntry>::const_iterator it1 = async_player1_log.begin();
-    std::vector<RandomEntry>::const_iterator it2 = async_player2_log.begin();
-
-    // compare counters, adjust them so we're comparing the same counter numbers
-    if(it1->counter > it2->counter)
+    // Check if we have all logs
+    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
     {
-        for(; it2 != async_player2_log.end(); ++it2)
-        {
-            if(it2->counter == it1->counter)
-                break;
-        }
-    } else if(it1->counter < it2->counter)
-    {
-        for(; it1 != async_player1_log.end(); ++it1)
-        {
-            if(it2->counter == it1->counter)
-                break;
-        }
+        if(!log.done)
+            return true;
     }
+
+    LOG.write(_("Async logs received completely.\n"));
+
+    // Get the highest common counter number and start from there (remove all others)
+    unsigned maxCtr = 0;
+    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    {
+        if(!log.randEntries.empty() && log.randEntries[0].counter > maxCtr)
+            maxCtr = log.randEntries[0].counter;
+    }
+    // Number of entries = max(asyncLogs[0..n].randEntries.size())
+    unsigned numEntries = 0;
+    BOOST_FOREACH(AsyncLog& log, asyncLogs)
+    {
+        std::vector<RandomEntry>::iterator it =
+          std::find_if(log.randEntries.begin(), log.randEntries.end(), boost::bind(&RandomEntry::counter, _1) == maxCtr);
+        log.randEntries.erase(log.randEntries.begin(), it);
+        if(numEntries < log.randEntries.size())
+            numEntries = log.randEntries.size();
+    }
+    // No entries :(
+    if(numEntries == 0 || asyncLogs.size() < 2u)
+        return true;
 
     // count identical lines
-    unsigned identical = 0;
-    while((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()) && (it1->max == it2->max) && (it1->rngState == it2->rngState)
-          && (it1->obj_id == it2->obj_id))
+    unsigned numIdentical = 0;
+    for(unsigned i = 0; i < numEntries; i++)
     {
-        ++identical;
-        ++it1;
-        ++it2;
+        bool isIdentical = true;
+        const RandomEntry& refEntry = asyncLogs[0].randEntries[i];
+        BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+        {
+            if(i >= log.randEntries.size())
+            {
+                isIdentical = false;
+                break;
+            }
+            const RandomEntry& curEntry = log.randEntries[i];
+            if(curEntry.max != refEntry.max || curEntry.rngState != refEntry.rngState || curEntry.obj_id != refEntry.obj_id)
+            {
+                isIdentical = false;
+                break;
+            }
+        }
+        if(isIdentical)
+            ++numIdentical;
+        else
+            break;
     }
 
-    it1 -= identical;
-    it2 -= identical;
-
-    LOG.write("There are %u identical async log entries.\n") % identical;
+    LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
     if(SETTINGS.global.submit_debug_data == 1
 #ifdef _WIN32
@@ -1359,9 +1372,18 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 #endif
     )
     {
+        unsigned otherPlayerIdx = 0;
+        for(unsigned i = 1; i < asyncLogs.size(); ++i)
+        {
+            if(asyncLogs[i].checksum != asyncLogs[0].checksum)
+            {
+                otherPlayerIdx = i;
+                break;
+            }
+        }
         DebugInfo di;
-        LOG.write("Sending async logs %s.\n")
-          % (di.SendAsyncLog(it1, it2, async_player1_log, async_player2_log, identical) ? "succeeded" : "failed");
+        LOG.write(_("Sending async logs %1%.\n"))
+          % (di.SendAsyncLog(asyncLogs[0].randEntries, asyncLogs[otherPlayerIdx].randEntries, numIdentical) ? "succeeded" : "failed");
 
         di.SendReplay();
     }
@@ -1374,32 +1396,48 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
     if(file)
     {
+        file << "Map: " << mapinfo.title << std::endl;
+        file << std::setfill(' ');
+        BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+        {
+            const JoinPlayerInfo& plInfo = playerInfos.at(log.playerId);
+            file << "Player " << std::setw(2) << unsigned(log.playerId) << (plInfo.isHost ? '#' : ' ') << "\t\"" << plInfo.name << '"'
+                 << std::endl;
+            file << "\tChecksum: " << std::setw(0) << log.checksum << std::endl;
+        }
         // print identical lines, they help in tracing the bug
-        for(unsigned i = 0; i < identical; i++)
+        for(unsigned i = 0; i < numIdentical; i++)
+            file << "[ I ]: " << asyncLogs[0].randEntries[i] << "\n";
+        for(unsigned i = numIdentical; i < numEntries; i++)
         {
-            file << "[I]: " << *it1 << "\n";
-            ++it1;
-            ++it2;
+            BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+            {
+                if(i < log.randEntries.size())
+                    file << "[C" << std::setw(2) << unsigned(log.playerId) << std::setw(0) << "]: " << log.randEntries[i] << '\n';
+            }
         }
 
-        while((it1 != async_player1_log.end()) && (it2 != async_player2_log.end()))
-        {
-            file << "[S]: " << *it1 << "\n";
-            file << "[C]: " << *it2 << "\n";
-            ++it1;
-            ++it2;
-        }
-
-        LOG.write("Async log saved at \"%s\"\n") % fileName;
+        LOG.write(_("Async log saved at \"%s\"\n")) % fileName;
     } else
     {
-        LOG.write("Failed to save async log at \"%s\"\n") % fileName;
+        LOG.write(_("Failed to save async log at \"%s\"\n")) % fileName;
     }
 
-    async_player1_log.clear();
-    async_player2_log.clear();
-
-    KickPlayer(msg.player, NP_ASYNC, 0);
+    // Kick all players that have a different checksum from the host
+    AsyncChecksum hostChecksum;
+    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    {
+        if(playerInfos.at(log.playerId).isHost)
+        {
+            hostChecksum = log.checksum;
+            break;
+        }
+    }
+    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    {
+        if(log.checksum != hostChecksum)
+            KickPlayer(log.playerId, NP_ASYNC, 0);
+    }
     return true;
 }
 

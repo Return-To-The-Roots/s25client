@@ -88,6 +88,11 @@ bfs::path RttrConfig::GetPrefixPath()
     return bfs::absolute(prefixPath);
 }
 
+boost::filesystem::path RttrConfig::GetSourceDir()
+{
+    return RTTR_SRCDIR;
+}
+
 std::string RttrConfig::ExpandPath(const std::string& path) const
 {
     if(path.empty())

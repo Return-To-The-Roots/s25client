@@ -92,6 +92,7 @@ private:
     void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
 
     void SendToAll(const GameMessage& msg) override;
+    /// Kick a player (free slot and set socket to invalid. Does NOT remove it from NetworkPlayers)
     void KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param);
     void KickPlayer(unsigned playerIdx) override;
 
@@ -131,6 +132,9 @@ private:
     void ExecuteGameFrame();
     void RunGF(bool isNWF);
     void ExecuteNWF(const unsigned currentTime);
+
+    bool CheckForAsync();
+
     void CheckAndKickLaggingPlayers();
     bool CheckForLaggingPlayers();
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override;
@@ -190,10 +194,9 @@ private:
     /// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
     std::vector<AIPlayer*> ai_players;
 
-    /// AsyncLogs of two async players
-    int async_player1, async_player2;
-    bool async_player1_done, async_player2_done;
-    std::vector<RandomEntry> async_player1_log, async_player2_log;
+    struct AsyncLog;
+    /// AsyncLogs of all players
+    std::vector<AsyncLog> asyncLogs;
 
     LANDiscoveryService lanAnnouncer;
 

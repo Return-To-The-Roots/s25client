@@ -24,6 +24,7 @@
 #include "helpers/Deleter.h"
 #include "network/GameClient.h"
 #include "libutil/Log.h"
+#include <boost/endian/conversion.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <bzlib.h>
 #include <vector>
@@ -207,13 +208,17 @@ bool DebugInfo::Send(const void* buffer, int length)
     return (true);
 }
 
-bool DebugInfo::SendUnsigned(unsigned i)
+bool DebugInfo::SendUnsigned(uint32_t i)
 {
+    // Debug server does not handle endianness and is little endian... TODO: Fix server
+    boost::endian::native_to_little_inplace(i);
     return (Send(&i, 4));
 }
 
-bool DebugInfo::SendSigned(signed i)
+bool DebugInfo::SendSigned(int32_t i)
 {
+    // Debug server does not handle endianness and is little endian... TODO: Fix server
+    boost::endian::native_to_little_inplace(i);
     return (Send(&i, 4));
 }
 
@@ -261,12 +266,12 @@ bool DebugInfo::SendReplay()
     // Replay mode is on, no recording of replays active
     if(!GAMECLIENT.IsReplayModeOn())
     {
-        Replay& rpl = GAMECLIENT.GetReplay();
+        Replay* rpl = GAMECLIENT.GetReplay();
 
-        if(!rpl.IsRecording())
+        if(!rpl || !rpl->IsRecording())
             return true;
 
-        BinaryFile& f = rpl.GetFile();
+        BinaryFile& f = rpl->GetFile();
 
         f.Flush();
 
@@ -316,8 +321,7 @@ bool DebugInfo::SendReplay()
     return true;
 }
 
-bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, std::vector<RandomEntry>::const_iterator first_b,
-                             const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical)
+bool DebugInfo::SendAsyncLog(const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical)
 {
     if(!SendString("AsyncLog"))
     {
@@ -328,8 +332,8 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     unsigned len = 4;
     unsigned cnt = 0;
 
-    std::vector<RandomEntry>::const_iterator it_a = first_a;
-    std::vector<RandomEntry>::const_iterator it_b = first_b;
+    std::vector<RandomEntry>::const_iterator it_a = a.begin() + identical;
+    std::vector<RandomEntry>::const_iterator it_b = b.begin() + identical;
 
     // if there were any identical lines, include only the last one
     if(identical)
@@ -361,8 +365,8 @@ bool DebugInfo::SendAsyncLog(std::vector<RandomEntry>::const_iterator first_a, s
     if(!SendUnsigned(cnt))
         return (false);
 
-    it_a = first_a;
-    it_b = first_b;
+    it_a = a.begin() + identical;
+    it_b = b.begin() + identical;
 
     // if there were any identical lines, send only one each
     for(unsigned i = 0; i < identical; i++)
