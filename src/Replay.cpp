@@ -33,7 +33,7 @@ std::string Replay::GetSignature() const
 uint16_t Replay::GetVersion() const
 {
     /// Version des Replay-Formates
-    return 4;
+    return 5;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -190,6 +190,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
 
 void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std::string& str)
 {
+    RTTR_Assert(IsRecording());
     if(!file.IsValid())
         return;
 
@@ -206,6 +207,7 @@ void Replay::AddChatCommand(unsigned gf, uint8_t player, uint8_t dest, const std
 
 void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds)
 {
+    RTTR_Assert(IsRecording());
     if(!file.IsValid())
         return;
 
@@ -223,6 +225,7 @@ void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommand
 
 bool Replay::ReadGF(unsigned* gf)
 {
+    RTTR_Assert(IsReplaying());
     try
     {
         *gf = file.ReadUnsignedInt();
@@ -238,12 +241,14 @@ bool Replay::ReadGF(unsigned* gf)
 
 Replay::ReplayCommand Replay::ReadRCType()
 {
+    RTTR_Assert(IsReplaying());
     // Type auslesen
     return ReplayCommand(file.ReadUnsignedChar());
 }
 
 void Replay::ReadChatCommand(uint8_t& player, uint8_t& dest, std::string& str)
 {
+    RTTR_Assert(IsReplaying());
     player = file.ReadUnsignedChar();
     dest = file.ReadUnsignedChar();
     str = file.ReadLongString();
@@ -251,6 +256,7 @@ void Replay::ReadChatCommand(uint8_t& player, uint8_t& dest, std::string& str)
 
 void Replay::ReadGameCommand(uint8_t& player, PlayerGameCommands& cmds)
 {
+    RTTR_Assert(IsReplaying());
     Serializer ser;
     ser.ReadFromFile(file);
     player = ser.PopUnsignedChar();
@@ -259,6 +265,7 @@ void Replay::ReadGameCommand(uint8_t& player, PlayerGameCommands& cmds)
 
 void Replay::UpdateLastGF(unsigned last_gf)
 {
+    RTTR_Assert(IsRecording());
     if(!file.IsValid())
         return;
 
