@@ -1315,26 +1315,50 @@ void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type
     }
 }
 
-void GameWorldGame::FillWaterEverywhere() 
+/**
+* Fills water depending on terrain and Addon setting
+*/
+void GameWorldGame::PlaceAndFixWater()
 {
+    bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2;
+
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
-        MapNode node = GetNode(pt);
-        Resource curNodeResource = node.resources;
+        Resource curNodeResource = GetNode(pt).resources;
         
-        if (curNodeResource.getType() != Resource::Nothing) {
+        if (curNodeResource.getType() != Resource::Nothing && curNodeResource.getType() != Resource::Water) {
             // do not override maps resource.
             continue;
         }
 
-        if ((node.t1 == TT_DESERT || node.t2 == TT_DESERT) || TerrainData::IsWater(node.t1) || TerrainData::IsWater(node.t2) 
-            || TerrainData::IsMountain(node.t1) || TerrainData::IsMountain(node.t2) || TerrainData::IsLava(node.t1) || TerrainData::IsLava(node.t2)) {
-            // Even with water everywhere, dont put it on water, desert, mountains or lava.
-            continue;
-        }
+        int amount = 0;
+        if (curNodeResource.getType() == Resource::Water)
+        {
+            if (World::IsOfTerrain(pt, TT_DESERT) || World::IsOfTerrain(pt, TerrainData::IsWater)
+                || World::IsOfTerrain(pt, TerrainData::IsMountain) || World::IsOfTerrain(pt, TerrainData::IsLava))
+            {
+                // remove water on water, desert, mountains or lava tiles.
+                amount = 0;
+            } else if (!waterEverywhere)
+            {
+                // reduce water on stepppe or savannah tiles.
+                if (World::IsOfTerrain(pt, TT_SAVANNAH))
+                    amount = 4;
+                else if (World::IsOfTerrain(pt, TT_STEPPE))
+                    amount = 2;
+                else
+                    amount = 7;
+            }
+        } else if (waterEverywhere) // if there is water everywhere, set all Nodes including Resource::Nothing to 7
+            amount = 7;
 
-        curNodeResource.setType(Resource::Water);
-        curNodeResource.setAmount(7);
+        if (amount != 0)
+        {
+            curNodeResource.setType(Resource::Water);
+            curNodeResource.setAmount(amount);
+        } else
+            curNodeResource.setType(Resource::Nothing);
+
         SetResource(pt, curNodeResource);
     }
 }
