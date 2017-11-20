@@ -138,7 +138,7 @@ bool Settings::Load()
     std::string settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
     if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SETTINGS_SECTIONS)
     {
-        s25Util::warning(std::string("No or corrupt \"") + settingsPath + "\" found, using default values.");
+        s25util::warning(std::string("No or corrupt \"") + settingsPath + "\" found, using default values.");
         return LoadDefaults();
     }
 
@@ -163,7 +163,7 @@ bool Settings::Load()
            ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
         {
             // nein, dann Standardeinstellungen laden
-            s25Util::warning(settingsPath + " found, but its corrupted or has wrong version. Loading default values.");
+            s25util::warning(settingsPath + " found, but its corrupted or has wrong version. Loading default values.");
             return LoadDefaults();
         }
 
@@ -171,7 +171,7 @@ bool Settings::Load()
         // {
         // stimmt die Spielrevision überein?
         if(iniGlobal->getValue("gameversion") != RTTR_Version::GetRevision())
-            s25Util::warning("Your application version has changed - please recheck your settings!\n");
+            s25util::warning("Your application version has changed - please recheck your settings!\n");
 
         global.submit_debug_data = iniGlobal->getValueI("submit_debug_data");
         global.use_upnp = iniGlobal->getValueI("use_upnp");
@@ -194,7 +194,7 @@ bool Settings::Load()
 
         if(video.fullscreenSize.x == 0 || video.fullscreenSize.y == 0 || video.windowedSize.x == 0 || video.windowedSize.y == 0)
         {
-            s25Util::warning(std::string("Corrupted \"") + settingsPath + "\" found, using default values.");
+            s25util::warning(std::string("Corrupted \"") + settingsPath + "\" found, using default values.");
             return LoadDefaults();
         }
 
@@ -280,7 +280,7 @@ bool Settings::Load()
 
     } catch(s25util::ConversionError& e)
     {
-        s25Util::warning(std::string("Corrupt \"") + settingsPath + "\" found, using default values. Error: " + e.what());
+        s25util::warning(std::string("Corrupt \"") + settingsPath + "\" found, using default values. Error: " + e.what());
         return LoadDefaults();
     }
 

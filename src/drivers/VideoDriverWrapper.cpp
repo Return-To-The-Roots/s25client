@@ -110,7 +110,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
 {
     if(!videodriver)
     {
-        s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("No video driver selected!\n");
         return false;
     }
 
@@ -120,14 +120,14 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     // Fenster erstellen
     if(!videodriver->CreateScreen(title.str(), VideoMode(screen_width, screen_height), fullscreen))
     {
-        s25Util::fatal_error("Erstellen des Fensters fehlgeschlagen!\n");
+        s25util::fatal_error("Could not create window!\n");
         return false;
     }
 
     // DriverWrapper Initialisieren
     if(!Initialize())
     {
-        s25Util::fatal_error("Initialisieren des OpenGL-Kontexts fehlgeschlagen!\n");
+        s25util::fatal_error("Failed to initialize the OpenGL context!\n");
         return false;
     }
 
@@ -154,7 +154,7 @@ bool VideoDriverWrapper::ResizeScreen(const unsigned short screenWidth, const un
 {
     if(!videodriver)
     {
-        s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("No video driver selected!\n");
         return false;
     }
 
@@ -185,7 +185,7 @@ bool VideoDriverWrapper::DestroyScreen()
 {
     if(!videodriver)
     {
-        s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("No video driver selected!\n");
         return false;
     }
 
@@ -256,7 +256,7 @@ unsigned VideoDriverWrapper::GenerateTexture()
 
     if(texture_pos >= texture_list.size())
     {
-        s25Util::fatal_error("texture-limit reached!!!!\n");
+        s25util::fatal_error("Texture-limit reached!\n");
         return 0;
     }
 
@@ -301,7 +301,7 @@ bool VideoDriverWrapper::SwapBuffers()
 {
     if(!videodriver)
     {
-        s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("No video driver selected!\n");
         return false;
     }
 
@@ -318,7 +318,7 @@ bool VideoDriverWrapper::Run()
 {
     if(!videodriver)
     {
-        s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("No video driver selected!\n");
         return false;
     }
 
@@ -472,7 +472,7 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
 {
     if(!videodriver)
     {
-        s25Util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
+        s25util::fatal_error("Kein Videotreiber ausgewaehlt!\n");
         return (NULL);
     }
 

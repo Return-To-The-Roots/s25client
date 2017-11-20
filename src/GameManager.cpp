@@ -61,7 +61,7 @@ bool GameManager::Start()
     /// Videotreiber laden
     if(!VIDEODRIVER.LoadDriver())
     {
-        s25Util::error(_("Video driver couldn't be loaded!\n"));
+        s25util::error(_("Video driver couldn't be loaded!\n"));
         return false;
     }
 
@@ -73,7 +73,7 @@ bool GameManager::Start()
     /// Audiodriver laden
     if(!AUDIODRIVER.LoadDriver())
     {
-        s25Util::warning(_("Audio driver couldn't be loaded!\n"));
+        s25util::warning(_("Audio driver couldn't be loaded!\n"));
         // return false;
     }
 
