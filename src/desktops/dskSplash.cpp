@@ -78,7 +78,7 @@ void dskSplash::LoadFiles()
         SetFpsDisplay(true);
     } else
     {
-        s25Util::error(_("Some files failed to load.\n"
+        s25util::error(_("Some files failed to load.\n"
                          "Please ensure that the Settlers 2 Gold-Edition is installed \n"
                          "in the same directory as Return to the Roots."));
         GLOBALVARS.notdone = false;

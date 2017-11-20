@@ -275,7 +275,7 @@ bool InitDirectories()
         const std::string newSettingsDir = RTTRCONFIG.ExpandPath(FILE_PATHS[94]);
         if(bfs::exists(newSettingsDir))
         {
-            s25Util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")
+            s25util::error(std::string("Old and new settings directory found. Please delete the one you don't want to keep!\nOld: ")
                            + oldSettingsDir + "\nNew: " + newSettingsDir);
             return false;
         }
@@ -283,7 +283,7 @@ bool InitDirectories()
         bfs::rename(oldSettingsDir, newSettingsDir, ec);
         if(ec != boost::system::errc::success)
         {
-            s25Util::error(std::string("Old settings directory found at ") + oldSettingsDir
+            s25util::error(std::string("Old settings directory found at ") + oldSettingsDir
                            + "\n Renaming to new name failed: " + newSettingsDir + "\nError: " + ec.message()
                            + "\nRename it yourself and/or make sure the directory is writable!");
             return false;
@@ -301,8 +301,8 @@ bool InitDirectories()
             // Make sure we catch that
             try
             {
-                s25Util::error(std::string("Directory ") + dir + " could not be created.");
-                s25Util::error("Failed to start the game");
+                s25util::error(std::string("Directory ") + dir + " could not be created.");
+                s25util::error("Failed to start the game");
             } catch(const std::runtime_error& error)
             {
                 LOG.write("Additional error: %1%\n", LogTarget::Stderr) % error.what();
@@ -332,15 +332,15 @@ bool InitGame()
     // Socketzeug initialisieren
     if(!Socket::Initialize())
     {
-        s25Util::error("Could not init sockets!");
-        s25Util::error("Failed to start the game");
+        s25util::error("Could not init sockets!");
+        s25util::error("Failed to start the game");
         return false;
     }
 
     // Spiel starten
     if(!GAMEMANAGER.Start())
     {
-        s25Util::error("Failed to start the game");
+        s25util::error("Failed to start the game");
         return false;
     }
     return true;
