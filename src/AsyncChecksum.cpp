@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "AsyncChecksum.h"
 #include "EventManager.h"
+#include "FileChecksum.h"
 #include "Game.h"
 #include "GameObject.h"
 #include "random/Random.h"
@@ -45,6 +46,13 @@ void AsyncChecksum::Deserialize(Serializer& ser)
     objIdCt = ser.PopUnsignedInt();
     eventCt = ser.PopUnsignedInt();
     evInstanceCt = ser.PopUnsignedInt();
+}
+
+unsigned AsyncChecksum::getHash() const
+{
+    Serializer ser;
+    Serialize(ser);
+    return CalcChecksumOfBuffer(ser.GetData(), ser.GetLength());
 }
 
 AsyncChecksum AsyncChecksum::create(const Game& game)

@@ -17,8 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "random/Random.h"
+#include "RttrConfig.h"
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
+#include <iomanip>
 #include <stdexcept>
 
 template<class T_PRNG>
@@ -118,7 +120,7 @@ void Random<T_PRNG>::SaveLog(const std::string& filename)
     bnw::ofstream file(filename);
 
     for(typename std::vector<RandomEntry>::const_iterator it = log.begin(); it != log.end(); ++it)
-        file << *it;
+        file << *it << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -160,8 +162,12 @@ int Random<T_PRNG>::RandomEntry::GetValue() const
 template<class T_PRNG>
 std::ostream& Random<T_PRNG>::RandomEntry::print(std::ostream& os) const
 {
-    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << rngState << " | " << src_name << "#" << src_line
-              << "|id=" << obj_id << "\n";
+    static const std::string rttrSrcBaseName = std::string(RttrConfig::GetSourceDir().generic_string()) + "/";
+    std::string strippedSrcFile = bfs::path(src_name).generic_string();
+    if(strippedSrcFile.find(rttrSrcBaseName) == 0)
+        strippedSrcFile = strippedSrcFile.substr(rttrSrcBaseName.size());
+    return os << counter << ":R(" << max << ")=" << GetValue() << ",z=" << std::hex << std::setw(8) << rngState << std::dec << std::setw(0)
+              << "\t| " << strippedSrcFile << "#" << src_line << "\t| id=" << obj_id;
 }
 
 // Instantiate the Random class with the used PRNG

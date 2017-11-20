@@ -38,7 +38,7 @@ void GameClient::ExecuteNWF()
 
         // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
         // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
-        if(!currentGCs.gcs.empty() && !replayMode)
+        if(!currentGCs.gcs.empty() && replayinfo && replayinfo->replay.IsRecording())
         {
             // Aktuelle Checksumme reinschreiben
             currentGCs.checksum = checksum;

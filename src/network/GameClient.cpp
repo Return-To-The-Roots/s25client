@@ -57,6 +57,8 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/SocketSet.h"
+#include "libutil/StringConversion.h"
+#include "libutil/fileFuncs.h"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -198,7 +200,7 @@ void GameClient::Stop()
 
     if(replayinfo)
     {
-        replayinfo->replay.StopRecording();
+        replayinfo->replay.Close();
         replayinfo.reset();
     }
 
@@ -700,7 +702,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
             return true;
 
         /// Mit im Replay aufzeichnen
-        replayinfo->replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
+        if(replayinfo && replayinfo->replay.IsRecording())
+            replayinfo->replay.AddChatCommand(GetGFNumber(), msg.player, msg.destination, msg.text);
 
         GamePlayer& player = game->world.GetPlayer(msg.player);
 
@@ -753,19 +756,21 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 
     // Fehler ausgeben (Konsole)!
     LOG.write(_("The Game is not in sync. Checksums of some players don't match."));
-    LOG.write(checksum_list.str());
-    LOG.write("\n");
+    LOG.write("\n%1%\n") % checksum_list.str();
 
     // Messenger im Game
     if(ci)
         ci->CI_Async(checksum_list.str());
 
-    std::string timeStr = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
-    std::string filePathSave = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + timeStr + ".sav";
-    std::string filePathLog = RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + timeStr + "Player.log";
+    std::string fileName = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    fileName += "_" + s25util::toStringClassic(mainPlayer.playerId) + "_";
+    fileName += game->world.GetPlayer(mainPlayer.playerId).name;
+
+    std::string filePathSave = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + makePortableFileName(fileName + ".sav");
+    std::string filePathLog = RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + makePortableFileName(fileName + "Player.log");
     RANDOM.SaveLog(filePathLog);
     SaveToFile(filePathSave);
-    LOG.write("Async log saved at \"%s\", game saved at \"%s\"\n") % filePathLog % filePathSave;
+    LOG.write(_("Async log saved at \"%s\",\ngame saved at \"%s\"\n")) % filePathLog % filePathSave;
     return true;
 }
 
@@ -1134,7 +1139,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     {
         if(replayMode)
         {
-            // In replay mode we have all commands in  the file -> Execute them
+            // In replay mode we have all commands in the file -> Execute them
             ExecuteGameFrame_Replay();
         } else
         {
@@ -1197,7 +1202,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         HandleAutosave();
 
         // GF-Ende im Replay aktualisieren
-        if(!replayMode)
+        if(replayinfo && replayinfo->replay.IsRecording())
             replayinfo->replay.UpdateLastGF(curGF);
     } else
     {
@@ -1279,7 +1284,7 @@ void GameClient::StartReplayRecording(const unsigned random_init)
     // Datei speichern
     if(!replayinfo->replay.StartRecording(RTTRCONFIG.ExpandPath(FILE_PATHS[51]) + "/" + replayinfo->fileName, mapinfo))
     {
-        LOG.write("GameClient::WriteReplayHeader: WARNING: File couldn't be opened. Don't use a replayinfo.\n");
+        LOG.write(_("Replayfile couldn't be opened. No replay will be recorded\n"));
         replayinfo.reset();
     }
 }
@@ -1405,7 +1410,8 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
 unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    // TODO: Move to some animation system that is part of game
+    unsigned elapsedTime = (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : 0;
     unsigned duration = ev->length * framesinfo.gf_length;
     unsigned result = (max_val * elapsedTime) / duration;
     if(result >= max_val)
@@ -1416,7 +1422,7 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    unsigned elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    unsigned elapsedTime = (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : 0;
     unsigned duration = ev->length * framesinfo.gf_length;
     return x1 + ((x2 - x1) * int(elapsedTime)) / int(duration);
 }
@@ -1528,7 +1534,10 @@ void GameClient::SetPause(bool pause)
 {
     if(state == CS_STOPPED)
     {
-        // Simply do it
+        // We can never continue from pause if stopped as the reason for stopping might be that the game was finished
+        // However we allow to pause even when stopped so we can pause after we received the stop notification
+        if(!pause)
+            return;
         framesinfo.isPaused = pause;
         framesinfo.frameTime = 0;
     } else if(replayMode)
@@ -1541,17 +1550,18 @@ void GameClient::SetPause(bool pause)
 
 void GameClient::ToggleReplayFOW()
 {
-    replayinfo->all_visible = !replayinfo->all_visible;
+    if(replayinfo)
+        replayinfo->all_visible = !replayinfo->all_visible;
 }
 
 bool GameClient::IsReplayFOWDisabled() const
 {
-    return replayinfo->all_visible;
+    return replayMode && replayinfo->all_visible;
 }
 
 unsigned GameClient::GetLastReplayGF() const
 {
-    return replayinfo->replay.GetLastGF();
+    return replayinfo ? replayinfo->replay.GetLastGF() : 0u;
 }
 
 bool GameClient::AddGC(gc::GameCommand* gc)
@@ -1614,10 +1624,9 @@ const std::string& GameClient::GetReplayFileName() const
     return replayinfo ? replayinfo->fileName : emptyString;
 }
 
-Replay& GameClient::GetReplay()
+Replay* GameClient::GetReplay()
 {
-    RTTR_Assert(replayinfo);
-    return replayinfo->replay;
+    return replayinfo ? &replayinfo->replay : NULL;
 }
 
 boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
@@ -1628,7 +1637,7 @@ boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
-    if(unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
+    if(game && unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
         return TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS] * 60 * 1000 / framesinfo.gf_length;
     else
         return 0;

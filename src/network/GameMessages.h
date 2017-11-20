@@ -230,7 +230,7 @@ public:
 
     void Serialize(Serializer& ser) const override
     {
-        LOG.writeToFile(">>> NUM_NMS_SERVERSDOWN(%d)\n") % countdown;
+        LOG.writeToFile(">>> NMS_SERVERCOUNTDOWN(%d)\n") % countdown;
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(countdown);
     }
@@ -243,7 +243,7 @@ public:
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NUM_NMS_SERVERSDOWN(%d)\n") % countdown;
+        LOG.writeToFile("<<< NMS_SERVERCOUNTDOWN(%d)\n") % countdown;
         return callback->OnGameMessage(*this);
     }
 };
@@ -323,10 +323,10 @@ public:
 class GameMessage_Server_Async : public GameMessage
 {
 public:
-    std::vector<int> checksums;
+    std::vector<unsigned> checksums;
 
     GameMessage_Server_Async() : GameMessage(NMS_SERVER_ASYNC) {}
-    GameMessage_Server_Async(const std::vector<int>& checksums) : GameMessage(NMS_SERVER_ASYNC), checksums(checksums)
+    GameMessage_Server_Async(const std::vector<unsigned>& checksums) : GameMessage(NMS_SERVER_ASYNC), checksums(checksums)
     {
         LOG.writeToFile(">>> NMS_SERVER_ASYNC(%d)\n") % checksums.size();
     }
@@ -336,7 +336,7 @@ public:
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(unsigned(checksums.size()));
         for(unsigned i = 0; i < checksums.size(); ++i)
-            ser.PushSignedInt(checksums[i]);
+            ser.PushUnsignedInt(checksums[i]);
     }
 
     void Deserialize(Serializer& ser) override
@@ -345,7 +345,7 @@ public:
         unsigned size = ser.PopUnsignedInt();
         checksums.resize(size);
         for(unsigned i = 0; i < size; ++i)
-            checksums[i] = ser.PopSignedInt();
+            checksums[i] = ser.PopUnsignedInt();
     }
 
     bool Run(GameMessageInterface* callback) const override

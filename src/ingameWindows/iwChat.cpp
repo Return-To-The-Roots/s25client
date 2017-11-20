@@ -24,7 +24,7 @@
 #include "random/Random.h"
 #include "gameData/const_gui_ids.h"
 
-unsigned char iwChat::chat_dest = 0;
+unsigned char iwChat::chat_dest = CD_ALL;
 
 iwChat::iwChat()
     : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"), LOADER.GetImageN("resource", 41))
@@ -34,11 +34,11 @@ iwChat::iwChat()
 
     ctrlOptionGroup* group = AddOptionGroup(1, ctrlOptionGroup::CHECK);
     // "Alle"
-    group->AddTextButton(0, DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
+    group->AddTextButton(CD_ALL, DrawPoint(20, 80), Extent(260, 22), TC_GREY, _("All"), NormalFont);
     // "Verbündete"
-    group->AddTextButton(1, DrawPoint(20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
+    group->AddTextButton(CD_ALLIES, DrawPoint(20, 112), Extent(125, 22), TC_GREEN2, _("Allies"), NormalFont);
     // "Feinde"
-    group->AddTextButton(2, DrawPoint(155, 112), Extent(125, 22), TC_RED1, _("Enemies"), NormalFont);
+    group->AddTextButton(CD_ENEMIES, DrawPoint(155, 112), Extent(125, 22), TC_RED1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
     group->SetSelection(chat_dest);
@@ -62,9 +62,6 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
 
     ctrlEdit* edit = GetCtrl<ctrlEdit>(0);
 
-    if(chat_dest != 0 && chat_dest != 1 && chat_dest != 2)
-        chat_dest = 0;
-
     if(edit->GetText() == "apocalypsis")
     {
         GAMECLIENT.CheatArmageddon();
@@ -86,7 +83,9 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
         return;
     }
 
-    GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest + 1));
+    if(chat_dest != CD_ALL && chat_dest != CD_ALLIES && chat_dest != CD_ENEMIES)
+        chat_dest = CD_ALL;
+    GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest));
 
     edit->SetText("");
 }

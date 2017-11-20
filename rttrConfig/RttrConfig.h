@@ -34,6 +34,8 @@ public:
     bool Init();
     /// Return the prefix path for the installation
     static boost::filesystem::path GetPrefixPath();
+    /// Return the path from which RTTR was compiled
+    static boost::filesystem::path GetSourceDir();
     /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
     std::string ExpandPath(const std::string& path) const;
 };

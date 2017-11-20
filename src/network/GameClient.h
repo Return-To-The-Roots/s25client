@@ -106,7 +106,7 @@ public:
     void ExitGame();
 
     ClientState GetState() const { return state; }
-    Replay& GetReplay();
+    Replay* GetReplay();
     boost::shared_ptr<const ClientPlayers> GetPlayers() const;
     boost::shared_ptr<GameLobby> GetGameLobby();
 
