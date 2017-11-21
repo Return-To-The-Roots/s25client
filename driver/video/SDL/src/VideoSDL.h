@@ -77,6 +77,7 @@ public:
 private:
     bool SetVideoMode(const VideoMode& newSize, bool fullscreen);
     void PrintError(const std::string& msg);
+    void HandlePaste();
 
     SDL_Surface* screen; /// Das Fenster-SDL-Surface.
 };

@@ -304,6 +304,33 @@ void VideoSDL::PrintError(const std::string& msg)
     bnw::cerr << msg << std::endl;
 }
 
+void VideoSDL::HandlePaste()
+{
+#ifdef _WIN32
+    if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
+        return;
+
+    OpenClipboard(NULL);
+
+    HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+    const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
+
+    KeyEvent ke = {KT_INVALID, 0, false, false, false};
+    while(pData && *pData)
+    {
+        ke.c = *(pData++);
+        if(ke.c == L' ')
+            ke.kt = KT_SPACE;
+        else
+            ke.kt = KT_CHAR;
+        CallBack->Msg_KeyDown(ke);
+    }
+
+    GlobalUnlock(hData);
+    CloseClipboard();
+#endif
+}
+
 /**
  *  Schliesst das Fenster.
  */
@@ -394,6 +421,13 @@ bool VideoSDL::MessageLoop()
                     case SDLK_END: ke.kt = KT_END; break;
                     case SDLK_ESCAPE: ke.kt = KT_ESCAPE; break;
                     case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
+                    case SDLK_v:
+                        if(SDL_GetModState() & KMOD_CTRL)
+                        {
+                            HandlePaste();
+                            continue;
+                        }
+                        break;
                 }
 
                 /// Strg, Alt, usw gedrückt?
