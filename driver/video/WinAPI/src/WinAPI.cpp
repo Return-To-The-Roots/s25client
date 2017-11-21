@@ -582,17 +582,17 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
  */
 void VideoWinAPI::OnWMPaste()
 {
-    if(!IsClipboardFormatAvailable(CF_TEXT))
+    if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
         return;
 
     OpenClipboard(NULL);
 
-    HANDLE hData = GetClipboardData(CF_TEXT);
-    const char* pData = (const char*)GlobalLock(hData);
+    HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+    const wchar_t* pData = (const wchar_t*)GlobalLock(hData);
 
     while(pData && *pData)
     {
-        char c = *(pData++);
+        wchar_t c = *(pData++);
         OnWMKeyDown(c);
         OnWMChar(c, true);
     }
