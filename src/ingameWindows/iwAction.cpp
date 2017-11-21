@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwAction.h"
-
 #include "GameInterface.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -34,6 +33,7 @@
 #include "iwMilitaryBuilding.h"
 #include "iwObservate.h"
 #include "network/GameClient.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
@@ -384,7 +384,7 @@ void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_coun
     if(attackers_count == 0)
     {
         // Angriff nicht  möglich!
-        group->AddText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        group->AddText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     } else
     {
         selected_soldiers_count = 1;
@@ -519,12 +519,12 @@ void iwAction::Msg_PaintAfter()
         {
             char str[32];
             sprintf(str, "%u/%u", selected_soldiers_count, available_soldiers_count);
-            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), str, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), str, FontStyle::CENTER, COLOR_YELLOW);
         } else if(tab->GetCurrentTab() == TAB_SEAATTACK && available_soldiers_count_sea > 0)
         {
             char str[32];
             sprintf(str, "%u/%u", selected_soldiers_count_sea, available_soldiers_count_sea);
-            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), str, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), str, FontStyle::CENTER, COLOR_YELLOW);
         }
     }
 }

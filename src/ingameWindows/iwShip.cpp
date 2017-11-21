@@ -27,6 +27,7 @@
 #include "figures/noFigure.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
@@ -81,18 +82,17 @@ void iwShip::Msg_PaintAfter()
         if(!ship)
         {
             NormalFont->Draw(GetDrawPos() + DrawPoint(GetSize().x / 2, 60), _("No ships available"),
-                             glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+                             FontStyle::CENTER | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
 
     // Schiffsname
-    NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), glArchivItem_Font::DF_NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     char str[32];
     sprintf(str, "%u/%u", ship_id + 1, owner.GetNumShips());
-    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_NO_OUTLINE,
-                     COLOR_WINDOWBROWN);
+    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), str, FontStyle::RIGHT | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
     LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
 

@@ -24,6 +24,7 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlText.h"
 #include "helpers/converters.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
@@ -119,8 +120,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     overlays->AddString("Borderland");
     overlays->AddString("Fish");
 
-    text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, glArchivItem_Font::DF_LEFT | glArchivItem_Font::DF_TOP,
-                   LOADER.GetFontN("resource", 0));
+    text = AddText(ID_Text, DrawPoint(15, 120), "", COLOR_YELLOW, FontStyle::LEFT | FontStyle::TOP, LOADER.GetFontN("resource", 0));
 
     // Show 7 lines of text and 1 empty line
     SetIwSize(Extent(GetIwSize().x, text->GetPos().y + 8 * text->GetFont()->getHeight()));

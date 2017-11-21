@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "WindowManager.h"
-
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "Settings.h"
@@ -26,6 +25,7 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ingameWindows/IngameWindow.h"
+#include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
@@ -898,6 +898,6 @@ void WindowManager::DrawToolTip()
 
         Rect bgRect(ttPos - DrawPoint(2, 2), text_width + 4, 4 + numLines * NormalFont->getDy());
         Window::DrawRectangle(bgRect, 0x9F000000);
-        NormalFont->Draw(ttPos, curTooltip, glArchivItem_Font::DF_TOP, COLOR_YELLOW);
+        NormalFont->Draw(ttPos, curTooltip, FontStyle::TOP, COLOR_YELLOW);
     }
 }

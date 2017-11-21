@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDiplomacy.h"
-
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -29,10 +28,12 @@
 #include "helpers/converters.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
+#include "libsiedler2/ArchivItem_BitmapBase.h"
 #include <cstdio>
 
 /// Position des Headers der Tabelle (Y)
@@ -61,10 +62,8 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
       gwv(gwv), gcFactory(gcFactory)
 {
     // "Header" der Tabelle
-    AddText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER,
-            NormalFont);
-    AddText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER,
-            NormalFont);
+    AddText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     DrawPoint curTxtPos(LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + CELL_HEIGHT / 2 - CELL_HEIGHT - SPACE_HEIGHT);
     for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
@@ -74,7 +73,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
         if(!player.isUsed())
             continue;
         // Einzelne Spielernamen
-        AddText(100 + i, curTxtPos, player.name, player.color, glArchivItem_Font::DF_VCENTER, NormalFont);
+        AddText(100 + i, curTxtPos, player.name, player.color, FontStyle::VCENTER, NormalFont);
 
         if(player.ps == PS_OCCUPIED)
         {
@@ -95,7 +94,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 
         // Verbleibende Zeit unter dem Button
         DrawPoint remainingTimePos = button->GetPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
-        AddText(500 + i, remainingTimePos, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
+        AddText(500 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
 
         // Nichtangriffspakt
         image = LOADER.GetImageN("io", 100);
@@ -104,7 +103,7 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
 
         // Verbleibende Zeit unter dem Button
         remainingTimePos = button->GetPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
-        AddText(600 + i, remainingTimePos, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, SmallFont);
+        AddText(600 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
     }
     // Farben festlegen
     Msg_PaintAfter();

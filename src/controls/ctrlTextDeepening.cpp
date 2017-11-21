@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextDeepening.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 
 ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc,
@@ -26,8 +27,7 @@ ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos,
 
 Rect ctrlTextDeepening::GetBoundaryRect() const
 {
-    const Rect txtRect =
-      font->getBounds(GetDrawPos() + DrawPoint(GetSize()) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+    const Rect txtRect = font->getBounds(GetDrawPos() + DrawPoint(GetSize()) / 2, text, FontStyle::CENTER | FontStyle::VCENTER);
     const Rect parentRect = ctrlDeepening::GetBoundaryRect();
     Rect result;
     result.left = std::min(txtRect.left, parentRect.left);
@@ -39,5 +39,5 @@ Rect ctrlTextDeepening::GetBoundaryRect() const
 
 void ctrlTextDeepening::DrawContent() const
 {
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, text, FontStyle::CENTER | FontStyle::VCENTER, color_);
 }

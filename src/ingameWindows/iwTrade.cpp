@@ -27,7 +27,6 @@
 #include "controls/ctrlText.h"
 #include "factories/GameCommandFactory.h"
 #include "helpers/converters.h"
-#include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/JobConsts.h"
@@ -35,6 +34,8 @@
 #include <boost/format.hpp>
 #include <cstdio>
 
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(wh.CreateGUIID(), IngameWindow::posAtMouse, Extent(400, 194), _("Trade"), LOADER.GetImageN("resource", 41)), wh(wh),
       gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.GetPlayer().GetWarehousesForTrading(wh))
@@ -46,12 +47,12 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 
     const unsigned left_column = 200;
 
-    this->AddComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TC_GREY, NormalFont, 90); // Ware/Figure names
-    this->AddText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TC_GREY, NormalFont, 90); // Ware/Figure names
+    AddText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
     ctrlComboBox* box = this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TC_GREY, NormalFont, 200); // Ware or figure?
     box->AddString(_("Wares"));
     box->AddString(_("Settlers"));
-    this->AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // Create possible wares, figures
     for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
@@ -74,7 +75,7 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 
     AddImage(5, DrawPoint(left_column + 20, 130), NULL, _("Ware you like to trade"));
     AddEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TC_GREY, NormalFont)->SetNumberOnly(true);
-    AddText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     AddTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TC_GREEN2, _("Send"), NormalFont);
 

@@ -17,14 +17,13 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuildingSite.h"
-
 #include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/noBuildingSite.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "gameData/BuildingConsts.h"
 
@@ -36,7 +35,7 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
     // Bild des Gebäudes
     AddImage(0, DrawPoint(113, 130), buildingsite->GetBuildingImage());
     // Gebäudename
-    AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     // Hilfe
     AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TC_GREY, LOADER.GetImageN("io", 225), _("Help"));

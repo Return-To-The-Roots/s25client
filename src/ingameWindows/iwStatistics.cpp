@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwStatistics.h"
-
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -29,7 +28,7 @@
 #include "controls/ctrlText.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/const_gui_ids.h"
@@ -146,23 +145,23 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
     // Aktuelle Überschrift über der Statistik
     headline = AddText(30, DrawPoint(130, 120), _("Size of country"), MakeColor(255, 136, 96, 52),
-                       glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE,
+                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE,
                        NormalFont); // qx: fix for bug #1106952
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52),
-                       glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
+    maxValue = AddText(31, DrawPoint(211, 125), "1", MakeColor(255, 136, 96, 52), FontStyle::RIGHT | FontStyle::VCENTER,
+                       LOADER.GetFontN("resource", 0));
 
     // Aktueller Minimalwert an der y-Achse
-    minValue = AddText(40, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52),
-                       glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
+    minValue = AddText(40, DrawPoint(211, 200), "0", MakeColor(255, 136, 96, 52), FontStyle::RIGHT | FontStyle::VCENTER,
+                       LOADER.GetFontN("resource", 0));
 
     // Zeit-Werte an der x-Achse
     timeAnnotations = std::vector<ctrlText*>(7); // TODO nach oben
     for(unsigned i = 0; i < 7; ++i)
     {
         timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
-                                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
+                                     FontStyle::CENTER | FontStyle::TOP, LOADER.GetFontN("resource", 0));
     }
 
     // Standardansicht: 15min / Landesgröße

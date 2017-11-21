@@ -17,13 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwHarborBuilding.h"
-
 #include "Loader.h"
 #include "buildings/nobHarborBuilding.h"
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImageButton.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb) : iwHQ(gwv, gcFactory, hb)
 {
@@ -34,14 +33,14 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     grpIdExpedition = harbor_page.GetID();
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
     harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176), _("Start expedition"));
     AdjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
     harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TC_GREY, LOADER.GetImageN("io", 176),

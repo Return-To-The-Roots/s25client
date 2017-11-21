@@ -24,7 +24,6 @@
 #include "Settings.h"
 #include "controls/ctrlMultiline.h"
 #include "files.h"
-#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/nowide/fstream.hpp>
 

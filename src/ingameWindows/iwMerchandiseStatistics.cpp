@@ -24,7 +24,7 @@
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlText.h"
 #include "iwHelp.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 #include <sstream>
 
@@ -93,12 +93,12 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     for(unsigned i = 0; i < 7; ++i)
     {
         timeAnnotations[i] = AddText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
-                                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_TOP, LOADER.GetFontN("resource", 0));
+                                     FontStyle::CENTER | FontStyle::TOP, LOADER.GetFontN("resource", 0));
     }
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = AddText(31, DrawPoint(211, 55), "1", MakeColor(255, 136, 96, 52),
-                       glArchivItem_Font::DF_RIGHT | glArchivItem_Font::DF_VCENTER, LOADER.GetFontN("resource", 0));
+    maxValue = AddText(31, DrawPoint(211, 55), "1", MakeColor(255, 136, 96, 52), FontStyle::RIGHT | FontStyle::VCENTER,
+                       LOADER.GetFontN("resource", 0));
 }
 
 iwMerchandiseStatistics::~iwMerchandiseStatistics() {}

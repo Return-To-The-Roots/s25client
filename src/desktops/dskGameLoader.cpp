@@ -32,7 +32,7 @@
 #include "files.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"
 
@@ -47,7 +47,7 @@ dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
 
     AddTimer(1, 50);
 
-    AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     for(unsigned i = 0; i < 8; ++i)
         AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, 0, LargeFont);

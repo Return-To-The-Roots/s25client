@@ -26,7 +26,7 @@
 #include "controls/ctrlTab.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/BuildingTypes.h"
 #include "gameData/BuildingConsts.h"
@@ -67,7 +67,7 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
         BOOST_FOREACH(const std::string& entry, group.entries)
         {
             unsigned txtId = group.entries.size() + curId;
-            tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, SmallFont);
+            tabGrp->AddText(txtId, txtPos, entry, COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, SmallFont);
             tabGrp->AddProgress(curId++, progPos, progSize, TC_GREY, 139, 138, 10);
             txtPos.y = progPos.y += progSize.y * 2;
         }

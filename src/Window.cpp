@@ -378,12 +378,12 @@ ctrlTimer* Window::AddTimer(unsigned id, unsigned timeout)
  *  @param[in] text   Text
  *  @param[in] color  Textfarbe
  *  @param[in] format Formatierung des Textes
- *                      @p glArchivItem_Font::DF_LEFT    - Text links ( standard )
- *                      @p glArchivItem_Font::DF_CENTER  - Text mittig
- *                      @p glArchivItem_Font::DF_RIGHT   - Text rechts
- *                      @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
- *                      @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
- *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
+ *                      @p FontStyle::LEFT    - Text links ( standard )
+ *                      @p FontStyle::CENTER  - Text mittig
+ *                      @p FontStyle::RIGHT   - Text rechts
+ *                      @p FontStyle::TOP     - Text oben ( standard )
+ *                      @p FontStyle::VCENTER - Text vertikal zentriert
+ *                      @p FontStyle::BOTTOM  - Text unten
  *  @param[in] font   Schriftart
  */
 ctrlText* Window::AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, unsigned format,
@@ -419,12 +419,12 @@ ctrlVarDeepening* Window::AddVarDeepening(unsigned id, const DrawPoint& pos, con
  *  @param[in] formatstr  Der Formatstring des Steuerelements
  *  @param[in] color      Textfarbe
  *  @param[in] format     Formatierung des Textes
- *                          @p glArchivItem_Font::DF_LEFT    - Text links ( standard )
- *                          @p glArchivItem_Font::DF_CENTER  - Text mittig
- *                          @p glArchivItem_Font::DF_RIGHT   - Text rechts
- *                          @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
- *                          @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
- *                          @p glArchivItem_Font::DF_BOTTOM  - Text unten
+ *                          @p FontStyle::LEFT    - Text links ( standard )
+ *                          @p FontStyle::CENTER  - Text mittig
+ *                          @p FontStyle::RIGHT   - Text rechts
+ *                          @p FontStyle::TOP     - Text oben ( standard )
+ *                          @p FontStyle::VCENTER - Text vertikal zentriert
+ *                          @p FontStyle::BOTTOM  - Text unten
  *  @param[in] font       Schriftart
  *  @param[in] parameters Anzahl der nachfolgenden Parameter
  *  @param[in] ...        die variablen Parameter

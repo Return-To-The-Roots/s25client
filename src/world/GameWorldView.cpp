@@ -32,8 +32,11 @@
 #include "helpers/converters.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glSmartBitmap.h"
+#include "ogl/oglIncludes.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/RoadBuildState.h"
@@ -348,8 +351,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(show_names)
             {
                 unsigned color = (no->GetGOT() == GOT_BUILDINGSITE) ? COLOR_GREY : COLOR_YELLOW;
-                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]),
-                                glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->GetBuildingType()]), FontStyle::CENTER | FontStyle::VCENTER, color);
                 curPos.y += SmallFont->getHeight();
             }
 
@@ -368,7 +370,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).GetBuildProgress();
-        SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+        SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GOT_NOB_USUAL || got == GOT_NOB_SHIPYARD)
     {
         const nobUsual& n = static_cast<const nobUsual&>(no);
@@ -394,7 +396,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
             else if(p >= 20)
                 color = COLOR_20_PERCENT;
         }
-        SmallFont->Draw(curPos, text, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color);
+        SmallFont->Draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GOT_NOB_MILITARY)
     {
         // Display amount of soldiers
@@ -405,8 +407,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         else
             sSoldiers = boost::str(boost::format(_("(%d soldiers)")) % soldiers_count);
 
-        SmallFont->Draw(curPos, sSoldiers, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER,
-                        (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
+        SmallFont->Draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER, (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
     }
 }
 

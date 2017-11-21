@@ -22,6 +22,7 @@
 #include "ctrlButton.h"
 #include "ctrlList.h"
 #include "driver/MouseCoords.h"
+#include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
 
@@ -245,7 +246,7 @@ void ctrlComboBox::Draw_()
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetNumLines() > 0)
-        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), glArchivItem_Font::DF_VCENTER, COLOR_YELLOW, 0,
+        font->Draw(GetDrawPos() + DrawPoint(2, GetSize().y / 2), liste->GetSelItemText(), FontStyle::VCENTER, COLOR_YELLOW, 0,
                    GetSize().x - 2 - GetSize().y, "");
 
     // Male restliche Controls per Hand, denn ein einfaches DrawControls() würde

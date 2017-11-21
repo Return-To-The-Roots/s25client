@@ -27,7 +27,6 @@
 #include "ingameWindows/iwDirectIPConnect.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "ogl/glArchivItem_Font.h"
 #include "gameData/LanDiscoveryCfg.h"
 #include "libutil/Serializer.h"
 #include <boost/lexical_cast.hpp>

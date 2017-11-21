@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "IngameWindow.h"
-
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
@@ -263,8 +263,8 @@ void IngameWindow::Draw_()
         titleImg.DrawPart(Rect(titleImgPos, rest, titleImg.getHeight()));
 
     // Text auf die Leiste
-    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_,
-                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, COLOR_YELLOW);
+    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_, FontStyle::CENTER | FontStyle::VCENTER,
+                     COLOR_YELLOW);
 
     glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
     glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);

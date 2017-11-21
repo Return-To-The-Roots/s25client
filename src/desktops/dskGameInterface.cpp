@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskGameInterface.h"
-
 #include "CollisionDetection.h"
 #include "EventManager.h"
 #include "Game.h"
@@ -66,6 +65,7 @@
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
+#include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "ogl/glArchivItem_Font.h"
@@ -129,7 +129,7 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
     AddImageButton(ID_btPost, barPos, btSize, TC_GREEN1, LOADER.GetImageN("io", 62), _("Post office"))->SetBorder(false);
     barPos += DrawPoint(18, 24);
 
-    AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, SmallFont);
+    AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
     LOBBYCLIENT.SetInterface(this);
     GAMECLIENT.SetInterface(this);
@@ -309,8 +309,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), GAMECLIENT.GetReplayFileName(), glArchivItem_Font::DF_BOTTOM,
-                         0xFFFFFF00);
+        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, 0xFFFFFF00);
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
@@ -351,7 +350,7 @@ void dskGameInterface::Msg_PaintAfter()
         if(speedStep != 1)
         {
             std::string multiplier = helpers::toString(std::abs(speedStep));
-            NormalFont->Draw(drawPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, glArchivItem_Font::DF_LEFT,
+            NormalFont->Draw(drawPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
                              speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
         }
     }
@@ -366,7 +365,7 @@ void dskGameInterface::Msg_PaintAfter()
         magnifierImg->DrawFull(drawPos);
 
         std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
-        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER, COLOR_YELLOW);
     }
 }
 
