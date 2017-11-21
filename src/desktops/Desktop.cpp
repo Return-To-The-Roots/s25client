@@ -22,8 +22,8 @@
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
 #include <limits>
 
 // Set to highest possible so it is drawn last
@@ -71,7 +71,7 @@ void Desktop::SetFpsDisplay(bool show)
     if(!show)
         DeleteCtrl(fpsDisplayId);
     else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
-        AddText(fpsDisplayId, DrawPoint(800, 0), "", COLOR_YELLOW, glArchivItem_Font::DF_RIGHT, SmallFont);
+        AddText(fpsDisplayId, DrawPoint(800, 0), "", COLOR_YELLOW, FontStyle::RIGHT, SmallFont);
 }
 
 void Desktop::UpdateFps(unsigned newFps)

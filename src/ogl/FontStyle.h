@@ -15,28 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "iwPleaseWait.h"
-#include "GameManager.h"
-#include "Loader.h"
-#include "ogl/FontStyle.h"
-#include "gameData/const_gui_ids.h"
+#ifndef FontStyle_h__
+#define FontStyle_h__
 
-/**
- *  Konstruktor von @p iwPleaseWait.
- *
- *  Fenster wird modal geöffnet, damit man ggf. einen "Weiter"-Button nicht
- *  mehrfach betätigen kann.
- */
-iwPleaseWait::iwPleaseWait()
-    : IngameWindow(CGI_PLEASEWAIT, IngameWindow::posLastOrCenter, Extent(300, 60), _("Please wait..."), LOADER.GetImageN("resource", 41),
-                   true, false)
+struct FontStyle
 {
-    GAMEMANAGER.SetCursor(CURSOR_MOON);
-    AddText(0, GetSize() / 2, _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, NormalFont);
-}
+    /// Horizontal align
+    enum
+    {
+        LEFT = 0,
+        RIGHT = 1,
+        CENTER = 2
+    };
 
-iwPleaseWait::~iwPleaseWait()
-{
-    GAMEMANAGER.SetCursor();
-}
+    /// Vertical align
+    enum
+    {
+        TOP = 0,
+        BOTTOM = 4,
+        VCENTER = 8
+    };
+
+    /// Additional style
+    enum
+    {
+        OUTLINE = 0,
+        NO_OUTLINE = 16
+    };
+};
+
+#endif // FontStyle_h__

@@ -21,11 +21,11 @@
 #include "controls/ctrlMultiline.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
-#include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/foreach.hpp>
 #include <vector>
 
+#include "ogl/glArchivItem_Bitmap.h"
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image)
     : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("io", 5), true, false),
       pauseGame_(pauseGame)

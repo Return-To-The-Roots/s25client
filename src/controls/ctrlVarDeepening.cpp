@@ -17,9 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlVarDeepening.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
-
-class Window;
 
 ctrlVarDeepening::ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                    const std::string& fmtString, glArchivItem_Font* font, unsigned color, unsigned count, va_list fmtArgs)
@@ -28,5 +27,5 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint&
 
 void ctrlVarDeepening::DrawContent() const
 {
-    font->Draw(GetDrawPos() + GetSize() / 2, GetFormatedText(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color_);
+    font->Draw(GetDrawPos() + GetSize() / 2, GetFormatedText(), FontStyle::CENTER | FontStyle::VCENTER, color_);
 }

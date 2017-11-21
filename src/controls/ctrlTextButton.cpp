@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlTextButton.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 
@@ -47,6 +48,6 @@ void ctrlTextButton::DrawContent() const
     }
 
     const unsigned short offset = isPressed ? 2 : 0;
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text,
-               glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER, color, 0, maxTextWidth);
+    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2 + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER, color, 0,
+               maxTextWidth);
 }

@@ -17,14 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwOptionsWindow.h"
-#include "RTTR_Version.h"
-
 #include "Loader.h"
-#include "Settings.h"
-#include "WindowManager.h"
-
 #include "MusicPlayer.h"
+#include "RTTR_Version.h"
+#include "Settings.h"
 #include "SoundManager.h"
+#include "WindowManager.h"
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlProgress.h"
 #include "drivers/AudioDriverWrapper.h"
@@ -34,7 +32,7 @@
 #include "iwSettings.h"
 #include "iwSurrender.h"
 #include "iwTextfile.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 
 iwOptionsWindow::iwOptionsWindow()
@@ -44,31 +42,30 @@ iwOptionsWindow::iwOptionsWindow()
     AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddFormattedText(2, DrawPoint(150, 76), _("Return To The Roots - %1%"), COLOR_YELLOW,
-                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont)
+    AddFormattedText(2, DrawPoint(150, 76), _("Return To The Roots - %1%"), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, NormalFont)
       % RTTR_Version::GetReadableVersion();
     // Copyright
-    AddFormattedText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW,
-                     glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM, NormalFont)
+    AddFormattedText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM,
+                     NormalFont)
       % RTTR_Version::GetYear();
 
     // "Tastaturbelegung"
     AddImageButton(4, DrawPoint(35, 120), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(5, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddText(5, DrawPoint(85, 140), _("Keyboard layout"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
     // "'Lies mich'-Datei laden"
     AddImageButton(6, DrawPoint(35, 160), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 79));
-    AddText(7, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddText(7, DrawPoint(85, 180), _("Load 'ReadMe' file"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
     // "Spiel laden!"
     // TODO: Implement
     // AddImageButton( 8, DrawPoint(35, 210), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 48));
-    // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    // AddText(9, DrawPoint(85, 230), _("Load game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
     // "Spiel speichern!"
     // TODO: Move back down to y=250 (Button) 270 (Text) after Load button is implemented
     AddImageButton(10, DrawPoint(35, 230), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 47));
-    AddText(11, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, 0 | glArchivItem_Font::DF_BOTTOM, NormalFont);
+    AddText(11, DrawPoint(85, 255), _("Save game!"), COLOR_YELLOW, 0 | FontStyle::BOTTOM, NormalFont);
 
     // Geräusche an/aus
     AddImageButton(12, DrawPoint(35, 300), Extent(35, 35), TC_GREEN2, LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte)); //-V807

@@ -76,25 +76,6 @@ public:
     /// es unumgänglich ist (Wort länger als die Zeile)
     WrapInfo GetWrapInfo(const std::string& text, const unsigned short primary_width, const unsigned short secondary_width);
 
-    enum
-    {
-        DF_LEFT = 0,
-        DF_RIGHT = 1,
-        DF_CENTER = 2
-    };
-
-    enum
-    {
-        DF_TOP = 0,
-        DF_BOTTOM = 4,
-        DF_VCENTER = 8
-    };
-
-    enum
-    {
-        DF_NO_OUTLINE = 16
-    };
-
     struct CharInfo
     {
         CharInfo() : pos(0, 0), width(0) {}

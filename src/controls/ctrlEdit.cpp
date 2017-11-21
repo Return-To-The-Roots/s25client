@@ -17,11 +17,11 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlEdit.h"
-
 #include "CollisionDetection.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include <sstream>
 
@@ -111,8 +111,8 @@ void ctrlEdit::Draw_()
         start = cursorPos_ - 5;
     if(cursorPos_ <= 5)
         start = 0;
-    font_->Draw(GetDrawPos() + DrawPoint(4, GetSize().y / 2), dtext.substr(start), glArchivItem_Font::DF_VCENTER,
-                (focus_ ? 0xFFFFA000 : COLOR_YELLOW), 0, GetSize().x - 8);
+    font_->Draw(GetDrawPos() + DrawPoint(4, GetSize().y / 2), dtext.substr(start), FontStyle::VCENTER, (focus_ ? 0xFFFFA000 : COLOR_YELLOW),
+                0, GetSize().x - 8);
 
     // Alle 500ms Cursor für 500ms anzeigen
     if(focus_ && !isDisabled_ && VIDEODRIVER.GetTickCount() % 1000 < 500)

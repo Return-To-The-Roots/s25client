@@ -46,7 +46,7 @@
 #include "lua/LuaInterfaceSettings.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
@@ -106,32 +106,32 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
       gameLobby->isHost() && !gameLobby->isSavegame() && (!lua || lua->IsChangeAllowed("addonsAll") || lua->IsChangeAllowed("addonsSome"));
 
     // Kartenname
-    AddText(0, DrawPoint(400, 5), GAMECLIENT.GetGameName(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(0, DrawPoint(400, 5), GAMECLIENT.GetGameName(), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Spielername"
-    AddText(10, DrawPoint(95, 40), _("Player Name"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(10, DrawPoint(95, 40), _("Player Name"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Einstufung"
-    AddText(11, DrawPoint(205, 40), _("Classification"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(11, DrawPoint(205, 40), _("Classification"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Volk"
-    AddText(12, DrawPoint(285, 40), _("Race"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(12, DrawPoint(285, 40), _("Race"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Farbe"
-    AddText(13, DrawPoint(355, 40), _("Color"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(13, DrawPoint(355, 40), _("Color"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Team"
-    AddText(14, DrawPoint(405, 40), _("Team"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(14, DrawPoint(405, 40), _("Team"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     if(!IsSinglePlayer())
     {
         // "Bereit"
-        AddText(15, DrawPoint(465, 40), _("Ready?"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(15, DrawPoint(465, 40), _("Ready?"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
         // "Ping"
-        AddText(16, DrawPoint(515, 40), _("Ping"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(16, DrawPoint(515, 40), _("Ping"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     }
     // "Swap"
     if(gameLobby->isHost() && !gameLobby->isSavegame())
-        AddText(24, DrawPoint(10, 40), _("Swap"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(24, DrawPoint(10, 40), _("Swap"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     // "Verschieben" (nur bei Savegames!)
     if(gameLobby->isSavegame())
-        AddText(17, DrawPoint(645, 40), _("Past player"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+        AddText(17, DrawPoint(645, 40), _("Past player"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     if(!IsSinglePlayer())
     {
@@ -232,7 +232,7 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
             // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
             // verschieben, da diese Position sonst skaliert wird!
             ctrlText* text =
-              AddText(71, DrawPoint(670, 0), _("Map: ") + GAMECLIENT.GetMapTitle(), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, NormalFont);
+              AddText(71, DrawPoint(670, 0), _("Map: ") + GAMECLIENT.GetMapTitle(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
             text->SetPos(DrawPoint(text->GetPos().x, preview->GetPos().y + preview->GetMapArea().bottom + 10));
         }
     }

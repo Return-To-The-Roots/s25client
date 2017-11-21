@@ -19,7 +19,6 @@
 #include "iwHelp.h"
 #include "Loader.h"
 #include "controls/ctrlMultiline.h"
-#include "ogl/glArchivItem_Font.h"
 
 /// Breite des Fensters
 const unsigned short HELP_WINDOW_WIDTH = 280;

@@ -28,8 +28,8 @@
 #include "iwHelp.h"
 #include "macros.h"
 #include "network/GameClient.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/glArchivItem_Font.h"
 #include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -87,15 +87,14 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     // Mülleimer, nur sichtbar, wenn Nachricht da
     AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TC_GREY, LOADER.GetImageN("io", 106))->SetVisible(false);
 
-    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM,
-            SmallFont)
+    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM, SmallFont)
       ->SetVisible(false);
 
     AddImage(ID_IMG, DrawPoint(127, 155), LOADER.GetImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
     ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TC_INVISIBLE, NormalFont,
-                                       glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_NO_OUTLINE);
+                                       FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE);
     text->SetNumVisibleLines(4);
     text->ShowBackground(false);
 

@@ -18,7 +18,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMilitaryBuilding.h"
-
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
@@ -31,6 +30,7 @@
 #include "iwHelp.h"
 #include "iwMsgbox.h"
 #include "network/GameClient.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
@@ -143,7 +143,7 @@ void iwMilitaryBuilding::Msg_PaintAfter()
             }
             std::stringstream hitpointsText;
             hitpointsText << hitpoints;
-            NormalFont->Draw(healthPos, hitpointsText.str(), glArchivItem_Font::DF_CENTER, hitpointsColour);
+            NormalFont->Draw(healthPos, hitpointsText.str(), FontStyle::CENTER, hitpointsColour);
             healthPos.x += 22;
         }
     }

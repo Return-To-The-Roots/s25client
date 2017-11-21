@@ -21,7 +21,7 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "controls/ctrlGroup.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 
 iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh) : iwBaseWarehouse(gwv, gcFactory, wh)
 {
@@ -32,7 +32,7 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     grpIdReserve = reserve.GetID();
 
     // "Reserve"-Überschrift
-    reserve.AddText(0, DrawPoint(83, 87), _("Reserve"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    reserve.AddText(0, DrawPoint(83, 87), _("Reserve"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Y-Abstand zwischen den Zeilen
     const unsigned Y_DISTANCE = 30;
@@ -50,8 +50,8 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
         reserve.AddImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TC_GREEN2, LOADER.GetImageN("io", 138),
                                _("More"));
         // Anzahl-Text
-        reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont,
-                           2, wh->GetReservePointerAvailable(i), wh->GetReservePointerClaimed(i));
+        reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER, NormalFont, 2,
+                           wh->GetReservePointerAvailable(i), wh->GetReservePointerClaimed(i));
     }
 }
 

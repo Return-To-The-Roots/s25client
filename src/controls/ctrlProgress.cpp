@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlProgress.h"
-
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "WindowManager.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include <boost/math/special_functions/round.hpp>
 #include <sstream>
@@ -105,8 +105,7 @@ void ctrlProgress::Draw_()
     // Prozentzahlen zeichnen
     std::stringstream percent;
     percent << percentage << "%";
-    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), glArchivItem_Font::DF_VCENTER | glArchivItem_Font::DF_CENTER,
-                    COLOR_YELLOW);
+    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, percent.str(), FontStyle::VCENTER | FontStyle::CENTER, COLOR_YELLOW);
 }
 
 void ctrlProgress::Resize(const Extent& newSize)

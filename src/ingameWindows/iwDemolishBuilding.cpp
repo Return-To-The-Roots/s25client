@@ -20,7 +20,8 @@
 #include "Loader.h"
 #include "buildings/noBaseBuilding.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
@@ -38,7 +39,7 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
     // Gebäudebild
     AddImage(3, DrawPoint(104, 109), building->GetBuildingImage());
     // Gebäudename
-    AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(4, DrawPoint(100, 125), _(BUILDING_NAMES[building->GetBuildingType()]), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 }
 
 void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)

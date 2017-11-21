@@ -17,14 +17,14 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMsgbox.h"
-
 #include "Loader.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 
+#include "libsiedler2/ArchivItem_BitmapBase.h"
 namespace {
 enum IDS
 {

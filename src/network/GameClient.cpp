@@ -46,6 +46,8 @@
 #include "network/ClientInterface.h"
 #include "network/GameMessages.h"
 #include "network/GameServer.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "ogl/glArchivItem_Map.h"
 #include "postSystem/PostManager.h"
@@ -59,6 +61,7 @@
 #include "libutil/SocketSet.h"
 #include "libutil/StringConversion.h"
 #include "libutil/fileFuncs.h"
+#include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -1472,7 +1475,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
             // text oben noch hinschreiben
             boost::format nwfString(_("current GF: %u - still fast forwarding: %d GFs left (%d %%)"));
             nwfString % GetGFNumber() % (gf - i) % (i * 100 / gf);
-            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwfString.str(), glArchivItem_Font::DF_CENTER, 0xFFFFFF00);
+            LargeFont->Draw(DrawPoint(VIDEODRIVER.GetScreenSize() / 2u), nwfString.str(), FontStyle::CENTER, 0xFFFFFF00);
 
             VIDEODRIVER.SwapBuffers();
         }

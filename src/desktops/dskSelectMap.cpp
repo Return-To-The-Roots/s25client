@@ -40,7 +40,7 @@
 #include "mapGenerator/MapGenerator.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Map.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -87,7 +87,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
              ctrlTable::SRT_MAPSIZE, "", 0, ctrlTable::SRT_STRING);
 
     // "Karten Auswahl"
-    AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Zurück"
     AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
@@ -131,8 +131,8 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     optiongroup->AddTextButton(8, curBtPos, catBtSize, TC_GREY, _("Played"), NormalFont);
 
     AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), NULL);
-    AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
-    AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+    AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // "Eigene" auswählen
     optiongroup->SetSelection(5, true);

@@ -28,7 +28,7 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "network/GameClient.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
 
@@ -60,7 +60,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
     ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
-    AddText(6, DrawPoint(150, 215), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(6, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Verbinden"
     AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TC_GREEN2, _("Connect"), NormalFont);

@@ -17,10 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Messenger.h"
-
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "mygettext/mygettext.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "libutil/Log.h"
 
@@ -54,11 +54,11 @@ void Messenger::Draw()
         std::string cd_str = (it->cd == CD_SYSTEM) ? "" : _(CD_STRINGS[it->cd]);
 
         DrawPoint curTextPos(textPos);
-        LargeFont->Draw(curTextPos, it->author, glArchivItem_Font::DF_LEFT, SetAlpha(it->color_author, transparency));
+        LargeFont->Draw(curTextPos, it->author, FontStyle::LEFT, SetAlpha(it->color_author, transparency));
         curTextPos.x += LargeFont->getWidth(it->author);
-        LargeFont->Draw(curTextPos, cd_str, glArchivItem_Font::DF_LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
+        LargeFont->Draw(curTextPos, cd_str, FontStyle::LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
         curTextPos.x += LargeFont->getWidth(cd_str);
-        LargeFont->Draw(curTextPos, it->msg, glArchivItem_Font::DF_LEFT, SetAlpha(it->color_msg, transparency));
+        LargeFont->Draw(curTextPos, it->msg, FontStyle::LEFT, SetAlpha(it->color_msg, transparency));
         ++it;
     }
 }

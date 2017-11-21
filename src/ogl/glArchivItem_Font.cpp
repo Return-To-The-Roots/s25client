@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "glArchivItem_Font.h"
 #include "ExtensionList.h"
+#include "FontStyle.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -193,12 +194,12 @@ void glArchivItem_Font::Draw(DrawPoint pos, const ucString& wtext, unsigned form
  *  @param[in] y      Y-Koordinate
  *  @param[in] text   Der Text
  *  @param[in] format Format des Textes (verodern)
- *                      @p glArchivItem_Font::DF_LEFT    - Text links ( standard )
- *                      @p glArchivItem_Font::DF_CENTER  - Text mittig
- *                      @p glArchivItem_Font::DF_RIGHT   - Text rechts
- *                      @p glArchivItem_Font::DF_TOP     - Text oben ( standard )
- *                      @p glArchivItem_Font::DF_VCENTER - Text vertikal zentriert
- *                      @p glArchivItem_Font::DF_BOTTOM  - Text unten
+ *                      @p FontStyle::LEFT    - Text links ( standard )
+ *                      @p FontStyle::CENTER  - Text mittig
+ *                      @p FontStyle::RIGHT   - Text rechts
+ *                      @p FontStyle::TOP     - Text oben ( standard )
+ *                      @p FontStyle::VCENTER - Text vertikal zentriert
+ *                      @p FontStyle::BOTTOM  - Text unten
  *  @param[in] color  Farbe des Textes
  *  @param[in] length Länge des Textes
  *  @param[in] max    maximale Länge
@@ -249,16 +250,16 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
     std::advance(itEnd, maxNumChars);
 
     // Vertical alignment (assumes 1 line only!)
-    if(format & DF_BOTTOM)
+    if(format & FontStyle::BOTTOM)
         pos.y -= dy;
-    else if(format & DF_VCENTER)
+    else if(format & FontStyle::VCENTER)
         pos.y -= dy / 2;
     // Horizontal center must change current line only. Everything else changes the start point
     DrawPoint curPos(pos);
     // Horizontal alignment
-    if(format & DF_RIGHT)
+    if(format & FontStyle::RIGHT)
         curPos.x = pos.x -= textWidth;
-    else if(format & DF_CENTER)
+    else if(format & FontStyle::CENTER)
     {
         unsigned short line_width;
         std::string::const_iterator itNl = std::find(text.begin(), itEnd, '\n');
@@ -277,7 +278,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         const uint32_t curChar = utf8::next(it, itEnd);
         if(curChar == '\n')
         {
-            if(format & DF_CENTER)
+            if(format & FontStyle::CENTER)
             {
                 unsigned short line_width;
                 std::string::const_iterator itNl = std::find(it, itEnd, '\n');
@@ -308,7 +309,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         return;
 
     // Get texture first as it might need to be created
-    glArchivItem_Bitmap& usedFont = (format & DF_NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
+    glArchivItem_Bitmap& usedFont = (format & FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
     unsigned texture = usedFont.GetTexture();
     if(!texture)
         return;
@@ -403,13 +404,13 @@ Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsign
     unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
     Rect result(Point<int>(pos), width, numLines * getHeight());
     Point<int> offset(0, 0);
-    if((format & 3) == DF_RIGHT)
+    if((format & 3) == FontStyle::RIGHT)
         offset.x = width;
-    else if((format & 3) == DF_CENTER)
+    else if((format & 3) == FontStyle::CENTER)
         offset.x = width / 2;
-    if((format & 12) == DF_BOTTOM)
+    if((format & 12) == FontStyle::BOTTOM)
         offset.y = getHeight();
-    else if((format & 12) == DF_VCENTER)
+    else if((format & 12) == FontStyle::VCENTER)
         offset.y = getHeight() / 2;
     result.move(-offset);
     return result;

@@ -25,7 +25,7 @@
 #include "controls/ctrlImage.h"
 #include "controls/ctrlVarText.h"
 #include "iwHelp.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "gameData/JobConsts.h"
 #include "gameData/ShieldConsts.h"
 
@@ -150,12 +150,11 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, const Extent& size, const st
 
         // die jeweilige Anzahl (Texte)
         DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
-        wares.AddVarText(600 + INVENTORY_IDS[0][ware_id], txtPos, _("%d"), COLOR_YELLOW,
-                         glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1, &inventory.goods[INVENTORY_IDS[0][ware_id]]);
+        wares.AddVarText(600 + INVENTORY_IDS[0][ware_id], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font, 1,
+                         &inventory.goods[INVENTORY_IDS[0][ware_id]]);
         if(INVENTORY_IDS[1][ware_id] != 0xFFFF)
-            figures.AddVarText(600 + INVENTORY_IDS[1][ware_id], txtPos, _("%d"), COLOR_YELLOW,
-                               glArchivItem_Font::DF_BOTTOM | glArchivItem_Font::DF_RIGHT, font, 1,
-                               &inventory.people[INVENTORY_IDS[1][ware_id]]);
+            figures.AddVarText(600 + INVENTORY_IDS[1][ware_id], txtPos, _("%d"), COLOR_YELLOW, FontStyle::BOTTOM | FontStyle::RIGHT, font,
+                               1, &inventory.people[INVENTORY_IDS[1][ware_id]]);
     }
 
     // "Blättern"

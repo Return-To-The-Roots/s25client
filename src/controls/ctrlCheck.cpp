@@ -20,6 +20,7 @@
 #include "CollisionDetection.h"
 #include "Loader.h"
 #include "driver/MouseCoords.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 
@@ -76,8 +77,8 @@ void ctrlCheck::Draw_()
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, glArchivItem_Font::DF_VCENTER,
-                   (check ? COLOR_YELLOW : 0xFFBBBBBB), 0, availableWidth);
+        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER, (check ? COLOR_YELLOW : 0xFFBBBBBB), 0,
+                   availableWidth);
     }
 
     DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);

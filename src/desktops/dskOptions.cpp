@@ -44,7 +44,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwTextfile.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "libutil/colors.h"
 #include <boost/lexical_cast.hpp>
 
@@ -59,7 +59,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
 
     // "Optionen"
-    AddText(1, DrawPoint(400, 10), _("Options"), COLOR_YELLOW, glArchivItem_Font::DF_CENTER, LargeFont);
+    AddText(1, DrawPoint(400, 10), _("Options"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     ctrlOptionGroup* optiongroup = AddOptionGroup(10, ctrlOptionGroup::CHECK);
 

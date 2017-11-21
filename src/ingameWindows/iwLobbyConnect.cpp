@@ -27,7 +27,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskLobby.h"
 #include "iwMsgbox.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/StringConversion.h"
@@ -87,7 +87,7 @@ iwLobbyConnect::iwLobbyConnect()
     AddTextButton(ID_btConnect, DrawPoint(20, 220), btSize, TC_RED1, _("Connect"), NormalFont);
     AddTextButton(ID_btRegister, DrawPoint(260, 220), btSize, TC_GREEN2, _("Register"), NormalFont);
 
-    AddText(ID_txtStatus, DrawPoint(250, 195), "", COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(ID_txtStatus, DrawPoint(250, 195), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetReadableVersion());
     LOBBYCLIENT.SetInterface(this);

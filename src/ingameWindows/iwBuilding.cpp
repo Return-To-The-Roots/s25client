@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
-
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -28,6 +27,8 @@
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
+#include "ogl/FontStyle.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
@@ -97,7 +98,7 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     if(building->GetBuildingType() == BLD_CATAPULT || building->GetBuildingType() == BLD_LOOKOUTTOWER)
         productivity->SetVisible(false);
 
-    AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, glArchivItem_Font::DF_CENTER, NormalFont);
+    AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Go to next" (building of same type)
     AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
@@ -159,7 +160,7 @@ void iwBuilding::Msg_PaintAfter()
 
             std::stringstream text;
             text << (unsigned)building->GetNumWares(i) << "/" << wares_count;
-            NormalFont->Draw(curPos + DrawPoint(0, 12), text.str(), glArchivItem_Font::DF_CENTER | glArchivItem_Font::DF_VCENTER);
+            NormalFont->Draw(curPos + DrawPoint(0, 12), text.str(), FontStyle::CENTER | FontStyle::VCENTER);
             curPos.y += 29;
         }
     }

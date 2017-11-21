@@ -31,6 +31,7 @@
 #include "iwHarborBuilding.h"
 #include "iwHelp.h"
 #include "iwMilitaryBuilding.h"
+#include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Font.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
@@ -106,7 +107,7 @@ void iwBuildings::Msg_PaintAfter()
                 break;
             char txt[64];
             sprintf(txt, "%u/%u", bc.buildings[bts[y * 4 + x]], bc.buildingSites[bts[y * 4 + x]]);
-            NormalFont->Draw(curPos, txt, glArchivItem_Font::DF_CENTER, COLOR_YELLOW);
+            NormalFont->Draw(curPos, txt, FontStyle::CENTER, COLOR_YELLOW);
             curPos.x += iconSpacing.x;
         }
         rowPos.y += iconSpacing.y;
