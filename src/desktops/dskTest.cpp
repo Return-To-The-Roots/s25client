@@ -17,14 +17,16 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskTest.h"
-
 #include "Loader.h"
 #include "WindowManager.h"
 #include "animation/BlinkButtonAnim.h"
 #include "animation/MoveAnimation.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlComboBox.h"
+#include "controls/ctrlEdit.h"
+#include "controls/ctrlText.h"
 #include "desktops/dskMainMenu.h"
-#include "ogl/glArchivItem_Font.h"
+#include "ogl/FontStyle.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
 
@@ -40,21 +42,23 @@ enum
     ID_btAnimate,
     ID_btAnimateRepeat,
     ID_btAnimateOscillate,
-    ID_btBack
+    ID_btBack,
+    ID_edtTest,
+    ID_txtTest,
+    ID_cbTxtSize
 };
 }
 
 dskTest::dskTest()
 {
-    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, glArchivItem_Font::DF_CENTER,
-            LargeFont);
+    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
     boost::array<std::string, 4> labels = {{"Green1", "Green2", "Red1", "Grey"}};
     unsigned yPos = 50;
     unsigned curId = ID_grpBtStart;
     for(unsigned i = 0; i < textures.size(); i++)
     {
-        AddText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, glArchivItem_Font::DF_LEFT, NormalFont);
+        AddText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
         ctrlButton* bt;
         bt = AddTextButton(curId + 1, DrawPoint(120, yPos), Extent(95, 22), textures[i], "Nothing", NormalFont);
         bt->SetIlluminated(false);
@@ -82,11 +86,42 @@ dskTest::dskTest()
     bt->SetEnabled(false);
     bt->SetIlluminated(true);
 
+    btPos.y += 45;
+    AddEdit(ID_edtTest, btPos, Extent(150, 22), TC_GREEN2, NormalFont, 0, false, false, true);
+    btPos.x += 170;
+    ctrlComboBox* cb = AddComboBox(ID_cbTxtSize, btPos, Extent(100, 22), TC_GREEN2, NormalFont, 100);
+    cb->AddString("Small Font");
+    cb->AddString("Medium Font");
+    cb->AddString("Large Font");
+    cb->SetSelection(0);
+    btPos.x += 110;
+    btPos.y += 11;
+    AddText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
+
     AddTextButton(ID_btDisable, DrawPoint(10, 550), Extent(200, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
     AddTextButton(ID_btAnimate, DrawPoint(215, 550), Extent(100, 22), TC_GREEN1, "Animate", NormalFont);
     AddTextButton(ID_btAnimateRepeat, DrawPoint(320, 550), Extent(130, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
     AddTextButton(ID_btAnimateOscillate, DrawPoint(455, 550), Extent(130, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
     AddTextButton(ID_btBack, DrawPoint(630, 550), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
+}
+
+void dskTest::Msg_EditChange(const unsigned ctrl_id)
+{
+    if(ctrl_id == ID_edtTest)
+        GetCtrl<ctrlText>(ID_txtTest)->SetText(GetCtrl<ctrlEdit>(ID_edtTest)->GetText());
+}
+
+void dskTest::Msg_ComboSelectItem(const unsigned ctrl_id, const int selection)
+{
+    if(ctrl_id == ID_cbTxtSize)
+    {
+        if(selection == 0)
+            GetCtrl<ctrlText>(ID_txtTest)->SetFont(SmallFont);
+        else if(selection == 1)
+            GetCtrl<ctrlText>(ID_txtTest)->SetFont(NormalFont);
+        else
+            GetCtrl<ctrlText>(ID_txtTest)->SetFont(LargeFont);
+    }
 }
 
 void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
