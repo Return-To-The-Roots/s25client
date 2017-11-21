@@ -1320,38 +1320,37 @@ void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type
 */
 void GameWorldGame::PlaceAndFixWater()
 {
-    bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2;
+    bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
 
     RTTR_FOREACH_PT(MapPoint, GetSize())
     {
         Resource curNodeResource = GetNode(pt).resources;
-        
+
         if (curNodeResource.getType() != Resource::Nothing && curNodeResource.getType() != Resource::Water) {
             // do not override maps resource.
             continue;
         }
 
         int amount = 0;
-        if (curNodeResource.getType() == Resource::Water)
-        {
-            if (World::IsOfTerrain(pt, TT_DESERT) || World::IsOfTerrain(pt, TerrainData::IsWater)
-                || World::IsOfTerrain(pt, TerrainData::IsMountain) || World::IsOfTerrain(pt, TerrainData::IsLava))
-            {
-                // remove water on water, desert, mountains or lava tiles.
-                amount = 0;
-            } else if (!waterEverywhere)
-            {
-                // reduce water on stepppe or savannah tiles.
-                if (World::IsOfTerrain(pt, TT_SAVANNAH))
-                    amount = 4;
-                else if (World::IsOfTerrain(pt, TT_STEPPE))
-                    amount = 2;
-                else
-                    amount = 7;
-            }
-        } else if (waterEverywhere) // if there is water everywhere, set all Nodes including Resource::Nothing to 7
-            amount = 7;
 
+        // only set water if no desert, water, mountain or lava
+        if (!(World::IsOfTerrain(pt, TT_DESERT) || World::IsOfTerrain(pt, TerrainData::IsWater)
+            || World::IsOfTerrain(pt, TerrainData::IsMountain) || World::IsOfTerrain(pt, TerrainData::IsLava)))
+        {
+            
+            if (waterEverywhere)
+                amount = 7;
+            // do not touch tile if waterEverywhere is disabled and no resource was stored by maploader
+            else if (curNodeResource.getType() == Resource::Nothing) 
+                amount = 0;
+            else if (World::IsOfTerrain(pt, TT_SAVANNAH)) // reduce water on stepppe or savannah tiles.
+                amount = 4;
+            else if (World::IsOfTerrain(pt, TT_STEPPE))
+                amount = 2;
+            else
+                amount = 7;
+        }
+    
         if (amount != 0)
         {
             curNodeResource.setType(Resource::Water);
