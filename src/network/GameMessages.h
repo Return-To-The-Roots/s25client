@@ -1022,10 +1022,16 @@ public:
 class GameMessage_SendAsyncLog : public GameMessage
 {
 public:
+    std::string addData;
     std::vector<RandomEntry> entries;
     bool last;
 
     GameMessage_SendAsyncLog() : GameMessage(NMS_SEND_ASYNC_LOG) {} //-V730
+
+    GameMessage_SendAsyncLog(const std::string& addData) : GameMessage(NMS_SEND_ASYNC_LOG), addData(addData), last(false)
+    {
+        LOG.writeToFile(">>> NMS_SEND_ASYNC_LOG\n");
+    }
 
     GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last)
         : GameMessage(NMS_SEND_ASYNC_LOG), entries(async_log), last(last)
@@ -1036,26 +1042,27 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushBool(last);
-        ser.PushUnsignedInt(entries.size());
+        ser.PushString(addData);
 
+        ser.PushUnsignedInt(entries.size());
         BOOST_FOREACH(const RandomEntry& entry, entries)
-        {
             entry.Serialize(ser);
-        }
+
+        ser.PushBool(last);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
-        last = ser.PopBool();
+        addData += ser.PopString();
+
         unsigned cnt = ser.PopUnsignedInt();
         entries.clear();
         entries.resize(cnt);
         BOOST_FOREACH(RandomEntry& entry, entries)
-        {
             entry.Deserialize(ser);
-        }
+
+        last = ser.PopBool();
     }
 
     bool Run(GameMessageInterface* callback) const override

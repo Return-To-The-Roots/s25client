@@ -134,6 +134,8 @@ private:
     void ExecuteNWF(const unsigned currentTime);
 
     bool CheckForAsync();
+    std::string SaveAsyncLog();
+    void SendAsyncLog(const std::string& asyncLogFilePath);
 
     void CheckAndKickLaggingPlayers();
     bool CheckForLaggingPlayers();
