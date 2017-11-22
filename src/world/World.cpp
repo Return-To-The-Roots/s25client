@@ -325,6 +325,29 @@ bool World::IsOfTerrain(const MapPoint pt, const TerrainType t) const
     return true;
 }
 
+bool World::HasTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) const
+{
+    if (!terrainPredicate)
+        return false;
+
+    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    {
+        if (terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
+            return true;
+    }
+    return false;
+}
+
+bool World::HasTerrain(const MapPoint pt, const TerrainType t) const
+{
+    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    {
+        if (GetRightTerrain(pt, Direction::fromInt(i)) == t)
+            return true;
+    }
+    return false;
+}
+
 bool World::IsSeaPoint(const MapPoint pt) const
 {
     return World::IsOfTerrain(pt, TerrainData::IsUsableByShip);

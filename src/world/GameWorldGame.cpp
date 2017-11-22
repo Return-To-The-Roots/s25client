@@ -1334,8 +1334,8 @@ void GameWorldGame::PlaceAndFixWater()
         int amount = 0;
 
         // only set water if no desert, water, mountain or lava
-        if (!(World::IsOfTerrain(pt, TT_DESERT) || World::IsOfTerrain(pt, TerrainData::IsWater)
-            || World::IsOfTerrain(pt, TerrainData::IsMountain) || World::IsOfTerrain(pt, TerrainData::IsLava)))
+        if (!(World::HasTerrain(pt, TT_DESERT) || World::HasTerrain(pt, TerrainData::IsWater)
+            || World::HasTerrain(pt, TerrainData::IsMountain) || World::HasTerrain(pt, TerrainData::IsLava)))
         {
             
             if (waterEverywhere)
@@ -1343,9 +1343,9 @@ void GameWorldGame::PlaceAndFixWater()
             // do not touch tile if waterEverywhere is disabled and no resource was stored by maploader
             else if (curNodeResource.getType() == Resource::Nothing) 
                 amount = 0;
-            else if (World::IsOfTerrain(pt, TT_SAVANNAH)) // reduce water on stepppe or savannah tiles.
+            else if (World::HasTerrain(pt, TT_SAVANNAH)) // reduce water on stepppe or savannah tiles.
                 amount = 4;
-            else if (World::IsOfTerrain(pt, TT_STEPPE))
+            else if (World::HasTerrain(pt, TT_STEPPE))
                 amount = 2;
             else
                 amount = 7;
@@ -1353,10 +1353,9 @@ void GameWorldGame::PlaceAndFixWater()
     
         if (amount != 0)
         {
-            curNodeResource.setType(Resource::Water);
-            curNodeResource.setAmount(amount);
+            curNodeResource = Resource(Resource::Water, amount);
         } else
-            curNodeResource.setType(Resource::Nothing);
+            curNodeResource = Resource(Resource::Nothing);
 
         SetResource(pt, curNodeResource);
     }

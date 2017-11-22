@@ -148,14 +148,19 @@ public:
     /// Create the FOW-objects, -streets, etc for a point and player
     void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
-    // returns if a map point is surrounded by a given TerrainType. Result is evaluated by the given predicate.
+    // Return if all surrounding terrains match the given predicate
     bool IsOfTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) const;
-    // returns if a map point is surrounded by a given TerrainType
+    // Return if a map point is fully surrounded by a given TerrainType
     bool IsOfTerrain(const MapPoint pt, const TerrainType t) const;
     /// Return whether a node is inside a (shippable) sea (surrounded by shippable water)
     bool IsSeaPoint(const MapPoint pt) const;
     /// Return true, if the point is surrounded by water
     bool IsWaterPoint(const MapPoint pt) const;
+    // Return if any neighbour node match the given predicate
+    bool HasTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) const;
+    // Return if a any neighbour node matches the given TerrainType
+    bool HasTerrain(const MapPoint pt, const TerrainType t) const;
+
     unsigned GetSeaSize(const unsigned seaId) const;
     /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
     unsigned short GetSeaId(const unsigned harborId, const Direction dir) const;
