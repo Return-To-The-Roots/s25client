@@ -64,6 +64,7 @@ struct GameServer::AsyncLog
     uint8_t playerId;
     bool done;
     AsyncChecksum checksum;
+    std::string addData;
     std::vector<RandomEntry> randEntries;
     AsyncLog(uint8_t playerId, AsyncChecksum checksum) : playerId(playerId), done(false), checksum(checksum) {}
 };
@@ -1289,6 +1290,7 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
         if(log.done)
             return true;
         foundPlayer = true;
+        log.addData += msg.addData;
         log.randEntries.insert(log.randEntries.end(), msg.entries.begin(), msg.entries.end());
         if(msg.last)
         {
@@ -1311,6 +1313,30 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
     LOG.write(_("Async logs received completely.\n"));
 
+    std::string asyncFilePath = SaveAsyncLog();
+    if(!asyncFilePath.empty())
+        SendAsyncLog(asyncFilePath);
+
+    // Kick all players that have a different checksum from the host
+    AsyncChecksum hostChecksum;
+    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    {
+        if(playerInfos.at(log.playerId).isHost)
+        {
+            hostChecksum = log.checksum;
+            break;
+        }
+    }
+    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+    {
+        if(log.checksum != hostChecksum)
+            KickPlayer(log.playerId, NP_ASYNC, 0);
+    }
+    return true;
+}
+
+std::string GameServer::SaveAsyncLog()
+{
     // Get the highest common counter number and start from there (remove all others)
     unsigned maxCtr = 0;
     BOOST_FOREACH(const AsyncLog& log, asyncLogs)
@@ -1330,7 +1356,7 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     }
     // No entries :(
     if(numEntries == 0 || asyncLogs.size() < 2u)
-        return true;
+        return "";
 
     // count identical lines
     unsigned numIdentical = 0;
@@ -1360,39 +1386,11 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
 
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
-    if(SETTINGS.global.submit_debug_data == 1
-#ifdef _WIN32
-       || (MessageBoxW(NULL,
-                       cvUTF8ToWideString(
-                         _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
-                           "the future? Thank you very much!"))
-                         .c_str(),
-                       cvUTF8ToWideString(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
-           == IDYES)
-#endif
-    )
-    {
-        unsigned otherPlayerIdx = 0;
-        for(unsigned i = 1; i < asyncLogs.size(); ++i)
-        {
-            if(asyncLogs[i].checksum != asyncLogs[0].checksum)
-            {
-                otherPlayerIdx = i;
-                break;
-            }
-        }
-        DebugInfo di;
-        LOG.write(_("Sending async logs %1%.\n"))
-          % (di.SendAsyncLog(asyncLogs[0].randEntries, asyncLogs[otherPlayerIdx].randEntries, numIdentical) ? "succeeded" : "failed");
-
-        di.SendReplay();
-    }
-
-    std::string fileName =
+    std::string filePath =
       RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log";
 
     // open async log
-    bnw::ofstream file(fileName);
+    bnw::ofstream file(filePath);
 
     if(file)
     {
@@ -1403,8 +1401,12 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
             const JoinPlayerInfo& plInfo = playerInfos.at(log.playerId);
             file << "Player " << std::setw(2) << unsigned(log.playerId) << (plInfo.isHost ? '#' : ' ') << "\t\"" << plInfo.name << '"'
                  << std::endl;
+            file << "System info: " << log.addData << std::endl;
             file << "\tChecksum: " << std::setw(0) << log.checksum << std::endl;
         }
+        BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+            file << "Checksum " << std::setw(2) << unsigned(log.playerId) << std::setw(0) << ": " << log.checksum << std::endl;
+
         // print identical lines, they help in tracing the bug
         for(unsigned i = 0; i < numIdentical; i++)
             file << "[ I ]: " << asyncLogs[0].randEntries[i] << "\n";
@@ -1417,28 +1419,34 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
             }
         }
 
-        LOG.write(_("Async log saved at \"%s\"\n")) % fileName;
+        LOG.write(_("Async log saved at \"%s\"\n")) % filePath;
+        return filePath;
     } else
     {
-        LOG.write(_("Failed to save async log at \"%s\"\n")) % fileName;
+        LOG.write(_("Failed to save async log at \"%s\"\n")) % filePath;
+        return "";
     }
+}
 
-    // Kick all players that have a different checksum from the host
-    AsyncChecksum hostChecksum;
-    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
+void GameServer::SendAsyncLog(const std::string& asyncLogFilePath)
+{
+    if(SETTINGS.global.submit_debug_data == 1
+#ifdef _WIN32
+       || (MessageBoxW(NULL,
+                       cvUTF8ToWideString(
+                         _("The game clients are out of sync. Would you like to send debug information to RttR to help us avoiding this in "
+                           "the future? Thank you very much!"))
+                         .c_str(),
+                       cvUTF8ToWideString(_("Error")).c_str(), MB_YESNO | MB_ICONERROR | MB_TASKMODAL | MB_SETFOREGROUND)
+           == IDYES)
+#endif
+    )
     {
-        if(playerInfos.at(log.playerId).isHost)
-        {
-            hostChecksum = log.checksum;
-            break;
-        }
+        DebugInfo di;
+        LOG.write(_("Sending async logs %1%.\n")) % (di.SendAsyncLog(asyncLogFilePath) ? "succeeded" : "failed");
+
+        di.SendReplay();
     }
-    BOOST_FOREACH(const AsyncLog& log, asyncLogs)
-    {
-        if(log.checksum != hostChecksum)
-            KickPlayer(log.playerId, NP_ASYNC, 0);
-    }
-    return true;
 }
 
 void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)

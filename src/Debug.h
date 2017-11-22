@@ -20,6 +20,8 @@
 #include "random/Random.h"
 #include "libutil/Socket.h"
 
+class BinaryFile;
+
 // This is for catching crashes and reporting bugs, it does not slow down anything.
 class DebugInfo
 {
@@ -37,7 +39,8 @@ public:
 
     bool SendStackTrace(void* ctx = NULL);
     bool SendReplay();
-    bool SendAsyncLog(const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical);
+    bool SendAsyncLog(const std::string& asyncLogFilepath);
+    bool SendFile(BinaryFile& file);
 };
 
 #endif

@@ -60,6 +60,7 @@
 #include "libsiedler2/prototypen.h"
 #include "libutil/SocketSet.h"
 #include "libutil/StringConversion.h"
+#include "libutil/System.h"
 #include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem.hpp>
@@ -1099,6 +1100,9 @@ bool GameClient::OnGameMessage(const GameMessage_Pause& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 {
+    std::string systemInfo = System::getCompilerName() + " @ " + System::getOSName();
+    mainPlayer.sendMsgAsync(new GameMessage_SendAsyncLog(systemInfo));
+
     // AsyncLog an den Server senden
 
     std::vector<RandomEntry> async_log = RANDOM.GetAsyncLog();

@@ -20,12 +20,17 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Debug.h"
 #include "RTTR_Version.h"
+#include "Replay.h"
 #include "Settings.h"
 #include "helpers/Deleter.h"
 #include "network/GameClient.h"
 #include "libutil/Log.h"
+#include <boost/endian/arithmetic.hpp>
 #include <boost/endian/conversion.hpp>
+#include <boost/foreach.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/conditional.hpp>
 #include <bzlib.h>
 #include <vector>
 
@@ -58,7 +63,6 @@ typedef WINBOOL(WINAPI* StackWalkType)(DWORD MachineType, HANDLE hProcess, HANDL
 #else
 #include <execinfo.h>
 #endif
-#include "Replay.h"
 
 #ifdef RTTR_USE_WIN_API
 #ifdef HAVE_DBGHELP_H
@@ -157,7 +161,7 @@ DebugInfo::DebugInfo()
     Send("RTTRDBG", 7);
 
     // Protocol Version
-    SendUnsigned(0x00000001);
+    SendUnsigned(2);
 
 // OS
 #if defined _WIN32 || defined __CYGWIN__
@@ -172,7 +176,7 @@ DebugInfo::DebugInfo()
 #endif
 
     // Bits
-    SendUnsigned(sizeof(void*) << 3);
+    SendUnsigned(sizeof(void*) * 8u);
 
     SendString(RTTR_Version::GetVersionDate());
     SendString(RTTR_Version::GetRevision());
@@ -255,8 +259,16 @@ bool DebugInfo::SendStackTrace(void* ctx)
     if(!SendString("StackTrace"))
         return false;
 
-    unsigned stacktraceLen = sizeof(void*) * stacktrace.size();
-    return SendString(reinterpret_cast<char*>(&stacktrace[0]), stacktraceLen);
+    typedef
+      typename boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
+    BOOST_STATIC_ASSERT_MSG(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
+    std::vector<littleVoid_t> endStacktrace;
+    endStacktrace.reserve(stacktrace.size());
+    BOOST_FOREACH(void* ptr, stacktrace)
+        endStacktrace.push_back(reinterpret_cast<littleVoid_t::value_type>(ptr));
+
+    unsigned stacktraceLen = sizeof(littleVoid_t) * endStacktrace.size();
+    return SendString(reinterpret_cast<const char*>(&endStacktrace[0]), stacktraceLen);
 }
 
 bool DebugInfo::SendReplay()
@@ -275,42 +287,11 @@ bool DebugInfo::SendReplay()
 
         f.Flush();
 
-        unsigned replay_len = f.Tell();
-
-        LOG.write("- Replay length: %u\n") % replay_len;
-
-        boost::interprocess::unique_ptr<char, Deleter<char[]> > replay(new char[replay_len]);
-
-        f.Seek(0, SEEK_SET);
-
-        f.ReadRawData(replay.get(), replay_len);
-
-        unsigned compressed_len = replay_len * 2 + 600;
-        boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
-
-        // send size of replay via socket
         if(!SendString("Replay"))
-        {
             return false;
-        }
-
-        LOG.write("- Compressing...\n");
-        if(BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*)&compressed_len, replay.get(), replay_len, 9, 0, 250) == BZ_OK)
-        {
-            LOG.write("- Sending...\n");
-
-            if(SendString(compressed.get(), compressed_len))
-            {
-                LOG.write("-> success\n");
-                return true;
-            }
-
-            LOG.write("-> Sending replay failed :(\n");
-        } else
-        {
-            LOG.write("-> BZ2 compression failed.\n");
-        }
-
+        if(SendFile(f))
+            return true;
+        // Empty replay
         SendUnsigned(0);
         return false;
     } else
@@ -321,104 +302,49 @@ bool DebugInfo::SendReplay()
     return true;
 }
 
-bool DebugInfo::SendAsyncLog(const std::vector<RandomEntry>& a, const std::vector<RandomEntry>& b, unsigned identical)
+bool DebugInfo::SendAsyncLog(const std::string& asyncLogFilepath)
 {
+    BinaryFile file;
+    if(!file.Open(asyncLogFilepath, OFM_READ))
+        return false;
+
     if(!SendString("AsyncLog"))
+        return false;
+
+    if(SendFile(file))
+        return true;
+    // Empty
+    SendUnsigned(0);
+    return false;
+}
+
+bool DebugInfo::SendFile(BinaryFile& file)
+{
+    file.Seek(0, SEEK_END);
+    unsigned fileSize = file.Tell();
+
+    LOG.write("- File size: %u\n") % fileSize;
+
+    boost::interprocess::unique_ptr<char, Deleter<char[]> > fileData(new char[fileSize]);
+    unsigned compressed_len = fileSize * 2 + 600;
+    boost::interprocess::unique_ptr<char, Deleter<char[]> > compressed(new char[compressed_len]);
+
+    file.Seek(0, SEEK_SET);
+    file.ReadRawData(fileData.get(), fileSize);
+
+    LOG.write("- Compressing...\n");
+    if(BZ2_bzBuffToBuffCompress(compressed.get(), (unsigned*)&compressed_len, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)
     {
-        return (false);
-    }
+        LOG.write("- Sending...\n");
 
-    // calculate size
-    unsigned len = 4;
-    unsigned cnt = 0;
+        if(SendString(compressed.get(), compressed_len))
+        {
+            LOG.write("-> success\n");
+            return true;
+        }
 
-    std::vector<RandomEntry>::const_iterator it_a = a.begin() + identical;
-    std::vector<RandomEntry>::const_iterator it_b = b.begin() + identical;
-
-    // if there were any identical lines, include only the last one
-    if(identical)
-    {
-        // sizes of: counter, max, rngState
-        //           string = length Bytes + 1 NULL terminator + 4B length
-        //           srcLine, objId
-        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
-
-        ++cnt;
-        ++it_a;
-        ++it_b;
-    }
-
-    while((it_a != a.end()) && (it_b != b.end()))
-    {
-        len += 4 + 4 + 4 + it_a->src_name.length() + 1 + 4 + 4 + 4;
-        len += 4 + 4 + 4 + it_b->src_name.length() + 1 + 4 + 4 + 4;
-
-        cnt += 2;
-        ++it_a;
-        ++it_b;
-    }
-
-    if(!SendUnsigned(len))
-        return (false);
-    if(!SendUnsigned(identical))
-        return (false);
-    if(!SendUnsigned(cnt))
-        return (false);
-
-    it_a = a.begin() + identical;
-    it_b = b.begin() + identical;
-
-    // if there were any identical lines, send only one each
-    for(unsigned i = 0; i < identical; i++)
-    {
-        if(!SendUnsigned(it_a->counter))
-            return (false);
-        if(!SendSigned(it_a->max))
-            return (false);
-        if(!SendSigned(RANDOM.CalcChecksum(it_a->rngState)))
-            return (false);
-        if(!SendString(it_a->src_name))
-            return (false);
-        if(!SendUnsigned(it_a->src_line))
-            return (false);
-        if(!SendUnsigned(it_a->obj_id))
-            return (false);
-
-        ++it_a;
-        ++it_b;
-    }
-
-    while((it_a != a.end()) && (it_b != b.end()))
-    {
-        if(!SendUnsigned(it_a->counter))
-            return (false);
-        if(!SendSigned(it_a->max))
-            return (false);
-        if(!SendSigned(RANDOM.CalcChecksum(it_a->rngState)))
-            return (false);
-        if(!SendString(it_a->src_name))
-            return (false);
-        if(!SendUnsigned(it_a->src_line))
-            return (false);
-        if(!SendUnsigned(it_a->obj_id))
-            return (false);
-
-        if(!SendUnsigned(it_b->counter))
-            return (false);
-        if(!SendSigned(it_b->max))
-            return (false);
-        if(!SendSigned(RANDOM.CalcChecksum(it_b->rngState)))
-            return (false);
-        if(!SendString(it_b->src_name))
-            return (false);
-        if(!SendUnsigned(it_b->src_line))
-            return (false);
-        if(!SendUnsigned(it_b->obj_id))
-            return (false);
-
-        ++it_a;
-        ++it_b;
-    }
-
-    return (true);
+        LOG.write("-> Sending file failed :(\n");
+    } else
+        LOG.write("-> BZ2 compression failed.\n");
+    return false;
 }
