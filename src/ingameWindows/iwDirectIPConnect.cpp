@@ -79,7 +79,7 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
 void iwDirectIPConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
-    SetText("", COLOR_RED, true);
+    SetStatus("", COLOR_RED);
 }
 
 void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
@@ -125,7 +125,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             int iPort = helpers::fromString(edtPort->GetText(), 0);
             if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
             {
-                SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);
+                SetStatus(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED);
                 edtHost->SetFocus(false);
                 edtPort->SetFocus(true);
                 edtPw->SetFocus(false);
@@ -136,15 +136,16 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             SETTINGS.server.last_ip = edtHost->GetText();
 
             // Text auf "Verbinde mit Host..." setzen und Button deaktivieren
-            SetText(_("Connecting with Host..."), COLOR_RED, false);
+            SetStatus(_("Connecting with Host..."), COLOR_RED);
 
             GAMECLIENT.Stop();
             if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), server_type, static_cast<unsigned short>(iPort), false,
                                    SETTINGS.server.ipv6))
             {
                 // Text auf "Verbindung fehlgeschlagen" setzen und Button aktivieren
-                SetText(_("Connection failed!"), COLOR_RED, true);
-            }
+                SetStatus(_("Connection failed!"), COLOR_RED);
+            } else
+                GetCtrl<ctrlButton>(ctrl_id)->SetEnabled(false);
         }
         break;
         case 8: { Close();
@@ -169,14 +170,11 @@ void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const int 
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  */
-void iwDirectIPConnect::SetText(const std::string& text, unsigned color, bool button)
+void iwDirectIPConnect::SetStatus(const std::string& text, unsigned color)
 {
     // Text setzen
     GetCtrl<ctrlText>(6)->SetTextColor(color);
     GetCtrl<ctrlText>(6)->SetText(text);
-
-    // Button (de)aktivieren
-    GetCtrl<ctrlButton>(7)->SetEnabled(button);
 }
 
 /**
@@ -211,25 +209,27 @@ void iwDirectIPConnect::CI_Error(const ClientError ce)
 {
     switch(ce)
     {
-        case CE_SERVERFULL: SetText(_("This Server is full!"), COLOR_RED, true); break;
-        case CE_WRONGPW: SetText(_("Wrong Password!"), COLOR_RED, true); break;
-        case CE_WRONGVERSION: SetText(_("Wrong client version"), COLOR_RED, true); break;
-        case CE_CONNECTIONLOST: SetText(_("Connection to Host closed!"), COLOR_RED, true); break;
-        case CE_INCOMPLETEMESSAGE: SetText(_("Too short Message received!"), COLOR_RED, true); break;
-        case CE_INVALIDSERVERTYPE: SetText(_("Wrong Server Type!"), COLOR_RED, true); break;
-        case CE_WRONGMAP: SetText("", COLOR_RED, true); break;
+        case CE_SERVERFULL: SetStatus(_("This Server is full!"), COLOR_RED); break;
+        case CE_WRONGPW: SetStatus(_("Wrong Password!"), COLOR_RED); break;
+        case CE_WRONGVERSION: SetStatus(_("Wrong client version"), COLOR_RED); break;
+        case CE_CONNECTIONLOST: SetStatus(_("Connection to Host closed!"), COLOR_RED); break;
+        case CE_INCOMPLETEMESSAGE: SetStatus(_("Too short Message received!"), COLOR_RED); break;
+        case CE_INVALIDSERVERTYPE: SetStatus(_("Wrong Server Type!"), COLOR_RED); break;
+        case CE_WRONGMAP: SetStatus("", COLOR_RED); break;
         default: break;
     }
+
+    GetCtrl<ctrlButton>(7)->SetEnabled();
 }
 
 void iwDirectIPConnect::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_WAITFORANSWER: SetText(_("Waiting for Reply..."), COLOR_YELLOW, true); break;
-        case CS_QUERYPW: SetText(_("Checking Password..."), COLOR_YELLOW, true); break;
-        case CS_QUERYMAPNAME: SetText(_("Checking Map..."), COLOR_YELLOW, true); break;
-        case CS_QUERYPLAYERLIST: SetText(_("Waiting for Playerinfo..."), COLOR_YELLOW, true); break;
+        case CS_WAITFORANSWER: SetStatus(_("Waiting for Reply..."), COLOR_YELLOW); break;
+        case CS_QUERYPW: SetStatus(_("Checking Password..."), COLOR_YELLOW); break;
+        case CS_QUERYMAPNAME: SetStatus(_("Checking Map..."), COLOR_YELLOW); break;
+        case CS_QUERYPLAYERLIST: SetStatus(_("Waiting for Playerinfo..."), COLOR_YELLOW); break;
 
         case CS_FINISHED: // Wir wurden verbunden
         {
