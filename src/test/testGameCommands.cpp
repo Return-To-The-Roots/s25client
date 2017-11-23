@@ -783,7 +783,7 @@ BOOST_AUTO_TEST_CASE(InventorySettingType)
 BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 {
     GamePlayer& player = world.GetPlayer(curPlayer);
-    nobBaseWarehouse* wh = player.GetFirstWH();
+    const nobBaseWarehouse* wh = player.GetFirstWH();
     BOOST_REQUIRE(wh);
     InventorySetting expectedSetting;
     BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GD_BOARDS), expectedSetting); //-V522
@@ -821,6 +821,40 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     this->SetAllInventorySettings(hqPos, false, settings);
     for(unsigned i = 0; i < NUM_JOB_TYPES; i++)
         BOOST_REQUIRE_EQUAL(wh->GetInventorySetting(GoodType(i)), settings[ConvertShields(GoodType(i))]);
+
+    settings.clear();
+    settings.resize(NUM_WARE_TYPES);
+    this->SetAllInventorySettings(hqPos, false, settings);
+    settings.resize(NUM_JOB_TYPES);
+    this->SetAllInventorySettings(hqPos, true, settings);
+
+    unsigned numBoards = wh->GetNumRealWares(GD_BOARDS);
+    unsigned numWoodcutters = wh->GetNumRealFigures(JOB_WOODCUTTER);
+    this->SetInventorySetting(hqPos, GD_BOARDS, EInventorySetting::SEND);
+    // Nothing should happen
+    RTTR_SKIP_GFS(100);
+    BOOST_REQUIRE_EQUAL(wh->GetNumRealWares(GD_BOARDS), numBoards);
+    this->SetInventorySetting(hqPos, GD_BOARDS, InventorySetting());
+    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, EInventorySetting::SEND);
+    // Figure goes out and wanders
+    RTTR_SKIP_GFS(100);
+    BOOST_REQUIRE_LT(wh->GetNumRealFigures(JOB_WOODCUTTER), numWoodcutters);
+    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, InventorySetting());
+
+    numWoodcutters = wh->GetNumRealFigures(JOB_WOODCUTTER);
+    MapPoint whPos = hqPos + MapPoint(3, 0);
+    const nobBaseWarehouse* wh2 = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_AFRICANS));
+    this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::EAST));
+    this->SetInventorySetting(hqPos, GD_BOARDS, EInventorySetting::SEND);
+    // Send some
+    RTTR_SKIP_GFS(100);
+    BOOST_REQUIRE_LT(wh->GetNumRealWares(GD_BOARDS), numBoards);
+    this->SetInventorySetting(hqPos, GD_BOARDS, InventorySetting());
+    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, EInventorySetting::SEND);
+    // Nothing should happen
+    RTTR_SKIP_GFS(100);
+    BOOST_REQUIRE_LT(wh->GetNumRealFigures(JOB_WOODCUTTER), numWoodcutters);
+    this->SetInventorySetting(hqPos, JOB_WOODCUTTER, InventorySetting());
 }
 
 BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)

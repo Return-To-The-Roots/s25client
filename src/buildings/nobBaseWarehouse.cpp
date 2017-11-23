@@ -416,7 +416,6 @@ void nobBaseWarehouse::HandleSendoutEvent()
         } else
         {
             gwg->GetPlayer(player).RemoveWare(ware);
-            ware->Destroy();
             deletePtr(ware);
         }
     } else
