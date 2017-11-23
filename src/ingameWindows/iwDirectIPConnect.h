@@ -36,7 +36,7 @@ public:
     void Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6, const bool hasPwd);
 
 private:
-    void SetText(const std::string& text, unsigned color, bool button);
+    void SetStatus(const std::string& text, unsigned color);
 
     void Msg_EditChange(const unsigned ctrl_id) override;
     void Msg_EditEnter(const unsigned ctrl_id) override;
