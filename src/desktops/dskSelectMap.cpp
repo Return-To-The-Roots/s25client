@@ -49,7 +49,7 @@
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
-#include <boost/thread.hpp>
+//#include <boost/thread.hpp>
 
 /** @class dskSelectMap
  *
@@ -143,8 +143,8 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
 
 dskSelectMap::~dskSelectMap()
 {
-    if(mapGenThread)
-        mapGenThread->join();
+    //if(mapGenThread)
+    //    mapGenThread->join();
     LOBBYCLIENT.RemoveInterface(this);
     GAMECLIENT.RemoveInterface(this);
 }
@@ -254,9 +254,10 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
             if(!mapGenThread)
             {
                 newRandMapPath.clear();
-                mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
                 waitWnd = new iwPleaseWait;
                 WINDOWMANAGER.Show(waitWnd);
+                //mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
+                CreateRandomMap();
             }
         }
         break;
@@ -393,8 +394,8 @@ void dskSelectMap::Draw_()
 {
     if(!newRandMapPath.empty())
     {
-        mapGenThread->join();
-        mapGenThread = NULL;
+        //mapGenThread->join();
+        //mapGenThread = NULL;
         OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
     }
