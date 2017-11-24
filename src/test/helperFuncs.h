@@ -19,6 +19,7 @@
 #define helperFuncs_h__
 
 #include "mygettext/mygettext.h"
+#include <boost/test/tools/assertion_result.hpp>
 #include <string>
 
 struct LocaleResetter
@@ -27,5 +28,36 @@ struct LocaleResetter
     LocaleResetter(const char* newLoc) : oldLoc(mysetlocale(LC_ALL, NULL)) { mysetlocale(LC_ALL, newLoc); }
     ~LocaleResetter() { mysetlocale(LC_ALL, oldLoc.c_str()); }
 };
+
+template<typename T1, typename T2>
+inline boost::test_tools::predicate_result testCmp(const char* cmp, const T1& l, const T2& r, bool equal)
+{
+    if((l == r) != equal)
+    {
+        boost::test_tools::predicate_result res(false);
+        res.message() << cmp << " [" << l << (equal ? "!=" : "==") << r << "]";
+        return res;
+    }
+
+    return true;
+}
+
+#define RTTR_REQUIRE_EQUAL_MSG(L, R, MSG)                                              \
+    do                                                                                 \
+    {                                                                                  \
+        boost::test_tools::predicate_result res = testCmp(#L "==" #R, (L), (R), true); \
+        if(!res)                                                                       \
+            res.message() << MSG;                                                      \
+        BOOST_REQUIRE(res);                                                            \
+    } while(false)
+
+#define RTTR_REQUIRE_NE_MSG(L, R, MSG)                                                  \
+    do                                                                                  \
+    {                                                                                   \
+        boost::test_tools::predicate_result res = testCmp(#L "!=" #R, (L), (R), false); \
+        if(!res)                                                                        \
+            res.message() << MSG;                                                       \
+        BOOST_REQUIRE(res);                                                             \
+    } while(false)
 
 #endif // helperFuncs_h__

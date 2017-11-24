@@ -685,23 +685,6 @@ void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char ne
             return;
         }
     }
-
-    // TODO: This might not be required. Roads are destroyed when their flags are destroyed
-
-    // ggf. Weg kappen
-    Direction dir(Direction::WEST);
-    noFlag* flag = GetRoadFlag(pt, dir, 0xFF);
-    if(flag)
-    {
-        // Die Ministraße von dem Militärgebäude nich abreißen!
-        if(flag->GetRoute(dir)->GetLength() == 1)
-        {
-            if(flag->GetRoute(dir)->GetF2() == exception)
-                return;
-        }
-
-        flag->DestroyRoad(dir);
-    }
 }
 
 void GameWorldGame::RoadNodeAvailable(const MapPoint pt)

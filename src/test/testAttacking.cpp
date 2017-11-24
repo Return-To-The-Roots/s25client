@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_SUITE(AttackSuite)
 
 struct AttackDefaults
 {
-    BOOST_STATIC_CONSTEXPR unsigned width = 12;
-    BOOST_STATIC_CONSTEXPR unsigned height = 20;
+    BOOST_STATIC_CONSTEXPR unsigned width = 20;
+    BOOST_STATIC_CONSTEXPR unsigned height = 12;
 };
 
 /// Reschedule the walk event of the obj to be executed in numGFs GFs
@@ -203,12 +203,12 @@ struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
     AttackFixture()
     {
         // Build some military buildings far away enough for holding some area outside HQ
-        milBld0Pos = world.MakeMapPoint(hqPos[0] + Position(6, 0));
+        milBld0Pos = world.MakeMapPoint(hqPos[0] + Position(0, 6));
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld0Pos, 0), BQ_CASTLE);
         milBld0 = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_BABYLONIANS));
         BOOST_REQUIRE(milBld0);
 
-        milBld1Pos = world.MakeMapPoint(hqPos[1] + Position(6, 0));
+        milBld1Pos = world.MakeMapPoint(hqPos[1] + Position(0, 6));
         BOOST_REQUIRE_EQUAL(world.GetBQ(milBld1Pos, 1), BQ_CASTLE);
         milBld1 = static_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_ROMANS));
         BOOST_REQUIRE(milBld1);
@@ -437,7 +437,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     }
 }
 
-typedef AttackFixture<4, 32> AttackFixture4P;
+typedef AttackFixture<4, 32, 34> AttackFixture4P;
 BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 {
     initGameRNG();
@@ -534,15 +534,16 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     nofAttacker* hostileAttacker = dynamic_cast<nofAttacker*>(hostileBld->GetLeavingFigures().front());
     BOOST_REQUIRE(hostileAttacker);
 
-    // Make sure all other soldiers left their buildings (<=30GFs each + 20 for walking to flag and a bit further.
-    // We got 2 from milBld1):
-    RTTR_SKIP_GFS(2 * 30 + 20 + 10);
+    // Make sure all other soldiers left their buildings (<=30GFs each + 20 for walking to flag and a bit further)
+    RTTR_SKIP_GFS(30 + 20 + 10);
     // And suspend them to inspect them later on
     rescheduleWalkEvent(em, *attackerFromPl0, 10000); //-V522
     rescheduleWalkEvent(em, *secAttacker, 10000);
-    rescheduleWalkEvent(em, *aggDefender, 10000);
     rescheduleWalkEvent(em, *alliedAttacker, 10000);  //-V522
     rescheduleWalkEvent(em, *hostileAttacker, 10000); //-V522
+    // We got 2 from milBld1
+    RTTR_SKIP_GFS(30);
+    rescheduleWalkEvent(em, *aggDefender, 10000);
     // Let defenders (2!) die
     defender = const_cast<nofDefender*>(milBld1->GetDefender());
     while(defender->GetHitpoints() > 1u)

@@ -67,8 +67,8 @@
 template<unsigned T_numPlayers>
 struct WorldDefault
 {
-    BOOST_STATIC_CONSTEXPR unsigned width = 32;
-    BOOST_STATIC_CONSTEXPR unsigned height = 40;
+    BOOST_STATIC_CONSTEXPR unsigned width = 40;
+    BOOST_STATIC_CONSTEXPR unsigned height = 32;
 };
 
 template<>
@@ -90,8 +90,8 @@ template<>
 struct WorldDefault<2>
 {
     // Based on HQ radius of 9 -> min size 20 per player
-    BOOST_STATIC_CONSTEXPR unsigned width = 20;
-    BOOST_STATIC_CONSTEXPR unsigned height = 40;
+    BOOST_STATIC_CONSTEXPR unsigned width = 40;
+    BOOST_STATIC_CONSTEXPR unsigned height = 20;
 };
 
 template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = WorldDefault<T_numPlayers>::width,

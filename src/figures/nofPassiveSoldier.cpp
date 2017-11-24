@@ -111,13 +111,8 @@ void nofPassiveSoldier::Heal()
 
 void nofPassiveSoldier::GoalReached()
 {
-    // im Militärgebäude angekommen
-
-    // mich hinzufügen
-    static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
-
-    // und wir können uns auch aus der Laufliste erstmal entfernen
     gwg->RemoveFigure(pos, this);
+    static_cast<nobMilitary*>(building)->AddPassiveSoldier(this);
 }
 
 void nofPassiveSoldier::InBuildingDestroyed()

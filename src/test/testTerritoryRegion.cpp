@@ -16,9 +16,16 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "CreateEmptyWorld.h"
+#include "GamePlayer.h"
 #include "PointOutput.h"
+#include "WorldFixture.h"
+#include "factories/BuildingFactory.h"
+#include "figures/nofPassiveSoldier.h"
+#include "helperFuncs.h"
 #include "helpers/containerUtils.h"
 #include "helpers/setTraits.h"
+#include "world/GameWorld.h"
 #include "world/TerritoryRegion.h"
 #include <boost/array.hpp>
 #include <boost/assign/std/set.hpp>
@@ -218,6 +225,108 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
             const bool result = !helpers::contains(results, pt);
             const bool isValid = TerritoryRegion::IsPointValid(worldSize, fullArea, pt);
             BOOST_REQUIRE_MESSAGE(isValid == result, isValid << "!=" << result << " at " << pt << " (iteration " << i << ")");
+        }
+    }
+}
+
+// HQ radius = 9, HQs 2 + 5 + 6 = 13 fields apart
+typedef WorldFixture<CreateEmptyWorld, 2, 26, 10> WorldFixtureEmpty2P;
+
+BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
+{
+    boost::array<MapPoint, 3> milBldPos;
+    milBldPos[0] = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(2, 0));
+    milBldPos[1] = world.MakeMapPoint(milBldPos[0] + Position(5, 4));
+    milBldPos[2] = world.MakeMapPoint(milBldPos[0] + Position(5, -4));
+    // Distance to HQ must be less than distance to other blds or they will be destroyed on capture
+    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1, world.CalcDistance(milBldPos[0], milBldPos[1]));
+    BOOST_REQUIRE_LT(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1, world.CalcDistance(milBldPos[0], milBldPos[2]));
+    // Create them in different orders. 3 blds -> 6 orders
+    for(unsigned i = 0; i < 6; i++)
+    {
+        // Create permutation
+        std::vector<MapPoint> positions;
+        if(i < 2)
+            positions.push_back(milBldPos[0]);
+        else if(i < 4)
+            positions.push_back(milBldPos[1]);
+        else
+            positions.push_back(milBldPos[2]);
+        if(i == 0 || i == 5)
+            positions.push_back(milBldPos[1]);
+        else if(i % 2 == 0)
+            positions.push_back(milBldPos[0]);
+        else
+            positions.push_back(milBldPos[2]);
+        if(i == 1 || i == 4)
+            positions.push_back(milBldPos[1]);
+        else if(i % 2 == 1)
+            positions.push_back(milBldPos[0]);
+        else
+            positions.push_back(milBldPos[2]);
+        BOOST_FOREACH(const MapPoint pt, positions)
+            BuildingFactory::CreateBuilding(world, BLD_BARRACKS, pt, (pt == milBldPos[0]) ? 0 : 1, NAT_AFRICANS);
+        boost::array<nobBaseMilitary*, 5> milBlds;
+        // bld 0 last as it would destroy others
+        for(int j = 2; j >= 0; --j)
+        {
+            milBlds[j] = world.GetSpecObj<nobBaseMilitary>(milBldPos[j]);
+            MapPoint flagPt = milBlds[j]->GetFlagPos();
+            nofPassiveSoldier* sld = new nofPassiveSoldier(flagPt, milBlds[j]->GetPlayer(), static_cast<nobBaseMilitary*>(milBlds[j]),
+                                                           static_cast<nobBaseMilitary*>(milBlds[j]), 0);
+            world.AddFigure(flagPt, sld);
+            sld->ActAtFirst();
+        }
+        milBlds[3] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(0).GetHQPos());
+        milBlds[4] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(1).GetHQPos());
+        RTTR_SKIP_GFS(30);
+
+        TerritoryRegion region(Position(0, 0), Position(world.GetSize()), world);
+        sortedMilitaryBlds buildings = world.LookForMilitaryBuildings(MapPoint(0, 0), 99);
+        BOOST_REQUIRE_EQUAL(buildings.size(), 5u);
+        BOOST_FOREACH(const nobBaseMilitary* bld, buildings)
+            region.CalcTerritoryOfBuilding(*bld);
+        // Check that TerritoryRegion assigned owners as expected
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        {
+            uint8_t owner = 0;
+            unsigned bestDist = 1000;
+            unsigned bestID = 0;
+            BOOST_FOREACH(const nobBaseMilitary* bld, milBlds)
+            {
+                unsigned distance = world.CalcDistance(pt, bld->GetPos());
+                // The closest bld gets the point. If 2 players are tied, the younger bld gets it
+                if(distance > bestDist || distance > bld->GetMilitaryRadius())
+                    continue;
+                if(distance < bestDist || bld->GetObjId() > bestID)
+                {
+                    owner = bld->GetPlayer() + 1;
+                    bestDist = distance;
+                    bestID = bld->GetObjId();
+                }
+            }
+            RTTR_REQUIRE_EQUAL_MSG(region.GetOwner(Position(pt)), owner, " on " << pt << " iteration " << i);
+        }
+        // Check that all world points that should have an owner do have one
+        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        {
+            uint8_t owner = region.GetOwner(Position(pt));
+            if(!owner)
+                RTTR_REQUIRE_EQUAL_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+            else
+                RTTR_REQUIRE_NE_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+        }
+        BOOST_FOREACH(const MapPoint pt, milBldPos)
+        {
+            world.DestroyNO(pt);
+            world.DestroyNO(pt); // Destroy fire
+            // Pause figure
+            BOOST_FOREACH(noBase* sld, world.GetFigures(pt))
+            {
+                std::vector<GameEvent*> evts = em.GetObjEvents(*sld);
+                BOOST_FOREACH(GameEvent* ev, evts)
+                    em.RescheduleEvent(*ev, em.GetCurrentGF() + 10000);
+            }
         }
     }
 }
