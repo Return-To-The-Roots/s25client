@@ -75,7 +75,7 @@ private:
     TRNode* TryGetNode(const MapPoint& pt);
     TRNode* TryGetNode(Position pt);
     const TRNode* TryGetNode(Position pt) const;
-    bool AdjustCoords(Position &pt) const;
+    bool AdjustCoords(Position& pt) const;
 
     const GameWorldBase& world;
     std::vector<TRNode> nodes;
