@@ -143,7 +143,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
 
 dskSelectMap::~dskSelectMap()
 {
-    //if(mapGenThread)
+    // if(mapGenThread)
     //    mapGenThread->join();
     LOBBYCLIENT.RemoveInterface(this);
     GAMECLIENT.RemoveInterface(this);
@@ -256,7 +256,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
                 newRandMapPath.clear();
                 waitWnd = new iwPleaseWait;
                 WINDOWMANAGER.Show(waitWnd);
-                //mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
+                // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
                 CreateRandomMap();
             }
         }
@@ -394,8 +394,8 @@ void dskSelectMap::Draw_()
 {
     if(!newRandMapPath.empty())
     {
-        //mapGenThread->join();
-        //mapGenThread = NULL;
+        // mapGenThread->join();
+        // mapGenThread = NULL;
         OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
     }

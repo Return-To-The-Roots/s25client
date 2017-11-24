@@ -39,7 +39,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     : noRoadNode(nop, pos, player), bldType_(type), nation(gwg->GetPlayer(player).nation), door_point_x(1000000),
       door_point_y(DOOR_CONSTS[gwg->GetPlayer(player).nation][type])
 {
-    MapPoint flagPt = gwg->GetNeighbour(pos, Direction::SOUTHEAST);
+    MapPoint flagPt = GetFlagPos();
     // Evtl Flagge setzen, wenn noch keine da ist
     if(gwg->GetNO(flagPt)->GetType() != NOP_FLAG)
     {
@@ -176,7 +176,7 @@ int noBaseBuilding::GetDoorPointX()
         // this is why we need the x-offset here according to the equation x = m*y + n
         // with n=0 (as door point is relative to building pos) and m = dx/dy
         const Point<int> bldPos = gwg->GetNodePos(pos);
-        const Point<int> flagPos = gwg->GetNodePos(gwg->GetNeighbour(pos, Direction::SOUTHEAST));
+        const Point<int> flagPos = gwg->GetNodePos(GetFlagPos());
         Point<int> diff = flagPos - bldPos;
 
         // We could have crossed the map border which results in unreasonable diffs
@@ -201,7 +201,12 @@ int noBaseBuilding::GetDoorPointX()
 
 noFlag* noBaseBuilding::GetFlag() const
 {
-    return gwg->GetSpecObj<noFlag>(gwg->GetNeighbour(pos, Direction::SOUTHEAST));
+    return gwg->GetSpecObj<noFlag>(GetFlagPos());
+}
+
+MapPoint noBaseBuilding::GetFlagPos() const
+{
+    return gwg->GetNeighbour(pos, Direction::SOUTHEAST);
 }
 
 void noBaseBuilding::WareNotNeeded(Ware* ware)

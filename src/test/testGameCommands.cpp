@@ -843,7 +843,7 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 
     numWoodcutters = wh->GetNumRealFigures(JOB_WOODCUTTER);
     MapPoint whPos = hqPos + MapPoint(3, 0);
-    const nobBaseWarehouse* wh2 = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_AFRICANS));
+    BuildingFactory::CreateBuilding(world, BLD_STOREHOUSE, whPos, curPlayer, NAT_AFRICANS);
     this->BuildRoad(wh->GetFlag()->GetPos(), false, std::vector<Direction>(3, Direction::EAST));
     this->SetInventorySetting(hqPos, GD_BOARDS, EInventorySetting::SEND);
     // Send some
