@@ -436,7 +436,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
-    TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, reason == TerritoryChangeReason::Destroyed);
+    TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, reason);
 
     // Set to true, where owner has changed (initially all false)
     std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
@@ -444,10 +444,6 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     std::vector<int> sizeChanges(GetNumPlayers());
     // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
     // das Land davon jemanden anders nun gehört
-
-    const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
-    const unsigned char newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(building.GetPos()));
-    const bool noAlliedBorderPush = GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
 
     RTTR_FOREACH_PT(Position, region.size)
     {
@@ -459,22 +455,6 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         if(oldOwner == newOwner)
             continue;
 
-        // Dann entsprechend neuen Besitzer setzen - bei improved alliances addon noch paar extra bedingungen prüfen
-        if(noAlliedBorderPush)
-        {
-            // rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can take territory
-            const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
-            if(ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
-               && building.GetBuildingType() != BLD_HEADQUARTERS)
-                continue;
-            // rule 2: do not gain territory when you lose a building (captured or destroyed)
-            if(ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build)
-                continue;
-            // rule 3: do not lose territory when you gain a building (newBuilt or capture)
-            if((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
-               || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured))
-                continue;
-        }
         SetOwner(curMapPt, newOwner);
         ownerChanged[region.GetIdx(pt)] = true;
         if(newOwner != 0)
@@ -564,7 +544,7 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
-    TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius, true);
+    TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius, TerritoryChangeReason::Destroyed);
 
     // schaun ob sich was ändern würd im berechneten gebiet
     RTTR_FOREACH_PT(Position, region.size)
@@ -592,7 +572,7 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
     return false;
 }
 
-TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, bool ignoreRegionOfBld) const
+TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, TerritoryChangeReason reason) const
 {
     const MapPoint bldPos = building.GetPos();
 
@@ -613,15 +593,49 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     sortedMilitaryBlds buildings = LookForMilitaryBuildings(bldPos, 3);
     BOOST_FOREACH(const nobBaseMilitary* milBld, buildings)
     {
-        if(!(ignoreRegionOfBld && milBld == &building))
+        if(!(reason == TerritoryChangeReason::Destroyed && milBld == &building))
             region.CalcTerritoryOfBuilding(*milBld);
     }
 
     // Baustellen von Häfen mit einschließen
     BOOST_FOREACH(const noBuildingSite* bldSite, harbor_building_sites_from_sea)
     {
-        if(!(ignoreRegionOfBld && bldSite == &building))
+        if(!(reason == TerritoryChangeReason::Destroyed && bldSite == &building))
             region.CalcTerritoryOfBuilding(*bldSite);
+    }
+    if(GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH))
+    {
+        const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
+        const unsigned char newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(building.GetPos()));
+
+        RTTR_FOREACH_PT(Position, region.size)
+        {
+            const MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
+            const unsigned char oldOwner = GetNode(curMapPt).owner;
+            const unsigned char newOwner = region.GetOwner(pt);
+
+            // If nothing changed, there is nothing to do (ownerChanged was already initialized)
+            if(oldOwner == newOwner)
+                continue;
+
+            // rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can take territory
+            const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
+            if(ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
+               && building.GetBuildingType() != BLD_HEADQUARTERS)
+            {
+                region.SetOwner(pt, oldOwner);
+            }
+            // rule 2: do not gain territory when you lose a building (captured or destroyed)
+            else if(ownerOfTriggerBld == newOwner && reason != TerritoryChangeReason::Build)
+            {
+                region.SetOwner(pt, oldOwner);
+            } // rule 3: do not lose territory when you gain a building (newBuilt or capture)
+            else if((ownerOfTriggerBld == oldOwner && oldOwner > 0 && reason == TerritoryChangeReason::Build)
+                    || (newOwnerOfTriggerBld == oldOwner && reason == TerritoryChangeReason::Captured))
+            {
+                region.SetOwner(pt, oldOwner);
+            }
+        }
     }
 
     return region;
