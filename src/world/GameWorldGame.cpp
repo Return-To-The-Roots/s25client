@@ -512,7 +512,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
         {
             GetPostMgr().SendMsg(
-                i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PostCategory::Military, building));
+              i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PostCategory::Military, building));
             GetNotifications().publish(BuildingNote(BuildingNote::LostLand, i, building.GetPos(), building.GetBuildingType()));
         }
     }
@@ -664,9 +664,39 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
             }
         }
 
-        // Wenn kein Land angrenzt, dann nicht nehmen
-        if(!isPlayerTerritoryNear)
-            region.SetOwner(pt, 0);
+        // All good?
+        if(isPlayerTerritoryNear)
+            continue;
+        // No neighbouring player territory found. Look for another
+        uint8_t newOwner = 0;
+        for(unsigned d = 0; d < Direction::COUNT; ++d)
+        {
+            Position neighbour = ::GetNeighbour(pt + region.startPt, Direction::fromInt(d));
+            uint8_t nbOwner = region.SafeGetOwner(neighbour - startPt);
+            // No or same player?
+            if(!nbOwner || nbOwner == owner)
+                continue;
+            bool isPlayerTerritory = true;
+            // Don't check this point as it would always fail
+            unsigned exceptDir = (Direction::fromInt(d) + 3u).toUInt();
+            for(unsigned d2 = 0; d2 < Direction::COUNT; ++d2)
+            {
+                if(d2 == exceptDir)
+                    continue;
+                if(region.SafeGetOwner(::GetNeighbour(neighbour, Direction::fromInt(d2)) - startPt) != nbOwner)
+                {
+                    isPlayerTerritory = false;
+                    break;
+                }
+            }
+            // First one found gets it
+            if(isPlayerTerritory)
+            {
+                newOwner = nbOwner;
+                break;
+            }
+        }
+        region.SetOwner(pt, newOwner);
     }
 
     return region;

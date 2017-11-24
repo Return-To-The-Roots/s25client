@@ -115,7 +115,7 @@ const TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt) cons
     return &GetNode(realPt);
 }
 
-bool TerritoryRegion::AdjustCoords(Position &pt) const
+bool TerritoryRegion::AdjustCoords(Position& pt) const
 {
     // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
     // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is

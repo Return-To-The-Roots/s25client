@@ -311,10 +311,10 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         RTTR_FOREACH_PT(MapPoint, world.GetSize())
         {
             uint8_t owner = region.GetOwner(Position(pt));
-            // if(!owner)
-            //    RTTR_REQUIRE_EQUAL_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
-            // else
-            //    RTTR_REQUIRE_NE_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+            if(!owner)
+                RTTR_REQUIRE_EQUAL_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
+            else
+                RTTR_REQUIRE_NE_MSG(world.GetNode(pt).owner, 0u, " on " << pt << " iteration " << i);
         }
         BOOST_FOREACH(const MapPoint pt, milBldPos)
         {
