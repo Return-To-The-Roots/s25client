@@ -427,8 +427,7 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
 
 void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason)
 {
-    // Radius der noch draufaddiert wird auf den eigentlich ausreichenden Bereich, für das Eliminieren von
-    // herausragenden Landesteilen und damit Grenzsteinen
+    // Additional radius to eliminate border stones or odd remaining territory parts
     static const int ADD_RADIUS = 2;
     // Get the military radius this building affects. Bld is either a military building or a harbor building site
     RTTR_Assert((building.GetBuildingType() == BLD_HARBORBUILDING && dynamic_cast<const noBuildingSite*>(&building))
@@ -442,9 +441,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
 
     std::vector<int> sizeChanges(GetNumPlayers());
-    // Daten von der TR kopieren in die richtige Karte, dabei zus. Grenzen korrigieren und Objekte zerstören, falls
-    // das Land davon jemanden anders nun gehört
 
+    // Copy owners from territory region to map and do the bookkeeping
     RTTR_FOREACH_PT(Position, region.size)
     {
         const MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
@@ -467,6 +465,45 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             GetLua().EventOccupied(newOwner - 1, curMapPt);
     }
 
+    // Destroy everything from old player on all nodes where the owner has changed
+    RTTR_FOREACH_PT(Position, region.size)
+    {
+        if(!ownerChanged[region.GetIdx(pt)])
+            continue;
+
+        MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
+
+        // Destroy everything around this point as this is at best a border node where nothing should be around
+        // Do not destroy the triggering building or its flag
+        // TODO: What about this point? Maybe make a set to handle each node only once
+        for(unsigned i = 0; i < Direction::COUNT; ++i)
+        {
+            MapPoint neighbourPt = GetNeighbour(curMapPt, Direction::fromInt(i));
+
+            DestroyPlayerRests(neighbourPt, GetNode(curMapPt).owner, &building, false);
+
+            // BQ neu berechnen
+            RecalcBQ(neighbourPt);
+            // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
+            if(GetNeighbourNode(neighbourPt, Direction::NORTHWEST).bq != BQ_NOTHING)
+                RecalcBQ(GetNeighbour(neighbourPt, Direction::NORTHWEST));
+        }
+
+        if(gi)
+            gi->GI_UpdateMinimap(curMapPt);
+    }
+
+    RecalcBorderStones(region.startPt, region.size);
+
+    // Recalc visibilities if building was destroyed
+    // Otherwise just set everything to visible
+    const unsigned visualRadius = militaryRadius + VISUALRANGE_MILITARY;
+    if(reason == TerritoryChangeReason::Destroyed)
+        RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), &building);
+    else
+        MakeVisibleAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
+
+    // Notify players
     for(unsigned i = 0; i < GetNumPlayers(); ++i)
     {
         GetPlayer(i).ChangeStatisticValue(NUM_STATSRY, sizeChanges[i]);
@@ -475,65 +512,25 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         if(reason == TerritoryChangeReason::Build && sizeChanges[i] < 0)
         {
             GetPostMgr().SendMsg(
-              i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PostCategory::Military, building));
+                i, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), _("Lost land by this building"), PostCategory::Military, building));
             GetNotifications().publish(BuildingNote(BuildingNote::LostLand, i, building.GetPos(), building.GetBuildingType()));
         }
     }
 
-    RTTR_FOREACH_PT(Position, region.size)
+    // Notify script
+    if(HasLua())
     {
-        MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
-        if(GetNode(curMapPt).owner != 0)
+        RTTR_FOREACH_PT(Position, region.size)
         {
-            /// Grenzsteine, die alleine "rausragen" und nicht mit einem richtigen Territorium verbunden sind, raushauen
-            bool isPlayerTerritoryNear = false;
-            for(unsigned d = 0; d < 6; ++d)
-            {
-                if(IsPlayerTerritory(GetNeighbour(curMapPt, Direction::fromInt(d))))
-                {
-                    isPlayerTerritoryNear = true;
-                    break;
-                }
-            }
+            if(!ownerChanged[region.GetIdx(pt)])
+                continue;
 
-            // Wenn kein Land angrenzt, dann nicht nehmen
-            if(!isPlayerTerritoryNear)
-                SetOwner(curMapPt, 0);
-        }
-
-        // Drumherum (da ja Grenzen mit einberechnet werden ins Gebiet, da darf trotzdem nichts stehen) alles vom Spieler zerstören
-        // nicht das Militärgebäude oder dessen Flagge nochmal abreißen
-        if(ownerChanged[region.GetIdx(pt)])
-        {
-            for(unsigned char i = 0; i < 6; ++i)
-            {
-                MapPoint neighbourPt = GetNeighbour(curMapPt, Direction::fromInt(i));
-
-                DestroyPlayerRests(neighbourPt, GetNode(curMapPt).owner, &building, false);
-
-                // BQ neu berechnen
-                RecalcBQ(neighbourPt);
-                // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
-                if(GetNeighbourNode(neighbourPt, Direction::NORTHWEST).bq != BQ_NOTHING)
-                    RecalcBQ(GetNeighbour(neighbourPt, Direction::NORTHWEST));
-            }
-
-            if(gi)
-                gi->GI_UpdateMinimap(curMapPt);
+            const uint8_t newOwner = region.GetOwner(pt);
+            // Event for map scripting
+            if(newOwner != 0)
+                GetLua().EventOccupied(newOwner - 1, MakeMapPoint(pt + region.startPt));
         }
     }
-
-    RecalcBorderStones(region.startPt, region.size);
-
-    // Sichtbarkeiten berechnen
-
-    // Wurde es zerstört, müssen die Sichtbarkeiten entsprechend neu berechnet werden, ansonsten reicht es auch
-    // sie einfach auf sichtbar zu setzen
-    const unsigned visualRadius = militaryRadius + VISUALRANGE_MILITARY;
-    if(reason == TerritoryChangeReason::Destroyed)
-        RecalcVisibilitiesAroundPoint(building.GetPos(), visualRadius, building.GetPlayer(), &building);
-    else
-        MakeVisibleAroundPoint(building.GetPos(), visualRadius, building.GetPlayer());
 }
 
 bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& building) const
@@ -636,6 +633,40 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
                 region.SetOwner(pt, oldOwner);
             }
         }
+    }
+
+    // "Cosmetics": Remove points that do not border to territory to avoid edges of border stones
+    RTTR_FOREACH_PT(Position, region.size)
+    {
+        uint8_t owner = region.GetOwner(pt);
+        if(!owner)
+            continue;
+        // Check if any neighbour is fully surrounded by player territory
+        bool isPlayerTerritoryNear = false;
+        for(unsigned d = 0; d < Direction::COUNT; ++d)
+        {
+            Position neighbour = ::GetNeighbour(pt + region.startPt, Direction::fromInt(d));
+            if(region.SafeGetOwner(neighbour - startPt) != owner)
+                continue;
+            bool isPlayerTerritory = true;
+            for(unsigned d2 = 0; d2 < Direction::COUNT; ++d2)
+            {
+                if(region.SafeGetOwner(::GetNeighbour(neighbour, Direction::fromInt(d2)) - startPt) != owner)
+                {
+                    isPlayerTerritory = false;
+                    break;
+                }
+            }
+            if(isPlayerTerritory)
+            {
+                isPlayerTerritoryNear = true;
+                break;
+            }
+        }
+
+        // Wenn kein Land angrenzt, dann nicht nehmen
+        if(!isPlayerTerritoryNear)
+            region.SetOwner(pt, 0);
     }
 
     return region;
