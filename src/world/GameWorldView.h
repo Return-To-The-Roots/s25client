@@ -45,7 +45,7 @@ class GameWorldView
     /// Currently selected point (where the mouse points to)
     MapPoint selPt;
     /// Offset to selected point
-    Point<int> selPtOffset;
+    Position selPtOffset;
 
     /// Callbacks called when node is printed
     std::vector<IDrawNodeCallback*> drawNodeCallbacks;
@@ -69,7 +69,7 @@ class GameWorldView
     const GameWorldViewer& gwv;
 
     /// Top-Left position of the view (window)
-    Point<int> origin_;
+    Position origin_;
     /// Size of the view
     Extent size_;
 
@@ -79,14 +79,14 @@ class GameWorldView
     float zoomSpeed_;
 
 public:
-    GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size);
+    GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size);
     ~GameWorldView();
 
     const GameWorldViewer& GetViewer() const { return gwv; }
     const GameWorldBase& GetWorld() const;
 
-    void SetPos(const Point<int>& newPos) { origin_ = newPos; }
-    Point<int> GetPos() const { return origin_; }
+    void SetPos(const Position& newPos) { origin_ = newPos; }
+    Position GetPos() const { return origin_; }
     Extent GetSize() const { return size_; }
 
     void SetZoomFactor(float zoomFactor, bool smoothTransition = true);
@@ -124,9 +124,9 @@ public:
     MapPoint GetSelectedPt() const { return selPt; }
 
     /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-    Point<int> GetFirstPt() const { return firstPt; }
+    Position GetFirstPt() const { return firstPt; }
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-    Point<int> GetLastPt() const { return lastPt; }
+    Position GetLastPt() const { return lastPt; }
 
     void Resize(const Extent& newSize);
 

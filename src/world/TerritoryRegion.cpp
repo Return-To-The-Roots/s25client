@@ -20,14 +20,15 @@
 #include "GamePlayer.h"
 #include "buildings/noBaseBuilding.h"
 #include "world/GameWorldBase.h"
+#include <stdexcept>
 
-TerritoryRegion::TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb)
-    : startPt(startPt), endPt(endPt), size(endPt - startPt), world(gwb)
+TerritoryRegion::TerritoryRegion(const Position& startPt, const Position& endPt, const GameWorldBase& gwb)
+    : startPt(startPt), size(endPt - startPt), world(gwb)
 {
-    RTTR_Assert(startPt.x <= endPt.x);
-    RTTR_Assert(startPt.y <= endPt.y);
-    RTTR_Assert(size.x <= gwb.GetWidth());
-    RTTR_Assert(size.y <= gwb.GetHeight());
+    if(startPt.x <= endPt.x || startPt.y <= endPt.y)
+        throw std::runtime_error("Invalid size for TerritoryRegion");
+    if(size.x > gwb.GetWidth() || size.y > gwb.GetHeight())
+        throw std::runtime_error("Size to big for TerritoryRegion");
     // Feld erzeugen
     nodes.resize(size.x * size.y);
 }
@@ -67,12 +68,11 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, con
 
 bool TerritoryRegion::IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt)
 {
-    typedef Point<int> PointI;
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
-    PointI pt2(pt.x + mapSize.x, pt.y), pt3(pt.x, pt.y + mapSize.y), pt4(pt + mapSize);
-    const std::vector<PointI> polygonInt(polygon.begin(), polygon.end());
-    return (polygon.empty() || IsPointInPolygon(polygonInt, PointI(pt)) || IsPointInPolygon(polygonInt, pt2)
+    Position pt2(pt.x + mapSize.x, pt.y), pt3(pt.x, pt.y + mapSize.y), pt4(pt + mapSize);
+    const std::vector<Position> polygonInt(polygon.begin(), polygon.end());
+    return (polygon.empty() || IsPointInPolygon(polygonInt, Position(pt)) || IsPointInPolygon(polygonInt, pt2)
             || IsPointInPolygon(polygonInt, pt3) || IsPointInPolygon(polygonInt, pt4));
 }
 
@@ -101,7 +101,7 @@ TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
     // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
     // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is
     // at most the world size
-    PointI realPt(pt);
+    Position realPt(pt);
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side

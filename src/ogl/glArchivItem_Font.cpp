@@ -399,11 +399,11 @@ unsigned short glArchivItem_Font::getWidth(const std::string& text, unsigned len
 Rect glArchivItem_Font::getBounds(DrawPoint pos, const std::string& text, unsigned format) const
 {
     if(text.empty())
-        return Rect(Point<int>(pos), 0, 0);
+        return Rect(Position(pos), 0, 0);
     unsigned width = getWidth(text);
     unsigned numLines = static_cast<unsigned>(std::count(text.begin(), text.end(), '\n')) + 1;
-    Rect result(Point<int>(pos), width, numLines * getHeight());
-    Point<int> offset(0, 0);
+    Rect result(Position(pos), width, numLines * getHeight());
+    Position offset(0, 0);
     if((format & 3) == FontStyle::RIGHT)
         offset.x = width;
     else if((format & 3) == FontStyle::CENTER)

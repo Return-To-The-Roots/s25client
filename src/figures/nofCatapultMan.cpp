@@ -254,9 +254,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             int worldHeight = gwg->GetHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Point<int> start = gwg->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
+            Position start = gwg->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
             // (Visuellen) Aufschlagpunkt bestimmen
-            Point<int> dest = gwg->GetNodePos(destMap);
+            Position dest = gwg->GetNodePos(destMap);
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen

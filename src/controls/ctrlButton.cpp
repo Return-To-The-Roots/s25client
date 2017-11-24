@@ -63,7 +63,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     }
 }
 
-bool ctrlButton::IsMouseOver(const Point<int>& mousePos) const
+bool ctrlButton::IsMouseOver(const Position& mousePos) const
 {
     return IsPointInRect(mousePos, GetDrawRect());
 }

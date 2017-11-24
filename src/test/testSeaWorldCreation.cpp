@@ -30,16 +30,16 @@ BOOST_AUTO_TEST_SUITE(SeaWorldCreationSuite)
 namespace {
 
 /// Return the ship dir from a point to an other point given by their difference
-ShipDirection getShipDir(const MapBase& world, MapPoint fromPt, const Point<int>& diff)
+ShipDirection getShipDir(const MapBase& world, MapPoint fromPt, const Position& diff)
 {
-    MapPoint toPt = world.MakeMapPoint(Point<int>(fromPt) + diff);
+    MapPoint toPt = world.MakeMapPoint(Position(fromPt) + diff);
     return world.GetShipDir(fromPt, toPt);
 }
 
 /// Test getting the ship dir for the various cases coming from a single point
 void testShipDir(const MapBase& world, const MapPoint fromPt)
 {
-    typedef Point<int> DiffPt;
+    typedef Position DiffPt;
     // General cases
     BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(0, -10)), ShipDirection::NORTH);
     BOOST_REQUIRE_EQUAL(getShipDir(world, fromPt, DiffPt(10, -1)), ShipDirection::NORTHEAST);

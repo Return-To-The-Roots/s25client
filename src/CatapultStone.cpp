@@ -71,14 +71,14 @@ void CatapultStone::Draw(DrawPoint drawOffset)
     } else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        Point<int> curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event), GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
+        Position curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event), GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
         DrawPoint drawPos = curPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
         // Schatten auf linearer Linie zeichnen
         LOADER.GetMapImageN(3101)->DrawFull(drawPos, COLOR_SHADOW);
 
-        Point<int> distance = destPos - startPos;
+        Position distance = destPos - startPos;
         double whole = std::sqrt(double(distance.x * distance.x + distance.y * distance.y));
         unsigned s = GAMECLIENT.Interpolate(static_cast<unsigned>(whole), event);
 

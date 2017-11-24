@@ -35,9 +35,9 @@ public:
 
 private:
     /// Koordinaten der Startposition des Steins
-    const Point<int> startPos;
+    const Position startPos;
     /// Koordinaten der Zielposition des Steins
-    const Point<int> destPos;
+    const Position destPos;
     /// Explodiert der Stein schon? (false = fliegt)
     bool explode;
     /// Flieg-/Explodier-Event

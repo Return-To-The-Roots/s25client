@@ -197,10 +197,10 @@ void noFigure::InitializeRoadWalking(const RoadSegment* const road, const unsign
 DrawPoint noFigure::CalcFigurRelative() const
 {
     MapPoint targetPt = gwg->GetNeighbour(pos, GetCurMoveDir());
-    Point<int> curPt = gwg->GetNodePos(pos);
-    Point<int> nextPt = gwg->GetNodePos(targetPt);
+    Position curPt = gwg->GetNodePos(pos);
+    Position nextPt = gwg->GetNodePos(targetPt);
 
-    Point<int> offset(0, 0);
+    Position offset(0, 0);
 
     if(GetCurMoveDir() == Direction::NORTHWEST
        && (gwg->GetNO(targetPt)->GetType() == NOP_BUILDINGSITE || gwg->GetNO(targetPt)->GetType() == NOP_BUILDING))

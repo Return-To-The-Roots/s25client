@@ -58,13 +58,13 @@ void MilitarySquares::Remove(nobBaseMilitary* const bld)
 sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsigned short radius) const
 {
     // maximum radius is half the size (rounded up) to avoid overlapping
-    const Point<int> offsets = elMin((size_ + Point<int>::all(1)) / 2, Point<int>::all(radius));
+    const Position offsets = elMin((size_ + Position::all(1)) / 2, Position::all(radius));
 
     // Convert to military coords
-    const Point<int> milPos(pt / MILITARY_SQUARE_SIZE);
+    const Position milPos(pt / MILITARY_SQUARE_SIZE);
 
-    const Point<int> firstPt = milPos - offsets;
-    const Point<int> lastPt = milPos + offsets;
+    const Position firstPt = milPos - offsets;
+    const Position lastPt = milPos + offsets;
 
     // List with unique(!) military buildings
     sortedMilitaryBlds buildings;

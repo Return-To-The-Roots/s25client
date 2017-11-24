@@ -106,8 +106,8 @@ enum
 
 dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
     : Desktop(NULL), game_(game), networkPlayers(GAMECLIENT.GetPlayers()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
-      gwv(worldViewer, Point<int>(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL),
-      roadwindow(NULL), minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
+      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
+      minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
     road.mode = RM_DISABLED;
     road.point = MapPoint(0, 0);
@@ -594,13 +594,13 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     VIDEODRIVER.SetMousePos(startScrollPt.x, startScrollPt.y);
 
     if(!SETTINGS.global.smartCursor)
-        startScrollPt = Point<int>(mc.x, mc.y);
+        startScrollPt = Position(mc.x, mc.y);
     return true;
 }
 
 bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
 {
-    startScrollPt = Point<int>(mc.x, mc.y);
+    startScrollPt = Position(mc.x, mc.y);
     isScrolling = true;
     GAMEMANAGER.SetCursor(CURSOR_SCROLL);
     return false;

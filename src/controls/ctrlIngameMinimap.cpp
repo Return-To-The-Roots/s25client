@@ -38,7 +38,7 @@ void ctrlIngameMinimap::Draw_()
     DrawMap(minimap);
 
     // Mittleren Punkt berechnen und dort hinscrollen
-    Point<int> middlePt = (gwv.GetLastPt() + gwv.GetFirstPt()) / 2;
+    Position middlePt = (gwv.GetLastPt() + gwv.GetFirstPt()) / 2;
 
     // Koordinaten korrigieren
     DrawPoint middle_corrected(MakeMapPoint(middlePt, minimap.GetMapSize()));

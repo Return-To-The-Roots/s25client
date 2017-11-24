@@ -39,7 +39,7 @@ const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, Extent(260, 190), _("Observation window"), NULL),
-      parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Point<int>(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
+      parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
       selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0), followMovableId(0)
 {
     view->MoveToMapPt(selectedPt);
@@ -94,8 +94,8 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
                 {
                     for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
                     {
-                        Point<int> curOffset;
-                        const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Point<int>(x, y), &curOffset);
+                        Position curOffset;
+                        const MapPoint curPt = view->GetViewer().GetTerrainRenderer().ConvertCoords(Position(x, y), &curOffset);
                         DrawPoint curDrawPt = view->GetWorld().GetNodePos(curPt) - view->GetOffset() + curOffset;
 
                         if(view->GetViewer().GetVisibility(curPt) != VIS_VISIBLE)
@@ -209,7 +209,7 @@ bool iwObservate::MoveToFollowedObj()
     {
         for(int x = view->GetFirstPt().x; x <= view->GetLastPt().x; ++x)
         {
-            const MapPoint curPt = world.MakeMapPoint(Point<int>(x, y));
+            const MapPoint curPt = world.MakeMapPoint(Position(x, y));
             if(MoveToFollowedObj(curPt))
                 return true;
         }

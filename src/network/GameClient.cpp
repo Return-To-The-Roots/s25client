@@ -238,7 +238,7 @@ void GameClient::StartGame(const unsigned random_init)
     RTTR_Assert(state == CS_CONFIG || (state == CS_STOPPED && replayMode));
 
     // Mond malen
-    Point<int> moonPos = VIDEODRIVER.GetMousePos();
+    Position moonPos = VIDEODRIVER.GetMousePos();
     moonPos.y -= 40;
     LOADER.GetImageN("resource", 33)->DrawFull(moonPos);
     VIDEODRIVER.SwapBuffers();
@@ -1508,7 +1508,7 @@ bool GameClient::SaveToFile(const std::string& filename)
     mainPlayer.sendMsg(saveAnnouncement);
 
     // Mond malen
-    Point<int> moonPos = VIDEODRIVER.GetMousePos();
+    Position moonPos = VIDEODRIVER.GetMousePos();
     moonPos.y -= 40;
     LOADER.GetImageN("resource", 33)->DrawFull(moonPos);
     VIDEODRIVER.SwapBuffers();

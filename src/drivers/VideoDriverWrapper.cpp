@@ -489,11 +489,11 @@ int VideoDriverWrapper::GetMouseY() const
     return GetMousePos().y;
 }
 
-Point<int> VideoDriverWrapper::GetMousePos() const
+Position VideoDriverWrapper::GetMousePos() const
 {
     if(!videodriver)
-        return Point<int>::Invalid();
-    Point<int> result;
+        return Position::Invalid();
+    Position result;
     videodriver->GetMousePos(result.x, result.y);
     return result;
 }
@@ -519,10 +519,10 @@ bool VideoDriverWrapper::IsRightDown()
  */
 void VideoDriverWrapper::SetMousePos(const int x, const int y)
 {
-    SetMousePos(Point<int>(x, y));
+    SetMousePos(Position(x, y));
 }
 
-void VideoDriverWrapper::SetMousePos(const Point<int>& newPos)
+void VideoDriverWrapper::SetMousePos(const Position& newPos)
 {
     if(!videodriver || !SETTINGS.global.smartCursor)
         return;

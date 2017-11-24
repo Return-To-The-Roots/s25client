@@ -118,13 +118,13 @@ private:
     /// Windows that will be shown after desktop switch
     /// Otherwise the window will not be shown, if it was added after a switch request
     std::vector<IngameWindow*> nextWnds;
-    Point<int> lastMousePos;
+    Position lastMousePos;
     std::string curTooltip;
     Extent screenSize; /// last valid screen size
 
     // Für Doppelklick merken:
-    unsigned lastLeftClickTime;  /// Zeit des letzten Links-Klicks
-    Point<int> lastLeftClickPos; /// Position beim letzten Links-Klick
+    unsigned lastLeftClickTime; /// Zeit des letzten Links-Klicks
+    Position lastLeftClickPos;  /// Position beim letzten Links-Klick
 };
 
 #define WINDOWMANAGER WindowManager::inst()

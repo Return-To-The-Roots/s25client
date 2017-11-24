@@ -49,7 +49,7 @@ void LuaWorld::Register(kaguya::State& state)
 
 bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
 {
-    MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
+    MapPoint pt = gw.MakeMapPoint(Position(x, y));
     noBase* obj = gw.GetNode(pt).obj;
     if(obj)
     {
@@ -69,7 +69,7 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
 {
     lua::assertTrue(size <= 2, "Invalid size");
 
-    MapPoint pt = gw.MakeMapPoint(Point<int>(x, y));
+    MapPoint pt = gw.MakeMapPoint(Position(x, y));
     noBase* obj = gw.GetNode(pt).obj;
     if(obj)
     {
@@ -88,7 +88,7 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
 void LuaWorld::AddAnimal(int x, int y, Species species)
 {
     lua::assertTrue(static_cast<unsigned>(species) < NUM_SPECS, "Invalid animal species");
-    MapPoint pos = gw.MakeMapPoint(Point<int>(x, y));
+    MapPoint pos = gw.MakeMapPoint(Position(x, y));
     noAnimal* animal = new noAnimal(species, pos);
     gw.AddFigure(pos, animal);
     animal->StartLiving();

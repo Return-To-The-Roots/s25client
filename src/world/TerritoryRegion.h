@@ -31,9 +31,7 @@ class GameWorldBase;
 class TerritoryRegion
 {
 public:
-    typedef Point<int> PointI;
-
-    TerritoryRegion(const PointI& startPt, const PointI& endPt, const GameWorldBase& gwb);
+    TerritoryRegion(const Position& startPt, const Position& endPt, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
     static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt);
@@ -41,16 +39,16 @@ public:
     /// Berechnet ein Militärgebäude mit ein
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
-    unsigned GetIdx(const PointI& pt) const;
+    unsigned GetIdx(const Position& pt) const;
     /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
-    unsigned char GetOwner(const PointI& pt) const { return GetNode(pt).owner; }
+    unsigned char GetOwner(const Position& pt) const { return GetNode(pt).owner; }
     /// Liefert Radius mit dem der Punkt besetzt wurde
-    unsigned char GetRadius(const PointI& pt) const { return GetNode(pt).radius; }
+    unsigned char GetRadius(const Position& pt) const { return GetNode(pt).radius; }
 
-    /// Start position(inclusive) and end position(exclusive)
-    const PointI startPt, endPt;
+    /// Start position(inclusive)
+    const Position startPt;
     /// Size of the region (calculated from x2-x1, y2-y1)
-    const PointI size;
+    const Extent size;
 
 private:
     /// Beschreibung eines Knotenpunktes
@@ -68,8 +66,8 @@ private:
     static bool IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
     void AdjustNode(MapPoint pt, unsigned char player, unsigned char radius, const std::vector<MapPoint>* allowedArea);
-    TRNode& GetNode(const PointI& pt) { return nodes[GetIdx(pt)]; }
-    const TRNode& GetNode(const PointI& pt) const { return nodes[GetIdx(pt)]; }
+    TRNode& GetNode(const Position& pt) { return nodes[GetIdx(pt)]; }
+    const TRNode& GetNode(const Position& pt) const { return nodes[GetIdx(pt)]; }
     /// Return a pointer to the node, if it is inside this region
     TRNode* TryGetNode(const MapPoint& pt);
 
@@ -77,9 +75,9 @@ private:
     std::vector<TRNode> nodes;
 };
 
-inline unsigned TerritoryRegion::GetIdx(const PointI& pt) const
+inline unsigned TerritoryRegion::GetIdx(const Position& pt) const
 {
-    PointI offset(pt - startPt);
+    Position offset(pt - startPt);
     RTTR_Assert(offset.x >= 0 && offset.x < size.x);
     RTTR_Assert(offset.y >= 0 && offset.y < size.y);
     return offset.y * size.x + offset.x;

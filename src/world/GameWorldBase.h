@@ -109,7 +109,7 @@ public:
     unsigned CreateGUIID(const MapPoint pt) const { return 1000 + GetIdx(pt); }
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
-    Point<int> GetNodePos(const MapPoint pt) const;
+    Position GetNodePos(const MapPoint pt) const;
 
     /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
     void RecalcBQAroundPoint(const MapPoint pt);

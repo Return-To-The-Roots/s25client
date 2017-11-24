@@ -48,7 +48,7 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Point<int>& pos, const Extent& size)
+GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(false), show_names(false), show_productivity(false), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
       size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
@@ -126,8 +126,8 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     SetNextZoomFactor();
 
     int shortestDistToMouse = 100000;
-    Point<int> mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
-    mousePos -= Point<int>(origin_);
+    Position mousePos(VIDEODRIVER.GetMouseX(), VIDEODRIVER.GetMouseY());
+    mousePos -= Position(origin_);
 
     glScissor(origin_.x, VIDEODRIVER.GetScreenSize().y - origin_.y - size_.y, size_.x, size_.y);
     if(zoomFactor_ != 1.f) //-V550
@@ -140,7 +140,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         diff = diff / 2.f;
         glTranslatef(-diff.x, -diff.y, 0.f);
         // Also adjust mouse
-        mousePos = Point<int>(Point<float>(mousePos) / zoomFactor_ + diff);
+        mousePos = Position(Point<float>(mousePos) / zoomFactor_ + diff);
         glMatrixMode(GL_MODELVIEW);
     }
 
@@ -159,11 +159,11 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
         for(int x = firstPt.x; x <= lastPt.x; ++x)
         {
-            Point<int> curOffset;
-            const MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
+            Position curOffset;
+            const MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
             DrawPoint curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
-            Point<int> mouseDist = mousePos - curPos;
+            Position mouseDist = mousePos - curPos;
             mouseDist *= mouseDist;
             if(std::abs(mouseDist.x) + std::abs(mouseDist.y) < shortestDistToMouse)
             {
@@ -245,9 +245,9 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
         for(int y = firstPt.y; y <= lastPt.y; ++y)
         {
             // Coordinates transform
-            Point<int> curOffset;
-            MapPoint curPt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
-            Point<int> curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+            Position curOffset;
+            MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
+            Position curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
             /// Current point indicated by Mouse
             if(drawMouse && selPt == curPt)
@@ -333,8 +333,8 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
         for(int y = firstPt.y; y <= lastPt.y; ++y)
         {
             // Coordinate transform
-            Point<int> curOffset;
-            MapPoint pt = terrainRenderer.ConvertCoords(Point<int>(x, y), &curOffset);
+            Position curOffset;
+            MapPoint pt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
 
             const noBaseBuilding* no = GetWorld().GetSpecObj<noBaseBuilding>(pt);
             if(!no)
@@ -344,7 +344,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(no->GetPlayer() != gwv.GetPlayerId())
                 continue;
 
-            Point<int> curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
+            Position curPos = GetWorld().GetNodePos(pt) - offset + curOffset;
             curPos.y -= 22;
 
             // Draw object name
@@ -441,9 +441,9 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
     {
         // Get figures opposite the current dir and check if they are moving in this dir
         // Coordinates transform
-        Point<int> curOffset;
+        Position curOffset;
         MapPoint curPt = terrainRenderer.ConvertCoords(GetNeighbour(curPos, dir + 3u), &curOffset);
-        Point<int> figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+        Position figPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
 
         const std::list<noBase*>& figures = GetWorld().GetFigures(curPt);
         BOOST_FOREACH(noBase* figure, figures)
@@ -564,7 +564,7 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
         return;
 
     lastOffset = offset;
-    Point<int> nodePos = GetWorld().GetNodePos(pt);
+    Position nodePos = GetWorld().GetNodePos(pt);
 
     MoveTo(nodePos - GetSize() / 2u, true);
 }
@@ -572,7 +572,7 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
 /// Springt zur letzten Position, bevor man "weggesprungen" ist
 void GameWorldView::MoveToLastPosition()
 {
-    Point<int> newLastOffset = offset;
+    Position newLastOffset = offset;
 
     MoveTo(lastOffset.x, lastOffset.y, true);
 
@@ -612,8 +612,8 @@ void GameWorldView::CalcFxLx()
         // Don't remove to much
         diff.x = std::floor(diff.x);
         diff.y = std::floor(diff.y);
-        firstPt = Point<int>(Point<float>(firstPt) + diff);
-        lastPt = Point<int>(Point<float>(lastPt) - diff);
+        firstPt = Position(Point<float>(firstPt) + diff);
+        lastPt = Position(Point<float>(lastPt) - diff);
     }
 }
 

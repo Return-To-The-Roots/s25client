@@ -536,7 +536,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj->GetItemID(), 500u);
     BOOST_REQUIRE_EQUAL(obj->GetItemFile(), 0xFFFFu);
     // Replace and test wrap around (envPt2==envPt1)
-    const Point<int> envPt2(envPt.x + world.GetWidth(), envPt.y - world.GetHeight());
+    const Position envPt2(envPt.x + world.GetWidth(), envPt.y - world.GetHeight());
     BOOST_REQUIRE_EQUAL(world.MakeMapPoint(envPt2), envPt);
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % envPt2.x % envPt2.y);
     obj = world.GetSpecObj<noEnvObject>(envPt);

@@ -128,7 +128,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
             LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. noMovable::CalcRelative: "
                       "current_ev->gf_length = 0!\n")
               % GetEvMgr().GetCurrentGF();
-            return Point<int>(0, 0);
+            return Position(0, 0);
         }
     }
 
@@ -150,7 +150,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
     RTTR_Assert(curTimePassed <= duration);
 
     // Check for map border crossing
-    const Point<int> mapDrawSize = gwg->GetSize() * Point<int>(TR_W, TR_H);
+    const Position mapDrawSize = gwg->GetSize() * Position(TR_W, TR_H);
     if(std::abs(nextPt.x - curPt.x) >= mapDrawSize.x / 2)
     {
         // So we need to get closer to nextPt
@@ -178,8 +178,8 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
 DrawPoint noMovable::CalcWalkingRelative() const
 {
-    Point<int> curPt = gwg->GetNodePos(pos);
-    Point<int> nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));
+    Position curPt = gwg->GetNodePos(pos);
+    Position nextPt = gwg->GetNodePos(gwg->GetNeighbour(pos, curMoveDir));
 
     return CalcRelative(curPt, nextPt);
 }

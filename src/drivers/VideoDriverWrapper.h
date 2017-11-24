@@ -65,7 +65,7 @@ public:
     // benutzen!!!)
     int GetMouseX() const;
     int GetMouseY() const;
-    Point<int> GetMousePos() const;
+    Position GetMousePos() const;
 
     /// Listet verfügbare Videomodi auf
     void ListVideoModes(std::vector<VideoMode>& video_modes) const;
@@ -80,7 +80,7 @@ public:
     bool IsRightDown();
     // setzt den Mausstatus
     void SetMousePos(const int x, const int y);
-    void SetMousePos(const Point<int>& newPos);
+    void SetMousePos(const Position& newPos);
     /// Get state of the modifier keys
     KeyEvent GetModKeyState() const;
 
