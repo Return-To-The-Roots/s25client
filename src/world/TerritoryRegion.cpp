@@ -101,30 +101,45 @@ TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
 
 TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt)
 {
+    if(!AdjustCoords(realPt))
+        return NULL;
+
+    return &GetNode(realPt);
+}
+
+const TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt) const
+{
+    if(!AdjustCoords(realPt))
+        return NULL;
+
+    return &GetNode(realPt);
+}
+
+bool TerritoryRegion::AdjustCoords(Position &pt) const
+{
     // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
     // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is
     // at most the world size
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
-    if(realPt.x < 0)
-        realPt.x += world.GetWidth();
-    else if(static_cast<unsigned>(realPt.x) >= size.x)
-        realPt.x -= world.GetWidth();
+    if(pt.x < 0)
+        pt.x += world.GetWidth();
+    else if(static_cast<unsigned>(pt.x) >= size.x)
+        pt.x -= world.GetWidth();
     // Check the (possibly) adjusted point
-    if(realPt.x < 0 || static_cast<unsigned>(realPt.x) >= size.x)
-        return NULL;
+    if(pt.x < 0 || static_cast<unsigned>(pt.x) >= size.x)
+        return false;
 
     // Apply wrap-around if on either side
-    if(realPt.y < 0)
-        realPt.y += world.GetHeight();
-    else if(static_cast<unsigned>(realPt.y) >= size.y)
-        realPt.y -= world.GetHeight();
+    if(pt.y < 0)
+        pt.y += world.GetHeight();
+    else if(static_cast<unsigned>(pt.y) >= size.y)
+        pt.y -= world.GetHeight();
     // Check the (possibly) adjusted point
-    if(realPt.y < 0 || static_cast<unsigned>(realPt.y) >= size.y)
-        return NULL;
-
-    return &GetNode(realPt);
+    if(pt.y < 0 || static_cast<unsigned>(pt.y) >= size.y)
+        return false;
+    return true;
 }
 
 namespace {
@@ -154,4 +169,12 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
     std::vector<GetMapPointWithRadius::result_type> pts = world.GetPointsInRadius(bldPos, radius, GetMapPointWithRadius());
     for(std::vector<GetMapPointWithRadius::result_type>::const_iterator it = pts.begin(); it != pts.end(); ++it)
         AdjustNode(it->first, building.GetPlayer(), it->second, allowedArea);
+}
+
+uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const
+{
+    const TRNode* node = TryGetNode(pt);
+    if(!node)
+        return world.GetNode(world.MakeMapPoint(pt + startPt)).owner;
+    return node->owner;
 }
