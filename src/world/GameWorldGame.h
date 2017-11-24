@@ -65,7 +65,7 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
     void MakeVisible(const MapPoint pt, const unsigned char player);
 
     /// Creates a region with territories marked around a building with the given radius
-    TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, bool ignoreRegionOfBld) const;
+    TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, TerritoryChangeReason reason) const;
 
 protected:
     /// Create Trade graphs
