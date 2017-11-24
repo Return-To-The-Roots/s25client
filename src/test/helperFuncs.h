@@ -19,7 +19,7 @@
 #define helperFuncs_h__
 
 #include "mygettext/mygettext.h"
-#include <boost/test/tools/assertion_result.hpp>
+#include <boost/test/unit_test.hpp>
 #include <string>
 
 struct LocaleResetter
