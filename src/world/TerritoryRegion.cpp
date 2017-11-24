@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/TerritoryRegion.h"
 #include "GamePlayer.h"
+#include "MapGeometry.h"
 #include "buildings/noBaseBuilding.h"
 #include "world/GameWorldBase.h"
 #include <stdexcept>
@@ -177,4 +178,16 @@ uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const
     if(!node)
         return world.GetNode(world.MakeMapPoint(pt + startPt)).owner;
     return node->owner;
+}
+
+bool TerritoryRegion::WillBePlayerTerritory(const Position& mapPos, uint8_t owner, unsigned exceptDir)
+{
+    for(unsigned d = 0; d < Direction::COUNT; ++d)
+    {
+        if(d == exceptDir)
+            continue;
+        if(SafeGetOwner(::GetNeighbour(mapPos, Direction::fromInt(d)) - startPt) != owner)
+            return false;
+    }
+    return true;
 }

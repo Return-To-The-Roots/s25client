@@ -47,6 +47,9 @@ public:
     /// Return the owner. If the point is outside the region return owner from map
     uint8_t SafeGetOwner(const Position& pt) const;
     void SetOwner(const Position& pt, uint8_t owner) { GetNode(pt).owner = owner; }
+    /// Return true, if all points surrounding the given point (relative to map origin!!!) have the same owner
+    /// Direction exceptDir will not be checked
+    bool WillBePlayerTerritory(const Position& mapPos, uint8_t owner, unsigned exceptDir);
 
     /// Start position (inclusive)
     const Position startPt;

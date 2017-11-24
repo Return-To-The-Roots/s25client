@@ -435,7 +435,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
-    TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, reason);
+    const TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, reason);
 
     // Set to true, where owner has changed (initially all false)
     std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
@@ -446,8 +446,8 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     RTTR_FOREACH_PT(Position, region.size)
     {
         const MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
-        const unsigned char oldOwner = GetNode(curMapPt).owner;
-        const unsigned char newOwner = region.GetOwner(pt);
+        const uint8_t oldOwner = GetNode(curMapPt).owner;
+        const uint8_t newOwner = region.GetOwner(pt);
 
         // If nothing changed, there is nothing to do (ownerChanged was already initialized)
         if(oldOwner == newOwner)
@@ -541,29 +541,26 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
     const unsigned militaryRadius = building.GetMilitaryRadius();
     RTTR_Assert(militaryRadius > 0u);
 
-    TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius, TerritoryChangeReason::Destroyed);
+    const TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius, TerritoryChangeReason::Destroyed);
 
-    // schaun ob sich was ändern würd im berechneten gebiet
+    // Look for a node that changed its owner and is important. If any -> return true
     RTTR_FOREACH_PT(Position, region.size)
     {
         MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
         if(GetNode(curMapPt).owner == region.GetOwner(pt))
             continue;
-        // if gameobjective is 75% ai can ignore water/snow/lava/swamp terrain (because it wouldnt help win the game)
-        if(GetGGS().objective == GO_CONQUER3_4)
+        // AI can ignore water/snow/lava/swamp terrain (because it wouldn't help win the game)
+        // So we check if any terrain is usable and if it is -> Land is important
+        TerrainType t1 = GetNode(curMapPt).t1, t2 = GetNode(curMapPt).t2;
+        if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
+            return true;
+        // also check neighboring nodes since border will still count as player territory but not allow any buildings!
+        for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
-            // So we check if any terrain is usable and if it is -> Land is important
-            TerrainType t1 = GetNode(curMapPt).t1, t2 = GetNode(curMapPt).t2;
-            if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
+            t1 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t1;
+            t2 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t2;
+            if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
                 return true;
-            // also check neighboring nodes since border will still count as player territory but not allow any buildings!
-            for(unsigned dir = 0; dir < Direction::COUNT; dir++)
-            {
-                t1 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t1;
-                t2 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t2;
-                if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
-                    return true;
-            }
         }
     }
     return false;
@@ -600,10 +597,17 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
         if(!(reason == TerritoryChangeReason::Destroyed && bldSite == &building))
             region.CalcTerritoryOfBuilding(*bldSite);
     }
+    CleanTerritoryRegion(region, reason, building);
+
+    return region;
+}
+
+void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeReason reason, const noBaseBuilding& triggerBld) const
+{
     if(GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH))
     {
-        const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
-        const unsigned char newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(building.GetPos()));
+        const unsigned char ownerOfTriggerBld = GetNode(triggerBld.GetPos()).owner;
+        const unsigned char newOwnerOfTriggerBld = region.GetOwner(region.GetPosFromMapPos(triggerBld.GetPos()));
 
         RTTR_FOREACH_PT(Position, region.size)
         {
@@ -618,7 +622,7 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
             // rule 1: only take territory from an ally if that ally loses a building - special case: headquarter can take territory
             const bool ownersAllied = oldOwner > 0 && newOwner > 0 && GetPlayer(oldOwner - 1).IsAlly(newOwner - 1);
             if(ownersAllied && (ownerOfTriggerBld != oldOwner || reason == TerritoryChangeReason::Build)
-               && building.GetBuildingType() != BLD_HEADQUARTERS)
+               && triggerBld.GetBuildingType() != BLD_HEADQUARTERS)
             {
                 region.SetOwner(pt, oldOwner);
             }
@@ -646,18 +650,11 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
         for(unsigned d = 0; d < Direction::COUNT; ++d)
         {
             Position neighbour = ::GetNeighbour(pt + region.startPt, Direction::fromInt(d));
-            if(region.SafeGetOwner(neighbour - startPt) != owner)
+            if(region.SafeGetOwner(neighbour - region.startPt) != owner)
                 continue;
-            bool isPlayerTerritory = true;
-            for(unsigned d2 = 0; d2 < Direction::COUNT; ++d2)
-            {
-                if(region.SafeGetOwner(::GetNeighbour(neighbour, Direction::fromInt(d2)) - startPt) != owner)
-                {
-                    isPlayerTerritory = false;
-                    break;
-                }
-            }
-            if(isPlayerTerritory)
+            // Don't check this point as it is always true
+            unsigned exceptDir = (Direction::fromInt(d) + 3u).toUInt();
+            if(region.WillBePlayerTerritory(neighbour, owner, exceptDir))
             {
                 isPlayerTerritoryNear = true;
                 break;
@@ -672,25 +669,14 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
         for(unsigned d = 0; d < Direction::COUNT; ++d)
         {
             Position neighbour = ::GetNeighbour(pt + region.startPt, Direction::fromInt(d));
-            uint8_t nbOwner = region.SafeGetOwner(neighbour - startPt);
+            uint8_t nbOwner = region.SafeGetOwner(neighbour - region.startPt);
             // No or same player?
             if(!nbOwner || nbOwner == owner)
                 continue;
-            bool isPlayerTerritory = true;
             // Don't check this point as it would always fail
             unsigned exceptDir = (Direction::fromInt(d) + 3u).toUInt();
-            for(unsigned d2 = 0; d2 < Direction::COUNT; ++d2)
-            {
-                if(d2 == exceptDir)
-                    continue;
-                if(region.SafeGetOwner(::GetNeighbour(neighbour, Direction::fromInt(d2)) - startPt) != nbOwner)
-                {
-                    isPlayerTerritory = false;
-                    break;
-                }
-            }
             // First one found gets it
-            if(isPlayerTerritory)
+            if(region.WillBePlayerTerritory(neighbour, nbOwner, exceptDir))
             {
                 newOwner = nbOwner;
                 break;
@@ -698,8 +684,6 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
         }
         region.SetOwner(pt, newOwner);
     }
-
-    return region;
 }
 
 void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception,

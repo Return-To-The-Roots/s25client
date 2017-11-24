@@ -66,6 +66,8 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
 
     /// Creates a region with territories marked around a building with the given radius
     TerritoryRegion CreateTerritoryRegion(const noBaseBuilding& building, unsigned radius, TerritoryChangeReason reason) const;
+    /// Cleans the region (removes edges of terrain and applies the allied border push addon
+    void CleanTerritoryRegion(TerritoryRegion& region, TerritoryChangeReason reason, const noBaseBuilding& triggerBld) const;
 
 protected:
     /// Create Trade graphs
