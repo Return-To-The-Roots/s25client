@@ -74,7 +74,7 @@ bool TerritoryRegion::IsPointValid(const MapExtent& mapSize, const std::vector<M
             || IsPointInPolygon(polygonInt, pt3) || IsPointInPolygon(polygonInt, pt4));
 }
 
-void TerritoryRegion::AdjustNode(MapPoint pt, unsigned char player, unsigned char radius, const std::vector<MapPoint>* allowedArea)
+void TerritoryRegion::AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, const std::vector<MapPoint>* allowedArea)
 {
     TRNode* node = TryGetNode(pt);
     // Not in our region -> Out
@@ -96,10 +96,14 @@ void TerritoryRegion::AdjustNode(MapPoint pt, unsigned char player, unsigned cha
 
 TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
 {
+    return TryGetNode(GetPosFromMapPos(pt));
+}
+
+TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt)
+{
     // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
     // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is
     // at most the world size
-    Position realPt(pt - startPt);
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
@@ -140,6 +144,8 @@ void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
         return;
 
     const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
+    if(allowedArea && allowedArea->empty())
+        allowedArea = NULL;
 
     // Punkt, auf dem das Militärgebäude steht
     MapPoint bldPos = building.GetPos();
