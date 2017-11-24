@@ -31,7 +31,7 @@ class GameWorldBase;
 class TerritoryRegion
 {
 public:
-    TerritoryRegion(const Position& startPt, const Position& endPt, const GameWorldBase& gwb);
+    TerritoryRegion(const Position& startPt, const Extent& size, const GameWorldBase& gwb);
     ~TerritoryRegion();
 
     static bool IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt);
@@ -40,6 +40,7 @@ public:
     void CalcTerritoryOfBuilding(const noBaseBuilding& building);
 
     unsigned GetIdx(const Position& pt) const;
+    Position GetPosFromMapPos(const MapPoint& pt) const;
     /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
     unsigned char GetOwner(const Position& pt) const { return GetNode(pt).owner; }
     /// Liefert Radius mit dem der Punkt besetzt wurde
@@ -77,10 +78,14 @@ private:
 
 inline unsigned TerritoryRegion::GetIdx(const Position& pt) const
 {
-    Position offset(pt - startPt);
-    RTTR_Assert(offset.x >= 0 && offset.x < size.x);
-    RTTR_Assert(offset.y >= 0 && offset.y < size.y);
-    return offset.y * size.x + offset.x;
+    RTTR_Assert(pt.x >= 0 && static_cast<unsigned>(pt.x) < size.x);
+    RTTR_Assert(pt.y >= 0 && static_cast<unsigned>(pt.y) < size.y);
+    return pt.y * size.x + pt.x;
+}
+
+inline Position TerritoryRegion::GetPosFromMapPos(const MapPoint& pt) const
+{
+    return pt - startPt;
 }
 
 #endif
