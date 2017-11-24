@@ -1343,10 +1343,10 @@ void GameWorldGame::PlaceAndFixWater()
             // do not touch tile if waterEverywhere is disabled and no resource was stored by maploader
             else if (curNodeResource.getType() == Resource::Nothing) 
                 amount = 0;
-            else if (World::HasTerrain(pt, TT_SAVANNAH)) // reduce water on stepppe or savannah tiles.
-                amount = 4;
-            else if (World::HasTerrain(pt, TT_STEPPE))
+            else if (World::HasTerrain(pt, TT_STEPPE))  // reduce water on stepppe or savannah tiles.
                 amount = 2;
+            else if (World::HasTerrain(pt, TT_SAVANNAH))
+                amount = 4;
             else
                 amount = 7;
         }
