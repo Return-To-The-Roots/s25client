@@ -345,7 +345,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
 typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorldGame& world, const std::vector<BoundaryStones>& expected)
 {
-    world.RecalcBorderStones(Position(0, 0), Position(world.GetWidth() - 1, world.GetHeight() - 1));
+    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         const BoundaryStones& isValue = world.GetNode(pt).boundary_stones;

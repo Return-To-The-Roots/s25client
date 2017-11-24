@@ -281,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         milBlds[4] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(1).GetHQPos());
         RTTR_SKIP_GFS(30);
 
-        TerritoryRegion region(Position(0, 0), Position(world.GetSize()), world);
+        TerritoryRegion region(Position(0, 0), Extent(world.GetSize()), world);
         sortedMilitaryBlds buildings = world.LookForMilitaryBuildings(MapPoint(0, 0), 99);
         BOOST_REQUIRE_EQUAL(buildings.size(), 5u);
         BOOST_FOREACH(const nobBaseMilitary* bld, buildings)

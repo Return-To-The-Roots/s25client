@@ -22,11 +22,9 @@
 #include "world/GameWorldBase.h"
 #include <stdexcept>
 
-TerritoryRegion::TerritoryRegion(const Position& startPt, const Position& endPt, const GameWorldBase& gwb)
-    : startPt(startPt), size(endPt - startPt), world(gwb)
+TerritoryRegion::TerritoryRegion(const Position& startPt, const Extent& size, const GameWorldBase& gwb)
+    : startPt(startPt), size(size), world(gwb)
 {
-    if(startPt.x <= endPt.x || startPt.y <= endPt.y)
-        throw std::runtime_error("Invalid size for TerritoryRegion");
     if(size.x > gwb.GetWidth() || size.y > gwb.GetHeight())
         throw std::runtime_error("Size to big for TerritoryRegion");
     // Feld erzeugen
@@ -101,25 +99,25 @@ TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
     // The region might wrap around world boundaries. So we have to adjust the point so it will still be inside this region even if it is on
     // "the other side" of the world wrap Note: Only 1 time wrapping around is allowed which is ensured by the assertion, that this size is
     // at most the world size
-    Position realPt(pt);
+    Position realPt(pt - startPt);
 
     // Check if this point is inside this region
     // Apply wrap-around if on either side
-    if(realPt.x < startPt.x)
+    if(realPt.x < 0)
         realPt.x += world.GetWidth();
-    else if(realPt.x >= endPt.x)
+    else if(static_cast<unsigned>(realPt.x) >= size.x)
         realPt.x -= world.GetWidth();
     // Check the (possibly) adjusted point
-    if(realPt.x < startPt.x || realPt.x >= endPt.x)
+    if(realPt.x < 0 || static_cast<unsigned>(realPt.x) >= size.x)
         return NULL;
 
     // Apply wrap-around if on either side
-    if(realPt.y < startPt.y)
+    if(realPt.y < 0)
         realPt.y += world.GetHeight();
-    else if(realPt.y >= endPt.y)
+    else if(static_cast<unsigned>(realPt.y) >= size.y)
         realPt.y -= world.GetHeight();
     // Check the (possibly) adjusted point
-    if(realPt.y < startPt.y || realPt.y >= endPt.y)
+    if(realPt.y < 0 || static_cast<unsigned>(realPt.y) >= size.y)
         return NULL;
 
     return &GetNode(realPt);

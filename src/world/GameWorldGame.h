@@ -177,7 +177,7 @@ public:
     /// Writeable access to node. Use only for initial map setup!
     MapNode& GetNodeWriteable(const MapPoint pt);
     /// Recalculates where border stones should be done after a change in the given region
-    void RecalcBorderStones(Position startPt, Position endPt);
+    void RecalcBorderStones(Position startPt, Extent areaSize);
 
 protected:
     void VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
