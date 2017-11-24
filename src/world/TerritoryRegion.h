@@ -42,13 +42,14 @@ public:
     unsigned GetIdx(const Position& pt) const;
     Position GetPosFromMapPos(const MapPoint& pt) const;
     /// Liefert den Besitzer eines Punktes (mit absoluten Koordinaten, werden automatisch in relative umgerechnet!)
-    unsigned char GetOwner(const Position& pt) const { return GetNode(pt).owner; }
+    uint8_t GetOwner(const Position& pt) const { return GetNode(pt).owner; }
+    void SetOwner(const Position& pt, unsigned char owner) { GetNode(pt).owner = owner; }
     /// Liefert Radius mit dem der Punkt besetzt wurde
-    unsigned char GetRadius(const Position& pt) const { return GetNode(pt).radius; }
+    uint16_t GetRadius(const Position& pt) const { return GetNode(pt).radius; }
 
     /// Start position(inclusive)
     const Position startPt;
-    /// Size of the region (calculated from x2-x1, y2-y1)
+    /// Size of the region
     const Extent size;
 
 private:
@@ -56,9 +57,9 @@ private:
     struct TRNode
     {
         /// Spieler-index (+1, da 0 = besitzlos!)
-        unsigned char owner;
+        uint8_t owner;
         /// Entfernung vom Militärgebäude
-        unsigned char radius;
+        uint16_t radius;
 
         TRNode() : owner(0), radius(0) {}
     };
@@ -66,11 +67,12 @@ private:
     /// Check whether the point is part of the polygon
     static bool IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt);
     /// Testet einen Punkt, ob der neue Spieler ihn übernehmen kann und übernimmt ihn ggf.
-    void AdjustNode(MapPoint pt, unsigned char player, unsigned char radius, const std::vector<MapPoint>* allowedArea);
+    void AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, const std::vector<MapPoint>* allowedArea);
     TRNode& GetNode(const Position& pt) { return nodes[GetIdx(pt)]; }
     const TRNode& GetNode(const Position& pt) const { return nodes[GetIdx(pt)]; }
     /// Return a pointer to the node, if it is inside this region
     TRNode* TryGetNode(const MapPoint& pt);
+    TRNode* TryGetNode(Position realPt);
 
     const GameWorldBase& world;
     std::vector<TRNode> nodes;
