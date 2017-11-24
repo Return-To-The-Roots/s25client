@@ -159,7 +159,7 @@ private:
     IngameMinimap minimap;
 
     bool isScrolling;
-    Point<int> startScrollPt;
+    Position startScrollPt;
     size_t zoomLvl;
     bool isCheatModeOn;
     std::string curCheatTxt;

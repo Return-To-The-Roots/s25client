@@ -119,7 +119,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
             BOOST_REQUIRE(hb);
             BuildRoadForBlds(harborPos[i], hqPos[i]);
             MapPoint shipPos = world.GetCoastalPoint(world.GetHarborPointID(harborPos[i]), 1);
-            shipPos = world.MakeMapPoint(Point<int>(shipPos) + (Point<int>(shipPos) - Point<int>(harborPos[i])) * 8);
+            shipPos = world.MakeMapPoint(Position(shipPos) + (Position(shipPos) - Position(harborPos[i])) * 8);
             BOOST_REQUIRE(shipPos.isValid());
             noShip* ship = new noShip(shipPos, i);
             world.AddFigure(shipPos, ship);

@@ -87,7 +87,7 @@ public:
 
     /// Return the offset of the door, which is also where people disappear into the building, the builder is building and the wares are
     /// lying
-    Point<int> GetDoorPoint() { return Point<int>(GetDoorPointX(), GetDoorPointY()); }
+    Position GetDoorPoint() { return Position(GetDoorPointX(), GetDoorPointY()); }
     int GetDoorPointX();
     int GetDoorPointY() const { return door_point_y; }
 

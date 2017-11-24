@@ -66,9 +66,9 @@ TerrainRenderer::~TerrainRenderer()
 TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsigned dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
-    PointI ptNb = ::GetNeighbour(PointI(pt), Direction::fromInt(dir));
+    Position ptNb = ::GetNeighbour(Position(pt), Direction::fromInt(dir));
 
-    PointI offset;
+    Position offset;
     MapPoint t = ConvertCoords(ptNb, &offset);
 
     return GetNodePos(t) + PointF(offset);
@@ -78,9 +78,9 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt
                                                                const unsigned char dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
-    PointI ptNb = ::GetNeighbour(PointI(pt), Direction::fromInt(dir));
+    Position ptNb = ::GetNeighbour(Position(pt), Direction::fromInt(dir));
 
-    Point<int> offset;
+    Position offset;
     MapPoint t = ConvertCoords(ptNb, &offset);
 
     return GetBorderPos(t, triangle) + PointF(offset);
@@ -621,7 +621,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
 /**
  *  zeichnet den Kartenausschnitt.
  */
-void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned* water) const
+void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, const GameWorldViewer& gwv, unsigned* water) const
 {
     RTTR_Assert(!gl_vertices.empty());
     RTTR_Assert(!borders.empty());
@@ -631,7 +631,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     boost::array<std::vector<BorderTile>, 5> sorted_borders;
     PreparedRoads sorted_roads;
 
-    Point<int> lastOffset(0, 0);
+    Position lastOffset(0, 0);
 
     // Beim zeichnen immer nur beginnen, wo man auch was sieht
     for(int y = firstPt.y; y <= lastPt.y; ++y)
@@ -641,8 +641,8 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
 
         for(int x = firstPt.x; x <= lastPt.x; ++x)
         {
-            Point<int> posOffset;
-            MapPoint tP = ConvertCoords(Point<int>(x, y), &posOffset);
+            Position posOffset;
+            MapPoint tP = ConvertCoords(Position(x, y), &posOffset);
 
             unsigned char t = terrain[GetVertexIdx(tP)][0];
             if(posOffset != lastOffset)
@@ -717,14 +717,14 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
             }
         }
 
-        PointI diff = lastPt - firstPt;
+        Position diff = lastPt - firstPt;
         if(diff.x && diff.y)
             *water = 50 * water_count / (diff.x * diff.y);
         else
             *water = 0;
     }
 
-    lastOffset = PointI(0, 0);
+    lastOffset = Position(0, 0);
 
     // Arrays aktivieren
     glEnableClientState(GL_COLOR_ARRAY);
@@ -773,7 +773,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
         {
             if(it->posOffset != lastOffset)
             {
-                PointI trans = it->posOffset - lastOffset;
+                Position trans = it->posOffset - lastOffset;
                 glTranslatef(float(trans.x), float(trans.y), 0.0f);
                 lastOffset = it->posOffset;
             }
@@ -786,7 +786,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
 
     glEnable(GL_BLEND);
 
-    lastOffset = PointI(0, 0);
+    lastOffset = Position(0, 0);
     glPushMatrix();
     for(unsigned short i = 0; i < 5; ++i)
     {
@@ -798,7 +798,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
         {
             if(it->posOffset != lastOffset)
             {
-                PointI trans = it->posOffset - lastOffset;
+                Position trans = it->posOffset - lastOffset;
                 glTranslatef(float(trans.x), float(trans.y), 0.0f);
                 lastOffset = it->posOffset;
             }
@@ -819,7 +819,7 @@ void TerrainRenderer::Draw(const PointI& firstPt, const PointI& lastPt, const Ga
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
-MapPoint TerrainRenderer::ConvertCoords(const PointI pt, PointI* offset) const
+MapPoint TerrainRenderer::ConvertCoords(const Position pt, Position* offset) const
 {
     if(offset)
     {
@@ -847,9 +847,9 @@ MapPoint TerrainRenderer::ConvertCoords(const PointI pt, PointI* offset) const
 }
 
 void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
-                                       const PointI& offset) const
+                                       const Position& offset) const
 {
-    PointI startPos = PointI(GetNodePos(pt)) + offset;
+    Position startPos = Position(GetNodePos(pt)) + offset;
 
     Visibility visibility = gwViewer.GetVisibility(pt);
 
@@ -865,8 +865,8 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         Direction targetDir = Direction::fromInt(3 + dir);
         MapPoint ta = gwViewer.GetNeighbour(pt, targetDir);
 
-        PointI endPos = PointI(GetNodePos(ta)) + offset;
-        PointI diff = startPos - endPos;
+        Position endPos = Position(GetNodePos(ta)) + offset;
+        Position diff = startPos - endPos;
 
         // Gehen wir über einen Kartenrand (horizontale Richung?)
         if(std::abs(diff.x) >= totalWidth / 2)
@@ -920,11 +920,11 @@ struct Tex2C3Ver2
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 {
     // 2D Array: [3][4]
-    static const boost::array<PointI, 12> begin_end_coords = {{PointI(-3, -3), PointI(-3, 3), PointI(-3, 3), PointI(-3, -3),
+    static const boost::array<Position, 12> begin_end_coords = {{Position(-3, -3), Position(-3, 3), Position(-3, 3), Position(-3, -3),
 
-                                                               PointI(3, -3), PointI(-3, 3), PointI(-3, 3), PointI(3, -3),
+                                                                 Position(3, -3), Position(-3, 3), Position(-3, 3), Position(3, -3),
 
-                                                               PointI(3, 3), PointI(-3, -3), PointI(-3, -3), PointI(3, 3)}};
+                                                                 Position(3, 3), Position(-3, -3), Position(-3, -3), Position(3, 3)}};
 
     size_t maxSize = 0;
     for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad)
@@ -953,7 +953,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
             curVertexData->tx = 0.0f;
             curVertexData->ty = 0.0f;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
-            PointI tmpP = it->pos + begin_end_coords[it->dir * 4];
+            Position tmpP = it->pos + begin_end_coords[it->dir * 4];
             curVertexData->x = GLfloat(tmpP.x);
             curVertexData->y = GLfloat(tmpP.y);
 
@@ -1087,5 +1087,5 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 
 MapPoint TerrainRenderer::GetNeighbour(const MapPoint& pt, const Direction dir) const
 {
-    return MakeMapPoint(::GetNeighbour(Point<int>(pt), dir), size_);
+    return MakeMapPoint(::GetNeighbour(Position(pt), dir), size_);
 }

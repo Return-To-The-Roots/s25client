@@ -40,7 +40,7 @@ class iwObservate : public IngameWindow
 
     // Scrolling
     bool isScrolling;
-    Point<int> scrollOrigin;
+    Position scrollOrigin;
 
     unsigned zoomLvl;
 

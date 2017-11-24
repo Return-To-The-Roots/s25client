@@ -113,7 +113,7 @@ BOOST_FIXTURE_TEST_CASE(GetIndexOf_OutsideOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
 {
-    std::vector<int> neighbors = VertexUtility::GetNeighbors(Point<int>(0, 0), MapExtent(10, 10), 1);
+    std::vector<int> neighbors = VertexUtility::GetNeighbors(Position(0, 0), MapExtent(10, 10), 1);
     const unsigned expectedSize = 5;
 
     BOOST_REQUIRE_EQUAL(neighbors.size(), expectedSize);
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_CASE(GetNeighbors_OutOfBounds, VertexUtility)
  */
 BOOST_FIXTURE_TEST_CASE(Distance_BoundaryNeighbors, VertexUtility)
 {
-    const double distance = VertexUtility::Distance(Point<int>(0, 0), Point<int>(0, 9), MapExtent(10, 10));
+    const double distance = VertexUtility::Distance(Position(0, 0), Position(0, 9), MapExtent(10, 10));
 
     BOOST_REQUIRE_LT(distance, 2.0);
 }

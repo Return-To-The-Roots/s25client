@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(IsInArea_PointInsideIgnorePlayer)
                   100.0, 0, 0, 10, 10,     // test-independent values
                   minPlayerDist);
 
-    BOOST_REQUIRE(area.IsInArea(Point<int>(size / 2), // check map center
+    BOOST_REQUIRE(area.IsInArea(Position(size / 2), // check map center
                                 playerDistance, size));
 }
 
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(IsInArea_PointOutsideIgnorePlayer)
                   100.0, 0, 0, 10, 10,     // test-independent values
                   minPlayerDist);
 
-    BOOST_REQUIRE(!area.IsInArea(Point<int>(size), // bottom-right corner
+    BOOST_REQUIRE(!area.IsInArea(Position(size), // bottom-right corner
                                  playerDistance, size));
 }
 
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(IsInArea_PointTooCloseToPlayer)
                   100.0, 0, 0, 10, 10,     // test-independent values
                   minPlayerDist);
 
-    BOOST_REQUIRE(!area.IsInArea(Point<int>(size / 2), playerDistance, size));
+    BOOST_REQUIRE(!area.IsInArea(Position(size / 2), playerDistance, size));
 }
 
 /**
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(IsInArea_PointFarFromPlayer)
                   100.0, 0, 0, 10, 10,     // test-independent values
                   minPlayerDist);
 
-    BOOST_REQUIRE(area.IsInArea(Point<int>(size / 2), playerDistance, size));
+    BOOST_REQUIRE(area.IsInArea(Position(size / 2), playerDistance, size));
 }
 
 /**
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(IsInArea_PointNearPlayer)
                   100.0, 0, 0, 10, 10,     // test-independent values
                   minPlayerDist, maxPlayerDist);
 
-    BOOST_REQUIRE(area.IsInArea(Point<int>(size / 2), playerDistance, size));
+    BOOST_REQUIRE(area.IsInArea(Position(size / 2), playerDistance, size));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -56,7 +56,7 @@ protected:
     void Draw_() override;
     /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
     virtual void DrawContent() const = 0;
-    bool IsMouseOver(const Point<int>& mousePos) const;
+    bool IsMouseOver(const Position& mousePos) const;
 
 protected:
     /// Texturfarbe des Buttons

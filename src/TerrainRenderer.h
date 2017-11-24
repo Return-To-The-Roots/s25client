@@ -31,7 +31,6 @@ class TerrainRenderer : private boost::noncopyable
 {
 public:
     typedef Point<float> PointF;
-    typedef Point<int> PointI;
 
     TerrainRenderer();
     ~TerrainRenderer();
@@ -42,11 +41,11 @@ public:
     void GenerateOpenGL(const GameWorldViewer& gwv);
 
     /// Draws the map between the given points. Optionally returns percentage of water drawn
-    void Draw(const PointI& firstPt, const PointI& lastPt, const GameWorldViewer& gwv, unsigned* water) const;
+    void Draw(const Position& firstPt, const Position& lastPt, const GameWorldViewer& gwv, unsigned* water) const;
 
     /// Converts given point into a MapPoint (0 <= x < width and 0 <= y < height)
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
-    MapPoint ConvertCoords(const PointI pt, PointI* offset = 0) const;
+    MapPoint ConvertCoords(const Position pt, Position* offset = 0) const;
     /// Get position of node in pixels (VertexPos)
     PointF GetNodePos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
@@ -65,26 +64,26 @@ private:
     {
         unsigned tileOffset;
         unsigned count;
-        PointI posOffset;
-        MapTile(unsigned tileOffset, PointI posOffset) : tileOffset(tileOffset), count(1), posOffset(posOffset) {}
+        Position posOffset;
+        MapTile(unsigned tileOffset, Position posOffset) : tileOffset(tileOffset), count(1), posOffset(posOffset) {}
     };
 
     struct BorderTile
     {
         unsigned tileOffset;
         unsigned count;
-        PointI posOffset;
-        BorderTile(unsigned tileOffset, PointI posOffset) : tileOffset(tileOffset), count(1), posOffset(posOffset) {}
+        Position posOffset;
+        BorderTile(unsigned tileOffset, Position posOffset) : tileOffset(tileOffset), count(1), posOffset(posOffset) {}
     };
 
     struct PreparedRoad
     {
         unsigned char type;
-        PointI pos, pos2;
+        Position pos, pos2;
         float color1, color2;
         unsigned char dir;
 
-        PreparedRoad(unsigned char type, PointI pos, PointI pos2, float color1, float color2, unsigned char dir)
+        PreparedRoad(unsigned char type, Position pos, Position pos2, float color1, float color2, unsigned char dir)
             : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir)
         {}
 
@@ -181,7 +180,7 @@ private:
     float GetBorderColor(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderColor[triangle]; }
 
     /// Adds possible roads from the given point to the prepared data struct
-    void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt, const PointI& offset) const;
+    void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt, const Position& offset) const;
     /// Draw the prepared roads
     void DrawWays(const PreparedRoads& sorted_roads) const;
 };

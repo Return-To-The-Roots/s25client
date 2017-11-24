@@ -258,9 +258,9 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned p
     }
 }
 
-Point<int> GameWorldBase::GetNodePos(const MapPoint pt) const
+Position GameWorldBase::GetNodePos(const MapPoint pt) const
 {
-    Point<int> result;
+    Position result;
     result.x = pt.x * TR_W;
     if(pt.y & 1)
         result.x += TR_W / 2;

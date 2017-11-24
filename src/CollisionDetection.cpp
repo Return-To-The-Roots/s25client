@@ -22,14 +22,14 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool IsPointInRect(const Point<int>& pt, const Rect& rect)
+bool IsPointInRect(const Position& pt, const Rect& rect)
 {
     return (pt.x >= rect.left && pt.x < rect.right && pt.y >= rect.top && pt.y < rect.bottom);
 }
 
 bool IsPointInRect(const int x, const int y, const Rect& rect)
 {
-    return IsPointInRect(Point<int>(x, y), rect);
+    return IsPointInRect(Position(x, y), rect);
 }
 
 bool IsPointInRect(const int x, const int y, const int rx, const int ry, const int rwidth, const int rheight)

@@ -34,7 +34,7 @@
 #include <algorithm>
 
 WindowManager::WindowManager()
-    : disable_mouse(false), lastMousePos(Point<int>::Invalid()), screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
+    : disable_mouse(false), lastMousePos(Position::Invalid()), screenSize(0, 0), lastLeftClickTime(0), lastLeftClickPos(0, 0)
 {}
 
 WindowManager::~WindowManager()
@@ -642,7 +642,7 @@ void WindowManager::Msg_WheelDown(const MouseCoords& mc)
  */
 void WindowManager::Msg_MouseMove(const MouseCoords& mc)
 {
-    lastMousePos = Point<int>(mc.x, mc.y);
+    lastMousePos = Position(mc.x, mc.y);
 
     // ist unser Desktop gültig?
     if(!curDesktop)

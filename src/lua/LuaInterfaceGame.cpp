@@ -312,7 +312,7 @@ void LuaInterfaceGame::PostMessageLua(unsigned playerIdx, const std::string& msg
 void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::string& msg, int x, int y)
 {
     gw.GetPostMgr().SendMsg(playerIdx,
-                            new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Point<int>(x, y))));
+                            new PostMsg(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General, gw.MakeMapPoint(Position(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)

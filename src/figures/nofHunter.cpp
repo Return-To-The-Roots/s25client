@@ -162,7 +162,7 @@ void nofHunter::TryStartHunting()
     std::vector<noAnimal*> available_animals;
 
     // Durchgehen und nach Tieren suchen
-    Point<int> curPos;
+    Position curPos;
     for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
     {
         for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
@@ -252,7 +252,7 @@ void nofHunter::HandleStateChasing()
     if(gwg->CalcDistance(pos, animal->GetPos()) < 7)
     {
         // Dann bitten wir es mal, schonmal anzuhalten und bekommen seine Koordinaten, wo es dann steht
-        Point<int> animalPos(animal->HunterIsNear());
+        Position animalPos(animal->HunterIsNear());
 
         // Nun müssen wir drumherum einen Punkt suchen, von dem wir schießen, der natürlich direkt dem Standort
         // des Tieres gegenüberliegen muss (mit zufälliger Richtung beginnen)
@@ -261,7 +261,7 @@ void nofHunter::HandleStateChasing()
         unsigned char d;
         for(d = 0; d < 6; ++d)
         {
-            Point<int> delta;
+            Position delta;
             switch((d + doffset) % 6)
             {
                 case 0:

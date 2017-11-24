@@ -23,7 +23,7 @@
 /// Iterate over all points of an area using a point of TYPE named "pt"
 /// WIDTH and HEIGHT is evaluated at most once
 /// Use like:
-///     RTTR_FOREACH_PT(Point<int>, world.GetSize()) {
+///     RTTR_FOREACH_PT(Position, world.GetSize()) {
 ///         std::cout << pt.x << "/" << pt.y;
 ///     }
 #define RTTR_FOREACH_PT(TYPE, SIZE)                                           \

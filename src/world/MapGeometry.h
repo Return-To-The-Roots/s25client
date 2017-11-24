@@ -21,8 +21,8 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 
-Point<int> GetNeighbour(const Point<int>& pt, const Direction dir);
-Point<int> GetNeighbour2(Point<int> pt, unsigned dir);
-MapPoint MakeMapPoint(Point<int> pt, const MapExtent& size);
+Position GetNeighbour(const Position& pt, const Direction dir);
+Position GetNeighbour2(Position pt, unsigned dir);
+MapPoint MakeMapPoint(Position pt, const MapExtent& size);
 
 #endif //! MAP_GEOMETRY_H_

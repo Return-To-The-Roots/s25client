@@ -120,7 +120,7 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
     const MapPoint startPt(5, 2);
     setupTestcase1(world, startPt, TT_WATER, TT_STEPPE);
     // 4 steps right
-    MapPoint endPt = world.MakeMapPoint(Point<int>(startPt.x + 4, startPt.y));
+    MapPoint endPt = world.MakeMapPoint(Position(startPt.x + 4, startPt.y));
     unsigned length;
     std::vector<Direction> route;
     // Forward route

@@ -334,12 +334,12 @@ bool GameWorldGame::HasRemovableObjForRoad(const MapPoint pt) const
 // DISABLED: This currently leads to bugs. If you enable/fix this, please add tests and document the conditions this tries to fix
 //#define PREVENT_BORDER_STONE_BLOCKING
 
-void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
+void GameWorldGame::RecalcBorderStones(Position startPt, Position endPt)
 {
-    Point<int> size = endPt - startPt;
+    Position size = endPt - startPt;
     // Add a bit extra space as this influences also border stones around the region
     // But not so much we wrap completely around the map (+1 to round up, /2 to have extra space centered)
-    Point<int> EXTRA_SPACE(std::min(3, (GetWidth() - size.x + 1) / 2), std::min(3, (GetHeight() - size.y + 1) / 2));
+    Position EXTRA_SPACE(std::min(3, (GetWidth() - size.x + 1) / 2), std::min(3, (GetHeight() - size.y + 1) / 2));
     startPt -= EXTRA_SPACE;
     endPt += EXTRA_SPACE;
     // We might still be 1 node to big, make sure we have don't exceed the mapsize
@@ -355,7 +355,7 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
     std::vector<uint8_t> neighbors(width * (endPt.y - startPt.y), 0);
 #endif
 
-    for(Point<int> pt(startPt); pt.y < endPt.y; ++pt.y)
+    for(Position pt(startPt); pt.y < endPt.y; ++pt.y)
     {
         for(pt.x = startPt.x; pt.x < endPt.x; ++pt.x)
         {
@@ -380,7 +380,7 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
                 // Count number of border nodes with same owner
-                Point<int> offset(pt - startPt);
+                Position offset(pt - startPt);
                 int idx = offset.y * width + offset.x;
                 for(unsigned i = 0; i < 6; ++i)
                 {
@@ -398,7 +398,7 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
 
 #ifdef PREVENT_BORDER_STONE_BLOCKING
     // Do a second pass and delete some stones with 3 or more neighbors to avoid blocks of stones
-    for(Point<int> pt(startPt); pt.y < endPt.y; ++pt.y)
+    for(Position pt(startPt); pt.y < endPt.y; ++pt.y)
     {
         for(pt.x = startPt.x; pt.x < endPt.x; ++pt.x)
         {
@@ -409,7 +409,7 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
             if(!owner)
                 continue;
 
-            Point<int> offset(pt - startPt);
+            Position offset(pt - startPt);
             int idx = offset.y * width + offset.x;
             if(neighbors[idx] < 3)
                 continue;
@@ -422,11 +422,11 @@ void GameWorldGame::RecalcBorderStones(Point<int> startPt, Point<int> endPt)
                 if(nbBoundStones[0] != owner)
                     continue;
 
-                Point<int> pa = ::GetNeighbour(pt, Direction(dir + 3));
+                Position pa = ::GetNeighbour(pt, Direction(dir + 3));
                 if(pa.x < startPt.x || pa.x >= endPt.x || pa.y < startPt.y || pa.y >= endPt.y)
                     continue;
                 // If that one has to many stones too, we delete the connection stone
-                Point<int> offset(pa - startPt);
+                Position offset(pa - startPt);
                 int idxNb = offset.y * width + offset.x;
                 if(neighbors[idxNb] > 2)
                 {
@@ -461,10 +461,10 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // das Land davon jemanden anders nun gehört
 
     const unsigned char ownerOfTriggerBld = GetNode(building.GetPos()).owner;
-    const unsigned char newOwnerOfTriggerBld = region.GetOwner(Point<int>(building.GetPos()));
+    const unsigned char newOwnerOfTriggerBld = region.GetOwner(Position(building.GetPos()));
     const bool noAlliedBorderPush = GetGGS().isEnabled(AddonId::NO_ALLIED_PUSH);
 
-    for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
+    for(Position pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
     {
         for(pt.x = region.startPt.x; pt.x < region.endPt.x; ++pt.x)
         {
@@ -518,7 +518,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
         }
     }
 
-    for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
+    for(Position pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
     {
         for(pt.x = region.startPt.x; pt.x < region.endPt.x; ++pt.x)
         {
@@ -588,7 +588,7 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
     TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius, true);
 
     // schaun ob sich was ändern würd im berechneten gebiet
-    for(Point<int> pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
+    for(Position pt(region.startPt); pt.y < region.endPt.y; ++pt.y)
     {
         for(pt.x = region.startPt.x; pt.x < region.endPt.x; ++pt.x)
         {
@@ -623,14 +623,14 @@ TerritoryRegion GameWorldGame::CreateTerritoryRegion(const noBaseBuilding& build
     // Span at most half the map size (assert even sizes, given due to layout)
     RTTR_Assert(GetWidth() % 2 == 0);
     RTTR_Assert(GetHeight() % 2 == 0);
-    Point<int> halfSize(GetSize() / 2u);
-    Point<int> radius2D = elMin(Point<int>::all(radius), halfSize);
+    Position halfSize(GetSize() / 2u);
+    Position radius2D = elMin(Position::all(radius), halfSize);
 
     // Koordinaten erzeugen für TerritoryRegion
-    const Point<int> startPt = Point<int>(bldPos) - radius2D;
+    const Position startPt = Position(bldPos) - radius2D;
     // All points in the region are less than endPt. If we want to check the same number of points right of bld as left we need a +1
     // unless radius is already half the map size in which case we would check the first point twice -> clamp to size/2
-    const Point<int> endPt = Point<int>(bldPos) + elMin(radius2D + Point<int>(1, 1), halfSize);
+    const Position endPt = Position(bldPos) + elMin(radius2D + Position(1, 1), halfSize);
     TerritoryRegion region(startPt, endPt, *this);
 
     // Alle Gebäude ihr Terrain in der Nähe neu berechnen

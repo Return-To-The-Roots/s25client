@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Water)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
 
-    const Point<int> position(10, 10); // any position is valid here, because everything is water
+    const Position position(10, 10); // any position is valid here, because everything is water
 
     unsigned water = MapUtility::GetBodySize(map, position, limit);
 
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Limit)
         map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
     }
 
-    const Point<int> position(10, 10);
+    const Position position(10, 10);
     unsigned water = MapUtility::GetBodySize(map, position, limit);
 
     BOOST_REQUIRE_EQUAL(water, limit);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(SetHill_Height)
 {
     const MapExtent size(16, 8);
     const unsigned z = 4u; // size.y of the hill
-    const Point<int> position(0, 0);
+    const Position position(0, 0);
 
     Map map(size, "map", "author");
 
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(SetHarbor_HarborPlaceAvailable)
     }
 
     // place harbor in the center of the map
-    const Point<int> center(size.x / 2 - 1, size.y / 2 - 1);
+    const Position center(size.x / 2 - 1, size.y / 2 - 1);
     MapUtility::SetHarbour(map, center, 0);
 
     int countHarbors = 0;
@@ -313,7 +313,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, ObjGenFixture)
 
     Map map(size, "map", "author");
 
-    Point<int> p(size / 2);
+    Position p(size / 2);
     MapUtility::SetTree(map, objGen, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
@@ -336,7 +336,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
         map.textureRsu[i] = TT_DESERT;
     }
 
-    Point<int> p(size / 2);
+    Position p(size / 2);
     MapUtility::SetTree(map, objGen, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
@@ -350,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
 BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, ObjGenFixture)
 {
     const MapExtent size(16, 8);
-    Point<int> p(size / 2);
+    Position p(size / 2);
     const int index = p.y * size.x + p.x;
 
     Map map(size, "map", "author");
@@ -374,7 +374,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, ObjGenFixture)
 
     Map map(size, "map", "author");
 
-    Point<int> p(size / 2);
+    Position p(size / 2);
     MapUtility::SetStone(map, objGen, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
@@ -388,7 +388,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, ObjGenFixture)
 BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, ObjGenFixture)
 {
     const MapExtent size(16, 8);
-    Point<int> p(size / 2);
+    Position p(size / 2);
     const int index = p.y * size.x + p.x;
 
     Map map(size, "map", "author");
@@ -407,12 +407,12 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, ObjGenFixture)
  */
 BOOST_AUTO_TEST_CASE(ComputePointOnCircle_FixedValues)
 {
-    Point<int> p1 = MapUtility::ComputePointOnCircle(0, 360, Point<int>(1, 1), 1.0);
+    Position p1 = MapUtility::ComputePointOnCircle(0, 360, Position(1, 1), 1.0);
 
     BOOST_REQUIRE_EQUAL(p1.x, 0x2);
     BOOST_REQUIRE_EQUAL(p1.y, 0x1);
 
-    Point<int> p2 = MapUtility::ComputePointOnCircle(90, 360, Point<int>(1, 1), 1.0);
+    Position p2 = MapUtility::ComputePointOnCircle(90, 360, Position(1, 1), 1.0);
 
     BOOST_REQUIRE_EQUAL(p2.x, 0x1);
     BOOST_REQUIRE_EQUAL(p2.y, 0x2);
