@@ -37,7 +37,6 @@
 #include "gameData/ToolConsts.h"
 #include "libutil/Log.h"
 #include <boost/lambda/bind.hpp>
-#include <boost/lambda/control_structures.hpp>
 #include <boost/lambda/if.hpp>
 #include <boost/lambda/lambda.hpp>
 
@@ -48,7 +47,7 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
     using bl::_1;
     toolOrderSub = gwg->GetNotifications().subscribe<ToolNote>(
       bl::if_((bl::bind(&ToolNote::type, _1) == ToolNote::OrderPlaced || bl::bind(&ToolNote::type, _1) == ToolNote::SettingsChanged)
-              && bl::bind(&ToolNote::player, _1) == boost::ref(player))[bl::bind(&nofMetalworker::CheckForOrders, this)]);
+              && bl::bind(&ToolNote::player, _1) == boost::ref(this->player))[bl::bind(&nofMetalworker::CheckForOrders, this)]);
 }
 
 nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id)
