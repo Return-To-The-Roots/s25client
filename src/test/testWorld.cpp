@@ -36,8 +36,6 @@
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/tmpFile.h"
 #include <boost/foreach.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
 

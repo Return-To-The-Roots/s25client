@@ -50,10 +50,8 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/TerrainData.h"
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/if.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
@@ -1109,9 +1107,8 @@ bool GameWorldGame::IsPointCompletelyVisible(const MapPoint& pt, unsigned char p
     }
 
     // Check scouts and soldiers
-    namespace bl = boost::lambda;
     const unsigned range = std::max(VISUALRANGE_SCOUT, VISUALRANGE_SOLDIER);
-    if(CheckPointsInRadius(pt, range, bl::bind(&GameWorldGame::IsScoutingFigureOnNode, this, bl::_1, player, bl::_2), true))
+    if(CheckPointsInRadius(pt, range, boost::bind(&GameWorldGame::IsScoutingFigureOnNode, this, _1, player, _2), true))
         return true;
     return IsPointScoutedByShip(pt, player);
 }
