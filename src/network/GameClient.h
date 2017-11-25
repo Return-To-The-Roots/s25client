@@ -17,6 +17,7 @@
 #ifndef GAMECLIENT_H_
 #define GAMECLIENT_H_
 
+#include "ClientError.h"
 #include "FramesInfo.h"
 #include "GameCommand.h"
 #include "GameMessageInterface.h"
@@ -230,6 +231,10 @@ private:
     bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
 
     bool OnGameMessage(const GameMessage_GetAsyncLog& msg) override;
+
+    /// Report the error and stop
+    void OnError(ClientError error);
+    bool CreateLobby();
 
     /// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungültige Nachricht etc.)
     void ServerLost();

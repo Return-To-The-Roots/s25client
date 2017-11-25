@@ -72,6 +72,7 @@ public:
     /// We don't need the actual GCs on the server. We can also have more than 1 here (next NWF and 2nd next NWF) but never more.
     /// TODO: Double check if we can even have 2 here.
     std::queue<AsyncChecksum> checksumOfNextNWF;
+    bool mapDataSent;
 };
 
 #endif // GAMESERVERPLAYER_H_INCLUDED
