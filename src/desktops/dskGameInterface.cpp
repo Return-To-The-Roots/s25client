@@ -1106,15 +1106,8 @@ void dskGameInterface::CI_GameResumed()
 
 void dskGameInterface::CI_Error(const ClientError ce)
 {
-    switch(ce)
-    {
-        default: break;
-
-        case CE_CONNECTIONLOST:
-            messenger.AddMessage("", 0, CD_SYSTEM, _("Lost connection to server!"), COLOR_RED);
-            GAMECLIENT.SetPause(true);
-            break;
-    }
+    messenger.AddMessage("", 0, CD_SYSTEM, ClientErrorToStr(ce), COLOR_RED);
+    GAMECLIENT.SetPause(true);
 }
 
 /**

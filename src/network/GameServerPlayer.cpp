@@ -24,7 +24,7 @@
 using boost::chrono::seconds;
 
 GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
-    : NetworkPlayer(id), isConnecting(true), pinging(false), isLagging(false)
+    : NetworkPlayer(id), isConnecting(true), pinging(false), isLagging(false), mapDataSent(false)
 {
     connectTime = Clock::now();
     this->socket = socket;

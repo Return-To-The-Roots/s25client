@@ -227,7 +227,7 @@ bool Loader::LoadSounds()
         std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
 #endif                                                   // _WIN32
 
-        LOG.write(_("Starting Sound-Converter ..."));
+        LOG.write(_("Starting Sound-Converter...\n"));
         if(system(cmd.c_str()) == -1)
             return false;
 

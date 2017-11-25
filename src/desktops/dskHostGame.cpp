@@ -1005,17 +1005,7 @@ void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/,
 
 void dskHostGame::CI_Error(const ClientError ce)
 {
-    switch(ce)
-    {
-        case CE_INCOMPLETEMESSAGE:
-        case CE_CONNECTIONLOST:
-        {
-            // Verbindung zu Server abgebrochen
-            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lost connection to server!"), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
-        }
-        break;
-        default: break;
-    }
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
 }
 
 /**

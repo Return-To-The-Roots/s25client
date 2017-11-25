@@ -207,18 +207,7 @@ void iwDirectIPConnect::SetPort(unsigned short port)
 
 void iwDirectIPConnect::CI_Error(const ClientError ce)
 {
-    switch(ce)
-    {
-        case CE_SERVERFULL: SetStatus(_("This Server is full!"), COLOR_RED); break;
-        case CE_WRONGPW: SetStatus(_("Wrong Password!"), COLOR_RED); break;
-        case CE_WRONGVERSION: SetStatus(_("Wrong client version"), COLOR_RED); break;
-        case CE_CONNECTIONLOST: SetStatus(_("Connection to Host closed!"), COLOR_RED); break;
-        case CE_INCOMPLETEMESSAGE: SetStatus(_("Too short Message received!"), COLOR_RED); break;
-        case CE_INVALIDSERVERTYPE: SetStatus(_("Wrong Server Type!"), COLOR_RED); break;
-        case CE_WRONGMAP: SetStatus("", COLOR_RED); break;
-        default: break;
-    }
-
+    SetStatus(ClientErrorToStr(ce), COLOR_RED);
     GetCtrl<ctrlButton>(7)->SetEnabled();
 }
 

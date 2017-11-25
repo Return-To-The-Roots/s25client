@@ -119,6 +119,7 @@ private:
     bool OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
     bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool OnGameMessage(const GameMessage_MapRequest& msg) override;
     bool OnGameMessage(const GameMessage_Map_Checksum& msg) override;
     bool OnGameMessage(const GameMessage_GameCommand& msg) override;
     bool OnGameMessage(const GameMessage_Server_Speed& msg) override;

@@ -53,9 +53,10 @@ enum
 
     NMS_MAP_NAME = 0x0301, // x mapname
     NMS_MAP_INFO,          // 0 | 4 parts, 4 ziplength, 4 length
-    NMS_MAP_DATA,          // 0 | x mappartdata
-    NMS_MAP_CHECKSUM,      // 4 checksum
-    NMS_MAP_CHECKSUMOK,    // 1 checksumok
+    NMS_MAP_REQUEST,
+    NMS_MAP_DATA,       // 0 | x mappartdata
+    NMS_MAP_CHECKSUM,   // 4 checksum
+    NMS_MAP_CHECKSUMOK, // 1 checksumok
 
     NMS_SERVER_NWF_DONE = 0x0401, // 0
     NMS_GAMECOMMANDS,

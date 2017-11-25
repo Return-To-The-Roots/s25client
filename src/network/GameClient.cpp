@@ -20,6 +20,7 @@
 #include "ClientPlayer.h"
 #include "ClientPlayers.h"
 #include "EventManager.h"
+#include "FileChecksum.h"
 #include "Game.h"
 #include "GameEvent.h"
 #include "GameInterface.h"
@@ -255,9 +256,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
     {
-        if(ci)
-            ci->CI_Error(CE_WRONGMAP);
-        Stop();
+        OnError(CE_WRONGMAP);
         return;
     }
 
@@ -374,10 +373,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
     if(msg.playerId == 0xFFFFFFFF)
     {
-        if(ci)
-            ci->CI_Error(CE_SERVERFULL);
-
-        Stop();
+        OnError(CE_SERVERFULL);
         return true;
     }
 
@@ -613,18 +609,14 @@ bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
         default:
         case 1:
         {
-            if(ci)
-                ci->CI_Error(CE_INVALIDSERVERTYPE);
-            Stop();
+            OnError(CE_INVALIDSERVERTYPE);
             return true;
         }
         break;
 
         case 2:
         {
-            if(ci)
-                ci->CI_Error(CE_WRONGVERSION);
-            Stop();
+            OnError(CE_WRONGVERSION);
             return true;
         }
         break;
@@ -644,14 +636,12 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 {
     if(msg.password != "true")
     {
-        if(ci)
-            ci->CI_Error(CE_WRONGPW);
-
-        Stop();
+        OnError(CE_WRONGPW);
         return true;
     }
 
     mainPlayer.sendMsgAsync(new GameMessage_Player_Name(SETTINGS.lobby.name));
+    mainPlayer.sendMsgAsync(new GameMessage_MapRequest(true));
 
     if(ci)
         ci->CI_NextConnectState(CS_QUERYMAPNAME);
@@ -807,11 +797,15 @@ bool GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown& /*msg*/
 bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
 {
     // full path
-    mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + msg.map_name;
+    std::string portFilename = makePortableFileName(msg.filename);
+    if(portFilename.empty())
+    {
+        LOG.write("Invalid filename received!\n");
+        OnError(CE_WRONGMAP);
+    }
+    mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + portFilename;
     mapinfo.type = msg.mt;
-    mapinfo.mapData.data.resize(msg.mapCompressedLen);
     mapinfo.mapData.length = msg.mapLen;
-    mapinfo.luaData.data.resize(msg.luaCompressedLen);
     mapinfo.luaData.length = msg.luaLen;
 
     // lua script file path
@@ -819,6 +813,21 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
         mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
     else
         mapinfo.luaFilepath.clear();
+
+    if(bfs::exists(mapinfo.filepath) && (mapinfo.luaFilepath.empty() || bfs::exists(mapinfo.luaFilepath)) && CreateLobby())
+    {
+        mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum);
+        if(!mapinfo.luaFilepath.empty())
+            mapinfo.luaData.CompressFromFile(mapinfo.luaFilepath, &mapinfo.luaChecksum);
+        if(mapinfo.mapData.data.size() == msg.mapCompressedLen && mapinfo.luaData.data.size() == msg.luaCompressedLen)
+        {
+            mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
+            return true;
+        }
+    }
+    mapinfo.mapData.data.resize(msg.mapCompressedLen);
+    mapinfo.luaData.data.resize(msg.luaCompressedLen);
+    mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
     return true;
 }
 
@@ -845,73 +854,73 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
-            if(ci)
-                ci->CI_Error(CE_WRONGMAP);
-            Stop();
+            OnError(CE_WRONGMAP);
             return true;
         }
         if(!mapinfo.luaFilepath.empty() && !mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath, &mapinfo.luaChecksum))
         {
-            if(ci)
-                ci->CI_Error(CE_WRONGMAP);
-            Stop();
+            OnError(CE_WRONGMAP);
             return true;
         }
         RTTR_Assert(!mapinfo.luaFilepath.empty() || mapinfo.luaChecksum == 0);
 
-        // Map-Typ unterscheiden
-        switch(mapinfo.type)
+        if(!CreateLobby())
         {
-            case MAPTYPE_OLDMAP:
-            {
-                libsiedler2::Archiv map;
-
-                // Karteninformationen laden
-                if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
-                {
-                    LOG.write("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
-                    if(ci)
-                        ci->CI_Error(CE_WRONGMAP);
-                    Stop();
-                    return true;
-                }
-
-                const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
-
-                RTTR_Assert(!gameLobby);
-                gameLobby.reset(new GameLobby(false, IsHost(), header.getNumPlayers()));
-                mapinfo.title = cvStringToUTF8(header.getName());
-            }
-            break;
-            case MAPTYPE_SAVEGAME:
-            {
-                mapinfo.savegame.reset(new Savegame);
-                if(!mapinfo.savegame->Load(mapinfo.filepath, true, false))
-                {
-                    if(ci)
-                        ci->CI_Error(CE_WRONGMAP);
-                    Stop();
-                    return true;
-                }
-
-                RTTR_Assert(!gameLobby);
-                gameLobby.reset(new GameLobby(true, IsHost(), mapinfo.savegame->GetNumPlayers()));
-                mapinfo.title = mapinfo.savegame->GetMapName();
-            }
-            break;
-        }
-
-        if(mainPlayer.playerId >= gameLobby->getNumPlayers())
-        {
-            if(ci)
-                ci->CI_Error(CE_WRONGMAP);
-            Stop();
+            OnError(CE_WRONGMAP);
             return true;
         }
-        mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
 
-        LOG.writeToFile(">>>NMS_MAP_CHECKSUM(%u)\n") % mapinfo.mapChecksum;
+        mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
     }
+    return true;
+}
+
+void GameClient::OnError(ClientError error)
+{
+    if(ci)
+        ci->CI_Error(error);
+    Stop();
+}
+
+bool GameClient::CreateLobby()
+{
+    RTTR_Assert(!gameLobby);
+
+    unsigned numPlayers;
+
+    switch(mapinfo.type)
+    {
+        case MAPTYPE_OLDMAP:
+        {
+            libsiedler2::Archiv map;
+
+            // Karteninformationen laden
+            if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
+            {
+                LOG.write("GameClient::OnMapData: ERROR: Map \"%s\", couldn't load header!\n") % mapinfo.filepath;
+                return false;
+            }
+
+            const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
+            numPlayers = header.getNumPlayers();
+            mapinfo.title = cvStringToUTF8(header.getName());
+        }
+        break;
+        case MAPTYPE_SAVEGAME:
+            mapinfo.savegame.reset(new Savegame);
+            if(!mapinfo.savegame->Load(mapinfo.filepath, true, false))
+                return false;
+
+            numPlayers = mapinfo.savegame->GetNumPlayers();
+            mapinfo.title = mapinfo.savegame->GetMapName();
+            break;
+        default: return false;
+    }
+
+    if(mainPlayer.playerId >= numPlayers)
+        return false;
+
+    gameLobby.reset(new GameLobby(mapinfo.type == MAPTYPE_SAVEGAME, IsHost(), numPlayers));
     return true;
 }
 
@@ -924,10 +933,10 @@ bool GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 
     if(!msg.correct)
     {
-        if(ci)
-            ci->CI_Error(CE_WRONGMAP);
-
-        Stop();
+        if(msg.retryAllowed)
+            mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
+        else
+            OnError(CE_WRONGMAP);
     }
     return true;
 }
@@ -1306,8 +1315,7 @@ bool GameClient::StartReplay(const std::string& path)
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
           % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());
-        if(ci)
-            ci->CI_Error(CE_WRONGMAP);
+        OnError(CE_WRONGMAP);
         replayinfo.reset();
         return false;
     }
@@ -1357,9 +1365,7 @@ bool GameClient::StartReplay(const std::string& path)
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 LOG.write(_("Error decompressing map file"));
-                if(ci)
-                    ci->CI_Error(CE_WRONGMAP);
-                Stop();
+                OnError(CE_WRONGMAP);
                 return false;
             }
             if(mapinfo.luaData.length)
@@ -1368,9 +1374,7 @@ bool GameClient::StartReplay(const std::string& path)
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
                     LOG.write(_("Error decompressing lua file"));
-                    if(ci)
-                        ci->CI_Error(CE_WRONGMAP);
-                    Stop();
+                    OnError(CE_WRONGMAP);
                     return false;
                 }
             }
@@ -1389,9 +1393,7 @@ bool GameClient::StartReplay(const std::string& path)
     } catch(SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
-        if(ci)
-            ci->CI_Error(CE_WRONGMAP);
-        Stop();
+        OnError(CE_WRONGMAP);
         return false;
     }
 
@@ -1436,9 +1438,7 @@ int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 
 void GameClient::ServerLost()
 {
-    Stop();
-    if(ci)
-        ci->CI_Error(CE_CONNECTIONLOST);
+    OnError(CE_CONNECTIONLOST);
 }
 
 /**

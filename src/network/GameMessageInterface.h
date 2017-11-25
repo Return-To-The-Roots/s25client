@@ -60,9 +60,9 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
                                 GameMessage_Player_Kicked, GameMessage_Player_Ping, GameMessage_Player_New, GameMessage_Player_Ready,
                                 GameMessage_Player_Swap,
 
-                                GameMessage_Map_Info, GameMessage_Map_Data, GameMessage_Map_Checksum, GameMessage_Map_ChecksumOK,
-                                GameMessage_GGSChange, GameMessage_RemoveLua, GameMessage_Pause, GameMessage_Server_NWFDone,
-                                GameMessage_GameCommand, GameMessage_Server_Speed,
+                                GameMessage_Map_Info, GameMessage_MapRequest, GameMessage_Map_Data, GameMessage_Map_Checksum,
+                                GameMessage_Map_ChecksumOK, GameMessage_GGSChange, GameMessage_RemoveLua, GameMessage_Pause,
+                                GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Server_Speed,
 
                                 GameMessage_GetAsyncLog, GameMessage_SendAsyncLog)
 

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "ClientError.h"
 #include "gameTypes/ChatDestination.h"
 #include "gameTypes/PlayerState.h"
 #include "gameData/NationConsts.h"
@@ -38,19 +39,6 @@ enum ConnectState
     CS_REGISTERED,
     CS_LOGGEDIN,
     CS_SERVERCREATED
-};
-
-/// Fehler, die vom Client gemeldet werden
-enum ClientError
-{
-    CE_INCOMPLETEMESSAGE,
-    CE_SERVERFULL,
-    CE_WRONGPW,
-    CE_CONNECTIONLOST,
-    CE_INVALIDSERVERTYPE,
-    CE_WRONGMAP,
-    CE_WRONGVERSION,
-    CE_LOBBYFULL
 };
 
 class ClientInterface

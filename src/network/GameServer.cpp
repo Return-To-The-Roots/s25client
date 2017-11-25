@@ -1110,38 +1110,8 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
     LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n") % unsigned(msg.player) % msg.playername;
 
     playerInfos[msg.player].name = msg.playername;
+    SendToAll(msg);
 
-    // Als Antwort Karteninformationen übertragen
-    player->sendMsgAsync(new GameMessage_Map_Info(bfs::path(mapinfo.filepath).filename().string(), mapinfo.type, mapinfo.mapData.length,
-                                                  mapinfo.mapData.data.size(), mapinfo.luaData.length, mapinfo.luaData.data.size()));
-
-    // Send map data
-    unsigned curPos = 0;
-    const unsigned compressedMapSize = mapinfo.mapData.data.size();
-    while(curPos < compressedMapSize)
-    {
-        unsigned chunkSize = (compressedMapSize - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (compressedMapSize - curPos);
-
-        player->sendMsgAsync(new GameMessage_Map_Data(true, curPos, &mapinfo.mapData.data[curPos], chunkSize));
-        curPos += chunkSize;
-    }
-
-    RTTR_Assert(curPos == compressedMapSize);
-
-    // And lua data (if there is any)
-    RTTR_Assert(mapinfo.luaFilepath.empty() == mapinfo.luaData.data.empty());
-    RTTR_Assert(mapinfo.luaData.data.empty() == (mapinfo.luaData.length == 0));
-    curPos = 0;
-    const unsigned compressedLuaSize = mapinfo.luaData.data.size();
-    while(curPos < compressedLuaSize)
-    {
-        unsigned chunkSize = (compressedLuaSize - curPos > MAP_PART_SIZE) ? MAP_PART_SIZE : (compressedLuaSize - curPos);
-
-        player->sendMsgAsync(new GameMessage_Map_Data(false, curPos, &mapinfo.luaData.data[curPos], chunkSize));
-        curPos += chunkSize;
-    }
-
-    RTTR_Assert(curPos == compressedLuaSize);
     return true;
 }
 
@@ -1155,7 +1125,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
     JoinPlayerInfo& player = playerInfos[msg.player];
     player.nation = msg.nation;
 
-    SendToAll(GameMessage_Player_Set_Nation(msg.player, msg.nation));
+    SendToAll(msg);
 
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n") % unsigned(msg.player) % player.nation;
     return true;
@@ -1171,7 +1141,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
     JoinPlayerInfo& player = playerInfos[msg.player];
     player.team = msg.team;
 
-    SendToAll(GameMessage_Player_Set_Team(msg.player, msg.team));
+    SendToAll(msg);
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n") % unsigned(msg.player) % player.team;
     return true;
 }
@@ -1209,8 +1179,52 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Checksumme
+bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
+{
+    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    if(!player)
+        return true;
+
+    if(msg.requestInfo)
+    {
+        player->sendMsgAsync(new GameMessage_Map_Info(bfs::path(mapinfo.filepath).filename().string(), mapinfo.type, mapinfo.mapData.length,
+                                                      mapinfo.mapData.data.size(), mapinfo.luaData.length, mapinfo.luaData.data.size()));
+    } else if(player->mapDataSent)
+    {
+        // Don't send again
+        KickPlayer(msg.player, NP_INVALIDMSG, 0);
+    } else
+    {
+        // Send map data
+        unsigned curPos = 0;
+        unsigned remainingSize = mapinfo.mapData.data.size();
+        while(remainingSize)
+        {
+            unsigned chunkSize = std::min(MAP_PART_SIZE, remainingSize);
+
+            player->sendMsgAsync(new GameMessage_Map_Data(true, curPos, &mapinfo.mapData.data[curPos], chunkSize));
+            curPos += chunkSize;
+            remainingSize -= chunkSize;
+        }
+
+        // And lua data (if there is any)
+        RTTR_Assert(mapinfo.luaFilepath.empty() == mapinfo.luaData.data.empty());
+        RTTR_Assert(mapinfo.luaData.data.empty() == (mapinfo.luaData.length == 0));
+        curPos = 0;
+        remainingSize = mapinfo.luaData.data.size();
+        while(remainingSize)
+        {
+            unsigned chunkSize = std::min(MAP_PART_SIZE, remainingSize);
+
+            player->sendMsgAsync(new GameMessage_Map_Data(false, curPos, &mapinfo.luaData.data[curPos], chunkSize));
+            curPos += chunkSize;
+            remainingSize -= chunkSize;
+        }
+        player->mapDataSent = true;
+    }
+    return true;
+}
+
 bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 {
     GameServerPlayer* player = GetNetworkPlayer(msg.player);
@@ -1222,14 +1236,16 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
     LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % unsigned(msg.player) % msg.mapChecksum
       % mapinfo.mapChecksum % (checksumok ? "yes" : "no");
 
-    // Antwort senden
-    player->sendMsgAsync(new GameMessage_Map_ChecksumOK(checksumok));
+    // Send response. If map data was not sent yet, the client may retry
+    player->sendMsgAsync(new GameMessage_Map_ChecksumOK(checksumok, !player->mapDataSent));
 
     LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n") % unsigned(msg.player) % checksumok;
 
     if(!checksumok)
-        KickPlayer(msg.player, NP_WRONGCHECKSUM, 0);
-    else
+    {
+        if(player->mapDataSent)
+            KickPlayer(msg.player, NP_WRONGCHECKSUM, 0);
+    } else
     {
         JoinPlayerInfo& playerInfo = playerInfos[msg.player];
         // den anderen Spielern mitteilen das wir einen neuen haben
