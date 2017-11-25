@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "WorldWithGCExecution.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -74,6 +75,35 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     this->SetProductionEnabled(bldPos2, false);
     RTTR_EXEC_TILL(2000, curInventory[TOOLS[0]] == expectedInventory[TOOLS[0]] && curInventory[TOOLS[1]] == expectedInventory[TOOLS[1]]
                            && curInventory[TOOLS[2]] == expectedInventory[TOOLS[2]]);
+}
+
+BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
+{
+    Inventory inv;
+    inv.Add(GD_BOARDS, 10);
+    inv.Add(GD_IRON, 10);
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddGoods(inv, true);
+    ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
+    ggs.setSelection(AddonId::TOOL_ORDERING, 1);
+    ToolSettings settings;
+    std::fill(settings.begin(), settings.end(), 0);
+    this->ChangeTools(settings);
+    MapPoint housePos(hqPos.x + 3, hqPos.y);
+    const nobUsual* mw = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, BLD_METALWORKS, housePos, curPlayer, NAT_ROMANS));
+    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SOUTHEAST);
+    this->BuildRoad(flagPos, false, std::vector<Direction>(3, Direction::EAST));
+    RTTR_EXEC_TILL(200, mw->HasWorker());
+    BOOST_REQUIRE(!mw->is_working);
+    // Wait till he has all the wares
+    RTTR_EXEC_TILL(3000, mw->GetNumWares(0) == 6);
+    RTTR_EXEC_TILL(3000, mw->GetNumWares(1) == 6);
+    // No order -> not working
+    BOOST_REQUIRE(!mw->is_working);
+    boost::array<int8_t, NUM_TOOLS> orders;
+    std::fill(orders.begin(), orders.end(), 0);
+    orders[0] = 1;
+    this->ChangeTools(settings, &orders.front());
+    RTTR_EXEC_TILL(1300, mw->is_working);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
