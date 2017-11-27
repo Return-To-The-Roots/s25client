@@ -20,12 +20,11 @@
 #include "Loader.h"
 #include "controls/ctrlMultiline.h"
 #include "network/GameClient.h"
-#include "network/GameServer.h"
+#include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
 #include <boost/foreach.hpp>
 #include <vector>
 
-#include "ogl/glArchivItem_Bitmap.h"
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame, HelpImage image)
     : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("io", 5), true, false),
       pauseGame_(pauseGame)
@@ -65,7 +64,7 @@ void iwMissionStatement::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // TODO: Make something better, this is quite hacky (Client and server dependency)
     if(pauseGame_)
-        GAMESERVER.SetPaused(false);
+        GAMECLIENT.SetPause(false);
     Close();
 }
 
@@ -74,5 +73,5 @@ void iwMissionStatement::SetActive(bool activate)
     IngameWindow::SetActive(activate);
     // TODO: Make something better, this is quite hacky (Client and server dependency)
     if(IsActive() && pauseGame_)
-        GAMESERVER.SetPaused(true);
+        GAMECLIENT.SetPause(true);
 }

@@ -52,18 +52,17 @@
 GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
 
                                 GameMessage_Server_Type, GameMessage_Server_TypeOK, GameMessage_Server_Password, GameMessage_Server_Name,
-                                GameMessage_Server_Start, GameMessage_Server_Chat, GameMessage_System_Chat, GameMessage_Server_Async,
-                                GameMessage_Server_Countdown, GameMessage_Server_CancelCountdown,
+                                GameMessage_Server_Start, GameMessage_Chat, GameMessage_Server_Async, GameMessage_Countdown,
+                                GameMessage_CancelCountdown,
 
-                                GameMessage_Player_Id, GameMessage_Player_Name, GameMessage_Player_List, GameMessage_Player_Set_State,
-                                GameMessage_Player_Set_Nation, GameMessage_Player_Set_Team, GameMessage_Player_Set_Color,
-                                GameMessage_Player_Kicked, GameMessage_Player_Ping, GameMessage_Player_New, GameMessage_Player_Ready,
-                                GameMessage_Player_Swap,
+                                GameMessage_Player_Id, GameMessage_Player_Name, GameMessage_Player_List, GameMessage_Player_State,
+                                GameMessage_Player_Nation, GameMessage_Player_Team, GameMessage_Player_Color, GameMessage_Player_Kicked,
+                                GameMessage_Player_Ping, GameMessage_Player_New, GameMessage_Player_Ready, GameMessage_Player_Swap,
 
                                 GameMessage_Map_Info, GameMessage_MapRequest, GameMessage_Map_Data, GameMessage_Map_Checksum,
                                 GameMessage_Map_ChecksumOK, GameMessage_GGSChange, GameMessage_RemoveLua, GameMessage_Pause,
-                                GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Server_Speed,
+                                GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Speed,
 
-                                GameMessage_GetAsyncLog, GameMessage_SendAsyncLog)
+                                GameMessage_GetAsyncLog, GameMessage_AsyncLog)
 
 #endif //! GAMEMESSAGEINTERFACE_H_INCLUDED

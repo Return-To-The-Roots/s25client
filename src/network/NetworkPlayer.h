@@ -42,7 +42,7 @@ public:
     void sendMsg(const Message& msg);
     /// Execute the handler function for all received messages. If usePlayerId is true, the player in the message will be replaced by this
     /// players id
-    void executeMsgs(MessageInterface& msgHandler, bool usePlayerId);
+    void executeMsgs(MessageInterface& msgHandler);
 
     unsigned playerId;
     MessageQueue recvQueue, sendQueue;

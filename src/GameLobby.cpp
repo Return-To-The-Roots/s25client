@@ -24,12 +24,12 @@ GameLobby::~GameLobby() {}
 
 JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId)
 {
-    return players_[playerId];
+    return players_.at(playerId);
 }
 
 const JoinPlayerInfo& GameLobby::getPlayer(unsigned playerId) const
 {
-    return players_[playerId];
+    return players_.at(playerId);
 }
 
 unsigned GameLobby::getNumPlayers() const

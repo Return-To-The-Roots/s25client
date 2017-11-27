@@ -53,8 +53,11 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
     if(bfs::exists(luaFilePath))
     {
         lua.reset(new LuaInterfaceGame(*this));
-        if(!lua->LoadScript(luaFilePath))
+        if(!lua->LoadScript(luaFilePath) || !lua->CheckScriptVersion())
+        {
             lua.reset();
+            return false;
+        }
     }
 
     std::vector<Nation> players;
@@ -122,20 +125,27 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
     if(!luaScript.empty())
     {
         if(sgd.PopUnsignedInt() != 0xC0DEBA5E)
-            throw SerializedGameData::Error("Invalid id for lua data");
+            throw SerializedGameData::Error(_("Invalid id for lua data"));
         // If there is a script, there is also save data. Pop that first
         unsigned luaSaveSize = sgd.PopUnsignedInt();
         Serializer luaSaveState;
         sgd.PopRawData(luaSaveState.GetDataWritable(luaSaveSize), luaSaveSize);
         luaSaveState.SetLength(luaSaveSize);
         if(sgd.PopUnsignedInt() != 0xC001C0DE)
-            throw SerializedGameData::Error("Invalid end-id for lua data");
+            throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
         lua.reset(new LuaInterfaceGame(*this));
         if(!lua->LoadScriptString(luaScript))
+        {
             lua.reset();
-        else
-            lua->Deserialize(luaSaveState);
+            throw SerializedGameData::Error(_("Lua script failed to load."));
+        }
+        if(!lua->CheckScriptVersion())
+        {
+            lua.reset();
+            throw SerializedGameData::Error(_("Wrong version for lua script."));
+        }
+        lua->Deserialize(luaSaveState);
     }
 }

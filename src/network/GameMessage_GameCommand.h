@@ -26,7 +26,7 @@
 
 class Serializer;
 
-class GameMessage_GameCommand : public GameMessage
+class GameMessage_GameCommand : public GameMessageWithPlayer
 {
 public:
     PlayerGameCommands gcs;

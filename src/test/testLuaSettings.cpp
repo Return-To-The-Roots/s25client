@@ -21,7 +21,7 @@
 #include "JoinPlayerInfo.h"
 #include "addons/Addon.h"
 #include "lua/LuaInterfaceSettings.h"
-#include "network/GameServerInterface.h"
+#include "network/IGameLobbyController.h"
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
@@ -32,46 +32,29 @@
 
 namespace {
 
-struct LuaSettingsTestsFixture : public GameServerInterface
+/// Fixture for the settings tests, implements IGameLobbyController
+/// Note: Here all settings are applied immediately, in the real thing they are transmitted to the server and then applied, hence with a
+/// delay
+struct LuaSettingsTestsFixture : public IGameLobbyController
 {
     std::vector<JoinPlayerInfo> players;
     GlobalGameSettings ggs;
     LuaInterfaceSettings lua;
     StringStreamWriter& logWriter;
 
-    bool IsRunning() const override { return true; }
-    unsigned GetNumMaxPlayers() const override { return players.size(); }
+    unsigned GetMaxNumPlayers() const override { return players.size(); }
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
-    void KickPlayer(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_FREE; }
-
-    void CheckAndSetColor(unsigned playerIdx, unsigned newColor) override
-    {
-        while(true)
-        {
-            bool found = false;
-            unsigned curId = 0;
-            BOOST_FOREACH(JoinPlayerInfo& player, players)
-            {
-                if(curId != playerIdx && player.isUsed() && newColor == player.color)
-                {
-                    found = true;
-                    break;
-                }
-                ++curId;
-            }
-            if(!found)
-            {
-                GetJoinPlayer(playerIdx).color = newColor;
-                return;
-            }
-            newColor = rand() & (0xFF << 24);
-        }
-    }
-
-    void AnnounceStatusChange() override {}
     const GlobalGameSettings& GetGGS() const override { return ggs; }
     void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
-    void SendToAll(const GameMessage& msg) override {}
+    void CloseSlot(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PS_LOCKED; }
+    void SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override
+    {
+        GetJoinPlayer(playerIdx).ps = state;
+        GetJoinPlayer(playerIdx).aiInfo = aiInfo;
+    }
+    void SetColor(unsigned playerIdx, unsigned newColor) override { GetJoinPlayer(playerIdx).color = newColor; }
+    void SetTeam(unsigned playerIdx, Team newTeam) override { GetJoinPlayer(playerIdx).team = newTeam; }
+    void SetNation(unsigned playerIdx, Nation newNation) override { GetJoinPlayer(playerIdx).nation = newNation; }
 
     LuaSettingsTestsFixture() : lua(*this), logWriter(dynamic_cast<StringStreamWriter&>(*LOG.getFileWriter()))
     {

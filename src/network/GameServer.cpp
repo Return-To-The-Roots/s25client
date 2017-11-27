@@ -117,15 +117,7 @@ bool GameServer::CountDown::Update(unsigned curTime)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::GameServer() : currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG)
-{
-    status = SS_STOPPED;
-
-    framesinfo.Clear();
-    config.Clear();
-    mapinfo.Clear();
-    skiptogf = 0;
-}
+GameServer::GameServer() : skiptogf(0), status(SS_STOPPED), currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG) {}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -353,7 +345,7 @@ void GameServer::Run()
                     return;
                 }
             } else
-                SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
+                SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
         }
     }
 
@@ -362,7 +354,7 @@ void GameServer::Run()
     {
         // maximal 10 Pakete verschicken
         player.sendMsgs(10);
-        player.executeMsgs(*this, true);
+        player.executeMsgs(*this);
     }
 
     for(std::vector<GameServerPlayer>::iterator it = networkPlayers.begin(); it != networkPlayers.end();)
@@ -414,65 +406,6 @@ void GameServer::Stop()
     // status
     status = SS_STOPPED;
     LOG.write("server state changed to stop\n");
-}
-
-/**
- *  startet den Spielstart-Countdown
- */
-bool GameServer::StartCountdown()
-{
-    int numPlayers = 0;
-
-    // Alle Spieler da?
-    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
-    {
-        // noch nicht alle spieler da -> feierabend!
-        if(player.ps == PS_FREE)
-            return false;
-        else if(player.isHuman() && !player.isReady)
-            return false;
-        if(player.isHuman())
-            numPlayers++;
-    }
-
-    std::set<unsigned> takenColors;
-
-    // Check all players have different colors
-    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
-    {
-        if(player.isUsed())
-        {
-            if(helpers::contains(takenColors, player.color))
-                return false;
-            takenColors.insert(player.color);
-        }
-    }
-
-    // Start countdown (except its single player)
-    if(numPlayers > 1)
-    {
-        countdown.Start(3, VIDEODRIVER.GetTickCount());
-        SendToAll(GameMessage_Server_Countdown(countdown.GetRemainingSecs()));
-        LOG.writeToFile("SERVER >>> Countdown started(%d)\n") % countdown.GetRemainingSecs();
-    } else if(!StartGame())
-    {
-        GAMEMANAGER.ShowMenu();
-        // Countdown was started (->true). Gamestart failed...
-        return true;
-    }
-
-    return true;
-}
-
-/**
- *  stoppt den Spielstart-Countdown
- */
-void GameServer::CancelCountdown()
-{
-    // Countdown-Stop allen mitteilen
-    countdown.Stop();
-    SendToAll(GameMessage_Server_CancelCountdown());
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
 }
 
 /**
@@ -544,163 +477,12 @@ bool GameServer::StartGame()
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
     // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(0xff, currentGF, framesinfo.gf_length, true));
+    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gf_length, true));
 
     // ab ins game wechseln
     status = SS_GAME;
 
     return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// wechselt Spielerstatus durch
-void GameServer::TogglePlayerState(unsigned char playerId)
-{
-    if(playerId >= playerInfos.size())
-        return;
-
-    // oh ein spieler, weg mit ihm!
-    if(GetNetworkPlayer(playerId))
-    {
-        KickPlayer(playerId, NP_NOCAUSE, 0);
-        return;
-    }
-
-    JoinPlayerInfo& player = playerInfos[playerId];
-
-    // playerstatus weiterwechseln
-    switch(player.ps)
-    {
-        default: break;
-        case PS_FREE:
-        {
-            player.ps = PS_AI;
-            player.aiInfo = AI::Info(AI::DEFAULT, AI::EASY);
-        }
-        break;
-        case PS_AI:
-        {
-            // Verschiedene KIs durchgehen
-            switch(player.aiInfo.type)
-            {
-                case AI::DEFAULT:
-                    switch(player.aiInfo.level)
-                    {
-                        case AI::EASY: player.aiInfo.level = AI::MEDIUM; break;
-                        case AI::MEDIUM: player.aiInfo.level = AI::HARD; break;
-                        case AI::HARD: player.aiInfo = AI::Info(AI::DUMMY); break;
-                    }
-                    break;
-                case AI::DUMMY:
-                    if(mapinfo.type != MAPTYPE_SAVEGAME)
-                        player.ps = PS_LOCKED;
-                    else
-                        player.ps = PS_FREE;
-                    break;
-                default:
-                    if(mapinfo.type != MAPTYPE_SAVEGAME)
-                        player.ps = PS_LOCKED;
-                    else
-                        player.ps = PS_FREE;
-                    break;
-            }
-            break;
-        }
-
-        case PS_LOCKED:
-        {
-            // Im Savegame können auf geschlossene Slots keine Spieler
-            // gesetzt werden, der entsprechende Spieler existierte ja gar nicht auf
-            // der Karte!
-            if(mapinfo.type != MAPTYPE_SAVEGAME)
-                player.ps = PS_FREE;
-        }
-        break;
-    }
-    if(player.ps == PS_AI)
-        player.SetAIName(playerId);
-    player.isReady = (player.ps == PS_AI);
-
-    // Tat verkünden
-    SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
-    SendToAll(GameMessage_Player_Ready(playerId, player.isReady));
-    AnnounceStatusChange();
-
-    // If slot is filled, check current color
-    if(player.isUsed())
-        CheckAndSetColor(playerId, player.color);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Team der KI ändern
-void GameServer::ToggleAITeam(unsigned char playerId)
-{
-    JoinPlayerInfo& player = playerInfos[playerId];
-
-    // nur KI
-    if(player.ps != PS_AI)
-        return;
-
-    // team wechseln
-    Team newTeam;
-    // switch from random team?
-    if(player.team == TM_RANDOMTEAM || player.team == TM_RANDOMTEAM2 || player.team == TM_RANDOMTEAM3 || player.team == TM_RANDOMTEAM4)
-        newTeam = TM_TEAM1;
-    else if(player.team == TM_NOTEAM) // switch to random team?
-    {
-        int randomTeamNum = rand() % 4;
-        if(randomTeamNum == 0)
-            newTeam = TM_RANDOMTEAM;
-        else
-            newTeam = Team(TM_RANDOMTEAM2 + randomTeamNum - 1);
-    } else
-        newTeam = Team((player.team + 1) % NUM_TEAMS);
-    OnGameMessage(GameMessage_Player_Set_Team(playerId, newTeam));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Farbe der KI ändern
-void GameServer::ToggleAIColor(unsigned char playerId)
-{
-    JoinPlayerInfo& player = playerInfos[playerId];
-
-    // nur KI
-    if(player.ps != PS_AI)
-        return;
-
-    CheckAndSetColor(playerId, PLAYER_COLORS[(player.GetColorIdx() + 1) % PLAYER_COLORS.size()]);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Nation der KI ändern
-void GameServer::ToggleAINation(unsigned char playerId)
-{
-    JoinPlayerInfo& player = playerInfos[playerId];
-
-    // nur KI
-    if(player.ps != PS_AI)
-        return;
-
-    // Nation wechseln
-    OnGameMessage(GameMessage_Player_Set_Nation(playerId, Nation((player.nation + 1) % NUM_NATS)));
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Spieleinstellungen verschicken
-void GameServer::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
-{
-    this->ggs_ = ggs;
-    SendToAll(GameMessage_GGSChange(ggs));
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_GGS_CHANGE\n");
-}
-
-void GameServer::RemoveLuaScript()
-{
-    RTTR_Assert(status == SS_CONFIG);
-    mapinfo.luaFilepath.clear();
-    mapinfo.luaData.Clear();
-    mapinfo.luaChecksum = 0;
-    SendToAll(GameMessage_RemoveLua());
 }
 
 /**
@@ -716,7 +498,7 @@ void GameServer::SendToAll(const GameMessage& msg)
     }
 }
 
-void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param)
+void GameServer::KickPlayer(uint8_t playerId, KickReason cause)
 {
     if(playerId >= playerInfos.size())
         return;
@@ -729,7 +511,7 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
         return;
     playerInfo.ps = PS_FREE;
 
-    SendToAll(GameMessage_Player_Kicked(playerId, cause, param));
+    SendToAll(GameMessage_Player_Kicked(playerId, cause));
 
     // If we are ingame, replace by KI
     if(status == SS_GAME)
@@ -742,12 +524,7 @@ void GameServer::KickPlayer(unsigned char playerId, unsigned char cause, unsigne
     }
 
     AnnounceStatusChange();
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % unsigned(playerId) % unsigned(cause) % param;
-}
-
-void GameServer::KickPlayer(unsigned playerId)
-{
-    KickPlayer(playerId, NP_NOCAUSE, 0);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d)\n") % unsigned(playerId) % unsigned(cause);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -769,7 +546,7 @@ void GameServer::ClientWatchDog()
             if(set.InSet(player.socket))
             {
                 LOG.write(_("SERVER: Error on socket of player %1%, bye bye!\n")) % player.playerId;
-                KickPlayer(player.playerId, NP_CONNECTIONLOST, 0);
+                KickPlayer(player.playerId, NP_CONNECTIONLOST);
             }
         }
     }
@@ -867,7 +644,7 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
         BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
         {
             asyncLogs.push_back(AsyncLog(player.playerId, player.checksumOfNextNWF.front()));
-            player.sendMsgAsync(new GameMessage_GetAsyncLog(player.playerId));
+            player.sendMsgAsync(new GameMessage_GetAsyncLog());
         }
     }
     // Remove first (current) msg
@@ -889,7 +666,7 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
 
     framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
 
-    SendToAll(GameMessage_Server_NWFDone(0xff, currentGF, framesinfo.gfLenghtNew));
+    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gfLenghtNew));
 }
 
 bool GameServer::CheckForAsync()
@@ -920,7 +697,7 @@ void GameServer::CheckAndKickLaggingPlayers()
     {
         const unsigned timeOut = player.getLagTimeOut();
         if(timeOut == 0)
-            KickPlayer(player.playerId, NP_PINGTIMEOUT, 0);
+            KickPlayer(player.playerId, NP_PINGTIMEOUT);
         else if(timeOut <= 30
                 && (timeOut % 5 == 0 || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
             LOG.write(_("SERVER: Kicking player %1% in %2% seconds\n")) % player.playerId % timeOut;
@@ -944,7 +721,7 @@ bool GameServer::CheckForLaggingPlayers()
 /**
  *  Sendet ein NC-Paket ohne Befehle.
  */
-void GameServer::SendNothingNC(const unsigned& id)
+void GameServer::SendNothingNC(const unsigned id)
 {
     SendToAll(GameMessage_GameCommand(id, AsyncChecksum(), std::vector<gc::GameCommandPtr>()));
 }
@@ -1017,7 +794,7 @@ void GameServer::FillPlayerQueues()
                     if(!player.receiveMsgs())
                     {
                         LOG.write(_("SERVER: Receiving Message for player %1% failed, kicking...\n")) % player.playerId;
-                        KickPlayer(player.playerId, NP_CONNECTIONLOST, 0);
+                        KickPlayer(player.playerId, NP_CONNECTIONLOST);
                     } else
                         msgReceived = true;
                 }
@@ -1030,17 +807,14 @@ void GameServer::FillPlayerQueues()
 // pongnachricht
 bool GameServer::OnGameMessage(const GameMessage_Pong& msg)
 {
-    if(msg.player >= GetNumMaxPlayers())
-        return true;
-
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(player)
     {
         unsigned ping = player->calcPingTime();
         if(ping == 0u)
             return true;
-        playerInfos[msg.player].ping = ping;
-        SendToAll(GameMessage_Player_Ping(msg.player, ping));
+        playerInfos[msg.senderPlayerID].ping = ping;
+        SendToAll(GameMessage_Player_Ping(msg.senderPlayerID, ping));
     }
     return true;
 }
@@ -1049,7 +823,7 @@ bool GameServer::OnGameMessage(const GameMessage_Pong& msg)
 // servertype
 bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 {
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(!player)
         return true;
 
@@ -1062,7 +836,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
     player->sendMsgAsync(new GameMessage_Server_TypeOK(typeok));
 
     if(typeok != 0)
-        KickPlayer(msg.player, NP_CONNECTIONLOST, 0);
+        KickPlayer(msg.senderPlayerID, NP_CONNECTIONLOST);
     return true;
 }
 
@@ -1071,7 +845,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
  */
 bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(!player)
         return true;
 
@@ -1080,22 +854,75 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
     player->sendMsgAsync(new GameMessage_Server_Password(passwordok));
 
     if(passwordok == "false")
-        KickPlayer(msg.player, NP_WRONGPASSWORD, 0);
+        KickPlayer(msg.senderPlayerID, NP_WRONGPASSWORD);
     return true;
 }
 
 /**
- *  Server-Chat-Nachricht.
+ *  Chat-Nachricht.
  */
-bool GameServer::OnGameMessage(const GameMessage_Server_Chat& msg)
+bool GameServer::OnGameMessage(const GameMessage_Chat& msg)
 {
-    SendToAll(msg);
+    int playerID = GetTargetPlayer(msg);
+    if(playerID >= 0)
+        SendToAll(GameMessage_Chat(playerID, msg.destination, msg.text));
     return true;
 }
 
-bool GameServer::OnGameMessage(const GameMessage_System_Chat& msg)
+bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
 {
-    SendToAll(msg);
+    // Can't do this. Have to have a joined player
+    if(msg.ps == PS_OCCUPIED)
+        return true;
+
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
+        return true;
+    JoinPlayerInfo& player = playerInfos[playerID];
+    const PlayerState oldPs = player.ps;
+    // Can't change self
+    if(playerID != msg.senderPlayerID)
+    {
+        // oh ein spieler, weg mit ihm!
+        if(GetNetworkPlayer(playerID))
+            KickPlayer(playerID, NP_NOCAUSE);
+
+        if(mapinfo.type == MAPTYPE_SAVEGAME)
+        {
+            // For savegames we cannot set anyone on a locked slot as the player does not exist on the map
+            if(player.ps != PS_LOCKED)
+            {
+                // And we don't lock!
+                player.ps = msg.ps == PS_LOCKED ? PS_FREE : msg.ps;
+                player.aiInfo = msg.aiInfo;
+            }
+        } else
+        {
+            player.ps = msg.ps;
+            player.aiInfo = msg.aiInfo;
+        }
+        if(player.ps == PS_FREE && config.servertype == ServerType::LOCAL)
+        {
+            player.ps = PS_AI;
+            player.aiInfo = AI::Info(AI::DEFAULT);
+        }
+    }
+    // Even when nothing changed we send the data because the other players might have expected a change
+
+    SendToAll(GameMessage_Player_State(playerID, player.ps, player.aiInfo));
+
+    if(player.ps == PS_AI)
+    {
+        player.SetAIName(playerID);
+        SendToAll(GameMessage_Player_Name(playerID, player.name));
+    }
+    // If slot is filled, check current color
+    if(player.isUsed())
+        CheckAndSetColor(playerID, player.color);
+    if(oldPs != player.ps)
+        player.isReady = (player.ps == PS_AI);
+    SendToAll(GameMessage_Player_Ready(playerID, player.isReady));
+    AnnounceStatusChange();
     return true;
 }
 
@@ -1103,58 +930,55 @@ bool GameServer::OnGameMessage(const GameMessage_System_Chat& msg)
 // Spielername
 bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 {
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
-    if(!player)
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
         return true;
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n") % unsigned(msg.player) % msg.playername;
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_PLAYER_NAME(%s)\n") % playerID % msg.playername;
 
-    playerInfos[msg.player].name = msg.playername;
-    SendToAll(msg);
+    playerInfos[playerID].name = msg.playername;
+    SendToAll(GameMessage_Player_Name(playerID, msg.playername));
 
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Nation weiterwechseln
-bool GameServer::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
+bool GameServer::OnGameMessage(const GameMessage_Player_Nation& msg)
 {
-    if(msg.player >= GetNumMaxPlayers())
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
         return true;
 
-    JoinPlayerInfo& player = playerInfos[msg.player];
-    player.nation = msg.nation;
+    playerInfos[playerID].nation = msg.nation;
 
-    SendToAll(msg);
-
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLENATION(%d, %d)\n") % unsigned(msg.player) % player.nation;
+    SendToAll(GameMessage_Player_Nation(playerID, msg.nation));
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Team weiterwechseln
-bool GameServer::OnGameMessage(const GameMessage_Player_Set_Team& msg)
+bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
 {
-    if(msg.player >= GetNumMaxPlayers())
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
         return true;
 
-    JoinPlayerInfo& player = playerInfos[msg.player];
-    player.team = msg.team;
+    playerInfos[playerID].team = msg.team;
 
-    SendToAll(msg);
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLETEAM(%d, %d)\n") % unsigned(msg.player) % player.team;
+    SendToAll(GameMessage_Player_Team(playerID, msg.team));
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Farbe weiterwechseln
-bool GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
+bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
 {
-    if(msg.player >= GetNumMaxPlayers())
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
         return true;
 
-    LOG.writeToFile("CLIENT%u >>> SERVER: NMS_PLAYER_TOGGLECOLOR %u\n") % unsigned(msg.player) % msg.color;
-    CheckAndSetColor(msg.player, msg.color);
+    CheckAndSetColor(playerID, msg.color);
     return true;
 }
 
@@ -1163,10 +987,11 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Set_Color& msg)
  */
 bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
-    if(msg.player >= GetNumMaxPlayers())
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
         return true;
 
-    JoinPlayerInfo& player = playerInfos[msg.player];
+    JoinPlayerInfo& player = playerInfos[playerID];
 
     player.isReady = msg.ready;
 
@@ -1174,14 +999,13 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
     if(!player.isReady && countdown.IsActive())
         CancelCountdown();
 
-    SendToAll(msg);
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_READY(%d, %s)\n") % unsigned(msg.player) % (player.isReady ? "true" : "false");
+    SendToAll(GameMessage_Player_Ready(playerID, msg.ready));
     return true;
 }
 
 bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 {
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(!player)
         return true;
 
@@ -1192,7 +1016,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
     } else if(player->mapDataSent)
     {
         // Don't send again
-        KickPlayer(msg.player, NP_INVALIDMSG, 0);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
     } else
     {
         // Send map data
@@ -1227,31 +1051,31 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 {
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(!player)
         return true;
 
     bool checksumok = (msg.mapChecksum == mapinfo.mapChecksum && msg.luaChecksum == mapinfo.luaChecksum);
 
-    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % unsigned(msg.player) % msg.mapChecksum
+    LOG.writeToFile("CLIENT%d >>> SERVER: NMS_MAP_CHECKSUM(%u) expected: %u, ok: %s\n") % unsigned(msg.senderPlayerID) % msg.mapChecksum
       % mapinfo.mapChecksum % (checksumok ? "yes" : "no");
 
     // Send response. If map data was not sent yet, the client may retry
     player->sendMsgAsync(new GameMessage_Map_ChecksumOK(checksumok, !player->mapDataSent));
 
-    LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n") % unsigned(msg.player) % checksumok;
+    LOG.writeToFile("SERVER >>> CLIENT%d: NMS_MAP_CHECKSUM(%d)\n") % unsigned(msg.senderPlayerID) % checksumok;
 
     if(!checksumok)
     {
         if(player->mapDataSent)
-            KickPlayer(msg.player, NP_WRONGCHECKSUM, 0);
+            KickPlayer(msg.senderPlayerID, NP_WRONGCHECKSUM);
     } else
     {
-        JoinPlayerInfo& playerInfo = playerInfos[msg.player];
+        JoinPlayerInfo& playerInfo = playerInfos[msg.senderPlayerID];
         // den anderen Spielern mitteilen das wir einen neuen haben
-        SendToAll(GameMessage_Player_New(msg.player, playerInfo.name));
+        SendToAll(GameMessage_Player_New(msg.senderPlayerID, playerInfo.name));
 
-        LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % unsigned(msg.player) % playerInfo.name;
+        LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_NEW(%d, %s)\n") % unsigned(msg.senderPlayerID) % playerInfo.name;
 
         // belegt markieren
         playerInfo.ps = PS_OCCUPIED;
@@ -1264,7 +1088,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
         player->sendMsgAsync(new GameMessage_Player_List(playerInfos));
 
         // Assign unique color
-        CheckAndSetColor(msg.player, playerInfo.color);
+        CheckAndSetColor(msg.senderPlayerID, playerInfo.color);
 
         // GGS senden
         player->sendMsgAsync(new GameMessage_GGSChange(ggs_));
@@ -1275,7 +1099,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 }
 
 // speed change message
-bool GameServer::OnGameMessage(const GameMessage_Server_Speed& msg)
+bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
 {
     framesinfo.gfLenghtNew2 = msg.gf_length;
     return true;
@@ -1283,24 +1107,24 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Speed& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
 {
-    GameServerPlayer* player = GetNetworkPlayer(msg.player);
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
     if(!player)
         return true;
-    // LOG.writeToFile("SERVER <<< GC %u\n") % unsigned(msg.player);
+    // LOG.writeToFile("SERVER <<< GC %u\n") % unsigned(msg.senderPlayerID);
 
     // Save and broadcast command
     player->checksumOfNextNWF.push(msg.gcs.checksum);
     player->setNotLagging();
-    SendToAll(msg);
+    SendToAll(GameMessage_GameCommand(msg.senderPlayerID, msg.gcs.checksum, msg.gcs.gcs));
     return true;
 }
 
-bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
+bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
 {
     bool foundPlayer = false;
     BOOST_FOREACH(AsyncLog& log, asyncLogs)
     {
-        if(log.playerId != msg.player)
+        if(log.playerId != msg.senderPlayerID)
             continue;
         RTTR_Assert(!log.done);
         if(log.done)
@@ -1316,7 +1140,7 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     }
     if(!foundPlayer)
     {
-        LOG.write(_("Received async log from %1%, but did not expect it!\n")) % unsigned(msg.player);
+        LOG.write(_("Received async log from %1%, but did not expect it!\n")) % unsigned(msg.senderPlayerID);
         return true;
     }
 
@@ -1346,7 +1170,103 @@ bool GameServer::OnGameMessage(const GameMessage_SendAsyncLog& msg)
     BOOST_FOREACH(const AsyncLog& log, asyncLogs)
     {
         if(log.checksum != hostChecksum)
-            KickPlayer(log.playerId, NP_ASYNC, 0);
+            KickPlayer(log.playerId, NP_ASYNC);
+    }
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_RemoveLua& msg)
+{
+    if(status != SS_CONFIG || !IsHost(msg.senderPlayerID))
+        return true;
+    mapinfo.luaFilepath.clear();
+    mapinfo.luaData.Clear();
+    mapinfo.luaChecksum = 0;
+    SendToAll(msg);
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
+{
+    if(status != SS_CONFIG)
+        return true;
+
+    NetworkPlayer* nwPlayer = GetNetworkPlayer(msg.senderPlayerID);
+    if(!nwPlayer || !IsHost(msg.senderPlayerID) || countdown.IsActive())
+        return true;
+
+    if(!ArePlayersReady())
+        nwPlayer->sendMsgAsync(new GameMessage_CancelCountdown(true));
+    else
+    {
+        // Just to make sure update all player infos
+        SendToAll(GameMessage_Player_List(playerInfos));
+        // Start countdown (except its single player)
+        if(networkPlayers.size() > 1)
+        {
+            countdown.Start(msg.countdown, VIDEODRIVER.GetTickCount());
+            SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
+            LOG.writeToFile("SERVER >>> Countdown started(%d)\n") % countdown.GetRemainingSecs();
+        } else if(!StartGame())
+            GAMEMANAGER.ShowMenu(); // TODO: Remove access to GAMEMANAGER
+    }
+
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_CancelCountdown& msg)
+{
+    if(status != SS_CONFIG)
+        return true;
+
+    if(IsHost(msg.senderPlayerID))
+        CancelCountdown();
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_GGSChange& msg)
+{
+    if(status == SS_CONFIG && IsHost(msg.senderPlayerID))
+    {
+        ggs_ = msg.ggs;
+        SendToAll(msg);
+    }
+    return true;
+}
+
+void GameServer::CancelCountdown()
+{
+    if(!countdown.IsActive())
+        return;
+    // Countdown-Stop allen mitteilen
+    countdown.Stop();
+    SendToAll(GameMessage_CancelCountdown());
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_CANCELCOUNTDOWN\n");
+}
+
+bool GameServer::ArePlayersReady() const
+{
+    // Alle Spieler da?
+    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
+    {
+        // noch nicht alle spieler da -> feierabend!
+        if(player.ps == PS_FREE)
+            return false;
+        else if(player.isHuman() && !player.isReady)
+            return false;
+    }
+
+    std::set<unsigned> takenColors;
+
+    // Check all players have different colors
+    BOOST_FOREACH(const JoinPlayerInfo& player, playerInfos)
+    {
+        if(player.isUsed())
+        {
+            if(helpers::contains(takenColors, player.color))
+                return false;
+            takenColors.insert(player.color);
+        }
     }
     return true;
 }
@@ -1496,44 +1416,65 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 
     player.color = newColor;
 
-    SendToAll(GameMessage_Player_Set_Color(playerIdx, player.color));
+    SendToAll(GameMessage_Player_Color(playerIdx, player.color));
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYER_TOGGLECOLOR(%d, %d)\n") % playerIdx % player.color;
 }
 
 bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
-    if(msg.player >= GetNumMaxPlayers() || msg.player2 >= GetNumMaxPlayers())
+    if(status != SS_GAME && status != SS_CONFIG)
+        return true;
+    int targetPlayer = GetTargetPlayer(msg);
+    if(targetPlayer < 0)
+        return true;
+    uint8_t player1 = static_cast<uint8_t>(targetPlayer);
+    if(player1 == msg.player2 || msg.player2 >= playerInfos.size())
         return true;
 
-    if(status != SS_GAME)
-        return true;
-    if(msg.player == msg.player2)
-        return true;
-    // old_id muss richtiger Spieler, new_id KI sein, ansonsten geht das natürlich nicht
-    if(playerInfos[msg.player].ps != PS_OCCUPIED || playerInfos[msg.player2].ps != PS_AI)
-        return true;
-    SendToAll(msg);
-    ChangePlayer(msg.player, msg.player2);
+    SwapPlayer(player1, msg.player2);
     return true;
 }
 
-void GameServer::SwapPlayer(const unsigned char player1, const unsigned char player2)
+void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
 {
-    RTTR_Assert(status == SS_CONFIG); // Swap player during match-making
-    SendToAll(GameMessage_Player_Swap(player1, player2));
-    // Swap everything
-    using std::swap;
-    swap(playerInfos[player1], playerInfos[player2]);
+    // TODO: Swapping the player messes up the ids because our IDs are indizes. Usually this works because we use the sender player ID for
+    // messages received by the server and set the right ID for messages sent by the server. However (currently only) the host may send
+    // messages for another player. Those will not get the adjusted ID till he gets the swap message. So there is a short time, where the
+    // messages may be executed for the wrong player.
+    // Idea: Use actual IDs for players in messages (unique)
+    if(status == SS_CONFIG)
+    {
+        // Swap player during match-making
+        // Swap everything
+        using std::swap;
+        swap(playerInfos[player1], playerInfos[player2]);
+        // In savegames some things cannot be changed
+        if(mapinfo.type == MAPTYPE_SAVEGAME)
+            playerInfos[player1].FixSwappedSaveSlot(playerInfos[player2]);
+    } else if(status == SS_GAME)
+    {
+        // Ingame we can only switch to a KI
+        if(playerInfos[player1].ps != PS_OCCUPIED || playerInfos[player2].ps != PS_AI)
+            return;
+
+        LOG.write("GameServer::ChangePlayer %i - %i \n") % unsigned(player1) % unsigned(player2);
+        using std::swap;
+        swap(playerInfos[player2].ps, playerInfos[player1].ps);
+
+        // Alte KI löschen
+        delete ai_players[player2];
+        ai_players[player2] = NULL;
+        // Place a dummy AI at the original spot
+        ai_players[player1] = GAMECLIENT.CreateAIPlayer(player1, AI::Info(AI::DUMMY));
+    }
     // Change ids of network players (if any). Get both first!
-    GameServerPlayer* newPlayer = GetNetworkPlayer(player1);
-    GameServerPlayer* oldPlayer = GetNetworkPlayer(player2);
+    GameServerPlayer* newPlayer = GetNetworkPlayer(player2);
+    GameServerPlayer* oldPlayer = GetNetworkPlayer(player1);
     if(newPlayer)
-        newPlayer->playerId = player2;
+        newPlayer->playerId = player1;
     if(oldPlayer)
-        oldPlayer->playerId = player1;
-    // In savegames some things cannot be changed
-    if(mapinfo.type == MAPTYPE_SAVEGAME)
-        playerInfos[player1].FixSwappedSaveSlot(playerInfos[player2]);
+        oldPlayer->playerId = player2;
+    SendToAll(GameMessage_Player_Swap(player1, player2));
 }
 
 GameServerPlayer* GameServer::GetNetworkPlayer(unsigned playerId)
@@ -1544,28 +1485,6 @@ GameServerPlayer* GameServer::GetNetworkPlayer(unsigned playerId)
             return &player;
     }
     return NULL;
-}
-
-void GameServer::ChangePlayer(const unsigned char old_id, const unsigned char new_id)
-{
-    RTTR_Assert(status == SS_GAME); // Change player only ingame
-
-    LOG.write("GameServer::ChangePlayer %i - %i \n") % unsigned(old_id) % unsigned(new_id);
-    using std::swap;
-    swap(playerInfos[new_id].ps, playerInfos[old_id].ps);
-    // Change ids of network players (if any). Get both first!
-    GameServerPlayer* newPlayer = GetNetworkPlayer(new_id);
-    GameServerPlayer* oldPlayer = GetNetworkPlayer(old_id);
-    if(newPlayer)
-        newPlayer->playerId = old_id;
-    if(oldPlayer)
-        oldPlayer->playerId = new_id;
-
-    // Alte KI löschen
-    delete ai_players[new_id];
-    ai_players[new_id] = NULL;
-    // Place a dummy AI at the original spot
-    ai_players[old_id] = GAMECLIENT.CreateAIPlayer(old_id, AI::Info(AI::DUMMY));
 }
 
 void GameServer::SetPaused(bool paused)
@@ -1579,4 +1498,20 @@ void GameServer::SetPaused(bool paused)
 JoinPlayerInfo& GameServer::GetJoinPlayer(unsigned playerIdx)
 {
     return playerInfos.at(playerIdx);
+}
+
+bool GameServer::IsHost(unsigned playerIdx) const
+{
+    return playerIdx < playerInfos.size() && playerInfos[playerIdx].isHost;
+}
+
+int GameServer::GetTargetPlayer(const GameMessageWithPlayer& msg)
+{
+    if(msg.player != 0xFF)
+    {
+        if(msg.player < playerInfos.size() && (msg.player == msg.senderPlayerID || IsHost(msg.senderPlayerID)))
+            return msg.player;
+    } else if(msg.senderPlayerID < playerInfos.size())
+        return msg.senderPlayerID;
+    return -1;
 }

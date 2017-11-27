@@ -170,6 +170,8 @@ public:
 
     void ToggleHumanAIPlayer();
 
+    NetworkPlayer& GetMainPlayer() { return mainPlayer; }
+
 private:
     /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt
     /// ist)
@@ -201,18 +203,18 @@ private:
     bool OnGameMessage(const GameMessage_Server_Password& msg) override;
     bool OnGameMessage(const GameMessage_Server_Name& msg) override;
     bool OnGameMessage(const GameMessage_Server_Start& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Chat& msg) override;
-    bool OnGameMessage(const GameMessage_System_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_Chat& msg) override;
     bool OnGameMessage(const GameMessage_Server_Async& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Countdown& msg) override;
-    bool OnGameMessage(const GameMessage_Server_CancelCountdown& msg) override;
+    bool OnGameMessage(const GameMessage_Countdown& msg) override;
+    bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
 
     bool OnGameMessage(const GameMessage_Player_Id& msg) override;
     bool OnGameMessage(const GameMessage_Player_List& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_State& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_Nation& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_Team& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Name& msg) override;
+    bool OnGameMessage(const GameMessage_Player_State& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Team& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Kicked& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ping& msg) override;
     bool OnGameMessage(const GameMessage_Player_New& msg) override;

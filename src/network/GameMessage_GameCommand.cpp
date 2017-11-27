@@ -24,21 +24,21 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-GameMessage_GameCommand::GameMessage_GameCommand() : GameMessage(NMS_GAMECOMMANDS) {}
+GameMessage_GameCommand::GameMessage_GameCommand() : GameMessageWithPlayer(NMS_GAMECOMMANDS) {}
 
 GameMessage_GameCommand::GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs)
-    : GameMessage(NMS_GAMECOMMANDS, player), gcs(checksum, gcs)
+    : GameMessageWithPlayer(NMS_GAMECOMMANDS, player), gcs(checksum, gcs)
 {}
 
 void GameMessage_GameCommand::Serialize(Serializer& ser) const
 {
-    GameMessage::Serialize(ser);
+    GameMessageWithPlayer::Serialize(ser);
     gcs.Serialize(ser);
 }
 
 void GameMessage_GameCommand::Deserialize(Serializer& ser)
 {
-    GameMessage::Deserialize(ser);
+    GameMessageWithPlayer::Deserialize(ser);
     gcs.Deserialize(ser);
 }
 

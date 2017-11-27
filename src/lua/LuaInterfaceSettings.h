@@ -23,13 +23,13 @@
 #include <vector>
 
 class LuaServerPlayer;
-class GameServerInterface;
+class IGameLobbyController;
 struct AddonId;
 
 class LuaInterfaceSettings : public LuaInterfaceBase
 {
 public:
-    LuaInterfaceSettings(GameServerInterface& gameServer);
+    LuaInterfaceSettings(IGameLobbyController& lobbyServerController);
     virtual ~LuaInterfaceSettings();
 
     static void Register(kaguya::State& state);
@@ -49,7 +49,7 @@ public:
     std::vector<AddonId> GetAllowedAddons();
 
 private:
-    GameServerInterface& gameServer_;
+    IGameLobbyController& lobbyServerController_;
     kaguya::LuaRef GetAllowedChanges();
 
     // Callable from Lua

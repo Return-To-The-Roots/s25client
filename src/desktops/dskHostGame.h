@@ -30,6 +30,7 @@ class ctrlChat;
 class GameLobby;
 class LobbyPlayerInfo;
 class LuaInterfaceSettings;
+struct GameLobbyController;
 
 /// Desktop für das Hosten-eines-Spiels-Fenster
 class dskHostGame : public Desktop, public ClientInterface, public LobbyInterface
@@ -76,18 +77,17 @@ private:
 
     void CI_GameStarted(boost::shared_ptr<Game> game) override;
 
-    void CI_PSChanged(const unsigned playerId, const PlayerState ps) override;
-    void CI_NationChanged(const unsigned playerId, const Nation nation) override;
-    void CI_TeamChanged(const unsigned playerId, const unsigned char team) override;
+    void CI_PlayerDataChanged(unsigned playerId) override;
     void CI_PingChanged(const unsigned playerId, const unsigned short ping) override;
-    void CI_ColorChanged(const unsigned playerId, const unsigned color) override;
     void CI_ReadyChanged(const unsigned playerId, const bool ready) override;
     void CI_PlayersSwapped(const unsigned player1, const unsigned player2) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
 
     void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) override;
     void CI_Countdown(unsigned remainingTimeInSec) override;
-    void CI_CancelCountdown() override;
+    void CI_CancelCountdown(bool error) override;
+
+    void FlashGameChat();
 
     void LC_Status_Error(const std::string& error) override;
     void LC_Chat(const std::string& player, const std::string& text) override;
@@ -101,6 +101,7 @@ private:
     unsigned localPlayerId_;
     bool hasCountdown_;
     boost::interprocess::unique_ptr<LuaInterfaceSettings, Deleter<LuaInterfaceSettings> > lua;
+    boost::interprocess::unique_ptr<GameLobbyController, Deleter<GameLobbyController> > lobbyHostController;
     bool wasActivated, allowAddonChange;
     ctrlChat *gameChat, *lobbyChat;
     unsigned lobbyChatTabAnimId, localChatTabAnimId;

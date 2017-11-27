@@ -1556,7 +1556,7 @@ void AIPlayerJH::MilUpgradeOptim()
 
 void AIPlayerJH::Chat(const std::string& message)
 {
-    GameMessage_Server_Chat chat = GameMessage_Server_Chat(playerId, CD_ALL, message);
+    GameMessage_Chat chat = GameMessage_Chat(playerId, CD_ALL, message);
     GAMESERVER.AIChat(chat);
 }
 
