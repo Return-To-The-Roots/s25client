@@ -22,11 +22,11 @@
 #include <kaguya/kaguya.hpp>
 
 struct JoinPlayerInfo;
-class GameServerInterface;
+class IGameLobbyController;
 
 class LuaServerPlayer : public LuaPlayerBase
 {
-    GameServerInterface& gameServer_;
+    IGameLobbyController& lobbyServerController_;
     const unsigned playerId;
     JoinPlayerInfo& player;
 
@@ -34,7 +34,7 @@ protected:
     const BasePlayerInfo& GetPlayer() const override;
 
 public:
-    LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId);
+    LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId);
     static void Register(kaguya::State& state);
 
     void SetNation(Nation nat);

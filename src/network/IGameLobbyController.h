@@ -16,28 +16,32 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
+#ifndef IGameLobbyController_h__
+#define IGameLobbyController_h__
 
-#ifndef GameServerInterface_h__
-#define GameServerInterface_h__
+#include "gameTypes/AIInfo.h"
+#include "gameTypes/Nation.h"
+#include "gameTypes/PlayerState.h"
+#include "gameTypes/TeamTypes.h"
 
 class GameMessage;
 class GlobalGameSettings;
 struct JoinPlayerInfo;
 
 /// Abstract interface for the GameServer so it can be emulated for testing
-class GameServerInterface
+class IGameLobbyController
 {
 public:
-    virtual ~GameServerInterface() {}
-    virtual bool IsRunning() const = 0;
-    virtual unsigned GetNumMaxPlayers() const = 0;
+    virtual ~IGameLobbyController() {}
+    virtual unsigned GetMaxNumPlayers() const = 0;
     virtual JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) = 0;
-    virtual void KickPlayer(unsigned playerIdx) = 0;
-    virtual void CheckAndSetColor(unsigned playerIdx, unsigned newColor) = 0;
-    virtual void AnnounceStatusChange() = 0;
+    virtual void CloseSlot(unsigned playerIdx) = 0;
+    virtual void SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) = 0;
+    virtual void SetColor(unsigned playerIdx, unsigned newColor) = 0;
+    virtual void SetTeam(unsigned playerIdx, Team newTeam) = 0;
+    virtual void SetNation(unsigned playerIdx, Nation newNation) = 0;
     virtual const GlobalGameSettings& GetGGS() const = 0;
     virtual void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) = 0;
-    virtual void SendToAll(const GameMessage& msg) = 0;
 };
 
-#endif // GameServerInterface_h__
+#endif // IGameLobbyController_h__

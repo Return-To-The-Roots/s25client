@@ -22,7 +22,7 @@
 GameMessage_Player_List::GameMessage_Player_List() : GameMessage(NMS_PLAYER_LIST) {}
 
 GameMessage_Player_List::GameMessage_Player_List(const std::vector<JoinPlayerInfo>& playerInfos)
-    : GameMessage(NMS_PLAYER_LIST, 0xFF), playerInfos(playerInfos)
+    : GameMessage(NMS_PLAYER_LIST), playerInfos(playerInfos)
 {
     LOG.writeToFile(">>> NMS_PLAYER_LIST(%u)\n") % playerInfos.size();
 }

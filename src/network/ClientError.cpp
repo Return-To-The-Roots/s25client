@@ -19,17 +19,17 @@
 #include "ClientError.h"
 #include "mygettext/mygettext.h"
 
-const char * ClientErrorToStr(ClientError error)
+const char* ClientErrorToStr(ClientError error)
 {
     switch(error)
     {
-    case CE_INCOMPLETEMESSAGE: return _("Too short Message received!");
-    case CE_SERVERFULL: return _("This Server is full!");
-    case CE_WRONGPW: return _("Wrong Password!");
-    case CE_CONNECTIONLOST: return _("Lost connection to server!");
-    case CE_INVALIDSERVERTYPE: return _("Wrong Server Type!");
-    case CE_WRONGMAP: return _("Map transmission was corrupt!");
-    case CE_WRONGVERSION: return _("Wrong client version");
-    default: return _("Unknown error!");
+        case CE_INCOMPLETEMESSAGE: return _("Too short Message received!");
+        case CE_SERVERFULL: return _("This Server is full!");
+        case CE_WRONGPW: return _("Wrong Password!");
+        case CE_CONNECTIONLOST: return _("Lost connection to server!");
+        case CE_INVALIDSERVERTYPE: return _("Wrong Server Type!");
+        case CE_WRONGMAP: return _("Map transmission was corrupt!");
+        case CE_WRONGVERSION: return _("Wrong client version");
+        default: return _("Unknown error!");
     }
 }

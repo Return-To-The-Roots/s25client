@@ -18,7 +18,6 @@
 #ifndef GAMEPROTOCOL_H_INCLUDED
 #define GAMEPROTOCOL_H_INCLUDED
 
-#include "gameTypes/ServerType.h"
 #include "libutil/Protocol.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,23 +27,23 @@ enum
     NMS_PING = 0x0001, // 0
     NMS_PONG = 0x0002, // 0
 
-    NMS_SERVER_TYPE = 0x0101,   // 1 servertyp, x server-version
-    NMS_SERVER_TYPEOK,          // 1 servertyp, x server-version
-    NMS_SERVER_PASSWORD,        // x serverpassword | 1 serverpasswordok
-    NMS_SERVER_NAME,            // x servername
-    NMS_SERVER_START,           //
-    NMS_SERVER_CHAT,            // 1 destination, x text | 1 source, x text
-    NMS_SERVER_ASYNC,           // playercount*4 int (Checksummen)
-    NMS_SERVERCOUNTDOWN,        // 4 countdown
-    NMS_SERVER_CANCELCOUNTDOWN, // 0
+    NMS_SERVER_TYPE = 0x0101, // 1 servertyp, x server-version
+    NMS_SERVER_TYPEOK,        // 1 servertyp, x server-version
+    NMS_SERVER_PASSWORD,      // x serverpassword | 1 serverpasswordok
+    NMS_SERVER_NAME,          // x servername
+    NMS_SERVER_START,         //
+    NMS_CHAT,                 // 1 destination, x text | 1 source, x text
+    NMS_SERVER_ASYNC,         // playercount*4 int (Checksummen)
+    NMS_COUNTDOWN,            // 4 countdown
+    NMS_CANCEL_COUNTDOWN,     // 0
 
     NMS_PLAYER_ID = 0x0201, // 1 playerId
     NMS_PLAYER_NAME,        // x playername
     NMS_PLAYER_LIST,        // 1 playercount | x GamePlayerInfo
-    NMS_PLAYER_SETSTATE,    // 1 playerId
-    NMS_PLAYER_SET_NATION,  // 0 | 1 playerId
-    NMS_PLAYER_SET_TEAM,    // 0 | 1 playerId
-    NMS_PLAYER_SET_COLOR,   // 0 | 1 playerId
+    NMS_PLAYER_STATE,       // 1 playerId
+    NMS_PLAYER_NATION,      // 0 | 1 playerId
+    NMS_PLAYER_TEAM,        // 0 | 1 playerId
+    NMS_PLAYER_COLOR,       // 0 | 1 playerId
     NMS_PLAYER_KICKED,      // 12 npk
     NMS_PLAYER_PING,        // 1 playerId, 2 playerping
     NMS_PLAYER_NEW,         // 1 playerId, x playername
@@ -67,8 +66,7 @@ enum
     NMS_REMOVE_LUA,
 
     NMS_GET_ASYNC_LOG = 0x0600,
-    NMS_SEND_ASYNC_LOG,
-    NMS_SYSTEM_CHAT
+    NMS_ASYNC_LOG
 };
 
 /* Hinweise:
@@ -86,9 +84,9 @@ NMS_PING                --> NMS_PONG
 
 NMS_PLAYER_ID           --> ok ? NMS_SERVER_TYP : disconnect
 NMS_PLAYER_SETSTATE  -->
-NMS_PLAYER_SET_NATION --> NMS_PLAYER_SET_NATION
-NMS_PLAYER_SET_TEAM   --> NMS_PLAYER_SET_TEAM
-NMS_PLAYER_SET_COLOR  --> NMS_PLAYER_SET_COLOR
+NMS_PLAYER_NATION --> NMS_PLAYER_NATION
+NMS_PLAYER_TEAM   --> NMS_PLAYER_TEAM
+NMS_PLAYER_COLOR  --> NMS_PLAYER_COLOR
 NMS_PLAYER_KICKED       -->
 
 NMS_SERVER_TYP          --> ok ? NMS_SERVER_PASSWORD : disconnect
@@ -120,9 +118,9 @@ NMS_SERVER_CHAT         --> toteam ? tc(NMS_SERVER_CHAT) : toenemy ? ec(NMS_SERV
 
 NMS_PLAYER_NAME         --> NMS_MAP_NAME
 NMS_PLAYER_SETSTATE  --> (playerstate != KI) ? kick(playerId) : bc(NMS_PLAYER_SETSTATE)
-NMS_PLAYER_SET_NATION --> bc(NMS_PLAYER_SET_NATION)
-NMS_PLAYER_SET_TEAM   --> bc(NMS_PLAYER_SET_TEAM)
-NMS_PLAYER_SET_COLOR  --> bc(NMS_PLAYER_SET_COLOR)
+NMS_PLAYER_NATION --> bc(NMS_PLAYER_NATION)
+NMS_PLAYER_TEAM   --> bc(NMS_PLAYER_TEAM)
+NMS_PLAYER_COLOR  --> bc(NMS_PLAYER_COLOR)
 
 NMS_MAP_INFO            --> NMS_MAP_INFO
 NMS_MAP_DATA            --> NMS_MAP_DATA
@@ -141,14 +139,14 @@ kick                    --> bc(NMS_PLAYER_KICK), NMS_DEAD_MSG
 // Sonstige Konstanten
 
 // Gründe fürs Kicken
-enum
+enum KickReason
 {
     NP_NOCAUSE = 0,    // Ohne Grund --> manuell vom GameServer rausgehauen, weiß der Teufel warum
     NP_CONNECTIONLOST, // Verbindung verloren/abgebrochen, wie auch immer
-    NP_INVALIDMSG,     // Unglütige Message, (evtl Cheater bzw. Asynchronität)
+    NP_INVALIDMSG,     // Ungültige Message, (evtl Cheater bzw. Asynchronität)
     NP_INCOMPLETEMSG,  // zu wenig gesendet
     NP_PINGTIMEOUT,    // Ping Timeout
-    NP_WRONGPASSWORD,  // falsches passwort
+    NP_WRONGPASSWORD,  // falsches Passwort
     NP_WRONGCHECKSUM,  // falsche Checksumme
     NP_ASYNC           // asynchron
 };

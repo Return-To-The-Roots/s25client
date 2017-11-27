@@ -34,17 +34,17 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
     if(GAMECLIENT.IsReplayModeOn() || text.length() == 0)
         return;
 
-    mainPlayer.sendMsgAsync(new GameMessage_Server_Chat(0xff, cd, text));
+    mainPlayer.sendMsgAsync(new GameMessage_Chat(0xff, cd, text));
 }
 
 void GameClient::Command_SetNation(Nation newNation)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_Player_Set_Nation(0xff, newNation));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Nation(0xff, newNation));
 }
 
 void GameClient::Command_SetTeam(Team newTeam)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_Player_Set_Team(0xff, newTeam));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Team(0xff, newTeam));
 }
 
 /**
@@ -57,7 +57,7 @@ void GameClient::Command_SetReady(bool isReady)
 
 void GameClient::Command_SetColor(unsigned newColor)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_Player_Set_Color(0xFF, newColor));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Color(0xFF, newColor));
 }
 
 /**

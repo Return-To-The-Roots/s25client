@@ -27,6 +27,7 @@
 #include "gameTypes/MapType.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/PlayerState.h"
+#include "gameTypes/ServerType.h"
 #include "gameTypes/TeamTypes.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
@@ -38,16 +39,16 @@ class MessageInterface;
 /*
  * The class comment is from client side. For server side reverse the meaning
  *
- * Default ctor (no params) is JUST for receiving.
+ * Default ctor (no params) is mainly for receiving.
  * Ctor with params is for sending. Messages from the client don't need the player (ignored on server)
  */
 
 /// eingehende Ping-Nachricht
-class GameMessage_Ping : public GameMessage
+class GameMessage_Ping : public GameMessageWithPlayer
 {
 public:
-    GameMessage_Ping() : GameMessage(NMS_PING) {}
-    GameMessage_Ping(uint8_t player) : GameMessage(NMS_PING, player) {}
+    GameMessage_Ping() : GameMessageWithPlayer(NMS_PING) {}
+    GameMessage_Ping(uint8_t player) : GameMessageWithPlayer(NMS_PING, player) {}
 
     bool Run(GameMessageInterface* callback) const override
     {
@@ -61,7 +62,6 @@ class GameMessage_Pong : public GameMessage
 {
 public:
     GameMessage_Pong() : GameMessage(NMS_PONG) {}
-    GameMessage_Pong(uint8_t player) : GameMessage(NMS_PONG, player) {}
     bool Run(GameMessageInterface* callback) const override
     {
         // LOG.writeToFile("<<< NMS_PONG\n");
@@ -108,10 +108,10 @@ class GameMessage_Server_TypeOK : public GameMessage
 {
 public:
     /// Vom Server akzeptiert?
-    unsigned err_code;
+    uint32_t err_code;
 
     GameMessage_Server_TypeOK() : GameMessage(NMS_SERVER_TYPEOK) {} //-V730
-    GameMessage_Server_TypeOK(const unsigned err_code) : GameMessage(NMS_SERVER_TYPEOK), err_code(err_code) {}
+    GameMessage_Server_TypeOK(const uint32_t err_code) : GameMessage(NMS_SERVER_TYPEOK), err_code(err_code) {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -189,8 +189,8 @@ public:
 class GameMessage_Server_Start : public GameMessage
 {
 public:
-    unsigned random_init;
-    unsigned nwf_length;
+    uint32_t random_init;
+    uint32_t nwf_length;
 
     GameMessage_Server_Start() : GameMessage(NMS_SERVER_START) {} //-V730
     GameMessage_Server_Start(const unsigned random_init, const unsigned nwf_length)
@@ -219,14 +219,15 @@ public:
     }
 };
 
-/// eingehende Server-Countdown-Nachricht
-class GameMessage_Server_Countdown : public GameMessage
+/// C->S: Start countdown request
+/// S->C: Current countdown
+class GameMessage_Countdown : public GameMessage
 {
 public:
-    unsigned countdown;
+    uint32_t countdown;
 
-    GameMessage_Server_Countdown() : GameMessage(NMS_SERVERCOUNTDOWN) {} //-V730
-    GameMessage_Server_Countdown(unsigned countdown) : GameMessage(NMS_SERVERCOUNTDOWN), countdown(countdown) {}
+    GameMessage_Countdown() : GameMessage(NMS_COUNTDOWN) {} //-V730
+    GameMessage_Countdown(uint32_t countdown) : GameMessage(NMS_COUNTDOWN), countdown(countdown) {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -248,43 +249,51 @@ public:
     }
 };
 
-/// eingehende Server-CancelCountdown-Nachricht
-class GameMessage_Server_CancelCountdown : public GameMessage
+/// Cancel countdown
+class GameMessage_CancelCountdown : public GameMessage
 {
 public:
-    GameMessage_Server_CancelCountdown() : GameMessage(NMS_SERVER_CANCELCOUNTDOWN) {}
+    bool error;
+    GameMessage_CancelCountdown(bool error = false) : GameMessage(NMS_CANCEL_COUNTDOWN), error(error) {}
 
-    bool Run(GameMessageInterface* callback) const override
+    void Serialize(Serializer& ser) const override
     {
-        LOG.writeToFile("<<< NMS_SERVER_CANCELCOUNTDOWN\n");
-        return callback->OnGameMessage(*this);
+        GameMessage::Serialize(ser);
+        ser.PushBool(error);
     }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessage::Deserialize(ser);
+        error = ser.PopBool();
+    }
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 /// ein/ausgehende Server-Chat-Nachricht
-class GameMessage_Server_Chat : public GameMessage
+class GameMessage_Chat : public GameMessageWithPlayer
 {
 public:
     ChatDestination destination;
     std::string text;
 
-    GameMessage_Server_Chat() : GameMessage(NMS_SERVER_CHAT) {} //-V730
-    GameMessage_Server_Chat(uint8_t player, const ChatDestination destination, const std::string& text)
-        : GameMessage(NMS_SERVER_CHAT, player), destination(destination), text(text)
+    GameMessage_Chat() : GameMessageWithPlayer(NMS_CHAT) {} //-V730
+    GameMessage_Chat(uint8_t player, const ChatDestination destination, const std::string& text)
+        : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(text)
     {
         LOG.writeToFile(">>> NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(static_cast<unsigned char>(destination));
         ser.PushString(text);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         destination = ChatDestination(ser.PopUnsignedChar());
         text = ser.PopString();
     }
@@ -294,29 +303,6 @@ public:
         LOG.writeToFile("<<< NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
         return callback->OnGameMessage(*this);
     }
-};
-
-class GameMessage_System_Chat : public GameMessage
-{
-public:
-    std::string text;
-
-    GameMessage_System_Chat() : GameMessage(NMS_SYSTEM_CHAT) {}
-    GameMessage_System_Chat(uint8_t player, const std::string& text) : GameMessage(NMS_SYSTEM_CHAT, player), text(text) {}
-
-    void Serialize(Serializer& ser) const override
-    {
-        GameMessage::Serialize(ser);
-        ser.PushString(text);
-    }
-
-    void Deserialize(Serializer& ser) override
-    {
-        GameMessage::Deserialize(ser);
-        text = ser.PopString();
-    }
-
-    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 /// eingehende Server-Async-Nachricht
@@ -356,58 +342,45 @@ public:
 };
 
 /// eingehende Player-ID-Nachricht
-class GameMessage_Player_Id : public GameMessage
+class GameMessage_Player_Id : public GameMessageWithPlayer
 {
 public:
-    unsigned playerId;
-
-    GameMessage_Player_Id() : GameMessage(NMS_PLAYER_ID) {} //-V730
-    GameMessage_Player_Id(const unsigned playerId) : GameMessage(NMS_PLAYER_ID), playerId(playerId)
+    GameMessage_Player_Id() : GameMessageWithPlayer(NMS_PLAYER_ID) {} //-V730
+    GameMessage_Player_Id(const uint8_t playerId) : GameMessageWithPlayer(NMS_PLAYER_ID, playerId)
     {
         LOG.writeToFile(">>> NMS_PLAYER_ID(%d)\n") % playerId;
     }
 
-    void Serialize(Serializer& ser) const override
-    {
-        GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(playerId);
-    }
-
-    void Deserialize(Serializer& ser) override
-    {
-        GameMessage::Deserialize(ser);
-        playerId = ser.PopUnsignedInt();
-    }
-
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_PLAYER_ID(%d)\n") % playerId;
+        LOG.writeToFile("<<< NMS_PLAYER_ID(%d)\n") % player;
         return callback->OnGameMessage(*this);
     }
 };
 
 /// ausgehende Player-Name-Nachricht
-class GameMessage_Player_Name : public GameMessage
+class GameMessage_Player_Name : public GameMessageWithPlayer
 {
 public:
     /// Name des neuen Spielers
     std::string playername;
 
-    GameMessage_Player_Name() : GameMessage(NMS_PLAYER_NAME) {}
-    GameMessage_Player_Name(const std::string& playername) : GameMessage(NMS_PLAYER_NAME), playername(playername)
+    GameMessage_Player_Name() : GameMessageWithPlayer(NMS_PLAYER_NAME) {}
+    GameMessage_Player_Name(uint8_t player, const std::string& playername)
+        : GameMessageWithPlayer(NMS_PLAYER_NAME, player), playername(playername)
     {
         LOG.writeToFile(">>> NMS_PLAYER_NAME(%s)\n") % playername;
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushString(playername);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         playername = ser.PopString();
     }
 
@@ -434,22 +407,22 @@ public:
 };
 
 /// gehende -Nachricht
-class GameMessage_Player_Set_State : public GameMessage
+class GameMessage_Player_State : public GameMessageWithPlayer
 {
 public:
     PlayerState ps;
     AI::Info aiInfo;
 
-    GameMessage_Player_Set_State() : GameMessage(NMS_PLAYER_SETSTATE) {} //-V730
-    GameMessage_Player_Set_State(uint8_t player, PlayerState ps, AI::Info aiInfo)
-        : GameMessage(NMS_PLAYER_SETSTATE, player), ps(ps), aiInfo(aiInfo)
+    GameMessage_Player_State() : GameMessageWithPlayer(NMS_PLAYER_STATE) {} //-V730
+    GameMessage_Player_State(uint8_t player, PlayerState ps, AI::Info aiInfo)
+        : GameMessageWithPlayer(NMS_PLAYER_STATE, player), ps(ps), aiInfo(aiInfo)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SETSTATE(%d)\n") % unsigned(player);
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(static_cast<unsigned char>(ps));
         ser.PushUnsignedChar(static_cast<unsigned char>(aiInfo.level));
         ser.PushUnsignedChar(static_cast<unsigned char>(aiInfo.type));
@@ -457,7 +430,7 @@ public:
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         ps = PlayerState(ser.PopUnsignedChar());
         aiInfo.level = AI::Level(ser.PopUnsignedChar());
         aiInfo.type = AI::Type(ser.PopUnsignedChar());
@@ -471,27 +444,27 @@ public:
 };
 
 /// gehende -Nachricht
-class GameMessage_Player_Set_Nation : public GameMessage
+class GameMessage_Player_Nation : public GameMessageWithPlayer
 {
 public:
     /// Das zu setzende Volk
     Nation nation;
 
-    GameMessage_Player_Set_Nation() : GameMessage(NMS_PLAYER_SET_NATION) {} //-V730
-    GameMessage_Player_Set_Nation(uint8_t player, const Nation nation) : GameMessage(NMS_PLAYER_SET_NATION, player), nation(nation)
+    GameMessage_Player_Nation() : GameMessageWithPlayer(NMS_PLAYER_NATION) {} //-V730
+    GameMessage_Player_Nation(uint8_t player, const Nation nation) : GameMessageWithPlayer(NMS_PLAYER_NATION, player), nation(nation)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SET_NATION\n");
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(static_cast<unsigned char>(nation));
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         nation = Nation(ser.PopUnsignedChar());
     }
 
@@ -502,27 +475,27 @@ public:
     }
 };
 
-class GameMessage_Player_Set_Team : public GameMessage
+class GameMessage_Player_Team : public GameMessageWithPlayer
 {
 public:
     /// Das zu setzende Team
     Team team;
 
-    GameMessage_Player_Set_Team() : GameMessage(NMS_PLAYER_SET_TEAM) {} //-V730
-    GameMessage_Player_Set_Team(uint8_t player, const Team team) : GameMessage(NMS_PLAYER_SET_TEAM, player), team(team)
+    GameMessage_Player_Team() : GameMessageWithPlayer(NMS_PLAYER_TEAM) {} //-V730
+    GameMessage_Player_Team(uint8_t player, const Team team) : GameMessageWithPlayer(NMS_PLAYER_TEAM, player), team(team)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SET_TEAM\n");
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(static_cast<unsigned char>(team));
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         team = Team(ser.PopUnsignedChar());
     }
 
@@ -533,26 +506,26 @@ public:
     }
 };
 
-class GameMessage_Player_Set_Color : public GameMessage
+class GameMessage_Player_Color : public GameMessageWithPlayer
 {
 public:
-    unsigned color;
+    uint32_t color;
 
-    GameMessage_Player_Set_Color() : GameMessage(NMS_PLAYER_SET_COLOR) {} //-V730
-    GameMessage_Player_Set_Color(uint8_t player, const unsigned color) : GameMessage(NMS_PLAYER_SET_COLOR, player), color(color)
+    GameMessage_Player_Color() : GameMessageWithPlayer(NMS_PLAYER_COLOR) {} //-V730
+    GameMessage_Player_Color(uint8_t player, const uint32_t color) : GameMessageWithPlayer(NMS_PLAYER_COLOR, player), color(color)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SET_COLOR\n");
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedInt(color);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         color = ser.PopUnsignedInt();
     }
 
@@ -564,56 +537,47 @@ public:
 };
 
 /// gehende Player-Kicked-Nachricht
-class GameMessage_Player_Kicked : public GameMessage
+class GameMessage_Player_Kicked : public GameMessageWithPlayer
 {
 public:
-    unsigned char cause;
-    unsigned short param;
+    KickReason cause;
 
-    GameMessage_Player_Kicked() : GameMessage(NMS_PLAYER_KICKED) {} //-V730
-    GameMessage_Player_Kicked(uint8_t player, const unsigned char cause, const unsigned short param)
-        : GameMessage(NMS_PLAYER_KICKED, player), cause(cause), param(param)
-    {}
+    GameMessage_Player_Kicked() : GameMessageWithPlayer(NMS_PLAYER_KICKED) {} //-V730
+    GameMessage_Player_Kicked(uint8_t player, KickReason cause) : GameMessageWithPlayer(NMS_PLAYER_KICKED, player), cause(cause) {}
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(cause);
-        ser.PushUnsignedShort(param);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
-        cause = ser.PopUnsignedChar();
-        param = ser.PopUnsignedShort();
+        GameMessageWithPlayer::Deserialize(ser);
+        cause = KickReason(ser.PopUnsignedChar());
     }
 
-    bool Run(GameMessageInterface* callback) const override
-    {
-        LOG.writeToFile("<<< NMS_PLAYER_KICKED\n");
-        return callback->OnGameMessage(*this);
-    }
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 /// gehende Player-Ping-Nachricht
-class GameMessage_Player_Ping : public GameMessage
+class GameMessage_Player_Ping : public GameMessageWithPlayer
 {
 public:
-    unsigned short ping;
+    uint16_t ping;
 
-    GameMessage_Player_Ping() : GameMessage(NMS_PLAYER_PING) {} //-V730
-    GameMessage_Player_Ping(uint8_t player, const unsigned short ping) : GameMessage(NMS_PLAYER_PING, player), ping(ping) {}
+    GameMessage_Player_Ping() : GameMessageWithPlayer(NMS_PLAYER_PING) {} //-V730
+    GameMessage_Player_Ping(uint8_t player, uint16_t ping) : GameMessageWithPlayer(NMS_PLAYER_PING, player), ping(ping) {}
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedShort(ping);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         ping = ser.PopUnsignedShort();
     }
 
@@ -625,27 +589,27 @@ public:
 };
 
 /// gehende Player-New-Nachricht
-class GameMessage_Player_New : public GameMessage
+class GameMessage_Player_New : public GameMessageWithPlayer
 {
 public:
     /// Name des Neuen Spielers
     std::string name;
 
-    GameMessage_Player_New() : GameMessage(NMS_PLAYER_NEW) {}
-    GameMessage_Player_New(uint8_t player, const std::string& name) : GameMessage(NMS_PLAYER_NEW, player), name(name)
+    GameMessage_Player_New() : GameMessageWithPlayer(NMS_PLAYER_NEW) {}
+    GameMessage_Player_New(uint8_t player, const std::string& name) : GameMessageWithPlayer(NMS_PLAYER_NEW, player), name(name)
     {
         LOG.writeToFile(">>> NMS_PLAYER_NEW\n");
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushString(name);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         name = ser.PopString();
     }
 
@@ -657,27 +621,27 @@ public:
 };
 
 /// gehende Player-Ready-Nachricht
-class GameMessage_Player_Ready : public GameMessage
+class GameMessage_Player_Ready : public GameMessageWithPlayer
 {
 public:
     /// Ist der Spieler bereit?
     bool ready;
 
-    GameMessage_Player_Ready() : GameMessage(NMS_PLAYER_READY) {} //-V730
-    GameMessage_Player_Ready(uint8_t player, const bool ready) : GameMessage(NMS_PLAYER_READY, player), ready(ready)
+    GameMessage_Player_Ready() : GameMessageWithPlayer(NMS_PLAYER_READY) {} //-V730
+    GameMessage_Player_Ready(uint8_t player, const bool ready) : GameMessageWithPlayer(NMS_PLAYER_READY, player), ready(ready)
     {
         LOG.writeToFile(">>> NMS_PLAYER_READY\n");
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushBool(ready);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         ready = ser.PopBool();
     }
 
@@ -689,26 +653,26 @@ public:
 };
 
 /// gehende Player-Swap-Nachricht
-class GameMessage_Player_Swap : public GameMessage
+class GameMessage_Player_Swap : public GameMessageWithPlayer
 {
 public:
     /// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
-    unsigned char player2;
-    GameMessage_Player_Swap() : GameMessage(NMS_PLAYER_SWAP) {} //-V730
-    GameMessage_Player_Swap(uint8_t player, uint8_t player2) : GameMessage(NMS_PLAYER_SWAP, player), player2(player2)
+    uint8_t player2;
+    GameMessage_Player_Swap() : GameMessageWithPlayer(NMS_PLAYER_SWAP) {} //-V730
+    GameMessage_Player_Swap(uint8_t player, uint8_t player2) : GameMessageWithPlayer(NMS_PLAYER_SWAP, player), player2(player2)
     {
         LOG.writeToFile(">>> NMS_PLAYER_SWAP\n");
     }
 
     void Serialize(Serializer& ser) const override
     {
-        GameMessage::Serialize(ser);
+        GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(player2);
     }
 
     void Deserialize(Serializer& ser) override
     {
-        GameMessage::Deserialize(ser);
+        GameMessageWithPlayer::Deserialize(ser);
         player2 = ser.PopUnsignedChar();
     }
 
@@ -726,8 +690,8 @@ public:
     std::string filename;
     /// Kartentyp (alte Karte neue Karte, Savegame usw.)
     MapType mt;
-    unsigned mapLen, mapCompressedLen;
-    unsigned luaLen, luaCompressedLen;
+    uint32_t mapLen, mapCompressedLen;
+    uint32_t luaLen, luaCompressedLen;
 
     GameMessage_Map_Info() : GameMessage(NMS_MAP_INFO) {} //-V730
     GameMessage_Map_Info(const std::string& filename, const MapType mt, const unsigned mapLen, const unsigned mapCompressedLen,
@@ -795,13 +759,13 @@ class GameMessage_Map_Data : public GameMessage
 public:
     bool isMapData;
     /// Offset into map buffer
-    unsigned offset;
+    uint32_t offset;
     /// Kartendaten
     std::vector<char> data;
     /// True for map data, false for luaData
 
     GameMessage_Map_Data() : GameMessage(NMS_MAP_DATA) {} //-V730
-    GameMessage_Map_Data(bool isMapData, const unsigned offset, const char* const data, const unsigned length)
+    GameMessage_Map_Data(bool isMapData, const uint32_t offset, const char* const data, const unsigned length)
         : GameMessage(NMS_MAP_DATA), isMapData(isMapData), offset(offset), data(data, data + length)
     {
         LOG.writeToFile(">>> NMS_MAP_DATA\n");
@@ -836,10 +800,10 @@ class GameMessage_Map_Checksum : public GameMessage
 {
 public:
     /// Checksumme, die vom Client berechnet wurde
-    unsigned mapChecksum, luaChecksum;
+    uint32_t mapChecksum, luaChecksum;
 
     GameMessage_Map_Checksum() : GameMessage(NMS_MAP_CHECKSUM) {} //-V730
-    GameMessage_Map_Checksum(unsigned mapChecksum, unsigned luaChecksum)
+    GameMessage_Map_Checksum(uint32_t mapChecksum, uint32_t luaChecksum)
         : GameMessage(NMS_MAP_CHECKSUM), mapChecksum(mapChecksum), luaChecksum(luaChecksum)
     {
         LOG.writeToFile(">>> NMS_MAP_CHECKSUM\n");
@@ -934,13 +898,13 @@ public:
     bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
-class GameMessage_Server_Speed : public GameMessage
+class GameMessage_Speed : public GameMessage
 {
 public:
-    unsigned gf_length; // new speed
+    uint32_t gf_length; // new speed
 
-    GameMessage_Server_Speed() : GameMessage(NMS_SERVER_SPEED) {} //-V730
-    GameMessage_Server_Speed(const unsigned gf_length) : GameMessage(NMS_SERVER_SPEED), gf_length(gf_length)
+    GameMessage_Speed() : GameMessage(NMS_SERVER_SPEED) {} //-V730
+    GameMessage_Speed(const uint32_t gf_length) : GameMessage(NMS_SERVER_SPEED), gf_length(gf_length)
     {
         LOG.writeToFile(">>> NMS_SERVER_SPEED(%d)\n") % gf_length;
     }
@@ -967,13 +931,13 @@ public:
 class GameMessage_Server_NWFDone : public GameMessage
 {
 public:
-    unsigned nr;        // GF
-    unsigned gf_length; // new speed
+    uint32_t nr;        // GF
+    uint32_t gf_length; // new speed
     bool first;
 
     GameMessage_Server_NWFDone() : GameMessage(NMS_SERVER_NWF_DONE) {} //-V730
-    GameMessage_Server_NWFDone(uint8_t player, const unsigned nr, const unsigned gf_length, const bool first = false)
-        : GameMessage(NMS_SERVER_NWF_DONE, player), nr(nr), gf_length(gf_length), first(first)
+    GameMessage_Server_NWFDone(const unsigned nr, const unsigned gf_length, const bool first = false)
+        : GameMessage(NMS_SERVER_NWF_DONE), nr(nr), gf_length(gf_length), first(first)
     {
         LOG.writeToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);
     }
@@ -1037,31 +1001,25 @@ class GameMessage_GetAsyncLog : public GameMessage
 {
 public:
     GameMessage_GetAsyncLog() : GameMessage(NMS_GET_ASYNC_LOG) {}
-    GameMessage_GetAsyncLog(uint8_t player) : GameMessage(NMS_GET_ASYNC_LOG, player) { LOG.writeToFile(">>> NMS_GET_ASYNC_LOG\n"); }
-    bool Run(GameMessageInterface* callback) const override
-    {
-        LOG.writeToFile("<<< NMS_GET_ASYNC_LOG\n");
-        return callback->OnGameMessage(*this);
-    }
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 /// eingehende SendAsyncLog-Nachricht
-class GameMessage_SendAsyncLog : public GameMessage
+class GameMessage_AsyncLog : public GameMessage
 {
 public:
     std::string addData;
     std::vector<RandomEntry> entries;
     bool last;
 
-    GameMessage_SendAsyncLog() : GameMessage(NMS_SEND_ASYNC_LOG) {} //-V730
+    GameMessage_AsyncLog() : GameMessage(NMS_ASYNC_LOG) {} //-V730
 
-    GameMessage_SendAsyncLog(const std::string& addData) : GameMessage(NMS_SEND_ASYNC_LOG), addData(addData), last(false)
+    GameMessage_AsyncLog(const std::string& addData) : GameMessage(NMS_ASYNC_LOG), addData(addData), last(false)
     {
         LOG.writeToFile(">>> NMS_SEND_ASYNC_LOG\n");
     }
 
-    GameMessage_SendAsyncLog(const std::vector<RandomEntry>& async_log, bool last)
-        : GameMessage(NMS_SEND_ASYNC_LOG), entries(async_log), last(last)
+    GameMessage_AsyncLog(const std::vector<RandomEntry>& async_log, bool last) : GameMessage(NMS_ASYNC_LOG), entries(async_log), last(last)
     {
         LOG.writeToFile(">>> NMS_SEND_ASYNC_LOG\n");
     }

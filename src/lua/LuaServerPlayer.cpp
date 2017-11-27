@@ -21,7 +21,7 @@
 #include "helpers/converters.h"
 #include "lua/LuaHelpers.h"
 #include "network/GameMessages.h"
-#include "network/GameServerInterface.h"
+#include "network/IGameLobbyController.h"
 #include "libutil/Log.h"
 #include "libutil/colors.h"
 #include <stdexcept>
@@ -31,8 +31,8 @@ const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
     return player;
 }
 
-LuaServerPlayer::LuaServerPlayer(GameServerInterface& gameServer, unsigned playerId)
-    : gameServer_(gameServer), playerId(playerId), player(gameServer_.GetJoinPlayer(playerId))
+LuaServerPlayer::LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId)
+    : lobbyServerController_(lobbyServerController), playerId(playerId), player(lobbyServerController_.GetJoinPlayer(playerId))
 {}
 
 void LuaServerPlayer::Register(kaguya::State& state)
@@ -50,14 +50,14 @@ void LuaServerPlayer::SetNation(Nation nat)
 {
     lua::assertTrue(unsigned(nat) < NUM_NATS, "Invalid Nation");
     player.nation = nat;
-    gameServer_.SendToAll(GameMessage_Player_Set_Nation(playerId, nat));
+    lobbyServerController_.SetNation(playerId, nat);
 }
 
 void LuaServerPlayer::SetTeam(Team team)
 {
     lua::assertTrue(unsigned(team) < NUM_TEAMS, "Invalid team");
     player.team = team;
-    gameServer_.SendToAll(GameMessage_Player_Set_Team(playerId, team));
+    lobbyServerController_.SetTeam(playerId, team);
 }
 
 void LuaServerPlayer::SetColor(unsigned colorOrIdx)
@@ -68,20 +68,14 @@ void LuaServerPlayer::SetColor(unsigned colorOrIdx)
         player.color = PLAYER_COLORS[colorOrIdx];
     } else
         player.color = colorOrIdx;
-    gameServer_.SendToAll(GameMessage_Player_Set_Color(playerId, player.color));
+    lobbyServerController_.SetColor(playerId, player.color);
 }
 
 void LuaServerPlayer::Close()
 {
     if(player.ps == PS_LOCKED)
         return;
-    if(player.ps == PS_OCCUPIED)
-        gameServer_.KickPlayer(playerId);
-    player.ps = PS_LOCKED;
-    player.isReady = false;
-
-    gameServer_.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
-    gameServer_.AnnounceStatusChange();
+    lobbyServerController_.CloseSlot(playerId);
 }
 
 void LuaServerPlayer::SetAI(unsigned level)
@@ -95,17 +89,5 @@ void LuaServerPlayer::SetAI(unsigned level)
         case 3: info.level = AI::HARD; break;
         default: lua::assertTrue(false, "Invalid AI level");
     }
-    if(player.ps == PS_OCCUPIED)
-        gameServer_.KickPlayer(playerId);
-    bool wasUsed = player.isUsed();
-    player.ps = PS_AI;
-    player.aiInfo = info;
-    player.isReady = true;
-    player.SetAIName(playerId);
-    gameServer_.SendToAll(GameMessage_Player_Set_State(playerId, player.ps, player.aiInfo));
-    // If we added a new AI, set an initial color
-    // Do this after(!) the player state was set
-    if(!wasUsed)
-        gameServer_.CheckAndSetColor(playerId, player.color);
-    gameServer_.AnnounceStatusChange();
+    lobbyServerController_.SetPlayerState(playerId, PS_AI, info);
 }

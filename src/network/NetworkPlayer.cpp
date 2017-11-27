@@ -53,13 +53,11 @@ void NetworkPlayer::sendMsg(const Message& msg)
     sendQueue.sendMessage(socket, msg);
 }
 
-void NetworkPlayer::executeMsgs(MessageInterface& msgHandler, bool usePlayerId)
+void NetworkPlayer::executeMsgs(MessageInterface& msgHandler)
 {
     while(!recvQueue.empty())
     {
-        // Do we want to overwrite the player id? Note: Do it IN the loop as a run command may change the playerId
-        unsigned usedPlayerId = usePlayerId ? playerId : 0xFFFFFFFF;
-        recvQueue.front()->run(&msgHandler, usedPlayerId);
+        recvQueue.front()->run(&msgHandler, playerId);
         recvQueue.pop();
     }
 }

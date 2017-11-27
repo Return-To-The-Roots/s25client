@@ -54,10 +54,7 @@ public:
 
     virtual void CI_GameStarted(boost::shared_ptr<Game> game) {}
 
-    virtual void CI_PSChanged(const unsigned playerId, const PlayerState ps) {}
-    virtual void CI_NationChanged(const unsigned playerId, const Nation nation) {}
-    virtual void CI_ColorChanged(const unsigned playerId, const unsigned color) {}
-    virtual void CI_TeamChanged(const unsigned playerId, const unsigned char team) {}
+    virtual void CI_PlayerDataChanged(unsigned playerId) {}
     virtual void CI_PingChanged(const unsigned playerId, const unsigned short ping) {}
     virtual void CI_ReadyChanged(const unsigned playerId, const bool ready) {}
     virtual void CI_PlayersSwapped(const unsigned player1, const unsigned player2) {}
@@ -65,7 +62,7 @@ public:
 
     virtual void CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg) {}
     virtual void CI_Countdown(unsigned remainingTimeInSec) {}
-    virtual void CI_CancelCountdown() {}
+    virtual void CI_CancelCountdown(bool error) {}
 
     virtual void CI_Async(const std::string& checksums_list) {}
     virtual void CI_ReplayAsync(const std::string& msg) {}

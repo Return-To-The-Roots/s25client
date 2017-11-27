@@ -22,7 +22,7 @@
 
 #include "FramesInfo.h"
 #include "GameMessageInterface.h"
-#include "GameServerInterface.h"
+#include "GameProtocol.h"
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
 #include "helpers/Deleter.h"
@@ -37,10 +37,11 @@
 class AIPlayer;
 struct CreateServerInfo;
 class GameMessage;
+class GameMessageWithPlayer;
 class GameMessage_GameCommand;
 class GameServerPlayer;
 
-class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, private GameServerInterface
+class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {
 public:
     BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
@@ -56,45 +57,21 @@ public:
     void Run();
     void Stop();
 
-    bool StartGame();
-    bool StartCountdown();
-    void CancelCountdown();
-
     void SetPaused(bool paused);
-    bool IsPaused() { return framesinfo.isPaused; }
-
-    void ToggleAINation(unsigned char playerId);
-    void ToggleAITeam(unsigned char playerId);
-    void ToggleAIColor(unsigned char playerId);
-    void TogglePlayerState(unsigned char playerId);
-    void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override;
-    /// Removes the lua script for the currently loaded map (only valid in config mode)
-    void RemoveLuaScript();
-
-    /// Tauscht Spieler(positionen) bei Savegames in dskHostGame
-    void SwapPlayer(const unsigned char player1, const unsigned char player2);
 
     void AIChat(const GameMessage& msg) { SendToAll(msg); }
-
-    std::string GetGameName() const { return config.gamename; }
-    bool HasPwd() const { return !config.password.empty(); }
-    unsigned short GetPort() const { return config.port; }
-    unsigned GetNumMaxPlayers() const override { return config.playercount; }
-    bool IsRunning() const override { return status != SS_STOPPED; }
-
-    const GlobalGameSettings& GetGGS() const override { return ggs_; }
-
-    GameServerInterface& GetInterface() { return *this; }
+    AIPlayer* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
+    unsigned skiptogf;
 
 private:
+    bool StartGame();
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
-    /// Lässt einen Spieler wechseln (nur zu Debugzwecken)
-    void ChangePlayer(const unsigned char old_id, const unsigned char new_id);
+    /// Swap players ingame or during config
+    void SwapPlayer(const uint8_t player1, const uint8_t player2);
 
-    void SendToAll(const GameMessage& msg) override;
+    void SendToAll(const GameMessage& msg);
     /// Kick a player (free slot and set socket to invalid. Does NOT remove it from NetworkPlayers)
-    void KickPlayer(unsigned char playerId, unsigned char cause, unsigned short param);
-    void KickPlayer(unsigned playerIdx) override;
+    void KickPlayer(uint8_t playerId, KickReason cause = NP_NOCAUSE);
 
     void ClientWatchDog();
 
@@ -102,32 +79,38 @@ private:
     void FillPlayerQueues();
 
     /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC(const unsigned& id);
+    void SendNothingNC(const unsigned id);
 
     unsigned GetNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
-    void AnnounceStatusChange() override;
+    void AnnounceStatusChange();
 
     bool OnGameMessage(const GameMessage_Pong& msg) override;
     bool OnGameMessage(const GameMessage_Server_Type& msg) override;
     bool OnGameMessage(const GameMessage_Server_Password& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Chat& msg) override;
-    bool OnGameMessage(const GameMessage_System_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_Chat& msg) override;
+    bool OnGameMessage(const GameMessage_GGSChange& msg) override;
+    bool OnGameMessage(const GameMessage_Player_State& msg) override;
     bool OnGameMessage(const GameMessage_Player_Name& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_Nation& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_Team& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Set_Color& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Team& msg) override;
+    bool OnGameMessage(const GameMessage_Player_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
     bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
     bool OnGameMessage(const GameMessage_MapRequest& msg) override;
     bool OnGameMessage(const GameMessage_Map_Checksum& msg) override;
     bool OnGameMessage(const GameMessage_GameCommand& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Speed& msg) override;
-    bool OnGameMessage(const GameMessage_SendAsyncLog& msg) override;
+    bool OnGameMessage(const GameMessage_Speed& msg) override;
+    bool OnGameMessage(const GameMessage_AsyncLog& msg) override;
+    bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
+    bool OnGameMessage(const GameMessage_Countdown& msg) override;
+    bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
+    void CancelCountdown();
+    bool ArePlayersReady() const;
 
     /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
     /// Sends a notification to all players if the color was changed
-    void CheckAndSetColor(unsigned playerIdx, unsigned newColor) override;
+    void CheckAndSetColor(unsigned playerIdx, unsigned newColor);
 
     /// Handles advancing of GFs, actions of AI and potentially the NWF
     void ExecuteGameFrame();
@@ -140,9 +123,13 @@ private:
 
     void CheckAndKickLaggingPlayers();
     bool CheckForLaggingPlayers();
-    JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override;
+    JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx);
 
-private:
+    /// Is the player with the given idx the host?
+    bool IsHost(unsigned playerIdx) const;
+    /// Get the player this message concerns. which is msg.player, msg.senderPlayer or -1 on error/wrong values
+    int GetTargetPlayer(const GameMessageWithPlayer& msg);
+
     enum ServerState
     {
         SS_STOPPED = 0,
@@ -154,9 +141,8 @@ private:
     FramesInfo framesinfo;
     unsigned currentGF;
 
-    class ServerConfig
+    struct ServerConfig
     {
-    public:
         ServerConfig();
         void Clear();
 
@@ -202,10 +188,6 @@ private:
     std::vector<AsyncLog> asyncLogs;
 
     LANDiscoveryService lanAnnouncer;
-
-public:
-    AIPlayer* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
-    unsigned skiptogf;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

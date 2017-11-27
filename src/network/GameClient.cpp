@@ -180,7 +180,7 @@ void GameClient::Run()
     // maximal 10 Pakete verschicken
     mainPlayer.sendMsgs(10);
 
-    mainPlayer.executeMsgs(*this, false);
+    mainPlayer.executeMsgs(*this);
 }
 
 /**
@@ -362,7 +362,7 @@ unsigned GameClient::GetGFNumber() const
  */
 bool GameClient::OnGameMessage(const GameMessage_Ping& /*msg*/)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_Pong(0xFF));
+    mainPlayer.sendMsgAsync(new GameMessage_Pong());
     return true;
 }
 
@@ -372,13 +372,13 @@ bool GameClient::OnGameMessage(const GameMessage_Ping& /*msg*/)
 bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
 {
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
-    if(msg.playerId == 0xFFFFFFFF)
+    if(msg.player == GameMessageWithPlayer::NO_PLAYER_ID)
     {
         OnError(CE_SERVERFULL);
         return true;
     }
 
-    mainPlayer.playerId = msg.playerId;
+    mainPlayer.playerId = msg.player;
 
     // Server-Typ senden
     mainPlayer.sendMsgAsync(new GameMessage_Server_Type(clientconfig.servertyp, RTTR_Version::GetRevision()));
@@ -390,16 +390,34 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Player_List& msg)
 {
-    RTTR_Assert(state == CS_CONNECT);
+    if(state != CS_CONNECT && state != CS_CONFIG)
+        return true;
     RTTR_Assert(gameLobby);
     RTTR_Assert(gameLobby->getNumPlayers() == msg.playerInfos.size());
+    if(gameLobby->getNumPlayers() != msg.playerInfos.size())
+        return true;
 
     for(unsigned i = 0; i < gameLobby->getNumPlayers(); ++i)
         gameLobby->getPlayer(i) = msg.playerInfos[i];
 
-    state = CS_CONFIG;
+    if(state != CS_CONFIG)
+    {
+        state = CS_CONFIG;
+        if(ci)
+            ci->CI_NextConnectState(CS_FINISHED);
+    }
+    return true;
+}
+
+bool GameClient::OnGameMessage(const GameMessage_Player_Name& msg)
+{
+    if(state != CS_CONFIG)
+        return true;
+    if(msg.player >= gameLobby->getNumPlayers())
+        return true;
+    gameLobby->getPlayer(msg.player).name = msg.playername;
     if(ci)
-        ci->CI_NextConnectState(CS_FINISHED);
+        ci->CI_PlayerDataChanged(msg.player);
     return true;
 }
 
@@ -451,7 +469,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
 /**
  *  Player-Toggle-State-Nachricht.
  */
-bool GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
+bool GameClient::OnGameMessage(const GameMessage_Player_State& msg)
 {
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->getNumPlayers())
@@ -461,18 +479,16 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Set_State& msg)
     playerInfo.ps = msg.ps;
     playerInfo.aiInfo = msg.aiInfo;
     playerInfo.InitRating();
-    if(playerInfo.ps == PS_AI)
-        playerInfo.SetAIName(msg.player);
 
     if(ci)
-        ci->CI_PSChanged(msg.player, playerInfo.ps);
+        ci->CI_PlayerDataChanged(msg.player);
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// nation button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-bool GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
+bool GameClient::OnGameMessage(const GameMessage_Player_Nation& msg)
 {
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->getNumPlayers())
@@ -481,14 +497,14 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Set_Nation& msg)
     gameLobby->getPlayer(msg.player).nation = msg.nation;
 
     if(ci)
-        ci->CI_NationChanged(msg.player, msg.nation);
+        ci->CI_PlayerDataChanged(msg.player);
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// team button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-bool GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
+bool GameClient::OnGameMessage(const GameMessage_Player_Team& msg)
 {
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->getNumPlayers())
@@ -497,14 +513,14 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Set_Team& msg)
     gameLobby->getPlayer(msg.player).team = msg.team;
 
     if(ci)
-        ci->CI_TeamChanged(msg.player, msg.team);
+        ci->CI_PlayerDataChanged(msg.player);
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// color button gedrückt
 /// @param message  Nachricht, welche ausgeführt wird
-bool GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
+bool GameClient::OnGameMessage(const GameMessage_Player_Color& msg)
 {
     RTTR_Assert(state == CS_CONFIG);
     if(msg.player >= gameLobby->getNumPlayers())
@@ -513,7 +529,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Set_Color& msg)
     gameLobby->getPlayer(msg.player).color = msg.color;
 
     if(ci)
-        ci->CI_ColorChanged(msg.player, msg.color);
+        ci->CI_PlayerDataChanged(msg.player);
     return true;
 }
 
@@ -542,7 +558,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Ready& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
 {
-    LOG.writeToFile("<<< NMS_PLAYER_KICKED(%d, %d, %d)\n") % unsigned(msg.player) % unsigned(msg.cause) % msg.param;
+    LOG.writeToFile("<<< NMS_PLAYER_KICKED(%d, %d)\n") % unsigned(msg.player) % unsigned(msg.cause);
 
     RTTR_Assert(state == CS_CONFIG || state == CS_LOADING || state == CS_GAME);
 
@@ -641,7 +657,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
         return true;
     }
 
-    mainPlayer.sendMsgAsync(new GameMessage_Player_Name(SETTINGS.lobby.name));
+    mainPlayer.sendMsgAsync(new GameMessage_Player_Name(0xFF, SETTINGS.lobby.name));
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(true));
 
     if(ci)
@@ -688,8 +704,13 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 /**
  *  Server-Chat-Nachricht.
  */
-bool GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
+bool GameClient::OnGameMessage(const GameMessage_Chat& msg)
 {
+    if(msg.destination == CD_SYSTEM)
+    {
+        SystemChat(msg.text, msg.player);
+        return true;
+    }
     if(state == CS_GAME)
     {
         // Ingame message: Do some checking and logging
@@ -723,12 +744,6 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Chat& msg)
 
     if(ci)
         ci->CI_Chat(msg.player, msg.destination, msg.text);
-    return true;
-}
-
-bool GameClient::OnGameMessage(const GameMessage_System_Chat& msg)
-{
-    SystemChat(msg.text, msg.player);
     return true;
 }
 
@@ -772,7 +787,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 /**
  *  Server-Countdown-Nachricht.
  */
-bool GameClient::OnGameMessage(const GameMessage_Server_Countdown& msg)
+bool GameClient::OnGameMessage(const GameMessage_Countdown& msg)
 {
     if(ci)
         ci->CI_Countdown(msg.countdown);
@@ -782,10 +797,10 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Countdown& msg)
 /**
  *  Server-Cancel-Countdown-Nachricht.
  */
-bool GameClient::OnGameMessage(const GameMessage_Server_CancelCountdown& /*msg*/)
+bool GameClient::OnGameMessage(const GameMessage_CancelCountdown& msg)
 {
     if(ci)
-        ci->CI_CancelCountdown();
+        ci->CI_CancelCountdown(msg.error);
     return true;
 }
 
@@ -997,7 +1012,7 @@ void GameClient::IncreaseSpeed()
     else
         framesinfo.gfLengthReq = 70;
 
-    mainPlayer.sendMsgAsync(new GameMessage_Server_Speed(framesinfo.gfLengthReq));
+    mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
 }
 
 void GameClient::DecreaseSpeed()
@@ -1021,7 +1036,7 @@ void GameClient::DecreaseSpeed()
         framesinfo.gfLengthReq += 10;
     }
 
-    mainPlayer.sendMsgAsync(new GameMessage_Server_Speed(framesinfo.gfLengthReq));
+    mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
 }
 
 void GameClient::IncreaseReplaySpeed()
@@ -1110,7 +1125,7 @@ bool GameClient::OnGameMessage(const GameMessage_Pause& msg)
 bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 {
     std::string systemInfo = System::getCompilerName() + " @ " + System::getOSName();
-    mainPlayer.sendMsgAsync(new GameMessage_SendAsyncLog(systemInfo));
+    mainPlayer.sendMsgAsync(new GameMessage_AsyncLog(systemInfo));
 
     // AsyncLog an den Server senden
 
@@ -1124,12 +1139,12 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 
         if(part.size() == 10)
         {
-            mainPlayer.sendMsgAsync(new GameMessage_SendAsyncLog(part, false));
+            mainPlayer.sendMsgAsync(new GameMessage_AsyncLog(part, false));
             part.clear();
         }
     }
 
-    mainPlayer.sendMsgAsync(new GameMessage_SendAsyncLog(part, true));
+    mainPlayer.sendMsgAsync(new GameMessage_AsyncLog(part, true));
     return true;
 }
 
@@ -1440,6 +1455,8 @@ int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 void GameClient::ServerLost()
 {
     OnError(CE_CONNECTIONLOST);
+    // Stop game
+    framesinfo.isPaused = true;
 }
 
 /**
@@ -1505,7 +1522,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char player)
 
 bool GameClient::SaveToFile(const std::string& filename)
 {
-    GameMessage_System_Chat saveAnnouncement(0xFF, "Saving game...");
+    GameMessage_Chat saveAnnouncement(0xFF, CD_SYSTEM, "Saving game...");
     mainPlayer.sendMsg(saveAnnouncement);
 
     // Mond malen
