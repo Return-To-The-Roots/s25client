@@ -19,11 +19,11 @@
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
+#include "LuaBaseFixture.h"
 #include "addons/Addon.h"
+#include "helperFuncs.h"
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
-#include "libutil/Log.h"
-#include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
@@ -35,12 +35,11 @@ namespace {
 /// Fixture for the settings tests, implements IGameLobbyController
 /// Note: Here all settings are applied immediately, in the real thing they are transmitted to the server and then applied, hence with a
 /// delay
-struct LuaSettingsTestsFixture : public IGameLobbyController
+struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyController, public LogAccessor
 {
     std::vector<JoinPlayerInfo> players;
     GlobalGameSettings ggs;
     LuaInterfaceSettings lua;
-    StringStreamWriter& logWriter;
 
     unsigned GetMaxNumPlayers() const override { return players.size(); }
     JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
@@ -56,10 +55,10 @@ struct LuaSettingsTestsFixture : public IGameLobbyController
     void SetTeam(unsigned playerIdx, Team newTeam) override { GetJoinPlayer(playerIdx).team = newTeam; }
     void SetNation(unsigned playerIdx, Nation newNation) override { GetJoinPlayer(playerIdx).nation = newNation; }
 
-    LuaSettingsTestsFixture() : lua(*this), logWriter(dynamic_cast<StringStreamWriter&>(*LOG.getFileWriter()))
+    LuaSettingsTestsFixture() : lua(*this)
     {
-        GLOBALVARS.isTest = true;
-        clearLog();
+        luaBase = &lua;
+
         players.resize(3);
         players[0].ps = PS_OCCUPIED;
         players[0].name = "Player1";
@@ -76,41 +75,6 @@ struct LuaSettingsTestsFixture : public IGameLobbyController
         players[1].isHost = false;
 
         players[2].ps = PS_FREE;
-    }
-
-    ~LuaSettingsTestsFixture() { GLOBALVARS.isTest = false; }
-
-    void clearLog() { logWriter.getStream().str(""); }
-
-    std::string getLog(bool clear = true)
-    {
-        std::string result = logWriter.getText();
-        if(clear)
-            clearLog();
-        return result;
-    }
-
-    void executeLua(const std::string& luaCode) { lua.LoadScriptString(luaCode); }
-
-    void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
-
-    boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
-    {
-        try
-        {
-            executeLua(std::string("assert(") + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
-        } catch(std::runtime_error& e)
-        {
-            boost::test_tools::predicate_result result(false);
-            std::string msg = e.what();
-            size_t xPos = msg.rfind("xxx=");
-            if(xPos != std::string::npos)
-                result.message() << "Value = " << msg.substr(xPos + 4);
-            else
-                result.message() << e.what();
-            return result;
-        }
-        return true;
     }
 
     void checkSettings(const GlobalGameSettings& shouldVal)
@@ -132,6 +96,7 @@ BOOST_FIXTURE_TEST_SUITE(LuaTestSuiteSettings, LuaSettingsTestsFixture)
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
     BOOST_REQUIRE_THROW(executeLua("assert(false)"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
 }
 
 BOOST_AUTO_TEST_CASE(Events)
@@ -187,11 +152,11 @@ BOOST_AUTO_TEST_CASE(Events)
     executeLua("function getAllowedAddons()\n  return {'ADDON_FAIL_ME'}\nend");
     allowedAddons = lua.GetAllowedAddons();
     BOOST_REQUIRE(allowedAddons.empty());
-    BOOST_REQUIRE(!getLog().empty());
+    BOOST_REQUIRE_NE(getLog(), "");
     executeLua("function getAllowedAddons()\n  return {9999}\nend");
     allowedAddons = lua.GetAllowedAddons();
     BOOST_REQUIRE(allowedAddons.empty());
-    BOOST_REQUIRE(!getLog().empty());
+    BOOST_REQUIRE_NE(getLog(), "");
 }
 
 BOOST_AUTO_TEST_CASE(SettingsFunctions)
@@ -201,7 +166,9 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     executeLua("assert(rttr:GetPlayer(2))");
     // Invalid player
     BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(3))"), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("Invalid player idx", false);
     BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(-1))"), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("Invalid player idx", false);
 
     executeLua("rttr:SetAddon(ADDON_LIMIT_CATAPULTS, 4)\n  rttr:SetAddon(ADDON_TRADE, true)\n");
     BOOST_REQUIRE_EQUAL(ggs.getSelection(AddonId::LIMIT_CATAPULTS), 4u);
@@ -337,6 +304,7 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
     BOOST_REQUIRE_EQUAL(players[0].aiInfo.level, AI::HARD);
     // Invalid lvl
     BOOST_REQUIRE_THROW(executeLua("player:SetAI(4)"), std::exception);
+    RTTR_REQUIRE_LOG_CONTAINS("Invalid AI", false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

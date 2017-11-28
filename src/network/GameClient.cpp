@@ -80,11 +80,7 @@ void GameClient::ClientConfig::Clear()
     isHost = false;
 }
 
-GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(CS_STOPPED), ci(NULL), replayMode(false)
-{
-    clientconfig.Clear();
-    framesinfo.Clear();
-}
+GameClient::GameClient() : skiptogf(0), mainPlayer(0), state(CS_STOPPED), ci(NULL), replayMode(false) {}
 
 GameClient::~GameClient()
 {
@@ -1588,14 +1584,11 @@ unsigned GameClient::GetLastReplayGF() const
     return replayinfo ? replayinfo->replay.GetLastGF() : 0u;
 }
 
-bool GameClient::AddGC(gc::GameCommand* gc)
+bool GameClient::AddGC(gc::GameCommandPtr gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
     if(framesinfo.isPaused || GetPlayer(mainPlayer.playerId).IsDefeated() || IsReplayModeOn())
-    {
-        delete gc;
         return false;
-    }
 
     gameCommands_.push_back(gc);
     return true;

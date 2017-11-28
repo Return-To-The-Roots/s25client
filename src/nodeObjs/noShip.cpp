@@ -76,6 +76,15 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
     RTTR_Assert(seaId_ > 0);
 }
 
+noShip::~noShip()
+{
+    // Delete everything on board
+    BOOST_FOREACH(noFigure* figure, figures)
+        deletePtr(figure);
+    BOOST_FOREACH(Ware* ware, wares)
+        deletePtr(ware);
+}
+
 void noShip::Serialize(SerializedGameData& sgd) const
 {
     Serialize_noMovable(sgd);
@@ -112,10 +121,10 @@ noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
 
 void noShip::Destroy()
 {
-    for(std::list<noFigure*>::iterator it = figures.begin(); it != figures.end(); ++it)
-        RTTR_Assert(!*it);
-    for(std::list<Ware*>::iterator it = wares.begin(); it != wares.end(); ++it)
-        RTTR_Assert(!*it);
+    BOOST_FOREACH(const noFigure* figure, figures)
+        RTTR_Assert(!figure);
+    BOOST_FOREACH(const Ware* ware, wares)
+        RTTR_Assert(!ware);
     gwg->GetNotifications().publish(ShipNote(ShipNote::Destroyed, ownerId_, pos));
     // Schiff wieder abmelden
     gwg->GetPlayer(ownerId_).RemoveShip(this);

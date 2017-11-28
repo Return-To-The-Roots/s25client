@@ -18,14 +18,18 @@
 #ifndef GameWorldWithLuaAccess_h__
 #define GameWorldWithLuaAccess_h__
 
+#include "BufferedWriter.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
+#include "LuaBaseFixture.h"
+#include "helperFuncs.h"
 #include "lua/LuaInterfaceGame.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
 #include "test/initTestHelpers.h"
+#include "libutil/AvoidDuplicatesWriter.h"
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
@@ -41,8 +45,6 @@ public:
     GameWorldWithLuaAccess() : GameWorldGame(CreatePlayers(), ggs, em), em(0) { createLua(); }
 
     void createLua() { lua.reset(new LuaInterfaceGame(*this)); }
-
-    void executeLua(const std::string& luaCode) { lua->LoadScriptString(luaCode); }
 
     static std::vector<PlayerInfo> CreatePlayers()
     {
@@ -66,54 +68,12 @@ public:
     }
 };
 
-struct LuaTestsFixture
+struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture
 {
-    StringStreamWriter* logWriter;
     GameWorldWithLuaAccess world;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture()
-    {
-        GLOBALVARS.isTest = true;
-        logWriter = dynamic_cast<StringStreamWriter*>(LOG.getFileWriter());
-        BOOST_REQUIRE(logWriter);
-        clearLog();
-    }
-
-    ~LuaTestsFixture() { GLOBALVARS.isTest = false; }
-
-    void clearLog() { logWriter->getStream().str(""); }
-
-    std::string getLog(bool clear = true)
-    {
-        std::string result = logWriter->getText();
-        if(clear)
-            clearLog();
-        return result;
-    }
-
-    void executeLua(const std::string& luaCode) { world.executeLua(luaCode); }
-
-    void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
-
-    boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)
-    {
-        try
-        {
-            executeLua("assert(" + luaVal + "==" + expectedValue + ", 'xxx=' .. tostring(" + luaVal + "))");
-        } catch(std::runtime_error& e)
-        {
-            boost::test_tools::predicate_result result(false);
-            std::string msg = e.what();
-            size_t xPos = msg.rfind("xxx=");
-            if(xPos != std::string::npos)
-                result.message() << "Value = " << msg.substr(xPos + 4);
-            else
-                result.message() << e.what();
-            return result;
-        }
-        return true;
-    }
+    LuaTestsFixture() { luaBase = &world.GetLua(); }
 
     void initWorld()
     {

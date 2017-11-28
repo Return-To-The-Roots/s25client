@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2016 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -18,6 +18,7 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "RTTR_Assert.h"
 #include "RTTR_AssertError.h"
+#include "libutil/Log.h"
 #include "libutil/System.h"
 #include <iostream>
 #include <sstream>
@@ -29,35 +30,51 @@ bool RTTR_AssertEnableBreak = true;
 
 bool RTTR_IsBreakOnAssertFailureEnabled()
 {
-    bool assertBreakDisabled = false;
+    if(!RTTR_AssertEnableBreak)
+        return false;
     try
     {
         std::string envVarVal = System::getEnvVar("RTTR_DISABLE_ASSERT_BREAKPOINT");
         if(envVarVal == "1" || envVarVal == "yes")
-            assertBreakDisabled = true;
+            return false;
     } catch(...)
     { //-V565
     }
-    return !assertBreakDisabled && RTTR_AssertEnableBreak;
+    return true;
 }
 
 void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)
 {
     static const std::string thisFilePath = __FILE__;
-    std::string filePath = file;
-    std::string::size_type pos = thisFilePath.find_last_of("/\\");
-    if(pos != std::string::npos && filePath.size() > pos && filePath.substr(0, pos) == thisFilePath.substr(0, pos))
-        filePath = filePath.substr(pos + 1);
+    static bool inAssertFailure = false;
 
-    std::stringstream sMsg;
-    sMsg << "Assertion failure";
-    if(function)
-        sMsg << " in \"" << function << "\"";
-    sMsg << " at " << filePath << "#" << line << ": " << condition;
-    std::string msg = sMsg.str();
-    std::cerr << msg << std::endl;
+    // Guard as e.g. LOG.write may throw an assertion
+    if(!inAssertFailure)
+    {
+        inAssertFailure = true;
+        std::string filePath = file;
+        std::string::size_type pos = thisFilePath.find_last_of("/\\");
+        if(pos != std::string::npos && filePath.size() > pos && filePath.substr(0, pos) == thisFilePath.substr(0, pos))
+            filePath = filePath.substr(pos + 1);
+
+        std::stringstream sMsg;
+        sMsg << "Assertion failure";
+        if(function)
+            sMsg << " in \"" << function << "\"";
+        sMsg << " at " << filePath << "#" << line << ": " << condition;
+        std::string msg = sMsg.str();
+        try
+        {
+            LOG.write(msg + "\n", LogTarget::Stderr);
+        } catch(...)
+        {
+            std::cerr << msg << std::endl;
+        }
 #ifdef _WIN32
-    OutputDebugStringA(msg.c_str());
+        OutputDebugStringA(msg.c_str());
 #endif
-    throw RTTR_AssertError(msg);
+        inAssertFailure = false;
+        throw RTTR_AssertError(msg);
+    } else
+        throw RTTR_AssertError(std::string(condition) + " failed while handling an assertion");
 }

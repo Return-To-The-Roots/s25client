@@ -79,7 +79,7 @@ struct GetTestCommands : public GameCommandFactory
     }
 
 protected:
-    bool AddGC(gc::GameCommand* gc) override
+    bool AddGC(gc::GameCommandPtr gc) override
     {
         result.gcs.push_back(gc);
         return true;

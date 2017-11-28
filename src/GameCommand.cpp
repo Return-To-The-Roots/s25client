@@ -24,7 +24,7 @@
 
 namespace gc {
 
-GameCommand* GameCommand::Deserialize(Serializer& ser)
+GameCommandPtr GameCommand::Deserialize(Serializer& ser)
 {
     Type gcType = static_cast<Type>(ser.PopUnsignedChar());
     GameCommand* gc;

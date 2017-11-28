@@ -47,6 +47,7 @@ BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
     BOOST_REQUIRE_THROW(executeLua("assert(false)"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
 }
 
 BOOST_AUTO_TEST_CASE(ScriptLoading)
@@ -69,15 +70,19 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     script = "assertTypo(rue)";
     BOOST_REQUIRE(!lua.LoadScriptString(script));
     BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
+    RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
     TmpFile luaFile2(".lua");
     luaFile2.getStream() << script;
     luaFile2.close();
     BOOST_REQUIRE(!lua.LoadScript(luaFile2.filePath));
     BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
+    RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
 
     GLOBALVARS.isTest = true;
     BOOST_REQUIRE_THROW(lua.LoadScriptString(script), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
     BOOST_REQUIRE_THROW(lua.LoadScript(luaFile2.filePath), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
 }
 
 BOOST_AUTO_TEST_CASE(BaseFunctions)
@@ -88,25 +93,30 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     // No getRequiredLuaVersion
     LuaInterfaceBase& lua = world.GetLua();
     BOOST_REQUIRE(!lua.CheckScriptVersion());
+    BOOST_REQUIRE_NE(getLog(), "");
     // Wrong version
     executeLua("function getRequiredLuaVersion()\n return 0\n end");
     BOOST_REQUIRE(!lua.CheckScriptVersion());
+    BOOST_REQUIRE_NE(getLog(), "");
     executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % (lua.GetVersion() + 1));
     BOOST_REQUIRE(!lua.CheckScriptVersion());
+    BOOST_REQUIRE_NE(getLog(), "");
     // Correct version
     executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end") % lua.GetVersion());
     BOOST_REQUIRE(lua.CheckScriptVersion());
 
     BOOST_CHECK(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.GetFeatureLevel())));
 
-    // (Invalid) connect to set params
-    BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, true, false));
+    GAMECLIENT.SetIsHost(true);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "true"));
-    BOOST_REQUIRE(!GAMECLIENT.Connect("localhost", "", ServerType::LOCAL, 0, false, false));
+    GAMECLIENT.SetIsHost(false);
     BOOST_CHECK(isLuaEqual("rttr:IsHost()", "false"));
     BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
+    std::string oldLog = getLog();
     // Set Player ID
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
+    clearLog();
+    LOG.write(oldLog, LogTarget::Stdout);
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
 }
 
@@ -210,6 +220,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     StoreChat storeChat;
     // Set player id
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
+    RTTR_REQUIRE_LOG_CONTAINS("NMS_PLAYER_ID", true);
     BOOST_REQUIRE_EQUAL(GAMECLIENT.GetPlayerId(), 1u);
     // Send to other player
     executeLua("rttr:Chat(0, 'Hello World')");
@@ -244,8 +255,11 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     executeLua("assert(rttr:GetPlayer(1))");
     executeLua("assert(rttr:GetPlayer(2))");
     // Invalid player
+    BOOST_REQUIRE_EQUAL(getLog(), "");
     BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(3))"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
     BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(-1))"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
 
     executeLua("assert(rttr:GetWorld())");
 }
@@ -397,15 +411,18 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FISHER), 0u);
     BOOST_CHECK_EQUAL(hq->GetNumRealFigures(JOB_FORESTER), 2u);
 
+    BOOST_REQUIRE_EQUAL(getLog(), "");
+    // Invalid ware/player throws
+    BOOST_CHECK_THROW(executeLua("player:AddWares({[9999]=8})"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
+    BOOST_CHECK_THROW(executeLua("player:AddPeople({[9999]=8})"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
+
     BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_HAMMER)", "8"));
     BOOST_CHECK(isLuaEqual("player:GetNumWares(GD_AXE)", "6"));
 
     BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_HELPER)", "30"));
     BOOST_CHECK(isLuaEqual("player:GetNumPeople(JOB_FORESTER)", "2"));
-
-    // Invalid ware/player throws
-    BOOST_CHECK_THROW(executeLua("player:AddWares({[9999]=8})"), std::runtime_error);
-    BOOST_CHECK_THROW(executeLua("player:AddPeople({[9999]=8})"), std::runtime_error);
 
     BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_WOODCUTTER)", "0"));
     BOOST_CHECK(isLuaEqual("player:GetNumBuildings(BLD_HEADQUARTERS)", "1"));
@@ -419,11 +436,15 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     // Closed or non-AI player
     BOOST_REQUIRE(isLuaEqual("rttr:GetPlayer(0):AIConstructionOrder(12, 13, BLD_WOODCUTTER)", "false"));
     BOOST_REQUIRE(isLuaEqual("rttr:GetPlayer(2):AIConstructionOrder(12, 13, BLD_WOODCUTTER)", "false"));
+    BOOST_REQUIRE_EQUAL(getLog(), "");
     // Wrong coordinate
     BOOST_REQUIRE_THROW(executeLua("player:AIConstructionOrder(9999, 13, BLD_WOODCUTTER)"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
     BOOST_REQUIRE_THROW(executeLua("player:AIConstructionOrder(12, 9999, BLD_WOODCUTTER)"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
     // Wrong building
     BOOST_REQUIRE_THROW(executeLua("player:AIConstructionOrder(12, 13, 9999)"), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
     // Correct
     BOOST_REQUIRE(!note.note_);
     BOOST_REQUIRE(isLuaEqual("player:AIConstructionOrder(12, 13, BLD_WOODCUTTER)", "true"));
@@ -493,9 +514,11 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     expectedRestrictedArea += MapPoint(0, 0), MapPoint(1, 1), MapPoint(10, 1), MapPoint(10, 10), MapPoint(1, 10), MapPoint(1, 1);
     expectedRestrictedArea += MapPoint(0, 0), MapPoint(5, 5), MapPoint(7, 5), MapPoint(7, 7), MapPoint(5, 5), MapPoint(0, 0);
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    BOOST_REQUIRE_EQUAL(getLog(), "");
     // Some prefer using nils
     executeLua("player:SetRestrictedArea(nil,nil, 1,1, 10,1, 10,10, 1,10, 1,1, nil,nil, 5,5, 7,5, 7,7, 5,5, nil,nil)");
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    RTTR_REQUIRE_LOG_CONTAINS("don't need leading nils", false);
 
     // New API: Single nil and no double point
     executeLua("player:SetRestrictedArea(1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
@@ -506,6 +529,7 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
     // ...or beginning
     executeLua("player:SetRestrictedArea(nil,1,1, 10,1, 10,10, 1,10, nil, 5,5, 7,5, 7,7)");
     RTTR_REQUIRE_EQUAL_COLLECTIONS(player.GetRestrictedArea(), expectedRestrictedArea);
+    RTTR_REQUIRE_LOG_CONTAINS("don't need leading nils", false);
 
     // Also for single polygon
     executeLua("player:SetRestrictedArea(5,7, 5,12, 15,12, nil)");
@@ -518,9 +542,12 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
 
     // Numbers must be pairs
     BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3)"), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("Argument mismatch", false);
     // And non negative
     BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, -3,4)"), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("must be positive", false);
     BOOST_REQUIRE_THROW(executeLua("player:SetRestrictedArea(1,2, 3,-4)"), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("must be positive", false);
 }
 
 BOOST_AUTO_TEST_CASE(World)
@@ -571,6 +598,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_REQUIRE_EQUAL(obj2->GetSize(), 2u);
     // Invalid Size
     BOOST_REQUIRE_THROW(executeLua(boost::format("world:AddStaticObject(%1%, %2%, 5, 3, 3)") % envPt2.x % envPt2.y), std::runtime_error);
+    RTTR_REQUIRE_LOG_CONTAINS("Invalid size", false);
 
     // Can't replace buildings
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % hqPos.x % hqPos.y);
@@ -661,6 +689,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // And in test mode it throws
     GLOBALVARS.isTest = true;
     BOOST_REQUIRE_THROW(lua.Serialize(), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
     GLOBALVARS.isTest = false;
 
     // Error from C++
@@ -673,6 +702,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // And in test mode it throws
     GLOBALVARS.isTest = true;
     BOOST_REQUIRE_THROW(lua.Deserialize(serData4), std::runtime_error);
+    BOOST_REQUIRE_NE(getLog(), "");
     GLOBALVARS.isTest = false;
 
     // False returned
@@ -697,8 +727,9 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
 
     executeLua("function onGameFrame(gameframe_number)\n  rttr:Log('gf: '..gameframe_number)\nend");
     lua.EventGameFrame(0);
+    BOOST_REQUIRE_EQUAL(getLog(), "gf: 0\n");
     lua.EventGameFrame(42);
-    BOOST_REQUIRE_EQUAL(getLog(), "gf: 0\ngf: 42\n");
+    BOOST_REQUIRE_EQUAL(getLog(), "gf: 42\n");
 
     executeLua("function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
                "'..y..')'..getResName(type)..':'..quantity)\nend");

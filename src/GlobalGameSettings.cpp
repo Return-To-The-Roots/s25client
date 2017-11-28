@@ -17,11 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GlobalGameSettings.h"
-
 #include "Settings.h"
-
 #include "addons/Addons.h"
-
 #include "helpers/containerUtils.h"
 #include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
@@ -212,7 +209,7 @@ void GlobalGameSettings::SaveSettings() const
  */
 void GlobalGameSettings::Serialize(Serializer& ser) const
 {
-    LOG.writeToFile(">>> Addon Status:\n");
+    // LOG.writeToFile(">>> Addon Status:\n");
 
     ser.PushUnsignedChar(static_cast<unsigned char>(speed));
     ser.PushUnsignedChar(static_cast<unsigned char>(objective));
@@ -228,7 +225,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
         ser.PushUnsignedInt(it->addon->getId());
         ser.PushUnsignedInt(it->status);
 
-        LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(it->addon->getId()) % it->status;
+        // LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(it->addon->getId()) % it->status;
     }
 }
 
@@ -249,7 +246,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     clearAddons();
 
-    LOG.writeToFile("<<< Addon Status:\n");
+    // LOG.writeToFile("<<< Addon Status:\n");
 
     for(unsigned i = 0; i < count; ++i)
     {
@@ -257,7 +254,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
         unsigned status = ser.PopUnsignedInt();
         setSelection(addon, status);
 
-        LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(addon) % status;
+        // LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(addon) % status;
     }
 }
 
@@ -265,7 +262,7 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
     AddonContainer::iterator it = std::find(addons.begin(), addons.end(), id);
     if(it == addons.end())
-        std::cout << "Addon 0x" << std::hex << id << std::dec << " not found!" << std::endl;
+        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % id;
     else
         it->status = selection;
 }

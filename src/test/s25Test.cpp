@@ -18,16 +18,21 @@
 #define BOOST_TEST_MODULE RTTR_Test
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "BufferedWriter.h"
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "languages.h"
 #include "ogl/glAllocator.h"
 #include "libsiedler2/libsiedler2.h"
+#include "libutil/AvoidDuplicatesWriter.h"
 #include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
+#include "libutil/NullWriter.h"
 #include "libutil/Socket.h"
+#include "libutil/StdStreamWriter.h"
 #include "libutil/StringStreamWriter.h"
 #include <boost/filesystem/operations.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 #include <ctime>
@@ -35,6 +40,8 @@
 
 // Test helpers. Header only
 #include "helpers/helperTests.hpp" // IWYU pragma: keep
+
+//#include <vld.h>
 
 namespace bfs = boost::filesystem;
 
@@ -44,8 +51,11 @@ struct TestSetup
     {
         if(!LocaleHelper::init())
             throw std::runtime_error("Could not init locale");
-        // Write to string stream only to avoid file output on the test server
-        LOG.open(new StringStreamWriter);
+        // Don't write to file
+        LOG.setWriter(new NullWriter(), LogTarget::File);
+        // Filter everything so FileAndStdout won't result in duplicate lines and store text for tests
+        LOG.setWriter(new AvoidDuplicatesWriter(boost::make_shared<BufferedWriter>(boost::make_shared<StdStreamWriter>(true))),
+                      LogTarget::StdoutAndStderr);
         if(!RTTRCONFIG.Init())
             throw std::runtime_error("Could not init working directory. Misplaced binary?");
         if(!bfs::is_directory(RTTRCONFIG.ExpandPath("<RTTR_RTTR>")))

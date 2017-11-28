@@ -23,6 +23,7 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlOptionGroup.h"
 #include "desktops/dskHostGame.h"
+#include "helperFuncs.h"
 #include "helpers/Deleter.h"
 #include "initTestHelpers.h"
 #include "liblobby/LobbyClient.h"
@@ -75,11 +76,12 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
     }
 };
 
-struct LobbyFixture
+struct LobbyFixture : public LogAccessor
 {
     TestLobbySever lobbyServer;
     uint16_t lobbyPort;
     LobbyFixture() : lobbyPort(5664) { BOOST_REQUIRE(lobbyServer.listen(lobbyPort)); }
+    ~LobbyFixture() { LOBBYCLIENT.Stop(); } // To avoid error msg due to missing server
     void run()
     {
         lobbyServer.run();
@@ -95,6 +97,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
 {
     initGUITests();
     BOOST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
+    RTTR_REQUIRE_LOG_CONTAINS("Connect", true);
     for(unsigned i = 0; i < 50; i++)
     {
         run();
@@ -102,6 +105,7 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
             break;
     }
     BOOST_REQUIRE(LOBBYCLIENT.IsLoggedIn());
+    RTTR_REQUIRE_LOG_CONTAINS("NMS", true);
     GameLobby gameLobby(false, true, 2);
     JoinPlayerInfo& player = gameLobby.getPlayer(0);
     player.ps = PS_OCCUPIED;
@@ -122,7 +126,15 @@ BOOST_AUTO_TEST_CASE(LobbyChat)
     {
         lobbyServer.connections[0].sendQueue.push(new LobbyMessage_Chat("OtherPlayer", "Test"));
         ci->CI_Chat(0, CD_ALL, "Test2");
-        run();
+        RTTR_REQUIRE_LOG_CONTAINS("<TestName>", false);
+
+        for(unsigned j = 0; j < 50; j++)
+        {
+            run();
+            if(!getLog(false).empty())
+                break;
+        }
+        RTTR_REQUIRE_LOG_CONTAINS("<OtherPlayer>", false);
         static_cast<Window*>(desktop)->Msg_OptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
     }
 }

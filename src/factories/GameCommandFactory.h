@@ -18,6 +18,7 @@
 #ifndef GameCommandFactory_h__
 #define GameCommandFactory_h__
 
+#include "GameCommand.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/Direction.h"
 #include "gameTypes/GoodTypes.h"
@@ -29,9 +30,6 @@
 #include "gameData/MilitaryConsts.h"
 #include <vector>
 
-namespace gc {
-class GameCommand;
-}
 struct InventorySetting;
 
 /// Factory class for creating game commands. Handling of them (storing, sending...) must be done in the derived class
@@ -102,8 +100,8 @@ public:
 
 protected:
     virtual ~GameCommandFactory() {}
-    /// Called for each created GC. Ownership over gc is passed!
-    virtual bool AddGC(gc::GameCommand* gc) = 0;
+    /// Called for each created GC. Return true iff this is going to be executed
+    virtual bool AddGC(gc::GameCommandPtr gc) = 0;
 };
 
 #endif // GameMessageFactory_h__

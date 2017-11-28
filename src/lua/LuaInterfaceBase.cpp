@@ -128,12 +128,12 @@ bool LuaInterfaceBase::CheckScriptVersion()
             return true;
         else
         {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.")) % scriptVersion % GetVersion() % GetFeatureLevel();
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.\n")) % scriptVersion % GetVersion() % GetFeatureLevel();
             return false;
         }
     } else
     {
-        LOG.write(_("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated."));
+        LOG.write(_("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.\n"));
         return false;
     }
 }

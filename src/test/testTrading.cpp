@@ -19,6 +19,7 @@
 #include "RTTR_AssertError.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "helperFuncs.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
@@ -95,8 +96,8 @@ BOOST_FIXTURE_TEST_CASE(TradeBothOrNone, TradeFixture)
 {
     RTTR_AssertEnableBreak = false;
     // It has to be either-or
-    BOOST_CHECK_THROW(this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_WOODCUTTER, 2), RTTR_AssertError);
-    BOOST_CHECK_THROW(this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_NOTHING, 2), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_WOODCUTTER, 2));
+    RTTR_REQUIRE_ASSERT(this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_NOTHING, 2));
     RTTR_AssertEnableBreak = true;
 }
 #endif

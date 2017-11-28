@@ -70,7 +70,12 @@ void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""
     defaultValue += rand();
 #endif
     RANDOM.Init(defaultValue);
-    if(fileName && fileName[0])
+    // Reduce log clutter
+    bool print = defaultValue != 1337;
+#ifdef RTTR_RAND_TEST
+    print = true;
+#endif
+    if(print && fileName && fileName[0])
         std::cout << "Ingame RNG (" << fileName << "#" << line << ")= " << RANDOM.GetCurrentState() << "(" << defaultValue << ")"
                   << std::endl;
 }

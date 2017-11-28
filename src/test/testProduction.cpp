@@ -19,6 +19,7 @@
 #include "WorldWithGCExecution.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
+#include "helperFuncs.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include <boost/array.hpp>
@@ -66,6 +67,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     expectedInventory.Add(TOOLS[2], toolOrder[2]);
     // Place order
     this->ChangeTools(toolSettings, toolOrder.data());
+    RTTR_REQUIRE_LOG_CONTAINS("Committing an order", true);
     // Wait for completion message
     RTTR_EXEC_TILL(3000, postbox->GetNumMsgs() == 1u);
     BOOST_REQUIRE_EQUAL(postbox->GetMsg(0)->GetCategory(), PostCategory::Economy);
