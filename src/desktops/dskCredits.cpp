@@ -46,7 +46,6 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     // Zurück
     AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TC_RED1, _("Back"), NormalFont);
 
-    // "Die Siedler II.5 RTTR"
     AddText(1, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Credits"
