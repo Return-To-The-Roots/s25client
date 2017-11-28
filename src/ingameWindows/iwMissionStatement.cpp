@@ -62,8 +62,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
 
 void iwMissionStatement::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
-    // TODO: Make something better, this is quite hacky (Client and server dependency)
-    if(pauseGame_)
+    if(pauseGame_ && GAMECLIENT.GetState() != GameClient::CS_STOPPED)
         GAMECLIENT.SetPause(false);
     Close();
 }
@@ -71,7 +70,6 @@ void iwMissionStatement::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 void iwMissionStatement::SetActive(bool activate)
 {
     IngameWindow::SetActive(activate);
-    // TODO: Make something better, this is quite hacky (Client and server dependency)
-    if(IsActive() && pauseGame_)
+    if(IsActive() && pauseGame_ && GAMECLIENT.GetState() != GameClient::CS_STOPPED)
         GAMECLIENT.SetPause(true);
 }
