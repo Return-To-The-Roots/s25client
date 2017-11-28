@@ -18,9 +18,9 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
 #include "PointOutput.h"
-#include "RTTR_AssertError.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
+#include "helperFuncs.h"
 #include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
 #include "network/GameClient.h"
@@ -211,6 +211,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
 
     // Set player
     static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(0));
+    RTTR_REQUIRE_LOG_CONTAINS("NMS_PLAYER_ID", true);
 
     dskGameInterface gameDesktop(boost::shared_ptr<Game>(&this->game, &deleteNoting));
     const GameWorldViewer& gwv = gameDesktop.GetViewer();

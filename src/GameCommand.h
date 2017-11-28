@@ -41,6 +41,10 @@ void intrusive_ptr_release(gc::GameCommand* x);
 
 namespace gc {
 
+class GameCommand;
+// Use this for safely using Pointers to GameCommands
+typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
+
 class GameCommand
 {
 protected:
@@ -105,7 +109,7 @@ public:
     }
 
     /// Builds a GameCommand depending on Type
-    static GameCommand* Deserialize(Serializer& ser);
+    static GameCommandPtr Deserialize(Serializer& ser);
 
     /// Serializes this GameCommand
     virtual void Serialize(Serializer& ser) const;
@@ -116,9 +120,6 @@ public:
 protected:
     GameCommand(const Type gcType) : gcType(gcType), refCounter_(0) {}
 };
-
-// Use this for safely using Pointers to GameCommands
-typedef boost::intrusive_ptr<GameCommand> GameCommandPtr;
 
 } // namespace gc
 

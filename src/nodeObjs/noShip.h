@@ -140,7 +140,7 @@ public:
     noShip(const MapPoint pt, const unsigned char player);
     noShip(SerializedGameData& sgd, const unsigned obj_id);
 
-    ~noShip() override {}
+    ~noShip() override;
 
     void Serialize(SerializedGameData& sgd) const override;
     void Destroy() override;

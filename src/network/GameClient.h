@@ -79,6 +79,8 @@ public:
             this->ci = NULL;
     }
     bool IsHost() const { return clientconfig.isHost; }
+    /// Manually set the host status. Normally done in connect call
+    void SetIsHost(bool isHost) { clientconfig.isHost = isHost; }
     std::string GetGameName() const { return clientconfig.gameName; }
 
     unsigned GetPlayerId() const { return mainPlayer.playerId; }
@@ -175,7 +177,7 @@ public:
 private:
     /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt
     /// ist)
-    bool AddGC(gc::GameCommand* gc) override;
+    bool AddGC(gc::GameCommandPtr gc) override;
 
     unsigned GetNumPlayers() const;
     /// Liefert einen Player zurück

@@ -30,12 +30,12 @@ public:
     GCExecutor() : curPlayer(0) {}
 
 protected:
-    bool AddGC(gc::GameCommand* gc) override
+    bool AddGC(gc::GameCommandPtr gc) override
     {
         // Go through serialization to check if that works too
         Serializer ser;
         gc->Serialize(ser);
-        deletePtr(gc);
+        gc.reset();
         gc = gc::GameCommand::Deserialize(ser);
         BOOST_REQUIRE_EQUAL(ser.GetBytesLeft(), 0u);
         Serializer ser2;
@@ -43,7 +43,6 @@ protected:
         BOOST_REQUIRE_EQUAL(ser2.GetLength(), ser.GetLength());
         BOOST_REQUIRE_EQUAL(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()), 0);
         gc->Execute(GetWorld(), curPlayer);
-        deletePtr(gc);
         return true;
     }
 

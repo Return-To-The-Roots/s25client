@@ -280,9 +280,7 @@ public:
     GameMessage_Chat() : GameMessageWithPlayer(NMS_CHAT) {} //-V730
     GameMessage_Chat(uint8_t player, const ChatDestination destination, const std::string& text)
         : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(text)
-    {
-        LOG.writeToFile(">>> NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
-    }
+    {}
 
     void Serialize(Serializer& ser) const override
     {
@@ -298,11 +296,7 @@ public:
         text = ser.PopString();
     }
 
-    bool Run(GameMessageInterface* callback) const override
-    {
-        LOG.writeToFile("<<< NMS_SERVER_CHAT(%d, %s)\n") % destination % text;
-        return callback->OnGameMessage(*this);
-    }
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 /// eingehende Server-Async-Nachricht
@@ -348,12 +342,12 @@ public:
     GameMessage_Player_Id() : GameMessageWithPlayer(NMS_PLAYER_ID) {} //-V730
     GameMessage_Player_Id(const uint8_t playerId) : GameMessageWithPlayer(NMS_PLAYER_ID, playerId)
     {
-        LOG.writeToFile(">>> NMS_PLAYER_ID(%d)\n") % playerId;
+        LOG.writeToFile(">>> NMS_PLAYER_ID(%d)\n") % unsigned(playerId);
     }
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_PLAYER_ID(%d)\n") % player;
+        LOG.writeToFile("<<< NMS_PLAYER_ID(%d)\n") % unsigned(player);
         return callback->OnGameMessage(*this);
     }
 };

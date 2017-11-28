@@ -20,6 +20,7 @@
 #include "GameObject.h"
 #include "RTTR_AssertError.h"
 #include "TestEventManager.h"
+#include "helperFuncs.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameEventsTestSuite)
@@ -228,13 +229,13 @@ BOOST_AUTO_TEST_CASE(InvalidEvent)
     EventManager evMgr(100);
     TestEventHandler obj;
     // Need object
-    BOOST_CHECK_THROW(evMgr.AddEvent(NULL, 1), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(NULL, 1));
     // Length must be > 0
-    BOOST_CHECK_THROW(evMgr.AddEvent(&obj, 0), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(&obj, 0));
     // ... even for continued events
-    BOOST_CHECK_THROW(evMgr.AddEvent(NULL, 50, 0, 50), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(NULL, 50, 0, 50));
     // continued event cannot start before the game
-    BOOST_CHECK_THROW(evMgr.AddEvent(NULL, 200, 0, 150), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(evMgr.AddEvent(NULL, 200, 0, 150));
     RTTR_AssertEnableBreak = true;
 #endif
 }

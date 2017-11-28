@@ -18,7 +18,10 @@
 #ifndef helperFuncs_h__
 #define helperFuncs_h__
 
+#include "BufferedWriter.h"
 #include "mygettext/mygettext.h"
+#include "libutil/AvoidDuplicatesWriter.h"
+#include "libutil/Log.h"
 #include <boost/test/unit_test.hpp>
 #include <string>
 
@@ -42,6 +45,35 @@ inline boost::test_tools::predicate_result testCmp(const char* cmp, const T1& l,
     return true;
 }
 
+/// Provide the last log line via getLog
+struct LogAccessor
+{
+    boost::shared_ptr<AvoidDuplicatesWriter> logWriter;
+    boost::shared_ptr<BufferedWriter> logWriterBuff;
+
+    LogAccessor()
+    {
+        logWriter = boost::dynamic_pointer_cast<AvoidDuplicatesWriter>(LOG.getStdoutWriter());
+        BOOST_REQUIRE(logWriter);
+        logWriterBuff = boost::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
+        BOOST_REQUIRE(logWriterBuff);
+    }
+
+    /// Clear the last line so it won't be written and reset duplicates avoidance as we may want the same entry again
+    void clearLog()
+    {
+        logWriter->reset();
+        logWriterBuff->curText.clear();
+    }
+    std::string getLog(bool clear = true)
+    {
+        std::string result = logWriterBuff->curText;
+        if(clear)
+            clearLog();
+        return result;
+    }
+};
+
 #define RTTR_REQUIRE_EQUAL_MSG(L, R, MSG)                                              \
     do                                                                                 \
     {                                                                                  \
@@ -58,6 +90,25 @@ inline boost::test_tools::predicate_result testCmp(const char* cmp, const T1& l,
         if(!res)                                                                        \
             res.message() << MSG;                                                       \
         BOOST_REQUIRE(res);                                                             \
+    } while(false)
+
+/// Require that the log contains "content" in the first line. If allowEmpty is true, then an empty log is acceptable
+#define RTTR_REQUIRE_LOG_CONTAINS(content, allowEmpty)                                                                           \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        LogAccessor logAcc;                                                                                                      \
+        const std::string log = logAcc.getLog();                                                                                 \
+        BOOST_REQUIRE_MESSAGE((allowEmpty) || !log.empty(), "Log does not contain: " << (content));                              \
+        BOOST_REQUIRE_MESSAGE(log.empty() || log.find(content) < log.find('\n'), "Unexpected log: " << log << "\n"               \
+                                                                                                    << "Expected: " << content); \
+    \
+} while(false)
+
+#define RTTR_REQUIRE_ASSERT(stmt)                              \
+    do                                                         \
+    {                                                          \
+        BOOST_CHECK_THROW(stmt, RTTR_AssertError);             \
+        RTTR_REQUIRE_LOG_CONTAINS("Assertion failure", false); \
     } while(false)
 
 #endif // helperFuncs_h__

@@ -118,9 +118,9 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
         if(it->isNilref())
         {
             if(pts.empty()) // Start separator (old style)
-                LOG.write("You don't need leading nils for SetRestrictedArea");
+                LOG.write("You don't need leading nils for SetRestrictedArea\n");
             else if(curPolyStart < 0) // We don't have a current polygon? Can only happen for multiple nils (old style)
-                LOG.write("Duplicate nils found in SetRestrictedArea");
+                LOG.write("Duplicate nils found in SetRestrictedArea\n");
             else if(pts.size() - static_cast<unsigned>(curPolyStart) < 3)
                 throw std::runtime_error(std::string("Invalid polygon (less than 3 points) found at index ")
                                          + helpers::toString(std::distance(inPoints.cbegin(), it)));
@@ -145,7 +145,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             ++it;
             int y = *it;
             if(x < 0 || y < 0)
-                throw std::runtime_error("Points must be non-negative");
+                throw std::runtime_error("Points must be positive");
             MapPoint pt(x, y);
             if(pt == MapPoint(0, 0))
             {

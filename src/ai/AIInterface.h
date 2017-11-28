@@ -168,7 +168,7 @@ public:
     const GameWorldBase& gwb;
 
 private:
-    bool AddGC(gc::GameCommand* gc) override
+    bool AddGC(gc::GameCommandPtr gc) override
     {
         gcs.push_back(gc);
         return true;

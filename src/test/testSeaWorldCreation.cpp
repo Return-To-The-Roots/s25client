@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "RTTR_AssertError.h"
 #include "SeaWorldWithGCExecution.h"
+#include "helperFuncs.h"
 #include <boost/test/unit_test.hpp>
 
 std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
@@ -101,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
 // Harbor ID 0 is means invalid harbor
 #if RTTR_ENABLE_ASSERTS
     RTTR_AssertEnableBreak = false;
-    BOOST_REQUIRE_THROW(world.GetHarborPoint(0), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(world.GetHarborPoint(0));
     RTTR_AssertEnableBreak = true;
 #else
     BOOST_REQUIRE(!world.GetHarborPoint(0).isValid());

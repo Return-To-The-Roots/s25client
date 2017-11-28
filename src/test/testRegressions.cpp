@@ -25,6 +25,7 @@
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "figures/nofFarmhand.h"
+#include "helperFuncs.h"
 #include "ingameWindows/iwHelp.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
@@ -127,7 +128,7 @@ BOOST_AUTO_TEST_CASE(IngameWnd)
     BOOST_REQUIRE_EQUAL(wnd.GetSize(), oldSize);
 }
 
-struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>
+struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public LogAccessor
 {
     boost::array<unsigned, NUM_JOB_TYPES> numPeople, numPeoplePlayer;
     boost::array<unsigned, NUM_WARE_TYPES> numGoods, numGoodsPlayer;
@@ -226,10 +227,10 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     RTTR_AssertEnableBreak = false;
     newGoods.clear();
     newGoods.Add(JOB_BOATCARRIER);
-    BOOST_CHECK_THROW(hq.AddGoods(newGoods, false), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
     newGoods.clear();
     newGoods.Add(GD_SHIELDAFRICANS);
-    BOOST_CHECK_THROW(hq.AddGoods(newGoods, false), RTTR_AssertError);
+    RTTR_REQUIRE_ASSERT(hq.AddGoods(newGoods, false));
     RTTR_AssertEnableBreak = true;
 #endif
 }

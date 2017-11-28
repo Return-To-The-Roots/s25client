@@ -30,9 +30,13 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 
-struct LocaleFixture
+struct LocaleFixture : private LogAccessor
 {
-    LocaleFixture() { LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true); }
+    LocaleFixture()
+    {
+        LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
+        RTTR_REQUIRE_LOG_CONTAINS("Loading", true);
+    }
     std::vector<std::string> getLanguageCodes()
     {
         std::vector<std::string> codes;

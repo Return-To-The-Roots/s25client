@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "RttrConfig.h"
+#include "helperFuncs.h"
 #include "libutil/System.h"
 #include "libutil/ucString.h"
 #include <boost/filesystem/operations.hpp>
@@ -140,6 +141,7 @@ BOOST_AUTO_TEST_CASE(PrefixPath)
         bfs::path fakePrefixPath = bfs::current_path() / "testPrefixPath";
         BOOST_REQUIRE(System::setEnvVar("RTTR_PREFIX_DIR", fakePrefixPath.string()));
         BOOST_REQUIRE_EQUAL(RTTRCONFIG.GetPrefixPath(), fakePrefixPath);
+        RTTR_REQUIRE_LOG_CONTAINS("manually set", false);
         BOOST_REQUIRE(System::removeEnvVar("RTTR_PREFIX_DIR"));
     }
     {
