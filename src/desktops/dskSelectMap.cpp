@@ -31,6 +31,7 @@
 #include "desktops/dskLobby.h"
 #include "desktops/dskSinglePlayer.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "helpers/converters.h"
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "ingameWindows/iwMapGenerator.h"
@@ -44,6 +45,7 @@
 #include "ogl/glArchivItem_Map.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/ucString.h"
 #include <boost/bind.hpp>
@@ -176,44 +178,46 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, const int s
  */
 void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const int selection)
 {
-    switch(ctrl_id)
+    if(ctrl_id == 1)
     {
-        case 1:
+        ctrlTable* table = GetCtrl<ctrlTable>(1);
+
+        // is the selection valid?
+        if(selection >= 0 && selection < table->GetNumRows())
         {
-            ctrlTable* table = GetCtrl<ctrlTable>(1);
+            // get path to map from table
+            std::string path = table->GetItemText(selection, 5);
 
-            // is the selection valid?
-            if(selection < table->GetNumRows())
+            libsiedler2::Archiv ai;
+            // load map data
+            int ec = libsiedler2::loader::LoadMAP(path, ai);
+            if(ec || !dynamic_cast<glArchivItem_Map*>(ai[0]))
             {
-                // get path to map from table
-                std::string path = table->GetItemText(selection, 5);
+                brokenMapPaths.push_back(path);
+                std::string errorTxt = _("Could not load map:\n");
+                errorTxt += path + '\n';
+                errorTxt += libsiedler2::getErrorString(ec);
+                WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt, this, MSB_OK, MSB_EXCLAMATIONRED, 1));
+                table->RemoveRow(selection);
+            } else
+            {
+                glArchivItem_Map* map = static_cast<glArchivItem_Map*>(ai[0]);
+                ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(11);
+                preview->SetMap(map);
 
-                libsiedler2::Archiv ai;
-                // load map data
-                if(libsiedler2::loader::LoadMAP(path, ai) == 0)
-                {
-                    glArchivItem_Map* map = dynamic_cast<glArchivItem_Map*>(ai.get(0));
-                    if(map)
-                    {
-                        ctrlPreviewMinimap* preview = GetCtrl<ctrlPreviewMinimap>(11);
-                        preview->SetMap(map);
+                ctrlText* text = GetCtrl<ctrlText>(12);
+                text->SetText(cvStringToUTF8(map->getHeader().getName()));
+                DrawPoint txtPos = text->GetPos();
+                txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
+                text->SetPos(txtPos);
 
-                        ctrlText* text = GetCtrl<ctrlText>(12);
-                        text->SetText(cvStringToUTF8(map->getHeader().getName()));
-                        DrawPoint txtPos = text->GetPos();
-                        txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
-                        text->SetPos(txtPos);
-
-                        text = GetCtrl<ctrlText>(13);
-                        text->SetText(path);
-                        txtPos = text->GetPos();
-                        txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
-                        text->SetPos(txtPos);
-                    }
-                }
+                text = GetCtrl<ctrlText>(13);
+                text->SetText(path);
+                txtPos = text->GetPos();
+                txtPos.x = preview->GetPos().x + preview->GetSize().x + 10;
+                text->SetPos(txtPos);
             }
         }
-        break;
     }
 }
 
@@ -356,9 +360,7 @@ void dskSelectMap::CI_NextConnectState(const ConnectState cs)
 {
     switch(cs)
     {
-        case CS_FINISHED: { WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId()));
-        }
-        break;
+        case CS_FINISHED: WINDOWMANAGER.Switch(new dskHostGame(csi.type, GAMECLIENT.GetGameLobby(), GAMECLIENT.GetPlayerId())); break;
         default: break;
     }
 }
@@ -403,12 +405,14 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
 
     BOOST_FOREACH(const std::string& filePath, files)
     {
+        if(helpers::contains(brokenMapPaths, filePath))
+            continue;
         // Karteninformationen laden
         libsiedler2::Archiv map;
         if(libsiedler2::loader::LoadMAP(filePath, map, true) != 0)
             continue;
 
-        const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
+        const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map[0])->getHeader();
 
         if(header.getNumPlayers() > MAX_PLAYERS)
             continue;

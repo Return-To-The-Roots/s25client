@@ -51,6 +51,7 @@
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
+#include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/prototypen.h"
 #include "libutil/Log.h"
 #include "libutil/MyTime.h"
@@ -227,7 +228,11 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
         // Map laden
         libsiedler2::Archiv mapArchiv;
         // Karteninformationen laden
-        if(libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv) == 0)
+        if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.GetMapPath(), mapArchiv))
+        {
+            WINDOWMANAGER.ShowAfterSwitch(
+              new iwMsgbox(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+        } else
         {
             glArchivItem_Map* map = static_cast<glArchivItem_Map*>(mapArchiv.get(0));
             ctrlPreviewMinimap* preview = AddPreviewMinimap(70, DrawPoint(560, 40), Extent(220, 220), map);
