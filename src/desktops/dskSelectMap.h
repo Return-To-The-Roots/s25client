@@ -20,9 +20,8 @@
 #pragma once
 
 #include "Desktop.h"
-#include "mapGenerator/MapSettings.h"
-
 #include "ingameWindows/iwDirectIPCreate.h"
+#include "mapGenerator/MapSettings.h"
 #include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
 #include <string>
@@ -77,6 +76,8 @@ private:
     boost::thread* mapGenThread;
     std::string newRandMapPath;
     IngameWindow* waitWnd;
+    /// Maps that we already know are broken
+    std::vector<std::string> brokenMapPaths;
 };
 
 #endif //! dskSELECTMAP_H_INCLUDED

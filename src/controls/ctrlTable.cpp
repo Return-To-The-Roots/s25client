@@ -163,6 +163,17 @@ void ctrlTable::AddRow(unsigned alwaysnull, ...)
     GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows.size()));
 }
 
+void ctrlTable::RemoveRow(unsigned rowIdx)
+{
+    if(rowIdx >= rows.size())
+        return;
+    rows.erase(rows.begin() + rowIdx);
+    GetCtrl<ctrlScrollBar>(0)->SetRange(static_cast<unsigned short>(rows.size()));
+    if(selection_ >= 0 && static_cast<unsigned>(selection_) >= rows.size())
+        selection_ = static_cast<int>(rows.size()) - 1;
+    SetSelection(selection_);
+}
+
 /**
  *  liefert den Wert eines Feldes.
  *

@@ -41,6 +41,7 @@ public:
     void DeleteAllItems();
     /// fügt eine Zeile hinzu.
     void AddRow(unsigned alwaysnull, ...);
+    void RemoveRow(unsigned rowIdx);
     /// liefert den Wert eines Feldes.
     const std::string& GetItemText(unsigned short row, unsigned short column) const;
     /// sortiert die Zeilen.
