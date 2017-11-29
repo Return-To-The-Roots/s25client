@@ -149,11 +149,6 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
     }
 }
 
-unsigned TerrainData::GetShiftColor(TerrainType t)
-{
-    return 0;
-}
-
 unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
 {
     switch(landsCape)

@@ -21,6 +21,7 @@
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include <vector>
 
 Extent glArchivItem_Bitmap_Player::CalcTextureSize() const
@@ -118,9 +119,9 @@ void glArchivItem_Bitmap_Player::FillTexture()
     int iformat = GetInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
 
     Extent texSize = GetTexSize();
-    std::vector<unsigned char> buffer(prodOfComponents(texSize) * 4);
+    libsiedler2::PixelBufferARGB buffer(texSize.x, texSize.y);
 
-    print(&buffer.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, 0, 0, 0, 0, 0, 0, false);
-    print(&buffer.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, texSize.x / 2u, 0, 0, 0, 0, 0, true);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
+    print(buffer, palette, 128, 0, 0, 0, 0, 0, 0, false);
+    print(buffer, palette, 128, texSize.x / 2u, 0, 0, 0, 0, 0, true);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }

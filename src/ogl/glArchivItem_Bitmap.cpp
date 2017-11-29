@@ -20,6 +20,7 @@
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/oglIncludes.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include <vector>
 
 glArchivItem_Bitmap::glArchivItem_Bitmap() {}
@@ -112,10 +113,9 @@ void glArchivItem_Bitmap::FillTexture()
     int iformat = GetInternalFormat(), dformat = GL_BGRA;
 
     const Extent texSize = GetTexSize();
-    std::vector<unsigned char> buffer(prodOfComponents(texSize) * 4);
-
-    print(&buffer.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
-    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, &buffer.front());
+    libsiedler2::PixelBufferARGB buffer(texSize.x, texSize.y);
+    print(buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }
 
 Extent glArchivItem_Bitmap::CalcTextureSize() const

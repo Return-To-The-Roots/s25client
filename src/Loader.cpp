@@ -39,6 +39,7 @@
 #include "gameData/TerrainData.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Palette.h"
+#include "libsiedler2/ArchivItem_PaletteAnimation.h"
 #include "libsiedler2/ArchivItem_Text.h"
 #include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/IAllocator.h"
@@ -269,8 +270,7 @@ void Loader::LoadDummyGUIFiles()
 {
     // Palettes
     libsiedler2::ArchivItem_Palette* palette = new libsiedler2::ArchivItem_Palette;
-    files_["colors"].archiv.push(palette);
-    palette = new libsiedler2::ArchivItem_Palette;
+    files_["colors"].archiv.pushC(*palette);
     files_["pal5"].archiv.push(palette);
     // GUI elements
     libsiedler2::Archiv& resource = files_["resource"].archiv;
@@ -278,29 +278,29 @@ void Loader::LoadDummyGUIFiles()
     for(unsigned id = 4; id < 36; id++)
     {
         glArchivItem_Bitmap_RLE* bmp = new glArchivItem_Bitmap_RLE();
-        const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
+        libsiedler2::PixelBufferARGB buffer(1, 1);
+        bmp->create(buffer);
         resource.set(id, bmp);
     }
     for(unsigned id = 36; id < 57; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
-        const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
+        libsiedler2::PixelBufferARGB buffer(1, 1);
+        bmp->create(buffer);
         resource.set(id, bmp);
     }
     libsiedler2::Archiv& io = files_["io"].archiv;
     for(unsigned id = 0; id < 264; id++)
     {
         glArchivItem_Bitmap_Raw* bmp = new glArchivItem_Bitmap_Raw();
-        const uint32_t buffer = SetAlpha(0, 255);
-        bmp->create(1, 1, reinterpret_cast<const unsigned char*>(&buffer), 1, 1, libsiedler2::FORMAT_BGRA, palette);
+        libsiedler2::PixelBufferARGB buffer(1, 1);
+        bmp->create(buffer);
         io.push(bmp);
     }
     // Fonts
     libsiedler2::Archiv& fonts = files_["outline_fonts"].archiv;
     fonts.alloc(3);
-    std::vector<uint32_t> buffer(15 * 16, SetAlpha(0, 255));
+    libsiedler2::PixelBufferARGB buffer(15, 16);
     for(unsigned i = 0; i < 3; i++)
     {
         glArchivItem_Font* font = new glArchivItem_Font();
@@ -312,7 +312,7 @@ void Loader::LoadDummyGUIFiles()
         for(unsigned id = 0x21; id < 255; id++)
         {
             glArchivItem_Bitmap_Player* bmp = new glArchivItem_Bitmap_Player();
-            bmp->create(dx, dy, reinterpret_cast<const unsigned char*>(&buffer[0]), dx, dy, libsiedler2::FORMAT_BGRA, palette, 0);
+            bmp->create(dx, dy, buffer, palette, 0);
             font->set(id, bmp);
         }
         fonts.set(i, font);
@@ -808,8 +808,8 @@ bool Loader::CreateTerrainTextures()
     {
         TerrainType t = TerrainType(i);
         if(TerrainData::IsAnimated(t))
-            terrainTexturesAnim[t] = ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetNumFrames(t),
-                                                            TerrainData::GetStartColor(t), TerrainData::GetShiftColor(t));
+            terrainTexturesAnim[t] =
+              ExtractAnimatedTexture(TerrainData::GetPosInTexture(t), TerrainData::GetStartColor(t), TerrainData::GetNumFrames(t));
         else
             terrainTextures[t] = ExtractTexture(TerrainData::GetPosInTexture(t));
     }
@@ -908,12 +908,6 @@ glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
     return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr));
 }
 
-const libsiedler2::ArchivItem_Palette* Loader::GetTexPalette()
-{
-    glArchivItem_Bitmap* texImageN = GetTexImageN(0);
-    return texImageN ? dynamic_cast<const libsiedler2::ArchivItem_Palette*>(texImageN->getPalette()) : NULL;
-}
-
 glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame /* = 0*/)
 {
     if(TerrainData::IsAnimated(t))
@@ -936,14 +930,13 @@ glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animation
  */
 glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 {
-    const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
     if(!image)
         return NULL;
 
     libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
 
-    if(int ec = image->print(buffer, palette, 0, 0, rect.left, rect.top))
+    if(int ec = image->print(buffer, NULL, 0, 0, rect.left, rect.top))
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
     // Replace black pixels by transparent ones (background of the texture is black)
     BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
@@ -953,7 +946,7 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
     }
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
-    if(int ec = bitmap->create(buffer, palette))
+    if(int ec = bitmap->create(buffer, image->getPalette()))
     {
         delete bitmap;
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
@@ -964,50 +957,36 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
-                                                    uint32_t colorShift)
+libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, uint8_t startIndex, uint8_t numFrames)
 {
-    const libsiedler2::ArchivItem_Palette* palette = GetTexPalette();
     glArchivItem_Bitmap* image = GetTexImageN(0);
     if(!image)
         return NULL;
 
     // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, start_index);
-    libsiedler2::PixelBufferARGB shiftBuffer(colorShift ? buffer.getWidth() : 0, buffer.getHeight());
+    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, 1);
 
-    image->print(buffer, palette, 0, 0, rect.left, rect.top);
+    image->print(buffer, NULL, 0, 0, rect.left, rect.top);
 
     boost::interprocess::unique_ptr<libsiedler2::Archiv, Deleter<libsiedler2::Archiv> > destination(new libsiedler2::Archiv());
-    for(unsigned char i = 0; i < color_count; ++i)
+    libsiedler2::ArchivItem_PaletteAnimation anim;
+    anim.isActive = true;
+    anim.moveUp = false;
+    anim.firstClr = startIndex;
+    anim.lastClr = startIndex + numFrames - 1u;
+    libsiedler2::ArchivItem_Palette* curPal = NULL;
+    for(unsigned i = 0; i < numFrames; ++i)
     {
-        BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
-        {
-            if(pxl >= start_index && pxl < start_index + color_count)
-            {
-                if(++pxl >= start_index + color_count)
-                    pxl = start_index;
-            }
-        }
+        if(i == 0)
+            curPal = image->getPalette()->clone();
+        else
+            curPal = anim.apply(*curPal);
         boost::interprocess::unique_ptr<glArchivItem_Bitmap_Raw, Deleter<glArchivItem_Bitmap> > bitmap(new glArchivItem_Bitmap_Raw);
 
-        if(int ec = bitmap->create(buffer, palette))
-            throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
-        if(colorShift)
-        {
-            libsiedler2::ColorARGB shiftClr(colorShift);
-            if(int ec = bitmap->print(shiftBuffer))
-                throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
-            BOOST_FOREACH(uint32_t& clrVal, shiftBuffer.getPixels())
-            {
-                libsiedler2::ColorARGB clr(clrVal);
-                clrVal = libsiedler2::ColorARGB(clr.getAlpha() + shiftClr.getAlpha(), clr.getRed() + shiftClr.getRed(),
-                                                clr.getGreen() + shiftClr.getGreen(), clr.getBlue() + shiftClr.getBlue())
-                           .clrValue;
-            }
-            bitmap->create(shiftBuffer);
-        }
+        bitmap->setPalette(curPal);
 
+        if(int ec = bitmap->create(buffer))
+            throw std::runtime_error("Error extracting animated texture: " + libsiedler2::getErrorString(ec));
         destination->push(bitmap.release());
     }
     return destination.release();
