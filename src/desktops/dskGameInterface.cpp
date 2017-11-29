@@ -830,12 +830,16 @@ void dskGameInterface::WheelZoom(float step)
     // also keep track in terms of fixed defined zoom levels
     zoomLvl = ZOOM_DEFAULT_INDEX;
     for(size_t i = ZOOM_DEFAULT_INDEX; i < ZOOM_FACTORS.size(); ++i)
+    {
         if(ZOOM_FACTORS[i] < new_zoom)
             zoomLvl = i;
+    }
 
     for(size_t i = ZOOM_DEFAULT_INDEX; i-- > 0;)
+    {
         if(ZOOM_FACTORS[i] > new_zoom)
             zoomLvl = i;
+    }
 }
 
 void dskGameInterface::OnBuildingNote(const BuildingNote& note)

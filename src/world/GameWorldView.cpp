@@ -98,10 +98,10 @@ void GameWorldView::SetNextZoomFactor()
 
 void GameWorldView::SetZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
 {
-    if(zoomFactor < ZOOM_MIN)
-        targetZoomFactor_ = ZOOM_MIN;
-    else if(zoomFactor > ZOOM_MAX)
-        targetZoomFactor_ = ZOOM_MAX;
+    if(zoomFactor < ZOOM_FACTORS.front())
+        targetZoomFactor_ = ZOOM_FACTORS.front();
+    else if(zoomFactor > ZOOM_FACTORS.back())
+        targetZoomFactor_ = ZOOM_FACTORS.back();
     else
         targetZoomFactor_ = zoomFactor;
     if(!smoothTransition)
