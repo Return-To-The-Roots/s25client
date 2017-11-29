@@ -107,6 +107,8 @@ private:
     bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
     void CancelCountdown();
     bool ArePlayersReady() const;
+    /// Some player data has changed. Set non-ready and cancel countdown
+    void PlayerDataChanged(unsigned playerIdx);
 
     /// Sets the color of this player to the given color, if it is unique, or to the next free one if not
     /// Sends a notification to all players if the color was changed
