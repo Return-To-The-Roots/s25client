@@ -80,7 +80,7 @@ inline XorShift::result_type XorShift::operator()()
     state_ ^= state_ >> 12; // a
     state_ ^= state_ << 25; // b
     state_ ^= state_ >> 27; // c
-    return state_ * UINT64_C(2685821657736338717);
+    return state_ * 2685821657736338717ULL;
 }
 
 #endif // XorShift_h__
