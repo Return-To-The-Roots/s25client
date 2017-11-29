@@ -302,14 +302,14 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
     fow.boundary_stones = GetNode(pt).boundary_stones;
 }
 
-bool World::IsOfTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) const
+bool World::IsOfTerrain(const MapPoint pt, bool (*terrainPredicate)(TerrainType)) const
 {
-    if (!terrainPredicate)
+    if(!terrainPredicate)
         return false;
 
-    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if (!terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
+        if(!terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
             return false;
     }
     return true;
@@ -317,22 +317,22 @@ bool World::IsOfTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType))
 
 bool World::IsOfTerrain(const MapPoint pt, const TerrainType t) const
 {
-    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if (GetRightTerrain(pt, Direction::fromInt(i)) != t)
+        if(GetRightTerrain(pt, Direction::fromInt(i)) != t)
             return false;
     }
     return true;
 }
 
-bool World::HasTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) const
+bool World::HasTerrain(const MapPoint pt, bool (*terrainPredicate)(TerrainType)) const
 {
-    if (!terrainPredicate)
+    if(!terrainPredicate)
         return false;
 
-    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if (terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
+        if(terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
             return true;
     }
     return false;
@@ -340,9 +340,9 @@ bool World::HasTerrain(const MapPoint pt, bool(*terrainPredicate)(TerrainType)) 
 
 bool World::HasTerrain(const MapPoint pt, const TerrainType t) const
 {
-    for (unsigned i = 0; i < Direction::COUNT; ++i)
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if (GetRightTerrain(pt, Direction::fromInt(i)) == t)
+        if(GetRightTerrain(pt, Direction::fromInt(i)) == t)
             return true;
     }
     return false;
