@@ -27,6 +27,10 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+// Allow e.g. UINT64_C macros
+#ifndef __STDC_CONSTANT_MACROS
+#define __STDC_CONSTANT_MACROS
+#endif
 
 #ifdef _WIN32
 
