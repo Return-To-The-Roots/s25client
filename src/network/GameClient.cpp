@@ -945,6 +945,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
 
     if(!msg.correct)
     {
+        gameLobby.reset();
         if(msg.retryAllowed)
             mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
         else
