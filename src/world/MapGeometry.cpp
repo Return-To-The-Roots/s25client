@@ -86,6 +86,11 @@ MapPoint MakeMapPoint(Position pt, const MapExtent& size)
 
 Position GetNodePos(MapPoint pt)
 {
+    return GetNodePos(Position(pt));
+}
+
+Position GetNodePos(Position pt)
+{
     Position result = pt * Position(TR_W, TR_H);
     if(pt.y & 1)
         result.x += TR_W / 2;

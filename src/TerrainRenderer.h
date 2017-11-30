@@ -49,9 +49,9 @@ public:
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
     MapPoint ConvertCoords(const Position pt, Position* offset = 0) const;
     /// Get position of node in pixels (VertexPos)
-    PointF GetNodePos(const MapPoint pt) const { return GetVertex(pt).pos; }
+    PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
-    PointF GetNeighbourPos(MapPoint pt, const unsigned dir) const;
+    PointF GetNeighbourVertexPos(MapPoint pt, const unsigned dir) const;
 
     /// Callback function for altitude changes
     void AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv);

@@ -63,7 +63,7 @@ TerrainRenderer::~TerrainRenderer()
     }
 }
 
-TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsigned dir) const
+TerrainRenderer::PointF TerrainRenderer::GetNeighbourVertexPos(MapPoint pt, const unsigned dir) const
 {
     // Note: We want the real neighbour point which might be outside of the map to get the offset right
     Position ptNb = ::GetNeighbour(Position(pt), Direction::fromInt(dir));
@@ -71,7 +71,7 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourPos(MapPoint pt, const unsi
     Position offset;
     MapPoint t = ConvertCoords(ptNb, &offset);
 
-    return GetNodePos(t) + PointF(offset);
+    return GetVertexPos(t) + PointF(offset);
 }
 
 TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt, const unsigned char triangle,
@@ -155,11 +155,11 @@ void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldView
 void TerrainRenderer::UpdateBorderVertex(const MapPoint pt)
 {
     Vertex& vertex = GetVertex(pt);
-    vertex.borderPos[0] = (GetNeighbourPos(pt, 5) + GetNodePos(pt) + GetNeighbourPos(pt, 4)) / 3.0f;
+    vertex.borderPos[0] = (GetNeighbourVertexPos(pt, 5) + GetVertexPos(pt) + GetNeighbourVertexPos(pt, 4)) / 3.0f;
     vertex.borderColor[0] =
       (GetColor(GetNeighbour(pt, Direction::SOUTHWEST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST))) / 3.0f;
 
-    vertex.borderPos[1] = (GetNeighbourPos(pt, 3) + GetNodePos(pt) + GetNeighbourPos(pt, 4)) / 3.0f;
+    vertex.borderPos[1] = (GetNeighbourVertexPos(pt, 3) + GetVertexPos(pt) + GetNeighbourVertexPos(pt, 4)) / 3.0f;
     vertex.borderColor[1] =
       (GetColor(GetNeighbour(pt, Direction::EAST)) + GetColor(pt) + GetColor(GetNeighbour(pt, Direction::SOUTHEAST))) / 3.0f;
 }
@@ -277,15 +277,15 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, bool updateVBO)
 {
     unsigned pos = GetTriangleIdx(pt);
 
-    gl_vertices[pos][0] = GetNodePos(pt);
-    gl_vertices[pos][1] = GetNeighbourPos(pt, 5);
-    gl_vertices[pos][2] = GetNeighbourPos(pt, 4);
+    gl_vertices[pos][0] = GetVertexPos(pt);
+    gl_vertices[pos][1] = GetNeighbourVertexPos(pt, 5);
+    gl_vertices[pos][2] = GetNeighbourVertexPos(pt, 4);
 
     ++pos;
 
-    gl_vertices[pos][0] = GetNodePos(pt);
-    gl_vertices[pos][1] = GetNeighbourPos(pt, 4);
-    gl_vertices[pos][2] = GetNeighbourPos(pt, 3);
+    gl_vertices[pos][0] = GetVertexPos(pt);
+    gl_vertices[pos][1] = GetNeighbourVertexPos(pt, 4);
+    gl_vertices[pos][2] = GetNeighbourVertexPos(pt, 3);
 
     if(updateVBO && vboBuffersUsed)
     {
@@ -402,8 +402,8 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
         if(!first_offset)
             first_offset = offset;
 
-        gl_vertices[offset][i ? 0 : 2] = GetNodePos(pt);
-        gl_vertices[offset][1] = GetNeighbourPos(pt, 4);
+        gl_vertices[offset][i ? 0 : 2] = GetVertexPos(pt);
+        gl_vertices[offset][1] = GetNeighbourVertexPos(pt, 4);
         gl_vertices[offset][i ? 2 : 0] = GetBorderPos(pt, i);
 
         ++count_borders;
@@ -419,8 +419,8 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
         if(!first_offset)
             first_offset = offset;
 
-        gl_vertices[offset][i ? 2 : 0] = GetNeighbourPos(pt, 4);
-        gl_vertices[offset][1] = GetNeighbourPos(pt, 3);
+        gl_vertices[offset][i ? 2 : 0] = GetNeighbourVertexPos(pt, 4);
+        gl_vertices[offset][1] = GetNeighbourVertexPos(pt, 3);
 
         if(i == 0)
             gl_vertices[offset][2] = GetBorderPos(pt, 1);
@@ -440,8 +440,8 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
         if(!first_offset)
             first_offset = offset;
 
-        gl_vertices[offset][i ? 2 : 0] = GetNeighbourPos(pt, 5);
-        gl_vertices[offset][1] = GetNeighbourPos(pt, 4);
+        gl_vertices[offset][i ? 2 : 0] = GetNeighbourVertexPos(pt, 5);
+        gl_vertices[offset][1] = GetNeighbourVertexPos(pt, 4);
 
         if(i == 0)
             gl_vertices[offset][2] = GetBorderPos(pt, i);
@@ -842,7 +842,7 @@ MapPoint TerrainRenderer::ConvertCoords(const Position pt, Position* offset) con
 void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
                                        const Position& offset) const
 {
-    Position startPos = Position(GetNodePos(pt)) + offset;
+    Position startPos = Position(GetVertexPos(pt)) + offset;
 
     Visibility visibility = gwViewer.GetVisibility(pt);
 
@@ -858,7 +858,7 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
         Direction targetDir = Direction::fromInt(3 + dir);
         MapPoint ta = gwViewer.GetNeighbour(pt, targetDir);
 
-        Position endPos = Position(GetNodePos(ta)) + offset;
+        Position endPos = Position(GetVertexPos(ta)) + offset;
         Position diff = startPos - endPos;
 
         // Gehen wir über einen Kartenrand (horizontale Richung?)

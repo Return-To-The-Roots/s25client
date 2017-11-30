@@ -26,6 +26,7 @@ Position GetNeighbour2(Position pt, unsigned dir);
 MapPoint MakeMapPoint(Position pt, const MapExtent& size);
 /// Return the position of the node on a flat map
 Position GetNodePos(MapPoint pt);
+Position GetNodePos(Position pt);
 /// Return the height adjusted point
 Position GetNodePos(MapPoint pt, uint8_t height);
 

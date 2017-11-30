@@ -958,8 +958,7 @@ libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const Rect& rect, uint8_t st
     if(!image)
         return NULL;
 
-    // Mit Startindex (also irgendeiner Farbe) füllen, um transparente Pixel und damit schwarze Punke am Rand zu verhindern
-    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y, 1);
+    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
 
     image->print(buffer, NULL, 0, 0, rect.left, rect.top);
 
