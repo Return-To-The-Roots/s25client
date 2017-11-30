@@ -29,8 +29,9 @@ class AddonExhaustibleWater : public AddonList
 {
 public:
     AddonExhaustibleWater()
-        : AddonList(AddonId::EXHAUSTIBLE_WATER, ADDONGROUP_ECONOMY, _("Exhaustible Water"),
-                    _("If Water is exhaustible wells will now dry out. If water everywhere is enabled, a geologist will not notify for water"), 0)
+        : AddonList(
+            AddonId::EXHAUSTIBLE_WATER, ADDONGROUP_ECONOMY, _("Exhaustible Water"),
+            _("If Water is exhaustible wells will now dry out. If water everywhere is enabled, a geologist will not notify for water"), 0)
     {
         addOption(_("Inexhaustible"));
         addOption(_("Inexhaustible and water everywhere"));

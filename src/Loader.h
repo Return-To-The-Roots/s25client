@@ -94,8 +94,7 @@ protected:
 private:
     bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& archiv);
     glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
-    libsiedler2::Archiv* ExtractAnimatedTexture(const Rect& rect, unsigned char color_count, unsigned char start_index,
-                                                uint32_t colorShift = 0);
+    libsiedler2::Archiv* ExtractAnimatedTexture(const Rect& rect, uint8_t start_index, uint8_t color_count);
 
     bool LoadFilesFromArray(const std::vector<unsigned>& files, bool isOriginal);
     bool LoadLsts(unsigned dir);
@@ -117,7 +116,6 @@ public:
     glArchivItem_Bitmap* GetMapImageN(unsigned nr);
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
     glArchivItem_Bitmap* GetTexImageN(unsigned nr);
-    const libsiedler2::ArchivItem_Palette* GetTexPalette();
     /// Returns the texture for the given terrain. For animated textures the given frame is returned
     glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 

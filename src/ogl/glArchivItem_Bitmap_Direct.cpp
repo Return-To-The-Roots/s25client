@@ -47,7 +47,7 @@ void glArchivItem_Bitmap_Direct::endUpdate()
 
     libsiedler2::PixelBufferARGB buffer(areaToUpdate_.getSize().x, areaToUpdate_.getSize().y);
     Position origin = areaToUpdate_.getOrigin();
-    int ec = print(buffer.getPixelPtr(), buffer.getWidth(), buffer.getHeight(), libsiedler2::FORMAT_BGRA, NULL, 0, 0, origin.x, origin.y);
+    int ec = print(buffer, NULL, 0, 0, origin.x, origin.y);
     RTTR_Assert(ec == 0);
     VIDEODRIVER.BindTexture(GetTexNoCreate());
     glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA, GL_UNSIGNED_BYTE,

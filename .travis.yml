@@ -58,6 +58,8 @@ matrix:
               - brew install gettext
               - brew install miniupnpc
               - brew link --force gettext
+              - command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+              - rvm get head || true # https://github.com/travis-ci/travis-ci/issues/6307
               - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
               - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
               - |

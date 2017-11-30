@@ -45,8 +45,6 @@ public:
     static unsigned char GetTextureIdentifier(TerrainType t);
     /// Gets the start color for the animation (extraction)
     static unsigned char GetStartColor(TerrainType t);
-    /// Gets the color by which the extracted texture is shifted. For the animation (extraction)
-    static unsigned GetShiftColor(TerrainType t);
     /// Returns the color for the terrain
     static unsigned GetColor(LandscapeType landsCape, TerrainType t);
     /// Gets the edge type for a terrain type

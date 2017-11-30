@@ -20,10 +20,11 @@
 
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "SerializedGameData.h"
 #include "SoundManager.h"
-#include "GlobalGameSettings.h"
+#include "addons/Addon.h"
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "notifications/ResourceNote.h"
@@ -35,7 +36,6 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noSign.h"
 #include "gameData/GameConsts.h"
-#include "addons/Addon.h"
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(JOB_GEOLOGIST, pos, player, goal), signs(0), node_goal(0, 0)
@@ -451,7 +451,8 @@ void nofGeologist::SetSign(Resource resources)
             default: RTTR_Assert(false); return;
         }
 
-        if (resources.getType() != Resource::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1) {
+        if(resources.getType() != Resource::Water || gwg->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) != 1)
+        {
             SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), msg, PostCategory::Geologist, pos));
         }
 

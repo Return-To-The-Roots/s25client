@@ -36,12 +36,12 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, ChangePolicy policy,
 
     Extent btSize(200, 22);
     if(policy != READONLY)
-        AddTextButton(1, DrawPoint(20, GetSize().y - 40), btSize, TC_GREY, _("Apply Changes"), NormalFont);
+        AddTextButton(1, DrawPoint(20, GetSize().y - 40), btSize, TC_GREEN2, _("Apply"), NormalFont, _("Apply Changes"));
 
-    AddTextButton(2, DrawPoint(250, GetSize().y - 40), btSize, TC_RED1, _("Close Without Saving"), NormalFont);
+    AddTextButton(2, DrawPoint(250, GetSize().y - 40), btSize, TC_RED1, _("Abort"), NormalFont, _("Close Without Saving"));
 
     if(policy != READONLY)
-        AddTextButton(3, DrawPoint(480, GetSize().y - 40), btSize, TC_GREY, _("Use S2 Defaults"), NormalFont);
+        AddTextButton(3, DrawPoint(480, GetSize().y - 40), btSize, TC_GREY, _("Default"), NormalFont, _("Use S2 Defaults"));
 
     // Kategorien
     ctrlOptionGroup* optiongroup = AddOptionGroup(5, ctrlOptionGroup::CHECK);

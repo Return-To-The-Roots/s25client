@@ -1331,8 +1331,8 @@ void GameWorldGame::ConvertMineResourceTypes(Resource::Type from, Resource::Type
 }
 
 /**
-* Fills water depending on terrain and Addon setting
-*/
+ * Fills water depending on terrain and Addon setting
+ */
 void GameWorldGame::PlaceAndFixWater()
 {
     bool waterEverywhere = GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
@@ -1341,7 +1341,8 @@ void GameWorldGame::PlaceAndFixWater()
     {
         Resource curNodeResource = GetNode(pt).resources;
 
-        if (curNodeResource.getType() != Resource::Nothing && curNodeResource.getType() != Resource::Water) {
+        if(curNodeResource.getType() != Resource::Nothing && curNodeResource.getType() != Resource::Water)
+        {
             // do not override maps resource.
             continue;
         }
@@ -1349,24 +1350,23 @@ void GameWorldGame::PlaceAndFixWater()
         int amount = 0;
 
         // only set water if no desert, water, mountain or lava
-        if (!(World::HasTerrain(pt, TT_DESERT) || World::HasTerrain(pt, TerrainData::IsWater)
-            || World::HasTerrain(pt, TerrainData::IsMountain) || World::HasTerrain(pt, TerrainData::IsLava)))
+        if(!(World::HasTerrain(pt, TT_DESERT) || World::HasTerrain(pt, TerrainData::IsWater)
+             || World::HasTerrain(pt, TerrainData::IsMountain) || World::HasTerrain(pt, TerrainData::IsLava)))
         {
-            
-            if (waterEverywhere)
+            if(waterEverywhere)
                 amount = 7;
             // do not touch tile if waterEverywhere is disabled and no resource was stored by maploader
-            else if (curNodeResource.getType() == Resource::Nothing) 
+            else if(curNodeResource.getType() == Resource::Nothing)
                 amount = 0;
-            else if (World::HasTerrain(pt, TT_STEPPE))  // reduce water on stepppe or savannah tiles.
+            else if(World::HasTerrain(pt, TT_STEPPE)) // reduce water on stepppe or savannah tiles.
                 amount = 2;
-            else if (World::HasTerrain(pt, TT_SAVANNAH))
+            else if(World::HasTerrain(pt, TT_SAVANNAH))
                 amount = 4;
             else
                 amount = 7;
         }
-    
-        if (amount != 0)
+
+        if(amount != 0)
         {
             curNodeResource = Resource(Resource::Water, amount);
         } else
@@ -1375,7 +1375,6 @@ void GameWorldGame::PlaceAndFixWater()
         SetResource(pt, curNodeResource);
     }
 }
-
 
 /// Gründet vom Schiff aus eine neue Kolonie
 bool GameWorldGame::FoundColony(const unsigned harbor_point, const unsigned char player, const unsigned short seaId)

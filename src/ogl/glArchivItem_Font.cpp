@@ -26,6 +26,7 @@
 #include "helpers/containerUtils.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/IAllocator.h"
+#include "libsiedler2/PixelBufferARGB.h"
 #include "libsiedler2/libsiedler2.h"
 #include "libutf8/utf8.h"
 #include "libutil/Log.h"
@@ -572,8 +573,8 @@ void glArchivItem_Font::initFont()
 
     BOOST_CONSTEXPR_OR_CONST Extent spacing(1, 1);
     Extent texSize = (Extent(dx, dy) + spacing * 2u) * Extent(numCharsPerLine, numLines) + spacing * 2u;
-    std::vector<unsigned char> bufferWithOutline(texSize.x * texSize.y * 4); // RGBA Puffer für alle Buchstaben
-    std::vector<unsigned char> bufferNoOutline(texSize.x * texSize.y * 4);   // RGBA Puffer für alle Buchstaben
+    libsiedler2::PixelBufferARGB bufferWithOutline(texSize.x, texSize.y);
+    libsiedler2::PixelBufferARGB bufferNoOutline(texSize.x, texSize.y);
 
     const libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
     Position curPos(spacing);
@@ -591,9 +592,8 @@ void glArchivItem_Font::initFont()
         }
 
         // Spezialpalette (blaue Spielerfarben sind Grau) verwenden, damit man per OpenGL einfärben kann!
-        c->print(&bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0,
-                 true);
-        c->print(&bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA, palette, 128, curPos.x, curPos.y);
+        c->print(bufferNoOutline, palette, 128, curPos.x, curPos.y, 0, 0, 0, 0, true);
+        c->print(bufferWithOutline, palette, 128, curPos.x, curPos.y);
 
         CharInfo ci(curPos, std::min<unsigned short>(dx + 2, c->getWidth()));
 
@@ -602,8 +602,8 @@ void glArchivItem_Font::initFont()
         ++numChars;
     }
 
-    fontNoOutline->create(texSize.x, texSize.y, &bufferNoOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
-    fontWithOutline->create(texSize.x, texSize.y, &bufferWithOutline.front(), texSize.x, texSize.y, libsiedler2::FORMAT_BGRA);
+    fontNoOutline->create(bufferNoOutline);
+    fontWithOutline->create(bufferWithOutline);
 
     // Set the placeholder for non-existant glyphs. Use '?' (should always be possible)
     if(CharExist('?'))
