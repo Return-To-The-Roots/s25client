@@ -25,7 +25,6 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
-#include "network/GameMessages.h"
 #include "ogl/glArchivItem_Font.h"
 #include "test/GameWorldWithLuaAccess.h"
 #include <boost/assign/std/vector.hpp>
@@ -37,7 +36,7 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     initGUITests();
 
     // Set player
-    static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
+    GAMECLIENT.SetTestPlayerId(1);
 
     BOOST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
 

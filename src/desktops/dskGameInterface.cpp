@@ -140,7 +140,8 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
     cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
 
     InitPlayer();
-    worldViewer.InitTerrainRenderer();
+    if(!GLOBALVARS.isTest)
+        worldViewer.InitTerrainRenderer();
 }
 
 void dskGameInterface::InitPlayer()

@@ -174,6 +174,8 @@ public:
 
     NetworkPlayer& GetMainPlayer() { return mainPlayer; }
 
+    /// TESTS ONLY: Set player id. TODO: Anything better?
+    void SetTestPlayerId(unsigned id);
 private:
     /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt
     /// ist)

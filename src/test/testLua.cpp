@@ -22,7 +22,6 @@
 #include "helpers/Deleter.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
-#include "network/GameMessages.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
@@ -39,6 +38,7 @@
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
+#include "libutil/Serializer.h"
 
 using namespace boost::assign;
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     BOOST_CHECK(isLuaEqual("rttr:GetNumPlayers()", "3"));
     std::string oldLog = getLog();
     // Set Player ID
-    static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
+    GAMECLIENT.SetTestPlayerId(1);
     clearLog();
     LOG.write(oldLog, LogTarget::Stdout);
     BOOST_CHECK(isLuaEqual("rttr:GetLocalPlayerIdx()", "1"));
@@ -224,8 +224,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
 
     StoreChat storeChat;
     // Set player id
-    static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(1));
-    RTTR_REQUIRE_LOG_CONTAINS("NMS_PLAYER_ID", true);
+    GAMECLIENT.SetTestPlayerId(1);
     BOOST_REQUIRE_EQUAL(GAMECLIENT.GetPlayerId(), 1u);
     // Send to other player
     executeLua("rttr:Chat(0, 'Hello World')");

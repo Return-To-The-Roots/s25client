@@ -1341,6 +1341,11 @@ void GameClient::WritePlayerInfo(SavedFile& file)
         file.AddPlayer(game->world.GetPlayer(i));
 }
 
+void GameClient::SetTestPlayerId(unsigned id)
+{
+    mainPlayer.playerId = id;
+}
+
 void GameClient::StartReplayRecording(const unsigned random_init)
 {
     replayinfo.reset(new ReplayInfo);
