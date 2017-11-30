@@ -180,6 +180,12 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
         break;
     }
 
+    if(config.playercount == 0)
+    {
+        LOG.write("Map \"%s\" has no players!\n") % mapinfo.filepath;
+        return false;
+    }
+
     status = SS_CREATING_LOBBY;
     // Von Lobby abhängig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
     // erstellen dürfen

@@ -22,9 +22,11 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "mygettext/mygettext.h"
 #include "network/GameClient.h"
+#include "libutf8/utf8.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
 #include <boost/nowide/fstream.hpp>
+#include <algorithm>
 #include <utility>
 
 namespace kaguya {
@@ -102,7 +104,7 @@ bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
     {
         bnw::ifstream scriptFile(scriptPath.c_str());
         script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
-        return true;
+        return ValidateUTF8();
     }
 }
 
@@ -114,7 +116,7 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script)
     else
     {
         script_ = script;
-        return true;
+        return ValidateUTF8();
     }
 }
 
@@ -204,6 +206,45 @@ std::string LuaInterfaceBase::Translate(const std::string& key)
         return key;
     else
         return entry->second.c_str();
+}
+
+bool LuaInterfaceBase::ValidateUTF8()
+{
+    std::string::iterator it = utf8::find_invalid(script_.begin(), script_.end());
+    if(it == script_.end())
+        return true;
+    size_t invPos = std::distance(script_.begin(), it);
+    size_t lineNum = std::count(script_.begin(), it, '\n') + 1;
+    size_t lineBegin = script_.rfind('\n', invPos);
+    size_t lineEnd = script_.find('\n', invPos);
+    if(lineBegin == std::string::npos)
+        lineBegin = 0;
+    else
+        lineBegin++;
+    if(lineEnd == std::string::npos)
+        lineEnd = script_.size();
+    else
+        lineEnd--;
+    std::string faultyLine = script_.substr(lineBegin, lineEnd - lineBegin);
+    std::string fixedLine;
+    fixedLine.reserve(faultyLine.length());
+    while(true)
+    {
+        try
+        {
+            utf8::replace_invalid(faultyLine.begin(), faultyLine.end(), std::back_inserter(fixedLine));
+            break;
+        } catch(utf8::not_enough_room&)
+        {
+            // Add zeroes until we have enough room (truncated UTF8) to detect the error
+            faultyLine.push_back('\0');
+            fixedLine.clear();
+        }
+    }
+    boost::format fmt("Found invalid UTF8 char at line %1%.\nContent: %2%\n");
+    fmt % lineNum % fixedLine;
+    ErrorHandler(0, fmt.str().c_str());
+    return false;
 }
 
 void LuaInterfaceBase::Log(const std::string& msg)

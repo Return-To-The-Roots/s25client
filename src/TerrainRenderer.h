@@ -19,12 +19,14 @@
 
 #include "Point.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/MapTypes.h"
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp>
 #include <vector>
 
 struct Direction;
 class GameWorldViewer;
+class glArchivItem_Bitmap;
 
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer : private boost::noncopyable
@@ -47,9 +49,9 @@ public:
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
     MapPoint ConvertCoords(const Position pt, Position* offset = 0) const;
     /// Get position of node in pixels (VertexPos)
-    PointF GetNodePos(const MapPoint pt) const { return GetVertex(pt).pos; }
+    PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to GetNodePos(pt)
-    PointF GetNeighbourPos(MapPoint pt, const unsigned dir) const;
+    PointF GetNeighbourVertexPos(MapPoint pt, const unsigned dir) const;
 
     /// Callback function for altitude changes
     void AltitudeChanged(const MapPoint pt, const GameWorldViewer& gwv);
@@ -118,6 +120,8 @@ private:
         boost::array<unsigned, 2> top_down_offset;
     };
 
+    typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
+
     /// Size of the map
     MapExtent size_;
     /// Map sized array of vertex related data
@@ -136,7 +140,7 @@ private:
 
     std::vector<Borders> borders;
 
-    typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
+    boost::array<std::vector<glArchivItem_Bitmap*>, NUM_TTS> terrainTextures;
 
     /// Returns the index of a vertex. Used to access vertices and borders
     unsigned GetVertexIdx(const MapPoint pt) const
@@ -146,11 +150,13 @@ private:
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
     unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node
-    inline MapPoint GetNeighbour(const MapPoint& pt, const Direction dir) const;
+    MapPoint GetNeighbour(const MapPoint& pt, const Direction dir) const;
 
     /// liefert den Vertex an der Stelle X, Y.
     Vertex& GetVertex(const MapPoint pt) { return vertices[GetVertexIdx(pt)]; }
     const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetVertexIdx(pt)]; }
+
+    void LoadTextures();
 
     /// Creates and initializes (map-)vertices for the viewer
     void GenerateVertices(const GameWorldViewer& gwv);

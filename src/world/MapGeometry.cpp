@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapGeometry.h"
+#include "gameData/MapConsts.h"
 #include <stdexcept>
 
 Position GetNeighbour(const Position& p, const Direction dir)
@@ -81,4 +82,24 @@ MapPoint MakeMapPoint(Position pt, const MapExtent& size)
     RTTR_Assert(pt.x >= 0 && pt.y >= 0);
     RTTR_Assert(static_cast<unsigned>(pt.x) < size.x && static_cast<unsigned>(pt.y) < size.y);
     return MapPoint(pt);
+}
+
+Position GetNodePos(MapPoint pt)
+{
+    return GetNodePos(Position(pt));
+}
+
+Position GetNodePos(Position pt)
+{
+    Position result = pt * Position(TR_W, TR_H);
+    if(pt.y & 1)
+        result.x += TR_W / 2;
+    return result;
+}
+
+Position GetNodePos(MapPoint pt, uint8_t height)
+{
+    Position result = GetNodePos(pt);
+    result.y -= HEIGHT_FACTOR * height;
+    return result;
 }

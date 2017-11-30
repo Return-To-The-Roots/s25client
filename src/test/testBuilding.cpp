@@ -24,7 +24,6 @@
 #include "helpers/containerUtils.h"
 #include "initTestHelpers.h"
 #include "network/GameClient.h"
-#include "network/GameMessages.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
@@ -35,6 +34,7 @@
 #include <boost/foreach.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/test/unit_test.hpp>
+#include "GlobalVars.h"
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)
@@ -210,9 +210,9 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
         world.SetOwner(pt, 1);
 
     // Set player
-    static_cast<GameMessageInterface&>(GAMECLIENT).OnGameMessage(GameMessage_Player_Id(0));
-    RTTR_REQUIRE_LOG_CONTAINS("NMS_PLAYER_ID", true);
+    GAMECLIENT.SetTestPlayerId(0);
 
+    GLOBALVARS.isTest = true;
     dskGameInterface gameDesktop(boost::shared_ptr<Game>(&this->game, &deleteNoting));
     const GameWorldViewer& gwv = gameDesktop.GetViewer();
     // Start at a position a bit away from the HQ so all points are castles

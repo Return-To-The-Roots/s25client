@@ -117,7 +117,7 @@ public:
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
     glArchivItem_Bitmap* GetTexImageN(unsigned nr);
     /// Returns the texture for the given terrain. For animated textures the given frame is returned
-    glArchivItem_Bitmap& GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
+    glArchivItem_Bitmap* GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
     unsigned char GetLastGFX() const { return lastgfx; }
 

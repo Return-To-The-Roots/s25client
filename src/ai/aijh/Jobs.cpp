@@ -106,7 +106,7 @@ void BuildJob::TryToBuild()
         searchMode = SEARCHMODE_RADIUS;
     }
 
-    MapPoint foundPos;
+    MapPoint foundPos = MapPoint::Invalid();
     if(searchMode == SEARCHMODE_RADIUS)
     {
         foundPos = aijh.FindPositionForBuildingAround(type, around);

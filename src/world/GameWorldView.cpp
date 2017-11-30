@@ -512,7 +512,8 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
         if(boundary_stones[i + 1])
         {
             DrawPoint tmp =
-              pos - DrawPoint((gwv.GetTerrainRenderer().GetNodePos(pt) - gwv.GetTerrainRenderer().GetNeighbourPos(pt, 3 + i)) / 2.0f);
+              pos
+              - DrawPoint((gwv.GetTerrainRenderer().GetVertexPos(pt) - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, 3 + i)) / 2.0f);
 
             LOADER.boundary_stone_cache[nation].draw(tmp, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
         }
@@ -596,9 +597,9 @@ void GameWorldView::CalcFxLx()
 {
     // Calc first and last point in map units (with 1 extra for incomplete triangles)
     firstPt.x = offset.x / TR_W - 1;
-    firstPt.y = (offset.y - 10 * HEIGHT_FACTOR) / TR_H - 1; // base altitude = 10
+    firstPt.y = offset.y / TR_H - 1;
     lastPt.x = (offset.x + size_.x) / TR_W + 1;
-    lastPt.y = (offset.y + size_.y + (60 - 10) * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60, base = 10
+    lastPt.y = (offset.y + size_.y + 60 * HEIGHT_FACTOR) / TR_H + 1; // max altitude = 60
 
     if(zoomFactor_ != 1.f) //-V550
     {

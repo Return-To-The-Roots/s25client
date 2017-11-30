@@ -44,7 +44,7 @@ public:
     void SetActive(bool activate = true) override;
 
 private:
-    void TogglePlayerReady(unsigned char player, bool ready);
+    void SetPlayerReady(unsigned char player, bool ready);
     // GGS von den Controls auslesen
     void UpdateGGS();
     /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)

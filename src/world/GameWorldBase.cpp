@@ -20,6 +20,7 @@
 #include "BQCalculator.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
+#include "MapGeometry.h"
 #include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
@@ -35,7 +36,6 @@
 #include "nodeObjs/noMovable.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
-#include "gameData/MapConsts.h"
 #include "gameData/TerrainData.h"
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
@@ -258,12 +258,7 @@ const noFlag* GameWorldBase::GetRoadFlag(MapPoint pt, Direction& dir, unsigned p
 
 Position GameWorldBase::GetNodePos(const MapPoint pt) const
 {
-    Position result;
-    result.x = pt.x * TR_W;
-    if(pt.y & 1)
-        result.x += TR_W / 2;
-    result.y = pt.y * TR_H - HEIGHT_FACTOR * (GetNode(pt).altitude + 0x0A);
-    return result;
+    return ::GetNodePos(pt, GetNode(pt).altitude);
 }
 
 void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis)

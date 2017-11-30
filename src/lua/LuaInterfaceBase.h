@@ -46,6 +46,8 @@ protected:
     kaguya::State lua;
     std::string script_;
 
+    bool ValidateUTF8();
+
     /// Write a string to log and stdout
     void Log(const std::string& msg);
     /// Return true, if local player is the host
