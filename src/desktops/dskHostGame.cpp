@@ -474,7 +474,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
         // Volk
         case 3:
         {
-            TogglePlayerReady(playerId, false);
+            SetPlayerReady(playerId, false);
 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
@@ -492,7 +492,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
         // Farbe
         case 4:
         {
-            TogglePlayerReady(playerId, false);
+            SetPlayerReady(playerId, false);
 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
@@ -531,7 +531,7 @@ void dskHostGame::Msg_Group_ButtonClick(const unsigned group_id, const unsigned 
         // Team
         case 5:
         {
-            TogglePlayerReady(playerId, false);
+            SetPlayerReady(playerId, false);
 
             if(playerId == localPlayerId_ || gameLobby->isHost())
             {
@@ -570,7 +570,7 @@ void dskHostGame::Msg_Group_CheckboxChange(const unsigned group_id, const unsign
 
     // Bereit
     if(playerId < MAX_PLAYERS)
-        TogglePlayerReady(playerId, checked);
+        SetPlayerReady(playerId, checked);
 }
 
 void dskHostGame::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/, const int selection)
@@ -632,6 +632,7 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             ctrlTextButton* ready = GetCtrl<ctrlTextButton>(2);
             if(gameLobby->isHost())
             {
+                SetPlayerReady(localPlayerId_, true);
                 if(lua)
                     lua->EventPlayerReady(localPlayerId_);
                 if(ready->GetText() == _("Start game"))
@@ -641,9 +642,9 @@ void dskHostGame::Msg_ButtonClick(const unsigned ctrl_id)
             } else
             {
                 if(ready->GetText() == _("Ready"))
-                    TogglePlayerReady(localPlayerId_, true);
+                    SetPlayerReady(localPlayerId_, true);
                 else
-                    TogglePlayerReady(localPlayerId_, false);
+                    SetPlayerReady(localPlayerId_, false);
             }
         }
         break;
@@ -844,9 +845,9 @@ void dskHostGame::ChangeReady(const unsigned player, const bool ready)
     if(check)
         check->SetCheck(ready);
 
-    ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
     if(player == localPlayerId_)
     {
+        ctrlTextButton* start = GetCtrl<ctrlTextButton>(2);
         if(gameLobby->isHost())
             start->SetText(hasCountdown_ ? _("Cancel start") : _("Start game"));
         else
@@ -882,7 +883,7 @@ void dskHostGame::ChangeColor(const unsigned i, const unsigned color)
         GetCtrl<ctrlPreviewMinimap>(70)->SetPlayerColor(i, color);
 }
 
-void dskHostGame::TogglePlayerReady(unsigned char player, bool ready)
+void dskHostGame::SetPlayerReady(unsigned char player, bool ready)
 {
     if(player != localPlayerId_)
         return;
@@ -980,7 +981,7 @@ void dskHostGame::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
     // random location
     GetCtrl<ctrlCheck>(23)->SetCheck(ggs.randomStartPosition);
 
-    TogglePlayerReady(localPlayerId_, false);
+    SetPlayerReady(localPlayerId_, false);
 }
 
 void dskHostGame::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/, const std::string& msg)

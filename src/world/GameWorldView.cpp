@@ -512,7 +512,8 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
         if(boundary_stones[i + 1])
         {
             DrawPoint tmp =
-              pos - DrawPoint((gwv.GetTerrainRenderer().GetVertexPos(pt) - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, 3 + i)) / 2.0f);
+              pos
+              - DrawPoint((gwv.GetTerrainRenderer().GetVertexPos(pt) - gwv.GetTerrainRenderer().GetNeighbourVertexPos(pt, 3 + i)) / 2.0f);
 
             LOADER.boundary_stone_cache[nation].draw(tmp, isFoW ? FOW_DRAW_COLOR : COLOR_WHITE, player_color);
         }
