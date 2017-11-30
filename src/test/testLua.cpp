@@ -83,6 +83,11 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
     BOOST_REQUIRE_THROW(lua.LoadScript(luaFile2.filePath), std::runtime_error);
     RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
+
+    GLOBALVARS.isTest = false;
+    script = "msg1='foo'\nmsg2='bar'\nmsg3='\xF1'\nmsg4='ok'";
+    BOOST_REQUIRE(!lua.LoadScriptString(script));
+    RTTR_REQUIRE_LOG_CONTAINS("invalid UTF8 char at line 3", false);
 }
 
 BOOST_AUTO_TEST_CASE(BaseFunctions)
