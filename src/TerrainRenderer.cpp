@@ -302,9 +302,9 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, bool updateVBO)
     Color& clr0 = gl_colors[pos][0];
     Color& clr1 = gl_colors[pos][1];
     Color& clr2 = gl_colors[pos][2];
-    clr0.r = clr0.g = clr0.b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
-    clr1.r = clr1.g = clr1.b = GetColor(pt);
-    clr2.r = clr2.g = clr2.b = GetColor(GetNeighbour(pt, Direction::SOUTHWEST));
+    clr0.r = clr0.g = clr0.b = GetColor(pt);
+    clr1.r = clr1.g = clr1.b = GetColor(GetNeighbour(pt, Direction::SOUTHWEST));
+    clr2.r = clr2.g = clr2.b = GetColor(GetNeighbour(pt, Direction::SOUTHEAST));
 
     ++pos;
 

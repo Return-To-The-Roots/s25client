@@ -88,10 +88,10 @@ Rect TerrainData::GetPosInTexture(TerrainType t)
 {
     switch(t)
     {
-        case TT_SNOW: return Rect(0, 0, 48, 48);
+        case TT_SNOW: return Rect(0, 0, 30, 30);
         case TT_DESERT: return Rect(48, 0, 48, 48);
-        case TT_SWAMPLAND: return Rect(96, 0, 48, 48);
-        case TT_MEADOW_FLOWERS: return Rect(144, 0, 48, 48);
+        case TT_SWAMPLAND: return Rect(96, 0, 30, 30);
+        case TT_MEADOW_FLOWERS: return Rect(144, 0, 42, 42);
         case TT_MOUNTAIN1: return Rect(0, 48, 48, 48);
         case TT_MOUNTAIN2:
         case TT_BUILDABLE_MOUNTAIN: return Rect(48, 48, 48, 48);
@@ -101,8 +101,8 @@ Rect TerrainData::GetPosInTexture(TerrainType t)
         case TT_MEADOW1: return Rect(48, 96, 48, 48);
         case TT_MEADOW2: return Rect(96, 96, 48, 48);
         case TT_MEADOW3: return Rect(144, 96, 48, 48);
-        case TT_STEPPE: return Rect(0, 144, 48, 48);
-        case TT_MOUNTAINMEADOW: return Rect(48, 144, 48, 48);
+        case TT_STEPPE: return Rect(0, 144, 40, 40);
+        case TT_MOUNTAINMEADOW: return Rect(48, 144, 30, 30);
         case TT_WATER:
         case TT_WATER_NOSHIP:
         case TT_BUILDABLE_WATER: return Rect(192, 48, 55, 56);
