@@ -908,21 +908,16 @@ glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
     return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr));
 }
 
-glArchivItem_Bitmap& Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame /* = 0*/)
+glArchivItem_Bitmap* Loader::GetTerrainTexture(TerrainType t, unsigned animationFrame)
 {
     if(TerrainData::IsAnimated(t))
     {
         libsiedler2::Archiv* archive = terrainTexturesAnim[t];
         if(!archive)
-            throw std::runtime_error("Invalid terrain texture requested");
-        return *dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame)); //-V522
+            return NULL;
+        return dynamic_cast<glArchivItem_Bitmap*>(archive->get(animationFrame)); //-V522
     } else
-    {
-        glArchivItem_Bitmap* bmp = terrainTextures[t];
-        if(!bmp)
-            throw std::runtime_error("Invalid terrain texture requested");
-        return *bmp;
-    }
+        return terrainTextures[t];
 }
 
 /**

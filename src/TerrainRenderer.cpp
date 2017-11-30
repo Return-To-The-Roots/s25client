@@ -86,6 +86,24 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt
     return GetBorderPos(t, triangle) + PointF(offset);
 }
 
+void TerrainRenderer::LoadTextures()
+{
+    for(unsigned i = 0; i < terrainTextures.size(); i++)
+    {
+        TerrainType tt = TerrainType(i);
+        unsigned numFrames = TerrainData::GetNumFrames(tt);
+        terrainTextures[i].resize(numFrames);
+        for(unsigned j = 0; j < numFrames; j++)
+        {
+            glArchivItem_Bitmap* bmp = LOADER.GetTerrainTexture(tt, j);
+            if(!bmp)
+                throw std::runtime_error("Terrain texture not found!");
+            terrainTextures[i][j] = bmp;
+            bmp->GetTexture(); // Init texture
+        }
+    }
+}
+
 void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
 {
     // Terrain generieren
@@ -174,37 +192,35 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     const GameWorldBase& world = gwv.GetWorld();
     Init(world.GetSize());
 
+    LoadTextures();
+
     GenerateVertices(gwv);
 
     // Add extra vertices for borders
     unsigned numTriangles = gl_vertices.size();
     const LandscapeType lt = world.GetLandscapeType();
-    for(MapCoord y = 0; y < size_.y; ++y)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
-        for(MapCoord x = 0; x < size_.x; ++x)
-        {
-            MapPoint pt(x, y);
-            const unsigned pos = GetVertexIdx(pt);
-            const TerrainType t1 = TerrainType(terrain[pos][0]);
-            const TerrainType t2 = TerrainType(terrain[pos][1]);
-            const TerrainType t3 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::EAST))][0]);
-            const TerrainType t4 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::SOUTHWEST))][1]);
+        const unsigned pos = GetVertexIdx(pt);
+        const TerrainType t1 = TerrainType(terrain[pos][0]);
+        const TerrainType t2 = TerrainType(terrain[pos][1]);
+        const TerrainType t3 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::EAST))][0]);
+        const TerrainType t4 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::SOUTHWEST))][1]);
 
-            if((borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)))
-                borders[pos].left_right_offset[0] = numTriangles++;
-            if((borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)))
-                borders[pos].left_right_offset[1] = numTriangles++;
+        if((borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)))
+            borders[pos].left_right_offset[0] = numTriangles++;
+        if((borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)))
+            borders[pos].left_right_offset[1] = numTriangles++;
 
-            if((borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t3, t2)))
-                borders[pos].right_left_offset[0] = numTriangles++;
-            if((borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t3)))
-                borders[pos].right_left_offset[1] = numTriangles++;
+        if((borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t3, t2)))
+            borders[pos].right_left_offset[0] = numTriangles++;
+        if((borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t3)))
+            borders[pos].right_left_offset[1] = numTriangles++;
 
-            if((borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t4, t1)))
-                borders[pos].top_down_offset[0] = numTriangles++;
-            if((borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t4)))
-                borders[pos].top_down_offset[1] = numTriangles++;
-        }
+        if((borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t4, t1)))
+            borders[pos].top_down_offset[0] = numTriangles++;
+        if((borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t4)))
+            borders[pos].top_down_offset[1] = numTriangles++;
     }
 
     gl_vertices.resize(numTriangles);
@@ -212,27 +228,19 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     gl_colors.resize(numTriangles);
 
     // Normales Terrain erzeugen
-    for(MapCoord y = 0; y < size_.y; ++y)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
-        for(MapCoord x = 0; x < size_.x; ++x)
-        {
-            MapPoint pt(x, y);
-            UpdateTrianglePos(pt, false);
-            UpdateTriangleColor(pt, false);
-            UpdateTriangleTerrain(pt, false);
-        }
+        UpdateTrianglePos(pt, false);
+        UpdateTriangleColor(pt, false);
+        UpdateTriangleTerrain(pt, false);
     }
 
     // Ränder erzeugen
-    for(MapCoord y = 0; y < size_.y; ++y)
+    RTTR_FOREACH_PT(MapPoint, size_)
     {
-        for(MapCoord x = 0; x < size_.x; ++x)
-        {
-            MapPoint pt(x, y);
-            UpdateBorderTrianglePos(pt, false);
-            UpdateBorderTriangleColor(pt, false);
-            UpdateBorderTriangleTerrain(pt, false);
-        }
+        UpdateBorderTrianglePos(pt, false);
+        UpdateBorderTriangleColor(pt, false);
+        UpdateBorderTriangleTerrain(pt, false);
     }
 
     if(SETTINGS.video.vbo && GLOBALVARS.ext_vbo)
@@ -269,9 +277,9 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, bool updateVBO)
 {
     unsigned pos = GetTriangleIdx(pt);
 
-    gl_vertices[pos][0] = GetNeighbourPos(pt, 4);
-    gl_vertices[pos][1] = GetNodePos(pt);
-    gl_vertices[pos][2] = GetNeighbourPos(pt, 5);
+    gl_vertices[pos][0] = GetNodePos(pt);
+    gl_vertices[pos][1] = GetNeighbourPos(pt, 5);
+    gl_vertices[pos][2] = GetNeighbourPos(pt, 4);
 
     ++pos;
 
@@ -323,60 +331,47 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
 
     const unsigned triangleIdx = GetTriangleIdx(pt);
     Triangle& texCoord = gl_texcoords[triangleIdx];
-    if(!TerrainData::IsAnimated(t1))
-    {
-        texCoord[0].x = 0.45f;
-        texCoord[0].y = 0.45f;
-        texCoord[1].x = 0.225f;
-        texCoord[1].y = 0.f;
-        texCoord[2].x = 0.f; //-V807
-        texCoord[2].y = 0.45f;
-    } else
-    {
-        // We use the full texture as it already consists of 2 triangles
-        // But we need to make sure to only use the correct part of it (texture sizes are powers of 2)
-        // Note: Better would be to use the actual textures, but they are not loaded when this is called during game start
-        Rect texRect = TerrainData::GetPosInTexture(t1);
-        int w = texRect.right - texRect.left;
-        int h = texRect.bottom - texRect.top;
-        RTTR_Assert(w > 0 && h > 0);
-        Point<float> texSize(VIDEODRIVER.calcPreferredTextureSize(Extent(w, h)));
+    const glArchivItem_Bitmap* texture = terrainTextures[t1][0];
+    Extent bmpSize = texture->GetSize();
+    unsigned usedSize = std::min(bmpSize.x, bmpSize.y);
+    // Make even to start at whole pixels
+    usedSize &= ~1;
+    PointF offset((bmpSize - Extent::all(usedSize)) / 2u);
 
-        // Tip of the triangle is in the middle in x
-        texCoord[1].x = (w + 1) / 2.f / texSize.x;
-        texCoord[1].y = 0.f;
-        // Bottom of the triangle is in the middle in y
-        texCoord[2].x = 0.f;
-        texCoord[2].y = (h + 1) / 2.f / texSize.y;
-        texCoord[0].x = (w - 1) / texSize.x;
-        texCoord[0].y = texCoord[2].y;
-    }
+    // Tip
+    texCoord[0].x = static_cast<float>(usedSize / 2u);
+    texCoord[0].y = 0.f;
+    // Left
+    texCoord[1].x = 0.f;
+    texCoord[1].y = static_cast<float>(usedSize / 2u);
+    // Right
+    texCoord[2].x = static_cast<float>(usedSize);
+    texCoord[2].y = texCoord[1].y;
+    // Normalize to texture size
+    PointF texSize(texture->GetTexSize());
+    for(unsigned i = 0; i < 3; i++)
+        texCoord[i] = (texCoord[i] + offset) / texSize;
 
     Triangle& texCoord2 = gl_texcoords[triangleIdx + 1];
-    if(!TerrainData::IsAnimated(t2))
-    {
-        texCoord2[0].x = 0.0f;
-        texCoord2[0].y = 0.0f;
-        texCoord2[1].x = 0.235f;
-        texCoord2[1].y = 0.45f;
-        texCoord2[2].x = 0.47f; //-V807
-        texCoord2[2].y = 0.0f;
-    } else
-    {
-        Rect texRect = TerrainData::GetPosInTexture(t2);
-        int w = texRect.right - texRect.left;
-        int h = texRect.bottom - texRect.top;
-        RTTR_Assert(w > 0 && h > 0);
-        Point<float> texSize(VIDEODRIVER.calcPreferredTextureSize(Extent(w, h)));
-        // Bottom tip of the triangle is in the middle in x
-        texCoord2[1].x = (w + 1) / 2.f / texSize.x;
-        texCoord2[1].y = (h - 1) / texSize.y;
-        // Top of the triangle is in the middle in y
-        texCoord2[2].x = (w - 1) / texSize.x;
-        texCoord2[2].y = (h + 1) / 2.f / texSize.y;
-        texCoord2[0].x = 0.f;
-        texCoord2[0].y = texCoord2[2].y;
-    }
+    texture = terrainTextures[t2][0];
+    bmpSize = texture->GetSize();
+    usedSize = std::min(bmpSize.x, bmpSize.y);
+    // Make even to start at whole pixels
+    usedSize &= ~1;
+    offset = PointF((bmpSize - Extent::all(usedSize)) / 2u);
+    // Left
+    texCoord2[0].x = 0.f;
+    texCoord2[0].y = static_cast<float>(usedSize / 2u);
+    // Tip
+    texCoord2[1].x = static_cast<float>(usedSize / 2u);
+    texCoord2[1].y = static_cast<float>(usedSize);
+    // Right
+    texCoord2[2].x = static_cast<float>(usedSize);
+    texCoord2[2].y = texCoord2[0].y;
+    // Normalize to texture size
+    texSize = PointF(texture->GetTexSize());
+    for(unsigned i = 0; i < 3; i++)
+        texCoord2[i] = (texCoord2[i] + offset) / texSize;
 
     if(updateVBO && vboBuffersUsed)
     {
@@ -759,15 +754,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
         if(sorted_textures[t].empty())
             continue;
         unsigned animationFrame;
-        TerrainType tt = TerrainType(t);
-        if(TerrainData::IsLava(tt))
-            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetNumFrames(tt), 5, 4, 0);
-        else if(TerrainData::IsWater(tt))
-            animationFrame = GAMECLIENT.GetGlobalAnimation(TerrainData::GetNumFrames(tt), 5, 2, 0);
+        unsigned numFrames = TerrainData::GetNumFrames(TerrainType(t));
+        if(numFrames > 1)
+            animationFrame = GAMECLIENT.GetGlobalAnimation(numFrames, 5 * numFrames, 16, 0); // We have 5/16 per frame
         else
             animationFrame = 0;
 
-        VIDEODRIVER.BindTexture(LOADER.GetTerrainTexture(tt, animationFrame).GetTexture());
+        VIDEODRIVER.BindTexture(terrainTextures[t][animationFrame]->GetTexture());
 
         for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
         {
