@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include <commonDefines.h>
-
 #include "helpers/SimpleMultiArray.h"
 #include <boost/array.hpp>
 #include <string>
