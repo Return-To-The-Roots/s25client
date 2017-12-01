@@ -9,13 +9,13 @@ def transformIntoStep(arch, wspwd) {
                 ansiColor('xterm') {
                     ws(wspwd + "/ws/" + arch) {
                         echo "Build ${arch} in " + pwd()
-                        
+
                         if( isUnix() ) {
                             sh 'chmod -R u+w .git || true' // fixes unstash overwrite bug ... #JENKINS-33126
                         }
 
                         unstash 'source'
-                        
+
                         sh """set -x
                               BARCH=--arch=c.${arch}
                               if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${arch}" ] ; then
@@ -41,16 +41,16 @@ def transformIntoStep(arch, wspwd) {
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$COMMANDS && make \$PARAMS"
+                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_BUILD_EDITOR=OFF \$COMMANDS && make \$PARAMS"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
                         """
-                        
+
                         archiveArtifacts artifacts: 's25rttr*.tar.bz2,s25rttr*.zip', fingerprint: true, onlyIfSuccessful: true
                     }
                 }
-            } 
+            }
         }
     }
 }
@@ -66,40 +66,40 @@ catchError() {
     ])
 
     milestone label: 'Start'
-    
+
     def wspwd = "";
-    
+
     stage("Checkout") {
         node('master') {
             ansiColor('xterm') {
                 checkout scm
-                
+
                 sh """set -x
                       git reset --hard
-                      git submodule foreach git clean --force
+                      git submodule foreach git clean -fxd
                       git submodule foreach git reset --hard
                       git submodule update --init --force --checkout
                    """
-            
+
                 stash includes: '**, .git/', excludes: 'ws/**', name: 'source', useDefaultExcludes: false
-                
+
                 wspwd = pwd()
             }
         }
     }
-    
+
     milestone label: 'Checkout complete'
-    
+
     stage("Building") {
         String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
         def parallel_map = [:]
-    
+
         for(int i = 0; i < archs.size(); i++) {
             def arch = archs[i]
             echo "Adding Job ${arch}"
             parallel_map["${arch}"] = transformIntoStep(arch, wspwd)
         }
-    
+
         // mirror to launchpad step
         parallel_map["mirror"] = {
             node('master') {
@@ -119,7 +119,7 @@ catchError() {
                 }
             }
         }
-        
+
         /*
         parallel_map["upload-ppa"] = {
             node('master') {
@@ -139,14 +139,14 @@ catchError() {
             }
         }
         */
-        
+
         parallel_map.failFast = true
         parallel parallel_map
     }
 
-    
+
     milestone label: 'Build complete'
-    
+
     stage("Publishing") {
         node('master') {
             ansiColor('xterm') {
@@ -161,14 +161,14 @@ catchError() {
                       ./upload_urls.sh nightly
                       ./upload_urls.sh stable
                 """
-                
+
                 archiveArtifacts artifacts: 'release/changelog-*.txt,release/rapidshare-*.txt', fingerprint: true, onlyIfSuccessful: true
             }
         }
     }
-    
+
     milestone label: 'Publishing complete'
-    
+
 } // catchError()
 
 node {
