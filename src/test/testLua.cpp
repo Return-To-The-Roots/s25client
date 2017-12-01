@@ -32,13 +32,13 @@
 #include "test/GameWorldWithLuaAccess.h"
 #include "test/helperFuncs.h"
 #include "test/initTestHelpers.h"
+#include "libutil/Serializer.h"
 #include "libutil/StringConversion.h"
 #include "libutil/tmpFile.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/test/unit_test.hpp>
-#include "libutil/Serializer.h"
 
 using namespace boost::assign;
 

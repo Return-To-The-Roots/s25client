@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GamePlayer.h"
+#include "GlobalVars.h"
 #include "PointOutput.h"
 #include "buildings/nobBaseMilitary.h"
 #include "desktops/dskGameInterface.h"
@@ -34,7 +35,6 @@
 #include <boost/foreach.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/test/unit_test.hpp>
-#include "GlobalVars.h"
 
 // Test stuff related to building/building quality
 BOOST_AUTO_TEST_SUITE(BuildingSuite)
