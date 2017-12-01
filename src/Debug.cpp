@@ -34,10 +34,6 @@
 #include <bzlib.h>
 #include <vector>
 
-#ifdef __GNUC__
-#define __GCC_VERSION__ (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#endif
-
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define RTTR_USE_WIN_API
 #endif
@@ -264,14 +260,9 @@ bool DebugInfo::SendStackTrace(void* ctx)
         return false;
 
     typedef 
-#ifdef __GNUC__
-    #if __GCC_VERSION__ > 40500
-      // if gcc-version > 4.5
-      BOOST_DEDUCED_TYPENAME
-    #endif
-#else
-      // non gcc
-      BOOST_DEDUCED_TYPENAME
+#if BOOST_COMP_CLANG
+    // actually not required and forbidden in C++03, but clang seems to want it(?)
+    typename
 #endif
       boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
     BOOST_STATIC_ASSERT_MSG(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
