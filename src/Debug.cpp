@@ -34,6 +34,10 @@
 #include <bzlib.h>
 #include <vector>
 
+#ifdef __GNUC__
+#define __GCC_VERSION__ (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#endif
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #define RTTR_USE_WIN_API
 #endif
@@ -261,10 +265,10 @@ bool DebugInfo::SendStackTrace(void* ctx)
 
     typedef 
 #ifdef __GNUC__
-#if __GNUC_PREREQ(4,5)
+    #if __GCC_VERSION__ > 40500
       // if gcc-version > 4.5
       BOOST_DEDUCED_TYPENAME
-#endif
+    #endif
 #else
       // non gcc
       BOOST_DEDUCED_TYPENAME
