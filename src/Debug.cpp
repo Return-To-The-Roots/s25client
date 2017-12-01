@@ -259,7 +259,16 @@ bool DebugInfo::SendStackTrace(void* ctx)
     if(!SendString("StackTrace"))
         return false;
 
-    typedef BOOST_DEDUCED_TYPENAME
+    typedef 
+#ifdef __GNUC__
+#if __GNUC_PREREQ(4,5)
+      // if gcc-version > 4.5
+      BOOST_DEDUCED_TYPENAME
+#endif
+#else
+      // non gcc
+      BOOST_DEDUCED_TYPENAME
+#endif
       boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
     BOOST_STATIC_ASSERT_MSG(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
     std::vector<littleVoid_t> endStacktrace;
