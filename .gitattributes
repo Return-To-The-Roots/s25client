@@ -41,3 +41,6 @@
 *.exe binary
 *.out binary
 *.app binary
+
+*.bat text eol=crlf
+*.sh text eol=lf
