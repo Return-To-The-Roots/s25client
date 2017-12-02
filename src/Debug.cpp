@@ -259,12 +259,7 @@ bool DebugInfo::SendStackTrace(void* ctx)
     if(!SendString("StackTrace"))
         return false;
 
-    typedef 
-#if BOOST_COMP_CLANG
-    // actually not required and forbidden in C++03, but clang seems to want it(?)
-    typename
-#endif
-      boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
+    typedef boost::conditional<sizeof(void*) == 4, boost::endian::little_int32_t, boost::endian::little_int64_t>::type littleVoid_t;
     BOOST_STATIC_ASSERT_MSG(sizeof(void*) <= sizeof(littleVoid_t), "Size of pointer did not fit!");
     std::vector<littleVoid_t> endStacktrace;
     endStacktrace.reserve(stacktrace.size());

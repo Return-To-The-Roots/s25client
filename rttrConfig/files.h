@@ -150,10 +150,8 @@ const helpers::SimpleMultiArray<const std::string, NUM_GFXSETS, NUM_NATIONS> SUP
    {"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"},
    {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
 
-const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {
-  {"map_0_z", "map_1_z", "map_2_z"}};
+const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"map_0_z", "map_1_z", "map_2_z"}};
 
-const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {
-  {"tex5", "tex6", "tex7"}};
+const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{"tex5", "tex6", "tex7"}};
 
 #endif // FILES_H_INCLUDED
