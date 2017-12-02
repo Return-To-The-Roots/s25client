@@ -51,6 +51,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
+#include "lua/LuaInterfaceGame.h"
 #include "libutil/Log.h"
 #include <boost/foreach.hpp>
 #include <limits>
@@ -1547,20 +1548,22 @@ void GamePlayer::PactChanged(const PactType pt)
     }
 }
 
-void GamePlayer::SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration)
+void GamePlayer::SuggestPact(const unsigned char targetPlayerId, const PactType pt, const unsigned duration)
 {
     // Don't try to make pact with self
-    if(targetPlayer == GetPlayerId())
+    if(targetPlayerId == GetPlayerId())
         return;
 
-    if(!pacts[targetPlayer][pt].accepted && duration > 0)
+    if(!pacts[targetPlayerId][pt].accepted && duration > 0)
     {
-        pacts[targetPlayer][pt].accepted = false;
-        pacts[targetPlayer][pt].duration = duration;
-        pacts[targetPlayer][pt].start = gwg->GetEvMgr().GetCurrentGF();
-
-        gwg->GetPlayer(targetPlayer)
-          .SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayer][pt].start, *this, duration));
+        pacts[targetPlayerId][pt].accepted = false;
+        pacts[targetPlayerId][pt].duration = duration;
+        pacts[targetPlayerId][pt].start = gwg->GetEvMgr().GetCurrentGF();
+        GamePlayer targetPlayer = gwg->GetPlayer(targetPlayerId);
+        if (targetPlayer.isHuman())
+            targetPlayer.SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
+        else if (gwg->HasLua())
+            gwg->GetLua().EventSuggestPact(pt, GetPlayerId(), targetPlayerId, duration);
     }
 }
 
@@ -1572,6 +1575,8 @@ void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned
         gwg->GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
         PactChanged(pt);
         gwg->GetPlayer(targetPlayer).PactChanged(pt);
+        if (gwg->HasLua())
+            gwg->GetLua().EventPactCreated(pt, GetPlayerId(), targetPlayer, pacts[targetPlayer][pt].duration);
     }
 }
 
@@ -1664,12 +1669,31 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
             SendPostMessage(new PostMsg(gwg->GetEvMgr().GetCurrentGF(), pt, gwg->GetPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
+            if (gwg->HasLua())
+                gwg->GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
         }
-        // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
-        else
-            gwg->GetPlayer(otherPlayerIdx)
-              .SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
-    } else
+        else 
+        {
+            // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
+            if (otherPlayer.isHuman())
+                otherPlayer.SendPostMessage(new DiplomacyPostQuestion(gwg->GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
+            else if(!gwg->HasLua() ||
+                    gwg->GetLua().EventCancelPactRequest(pt, GetPlayerId(), otherPlayerIdx)) {
+                    // AI accepts cancels, if there is no lua-interace
+                    pacts[otherPlayerIdx][pt].accepted = false;
+                    pacts[otherPlayerIdx][pt].duration = 0;
+                    pacts[otherPlayerIdx][pt].want_cancel = false;
+
+                    otherPlayer.pacts[GetPlayerId()][pt].accepted = false;
+                    otherPlayer.pacts[GetPlayerId()][pt].duration = 0;
+                    otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
+
+                    if (gwg->HasLua())
+                        gwg->GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
+            }
+        }
+    } 
+    else
     {
         // Es besteht kein Bündnis, also unseren Bündnisvorschlag wieder zurücknehmen
         pacts[otherPlayerIdx][pt].duration = 0;

@@ -22,6 +22,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/PactTypes.h"
 #include <kaguya/kaguya.hpp>
 #include <map>
 
@@ -56,6 +57,10 @@ public:
     bool IsDefeated() const;
     void Surrender(bool destroyBlds);
     kaguya::standard::tuple<unsigned, unsigned> GetHQPos() const;
+    bool IsAlly(unsigned char otherPlayerId);
+    bool IsAttackable(unsigned char otherPlayerId);
+    void SuggestPact(unsigned char otherPlayerId, PactType pt, const unsigned duration);
+    void CancelPact(const PactType pt, unsigned char otherPlayerId);
 };
 
 #endif // LuaPlayer_h__

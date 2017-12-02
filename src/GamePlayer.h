@@ -263,7 +263,7 @@ public:
     void NotifyAlliesOfLocation(const MapPoint pt);
 
     /// This player suggests a pact to target player
-    void SuggestPact(const unsigned char targetPlayer, const PactType pt, const unsigned duration);
+    void SuggestPact(const unsigned char targetPlayerId, const PactType pt, const unsigned duration);
     /// Accepts a pact, that this player suggested target player
     void AcceptPact(const unsigned id, const PactType pt, const unsigned char targetPlayer);
     /// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will

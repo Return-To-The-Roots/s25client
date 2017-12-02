@@ -20,6 +20,7 @@
 
 #include "LuaInterfaceBase.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/PactTypes.h"
 #include <string>
 
 class GameWorldGame;
@@ -43,7 +44,14 @@ public:
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned number);
     void EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type, unsigned char quantity);
-
+    // Called if player wants to cancel a pact
+    bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    // Called if player suggests a pact
+    void EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration);
+    // called if pact was canceled
+    void EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    // called if pact was created
+    void EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration);
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;
