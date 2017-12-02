@@ -21,6 +21,7 @@
 #include "GlobalVars.h"
 #include "QuickStartGame.h"
 #include "RTTR_AssertError.h"
+#include "RTTR_Version.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "SignalHandler.h"
@@ -67,6 +68,7 @@
 #include <ctime>
 #include <iostream>
 #include <limits>
+#include <sstream>
 
 namespace po = boost::program_options;
 
@@ -87,6 +89,14 @@ void WaitForEnter()
     bnw::cin.clear();
     bnw::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     bnw::cin.get();
+}
+
+std::string GetProgramDescription()
+{
+    std::stringstream s;
+    s << RTTR_Version::GetTitle() << " v" << RTTR_Version::GetVersionDate() << "-" << RTTR_Version::GetRevision() << "\n"
+      << "Compiled with " << System::getCompilerName() << " for " << System::getOSName();
+    return s.str();
 }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -315,6 +325,7 @@ bool InitDirectories()
     try
     {
         LOG.open();
+        LOG.write("%1%\n\n", LogTarget::File) % GetProgramDescription();
         LOG.write("Starting in %s\n", LogTarget::File) % curPath;
     } catch(const std::exception& e)
     {
@@ -347,6 +358,7 @@ bool InitGame()
 
 int RunProgram(po::variables_map& options)
 {
+    LOG.write("%1%\n\n", LogTarget::Stdout) % GetProgramDescription();
     if(!LocaleHelper::init())
         return 1;
     if(!RTTRCONFIG.Init())
