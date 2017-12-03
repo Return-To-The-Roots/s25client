@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
     BOOST_REQUIRE_EQUAL(getLog(), "Hello World\n");
 
     // No getRequiredLuaVersion
-    LuaInterfaceBase& lua = world.GetLua();
+    LuaInterfaceGameBase& lua = world.GetLua();
     BOOST_REQUIRE(!lua.CheckScriptVersion());
     BOOST_REQUIRE_NE(getLog(), "");
     // Wrong version

@@ -15,25 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BQOutput_h__
-#define BQOutput_h__
+#include "rttrDefines.h" // IWYU pragma: keep
+#include "WorldDescription.h"
+#include "EdgeDesc.h"
+#include "TerrainDesc.h"
 
-#include "gameTypes/BuildingQuality.h"
-#include "gameData/TerrainDesc.h"
-#include <boost/array.hpp>
-#include <iosfwd>
+WorldDescription::~WorldDescription() {}
 
-const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
-inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
-{
-    return stream << bqNames[bq];
-}
-
-const boost::array<const char*, 6> bqNames2 = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
-
-inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
-{
-    return stream << bqNames2[boost::underlying_cast<unsigned>(bq)];
-}
-
-#endif // BQOutput_h__
+WorldDescription::WorldDescription() {}

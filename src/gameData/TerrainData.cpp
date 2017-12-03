@@ -38,9 +38,9 @@ unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
         case TT_STEPPE: return 0x0E;
         case TT_MOUNTAINMEADOW: return 0x12;
         case TT_WATER: return 0x05;
-        case TT_WATER_NOSHIP: return 0x06;
+        case TT_WATER_NOSHIP: return 0x13;
         case TT_BUILDABLE_MOUNTAIN: return 0x22;
-        case TT_BUILDABLE_WATER: return 0x13;
+        case TT_BUILDABLE_WATER: return 0x06;
         case TT_LAVA: return 0x10;
         case TT_LAVA2: return 0x14;
         case TT_LAVA3: return 0x15;
@@ -349,7 +349,7 @@ const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
    /*TT_WATER*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
    /*TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
    /*TT_WATER_NOSHIP*/ {1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, 1},
-   /*TT_BUILDABLE_WATER*/ {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
+   /*TT_BUILDABLE_WATER*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
    /*TT_BUILDABLE_MOUNTAIN*/ {-1, -1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, -1, 0, 1, 1, -1, -1},
    /*TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
    /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
@@ -447,8 +447,7 @@ bool TerrainData::IsUsableByShip(TerrainType t)
 {
     switch(t)
     {
-        case TT_WATER:
-        case TT_BUILDABLE_WATER: return true;
+        case TT_WATER: return true;
         default: return false;
     }
 }
@@ -463,7 +462,8 @@ bool TerrainData::IsUsableByAnimals(TerrainType t)
         case TT_MEADOW2:
         case TT_MEADOW3:
         case TT_STEPPE:
-        case TT_MOUNTAINMEADOW: return true;
+        case TT_MOUNTAINMEADOW:
+        case TT_BUILDABLE_MOUNTAIN: return true;
         default: return false;
     }
 }
@@ -532,14 +532,7 @@ bool TerrainData::IsMountain(TerrainType t)
 
 bool TerrainData::IsMineable(TerrainType t)
 {
-    switch(t)
-    {
-        case TT_MOUNTAIN1:
-        case TT_MOUNTAIN2:
-        case TT_MOUNTAIN3:
-        case TT_MOUNTAIN4: return true;
-        default: return false;
-    }
+    return GetBuildingQuality(t) == TerrainBQ::MINE;
 }
 
 TerrainBQ TerrainData::GetBuildingQuality(TerrainType t)

@@ -18,41 +18,14 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
 #include "GlobalVars.h"
-#include "WindowManager.h"
-#include "ingameWindows/iwMsgbox.h"
+#include "mygettext/mygettext.h"
 #include "mygettext/utils.h"
-#include "network/GameClient.h"
 #include "libutf8/utf8.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
-#include <utility>
-
-namespace kaguya {
-template<typename T1, typename T2>
-struct lua_type_traits<std::pair<T1, T2> >
-{
-    static int push(lua_State* l, const std::pair<T1, T2>& v)
-    {
-        int count = 0;
-        count += lua_type_traits<T1>::push(l, v.first);
-        count += lua_type_traits<T2>::push(l, v.second);
-        return count;
-    }
-};
-} // namespace kaguya
-
-unsigned LuaInterfaceBase::GetVersion()
-{
-    return 1;
-}
-
-unsigned LuaInterfaceBase::GetFeatureLevel()
-{
-    return 3;
-}
 
 LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
 {
@@ -71,19 +44,14 @@ LuaInterfaceBase::~LuaInterfaceBase() {}
 void LuaInterfaceBase::Register(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
-                                 .addStaticFunction("GetFeatureLevel", &LuaInterfaceBase::GetFeatureLevel)
                                  .addFunction("Log", &LuaInterfaceBase::Log)
-                                 .addFunction("IsHost", &LuaInterfaceBase::IsHost)
-                                 .addFunction("GetLocalPlayerIdx", &LuaInterfaceBase::GetLocalPlayerIdx)
-                                 .addOverloadedFunctions("MsgBox", &LuaInterfaceBase::MsgBox, &LuaInterfaceBase::MsgBox2)
-                                 .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceBase::MsgBoxEx, &LuaInterfaceBase::MsgBoxEx2)
                                  .addFunction("RegisterTranslations", &LuaInterfaceBase::RegisterTranslations));
     state.setErrorHandler(ErrorHandler);
 }
 
 void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 {
-    LOG.write(_("Lua error: %s\n")) % message;
+    LOG.write(_("Lua error: %s\n")) % (message ? message : "Unknown");
     if(GLOBALVARS.isTest)
     {
         GLOBALVARS.errorOccured = true;
@@ -93,80 +61,39 @@ void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 
 void LuaInterfaceBase::ErrorHandlerThrow(int status, const char* message)
 {
-    throw std::runtime_error(message);
+    throw std::runtime_error(message ? message : "Unknown error");
 }
 
 bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
 {
     script_.clear();
+    bnw::ifstream scriptFile(scriptPath.c_str());
+    std::string tmpScript;
+    tmpScript.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
+    if(!scriptFile)
+    {
+        LOG.write("Failed to read lua file '%1%'\n") % scriptPath;
+        return false;
+    }
+    if(!ValidateUTF8(tmpScript))
+        return false;
     if(!lua.dofile(scriptPath))
         return false;
     else
-    {
-        bnw::ifstream scriptFile(scriptPath.c_str());
-        script_.assign(std::istreambuf_iterator<char>(scriptFile), std::istreambuf_iterator<char>());
-        return ValidateUTF8();
-    }
+        script_ = tmpScript;
+    return true;
 }
 
 bool LuaInterfaceBase::LoadScriptString(const std::string& script)
 {
     script_.clear();
+    if(!ValidateUTF8(script))
+        return false;
     if(!lua.dostring(script))
         return false;
     else
-    {
         script_ = script;
-        return ValidateUTF8();
-    }
-}
-
-bool LuaInterfaceBase::CheckScriptVersion()
-{
-    kaguya::LuaRef func = lua["getRequiredLuaVersion"];
-    if(func.type() == LUA_TFUNCTION)
-    {
-        const unsigned scriptVersion = func.call<unsigned>();
-        if(scriptVersion == GetVersion())
-            return true;
-        else
-        {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.%3%.\n")) % scriptVersion % GetVersion() % GetFeatureLevel();
-            return false;
-        }
-    } else
-    {
-        LOG.write(_("Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.\n"));
-        return false;
-    }
-}
-
-bool LuaInterfaceBase::IsHost() const
-{
-    return GAMECLIENT.IsHost();
-}
-
-unsigned LuaInterfaceBase::GetLocalPlayerIdx() const
-{
-    return GAMECLIENT.GetPlayerId();
-}
-
-void LuaInterfaceBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
-{
-    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, isError ? MSB_EXCLAMATIONRED : MSB_EXCLAMATIONGREEN));
-}
-
-void LuaInterfaceBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx)
-{
-    WINDOWMANAGER.Show(new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx));
-}
-
-void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX,
-                                 int iconY)
-{
-    iwMsgbox* msgBox = new iwMsgbox(_(title), _(msg), NULL, MSB_OK, iconFile, iconIdx);
-    msgBox->MoveIcon(DrawPoint(iconX, iconY));
-    WINDOWMANAGER.Show(msgBox);
+    return true;
 }
 
 std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
@@ -201,24 +128,24 @@ std::string LuaInterfaceBase::Translate(const std::string& key)
         return entry->second.c_str();
 }
 
-bool LuaInterfaceBase::ValidateUTF8()
+bool LuaInterfaceBase::ValidateUTF8(const std::string& scriptTxt)
 {
-    std::string::iterator it = utf8::find_invalid(script_.begin(), script_.end());
-    if(it == script_.end())
+    std::string::const_iterator it = utf8::find_invalid(scriptTxt.begin(), scriptTxt.end());
+    if(it == scriptTxt.end())
         return true;
-    size_t invPos = std::distance(script_.begin(), it);
-    size_t lineNum = std::count(script_.begin(), it, '\n') + 1;
-    size_t lineBegin = script_.rfind('\n', invPos);
-    size_t lineEnd = script_.find('\n', invPos);
+    size_t invPos = std::distance(scriptTxt.begin(), it);
+    size_t lineNum = std::count(scriptTxt.begin(), it, '\n') + 1;
+    size_t lineBegin = scriptTxt.rfind('\n', invPos);
+    size_t lineEnd = scriptTxt.find('\n', invPos);
     if(lineBegin == std::string::npos)
         lineBegin = 0;
     else
         lineBegin++;
     if(lineEnd == std::string::npos)
-        lineEnd = script_.size();
+        lineEnd = scriptTxt.size();
     else
         lineEnd--;
-    std::string faultyLine = script_.substr(lineBegin, lineEnd - lineBegin);
+    std::string faultyLine = scriptTxt.substr(lineBegin, lineEnd - lineBegin);
     std::string fixedLine;
     fixedLine.reserve(faultyLine.length());
     while(true)
@@ -236,7 +163,7 @@ bool LuaInterfaceBase::ValidateUTF8()
     }
     boost::format fmt("Found invalid UTF8 char at line %1%.\nContent: %2%\n");
     fmt % lineNum % fixedLine;
-    ErrorHandler(0, fmt.str().c_str());
+    Log(fmt.str());
     return false;
 }
 

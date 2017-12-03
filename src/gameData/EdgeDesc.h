@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BQOutput_h__
-#define BQOutput_h__
+#ifndef EdgeDesc_h__
+#define EdgeDesc_h__
 
-#include "gameTypes/BuildingQuality.h"
-#include "gameData/TerrainDesc.h"
-#include <boost/array.hpp>
-#include <iosfwd>
+#include "Rect.h"
+#include "gameTypes/LandscapeType.h"
+#include <string>
 
-const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
-inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
-{
-    return stream << bqNames[bq];
+struct WorldDescription;
+namespace kaguya {
+class LuaRef;
 }
 
-const boost::array<const char*, 6> bqNames2 = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
-
-inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
+struct EdgeDesc
 {
-    return stream << bqNames2[boost::underlying_cast<unsigned>(bq)];
-}
+    std::string name;
+    LandscapeType landscape;
+    std::string texturePath;
+    Rect posInTexture;
 
-#endif // BQOutput_h__
+    EdgeDesc(const kaguya::LuaRef& luaData, const WorldDescription& worldDesc);
+};
+
+#endif // EdgeDesc_h__

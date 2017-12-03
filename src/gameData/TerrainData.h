@@ -22,12 +22,10 @@
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
-#include <boost/core/scoped_enum.hpp>
+#include "gameData/TerrainDesc.h"
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
-
-  /// Static class returning properties of terrain types
-  class TerrainData
+/// Static class returning properties of terrain types
+class TerrainData
 {
     // Disallow construction, only static methods
     TerrainData();

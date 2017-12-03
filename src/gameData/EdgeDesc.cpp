@@ -1,4 +1,4 @@
-// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,25 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef BQOutput_h__
-#define BQOutput_h__
+#include "rttrDefines.h" // IWYU pragma: keep
+#include "EdgeDesc.h"
+#include "DescriptionHelpers.h"
 
-#include "gameTypes/BuildingQuality.h"
-#include "gameData/TerrainDesc.h"
-#include <boost/array.hpp>
-#include <iosfwd>
+using namespace descriptionHelpers;
 
-const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House", "Castle", "Mine"}};
-inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
+EdgeDesc::EdgeDesc(const kaguya::LuaRef& luaData, const WorldDescription&)
 {
-    return stream << bqNames[bq];
+    getOrThrow(name, luaData, "name");
+    landscape = strToLandscape(getOrThrow<std::string>(luaData, "landscape"));
+    getOrThrow(texturePath, luaData, "texture");
+    posInTexture = getRectOrDefault(luaData, "pos", Rect());
 }
-
-const boost::array<const char*, 6> bqNames2 = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
-
-inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
-{
-    return stream << bqNames2[boost::underlying_cast<unsigned>(bq)];
-}
-
-#endif // BQOutput_h__

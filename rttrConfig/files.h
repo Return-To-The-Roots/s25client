@@ -27,7 +27,7 @@
 // Konstanten
 const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /*  0 */ "<RTTR_CONFIG>/CONFIG.INI",         // die Einstellungsdatei
-  /*  1 */ "",                                 // unused
+  /*  1 */ "<RTTR_RTTR>/gamedata",             // Path to the gamedata
   /*  2 */ "",                                 // unused
   /*  3 */ "",                                 // unused
   /*  4 */ "",                                 // unused

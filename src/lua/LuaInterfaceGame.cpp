@@ -183,7 +183,7 @@ KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMis
 
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
-    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceBase>()
+    state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
                                  .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
                                  .addFunction("GetGF", &LuaInterfaceGame::GetGF)
                                  .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
@@ -205,7 +205,6 @@ void LuaInterfaceGame::Register(kaguya::State& state)
                                         .addFunction("PopBool", &Serializer::PopBool)
                                         .addFunction("PushString", &Serializer::PushString)
                                         .addFunction("PopString", &Serializer::PopString));
-    state.setErrorHandler(ErrorHandler);
 }
 
 Serializer LuaInterfaceGame::Serialize()

@@ -19,7 +19,7 @@
 #define LuaBaseFixture_h__
 
 #include "GlobalVars.h"
-#include "lua/LuaInterfaceBase.h"
+#include "lua/LuaInterfaceGameBase.h"
 #include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -27,7 +27,7 @@
 class LuaBaseFixture
 {
 protected:
-    LuaInterfaceBase* luaBase;
+    LuaInterfaceGameBase* luaBase;
 
 public:
     LuaBaseFixture() { GLOBALVARS.isTest = true; }
