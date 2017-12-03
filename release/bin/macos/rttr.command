@@ -57,7 +57,7 @@ if [ ! -f "$RTTR_TEST_FILEA" ] || [ ! -f "$RTTR_TEST_FILEB" ]; then
 fi
 
 if [ ! "$2" = "noupdate" ] ; then
-	if [ -f ./share/s25rttr/RTTR/s25update ] ; then
+	if [ -f ./bin/RTTR/s25update ] ; then
 		(cd ../../../ && ./s25client.app/Contents/MacOS/bin/RTTR/s25update -d "$PWD")
 	fi
 fi
