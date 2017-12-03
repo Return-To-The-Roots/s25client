@@ -50,20 +50,20 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("ClearResources", &LuaPlayer::ClearResources)
                                .addFunction("AddWares", &LuaPlayer::AddWares)
                                .addFunction("AddPeople", &LuaPlayer::AddPeople)
-                               .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
-                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
-                               .addFunction("GetWareCount", &LuaPlayer::GetNumWares)
-                               .addFunction("GetPeopleCount", &LuaPlayer::GetNumPeople)
+                               .addFunction("GetNumBuildings", &LuaPlayer::GetNumBuildings)
+                               .addFunction("GetNumBuildingSites", &LuaPlayer::GetNumBuildingSites)
+                               .addFunction("GetNumWares", &LuaPlayer::GetNumWares)
+                               .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople)
                                .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
                                .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
                                .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
                                .addFunction("Surrender", &LuaPlayer::Surrender)
                                // Old names
-                               .addFunction("GetNumBuildings", &LuaPlayer::GetNumBuildings)
-                               .addFunction("GetNumBuildingSites", &LuaPlayer::GetNumBuildingSites)
-                               .addFunction("GetNumWares", &LuaPlayer::GetNumWares)
-                               .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople));
+                               .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
+                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
+                               .addFunction("GetWareCount", &LuaPlayer::GetNumWares)
+                               .addFunction("GetPeopleCount", &LuaPlayer::GetNumPeople));
 }
 
 void LuaPlayer::EnableBuilding(BuildingType bld, bool notify)
