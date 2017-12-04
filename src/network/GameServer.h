@@ -40,6 +40,7 @@ class GameMessage;
 class GameMessageWithPlayer;
 class GameMessage_GameCommand;
 class GameServerPlayer;
+struct AIServerPlayer;
 
 class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
 {
@@ -59,13 +60,12 @@ public:
 
     void SetPaused(bool paused);
 
-    void AIChat(const GameMessage& msg) { SendToAll(msg); }
-    AIPlayer* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
     unsigned skiptogf;
 
 private:
     bool StartGame();
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
+    AIServerPlayer* GetAIPlayer(unsigned playerId);
     /// Swap players ingame or during config
     void SwapPlayer(const uint8_t player1, const uint8_t player2);
 
@@ -97,6 +97,7 @@ private:
     bool OnGameMessage(const GameMessage_Player_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
     bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool OnGameMessage(const GameMessage_Player_SwapConfirm& msg) override;
     bool OnGameMessage(const GameMessage_MapRequest& msg) override;
     bool OnGameMessage(const GameMessage_Map_Checksum& msg) override;
     bool OnGameMessage(const GameMessage_GameCommand& msg) override;
@@ -116,7 +117,6 @@ private:
 
     /// Handles advancing of GFs, actions of AI and potentially the NWF
     void ExecuteGameFrame();
-    void RunGF(bool isNWF);
     void ExecuteNWF(const unsigned currentTime);
 
     bool CheckForAsync();
@@ -162,6 +162,7 @@ private:
     Socket serversocket;
     std::vector<JoinPlayerInfo> playerInfos;
     std::vector<GameServerPlayer> networkPlayers;
+    std::vector<AIServerPlayer> aiPlayers;
     GlobalGameSettings ggs_;
 
     /// der Spielstartcountdown
@@ -181,9 +182,6 @@ private:
         bool IsActive() const { return isActive; }
         unsigned GetRemainingSecs() const { return remainingSecs; }
     } countdown;
-
-    /// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
-    std::vector<AIPlayer*> ai_players;
 
     struct AsyncLog;
     /// AsyncLogs of all players

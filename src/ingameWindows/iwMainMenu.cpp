@@ -17,11 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMainMenu.h"
-
+#include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
-
-#include "GamePlayer.h"
 #include "addons/const_addons.h"
 #include "iwAIDebug.h"
 #include "iwBuildOrder.h"
@@ -37,7 +36,7 @@
 #include "iwStatistics.h"
 #include "iwTools.h"
 #include "iwTransport.h"
-#include "network/GameServer.h"
+#include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
@@ -163,7 +162,7 @@ void iwMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
                 std::vector<const AIPlayer*> ais;
                 for(unsigned i = 0; i < gwv.GetViewer().GetNumPlayers(); ++i)
                 {
-                    const AIPlayer* ai = GAMESERVER.GetAIPlayer(i);
+                    const AIPlayer* ai = GAMECLIENT.GetAIPlayer(i);
                     if(ai)
                         ais.push_back(ai);
                 }

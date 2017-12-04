@@ -64,6 +64,7 @@
 #include "libutil/System.h"
 #include "libutil/fileFuncs.h"
 #include "libutil/ucString.h"
+#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -225,6 +226,18 @@ boost::shared_ptr<GameLobby> GameClient::GetGameLobby()
     return gameLobby;
 }
 
+const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
+{
+    if(!game)
+        return NULL;
+    BOOST_FOREACH(const AIPlayer& ai, game->aiPlayers)
+    {
+        if(ai.GetPlayerId() == id)
+            return &ai;
+    }
+    return NULL;
+}
+
 /**
  *  Startet ein Spiel oder Replay.
  *
@@ -331,7 +344,20 @@ void GameClient::GameStarted()
 
     // Send empty GC for first NWF
     if(!replayMode)
+    {
+        if(IsHost())
+        {
+            for(unsigned id = 0; id < GetNumPlayers(); id++)
+            {
+                if(GetPlayer(id).ps == PS_AI)
+                {
+                    game->aiPlayers.push_back(CreateAIPlayer(id, GetPlayer(id).aiInfo));
+                    SendNothingNC(id);
+                }
+            }
+        }
         SendNothingNC();
+    }
 
     GAMEMANAGER.ResetAverageFPS();
     game->Start(mapinfo.savegame);
@@ -340,8 +366,6 @@ void GameClient::GameStarted()
 void GameClient::ExitGame()
 {
     RTTR_Assert(state == CS_GAME || state == CS_LOADING);
-    // Spielwelt zerstören
-    human_ai.reset();
     game.reset();
     clientPlayers.reset();
     // Clear remaining commands
@@ -569,11 +593,22 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
     {
         if(msg.player >= gameLobby->getNumPlayers())
             return true;
-        gameLobby->getPlayer(msg.player).ps = PS_FREE;
+        GetPlayer(msg.player).ps = PS_FREE;
     } else if(state == CS_LOADING || state == CS_GAME)
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
-        game->world.GetPlayer(msg.player).ps = PS_AI;
+        GamePlayer& player = GetPlayer(msg.player);
+        if(player.ps != PS_AI)
+        {
+            player.ps = PS_AI;
+            player.aiInfo = AI::Info(AI::DUMMY);
+            // Host has to handle it
+            if(IsHost())
+            {
+                game->aiPlayers.push_back(CreateAIPlayer(msg.player, player.aiInfo));
+                SendNothingNC(msg.player);
+            }
+        }
     } else
         return true;
 
@@ -607,11 +642,10 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
         if(ci)
             ci->CI_PlayersSwapped(msg.player, msg.player2);
     } else if(state == CS_LOADING || state == CS_GAME)
-    {
-        if(msg.player >= game->world.GetNumPlayers() || msg.player2 >= game->world.GetNumPlayers())
-            return true;
         ChangePlayerIngame(msg.player, msg.player2);
-    }
+    else
+        return true;
+    mainPlayer.sendMsgAsync(new GameMessage_Player_SwapConfirm(msg.player, msg.player2));
     return true;
 }
 
@@ -1319,16 +1353,9 @@ void GameClient::HandleAutosave()
 /// Führt notwendige Dinge für nächsten GF aus
 void GameClient::NextGF()
 {
+    BOOST_FOREACH(AIPlayer& ai, game->aiPlayers)
+        ai.RunGF(GetGFNumber(), (GetGFNumber() % framesinfo.nwf_length == 0));
     game->RunGF();
-
-    if(human_ai)
-    {
-        human_ai->RunGF(GetGFNumber(), (GetGFNumber() % framesinfo.nwf_length == 0));
-
-        const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
-        gameCommands_.insert(gameCommands_.end(), ai_gcs.begin(), ai_gcs.end());
-        human_ai->FetchGameCommands();
-    }
 }
 
 void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
@@ -1337,9 +1364,9 @@ void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
         gc->Execute(game->world, playerId);
 }
 
-void GameClient::SendNothingNC()
+void GameClient::SendNothingNC(uint8_t player)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
+    mainPlayer.sendMsgAsync(new GameMessage_GameCommand(player, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WritePlayerInfo(SavedFile& file)
@@ -1719,10 +1746,12 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    if(human_ai)
-        human_ai.reset();
+    boost::ptr_vector<AIPlayer>::iterator it =
+      std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(), boost::bind(&AIPlayer::GetPlayerId, _1) == GetPlayerId());
+    if(it != game->aiPlayers.end())
+        game->aiPlayers.erase(it);
     else
-        human_ai.reset(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
+        game->aiPlayers.push_back(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)

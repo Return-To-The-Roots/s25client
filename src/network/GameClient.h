@@ -84,8 +84,6 @@ public:
     std::string GetGameName() const { return clientconfig.gameName; }
 
     unsigned GetPlayerId() const { return mainPlayer.playerId; }
-    /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
-    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
@@ -112,6 +110,7 @@ public:
     Replay* GetReplay();
     boost::shared_ptr<const ClientPlayers> GetPlayers() const;
     boost::shared_ptr<GameLobby> GetGameLobby();
+    const AIPlayer* GetAIPlayer(unsigned id) const;
 
     unsigned GetGFNumber() const;
     unsigned GetGFLength() const { return framesinfo.gf_length; }
@@ -178,8 +177,10 @@ public:
     void SetTestPlayerId(unsigned id);
 
 private:
-    /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt
-    /// ist)
+    /// Create an AI player for the current world
+    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
+
+    /// Add the gamecommand. Return true in success, false otherwise (paused, or defeated)
     bool AddGC(gc::GameCommandPtr gc) override;
 
     unsigned GetNumPlayers() const;
@@ -194,7 +195,7 @@ private:
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
     void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC();
+    void SendNothingNC(uint8_t player = 0xFF);
 
     /// Führt notwendige Dinge für nächsten GF aus
     void NextGF();
@@ -290,8 +291,6 @@ private:
     FramesInfoClient framesinfo;
 
     ClientInterface* ci;
-
-    boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > human_ai;
 
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;

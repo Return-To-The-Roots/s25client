@@ -57,6 +57,7 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_PLAYER_NEW: msg = new GameMessage_Player_New(); break;
         case NMS_PLAYER_READY: msg = new GameMessage_Player_Ready(); break;
         case NMS_PLAYER_SWAP: msg = new GameMessage_Player_Swap(); break;
+        case NMS_PLAYER_SWAP_CONFIRM: msg = new GameMessage_Player_SwapConfirm(); break;
         case NMS_MAP_INFO: msg = new GameMessage_Map_Info(); break;
         case NMS_MAP_REQUEST: msg = new GameMessage_MapRequest(); break;
         case NMS_MAP_DATA: msg = new GameMessage_Map_Data(); break;

@@ -217,7 +217,6 @@ bool GameServer::Start()
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
     playerInfos.resize(config.playercount);
-    ai_players.resize(config.playercount);
 
     bool host_found = false;
 
@@ -386,17 +385,13 @@ void GameServer::Stop()
     // player verabschieden
     playerInfos.clear();
     networkPlayers.clear();
+    aiPlayers.clear();
 
     // aufräumen
     framesinfo.Clear();
     config.Clear();
     mapinfo.Clear();
     countdown.Stop();
-
-    // KI-Player zerstören
-    for(unsigned i = 0; i < ai_players.size(); ++i)
-        delete ai_players[i];
-    ai_players.clear();
 
     // laden dicht machen
     serversocket.Close();
@@ -469,18 +464,14 @@ bool GameServer::StartGame()
         return false;
     }
 
+    for(unsigned id = 0; id < playerInfos.size(); id++)
+    {
+        if(playerInfos[id].ps == PS_AI)
+            aiPlayers.push_back(AIServerPlayer(id));
+    }
+
     // Init current GF
     currentGF = GAMECLIENT.GetGFNumber();
-
-    // Erste KI-Nachrichten schicken
-    for(unsigned i = 0; i < playerInfos.size(); ++i)
-    {
-        if(playerInfos[i].ps == PS_AI)
-        {
-            ai_players[i] = GAMECLIENT.CreateAIPlayer(i, playerInfos[i].aiInfo);
-            SendNothingNC(i);
-        }
-    }
 
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
@@ -525,10 +516,8 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause)
     if(status == SS_GAME)
     {
         playerInfo.ps = PS_AI;
-        playerInfo.aiInfo.type = AI::DUMMY;
-        playerInfo.aiInfo.level = AI::MEDIUM;
-        ai_players[playerId] = GAMECLIENT.CreateAIPlayer(playerId, playerInfo.aiInfo);
-        SendNothingNC(playerId);
+        playerInfo.aiInfo = AI::Info(AI::DUMMY);
+        aiPlayers.push_back(AIServerPlayer(playerId));
     } else
         CancelCountdown();
 
@@ -599,26 +588,15 @@ void GameServer::ExecuteGameFrame()
             {
                 ExecuteNWF(currentTime);
                 // Execute RunGF AFTER the NWF is send.
-                RunGF(true);
+                ++currentGF;
             }
         } else
         {
-            RunGF(false);
+            ++currentGF;
             // Diesen Zeitpunkt merken
             framesinfo.lastTime = currentTime;
         }
     }
-}
-
-void GameServer::RunGF(bool isNWF)
-{
-    // KIs ausführen
-    BOOST_FOREACH(AIPlayer* ai_player, ai_players)
-    {
-        if(ai_player)
-            ai_player->RunGF(currentGF, isNWF);
-    }
-    ++currentGF;
 }
 
 void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
@@ -626,15 +604,6 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
     // Advance lastExecutedTime by the GF length.
     // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier
     framesinfo.lastTime += framesinfo.gf_length;
-
-    /// Handle AI
-    BOOST_FOREACH(AIPlayer* ai, ai_players)
-    {
-        if(!ai)
-            continue;
-        SendToAll(GameMessage_GameCommand(ai->GetPlayerId(), AsyncChecksum(), ai->GetGameCommands()));
-        ai->FetchGameCommands();
-    }
 
     // Check for asyncs
     if(CheckForAsync())
@@ -658,6 +627,11 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
     }
     // Remove first (current) msg
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    {
+        player.checksumOfNextNWF.pop();
+        RTTR_Assert(player.checksumOfNextNWF.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
+    }
+    BOOST_FOREACH(AIServerPlayer& player, aiPlayers)
     {
         player.checksumOfNextNWF.pop();
         RTTR_Assert(player.checksumOfNextNWF.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
@@ -1188,15 +1162,27 @@ bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
     }
-    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
-    if(!player)
+    int targetPlayerId = GetTargetPlayer(msg);
+    if(targetPlayerId < 0)
+    {
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
-    // LOG.writeToFile("SERVER <<< GC %u\n") % unsigned(msg.senderPlayerID);
+    }
 
-    // Save and broadcast command
-    player->checksumOfNextNWF.push(msg.gcs.checksum);
-    player->setNotLagging();
-    SendToAll(GameMessage_GameCommand(msg.senderPlayerID, msg.gcs.checksum, msg.gcs.gcs));
+    GameServerPlayer* player = GetNetworkPlayer(targetPlayerId);
+    if(player)
+    {
+        // Save and broadcast command
+        player->checksumOfNextNWF.push(msg.gcs.checksum);
+        player->setNotLagging();
+    } else
+    {
+        AIServerPlayer* ai = GetAIPlayer(targetPlayerId);
+        if(!ai)
+            return true;
+        ai->checksumOfNextNWF.push(msg.gcs.checksum);
+    }
+    SendToAll(GameMessage_GameCommand(targetPlayerId, msg.gcs.checksum, msg.gcs.gcs));
     return true;
 }
 
@@ -1544,6 +1530,22 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
     return true;
 }
 
+bool GameServer::OnGameMessage(const GameMessage_Player_SwapConfirm& msg)
+{
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
+    if(!player)
+        return true;
+    for(std::vector<GameServerPlayer::PendingSwap>::iterator it = player->pendingSwaps.begin(); it != player->pendingSwaps.end(); ++it)
+    {
+        if(it->playerId1 == msg.player && it->playerId2 == msg.player2)
+        {
+            player->pendingSwaps.erase(it);
+            break;
+        }
+    }
+    return true;
+}
+
 void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
 {
     // TODO: Swapping the player messes up the ids because our IDs are indizes. Usually this works because we use the sender player ID for
@@ -1569,12 +1571,9 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
         LOG.write("GameServer::ChangePlayer %i - %i \n") % unsigned(player1) % unsigned(player2);
         using std::swap;
         swap(playerInfos[player2].ps, playerInfos[player1].ps);
-
-        // Alte KI löschen
-        delete ai_players[player2];
-        ai_players[player2] = NULL;
-        // Place a dummy AI at the original spot
-        ai_players[player1] = GAMECLIENT.CreateAIPlayer(player1, AI::Info(AI::DUMMY));
+        swap(playerInfos[player2].aiInfo, playerInfos[player1].aiInfo);
+        swap(playerInfos[player2].isHost, playerInfos[player1].isHost);
+        GetAIPlayer(player2)->playerId = player1;
     }
     // Change ids of network players (if any). Get both first!
     GameServerPlayer* newPlayer = GetNetworkPlayer(player2);
@@ -1584,11 +1583,30 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
     if(oldPlayer)
         oldPlayer->playerId = player2;
     SendToAll(GameMessage_Player_Swap(player1, player2));
+    GameServerPlayer::PendingSwap pSwap;
+    pSwap.playerId1 = player1;
+    pSwap.playerId2 = player2;
+    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    {
+        if(!player.isConnected())
+            continue;
+        player.pendingSwaps.push_back(pSwap);
+    }
 }
 
 GameServerPlayer* GameServer::GetNetworkPlayer(unsigned playerId)
 {
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    {
+        if(player.playerId == playerId)
+            return &player;
+    }
+    return NULL;
+}
+
+AIServerPlayer* GameServer::GetAIPlayer(unsigned playerId)
+{
+    BOOST_FOREACH(AIServerPlayer& player, aiPlayers)
     {
         if(player.playerId == playerId)
             return &player;
@@ -1619,7 +1637,18 @@ int GameServer::GetTargetPlayer(const GameMessageWithPlayer& msg)
     if(msg.player != 0xFF)
     {
         if(msg.player < playerInfos.size() && (msg.player == msg.senderPlayerID || IsHost(msg.senderPlayerID)))
-            return msg.player;
+        {
+            unsigned result = msg.player;
+            // Apply pending swaps
+            BOOST_FOREACH(GameServerPlayer::PendingSwap& pSwap, GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps)
+            {
+                if(pSwap.playerId1 == result)
+                    result = pSwap.playerId2;
+                else if(pSwap.playerId2 == result)
+                    result = pSwap.playerId1;
+            }
+            return result;
+        }
     } else if(msg.senderPlayerID < playerInfos.size())
         return msg.senderPlayerID;
     return -1;

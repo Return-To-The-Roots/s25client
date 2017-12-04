@@ -49,6 +49,7 @@ enum
     NMS_PLAYER_NEW,         // 1 playerId, x playername
     NMS_PLAYER_READY,       // 1 status | 1 playerId, 1 status
     NMS_PLAYER_SWAP,        // 1 playerId1, 1 playerId2
+    NMS_PLAYER_SWAP_CONFIRM,
 
     NMS_MAP_NAME = 0x0301, // x mapname
     NMS_MAP_INFO,          // 0 | 4 parts, 4 ziplength, 4 length

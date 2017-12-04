@@ -31,8 +31,8 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "helpers/containerUtils.h"
+#include "network/GameClient.h"
 #include "network/GameMessages.h"
-#include "network/GameServer.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/ExpeditionNote.h"
 #include "notifications/NodeNote.h"
@@ -1556,8 +1556,7 @@ void AIPlayerJH::MilUpgradeOptim()
 
 void AIPlayerJH::Chat(const std::string& message)
 {
-    GameMessage_Chat chat = GameMessage_Chat(playerId, CD_ALL, message);
-    GAMESERVER.AIChat(chat);
+    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Chat(playerId, CD_ALL, message));
 }
 
 bool AIPlayerJH::HasFrontierBuildings()

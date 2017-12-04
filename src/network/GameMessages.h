@@ -646,7 +646,7 @@ public:
     }
 };
 
-/// gehende Player-Swap-Nachricht
+/// Swap the given players
 class GameMessage_Player_Swap : public GameMessageWithPlayer
 {
 public:
@@ -675,6 +675,32 @@ public:
         LOG.writeToFile("<<< NMS_PLAYER_SWAP\n");
         return callback->OnGameMessage(*this);
     }
+};
+
+// Outgoing confirmation of the swap
+class GameMessage_Player_SwapConfirm : public GameMessageWithPlayer
+{
+public:
+    /// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
+    uint8_t player2;
+    GameMessage_Player_SwapConfirm() : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM) {} //-V730
+    GameMessage_Player_SwapConfirm(uint8_t player, uint8_t player2)
+        : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM, player), player2(player2)
+    {}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessageWithPlayer::Serialize(ser);
+        ser.PushUnsignedChar(player2);
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessageWithPlayer::Deserialize(ser);
+        player2 = ser.PopUnsignedChar();
+    }
+
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 class GameMessage_Map_Info : public GameMessage

@@ -16,10 +16,12 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
+#include "Game.h"
 #include "ClientPlayers.h"
 #include "GameMessage_GameCommand.h"
 #include "GamePlayer.h"
 #include "ReplayInfo.h"
+#include "ai/AIPlayer.h"
 #include "network/GameClient.h"
 #include "random/Random.h"
 #include "libutil/Log.h"
@@ -53,9 +55,16 @@ void GameClient::ExecuteNWF()
     }
 
     // Send GC message for this NWF
+    // First for all potential AIs as we need to combine the AI cmds of the local player with our own ones
+    BOOST_FOREACH(AIPlayer& ai, game->aiPlayers)
+    {
+        const std::vector<gc::GameCommandPtr> aiGCs = ai.FetchGameCommands();
+        /// Cmds from own AI get added to our gcs
+        if(ai.GetPlayerId() == GetPlayerId())
+            gameCommands_.insert(gameCommands_.end(), aiGCs.begin(), aiGCs.end());
+        else
+            mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.GetPlayerId(), checksum, aiGCs));
+    }
     mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, checksum, gameCommands_));
-    // LOG.writeToFile("CLIENT >>> GC %u\n") % playerId_;
-
-    // alles gesendet --> Liste löschen
     gameCommands_.clear();
 }

@@ -26,6 +26,19 @@
 
 class Serializer;
 
+/// Used to represent an AI on the server
+/// It is similar to the GameServerPlayer but has no connection
+struct AIServerPlayer
+{
+    AIServerPlayer(unsigned playerId) : playerId(playerId) {}
+    unsigned playerId;
+
+    /// Store the Checksum for following NetWorkFrames from this player.
+    /// We don't need the actual GCs on the server. We can also have more than 1 here (next NWF and 2nd next NWF) but never more.
+    /// TODO: Double check if we can even have 2 here.
+    std::queue<AsyncChecksum> checksumOfNextNWF;
+};
+
 /// Player connected to the server
 class GameServerPlayer : public NetworkPlayer
 {
@@ -73,6 +86,12 @@ public:
     /// TODO: Double check if we can even have 2 here.
     std::queue<AsyncChecksum> checksumOfNextNWF;
     bool mapDataSent;
+    /// These swaps are yet to be confirmed by the client
+    struct PendingSwap
+    {
+        unsigned playerId1, playerId2;
+    };
+    std::vector<PendingSwap> pendingSwaps;
 };
 
 #endif // GAMESERVERPLAYER_H_INCLUDED
