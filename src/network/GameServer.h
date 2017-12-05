@@ -29,6 +29,7 @@
 #include "random/Random.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
+#include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -42,7 +43,7 @@ class GameMessage_GameCommand;
 class GameServerPlayer;
 struct AIServerPlayer;
 
-class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
+class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, public LobbyInterface
 {
 public:
     BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
@@ -50,17 +51,11 @@ public:
     GameServer();
     ~GameServer() override;
 
-    /// "Versucht" den Server zu starten (muss ggf. erst um Erlaubnis beim LobbyClient fragen)
-    bool TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type);
-    /// Startet den Server, muss vorher TryToStart aufgerufen werden!
-    bool Start();
+    /// Starts the server
+    bool Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw);
 
     void Run();
     void Stop();
-
-    void SetPaused(bool paused);
-
-    unsigned skiptogf;
 
 private:
     bool StartGame();
@@ -84,6 +79,10 @@ private:
     unsigned GetNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
     void AnnounceStatusChange();
+    void SetPaused(bool paused);
+
+    void LC_Status_Error(const std::string& error) override;
+    void LC_Created() override;
 
     bool OnGameMessage(const GameMessage_Pong& msg) override;
     bool OnGameMessage(const GameMessage_Server_Type& msg) override;
@@ -106,6 +105,8 @@ private:
     bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
     bool OnGameMessage(const GameMessage_Countdown& msg) override;
     bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
+    bool OnGameMessage(const GameMessage_Pause& msg) override;
+    bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
     void CancelCountdown();
     bool ArePlayersReady() const;
     /// Some player data has changed. Set non-ready and cancel countdown
@@ -132,10 +133,11 @@ private:
     /// Get the player this message concerns. which is msg.player, msg.senderPlayer or -1 on error/wrong values
     int GetTargetPlayer(const GameMessageWithPlayer& msg);
 
+    unsigned skiptogf;
+
     enum ServerState
     {
         SS_STOPPED = 0,
-        SS_CREATING_LOBBY, // Creating game lobby (Call Start() next)
         SS_CONFIG,
         SS_GAME
     } status;
@@ -149,12 +151,10 @@ private:
         void Clear();
 
         ServerType servertype;
-        unsigned playercount;
         std::string gamename;
-        std::string password;
+        std::string hostPassword, password;
         unsigned short port;
         bool ipv6;
-        bool use_upnp;
     } config;
 
     MapInfo mapinfo;

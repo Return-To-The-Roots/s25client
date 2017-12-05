@@ -270,7 +270,7 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
     }
     CI_GGSChanged(gameLobby->getSettings());
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     if(serverType == ServerType::LOBBY && LOBBYCLIENT.IsLoggedIn())
     {
         LOBBYCLIENT.SendServerJoinRequest();
@@ -288,7 +288,7 @@ dskHostGame::dskHostGame(ServerType serverType, boost::shared_ptr<GameLobby> gam
 
 dskHostGame::~dskHostGame()
 {
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
 
@@ -729,7 +729,8 @@ void dskHostGame::FlashGameChat()
     {
         Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
         ctrlButton* bt = tab->GetCtrl<ctrlButton>(TAB_GAMECHAT);
-        localChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+        if(!localChatTabAnimId)
+            localChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
 }
 
@@ -1029,6 +1030,7 @@ void dskHostGame::LC_Chat(const std::string& player, const std::string& text)
     {
         Window* tab = GetCtrl<Window>(ID_CHAT_TAB);
         ctrlButton* bt = tab->GetCtrl<ctrlButton>(TAB_LOBBYCHAT);
-        lobbyChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
+        if(!lobbyChatTabAnimId)
+            lobbyChatTabAnimId = tab->GetAnimationManager().addAnimation(new BlinkButtonAnim(bt));
     }
 }

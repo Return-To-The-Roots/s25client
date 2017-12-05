@@ -52,14 +52,14 @@ dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
     for(unsigned i = 0; i < 8; ++i)
         AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, 0, LargeFont);
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     GAMECLIENT.SetInterface(this);
 }
 
 dskGameLoader::~dskGameLoader()
 {
     GAMEMANAGER.SetCursor();
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
 

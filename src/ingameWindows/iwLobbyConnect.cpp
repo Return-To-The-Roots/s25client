@@ -90,7 +90,7 @@ iwLobbyConnect::iwLobbyConnect()
     AddText(ID_txtStatus, DrawPoint(250, 195), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     LOBBYCLIENT.SetProgramVersion(RTTR_Version::GetReadableVersion());
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
 }
 
 iwLobbyConnect::~iwLobbyConnect()
@@ -99,7 +99,7 @@ iwLobbyConnect::~iwLobbyConnect()
     std::string user, pass, email;
     ReadFromEditAndSaveLobbyData(user, pass, email);
 
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
     if(!LOBBYCLIENT.IsLoggedIn())
         LOBBYCLIENT.Stop();
 }

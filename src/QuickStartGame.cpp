@@ -22,8 +22,8 @@
 #include "desktops/dskSelectMap.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "network/ClientInterface.h"
+#include "network/CreateServerInfo.h"
 #include "network/GameClient.h"
-#include "network/GameServer.h"
 #include <boost/array.hpp>
 #include <boost/filesystem/path.hpp>
 #include <algorithm>
@@ -53,8 +53,8 @@ bool QuickStartGame(const std::string& filePath, bool singlePlayer)
 
     WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
-    if((extension == ".sav" && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_SAVEGAME))
-       || ((extension == ".swd" || extension == ".wld") && GAMESERVER.TryToStart(csi, filePath, MAPTYPE_OLDMAP)))
+    if((extension == ".sav" && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_SAVEGAME))
+       || ((extension == ".swd" || extension == ".wld") && GAMECLIENT.HostGame(csi, filePath, MAPTYPE_OLDMAP)))
     {
         WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
         return true;

@@ -23,6 +23,7 @@
 #include "ingameWindows/iwDirectIPCreate.h"
 #include "mapGenerator/MapSettings.h"
 #include "network/ClientInterface.h"
+#include "network/CreateServerInfo.h"
 #include "liblobby/LobbyInterface.h"
 #include <string>
 #include <vector>
@@ -51,7 +52,6 @@ private:
     void CI_NextConnectState(const ConnectState cs) override;
     void CI_Error(const ClientError ce) override;
 
-    void LC_Created() override;
     void LC_Status_Error(const std::string& error) override;
 
     /**

@@ -40,7 +40,6 @@
 #include "ingameWindows/iwSave.h"
 #include "mapGenerator/MapGenerator.h"
 #include "network/GameClient.h"
-#include "network/GameServer.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Map.h"
 #include "liblobby/LobbyClient.h"
@@ -139,7 +138,7 @@ dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     // "Eigene" auswählen
     optiongroup->SetSelection(5, true);
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     GAMECLIENT.SetInterface(this);
 }
 
@@ -147,7 +146,7 @@ dskSelectMap::~dskSelectMap()
 {
     // if(mapGenThread)
     //    mapGenThread->join();
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
 
@@ -328,10 +327,9 @@ void dskSelectMap::StartServer()
         std::string mapPath = table->GetItemText(selection, 5);
 
         // Server starten
-        if(!GAMESERVER.TryToStart(csi, mapPath, MAPTYPE_OLDMAP))
-        {
+        if(!GAMECLIENT.HostGame(csi, mapPath, MAPTYPE_OLDMAP))
             GoBack();
-        } else
+        else
         {
             // Verbindungsfenster anzeigen
             WINDOWMANAGER.Show(new iwPleaseWait);
@@ -376,15 +374,6 @@ void dskSelectMap::CI_Error(const ClientError ce)
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
-}
-
-/**
- *  (Lobby-)Server wurde erstellt.
- */
-void dskSelectMap::LC_Created()
-{
-    // ggf. im nächstes Stadium weiter
-    GAMESERVER.Start();
 }
 
 void dskSelectMap::Draw_()

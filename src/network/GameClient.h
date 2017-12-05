@@ -51,7 +51,7 @@ class Replay;
 class EventManager;
 struct PlayerGameCommands;
 struct ClientPlayers;
-
+struct CreateServerInfo;
 struct ReplayInfo;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
@@ -87,6 +87,8 @@ public:
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
+    /// Start the server and connect to it
+    bool HostGame(const CreateServerInfo& csi, const std::string& map_path, MapType map_type);
     void Run();
     void Stop();
 
@@ -232,6 +234,7 @@ private:
     bool OnGameMessage(const GameMessage_Map_ChecksumOK& msg) override;
 
     bool OnGameMessage(const GameMessage_Pause& msg) override;
+    bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
     bool OnGameMessage(const GameMessage_Server_NWFDone& msg) override;
     bool OnGameMessage(const GameMessage_GameCommand& msg) override;
 

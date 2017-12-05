@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwDirectIPCreate.h"
-
 #include "Loader.h"
 #include "Settings.h"
 #include "WindowManager.h"
@@ -27,6 +26,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskSelectMap.h"
 #include "helpers/converters.h"
+#include "network/CreateServerInfo.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
 

@@ -14,32 +14,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwDIRECTIPCREATE_H_INCLUDED
-#define iwDIRECTIPCREATE_H_INCLUDED
 
-#pragma once
+#ifndef CreateServerInfo_h__
+#define CreateServerInfo_h__
 
-#include "IngameWindow.h"
 #include "gameTypes/ServerType.h"
+#include <string>
 
-class iwDirectIPCreate : public IngameWindow
+/// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
+struct CreateServerInfo
 {
-public:
-    iwDirectIPCreate(ServerType server_type);
-
-    void LC_Status_Error(const std::string& error);
-
-protected:
-    void Msg_EditChange(const unsigned ctrl_id) override;
-    void Msg_EditEnter(const unsigned ctrl_id) override;
-    void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-
-private:
-    void SetText(const std::string& text, unsigned color, bool button);
-
-private:
-    ServerType server_type;
+    ServerType type;      /// Typ des Servers.
+    unsigned short port;  /// Port des Servers
+    std::string gamename; /// Name des Servers.
+    std::string password; /// Passwort des Servers.
+    bool ipv6;            /// Soll IPv6 verwendet werden?
+    bool use_upnp;
 };
 
-#endif // !iwDIRECTIPCREATE_H_INCLUDED
+#endif // CreateServerInfo_h__

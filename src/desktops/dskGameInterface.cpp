@@ -131,7 +131,7 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     GAMECLIENT.SetInterface(this);
     game->world.SetGameInterface(this);
 
@@ -174,7 +174,7 @@ dskGameInterface::~dskGameInterface()
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
     GAMECLIENT.RemoveInterface(this);
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
 }
 
 void dskGameInterface::SetActive(bool activate)

@@ -30,7 +30,8 @@
 #include "ingameWindows/iwPlayReplay.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
-#include "network/GameServer.h"
+#include "network/CreateServerInfo.h"
+#include "network/GameClient.h"
 #include <boost/filesystem.hpp>
 
 /** @class dskSinglePlayer
@@ -105,11 +106,13 @@ void dskSinglePlayer::Msg_ButtonClick(const unsigned ctrl_id)
 
                 WINDOWMANAGER.Switch(new dskSelectMap(csi));
 
-                if(GAMESERVER.TryToStart(csi, path.string(), MAPTYPE_SAVEGAME))
+                if(GAMECLIENT.HostGame(csi, path.string(), MAPTYPE_SAVEGAME))
                     WINDOWMANAGER.ShowAfterSwitch(new iwPleaseWait);
                 else
+                {
                     WINDOWMANAGER.Show(
                       new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+                }
             } else
                 WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("The specified file couldn't be loaded!"), NULL, MSB_OK, MSB_EXCLAMATIONRED));
         }

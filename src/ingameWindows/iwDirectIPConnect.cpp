@@ -26,10 +26,10 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskHostGame.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "helpers/converters.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "gameData/const_gui_ids.h"
+#include "libutil/StringConversion.h"
 #include "libutil/colors.h"
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType server_type)
@@ -122,7 +122,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             ctrlEdit* edtPort = GetCtrl<ctrlEdit>(3);
             ctrlEdit* edtPw = GetCtrl<ctrlEdit>(5);
 
-            int iPort = helpers::fromString(edtPort->GetText(), 0);
+            int iPort = s25util::fromStringClassicDef(edtPort->GetText(), 0);
             if(iPort <= 0 || iPort >= 65535 || iPort == 3664)
             {
                 SetStatus(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED);
@@ -202,7 +202,7 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
  */
 void iwDirectIPConnect::SetPort(unsigned short port)
 {
-    GetCtrl<ctrlEdit>(3)->SetText(helpers::toString(port));
+    GetCtrl<ctrlEdit>(3)->SetText(s25util::toStringClassic(port));
 }
 
 void iwDirectIPConnect::CI_Error(const ClientError ce)

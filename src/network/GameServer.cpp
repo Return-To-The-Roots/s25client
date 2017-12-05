@@ -18,25 +18,20 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameServer.h"
 #include "Debug.h"
-#include "GameManager.h"
 #include "GameMessage.h"
 #include "GameMessage_GameCommand.h"
 #include "GameServerPlayer.h"
 #include "GlobalGameSettings.h"
-#include "Loader.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
-#include "ai/AIPlayer.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
 #include "helpers/containerUtils.h"
-#include "ingameWindows/iwDirectIPCreate.h"
-#include "network/GameClient.h"
+#include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "gameTypes/LanGameInfo.h"
 #include "gameData/GameConsts.h"
@@ -76,12 +71,10 @@ GameServer::ServerConfig::ServerConfig()
 
 void GameServer::ServerConfig::Clear()
 {
-    playercount = 0;
     gamename.clear();
     password.clear();
     port = 0;
     ipv6 = false;
-    use_upnp = false;
 }
 
 GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0), lasttime(0) {}
@@ -128,17 +121,17 @@ GameServer::~GameServer()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spiel hosten
-bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type)
+bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw)
 {
     Stop();
 
     // Name, Password und Kartenname kopieren
     config.gamename = csi.gamename;
+    config.hostPassword = hostPw;
     config.password = csi.password;
     config.servertype = csi.type;
     config.port = csi.port;
     config.ipv6 = csi.ipv6;
-    config.use_upnp = csi.use_upnp;
     mapinfo.type = map_type;
     mapinfo.filepath = map_path;
 
@@ -161,8 +154,10 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             }
             const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
-            config.playercount = header.getNumPlayers();
+            playerInfos.resize(header.getNumPlayers());
             mapinfo.title = cvStringToUTF8(header.getName());
+            ggs_.LoadSettings();
+            currentGF = 0;
         }
         break;
         // Gespeichertes Spiel
@@ -174,35 +169,29 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
                 return false;
 
             // Spieleranzahl
-            config.playercount = save.GetNumPlayers();
+            playerInfos.resize(save.GetNumPlayers());
             mapinfo.title = save.GetMapName();
+
+            for(unsigned i = 0; i < playerInfos.size(); ++i)
+            {
+                playerInfos[i] = JoinPlayerInfo(save.GetPlayer(i));
+                // If it was a human we make it free, so someone can join
+                if(playerInfos[i].ps == PS_OCCUPIED)
+                    playerInfos[i].ps = PS_FREE;
+                playerInfos[i].InitRating();
+            }
+
+            ggs_ = save.ggs;
+            currentGF = save.start_gf;
         }
         break;
     }
 
-    if(config.playercount == 0)
+    if(playerInfos.empty())
     {
         LOG.write("Map \"%s\" has no players!\n") % mapinfo.filepath;
         return false;
     }
-
-    status = SS_CREATING_LOBBY;
-    // Von Lobby abhängig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
-    // erstellen dürfen
-    if(config.servertype == ServerType::LOBBY)
-    {
-        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
-        return true;
-    } else
-        // ansonsten können wir sofort starten
-        return Start();
-}
-
-bool GameServer::Start()
-{
-    RTTR_Assert(status == SS_CREATING_LOBBY);
-    if(status != SS_CREATING_LOBBY)
-        return false;
 
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
@@ -216,69 +205,24 @@ bool GameServer::Start()
     } else
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
-    playerInfos.resize(config.playercount);
-
-    bool host_found = false;
-
-    //// Spieler 0 erstmal der Host
-    switch(mapinfo.type)
-    {
-        default: break;
-
-        case MAPTYPE_OLDMAP:
-        {
-            // Host bei normalen Spieler der erste Spieler
-            playerInfos[0].isHost = true;
-
-            ggs_.LoadSettings();
-        }
-        break;
-        case MAPTYPE_SAVEGAME:
-        {
-            Savegame save;
-            if(!save.Load(mapinfo.filepath, true, false))
-                return false;
-
-            // Bei Savegames die Originalspieldaten noch mit auslesen
-            for(unsigned i = 0; i < playerInfos.size(); ++i)
-            {
-                playerInfos[i] = JoinPlayerInfo(save.GetPlayer(i));
-                if(playerInfos[i].ps == PS_OCCUPIED)
-                {
-                    // If it was a human we make it free, so someone can join
-                    playerInfos[i].ps = PS_FREE;
-                    // First player becomes the host
-                    if(!host_found)
-                    {
-                        playerInfos[i].isHost = true;
-                        host_found = true;
-                    }
-                }
-                playerInfos[i].InitRating();
-            }
-
-            ggs_ = save.ggs;
-        }
-        break;
-    }
-
     // ab in die Konfiguration
     status = SS_CONFIG;
 
     // und das socket in listen-modus schicken
-    if(!serversocket.Listen(config.port, config.ipv6, config.use_upnp))
+    if(!serversocket.Listen(config.port, config.ipv6, csi.use_upnp))
     {
         LOG.write("GameServer::Start: ERROR: Listening on port %d failed!\n") % config.port;
         LOG.writeLastError("Fehler");
         return false;
     }
 
-    // Zu sich selbst connecten als Host
-    if(!GAMECLIENT.Connect("localhost", config.password, config.servertype, config.port, true, config.ipv6))
-        return false;
-
     if(config.servertype == ServerType::LAN)
         lanAnnouncer.Start();
+    else if(config.servertype == ServerType::LOBBY)
+    {
+        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
+        LOBBYCLIENT.AddListener(this);
+    }
     AnnounceStatusChange();
 
     return true;
@@ -314,8 +258,22 @@ void GameServer::AnnounceStatusChange()
         lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
     } else if(config.servertype == ServerType::LOBBY)
     {
-        LOBBYCLIENT.UpdateServerNumPlayers(GetNumFilledSlots(), playerInfos.size());
+        if(LOBBYCLIENT.IsIngame())
+            LOBBYCLIENT.UpdateServerNumPlayers(GetNumFilledSlots(), playerInfos.size());
     }
+}
+
+void GameServer::LC_Status_Error(const std::string& error)
+{
+    // Error during adding of server to lobby -> Stop
+    Stop();
+}
+
+void GameServer::LC_Created()
+{
+    // All good -> Don't listen anymore
+    LOBBYCLIENT.RemoveListener(this);
+    AnnounceStatusChange();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -326,8 +284,7 @@ void GameServer::Run()
         return;
 
     // auf tote Clients prüfen
-    if(status != SS_CREATING_LOBBY)
-        ClientWatchDog();
+    ClientWatchDog();
 
     // auf neue Clients warten
     if(status == SS_CONFIG)
@@ -348,7 +305,7 @@ void GameServer::Run()
             {
                 if(!StartGame())
                 {
-                    GAMEMANAGER.ShowMenu();
+                    Stop();
                     return;
                 }
             } else
@@ -405,6 +362,7 @@ void GameServer::Stop()
 
     if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
         LOBBYCLIENT.DeleteServer();
+    LOBBYCLIENT.RemoveListener(this);
 
     // status
     status = SS_STOPPED;
@@ -454,24 +412,11 @@ bool GameServer::StartGame()
 
     framesinfo.lastTime = VIDEODRIVER.GetTickCount();
 
-    try
-    {
-        // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
-        GAMECLIENT.StartGame(random_init);
-    } catch(SerializedGameData::Error& error)
-    {
-        LOG.write("Error when loading game: %s\n") % error.what();
-        return false;
-    }
-
     for(unsigned id = 0; id < playerInfos.size(); id++)
     {
         if(playerInfos[id].ps == PS_AI)
             aiPlayers.push_back(AIServerPlayer(id));
     }
-
-    // Init current GF
-    currentGF = GAMECLIENT.GetGFNumber();
 
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
@@ -845,6 +790,12 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
         return true;
 
     std::string passwordok = (config.password == msg.password ? "true" : "false");
+    if(msg.password == config.hostPassword)
+    {
+        passwordok = "true";
+        playerInfos[msg.senderPlayerID].isHost = true;
+    } else
+        playerInfos[msg.senderPlayerID].isHost = false;
 
     player->sendMsgAsync(new GameMessage_Server_Password(passwordok));
 
@@ -1287,7 +1238,7 @@ bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
             SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
             LOG.writeToFile("SERVER >>> Countdown started(%d)\n") % countdown.GetRemainingSecs();
         } else if(!StartGame())
-            GAMEMANAGER.ShowMenu(); // TODO: Remove access to GAMEMANAGER
+            Stop();
     }
 
     return true;
@@ -1302,6 +1253,23 @@ bool GameServer::OnGameMessage(const GameMessage_CancelCountdown& msg)
     }
 
     CancelCountdown();
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_Pause& msg)
+{
+    if(IsHost(msg.senderPlayerID))
+        SetPaused(msg.paused);
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_SkipToGF& msg)
+{
+    if(IsHost(msg.senderPlayerID))
+    {
+        skiptogf = msg.targetGF;
+        SendToAll(msg);
+    }
     return true;
 }
 

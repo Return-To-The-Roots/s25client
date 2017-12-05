@@ -19,6 +19,7 @@
 #include "GameClient.h"
 #include "ClientPlayer.h"
 #include "ClientPlayers.h"
+#include "CreateServerInfo.h"
 #include "EventManager.h"
 #include "FileChecksum.h"
 #include "Game.h"
@@ -63,6 +64,7 @@
 #include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include "libutil/fileFuncs.h"
+#include "libutil/strFuncs.h"
 #include "libutil/ucString.h"
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
@@ -115,6 +117,8 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     if(!mainPlayer.socket.Connect(server, port, use_ipv6, SETTINGS.proxy))
     {
         LOG.write("GameClient::Connect: ERROR: Connect failed!\n");
+        if(host)
+            GAMESERVER.Stop();
         return false;
     }
 
@@ -127,6 +131,12 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     replayMode = false;
 
     return true;
+}
+
+bool GameClient::HostGame(const CreateServerInfo& csi, const std::string& map_path, MapType map_type)
+{
+    std::string hostPw = createRandString(20);
+    return GAMESERVER.Start(csi, map_path, map_type, hostPw) && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
 }
 
 /**
@@ -726,15 +736,6 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 {
-    /// Beim Host muss das Spiel nicht nochmal gestartet werden, das hat der Server schon erledigt
-    if(IsHost())
-    {
-        if(state != CS_LOADING)
-            return true;
-        // NWF-Länge bekommen wir vom Server
-        framesinfo.nwf_length = msg.nwf_length;
-        return true;
-    }
     if(state != CS_CONFIG)
         return true;
     // NWF-Länge bekommen wir vom Server
@@ -746,8 +747,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     } catch(SerializedGameData::Error& error)
     {
         LOG.write("Error when loading game: %s\n") % error.what();
+        Stop();
         GAMEMANAGER.ShowMenu();
-        ExitGame();
     }
     return true;
 }
@@ -957,6 +958,13 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
 
         mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
     }
+    return true;
+}
+
+bool GameClient::OnGameMessage(const GameMessage_SkipToGF& msg)
+{
+    skiptogf = msg.targetGF;
+    LOG.write("Jumping from GF %1% to GF %2%\n") % GetGFNumber() % skiptogf;
     return true;
 }
 
@@ -1552,10 +1560,8 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     if(!replayMode)
     {
         // unpause before skipping
-        GAMESERVER.SetPaused(false);
-        GAMESERVER.skiptogf = gf;
-        skiptogf = gf;
-        LOG.write("jumping from gf %i to gf %i \n") % GetGFNumber() % gf;
+        SetPause(false);
+        mainPlayer.sendMsgAsync(new GameMessage_SkipToGF(gf));
         return;
     }
 
@@ -1648,7 +1654,12 @@ void GameClient::SetPause(bool pause)
         framesinfo.isPaused = pause;
         framesinfo.frameTime = 0;
     } else if(IsHost())
-        GAMESERVER.SetPaused(pause);
+    {
+        // Pause instantly
+        if(pause)
+            framesinfo.isPaused = true;
+        mainPlayer.sendMsgAsync(new GameMessage_Pause(pause));
+    }
 }
 
 void GameClient::ToggleReplayFOW()

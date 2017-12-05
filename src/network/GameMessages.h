@@ -1016,6 +1016,29 @@ public:
     }
 };
 
+class GameMessage_SkipToGF : public GameMessage
+{
+public:
+    uint32_t targetGF;
+
+    GameMessage_SkipToGF() : GameMessage(NMS_SKIP_TO_GF) {} //-V730
+    GameMessage_SkipToGF(uint32_t targetGF) : GameMessage(NMS_SKIP_TO_GF), targetGF(targetGF) {}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessage::Serialize(ser);
+        ser.PushUnsignedInt(targetGF);
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessage::Deserialize(ser);
+        targetGF = ser.PopUnsignedInt();
+    }
+
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
+};
+
 /// ausgehende GetAsyncLog-Nachricht
 class GameMessage_GetAsyncLog : public GameMessage
 {
