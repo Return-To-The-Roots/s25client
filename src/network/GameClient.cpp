@@ -1215,7 +1215,7 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 
 ///////////////////////////////////////////////////////////////////////////////
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
-void GameClient::ExecuteGameFrame(const bool skipping)
+void GameClient::ExecuteGameFrame()
 {
     const unsigned curGF = GetGFNumber();
     FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
@@ -1232,7 +1232,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     }
 
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
-    if(skipping || skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
+    if(skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
         if(replayMode)
         {
@@ -1549,6 +1549,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     }
 
     SetPause(false);
+    skiptogf = gf;
 
     // GFs überspringen
     for(unsigned i = GetGFNumber(); i < gf; ++i)
@@ -1568,8 +1569,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
             VIDEODRIVER.SwapBuffers();
         }
-        ExecuteGameFrame(true);
-        // LOG.write(("jumping: now at gf %i\n", framesinfo.nr);
+        ExecuteGameFrame();
     }
 
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat

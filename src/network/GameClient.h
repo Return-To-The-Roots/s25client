@@ -188,7 +188,7 @@ private:
     GamePlayer& GetPlayer(const unsigned id);
 
     /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
-    void ExecuteGameFrame(const bool skipping = false);
+    void ExecuteGameFrame();
     void ExecuteGameFrame_Replay();
     void ExecuteNWF();
     /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
