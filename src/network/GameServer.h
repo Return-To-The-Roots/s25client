@@ -32,6 +32,7 @@
 #include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
+#include <boost/chrono.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
@@ -118,7 +119,7 @@ private:
 
     /// Handles advancing of GFs, actions of AI and potentially the NWF
     void ExecuteGameFrame();
-    void ExecuteNWF(const unsigned currentTime);
+    void ExecuteNWF();
 
     bool CheckForAsync();
     std::string SaveAsyncLog();
@@ -170,15 +171,15 @@ private:
     {
         bool isActive;
         unsigned remainingSecs;
-        unsigned lasttime;
+        boost::chrono::steady_clock::time_point lasttime;
 
     public:
         CountDown();
         /// Starts a countdown at curTime of timeInSec seconds
-        void Start(unsigned timeInSec, unsigned curTime);
+        void GameServer::CountDown::Start(unsigned timeInSec);
         void Stop();
         /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
-        bool Update(unsigned curTime);
+        bool Update();
         bool IsActive() const { return isActive; }
         unsigned GetRemainingSecs() const { return remainingSecs; }
     } countdown;

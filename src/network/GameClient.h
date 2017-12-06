@@ -115,9 +115,9 @@ public:
     const AIPlayer* GetAIPlayer(unsigned id) const;
 
     unsigned GetGFNumber() const;
-    unsigned GetGFLength() const { return framesinfo.gf_length; }
+    FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
-    unsigned GetFrameTime() const { return framesinfo.frameTime; }
+    FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
     unsigned GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator,
                                 const unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
@@ -135,8 +135,6 @@ public:
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const std::string& path);
     /// Replay-Geschwindigkeit erhöhen/verringern
-    void IncreaseReplaySpeed();
-    void DecreaseReplaySpeed();
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus

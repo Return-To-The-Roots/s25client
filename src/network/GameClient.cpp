@@ -267,7 +267,7 @@ void GameClient::StartGame(const unsigned random_init)
     framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
-    framesinfo.gf_length = SPEED_GF_LENGTHS[gameLobby->getSettings().speed];
+    framesinfo.gf_length = FramesInfo::milliseconds32_t(SPEED_GF_LENGTHS[gameLobby->getSettings().speed]);
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
@@ -332,9 +332,6 @@ void GameClient::StartGame(const unsigned random_init)
     // Update visual settings
     ResetVisualSettings();
 
-    // Zeit setzen
-    framesinfo.lastTime = VIDEODRIVER.GetTickCount();
-
     if(!replayMode)
     {
         RTTR_Assert(!replayinfo);
@@ -370,6 +367,7 @@ void GameClient::GameStarted()
     }
 
     GAMEMANAGER.ResetAverageFPS();
+    framesinfo.lastTime = FramesInfo::UsedClock::now();
     game->Start(mapinfo.savegame);
 }
 
@@ -1083,64 +1081,43 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 
 void GameClient::IncreaseSpeed()
 {
-    if(framesinfo.gfLengthReq > 10)
-        framesinfo.gfLengthReq -= 10;
-
+    const bool debugMode =
 #ifndef NDEBUG
-    else if(framesinfo.gfLengthReq == 10)
-        framesinfo.gfLengthReq = 1;
+      true;
+#else
+      false;
 #endif
-
+    if(framesinfo.gfLengthReq > FramesInfo::milliseconds32_t(10))
+        framesinfo.gfLengthReq -= FramesInfo::milliseconds32_t(10);
+    else if((replayMode || debugMode) && framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(10))
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(1);
     else
-        framesinfo.gfLengthReq = 70;
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(70);
 
-    mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
+    if(!replayMode)
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
 }
 
 void GameClient::DecreaseSpeed()
 {
-    if(framesinfo.gfLengthReq == 70)
-    {
+    const bool debugMode =
 #ifndef NDEBUG
-        framesinfo.gfLengthReq = 1;
+      true;
 #else
-        framesinfo.gfLengthReq = 10;
+      false;
 #endif
-    }
-#ifndef NDEBUG
-    else if(framesinfo.gfLengthReq == 1)
-    {
-        framesinfo.gfLengthReq = 10;
-    }
-#endif
+
+    FramesInfo::milliseconds32_t maxSpeed(replayMode ? 1000 : 70);
+
+    if(framesinfo.gfLengthReq == maxSpeed)
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(replayMode || debugMode ? 1 : 10);
+    else if(framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(1))
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(10);
     else
-    {
-        framesinfo.gfLengthReq += 10;
-    }
+        framesinfo.gfLengthReq += FramesInfo::milliseconds32_t(10);
 
-    mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
-}
-
-void GameClient::IncreaseReplaySpeed()
-{
-    if(replayMode)
-    {
-        if(framesinfo.gf_length > 10)
-            framesinfo.gf_length -= 10;
-        else if(framesinfo.gf_length == 10)
-            framesinfo.gf_length = 1;
-    }
-}
-
-void GameClient::DecreaseReplaySpeed()
-{
-    if(replayMode)
-    {
-        if(framesinfo.gf_length == 1)
-            framesinfo.gf_length = 10;
-        else if(framesinfo.gf_length < 1000)
-            framesinfo.gf_length += 10;
-    }
+    if(!replayMode)
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1151,12 +1128,12 @@ bool GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
     if(state != CS_GAME && state != CS_LOADING)
         return true;
     // Emulate a push of the new gf length
-    if(!framesinfo.gfLenghtNew)
-        framesinfo.gfLenghtNew = msg.gf_length;
+    if(!framesinfo.gfLenghtNew.count())
+        framesinfo.gfLenghtNew = FramesInfo::milliseconds32_t(msg.gf_length);
     else
     {
-        RTTR_Assert(framesinfo.gfLenghtNew2 == 0);
-        framesinfo.gfLenghtNew2 = msg.gf_length;
+        RTTR_Assert(framesinfo.gfLenghtNew2.count() == 0);
+        framesinfo.gfLenghtNew2 = FramesInfo::milliseconds32_t(msg.gf_length);
     }
 
     if(msg.first)
@@ -1169,7 +1146,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
             framesinfo.gfNrServer -=
               framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
         }
-        RTTR_Assert(framesinfo.gf_length == msg.gf_length);
+        RTTR_Assert(framesinfo.gf_length == FramesInfo::milliseconds32_t(msg.gf_length));
     } else
     {
         RTTR_Assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
@@ -1241,15 +1218,15 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 void GameClient::ExecuteGameFrame(const bool skipping)
 {
     const unsigned curGF = GetGFNumber();
-    unsigned currentTime = VIDEODRIVER.GetTickCount();
+    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
 
     if(framesinfo.isPaused)
         return; // Pause
 
-    if(framesinfo.forcePauseLen)
+    if(framesinfo.forcePauseLen.count())
     {
         if(currentTime - framesinfo.forcePauseStart > framesinfo.forcePauseLen)
-            framesinfo.forcePauseLen = 0;
+            framesinfo.forcePauseLen = FramesInfo::milliseconds32_t::zero();
         else
             return; // Pause
     }
@@ -1285,11 +1262,11 @@ void GameClient::ExecuteGameFrame(const bool skipping)
 
                 ExecuteNWF();
 
-                RTTR_Assert(framesinfo.gfLenghtNew != 0);
+                RTTR_Assert(framesinfo.gfLenghtNew.count() != 0);
                 if(framesinfo.gfLenghtNew != framesinfo.gf_length)
                 {
-                    unsigned oldGfLen = framesinfo.gf_length;
-                    int oldNwfLen = framesinfo.nwf_length;
+                    FramesInfo::milliseconds32_t oldGfLen = framesinfo.gf_length;
+                    unsigned oldNwfLen = framesinfo.nwf_length;
                     framesinfo.ApplyNewGFLength();
                     framesinfo.gfLengthReq = framesinfo.gf_length;
 
@@ -1307,7 +1284,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                 }
                 // "pop" the length
                 framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
-                framesinfo.gfLenghtNew2 = 0;
+                framesinfo.gfLenghtNew2 = FramesInfo::milliseconds32_t::zero();
             }
 
             NextGF();
@@ -1317,7 +1294,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
         // Store this timestamp
         framesinfo.lastTime = currentTime;
         // Reset frameTime
-        framesinfo.frameTime = 0;
+        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
 
         HandleAutosave();
 
@@ -1327,7 +1304,7 @@ void GameClient::ExecuteGameFrame(const bool skipping)
     } else
     {
         // Next GF not yet reached, just update the time in the current one for drawing
-        framesinfo.frameTime = currentTime - framesinfo.lastTime;
+        framesinfo.frameTime = boost::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
         RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
     }
 }
@@ -1514,7 +1491,9 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     const unsigned unit = 630 /*ms*/ * factor_numerator / factor_denumerator;
     // Good approximation of current time in ms
     // (Accuracy of a possibly expensive VideoDriverWrapper::GetTicks() isn't needed here):
-    const unsigned currenttime = framesinfo.lastTime + framesinfo.frameTime;
+    using namespace boost::chrono;
+    const unsigned currenttime =
+      boost::chrono::duration_cast<FramesInfo::milliseconds32_t>((framesinfo.lastTime + framesinfo.frameTime).time_since_epoch()).count();
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
@@ -1522,8 +1501,10 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     // TODO: Move to some animation system that is part of game
-    unsigned elapsedTime = (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : 0;
-    unsigned duration = ev->length * framesinfo.gf_length;
+    FramesInfo::milliseconds32_t elapsedTime = (state == CS_GAME) ?
+                                                 (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime :
+                                                 FramesInfo::milliseconds32_t::zero();
+    FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
     unsigned result = (max_val * elapsedTime) / duration;
     if(result >= max_val)
         RTTR_Assert(result < max_val);
@@ -1533,9 +1514,11 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    unsigned elapsedTime = (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : 0;
-    unsigned duration = ev->length * framesinfo.gf_length;
-    return x1 + ((x2 - x1) * int(elapsedTime)) / int(duration);
+    typedef boost::chrono::duration<int32_t, boost::milli> milliseconds32_t;
+    milliseconds32_t elapsedTime =
+      (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : milliseconds32_t::zero();
+    milliseconds32_t duration = ev->length * framesinfo.gf_length;
+    return x1 + ((x2 - x1) * elapsedTime) / duration;
 }
 
 void GameClient::ServerLost()
@@ -1648,11 +1631,11 @@ void GameClient::SetPause(bool pause)
         if(!pause)
             return;
         framesinfo.isPaused = pause;
-        framesinfo.frameTime = 0;
+        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(replayMode)
     {
         framesinfo.isPaused = pause;
-        framesinfo.frameTime = 0;
+        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(IsHost())
     {
         // Pause instantly
@@ -1709,24 +1692,29 @@ AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
 std::string GameClient::FormatGFTime(const unsigned gf) const
 {
+    typedef boost::chrono::duration<uint32_t, boost::chrono::seconds::period> seconds;
+    typedef boost::chrono::duration<uint32_t, boost::chrono::hours::period> hours;
+    typedef boost::chrono::duration<uint32_t, boost::chrono::minutes::period> minutes;
+    using boost::chrono::duration_cast;
+
     // In Sekunden umrechnen
-    unsigned seconds = gf * framesinfo.gf_length / 1000;
+    seconds numSeconds = duration_cast<seconds>(gf * framesinfo.gf_length);
 
     // Angaben rausfiltern
-    unsigned hours = seconds / 3600;
-    seconds -= hours * 3600;
-    unsigned minutes = seconds / 60;
-    seconds -= minutes * 60;
+    hours numHours = duration_cast<hours>(numSeconds);
+    numSeconds -= numHours;
+    minutes numMinutes = duration_cast<hours>(numSeconds);
+    numSeconds -= numMinutes;
 
     char str[64];
 
     // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach
-    if(hours)
-        sprintf(str, "%02u:%02u:%02u", hours, minutes, seconds);
+    if(numHours.count())
+        sprintf(str, "%02u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
     else
-        sprintf(str, "%02u:%02u", minutes, seconds);
+        sprintf(str, "%02u:%02u", numMinutes.count(), numSeconds.count());
 
-    return std::string(str);
+    return str;
 }
 
 const std::string& GameClient::GetReplayFileName() const
@@ -1748,8 +1736,9 @@ boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
+    using namespace boost::chrono;
     if(game && unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
-        return TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS] * 60 * 1000 / framesinfo.gf_length;
+        return minutes(TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS]) / framesinfo.gf_length;
     else
         return 0;
 }

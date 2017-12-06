@@ -18,27 +18,32 @@
 #ifndef FramesInfo_h__
 #define FramesInfo_h__
 
+#include <boost/chrono.hpp>
+
 /// Struct that stores information about the frames, like GF status...
 struct FramesInfo
 {
 public:
+    typedef boost::chrono::duration<uint32_t, boost::milli> milliseconds32_t;
+    typedef boost::chrono::steady_clock UsedClock;
+
     FramesInfo();
     void Clear();
     /// Changes the GF length to GFLengthNew and adapts the NWF length accordingly
     void ApplyNewGFLength();
 
     /// Lenght of one GF in ms (~ 1/speed of the game)
-    unsigned gf_length;
+    milliseconds32_t gf_length;
     /// New length of a GF (applied on next NWF)
-    unsigned gfLenghtNew;
+    milliseconds32_t gfLenghtNew;
     /// New length of a GF (applied on second next NWF)
-    unsigned gfLenghtNew2;
+    milliseconds32_t gfLenghtNew2;
     /// Length of a NWF (network frame) in GFs
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )
-    unsigned frameTime;
+    milliseconds32_t frameTime;
     /// Timestamp of the last processed GF (--> FrameTime = CurrentTime - LastTime (except for lags) )
-    unsigned lastTime;
+    UsedClock::time_point lastTime;
     /// True if the game is paused (no processing of GFs)
     bool isPaused;
 };
@@ -51,11 +56,12 @@ public:
     void Clear();
 
     /// Requested length of GF (for multiple changes between a NWF)
-    unsigned gfLengthReq;
+    milliseconds32_t gfLengthReq;
     /// Number of the GF that the server acknowledged -> Run only to this one -> gfNr <= gfNrServer
     unsigned gfNrServer;
     /// Force pause the game (start TS and length) e.g. to compensate for lags
-    unsigned forcePauseStart, forcePauseLen;
+    UsedClock::time_point forcePauseStart;
+    milliseconds32_t forcePauseLen;
 };
 
 #endif // FramesInfo_h__

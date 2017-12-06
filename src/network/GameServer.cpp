@@ -26,7 +26,6 @@
 #include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
 #include "helpers/containerUtils.h"
@@ -43,6 +42,7 @@
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
 #include <boost/bind.hpp>
+#include <boost/chrono/system_clocks.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/nowide/fstream.hpp>
@@ -77,13 +77,13 @@ void GameServer::ServerConfig::Clear()
     ipv6 = false;
 }
 
-GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0), lasttime(0) {}
+GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0) {}
 
-void GameServer::CountDown::Start(unsigned timeInSec, unsigned curTime)
+void GameServer::CountDown::Start(unsigned timeInSec)
 {
     isActive = true;
     remainingSecs = timeInSec;
-    lasttime = curTime;
+    lasttime = boost::chrono::steady_clock().now();
 }
 
 void GameServer::CountDown::Stop()
@@ -91,11 +91,13 @@ void GameServer::CountDown::Stop()
     isActive = false;
 }
 
-bool GameServer::CountDown::Update(unsigned curTime)
+bool GameServer::CountDown::Update()
 {
     RTTR_Assert(isActive);
+    boost::chrono::steady_clock::time_point curTime = boost::chrono::steady_clock().now();
+
     // Check if 1s has passed
-    if(curTime - lasttime < 1000)
+    if(curTime - lasttime < boost::chrono::seconds(1))
         return false;
     if(remainingSecs == 0)
     {
@@ -298,7 +300,7 @@ void GameServer::Run()
     if(countdown.IsActive())
     {
         // countdown erzeugen
-        if(countdown.Update(VIDEODRIVER.GetTickCount()))
+        if(countdown.Update())
         {
             // nun echt starten
             if(!countdown.IsActive())
@@ -377,7 +379,11 @@ bool GameServer::StartGame()
     lanAnnouncer.Stop();
 
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
-    unsigned random_init = (mapinfo.type == MAPTYPE_SAVEGAME) ? 0 : VIDEODRIVER.GetTickCount();
+    unsigned random_init;
+    if(mapinfo.type == MAPTYPE_SAVEGAME)
+        random_init = 0;
+    else
+        random_init = static_cast<unsigned>(boost::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
@@ -390,13 +396,13 @@ bool GameServer::StartGame()
         }
     }
 
-    framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2 = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
+    framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2 = framesinfo.gf_length = FramesInfo::milliseconds32_t(SPEED_GF_LENGTHS[ggs_.speed]);
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
     unsigned i = 1;
     for(; i < 20; ++i)
     {
-        if(i * framesinfo.gf_length > highest_ping + 200)
+        if(i * framesinfo.gf_length > FramesInfo::milliseconds32_t(highest_ping + 200))
             break;
     }
 
@@ -410,7 +416,7 @@ bool GameServer::StartGame()
     SendToAll(GameMessage_Server_Start(random_init, framesinfo.nwf_length));
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n") % random_init;
 
-    framesinfo.lastTime = VIDEODRIVER.GetTickCount();
+    framesinfo.lastTime = FramesInfo::UsedClock::now();
 
     for(unsigned id = 0; id < playerInfos.size(); id++)
     {
@@ -421,7 +427,7 @@ bool GameServer::StartGame()
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
 
     // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gf_length, true));
+    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gf_length.count(), true));
 
     // ab ins game wechseln
     status = SS_GAME;
@@ -512,7 +518,7 @@ void GameServer::ExecuteGameFrame()
     if(framesinfo.isPaused)
         return;
 
-    unsigned currentTime = VIDEODRIVER.GetTickCount();
+    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
 
     // prüfen ob GF vergangen
     if(currentTime - framesinfo.lastTime >= framesinfo.gf_length || skiptogf > currentGF)
@@ -523,15 +529,15 @@ void GameServer::ExecuteGameFrame()
             if(CheckForLaggingPlayers())
             {
                 // Check for kicking every second
-                static unsigned lastLagKickTime = 0;
-                if(VIDEODRIVER.GetTickCount() - lastLagKickTime >= 1000)
+                static FramesInfo::UsedClock::time_point lastLagKickTime;
+                if(currentTime - lastLagKickTime >= boost::chrono::seconds(1))
                 {
-                    lastLagKickTime = VIDEODRIVER.GetTickCount();
+                    lastLagKickTime = currentTime;
                     CheckAndKickLaggingPlayers();
                 }
             } else
             {
-                ExecuteNWF(currentTime);
+                ExecuteNWF();
                 // Execute RunGF AFTER the NWF is send.
                 ++currentGF;
             }
@@ -544,7 +550,7 @@ void GameServer::ExecuteGameFrame()
     }
 }
 
-void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
+void GameServer::ExecuteNWF()
 {
     // Advance lastExecutedTime by the GF length.
     // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier
@@ -584,7 +590,7 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
 
     if(framesinfo.gfLenghtNew != framesinfo.gf_length)
     {
-        unsigned oldGfLen = framesinfo.gf_length;
+        FramesInfo::milliseconds32_t oldGfLen = framesinfo.gf_length;
         unsigned oldnNwfLen = framesinfo.nwf_length;
         framesinfo.ApplyNewGFLength();
 
@@ -594,7 +600,7 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
 
     framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
 
-    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gfLenghtNew));
+    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gfLenghtNew.count()));
 }
 
 bool GameServer::CheckForAsync()
@@ -1102,7 +1108,7 @@ bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
     }
-    framesinfo.gfLenghtNew2 = msg.gf_length;
+    framesinfo.gfLenghtNew2 = FramesInfo::milliseconds32_t(msg.gf_length);
     return true;
 }
 
@@ -1234,7 +1240,7 @@ bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
         // Start countdown (except its single player)
         if(networkPlayers.size() > 1)
         {
-            countdown.Start(msg.countdown, VIDEODRIVER.GetTickCount());
+            countdown.Start(msg.countdown);
             SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
             LOG.writeToFile("SERVER >>> Countdown started(%d)\n") % countdown.GetRemainingSecs();
         } else if(!StartGame())

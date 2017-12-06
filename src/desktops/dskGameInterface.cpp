@@ -300,10 +300,12 @@ void dskGameInterface::Msg_PaintAfter()
 
     if(tmd)
     {
-        // Convert gf to seconds
-        unsigned sec = (tmd - world.GetEvMgr().GetCurrentGF()) * GAMECLIENT.GetGFLength() / 1000;
-        char str[512];
-        sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
+        unsigned curGF = world.GetEvMgr().GetCurrentGF();
+        std::string tournamentNotice;
+        if(curGF >= tmd)
+            tournamentNotice = _("Tournament finished");
+        else
+            tournamentNotice = (boost::format("Tournament mode: %1% remaining") % GAMECLIENT.FormatGFTime(tmd - curGF)).str();
     }
 
     NormalFont->Draw(DrawPoint(30, 1), nwf_string, 0, 0xFFFFFF00);
@@ -338,7 +340,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Draw speed indicator icon
     const int startSpeed = SPEED_GF_LENGTHS[game_->ggs.speed];
-    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
+    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength() / boost::chrono::milliseconds(10));
 
     if(speedStep != 0)
     {
@@ -696,22 +698,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.c)
     {
         case '+':
-            if(GAMECLIENT.IsReplayModeOn())
-            {
-                GAMECLIENT.IncreaseReplaySpeed();
-            } else if(game_->world.IsSinglePlayer())
-            {
+            if(GAMECLIENT.IsReplayModeOn() || game_->world.IsSinglePlayer())
                 GAMECLIENT.IncreaseSpeed();
-            }
             return true;
         case '-':
-            if(GAMECLIENT.IsReplayModeOn())
-            {
-                GAMECLIENT.DecreaseReplaySpeed();
-            } else if(game_->world.IsSinglePlayer())
-            {
+            if(GAMECLIENT.IsReplayModeOn() || game_->world.IsSinglePlayer())
                 GAMECLIENT.DecreaseSpeed();
-            }
             return true;
 
         case '1':
