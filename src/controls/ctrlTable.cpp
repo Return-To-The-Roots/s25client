@@ -23,6 +23,7 @@
 #include "driver/KeyEvent.h"
 #include "driver/MouseCoords.h"
 #include "ogl/glArchivItem_Font.h"
+#include "libutil/StringConversion.h"
 #include <cstdarg>
 #include <sstream>
 
@@ -492,8 +493,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
         // Nach Datum im Format dd.mm.yyyy - hh:mm sortieren
         case SRT_DATE:
         {
-            std::stringstream ss_a(a);
-            std::stringstream ss_b(b);
+            s25util::ClassicImbuedStream<std::stringstream> ss_a(a);
+            s25util::ClassicImbuedStream<std::stringstream> ss_b(b);
             int d_a, d_b, m_a, m_b, y_a, y_b;
             char c;
 
