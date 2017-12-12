@@ -50,7 +50,7 @@ class Game;
 class Replay;
 class EventManager;
 struct PlayerGameCommands;
-struct ClientPlayers;
+class NWFInfo;
 struct CreateServerInfo;
 struct ReplayInfo;
 
@@ -65,6 +65,7 @@ public:
         CS_CONNECT,
         CS_CONFIG,
         CS_LOADING,
+        CS_LOADED,
         CS_GAME
     };
 
@@ -102,15 +103,15 @@ public:
 
     // Initialisiert und startet das Spiel
     void StartGame(const unsigned random_init);
-    /// Wird aufgerufen, wenn das GUI fertig mit Laden ist und es losgehen kann
-    void GameStarted();
+    /// Called when the game is loaded
+    void GameLoaded();
 
     /// Beendet das Spiel, zerstört die Spielstrukturen
     void ExitGame();
 
     ClientState GetState() const { return state; }
     Replay* GetReplay();
-    boost::shared_ptr<const ClientPlayers> GetPlayers() const;
+    boost::shared_ptr<const NWFInfo> GetNWFInfo() const;
     boost::shared_ptr<GameLobby> GetGameLobby();
     const AIPlayer* GetAIPlayer(unsigned id) const;
 
@@ -253,6 +254,8 @@ private:
     /// Schreibt den Header der Replaydatei
     void StartReplayRecording(const unsigned random_init);
     void WritePlayerInfo(SavedFile& file);
+    /// Called when the game is ready to start (loaded and all players ready)
+    void OnGameStart();
 
 public:
     /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu verstecken
@@ -268,8 +271,8 @@ private:
 
     /// Game state itself (valid during LOADING and GAME state)
     boost::shared_ptr<Game> game;
-    /// Game commands to execute per player
-    boost::shared_ptr<ClientPlayers> clientPlayers;
+    /// NWF info
+    boost::shared_ptr<NWFInfo> nwfInfo;
     /// Game lobby (valid during CONFIG state)
     boost::shared_ptr<GameLobby> gameLobby;
 

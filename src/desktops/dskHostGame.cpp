@@ -921,7 +921,7 @@ void dskHostGame::CI_PlayerLeft(const unsigned playerId)
         lua->EventPlayerLeft(playerId);
 }
 
-void dskHostGame::CI_GameStarted(boost::shared_ptr<Game> game)
+void dskHostGame::CI_GameLoading(boost::shared_ptr<Game> game)
 {
     // Desktop wechseln
     WINDOWMANAGER.Switch(new dskGameLoader(game));

@@ -71,7 +71,7 @@ public:
     /// Lädt alle allgemeinen Dateien.
     bool LoadFilesAtStart();
     /// Lädt die Spieldateien.
-    bool LoadFilesAtGame(unsigned char gfxset, bool* nations);
+    bool LoadFilesAtGame(unsigned char gfxset, const std::vector<bool>& nations);
     /// Lädt Dateien von Addons.
     bool LoadFilesFromAddon(const AddonId id);
     void fillCaches();

@@ -29,19 +29,21 @@
 #include "dskDirectIP.h"
 #include "dskGameInterface.h"
 #include "dskLobby.h"
+#include "dskSinglePlayer.h"
 #include "files.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"
+#include <vector>
 
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % NUM_FILE_LOAD_IDS], 0)), position(0), game(game)
+    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % NUM_FILE_LOAD_IDS], 0)), position(0), game(game), nextDesktop(NULL)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
@@ -61,6 +63,7 @@ dskGameLoader::~dskGameLoader()
     GAMEMANAGER.SetCursor();
     LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
+    delete nextDesktop;
 }
 
 void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
@@ -71,6 +74,8 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(new dskLobby);
+        else if(game->world.IsSinglePlayer())
+            WINDOWMANAGER.Switch(new dskSinglePlayer);
         else
             WINDOWMANAGER.Switch(new dskDirectIP);
     }
@@ -78,43 +83,34 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
 
 void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 {
-    static bool load_nations[NUM_NATS];
+    static std::vector<bool> load_nations;
 
     ctrlTimer* timer = GetCtrl<ctrlTimer>(1);
     ctrlText* text = GetCtrl<ctrlText>(10 + position);
-    int interval = 500;
+    int interval = 50;
 
     timer->Stop();
 
     switch(position)
     {
         case 0: // Kartename anzeigen
-        {
             text->SetText(GAMECLIENT.GetMapTitle());
-            interval = 50;
-        }
-        break;
+            break;
 
         case 1: // Karte geladen
-        {
             text->SetText(_("Map was loaded and pinned at the wall..."));
-            interval = 50;
-        }
-        break;
+            break;
 
         case 2: // Nationen ermitteln
-        {
-            memset(load_nations, 0, sizeof(bool) * NUM_NATS);
+            load_nations.clear();
+            load_nations.resize(NUM_NATS, false);
             for(unsigned char i = 0; i < game->world.GetNumPlayers(); ++i)
                 load_nations[game->world.GetPlayer(i).nation] = true;
 
             text->SetText(_("Tribal chiefs assembled around the table..."));
-            interval = 50;
-        }
-        break;
+            break;
 
         case 3: // Objekte laden
-        {
             if(!LOADER.LoadFilesAtGame(game->world.GetLandscapeType(), load_nations))
             {
                 LC_Status_Error(_("Failed to load map objects."));
@@ -133,39 +129,28 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             LOADER.fillCaches();
 
             text->SetText(_("Game crate was picked and spread out..."));
-            interval = 50;
-        }
-        break;
+            break;
 
         case 4: // Welt erstellen
-        {
             if(!LOADER.CreateTerrainTextures())
             {
                 LC_Status_Error(_("Failed to load terrain data."));
                 return;
             }
-
+            // Do this here as it will init OGL
+            nextDesktop = new dskGameInterface(game);
             // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
 
+            // We are done, wait for others
+            GAMECLIENT.GameLoaded();
+
             text->SetText(_("World was put together and glued..."));
-            interval = 50;
-        }
-        break;
+            break;
 
         case 5: // nochmal text anzeigen
-        {
             text->SetText(_("And let's go!"));
             text->SetTextColor(COLOR_RED);
-            interval = 50;
-        }
-        break;
-
-        case 6: // zum Spiel wechseln
-        {
-            WINDOWMANAGER.Switch(new dskGameInterface(game));
             return;
-        }
-        break;
     }
 
     ++position;
@@ -178,4 +163,18 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
     WINDOWMANAGER.Show(new iwMsgbox(_("Error"), error, this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    GetCtrl<ctrlTimer>(1)->Stop();
+}
+
+void dskGameLoader::CI_GameStarted(boost::shared_ptr<Game> game)
+{
+    RTTR_Assert(nextDesktop);
+    WINDOWMANAGER.Switch(nextDesktop);
+    nextDesktop = NULL;
+}
+
+void dskGameLoader::CI_Error(const ClientError ce)
+{
+    WINDOWMANAGER.Show(new iwMsgbox(_("Error"), ClientErrorToStr(ce), this, MSB_OK, MSB_EXCLAMATIONRED, 0));
+    GetCtrl<ctrlTimer>(1)->Stop();
 }

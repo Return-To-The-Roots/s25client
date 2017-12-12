@@ -2283,7 +2283,7 @@ void AIPlayerJH::ExecuteLuaConstructionOrder(const MapPoint pt, BuildingType bt,
     {
         aii.SetBuildingSite(pt, bt);
         BuildJob* j = new BuildJob(*this, bt, pt);
-        j->SetStatus(JOB_EXECUTING_ROAD1);
+        j->SetState(JOB_EXECUTING_ROAD1);
         j->SetTarget(pt);
         construction->AddBuildJob(j, true); // connects the buildingsite to roadsystem
     } else

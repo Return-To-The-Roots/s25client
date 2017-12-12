@@ -35,7 +35,7 @@ public:
     SwitchOnStart() { GAMECLIENT.SetInterface(this); }
     ~SwitchOnStart() { GAMECLIENT.RemoveInterface(this); }
 
-    void CI_GameStarted(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
+    void CI_GameLoading(boost::shared_ptr<Game> game) override { WINDOWMANAGER.Switch(new dskGameLoader(game)); }
 };
 
 bool QuickStartGame(const std::string& filePath, bool singlePlayer)

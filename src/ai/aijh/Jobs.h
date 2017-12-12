@@ -35,7 +35,7 @@ namespace AIJH {
 class AIPlayerJH;
 class PositionSearch;
 
-enum JobStatus
+enum JobState
 {
     JOB_WAITING,
     JOB_EXECUTING_START,
@@ -59,12 +59,12 @@ public:
     Job(AIPlayerJH& aijh);
     virtual ~Job() {}
     virtual void ExecuteJob() = 0;
-    JobStatus GetStatus() const { return status; }
-    void SetStatus(JobStatus s) { status = s; }
+    JobState GetState() const { return state; }
+    void SetState(JobState s) { state = s; }
 
 protected:
     AIPlayerJH& aijh;
-    JobStatus status;
+    JobState state;
 };
 
 class JobWithTarget

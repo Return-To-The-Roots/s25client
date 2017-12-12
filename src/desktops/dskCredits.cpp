@@ -149,7 +149,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Thank you!"));
     entries.push_back(entry);
 
-    bool nations[NUM_NATS] = {true, true, true, true, false};
+    std::vector<bool> nations(NUM_NATIVE_NATS, true);
 
     LOADER.LoadFilesAtGame(0, nations);
 

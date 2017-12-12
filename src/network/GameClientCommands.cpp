@@ -16,7 +16,6 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientPlayers.h"
 #include "Game.h"
 #include "GamePlayer.h"
 #include "ai/AIPlayer.h"
@@ -124,14 +123,6 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
             gameCommands_.clear();
         }
     }
-
-    // Swap ids
-    ClientPlayer* player1 = clientPlayers->get(playerId1);
-    ClientPlayer* player2 = clientPlayers->get(playerId2);
-    if(player1)
-        player1->id = playerId2;
-    if(player2)
-        player2->id = playerId1;
 
     if(ci)
         ci->CI_PlayersSwapped(playerId1, playerId2);

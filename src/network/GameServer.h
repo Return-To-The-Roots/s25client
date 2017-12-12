@@ -25,6 +25,7 @@
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
+#include "NWFInfo.h"
 #include "helpers/Deleter.h"
 #include "random/Random.h"
 #include "gameTypes/MapInfo.h"
@@ -48,6 +49,7 @@ class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity
 {
 public:
     BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
+    typedef boost::chrono::steady_clock SteadyClock;
 
     GameServer();
     ~GameServer() override;
@@ -56,16 +58,25 @@ public:
     bool Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw);
 
     void Run();
+
+    void RunStateGame();
+
+    void RunStateConfig();
+
     void Stop();
 
 private:
     bool StartGame();
+
+    unsigned CalcNWFLenght(FramesInfo::milliseconds32_t minDuration);
+
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
-    AIServerPlayer* GetAIPlayer(unsigned playerId);
     /// Swap players ingame or during config
     void SwapPlayer(const uint8_t player1, const uint8_t player2);
 
     void SendToAll(const GameMessage& msg);
+    void SendNWFDone(const NWFServerInfo& info);
+
     /// Kick a player (free slot and set socket to invalid. Does NOT remove it from NetworkPlayers)
     void KickPlayer(uint8_t playerId, KickReason cause = NP_NOCAUSE);
 
@@ -73,9 +84,6 @@ private:
 
     void WaitForClients();
     void FillPlayerQueues();
-
-    /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC(const unsigned id);
 
     unsigned GetNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
@@ -140,8 +148,9 @@ private:
     {
         SS_STOPPED = 0,
         SS_CONFIG,
+        SS_LOADING,
         SS_GAME
-    } status;
+    } state;
 
     FramesInfo framesinfo;
     unsigned currentGF;
@@ -163,7 +172,7 @@ private:
     Socket serversocket;
     std::vector<JoinPlayerInfo> playerInfos;
     std::vector<GameServerPlayer> networkPlayers;
-    std::vector<AIServerPlayer> aiPlayers;
+    NWFInfo nwfInfo;
     GlobalGameSettings ggs_;
 
     /// der Spielstartcountdown
@@ -187,8 +196,11 @@ private:
     struct AsyncLog;
     /// AsyncLogs of all players
     std::vector<AsyncLog> asyncLogs;
+    /// Time at which the loading started
+    boost::chrono::steady_clock::time_point loadStartTime;
 
     LANDiscoveryService lanAnnouncer;
+    void RunStateLoading();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

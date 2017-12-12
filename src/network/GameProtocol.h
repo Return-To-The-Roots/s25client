@@ -153,12 +153,17 @@ enum KickReason
     NP_ASYNC           // asynchron
 };
 
-/// How long till we kick a connecting player (in seconds)
+// All times are in seconds
+/// How long till we kick a connecting player
 const unsigned CONNECT_TIMEOUT = 2 * 60; // 2min
-/// How long till we kick a lagging player (in seconds)
-const unsigned LAG_TIMEOUT = 35 * 60;
-/// How often we send pings (in seconds)
+/// How long till we kick a lagging player
+const unsigned LAG_TIMEOUT = 5 * 60;
+/// How often we send pings
 const unsigned PING_RATE = 1;
+/// Maximum time for a ping reply before we kick a player
+const unsigned PING_TIMEOUT = 5 * 60;
+/// Maximum time the players get for loading the map
+const unsigned LOAD_TIMEOUT = 10 * 60;
 
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!

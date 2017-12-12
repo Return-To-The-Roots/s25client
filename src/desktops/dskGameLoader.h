@@ -25,6 +25,7 @@
 #include "liblobby/LobbyInterface.h"
 
 class GameWorldBase;
+class dskGameInterface;
 
 class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
 {
@@ -33,6 +34,8 @@ public:
     ~dskGameLoader() override;
 
     void LC_Status_Error(const std::string& error) override;
+    void CI_GameStarted(boost::shared_ptr<Game> game) override;
+    void CI_Error(const ClientError ce) override;
 
 private:
     void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
@@ -40,6 +43,7 @@ private:
 
     unsigned position;
     boost::shared_ptr<Game> game;
+    dskGameInterface* nextDesktop;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED

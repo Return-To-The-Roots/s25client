@@ -327,7 +327,7 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
+bool Loader::LoadFilesAtGame(unsigned char gfxset, const std::vector<bool>& nations)
 {
     RTTR_Assert(gfxset <= LT_WINTERWORLD);
     using namespace boost::assign; // Adds the vector += operator
@@ -342,7 +342,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     for(unsigned char i = 0; i < NUM_NATIVE_NATS; ++i)
     {
         // ggf. Völker-Grafiken laden
-        if(nations[i] || (i == NAT_ROMANS && nations[NAT_BABYLONIANS]))
+        if((i < nations.size() && nations[i]) || (i == NAT_ROMANS && NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]))
             files += 27 + i + (gfxset == LT_WINTERWORLD) * NUM_NATIVE_NATS;
     }
 
@@ -352,7 +352,8 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, bool* nations)
     if(!LoadFilesFromArray(files, true))
         return false;
 
-    if((nations[NAT_BABYLONIANS]) && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
+    if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]
+       && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
         return false;
 
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files

@@ -23,21 +23,16 @@
 /// Struct that stores information about the frames, like GF status...
 struct FramesInfo
 {
-public:
     typedef boost::chrono::duration<uint32_t, boost::milli> milliseconds32_t;
     typedef boost::chrono::steady_clock UsedClock;
 
     FramesInfo();
     void Clear();
-    /// Changes the GF length to GFLengthNew and adapts the NWF length accordingly
-    void ApplyNewGFLength();
 
-    /// Lenght of one GF in ms (~ 1/speed of the game)
+    /// Length of one GF in ms (~ 1/speed of the game)
     milliseconds32_t gf_length;
-    /// New length of a GF (applied on next NWF)
-    milliseconds32_t gfLenghtNew;
-    /// New length of a GF (applied on second next NWF)
-    milliseconds32_t gfLenghtNew2;
+    /// Requested length of GF (for multiple changes between a NWF)
+    milliseconds32_t gfLengthReq;
     /// Length of a NWF (network frame) in GFs
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )
@@ -51,14 +46,9 @@ public:
 /// Same as FramesInfo but with additional data that is only meaningfull for the client
 struct FramesInfoClient : public FramesInfo
 {
-public:
     FramesInfoClient();
     void Clear();
 
-    /// Requested length of GF (for multiple changes between a NWF)
-    milliseconds32_t gfLengthReq;
-    /// Number of the GF that the server acknowledged -> Run only to this one -> gfNr <= gfNrServer
-    unsigned gfNrServer;
     /// Force pause the game (start TS and length) e.g. to compensate for lags
     UsedClock::time_point forcePauseStart;
     milliseconds32_t forcePauseLen;

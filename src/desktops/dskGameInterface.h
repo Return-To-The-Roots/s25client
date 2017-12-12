@@ -43,7 +43,7 @@ class PostBox;
 class PostMsg;
 struct BuildingNote;
 struct KeyEvent;
-struct ClientPlayers;
+class NWFInfo;
 
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface
 {
@@ -138,7 +138,7 @@ private:
 
     PostBox& GetPostBox();
     boost::shared_ptr<const Game> game_;
-    boost::shared_ptr<const ClientPlayers> networkPlayers;
+    boost::shared_ptr<const NWFInfo> nwfInfo;
     GameWorldViewer worldViewer;
     GameWorldView gwv;
 

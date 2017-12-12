@@ -24,6 +24,7 @@
 #include "GamePlayer.h"
 #include "GlobalVars.h"
 #include "Loader.h"
+#include "NWFInfo.h"
 #include "Settings.h"
 #include "SoundManager.h"
 #include "WindowManager.h"
@@ -61,7 +62,6 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
-#include "network/ClientPlayers.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
@@ -105,7 +105,7 @@ enum
 }
 
 dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
-    : Desktop(NULL), game_(game), networkPlayers(GAMECLIENT.GetPlayers()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
+    : Desktop(NULL), game_(game), nwfInfo(GAMECLIENT.GetNWFInfo()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -131,8 +131,6 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
-    LOBBYCLIENT.AddListener(this);
-    GAMECLIENT.SetInterface(this);
     game->world.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
@@ -182,11 +180,13 @@ void dskGameInterface::SetActive(bool activate)
     if(activate == IsActive())
         return;
     Desktop::SetActive(activate);
-    if(activate && GAMECLIENT.GetState() == GameClient::CS_LOADING)
+    // Do this here to allow previous screen to keep control
+    if(activate)
     {
-        // Wir sind nun ingame
-        GAMECLIENT.GameStarted();
+        GAMECLIENT.SetInterface(this);
+        LOBBYCLIENT.AddListener(this);
     }
+
     if(!activate)
     {
         isScrolling = false;
@@ -316,7 +316,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-    BOOST_FOREACH(const ClientPlayer& player, networkPlayers->players)
+    BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
     {
         if(player.isLagging)
         {

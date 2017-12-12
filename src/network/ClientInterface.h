@@ -51,7 +51,9 @@ public:
 
     virtual void CI_NewPlayer(const unsigned playerId) {}
     virtual void CI_PlayerLeft(const unsigned playerId) {}
-
+    /// Game entered loading state
+    virtual void CI_GameLoading(boost::shared_ptr<Game> game) {}
+    /// Game is started and running
     virtual void CI_GameStarted(boost::shared_ptr<Game> game) {}
 
     virtual void CI_PlayerDataChanged(unsigned playerId) {}

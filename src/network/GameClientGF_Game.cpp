@@ -17,9 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Game.h"
-#include "ClientPlayers.h"
 #include "GameMessage_GameCommand.h"
 #include "GamePlayer.h"
+#include "NWFInfo.h"
 #include "ReplayInfo.h"
 #include "ai/AIPlayer.h"
 #include "network/GameClient.h"
@@ -34,24 +34,21 @@ void GameClient::ExecuteNWF()
     AsyncChecksum checksum = AsyncChecksum::create(*game);
     const unsigned curGF = GetGFNumber();
 
-    BOOST_FOREACH(ClientPlayer& player, clientPlayers->players)
+    BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
     {
-        PlayerGameCommands& currentGCs = player.gcsToExecute.front();
+        const PlayerGameCommands& currentGCs = player.commands.front();
 
         // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
         // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
         if(!currentGCs.gcs.empty() && replayinfo && replayinfo->replay.IsRecording())
         {
-            // Aktuelle Checksumme reinschreiben
-            currentGCs.checksum = checksum;
-            replayinfo->replay.AddGameCommand(curGF, player.id, currentGCs);
+            // Set the current checksum as the GF checksum. The checksum from the command is from the last NWF!
+            PlayerGameCommands replayCmds(checksum, currentGCs.gcs);
+            replayinfo->replay.AddGameCommand(curGF, player.id, replayCmds);
         }
 
         // Das ganze Zeug soll die andere Funktion ausführen
         ExecuteAllGCs(player.id, currentGCs);
-
-        // Nachricht abwerfen :)
-        player.gcsToExecute.pop();
     }
 
     // Send GC message for this NWF
