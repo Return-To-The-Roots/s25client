@@ -185,7 +185,7 @@ private:
     public:
         CountDown();
         /// Starts a countdown at curTime of timeInSec seconds
-        void GameServer::CountDown::Start(unsigned timeInSec);
+        void Start(unsigned timeInSec);
         void Stop();
         /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
         bool Update();

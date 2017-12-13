@@ -67,6 +67,8 @@ bool GameServerPlayer::hasTimedOut() const
 
 unsigned GameServerPlayer::getLagTimeOut() const
 {
+    if(!isLagging)
+        return LAG_TIMEOUT;
     const int timeout =
       boost::chrono::duration_cast<boost::chrono::duration<int> >(lagStartTime + seconds(LAG_TIMEOUT) - Clock::now()).count();
     return static_cast<unsigned>(std::max(0, timeout));

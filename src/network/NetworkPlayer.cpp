@@ -35,7 +35,7 @@ void NetworkPlayer::closeConnection(bool flushMsgsFirst)
 
 bool NetworkPlayer::receiveMsgs()
 {
-    return recvQueue.recv(socket);
+    return recvQueue.recvAll(socket) >= 0;
 }
 
 bool NetworkPlayer::sendMsgs(int maxNumMsgs)

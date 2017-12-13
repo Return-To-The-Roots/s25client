@@ -300,15 +300,21 @@ void GameServer::Run()
     // post zustellen
     FillPlayerQueues();
 
-    // queues abarbeiten
+    // Execute messages
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
     {
         // Ignore kicked players
         if(!player.socket.isValid())
             continue;
-        // maximal 10 Pakete verschicken
-        player.sendMsgs(10);
         player.executeMsgs(*this);
+    }
+    // Send afterwards as most messages are relayed which should be done as fast as possible
+    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    {
+        // Ignore kicked players
+        if(!player.socket.isValid())
+            continue;
+        player.sendMsgs(10);
     }
 
     for(std::vector<GameServerPlayer>::iterator it = networkPlayers.begin(); it != networkPlayers.end();)
@@ -357,21 +363,21 @@ void GameServer::RunStateLoading()
     LOG.write("SERVER: Game loaded by all players after %1%\n")
       % boost::chrono::duration_cast<boost::chrono::seconds>(SteadyClock::now() - loadStartTime);
     // The first NWF is ready. Server has to set up "missing" commands so every future command is for the correct NWF as specified with
-    // cmdDelay We have commands for NWF 0. When clients execute this they will send the commands for NWF cmdDelay. So commands for
+    // cmdDelay. We have commands for NWF 0. When clients execute this they will send the commands for NWF cmdDelay. So commands for
     // NWF 1..cmdDelay-1 are missing. Do this here and before the NWFDone is sent, otherwise we might get them in a wrong order when
     // messages are sent asynchronously
     for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
     {
-        BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo.getPlayerInfos())
         {
-            GameMessage_GameCommand msg(player.playerId, nwfInfo.getPlayerCmds(player.playerId).checksum,
-                                        std::vector<gc::GameCommandPtr>());
+            GameMessage_GameCommand msg(player.id, nwfInfo.getPlayerCmds(player.id).checksum, std::vector<gc::GameCommandPtr>());
             SendToAll(msg);
-            OnGameMessage(msg);
+            nwfInfo.addPlayerCmds(player.id, msg.cmds);
         }
     }
 
     NWFServerInfo serverInfo = nwfInfo.getServerInfo();
+    // Send cmdDelay NWFDone messages
     // First send the OK for NWF 0 which is also the game ready command
     // Note: Do not store. It already is in NWFInfo
     SendToAll(GameMessage_Server_NWFDone(serverInfo.gf, serverInfo.newGFLen, serverInfo.nextNWF));
@@ -445,7 +451,7 @@ bool GameServer::StartGame()
     else
         random_init = static_cast<unsigned>(boost::chrono::high_resolution_clock::now().time_since_epoch().count());
 
-    nwfInfo.init(currentGF, 1);
+    nwfInfo.init(currentGF, 3);
 
     // Send start first, then load the rest
     SendToAll(GameMessage_Server_Start(random_init, nwfInfo.getNextNWF(), nwfInfo.getCmdDelay()));
@@ -465,7 +471,7 @@ bool GameServer::StartGame()
     framesinfo.gfLengthReq = framesinfo.gf_length = FramesInfo::milliseconds32_t(SPEED_GF_LENGTHS[ggs_.speed]);
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping + 200));
+    framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping));
 
     LOG.write("SERVER: Using gameframe length of %d\n") % framesinfo.gf_length;
     LOG.write("SERVER: Using networkframe length of %u GFs (%u)\n") % framesinfo.nwf_length
@@ -654,15 +660,14 @@ void GameServer::ExecuteNWF()
         LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF % oldGFLen % framesinfo.gf_length
           % framesinfo.nwf_length;
     }
-    unsigned curNWFLen = framesinfo.nwf_length;
     NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1), lastNWF + framesinfo.nwf_length);
     if(framesinfo.gfLengthReq != framesinfo.gf_length)
     {
         // Speed will change, adjust nwf length so the time will stay constant
         using namespace boost::chrono;
         typedef duration<double, boost::milli> MsDouble;
-        double newNWFLen = curNWFLen * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
-        newInfo.nextNWF = lastNWF + boost::math::iround(newNWFLen);
+        double newNWFLen = framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
+        newInfo.nextNWF = lastNWF + std::max(1, boost::math::iround(newNWFLen));
     }
     SendNWFDone(newInfo);
 }
@@ -737,8 +742,6 @@ void GameServer::WaitForClients()
             {
                 networkPlayers.push_back(GameServerPlayer(playerId, socket));
                 newPlayerId = playerId;
-                // LOG.write(("new socket, about to tell him about his playerId: %i \n",playerId);
-                // schleife beenden
                 break;
             }
         }
@@ -1178,6 +1181,7 @@ bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
     if(player)
         player->setNotLagging();
     SendToAll(GameMessage_GameCommand(targetPlayerId, msg.cmds.checksum, msg.cmds.gcs));
+
     return true;
 }
 
@@ -1406,6 +1410,8 @@ std::string GameServer::SaveAsyncLog()
     for(unsigned i = 0; i < numEntries; i++)
     {
         bool isIdentical = true;
+        if(i >= asyncLogs[0].randEntries.size())
+            break;
         const RandomEntry& refEntry = asyncLogs[0].randEntries[i];
         BOOST_FOREACH(const AsyncLog& log, asyncLogs)
         {
