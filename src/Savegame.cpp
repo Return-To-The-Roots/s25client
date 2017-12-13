@@ -64,19 +64,26 @@ bool Savegame::Load(const std::string& filePath, bool loadSettings, bool loadGam
 
 bool Savegame::Load(BinaryFile& file, bool loadSettings, bool loadGameData)
 {
-    ClearPlayers();
-    sgd.Clear();
-    if(!ReadAllHeaderData(file))
+    try
+    {
+        ClearPlayers();
+        sgd.Clear();
+        if(!ReadAllHeaderData(file))
+            return false;
+
+        if(!loadSettings)
+            return true;
+
+        ReadPlayerData(file);
+        ReadGGS(file);
+
+        if(loadGameData)
+            ReadGameData(file);
+    } catch(std::runtime_error& e)
+    {
+        lastErrorMsg = e.what();
         return false;
-
-    if(!loadSettings)
-        return true;
-
-    ReadPlayerData(file);
-    ReadGGS(file);
-
-    if(loadGameData)
-        ReadGameData(file);
+    }
 
     return true;
 }

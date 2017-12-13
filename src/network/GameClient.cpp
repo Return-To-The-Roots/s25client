@@ -845,26 +845,35 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     }
     mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + portFilename;
     mapinfo.type = msg.mt;
-    mapinfo.mapData.length = msg.mapLen;
-    mapinfo.luaData.length = msg.luaLen;
 
     // lua script file path
     if(msg.luaLen > 0)
-        mapinfo.luaFilepath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
+        mapinfo.luaFilepath = bfs::path(mapinfo.filepath).replace_extension("lua").string();
     else
         mapinfo.luaFilepath.clear();
 
     if(bfs::exists(mapinfo.filepath) && (mapinfo.luaFilepath.empty() || bfs::exists(mapinfo.luaFilepath)) && CreateLobby())
     {
         mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum);
-        if(!mapinfo.luaFilepath.empty())
-            mapinfo.luaData.CompressFromFile(mapinfo.luaFilepath, &mapinfo.luaChecksum);
-        if(mapinfo.mapData.data.size() == msg.mapCompressedLen && mapinfo.luaData.data.size() == msg.luaCompressedLen)
+        if(mapinfo.mapData.data.size() == msg.mapCompressedLen && mapinfo.mapData.length == msg.mapLen)
         {
-            mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
-            return true;
+            bool ok = true;
+            if(!mapinfo.luaFilepath.empty())
+            {
+                mapinfo.luaData.CompressFromFile(mapinfo.luaFilepath, &mapinfo.luaChecksum);
+                ok = (mapinfo.luaData.data.size() == msg.luaCompressedLen && mapinfo.luaData.length == msg.luaLen);
+            }
+
+            if(ok)
+            {
+                mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
+                return true;
+            }
+            gameLobby.reset();
         }
     }
+    mapinfo.mapData.length = msg.mapLen;
+    mapinfo.luaData.length = msg.luaLen;
     mapinfo.mapData.data.resize(msg.mapCompressedLen);
     mapinfo.luaData.data.resize(msg.luaCompressedLen);
     mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
