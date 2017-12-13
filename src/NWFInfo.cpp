@@ -34,6 +34,9 @@ void NWFInfo::init(unsigned nextNWF, unsigned cmdDelay)
         throw std::runtime_error("Command delay must be at least 1");
     nextNWF_ = nextNWF;
     cmdDelay_ = cmdDelay;
+    playerInfos_.clear();
+    while(!serverInfos_.empty())
+        serverInfos_.pop();
 }
 
 void NWFInfo::addPlayer(unsigned playerId)
@@ -57,8 +60,9 @@ bool NWFInfo::addPlayerCmds(unsigned playerId, const PlayerGameCommands& cmds)
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     // Commands in NWF n are sent for NWF n + cmdDelay. Clients can only execute an NWF (and send their cmds) when all others are received.
-    // This means no one can execute NWF n + cmdDelay before we executed NWF n -> max cmd# is cmdDelay
-    if(it->commands.size() >= cmdDelay_)
+    // This means no one can execute NWF n + cmdDelay before we executed NWF n. So the last NWF one can have executed is n + cmDelay - 1
+    // with the commands for n + cmdDelay - 1 + cmdDelay. Counting those leads to cmdDelay*2 pending commands.
+    if(it->commands.size() >= 2 * cmdDelay_)
         return false;
     it->commands.push(cmds);
     return true;

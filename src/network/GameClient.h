@@ -199,7 +199,7 @@ private:
     void SendNothingNC(uint8_t player = 0xFF);
 
     /// Führt notwendige Dinge für nächsten GF aus
-    void NextGF();
+    void NextGF(bool wasNWF);
     /// Checks if its time for autosaving (if enabled) and does it
     void HandleAutosave();
 

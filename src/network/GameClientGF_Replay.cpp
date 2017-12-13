@@ -32,6 +32,7 @@ void GameClient::ExecuteGameFrame_Replay()
     const unsigned curGF = GetGFNumber();
     RTTR_Assert(replayinfo->next_gf >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
 
+    bool cmdsExecuted = false;
     // Execute all commands from the replay for the current GF
     while(replayinfo->next_gf == curGF)
     {
@@ -48,6 +49,8 @@ void GameClient::ExecuteGameFrame_Replay()
                 ci->CI_Chat(player, ChatDestination(dest), message);
         } else if(rc == Replay::RC_GAME)
         {
+            cmdsExecuted = true;
+
             PlayerGameCommands msg;
             uint8_t gcPlayer;
             replayinfo->replay.ReadGameCommand(gcPlayer, msg);
@@ -83,7 +86,7 @@ void GameClient::ExecuteGameFrame_Replay()
     }
 
     // Run game simulation
-    NextGF();
+    NextGF(cmdsExecuted);
 
     // Check for game end
     if(curGF == replayinfo->replay.GetLastGF())

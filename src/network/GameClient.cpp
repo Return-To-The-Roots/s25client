@@ -290,7 +290,6 @@ void GameClient::StartGame(const unsigned random_init)
       new Game(gameLobby->getSettings(), startGF, std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end())));
     if(!IsReplayModeOn())
     {
-        nwfInfo.reset(new NWFInfo());
         for(unsigned id = 0; id < gameLobby->getNumPlayers(); id++)
         {
             if(gameLobby->getPlayer(id).isUsed())
@@ -743,6 +742,8 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
     if(state != CS_CONFIG)
         return true;
 
+    nwfInfo.reset(new NWFInfo());
+    nwfInfo->init(msg.firstNwf, msg.cmdDelay);
     try
     {
         StartGame(msg.random_init);
@@ -752,7 +753,6 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
         Stop();
         GAMEMANAGER.ShowMenu();
     }
-    nwfInfo->init(msg.firstNwf, msg.cmdDelay);
     return true;
 }
 
@@ -1074,7 +1074,10 @@ bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
     if(nwfInfo)
     {
         if(!nwfInfo->addPlayerCmds(msg.player, msg.cmds))
+        {
             LOG.write("Could not add gamecommands for player %1%. He might be cheating!\n") % unsigned(msg.player);
+            RTTR_Assert(false);
+        }
     }
     return true;
 }
@@ -1133,7 +1136,10 @@ bool GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
         return true;
 
     if(!nwfInfo->addServerInfo(NWFServerInfo(msg.gf, msg.gf_length, msg.nextNWF)))
+    {
+        RTTR_Assert(false);
         LOG.write("Failed to add server info. Invalid server?\n");
+    }
 
     return true;
 }
@@ -1220,8 +1226,10 @@ void GameClient::ExecuteGameFrame()
             ExecuteGameFrame_Replay();
         } else
         {
+            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+            bool isNWF = (curGF == nwfInfo->getNextNWF());
             // Is it time for a NWF, handle that first
-            if(curGF >= nwfInfo->getNextNWF())
+            if(isNWF)
             {
                 // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
                 // -> Don't execute GF, don't autosave etc.
@@ -1247,10 +1255,8 @@ void GameClient::ExecuteGameFrame()
                       % framesinfo.nwf_length;
                 }
             }
-            if(curGF >= nwfInfo->getNextNWF())
-                return;
 
-            NextGF();
+            NextGF(isNWF);
             RTTR_Assert(curGF <= nwfInfo->getNextNWF());
             HandleAutosave();
 
@@ -1299,10 +1305,10 @@ void GameClient::HandleAutosave()
 }
 
 /// Führt notwendige Dinge für nächsten GF aus
-void GameClient::NextGF()
+void GameClient::NextGF(bool wasNWF)
 {
     BOOST_FOREACH(AIPlayer& ai, game->aiPlayers)
-        ai.RunGF(GetGFNumber(), (GetGFNumber() % framesinfo.nwf_length == 0));
+        ai.RunGF(GetGFNumber(), wasNWF);
     game->RunGF();
 }
 
