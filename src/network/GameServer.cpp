@@ -207,12 +207,12 @@ bool GameServer::Start()
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
 
-    std::string luaFilePath = mapinfo.filepath.substr(0, mapinfo.filepath.length() - 3) + "lua";
-    if(bfs::exists(luaFilePath))
+    bfs::path luaFilePath = bfs::path(mapinfo.filepath).replace_extension("lua");
+    if(bfs::is_regular_file(luaFilePath))
     {
-        if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
+        if(!mapinfo.luaData.CompressFromFile(luaFilePath.string(), &mapinfo.luaChecksum))
             return false;
-        mapinfo.luaFilepath = luaFilePath;
+        mapinfo.luaFilepath = luaFilePath.string();
     } else
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 

@@ -122,28 +122,35 @@ bool Replay::LoadHeader(const std::string& filename, bool loadSettings)
     }
     isRecording = false;
 
-    // Check file header
-    if(!ReadAllHeaderData(file))
-        return false;
-
-    mapType_ = static_cast<MapType>(file.ReadUnsignedShort());
-    if(mapType_ == MAPTYPE_SAVEGAME)
+    try
     {
-        // Validate savegame
-        Savegame save;
-        if(!save.ReadFileHeader(file))
-        {
-            lastErrorMsg = std::string(_("Savegame error: ")) + save.GetLastErrorMsg();
+        // Check file header
+        if(!ReadAllHeaderData(file))
             return false;
+
+        mapType_ = static_cast<MapType>(file.ReadUnsignedShort());
+        if(mapType_ == MAPTYPE_SAVEGAME)
+        {
+            // Validate savegame
+            Savegame save;
+            if(!save.ReadFileHeader(file))
+            {
+                lastErrorMsg = std::string(_("Savegame error: ")) + save.GetLastErrorMsg();
+                return false;
+            }
         }
-    }
 
-    lastGF_ = file.ReadUnsignedInt();
+        lastGF_ = file.ReadUnsignedInt();
 
-    if(loadSettings)
+        if(loadSettings)
+        {
+            ReadPlayerData(file);
+            ReadGGS(file);
+        }
+    } catch(std::runtime_error& e)
     {
-        ReadPlayerData(file);
-        ReadGGS(file);
+        lastErrorMsg = e.what();
+        return false;
     }
 
     return true;
@@ -151,40 +158,42 @@ bool Replay::LoadHeader(const std::string& filename, bool loadSettings)
 
 bool Replay::LoadGameData(MapInfo& mapInfo)
 {
-    random_init = file.ReadUnsignedInt();
-
-    mapInfo.Clear();
-    mapInfo.type = mapType_;
-    mapInfo.title = GetMapName();
-    mapInfo.filepath = file.ReadLongString();
-    switch(mapType_)
+    try
     {
-        default: return false;
-        case MAPTYPE_OLDMAP:
-        {
-            // Map-Daten
-            mapInfo.mapData.length = file.ReadUnsignedInt();
-            mapInfo.mapData.data.resize(file.ReadUnsignedInt());
-            file.ReadRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
-            mapInfo.luaData.length = file.ReadUnsignedInt();
-            mapInfo.luaData.data.resize(file.ReadUnsignedInt());
-            if(!mapInfo.luaData.data.empty())
-                file.ReadRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
-            break;
-        }
-        case MAPTYPE_SAVEGAME:
-        {
-            // Load savegame
-            mapInfo.savegame.reset(new Savegame);
-            if(!mapInfo.savegame->Load(file, true, true))
-            {
-                lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->GetLastErrorMsg();
-                return false;
-            }
-            break;
-        }
-    }
+        random_init = file.ReadUnsignedInt();
 
+        mapInfo.Clear();
+        mapInfo.type = mapType_;
+        mapInfo.title = GetMapName();
+        mapInfo.filepath = file.ReadLongString();
+        switch(mapType_)
+        {
+            default: return false;
+            case MAPTYPE_OLDMAP:
+                // Map-Daten
+                mapInfo.mapData.length = file.ReadUnsignedInt();
+                mapInfo.mapData.data.resize(file.ReadUnsignedInt());
+                file.ReadRawData(&mapInfo.mapData.data[0], mapInfo.mapData.data.size());
+                mapInfo.luaData.length = file.ReadUnsignedInt();
+                mapInfo.luaData.data.resize(file.ReadUnsignedInt());
+                if(!mapInfo.luaData.data.empty())
+                    file.ReadRawData(&mapInfo.luaData.data[0], mapInfo.luaData.data.size());
+                break;
+            case MAPTYPE_SAVEGAME:
+                // Load savegame
+                mapInfo.savegame.reset(new Savegame);
+                if(!mapInfo.savegame->Load(file, true, true))
+                {
+                    lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->GetLastErrorMsg();
+                    return false;
+                }
+                break;
+        }
+    } catch(std::runtime_error& e)
+    {
+        lastErrorMsg = e.what();
+        return false;
+    }
     return true;
 }
 

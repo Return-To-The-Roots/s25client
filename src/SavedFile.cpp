@@ -68,23 +68,31 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
     boost::array<char, 32> read_signature;
     if(signature.size() > read_signature.size())
         throw std::range_error("Program signature is to long!");
-    file.ReadRawData(&read_signature[0], signature.size());
-
-    // Signatur überprüfen
-    if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
+    try
     {
-        lastErrorMsg = _("File is not in a valid format!");
-        return false;
-    }
+        file.ReadRawData(&read_signature[0], signature.size());
 
-    // Version überprüfen
-    uint16_t read_version = file.ReadUnsignedShort();
-    if(read_version != GetVersion())
+        // Signatur überprüfen
+        if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
+        {
+            lastErrorMsg = _("File is not in a valid format!");
+            return false;
+        }
+
+        // Version überprüfen
+        uint16_t read_version = file.ReadUnsignedShort();
+        if(read_version != GetVersion())
+        {
+            boost::format fmt =
+              boost::format((read_version < GetVersion()) ?
+                              _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
+                              _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
+            lastErrorMsg = (fmt % read_version % GetVersion()).str();
+            return false;
+        }
+    } catch(std::runtime_error& e)
     {
-        boost::format fmt = boost::format(
-          (read_version < GetVersion()) ? _("File has an old version and cannot be used (version: %1%, expected: %2%)!") :
-                                          _("File was created with more recent program and cannot be used (version: %1%, expected: %2%)!"));
-        lastErrorMsg = (fmt % read_version % GetVersion()).str();
+        lastErrorMsg = e.what();
         return false;
     }
 
