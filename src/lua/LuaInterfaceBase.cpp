@@ -20,11 +20,12 @@
 #include "GlobalVars.h"
 #include "WindowManager.h"
 #include "ingameWindows/iwMsgbox.h"
-#include "mygettext/mygettext.h"
+#include "mygettext/utils.h"
 #include "network/GameClient.h"
 #include "libutf8/utf8.h"
 #include "libutil/Log.h"
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 #include <utility>
@@ -170,21 +171,13 @@ void LuaInterfaceBase::MsgBoxEx2(const std::string& title, const std::string& ms
 
 std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
 {
-    kaguya::LuaRef entry = luaTranslations[code];
-    if(entry.type() == LUA_TTABLE)
-        return entry;
-    std::string lang, region, encoding;
-    splitLanguageCode(code, lang, region, encoding);
-
-    if(!region.empty())
+    std::vector<std::string> folders = getPossibleFoldersForLangCode(code);
+    BOOST_FOREACH(const std::string& folder, folders)
     {
-        entry = luaTranslations[lang + "_" + region];
+        kaguya::LuaRef entry = luaTranslations[folder];
         if(entry.type() == LUA_TTABLE)
             return entry;
     }
-    entry = luaTranslations[lang];
-    if(entry.type() == LUA_TTABLE)
-        return entry;
     return std::map<std::string, std::string>();
 }
 
