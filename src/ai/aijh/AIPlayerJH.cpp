@@ -191,13 +191,10 @@ void AIPlayerJH::RunGF(const unsigned gf, bool gfisnwf)
         }
     }
 
-    if(!gfisnwf) // try to complete a job on the list
-    {
-        // LOG.write(("ai doing stuff %i \n",playerId);
-        if(gf % 100 == 0)
-            bldPlanner->UpdateBuildingsWanted(*this);
-        ExecuteAIJob();
-    }
+    // LOG.write(("ai doing stuff %i \n",playerId);
+    if(gf % 100 == 0)
+        bldPlanner->UpdateBuildingsWanted(*this);
+    ExecuteAIJob();
 
     if((gf + playerId * 17) % attack_interval == 0)
     {
