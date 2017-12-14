@@ -31,7 +31,6 @@
 #include "helpers/converters.h"
 #include "iwPleaseWait.h"
 #include "network/GameClient.h"
-#include "network/GameServer.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
@@ -193,7 +192,7 @@ void iwLoad::SaveLoad()
     // Server starten
     ctrlTable* table = GetCtrl<ctrlTable>(0);
 
-    if(!GAMESERVER.TryToStart(csi, table->GetItemText(table->GetSelection(), 4), MAPTYPE_SAVEGAME))
+    if(!GAMECLIENT.HostGame(csi, table->GetItemText(table->GetSelection(), 4), MAPTYPE_SAVEGAME))
     {
         // Server starten
         if(LOBBYCLIENT.IsLoggedIn())

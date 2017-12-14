@@ -76,7 +76,7 @@ dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoW
     UpdateServerList();
     UpdatePlayerList();
 
-    LOBBYCLIENT.SetInterface(this);
+    LOBBYCLIENT.AddListener(this);
     LOBBYCLIENT.SendServerListRequest();
     LOBBYCLIENT.SendPlayerListRequest();
 
@@ -85,7 +85,7 @@ dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoW
 
 dskLobby::~dskLobby()
 {
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
 

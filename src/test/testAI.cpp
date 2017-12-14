@@ -153,8 +153,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
     {
-        std::vector<gc::GameCommandPtr> aiGcs = ai->GetGameCommands();
-        ai->FetchGameCommands();
+        std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++, gf++)
         {
             em.ExecuteNextGF();
@@ -190,8 +189,7 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
     // Can't build sawmill -> Expand anyway
     for(unsigned gf = 0; gf < 2000;)
     {
-        std::vector<gc::GameCommandPtr> aiGcs = ai->GetGameCommands();
-        ai->FetchGameCommands();
+        std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++, gf++)
         {
             em.ExecuteNextGF();

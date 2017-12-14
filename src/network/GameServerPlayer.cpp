@@ -24,9 +24,9 @@
 using boost::chrono::seconds;
 
 GameServerPlayer::GameServerPlayer(unsigned id, const Socket& socket) //-V818
-    : NetworkPlayer(id), isConnecting(true), pinging(false), isLagging(false), mapDataSent(false)
+    : NetworkPlayer(id), isConnecting(true), isPinging(false), isLagging(false), mapDataSent(false)
 {
-    connectTime = Clock::now();
+    lastPingTime = Clock::now();
     this->socket = socket;
 }
 
@@ -34,9 +34,9 @@ GameServerPlayer::~GameServerPlayer() {}
 
 void GameServerPlayer::doPing()
 {
-    if(!isConnecting && !pinging && (Clock::now() - lastPingTime) > seconds(PING_RATE))
+    if(!isConnecting && !isPinging && (Clock::now() - lastPingTime) > seconds(PING_RATE))
     {
-        pinging = true;
+        isPinging = true;
         lastPingTime = Clock::now();
         sendQueue.push(new GameMessage_Ping(0xFF));
     }
@@ -44,9 +44,9 @@ void GameServerPlayer::doPing()
 
 unsigned GameServerPlayer::calcPingTime()
 {
-    if(!pinging)
+    if(!isPinging)
         return 0u;
-    pinging = false;
+    isPinging = false;
     TimePoint now = Clock::now();
     int result = boost::chrono::duration_cast<boost::chrono::duration<int> >(now - lastPingTime).count();
     lastPingTime = now;
@@ -55,22 +55,20 @@ unsigned GameServerPlayer::calcPingTime()
 
 ///////////////////////////////////////////////////////////////////////////////
 /// prüft auf Ping-Timeout beim verbinden
-bool GameServerPlayer::hasConnectTimedOut() const
+bool GameServerPlayer::hasTimedOut() const
 {
-    if(isConnecting && (Clock::now() - connectTime) > seconds(CONNECT_TIMEOUT))
-        return true;
+    if(isConnecting)
+        return (Clock::now() - lastPingTime) > seconds(CONNECT_TIMEOUT);
+    else if(isPinging)
+        return (Clock::now() - lastPingTime) > seconds(PING_TIMEOUT);
     else
         return false;
 }
 
-void GameServerPlayer::closeConnection(bool flushMsgsFirst)
-{
-    NetworkPlayer::closeConnection(flushMsgsFirst);
-    checksumOfNextNWF = std::queue<AsyncChecksum>();
-}
-
 unsigned GameServerPlayer::getLagTimeOut() const
 {
+    if(!isLagging)
+        return LAG_TIMEOUT;
     const int timeout =
       boost::chrono::duration_cast<boost::chrono::duration<int> >(lagStartTime + seconds(LAG_TIMEOUT) - Clock::now()).count();
     return static_cast<unsigned>(std::max(0, timeout));

@@ -44,9 +44,8 @@ public:
     void doPing();
     /// Called when a ping response was received. Return the ping in ms
     unsigned calcPingTime();
-    /// Check if the connect has timed out.
-    bool hasConnectTimedOut() const;
-    void closeConnection(bool flushMsgsFirst) override;
+    /// Check if the player timed out.
+    bool hasTimedOut() const;
 
     /// Set player is lagging
     void setLagging();
@@ -57,22 +56,22 @@ private:
     /// True if the player is just connecting (reserved slot) or false if he really is connected
     bool isConnecting;
     /// Are we waiting for a ping reply
-    bool pinging;
+    bool isPinging;
     /// Is the player currently lagging
     bool isLagging;
-    /// Time the player connected
-    TimePoint connectTime;
-    /// Time the last ping command was sent or received
+    /// Time the last ping command was sent or received or the time the player started connecting (connecting players are not pinged)
     TimePoint lastPingTime;
     /// Time at which the player started lagging
     TimePoint lagStartTime;
 
 public:
-    /// Store the Checksum for following NetWorkFrames from this player.
-    /// We don't need the actual GCs on the server. We can also have more than 1 here (next NWF and 2nd next NWF) but never more.
-    /// TODO: Double check if we can even have 2 here.
-    std::queue<AsyncChecksum> checksumOfNextNWF;
     bool mapDataSent;
+    /// These swaps are yet to be confirmed by the client
+    struct PendingSwap
+    {
+        unsigned playerId1, playerId2;
+    };
+    std::vector<PendingSwap> pendingSwaps;
 };
 
 #endif // GAMESERVERPLAYER_H_INCLUDED

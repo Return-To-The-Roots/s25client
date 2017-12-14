@@ -27,22 +27,12 @@ FramesInfo::FramesInfo()
 void FramesInfo::Clear()
 {
     // Default GF len of 20
-    gf_length = 20;
-    gfLenghtNew = 0;
-    gfLenghtNew2 = 0;
+    gf_length = milliseconds32_t(20);
+    gfLengthReq = gf_length;
     nwf_length = 0;
-    frameTime = 0;
-    lastTime = 0;
+    frameTime = milliseconds32_t::zero();
+    lastTime = UsedClock::time_point();
     isPaused = false;
-}
-
-void FramesInfo::ApplyNewGFLength()
-{
-    // Current length of a NWF in ms
-    unsigned nwfLenInMs = gf_length * nwf_length;
-    gf_length = gfLenghtNew;
-    // Time for one NWF should stay the same
-    nwf_length = helpers::roundedDiv(nwfLenInMs, gf_length);
 }
 
 FramesInfoClient::FramesInfoClient()
@@ -53,7 +43,6 @@ FramesInfoClient::FramesInfoClient()
 void FramesInfoClient::Clear()
 {
     FramesInfo::Clear();
-    gfLengthReq = 0;
-    gfNrServer = 0;
-    forcePauseStart = forcePauseLen = 0;
+    forcePauseStart = UsedClock::time_point();
+    forcePauseLen = milliseconds32_t::zero();
 }

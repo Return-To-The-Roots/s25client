@@ -15,20 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#ifndef CreateServerInfo_h__
+#define CreateServerInfo_h__
 
-#ifndef ClientPlayer_h__
-#define ClientPlayer_h__
+#include "gameTypes/ServerType.h"
+#include <string>
 
-#include "PlayerGameCommands.h"
-#include <queue>
-
-struct ClientPlayer
+/// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
+struct CreateServerInfo
 {
-    explicit ClientPlayer(unsigned id) : id(id), isLagging(false) {}
-    unsigned id;
-    std::queue<PlayerGameCommands> gcsToExecute;
-    bool isLagging;
+    ServerType type;      /// Typ des Servers.
+    unsigned short port;  /// Port des Servers
+    std::string gamename; /// Name des Servers.
+    std::string password; /// Passwort des Servers.
+    bool ipv6;            /// Soll IPv6 verwendet werden?
+    bool use_upnp;
 };
 
-#endif // ClientPlayer_h__
+#endif // CreateServerInfo_h__

@@ -17,14 +17,15 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMsgbox.h"
+#include "GameManager.h"
 #include "Loader.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
-
 #include "libsiedler2/ArchivItem_BitmapBase.h"
+
 namespace {
 enum IDS
 {
@@ -102,6 +103,7 @@ void iwMsgbox::Init(const std::string& text, const std::string& iconFile, unsign
     const Window* defBt = GetCtrl<Window>(defaultBt + ID_BT_0);
     if(defBt)
         VIDEODRIVER.SetMousePos(defBt->GetDrawPos() + DrawPoint(defBt->GetSize()) / 2);
+    GAMEMANAGER.SetCursor();
 }
 
 iwMsgbox::~iwMsgbox() {}

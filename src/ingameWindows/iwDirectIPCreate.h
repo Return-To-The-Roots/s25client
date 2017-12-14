@@ -22,17 +22,6 @@
 #include "IngameWindow.h"
 #include "gameTypes/ServerType.h"
 
-/// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
-struct CreateServerInfo
-{
-    ServerType type;      /// Typ des Servers.
-    unsigned short port;  /// Port des Servers
-    std::string gamename; /// Name des Servers.
-    std::string password; /// Passwort des Servers.
-    bool ipv6;            /// Soll IPv6 verwendet werden?
-    bool use_upnp;
-};
-
 class iwDirectIPCreate : public IngameWindow
 {
 public:

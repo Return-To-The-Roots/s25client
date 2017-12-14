@@ -29,7 +29,7 @@ class Serializer;
 class GameMessage_GameCommand : public GameMessageWithPlayer
 {
 public:
-    PlayerGameCommands gcs;
+    PlayerGameCommands cmds;
 
     GameMessage_GameCommand(); //-V730
     GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);

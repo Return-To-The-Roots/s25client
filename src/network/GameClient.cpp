@@ -17,8 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameClient.h"
-#include "ClientPlayer.h"
-#include "ClientPlayers.h"
+#include "CreateServerInfo.h"
 #include "EventManager.h"
 #include "FileChecksum.h"
 #include "Game.h"
@@ -31,6 +30,7 @@
 #include "GlobalVars.h"
 #include "JoinPlayerInfo.h"
 #include "Loader.h"
+#include "NWFInfo.h"
 #include "PlayerGameCommands.h"
 #include "RTTR_Version.h"
 #include "ReplayInfo.h"
@@ -63,7 +63,9 @@
 #include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include "libutil/fileFuncs.h"
+#include "libutil/strFuncs.h"
 #include "libutil/ucString.h"
+#include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
@@ -114,6 +116,8 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     if(!mainPlayer.socket.Connect(server, port, use_ipv6, SETTINGS.proxy))
     {
         LOG.write("GameClient::Connect: ERROR: Connect failed!\n");
+        if(host)
+            GAMESERVER.Stop();
         return false;
     }
 
@@ -126,6 +130,12 @@ bool GameClient::Connect(const std::string& server, const std::string& password,
     replayMode = false;
 
     return true;
+}
+
+bool GameClient::HostGame(const CreateServerInfo& csi, const std::string& map_path, MapType map_type)
+{
+    std::string hostPw = createRandString(20);
+    return GAMESERVER.Start(csi, map_path, map_type, hostPw) && Connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
 }
 
 /**
@@ -170,7 +180,12 @@ void GameClient::Run()
         }
     }
 
-    if(state == CS_GAME)
+    if(state == CS_LOADED)
+    {
+        // All players ready?
+        if(nwfInfo->isReady())
+            OnGameStart();
+    } else if(state == CS_GAME)
         ExecuteGameFrame();
 
     // maximal 10 Pakete verschicken
@@ -187,7 +202,7 @@ void GameClient::Stop()
     if(state == CS_STOPPED)
         return;
 
-    if(state == CS_LOADING || state == CS_GAME)
+    if(game)
         ExitGame();
     else if(state == CS_CONNECT || state == CS_CONFIG)
         gameLobby.reset();
@@ -225,6 +240,18 @@ boost::shared_ptr<GameLobby> GameClient::GetGameLobby()
     return gameLobby;
 }
 
+const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
+{
+    if(!game)
+        return NULL;
+    BOOST_FOREACH(const AIPlayer& ai, game->aiPlayers)
+    {
+        if(ai.GetPlayerId() == id)
+            return &ai;
+    }
+    return NULL;
+}
+
 /**
  *  Startet ein Spiel oder Replay.
  *
@@ -244,7 +271,7 @@ void GameClient::StartGame(const unsigned random_init)
     framesinfo.isPaused = true;
 
     // Je nach Geschwindigkeit GF-Länge einstellen
-    framesinfo.gf_length = SPEED_GF_LENGTHS[gameLobby->getSettings().speed];
+    framesinfo.gf_length = FramesInfo::milliseconds32_t(SPEED_GF_LENGTHS[gameLobby->getSettings().speed]);
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
@@ -261,11 +288,13 @@ void GameClient::StartGame(const unsigned random_init)
     // Create the game
     game.reset(
       new Game(gameLobby->getSettings(), startGF, std::vector<PlayerInfo>(gameLobby->getPlayers().begin(), gameLobby->getPlayers().end())));
-    clientPlayers.reset(new ClientPlayers());
-    for(unsigned id = 0; id < gameLobby->getNumPlayers(); id++)
+    if(!IsReplayModeOn())
     {
-        if(gameLobby->getPlayer(id).isUsed())
-            clientPlayers->add(id);
+        for(unsigned id = 0; id < gameLobby->getNumPlayers(); id++)
+        {
+            if(gameLobby->getPlayer(id).isUsed())
+                nwfInfo->addPlayer(id);
+        }
     }
     // Release lobby
     gameLobby.reset();
@@ -273,7 +302,7 @@ void GameClient::StartGame(const unsigned random_init)
     state = CS_LOADING;
 
     if(ci)
-        ci->CI_GameStarted(game);
+        ci->CI_GameLoading(game);
 
     // Get standard settings before they get overwritten
     GetPlayer(mainPlayer.playerId).FillVisualSettings(default_settings);
@@ -309,9 +338,6 @@ void GameClient::StartGame(const unsigned random_init)
     // Update visual settings
     ResetVisualSettings();
 
-    // Zeit setzen
-    framesinfo.lastTime = VIDEODRIVER.GetTickCount();
-
     if(!replayMode)
     {
         RTTR_Assert(!replayinfo);
@@ -322,28 +348,39 @@ void GameClient::StartGame(const unsigned random_init)
     mapinfo.mapData.Clear();
 }
 
-void GameClient::GameStarted()
+void GameClient::GameLoaded()
 {
     RTTR_Assert(state == CS_LOADING);
-    state = CS_GAME; // zu gamestate wechseln
 
-    framesinfo.isPaused = replayMode;
-
-    // Send empty GC for first NWF
-    if(!replayMode)
-        SendNothingNC();
-
-    GAMEMANAGER.ResetAverageFPS();
     game->Start(mapinfo.savegame);
+    state = CS_LOADED;
+
+    if(replayMode)
+        OnGameStart();
+    else
+    {
+        // Notify server that we are ready
+        if(IsHost())
+        {
+            for(unsigned id = 0; id < GetNumPlayers(); id++)
+            {
+                if(GetPlayer(id).ps == PS_AI)
+                {
+                    game->aiPlayers.push_back(CreateAIPlayer(id, GetPlayer(id).aiInfo));
+                    SendNothingNC(id);
+                }
+            }
+        }
+        SendNothingNC();
+        framesinfo.isPaused = false;
+    }
 }
 
 void GameClient::ExitGame()
 {
-    RTTR_Assert(state == CS_GAME || state == CS_LOADING);
-    // Spielwelt zerstören
-    human_ai.reset();
+    RTTR_Assert(state == CS_GAME || state == CS_LOADED || state == CS_LOADING);
     game.reset();
-    clientPlayers.reset();
+    nwfInfo.reset();
     // Clear remaining commands
     gameCommands_.clear();
 }
@@ -449,7 +486,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Ping& msg)
         if(msg.player >= gameLobby->getNumPlayers())
             return true;
         gameLobby->getPlayer(msg.player).ping = msg.ping;
-    } else if(state == CS_LOADING || state == CS_GAME)
+    } else if(state == CS_LOADING || state == CS_LOADED || state == CS_GAME)
     {
         if(msg.player >= GetNumPlayers())
             return true;
@@ -569,11 +606,22 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
     {
         if(msg.player >= gameLobby->getNumPlayers())
             return true;
-        gameLobby->getPlayer(msg.player).ps = PS_FREE;
-    } else if(state == CS_LOADING || state == CS_GAME)
+        GetPlayer(msg.player).ps = PS_FREE;
+    } else if(state == CS_LOADING || state == CS_LOADED || state == CS_GAME)
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
-        game->world.GetPlayer(msg.player).ps = PS_AI;
+        GamePlayer& player = GetPlayer(msg.player);
+        if(player.ps != PS_AI)
+        {
+            player.ps = PS_AI;
+            player.aiInfo = AI::Info(AI::DUMMY);
+            // Host has to handle it
+            if(IsHost())
+            {
+                game->aiPlayers.push_back(CreateAIPlayer(msg.player, player.aiInfo));
+                SendNothingNC(msg.player);
+            }
+        }
     } else
         return true;
 
@@ -606,12 +654,11 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Swap& msg)
 
         if(ci)
             ci->CI_PlayersSwapped(msg.player, msg.player2);
-    } else if(state == CS_LOADING || state == CS_GAME)
-    {
-        if(msg.player >= game->world.GetNumPlayers() || msg.player2 >= game->world.GetNumPlayers())
-            return true;
+    } else if(state == CS_LOADING || state == CS_LOADED || state == CS_GAME)
         ChangePlayerIngame(msg.player, msg.player2);
-    }
+    else
+        return true;
+    mainPlayer.sendMsgAsync(new GameMessage_Player_SwapConfirm(msg.player, msg.player2));
     return true;
 }
 
@@ -692,28 +739,19 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Name& msg)
  */
 bool GameClient::OnGameMessage(const GameMessage_Server_Start& msg)
 {
-    /// Beim Host muss das Spiel nicht nochmal gestartet werden, das hat der Server schon erledigt
-    if(IsHost())
-    {
-        if(state != CS_LOADING)
-            return true;
-        // NWF-Länge bekommen wir vom Server
-        framesinfo.nwf_length = msg.nwf_length;
-        return true;
-    }
     if(state != CS_CONFIG)
         return true;
-    // NWF-Länge bekommen wir vom Server
-    framesinfo.nwf_length = msg.nwf_length;
 
+    nwfInfo.reset(new NWFInfo());
+    nwfInfo->init(msg.firstNwf, msg.cmdDelay);
     try
     {
         StartGame(msg.random_init);
     } catch(SerializedGameData::Error& error)
     {
         LOG.write("Error when loading game: %s\n") % error.what();
+        Stop();
         GAMEMANAGER.ShowMenu();
-        ExitGame();
     }
     return true;
 }
@@ -926,6 +964,13 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
     return true;
 }
 
+bool GameClient::OnGameMessage(const GameMessage_SkipToGF& msg)
+{
+    skiptogf = msg.targetGF;
+    LOG.write("Jumping from GF %1% to GF %2%\n") % GetGFNumber() % skiptogf;
+    return true;
+}
+
 void GameClient::OnError(ClientError error)
 {
     if(ci)
@@ -1026,79 +1071,60 @@ bool GameClient::OnGameMessage(const GameMessage_RemoveLua& msg)
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_GameCommand& msg)
 {
-    if(state != CS_LOADING && state != CS_GAME)
-        return true;
-    ClientPlayer* player = clientPlayers->get(msg.player);
-    if(!player)
-        return true;
-    // LOG.writeToFile("CLIENT <<< GC %u\n") % unsigned(msg.player);
-    // If this is our GC then we must have no other command as we need to execute this before we even send the next one
-    RTTR_Assert(msg.player != mainPlayer.playerId || player->gcsToExecute.empty());
-    // Nachricht in Queue einhängen
-    player->gcsToExecute.push(msg.gcs);
+    if(nwfInfo)
+    {
+        if(!nwfInfo->addPlayerCmds(msg.player, msg.cmds))
+        {
+            LOG.write("Could not add gamecommands for player %1%. He might be cheating!\n") % unsigned(msg.player);
+            RTTR_Assert(false);
+        }
+    }
     return true;
 }
 
 void GameClient::IncreaseSpeed()
 {
-    if(framesinfo.gfLengthReq > 10)
-        framesinfo.gfLengthReq -= 10;
-
+    const bool debugMode =
 #ifndef NDEBUG
-    else if(framesinfo.gfLengthReq == 10)
-        framesinfo.gfLengthReq = 1;
+      true;
+#else
+      false;
 #endif
-
+    if(framesinfo.gfLengthReq > FramesInfo::milliseconds32_t(10))
+        framesinfo.gfLengthReq -= FramesInfo::milliseconds32_t(10);
+    else if((replayMode || debugMode) && framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(10))
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(1);
     else
-        framesinfo.gfLengthReq = 70;
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(70);
 
-    mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
+    if(replayMode)
+        framesinfo.gf_length = framesinfo.gfLengthReq;
+    else
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
 }
 
 void GameClient::DecreaseSpeed()
 {
-    if(framesinfo.gfLengthReq == 70)
-    {
+    const bool debugMode =
 #ifndef NDEBUG
-        framesinfo.gfLengthReq = 1;
+      true;
 #else
-        framesinfo.gfLengthReq = 10;
+      false;
 #endif
-    }
-#ifndef NDEBUG
-    else if(framesinfo.gfLengthReq == 1)
-    {
-        framesinfo.gfLengthReq = 10;
-    }
-#endif
+
+    FramesInfo::milliseconds32_t maxSpeed(replayMode ? 1000 : 70);
+
+    if(framesinfo.gfLengthReq == maxSpeed)
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(replayMode || debugMode ? 1 : 10);
+    else if(framesinfo.gfLengthReq == FramesInfo::milliseconds32_t(1))
+        framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(10);
     else
-    {
-        framesinfo.gfLengthReq += 10;
-    }
+        framesinfo.gfLengthReq += FramesInfo::milliseconds32_t(10);
 
-    mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq));
-}
-
-void GameClient::IncreaseReplaySpeed()
-{
     if(replayMode)
-    {
-        if(framesinfo.gf_length > 10)
-            framesinfo.gf_length -= 10;
-        else if(framesinfo.gf_length == 10)
-            framesinfo.gf_length = 1;
-    }
-}
-
-void GameClient::DecreaseReplaySpeed()
-{
-    if(replayMode)
-    {
-        if(framesinfo.gf_length == 1)
-            framesinfo.gf_length = 10;
-        else if(framesinfo.gf_length < 1000)
-            framesinfo.gf_length += 10;
-    }
+        framesinfo.gf_length = framesinfo.gfLengthReq;
+    else
+        mainPlayer.sendMsgAsync(new GameMessage_Speed(framesinfo.gfLengthReq.count()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1106,47 +1132,26 @@ void GameClient::DecreaseReplaySpeed()
 /// @param message  Nachricht, welche ausgeführt wird
 bool GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
 {
-    if(state != CS_GAME && state != CS_LOADING)
+    if(!nwfInfo)
         return true;
-    // Emulate a push of the new gf length
-    if(!framesinfo.gfLenghtNew)
-        framesinfo.gfLenghtNew = msg.gf_length;
-    else
+
+    if(!nwfInfo->addServerInfo(NWFServerInfo(msg.gf, msg.gf_length, msg.nextNWF)))
     {
-        RTTR_Assert(framesinfo.gfLenghtNew2 == 0);
-        framesinfo.gfLenghtNew2 = msg.gf_length;
+        RTTR_Assert(false);
+        LOG.write("Failed to add server info. Invalid server?\n");
     }
 
-    if(msg.first)
-    {
-        if(msg.nr % framesinfo.nwf_length == 0)
-            framesinfo.gfNrServer = msg.nr; // If the next frame is a NWF, we allow only this one
-        else
-        {
-            framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
-            framesinfo.gfNrServer -=
-              framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
-        }
-        RTTR_Assert(framesinfo.gf_length == msg.gf_length);
-    } else
-    {
-        RTTR_Assert(framesinfo.gfNrServer == msg.nr); // We expect the next message when the server is at a NWF
-        framesinfo.gfNrServer = msg.nr + framesinfo.nwf_length;
-        framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length; // Set the value of the next NWF, not some GFs after that
-    }
-
-    // LOG.writeToFile("framesinfo.gf_nr(%d) == framesinfo.gfNrServer(%d)\n") % framesinfo.gf_nr % framesinfo.gfNrServer;
     return true;
 }
 
 /**
- *  NFC Pause-Nachricht von Server
+ *  Pause-Nachricht von Server
  *
  *  @param[in] message Nachricht, welche ausgeführt wird
  */
 bool GameClient::OnGameMessage(const GameMessage_Pause& msg)
 {
-    if(state != CS_GAME && state != CS_LOADING)
+    if(state != CS_GAME)
         return true;
     if(framesinfo.isPaused == msg.paused)
         return true;
@@ -1196,24 +1201,24 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 
 ///////////////////////////////////////////////////////////////////////////////
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
-void GameClient::ExecuteGameFrame(const bool skipping)
+void GameClient::ExecuteGameFrame()
 {
     const unsigned curGF = GetGFNumber();
-    unsigned currentTime = VIDEODRIVER.GetTickCount();
+    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
 
     if(framesinfo.isPaused)
         return; // Pause
 
-    if(framesinfo.forcePauseLen)
+    if(framesinfo.forcePauseLen.count())
     {
         if(currentTime - framesinfo.forcePauseStart > framesinfo.forcePauseLen)
-            framesinfo.forcePauseLen = 0;
+            framesinfo.forcePauseLen = FramesInfo::milliseconds32_t::zero();
         else
             return; // Pause
     }
 
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
-    if(skipping || skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
+    if(skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
         if(replayMode)
         {
@@ -1221,12 +1226,14 @@ void GameClient::ExecuteGameFrame(const bool skipping)
             ExecuteGameFrame_Replay();
         } else
         {
+            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+            bool isNWF = (curGF == nwfInfo->getNextNWF());
             // Is it time for a NWF, handle that first
-            if(curGF % framesinfo.nwf_length == 0)
+            if(isNWF)
             {
                 // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
                 // -> Don't execute GF, don't autosave etc.
-                if(clientPlayers->checkForLaggingPlayers())
+                if(!nwfInfo->isReady())
                 {
                     // If a player is a few GFs behind, he will never catch up and always lag
                     // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
@@ -1236,56 +1243,37 @@ void GameClient::ExecuteGameFrame(const bool skipping)
                     return;
                 }
 
-                // Same for the server
-                if(framesinfo.gfNrServer < curGF)
-                    return;
-                RTTR_Assert(framesinfo.gfNrServer <= curGF + framesinfo.nwf_length);
+                RTTR_Assert(nwfInfo->getServerInfo().gf == curGF);
 
                 ExecuteNWF();
 
-                RTTR_Assert(framesinfo.gfLenghtNew != 0);
-                if(framesinfo.gfLenghtNew != framesinfo.gf_length)
+                FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+                nwfInfo->execute(framesinfo);
+                if(oldGFLen != framesinfo.gf_length)
                 {
-                    unsigned oldGfLen = framesinfo.gf_length;
-                    int oldNwfLen = framesinfo.nwf_length;
-                    framesinfo.ApplyNewGFLength();
-                    framesinfo.gfLengthReq = framesinfo.gf_length;
-
-                    // Adjust next confirmation for next NWF (if we have it already)
-                    if(framesinfo.gfNrServer != curGF)
-                    {
-                        RTTR_Assert(framesinfo.gfNrServer == curGF + oldNwfLen);
-                        framesinfo.gfNrServer = framesinfo.gfNrServer - oldNwfLen + framesinfo.nwf_length;
-                        // Make it a NWF (mostly for validation and consistency)
-                        framesinfo.gfNrServer -= framesinfo.gfNrServer % framesinfo.nwf_length;
-                    }
-
-                    LOG.write("Client: %u/%u: Speed changed from %u to %u (NWF: %u to %u)\n") % framesinfo.gfNrServer % curGF % oldGfLen
-                      % framesinfo.gf_length % oldNwfLen % framesinfo.nwf_length;
+                    LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
+                      % framesinfo.nwf_length;
                 }
-                // "pop" the length
-                framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
-                framesinfo.gfLenghtNew2 = 0;
             }
 
-            NextGF();
+            NextGF(isNWF);
+            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+            HandleAutosave();
+
+            // GF-Ende im Replay aktualisieren
+            if(replayinfo && replayinfo->replay.IsRecording())
+                replayinfo->replay.UpdateLastGF(curGF);
         }
 
-        RTTR_Assert(replayMode || curGF <= framesinfo.gfNrServer + framesinfo.nwf_length);
         // Store this timestamp
         framesinfo.lastTime = currentTime;
         // Reset frameTime
-        framesinfo.frameTime = 0;
+        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
 
-        HandleAutosave();
-
-        // GF-Ende im Replay aktualisieren
-        if(replayinfo && replayinfo->replay.IsRecording())
-            replayinfo->replay.UpdateLastGF(curGF);
     } else
     {
         // Next GF not yet reached, just update the time in the current one for drawing
-        framesinfo.frameTime = currentTime - framesinfo.lastTime;
+        framesinfo.frameTime = boost::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
         RTTR_Assert(framesinfo.frameTime < framesinfo.gf_length);
     }
 }
@@ -1317,18 +1305,11 @@ void GameClient::HandleAutosave()
 }
 
 /// Führt notwendige Dinge für nächsten GF aus
-void GameClient::NextGF()
+void GameClient::NextGF(bool wasNWF)
 {
+    BOOST_FOREACH(AIPlayer& ai, game->aiPlayers)
+        ai.RunGF(GetGFNumber(), wasNWF);
     game->RunGF();
-
-    if(human_ai)
-    {
-        human_ai->RunGF(GetGFNumber(), (GetGFNumber() % framesinfo.nwf_length == 0));
-
-        const std::vector<gc::GameCommandPtr>& ai_gcs = human_ai->GetGameCommands();
-        gameCommands_.insert(gameCommands_.end(), ai_gcs.begin(), ai_gcs.end());
-        human_ai->FetchGameCommands();
-    }
 }
 
 void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
@@ -1337,17 +1318,28 @@ void GameClient::ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs)
         gc->Execute(game->world, playerId);
 }
 
-void GameClient::SendNothingNC()
+void GameClient::SendNothingNC(uint8_t player)
 {
-    mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
+    mainPlayer.sendMsgAsync(new GameMessage_GameCommand(player, AsyncChecksum::create(*game), std::vector<gc::GameCommandPtr>()));
 }
 
 void GameClient::WritePlayerInfo(SavedFile& file)
 {
-    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    RTTR_Assert(state == CS_LOADING || state == CS_LOADED || state == CS_GAME);
     // Spielerdaten
     for(unsigned i = 0; i < game->world.GetNumPlayers(); ++i)
         file.AddPlayer(game->world.GetPlayer(i));
+}
+
+void GameClient::OnGameStart()
+{
+    RTTR_Assert(state == CS_LOADED);
+    GAMEMANAGER.ResetAverageFPS();
+    framesinfo.lastTime = FramesInfo::UsedClock::now();
+    framesinfo.isPaused = replayMode;
+    state = CS_GAME;
+    if(ci)
+        ci->CI_GameStarted(game);
 }
 
 void GameClient::SetTestPlayerId(unsigned id)
@@ -1479,7 +1471,9 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     const unsigned unit = 630 /*ms*/ * factor_numerator / factor_denumerator;
     // Good approximation of current time in ms
     // (Accuracy of a possibly expensive VideoDriverWrapper::GetTicks() isn't needed here):
-    const unsigned currenttime = framesinfo.lastTime + framesinfo.frameTime;
+    using namespace boost::chrono;
+    const unsigned currenttime =
+      boost::chrono::duration_cast<FramesInfo::milliseconds32_t>((framesinfo.lastTime + framesinfo.frameTime).time_since_epoch()).count();
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
@@ -1487,8 +1481,12 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     // TODO: Move to some animation system that is part of game
-    unsigned elapsedTime = (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : 0;
-    unsigned duration = ev->length * framesinfo.gf_length;
+    FramesInfo::milliseconds32_t elapsedTime;
+    if(state == CS_GAME)
+        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    else
+        elapsedTime = FramesInfo::milliseconds32_t::zero();
+    FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
     unsigned result = (max_val * elapsedTime) / duration;
     if(result >= max_val)
         RTTR_Assert(result < max_val);
@@ -1498,9 +1496,14 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
-    unsigned elapsedTime = (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : 0;
-    unsigned duration = ev->length * framesinfo.gf_length;
-    return x1 + ((x2 - x1) * int(elapsedTime)) / int(duration);
+    typedef boost::chrono::duration<int32_t, boost::milli> milliseconds32_t;
+    milliseconds32_t elapsedTime;
+    if(state == CS_GAME)
+        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    else
+        elapsedTime = milliseconds32_t::zero();
+    milliseconds32_t duration = ev->length * framesinfo.gf_length;
+    return x1 + ((x2 - x1) * elapsedTime) / duration;
 }
 
 void GameClient::ServerLost()
@@ -1525,14 +1528,13 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     if(!replayMode)
     {
         // unpause before skipping
-        GAMESERVER.SetPaused(false);
-        GAMESERVER.skiptogf = gf;
-        skiptogf = gf;
-        LOG.write("jumping from gf %i to gf %i \n") % GetGFNumber() % gf;
+        SetPause(false);
+        mainPlayer.sendMsgAsync(new GameMessage_SkipToGF(gf));
         return;
     }
 
     SetPause(false);
+    skiptogf = gf;
 
     // GFs überspringen
     for(unsigned i = GetGFNumber(); i < gf; ++i)
@@ -1552,8 +1554,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
             VIDEODRIVER.SwapBuffers();
         }
-        ExecuteGameFrame(true);
-        // LOG.write(("jumping: now at gf %i\n", framesinfo.nr);
+        ExecuteGameFrame();
     }
 
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat
@@ -1615,13 +1616,18 @@ void GameClient::SetPause(bool pause)
         if(!pause)
             return;
         framesinfo.isPaused = pause;
-        framesinfo.frameTime = 0;
+        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(replayMode)
     {
         framesinfo.isPaused = pause;
-        framesinfo.frameTime = 0;
+        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
     } else if(IsHost())
-        GAMESERVER.SetPaused(pause);
+    {
+        // Pause instantly
+        if(pause)
+            framesinfo.isPaused = true;
+        mainPlayer.sendMsgAsync(new GameMessage_Pause(pause));
+    }
 }
 
 void GameClient::ToggleReplayFOW()
@@ -1652,13 +1658,13 @@ bool GameClient::AddGC(gc::GameCommandPtr gc)
 
 unsigned GameClient::GetNumPlayers() const
 {
-    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    RTTR_Assert(state == CS_LOADING || state == CS_LOADED || state == CS_GAME);
     return game->world.GetNumPlayers();
 }
 
 GamePlayer& GameClient::GetPlayer(const unsigned id)
 {
-    RTTR_Assert(state == CS_LOADING || state == CS_GAME);
+    RTTR_Assert(state == CS_LOADING || state == CS_LOADED || state == CS_GAME);
     RTTR_Assert(id < GetNumPlayers());
     return game->world.GetPlayer(id);
 }
@@ -1671,24 +1677,29 @@ AIPlayer* GameClient::CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo)
 /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
 std::string GameClient::FormatGFTime(const unsigned gf) const
 {
+    typedef boost::chrono::duration<uint32_t, boost::chrono::seconds::period> seconds;
+    typedef boost::chrono::duration<uint32_t, boost::chrono::hours::period> hours;
+    typedef boost::chrono::duration<uint32_t, boost::chrono::minutes::period> minutes;
+    using boost::chrono::duration_cast;
+
     // In Sekunden umrechnen
-    unsigned seconds = gf * framesinfo.gf_length / 1000;
+    seconds numSeconds = duration_cast<seconds>(gf * framesinfo.gf_length);
 
     // Angaben rausfiltern
-    unsigned hours = seconds / 3600;
-    seconds -= hours * 3600;
-    unsigned minutes = seconds / 60;
-    seconds -= minutes * 60;
+    hours numHours = duration_cast<hours>(numSeconds);
+    numSeconds -= numHours;
+    minutes numMinutes = duration_cast<hours>(numSeconds);
+    numSeconds -= numMinutes;
 
     char str[64];
 
     // ganze Stunden mit dabei? Dann entsprechend anderes format, ansonsten ignorieren wir die einfach
-    if(hours)
-        sprintf(str, "%02u:%02u:%02u", hours, minutes, seconds);
+    if(numHours.count())
+        sprintf(str, "%02u:%02u:%02u", numHours.count(), numMinutes.count(), numSeconds.count());
     else
-        sprintf(str, "%02u:%02u", minutes, seconds);
+        sprintf(str, "%02u:%02u", numMinutes.count(), numSeconds.count());
 
-    return std::string(str);
+    return str;
 }
 
 const std::string& GameClient::GetReplayFileName() const
@@ -1702,16 +1713,17 @@ Replay* GameClient::GetReplay()
     return replayinfo ? &replayinfo->replay : NULL;
 }
 
-boost::shared_ptr<const ClientPlayers> GameClient::GetPlayers() const
+boost::shared_ptr<const NWFInfo> GameClient::GetNWFInfo() const
 {
-    return clientPlayers;
+    return nwfInfo;
 }
 
 /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
 unsigned GameClient::GetTournamentModeDuration() const
 {
+    using namespace boost::chrono;
     if(game && unsigned(game->ggs.objective) >= NUM_OBJECTIVESS)
-        return TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS] * 60 * 1000 / framesinfo.gf_length;
+        return minutes(TOURNAMENT_MODES_DURATION[game->ggs.objective - NUM_OBJECTIVESS]) / framesinfo.gf_length;
     else
         return 0;
 }
@@ -1719,10 +1731,12 @@ unsigned GameClient::GetTournamentModeDuration() const
 void GameClient::ToggleHumanAIPlayer()
 {
     RTTR_Assert(!IsReplayModeOn());
-    if(human_ai)
-        human_ai.reset();
+    boost::ptr_vector<AIPlayer>::iterator it =
+      std::find_if(game->aiPlayers.begin(), game->aiPlayers.end(), boost::bind(&AIPlayer::GetPlayerId, _1) == GetPlayerId());
+    if(it != game->aiPlayers.end())
+        game->aiPlayers.erase(it);
     else
-        human_ai.reset(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
+        game->aiPlayers.push_back(CreateAIPlayer(mainPlayer.playerId, AI::Info(AI::DEFAULT, AI::EASY)));
 }
 
 void GameClient::RequestSwapToPlayer(const unsigned char newId)

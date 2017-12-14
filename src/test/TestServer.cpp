@@ -72,7 +72,7 @@ bool TestServer::run()
             if(set.InSet(connections[id].so))
             {
                 // nachricht empfangen
-                if(!connections[id].recvQueue.recv(connections[id].so))
+                if(connections[id].recvQueue.recv(connections[id].so) < 0)
                     connections.erase(connections.begin() + id);
                 else
                 {

@@ -49,6 +49,7 @@ enum
     NMS_PLAYER_NEW,         // 1 playerId, x playername
     NMS_PLAYER_READY,       // 1 status | 1 playerId, 1 status
     NMS_PLAYER_SWAP,        // 1 playerId1, 1 playerId2
+    NMS_PLAYER_SWAP_CONFIRM,
 
     NMS_MAP_NAME = 0x0301, // x mapname
     NMS_MAP_INFO,          // 0 | 4 parts, 4 ziplength, 4 length
@@ -60,6 +61,7 @@ enum
     NMS_SERVER_NWF_DONE = 0x0401, // 0
     NMS_GAMECOMMANDS,
     NMS_PAUSE,
+    NMS_SKIP_TO_GF,
     NMS_SERVER_SPEED,
 
     NMS_GGS_CHANGE = 0x0501, //
@@ -151,12 +153,17 @@ enum KickReason
     NP_ASYNC           // asynchron
 };
 
-/// How long till we kick a connecting player (in seconds)
+// All times are in seconds
+/// How long till we kick a connecting player
 const unsigned CONNECT_TIMEOUT = 2 * 60; // 2min
-/// How long till we kick a lagging player (in seconds)
-const unsigned LAG_TIMEOUT = 35 * 60;
-/// How often we send pings (in seconds)
+/// How long till we kick a lagging player
+const unsigned LAG_TIMEOUT = 5 * 60;
+/// How often we send pings
 const unsigned PING_RATE = 1;
+/// Maximum time for a ping reply before we kick a player
+const unsigned PING_TIMEOUT = 5 * 60;
+/// Maximum time the players get for loading the map
+const unsigned LOAD_TIMEOUT = 10 * 60;
 
 /// Größe eines Map-Paketes
 /// ACHTUNG: IPV4 garantiert nur maximal 576!!

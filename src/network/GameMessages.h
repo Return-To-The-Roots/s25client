@@ -189,32 +189,33 @@ public:
 class GameMessage_Server_Start : public GameMessage
 {
 public:
-    uint32_t random_init;
-    uint32_t nwf_length;
+    uint32_t random_init, firstNwf, cmdDelay;
 
     GameMessage_Server_Start() : GameMessage(NMS_SERVER_START) {} //-V730
-    GameMessage_Server_Start(const unsigned random_init, const unsigned nwf_length)
-        : GameMessage(NMS_SERVER_START), random_init(random_init), nwf_length(nwf_length)
+    GameMessage_Server_Start(const unsigned random_init, const unsigned firstNwf, const unsigned cmdDelay)
+        : GameMessage(NMS_SERVER_START), random_init(random_init), firstNwf(firstNwf), cmdDelay(cmdDelay)
     {}
 
     void Serialize(Serializer& ser) const override
     {
-        LOG.writeToFile(">>> NMS_SERVER_START(%d, %d)\n") % random_init % nwf_length;
+        LOG.writeToFile(">>> NMS_SERVER_START(%d, %d, %d)\n") % random_init % firstNwf % cmdDelay;
         GameMessage::Serialize(ser);
         ser.PushUnsignedInt(random_init);
-        ser.PushUnsignedInt(nwf_length);
+        ser.PushUnsignedInt(firstNwf);
+        ser.PushUnsignedInt(cmdDelay);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
         random_init = ser.PopUnsignedInt();
-        nwf_length = ser.PopUnsignedInt();
+        firstNwf = ser.PopUnsignedInt();
+        cmdDelay = ser.PopUnsignedInt();
     }
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_SERVER_START(%d, %d)\n") % random_init % nwf_length;
+        LOG.writeToFile("<<< NMS_SERVER_START(%d, %d, %d)\n") % random_init % firstNwf % cmdDelay;
         return callback->OnGameMessage(*this);
     }
 };
@@ -646,7 +647,7 @@ public:
     }
 };
 
-/// gehende Player-Swap-Nachricht
+/// Swap the given players
 class GameMessage_Player_Swap : public GameMessageWithPlayer
 {
 public:
@@ -675,6 +676,32 @@ public:
         LOG.writeToFile("<<< NMS_PLAYER_SWAP\n");
         return callback->OnGameMessage(*this);
     }
+};
+
+// Outgoing confirmation of the swap
+class GameMessage_Player_SwapConfirm : public GameMessageWithPlayer
+{
+public:
+    /// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
+    uint8_t player2;
+    GameMessage_Player_SwapConfirm() : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM) {} //-V730
+    GameMessage_Player_SwapConfirm(uint8_t player, uint8_t player2)
+        : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM, player), player2(player2)
+    {}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessageWithPlayer::Serialize(ser);
+        ser.PushUnsignedChar(player2);
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessageWithPlayer::Deserialize(ser);
+        player2 = ser.PopUnsignedChar();
+    }
+
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 class GameMessage_Map_Info : public GameMessage
@@ -925,36 +952,34 @@ public:
 class GameMessage_Server_NWFDone : public GameMessage
 {
 public:
-    uint32_t nr;        // GF
-    uint32_t gf_length; // new speed
-    bool first;
+    uint32_t gf, gf_length, nextNWF;
 
     GameMessage_Server_NWFDone() : GameMessage(NMS_SERVER_NWF_DONE) {} //-V730
-    GameMessage_Server_NWFDone(const unsigned nr, const unsigned gf_length, const bool first = false)
-        : GameMessage(NMS_SERVER_NWF_DONE), nr(nr), gf_length(gf_length), first(first)
+    GameMessage_Server_NWFDone(const unsigned gf, const unsigned gf_length, const unsigned nextNWF)
+        : GameMessage(NMS_SERVER_NWF_DONE), gf(gf), gf_length(gf_length), nextNWF(nextNWF)
     {
-        LOG.writeToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);
+        LOG.writeToFile(">>> NMS_NWF_DONE(%d, %d, %d)\n") % gf % gf_length % nextNWF;
     }
 
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ser.PushUnsignedInt(nr);
+        ser.PushUnsignedInt(gf);
         ser.PushUnsignedInt(gf_length);
-        ser.PushBool(first);
+        ser.PushUnsignedInt(nextNWF);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
-        nr = ser.PopUnsignedInt();
+        gf = ser.PopUnsignedInt();
         gf_length = ser.PopUnsignedInt();
-        first = ser.PopBool();
+        nextNWF = ser.PopUnsignedInt();
     }
 
     bool Run(GameMessageInterface* callback) const override
     {
-        LOG.writeToFile("<<< NMS_NWF_DONE(%d, %d, %d)\n") % nr % gf_length % (first ? 1 : 0);
+        LOG.writeToFile("<<< NMS_NWF_DONE(%d, %d, %d)\n") % gf % gf_length % nextNWF;
         return callback->OnGameMessage(*this);
     }
 };
@@ -988,6 +1013,29 @@ public:
         LOG.writeToFile("<<< NMS_PAUSE(%d)\n") % (paused ? 1 : 0);
         return callback->OnGameMessage(*this);
     }
+};
+
+class GameMessage_SkipToGF : public GameMessage
+{
+public:
+    uint32_t targetGF;
+
+    GameMessage_SkipToGF() : GameMessage(NMS_SKIP_TO_GF) {} //-V730
+    GameMessage_SkipToGF(uint32_t targetGF) : GameMessage(NMS_SKIP_TO_GF), targetGF(targetGF) {}
+
+    void Serialize(Serializer& ser) const override
+    {
+        GameMessage::Serialize(ser);
+        ser.PushUnsignedInt(targetGF);
+    }
+
+    void Deserialize(Serializer& ser) override
+    {
+        GameMessage::Deserialize(ser);
+        targetGF = ser.PopUnsignedInt();
+    }
+
+    bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }
 };
 
 /// ausgehende GetAsyncLog-Nachricht

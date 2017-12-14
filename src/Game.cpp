@@ -19,6 +19,7 @@
 #include "Game.h"
 #include "GameInterface.h"
 #include "GamePlayer.h"
+#include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
@@ -28,6 +29,8 @@ Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vect
 Game::Game(const GlobalGameSettings& settings, EventManager* em, const std::vector<PlayerInfo>& players)
     : ggs(settings), em(em), world(players, ggs, *em), gameFinished(false)
 {}
+
+Game::~Game() {}
 
 void Game::Start(bool startFromSave)
 {

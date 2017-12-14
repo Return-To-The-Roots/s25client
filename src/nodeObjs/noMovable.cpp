@@ -134,17 +134,29 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 
     RTTR_Assert(current_ev || pause_walked_gf);
 
+    typedef boost::chrono::duration<int32_t, boost::milli> milliseconds_i32_t;
+
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
-    unsigned gf_diff = current_ev ? (GetEvMgr().GetCurrentGF() - current_ev->startGF) : pause_walked_gf;
-    unsigned evLength = current_ev ? current_ev->length : pause_event_length;
-    unsigned frame_time = current_ev ? GAMECLIENT.GetFrameTime() : 0;
+    unsigned gf_diff, evLength;
+    milliseconds_i32_t frame_time;
+    if(current_ev)
+    {
+        gf_diff = GetEvMgr().GetCurrentGF() - current_ev->startGF;
+        evLength = current_ev->length;
+        frame_time = GAMECLIENT.GetFrameTime();
+    } else
+    {
+        gf_diff = pause_walked_gf;
+        evLength = pause_event_length;
+        frame_time = milliseconds_i32_t::zero();
+    }
 
     // Convert to real world time
-    const unsigned gfLength = GAMECLIENT.GetGFLength();
+    const milliseconds_i32_t gfLength = GAMECLIENT.GetGFLength();
     // Time since the start of the event
-    unsigned curTimePassed = gf_diff * gfLength + frame_time;
+    milliseconds_i32_t curTimePassed = gf_diff * gfLength + frame_time;
     // Duration of the event
-    unsigned duration = evLength * gfLength;
+    milliseconds_i32_t duration = evLength * gfLength;
 
     // We are in that event
     RTTR_Assert(curTimePassed <= duration);
@@ -167,12 +179,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
             curPt.y += mapDrawSize.y;
     }
 
-    RTTR_Assert(curTimePassed <= static_cast<unsigned>(std::numeric_limits<int>::max()));
-    int iCurTimePassed = static_cast<int>(curTimePassed);
-    RTTR_Assert(duration <= static_cast<unsigned>(std::numeric_limits<int>::max()));
-    int iDuration = static_cast<int>(duration);
-
-    return ((nextPt - curPt) * iCurTimePassed) / iDuration;
+    return ((nextPt - curPt) * curTimePassed.count()) / duration.count();
 }
 
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten

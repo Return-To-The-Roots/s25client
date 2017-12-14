@@ -23,6 +23,9 @@
 #include "GlobalGameSettings.h"
 #include "world/GameWorld.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
+
+class AIPlayer;
 
 /// Holds all data for a running game
 class Game
@@ -30,10 +33,12 @@ class Game
 public:
     Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players);
     Game(const GlobalGameSettings& settings, EventManager* em, const std::vector<PlayerInfo>& players);
+    ~Game();
 
     const GlobalGameSettings ggs;
     boost::interprocess::unique_ptr<EventManager, Deleter<EventManager> > em;
     GameWorld world;
+    boost::ptr_vector<AIPlayer> aiPlayers;
 
     /// Does the remaining initializations for starting the game
     void Start(bool startFromSave);

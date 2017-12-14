@@ -159,6 +159,13 @@ inline bool contains(const T& container, const U& value)
     return find(container, value) != container.end();
 }
 
+/// Returns true if the container contains a value matching the predicate
+template<typename T, class T_Predicate>
+inline bool containsPred(const T& container, const T_Predicate& predicate)
+{
+    return std::find_if(container.begin(), container.end(), predicate) != container.end();
+}
+
 /// Remove duplicate values from the given container without changing the order
 template<class T>
 inline void makeUnique(T& container)

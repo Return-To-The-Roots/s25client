@@ -18,25 +18,19 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameServer.h"
 #include "Debug.h"
-#include "GameManager.h"
 #include "GameMessage.h"
 #include "GameMessage_GameCommand.h"
 #include "GameServerPlayer.h"
 #include "GlobalGameSettings.h"
-#include "Loader.h"
 #include "RTTR_Version.h"
 #include "RttrConfig.h"
 #include "Savegame.h"
 #include "Settings.h"
-#include "ai/AIPlayer.h"
-#include "drivers/VideoDriverWrapper.h"
 #include "files.h"
 #include "helpers/Deleter.h"
 #include "helpers/containerUtils.h"
-#include "ingameWindows/iwDirectIPCreate.h"
-#include "network/GameClient.h"
+#include "network/CreateServerInfo.h"
 #include "network/GameMessages.h"
-#include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Map.h"
 #include "gameTypes/LanGameInfo.h"
 #include "gameData/GameConsts.h"
@@ -48,8 +42,10 @@
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
 #include <boost/bind.hpp>
+#include <boost/chrono/system_clocks.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
+#include <boost/math/special_functions/round.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <iomanip>
 
@@ -76,21 +72,19 @@ GameServer::ServerConfig::ServerConfig()
 
 void GameServer::ServerConfig::Clear()
 {
-    playercount = 0;
     gamename.clear();
     password.clear();
     port = 0;
     ipv6 = false;
-    use_upnp = false;
 }
 
-GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0), lasttime(0) {}
+GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0) {}
 
-void GameServer::CountDown::Start(unsigned timeInSec, unsigned curTime)
+void GameServer::CountDown::Start(unsigned timeInSec)
 {
     isActive = true;
     remainingSecs = timeInSec;
-    lasttime = curTime;
+    lasttime = SteadyClock::now();
 }
 
 void GameServer::CountDown::Stop()
@@ -98,11 +92,13 @@ void GameServer::CountDown::Stop()
     isActive = false;
 }
 
-bool GameServer::CountDown::Update(unsigned curTime)
+bool GameServer::CountDown::Update()
 {
     RTTR_Assert(isActive);
+    SteadyClock::time_point curTime = SteadyClock::now();
+
     // Check if 1s has passed
-    if(curTime - lasttime < 1000)
+    if(curTime - lasttime < boost::chrono::seconds(1))
         return false;
     if(remainingSecs == 0)
     {
@@ -117,7 +113,7 @@ bool GameServer::CountDown::Update(unsigned curTime)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-GameServer::GameServer() : skiptogf(0), status(SS_STOPPED), currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG) {}
+GameServer::GameServer() : skiptogf(0), state(SS_STOPPED), currentGF(0), lanAnnouncer(LAN_DISCOVERY_CFG) {}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -128,17 +124,17 @@ GameServer::~GameServer()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Spiel hosten
-bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type)
+bool GameServer::Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw)
 {
     Stop();
 
     // Name, Password und Kartenname kopieren
     config.gamename = csi.gamename;
+    config.hostPassword = hostPw;
     config.password = csi.password;
     config.servertype = csi.type;
     config.port = csi.port;
     config.ipv6 = csi.ipv6;
-    config.use_upnp = csi.use_upnp;
     mapinfo.type = map_type;
     mapinfo.filepath = map_path;
 
@@ -161,8 +157,10 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
             }
             const libsiedler2::ArchivItem_Map_Header& header = checkedCast<const glArchivItem_Map*>(map.get(0))->getHeader();
 
-            config.playercount = header.getNumPlayers();
+            playerInfos.resize(header.getNumPlayers());
             mapinfo.title = cvStringToUTF8(header.getName());
+            ggs_.LoadSettings();
+            currentGF = 0;
         }
         break;
         // Gespeichertes Spiel
@@ -174,35 +172,29 @@ bool GameServer::TryToStart(const CreateServerInfo& csi, const std::string& map_
                 return false;
 
             // Spieleranzahl
-            config.playercount = save.GetNumPlayers();
+            playerInfos.resize(save.GetNumPlayers());
             mapinfo.title = save.GetMapName();
+
+            for(unsigned i = 0; i < playerInfos.size(); ++i)
+            {
+                playerInfos[i] = JoinPlayerInfo(save.GetPlayer(i));
+                // If it was a human we make it free, so someone can join
+                if(playerInfos[i].ps == PS_OCCUPIED)
+                    playerInfos[i].ps = PS_FREE;
+                playerInfos[i].InitRating();
+            }
+
+            ggs_ = save.ggs;
+            currentGF = save.start_gf;
         }
         break;
     }
 
-    if(config.playercount == 0)
+    if(playerInfos.empty())
     {
         LOG.write("Map \"%s\" has no players!\n") % mapinfo.filepath;
         return false;
     }
-
-    status = SS_CREATING_LOBBY;
-    // Von Lobby abhängig? Dann der Bescheid sagen und auf eine Antwort warten, dass wir den Server
-    // erstellen dürfen
-    if(config.servertype == ServerType::LOBBY)
-    {
-        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
-        return true;
-    } else
-        // ansonsten können wir sofort starten
-        return Start();
-}
-
-bool GameServer::Start()
-{
-    RTTR_Assert(status == SS_CREATING_LOBBY);
-    if(status != SS_CREATING_LOBBY)
-        return false;
 
     if(!mapinfo.mapData.CompressFromFile(mapinfo.filepath, &mapinfo.mapChecksum))
         return false;
@@ -216,70 +208,24 @@ bool GameServer::Start()
     } else
         RTTR_Assert(mapinfo.luaFilepath.empty() && mapinfo.luaChecksum == 0);
 
-    playerInfos.resize(config.playercount);
-    ai_players.resize(config.playercount);
-
-    bool host_found = false;
-
-    //// Spieler 0 erstmal der Host
-    switch(mapinfo.type)
-    {
-        default: break;
-
-        case MAPTYPE_OLDMAP:
-        {
-            // Host bei normalen Spieler der erste Spieler
-            playerInfos[0].isHost = true;
-
-            ggs_.LoadSettings();
-        }
-        break;
-        case MAPTYPE_SAVEGAME:
-        {
-            Savegame save;
-            if(!save.Load(mapinfo.filepath, true, false))
-                return false;
-
-            // Bei Savegames die Originalspieldaten noch mit auslesen
-            for(unsigned i = 0; i < playerInfos.size(); ++i)
-            {
-                playerInfos[i] = JoinPlayerInfo(save.GetPlayer(i));
-                if(playerInfos[i].ps == PS_OCCUPIED)
-                {
-                    // If it was a human we make it free, so someone can join
-                    playerInfos[i].ps = PS_FREE;
-                    // First player becomes the host
-                    if(!host_found)
-                    {
-                        playerInfos[i].isHost = true;
-                        host_found = true;
-                    }
-                }
-                playerInfos[i].InitRating();
-            }
-
-            ggs_ = save.ggs;
-        }
-        break;
-    }
-
     // ab in die Konfiguration
-    status = SS_CONFIG;
+    state = SS_CONFIG;
 
     // und das socket in listen-modus schicken
-    if(!serversocket.Listen(config.port, config.ipv6, config.use_upnp))
+    if(!serversocket.Listen(config.port, config.ipv6, csi.use_upnp))
     {
         LOG.write("GameServer::Start: ERROR: Listening on port %d failed!\n") % config.port;
         LOG.writeLastError("Fehler");
         return false;
     }
 
-    // Zu sich selbst connecten als Host
-    if(!GAMECLIENT.Connect("localhost", config.password, config.servertype, config.port, true, config.ipv6))
-        return false;
-
     if(config.servertype == ServerType::LAN)
         lanAnnouncer.Start();
+    else if(config.servertype == ServerType::LOBBY)
+    {
+        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (config.password.length() != 0), config.port);
+        LOBBYCLIENT.AddListener(this);
+    }
     AnnounceStatusChange();
 
     return true;
@@ -315,54 +261,60 @@ void GameServer::AnnounceStatusChange()
         lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
     } else if(config.servertype == ServerType::LOBBY)
     {
-        LOBBYCLIENT.UpdateServerNumPlayers(GetNumFilledSlots(), playerInfos.size());
+        if(LOBBYCLIENT.IsIngame())
+            LOBBYCLIENT.UpdateServerNumPlayers(GetNumFilledSlots(), playerInfos.size());
     }
+}
+
+void GameServer::LC_Status_Error(const std::string& error)
+{
+    // Error during adding of server to lobby -> Stop
+    Stop();
+}
+
+void GameServer::LC_Created()
+{
+    // All good -> Don't listen anymore
+    LOBBYCLIENT.RemoveListener(this);
+    AnnounceStatusChange();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Hauptschleife
 void GameServer::Run()
 {
-    if(status == SS_STOPPED)
+    if(state == SS_STOPPED)
         return;
 
     // auf tote Clients prüfen
-    if(status != SS_CREATING_LOBBY)
-        ClientWatchDog();
+    ClientWatchDog();
 
     // auf neue Clients warten
-    if(status == SS_CONFIG)
-        WaitForClients();
-    else if(status == SS_GAME)
-        ExecuteGameFrame();
+    if(state == SS_CONFIG)
+        RunStateConfig();
+    else if(state == SS_LOADING)
+        RunStateLoading();
+    else if(state == SS_GAME)
+        RunStateGame();
 
     // post zustellen
     FillPlayerQueues();
 
-    if(countdown.IsActive())
-    {
-        // countdown erzeugen
-        if(countdown.Update(VIDEODRIVER.GetTickCount()))
-        {
-            // nun echt starten
-            if(!countdown.IsActive())
-            {
-                if(!StartGame())
-                {
-                    GAMEMANAGER.ShowMenu();
-                    return;
-                }
-            } else
-                SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
-        }
-    }
-
-    // queues abarbeiten
+    // Execute messages
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
     {
-        // maximal 10 Pakete verschicken
-        player.sendMsgs(10);
+        // Ignore kicked players
+        if(!player.socket.isValid())
+            continue;
         player.executeMsgs(*this);
+    }
+    // Send afterwards as most messages are relayed which should be done as fast as possible
+    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    {
+        // Ignore kicked players
+        if(!player.socket.isValid())
+            continue;
+        player.sendMsgs(10);
     }
 
     for(std::vector<GameServerPlayer>::iterator it = networkPlayers.begin(); it != networkPlayers.end();)
@@ -376,11 +328,84 @@ void GameServer::Run()
     lanAnnouncer.Run();
 }
 
+void GameServer::RunStateConfig()
+{
+    WaitForClients();
+    if(countdown.IsActive() && countdown.Update())
+    {
+        // nun echt starten
+        if(!countdown.IsActive())
+        {
+            if(!StartGame())
+            {
+                Stop();
+                return;
+            }
+        } else
+            SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
+    }
+}
+
+void GameServer::RunStateLoading()
+{
+    if(!nwfInfo.isReady())
+    {
+        if(SteadyClock::now() - loadStartTime > boost::chrono::seconds(LOAD_TIMEOUT))
+        {
+            BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo.getPlayerInfos())
+            {
+                if(player.isLagging)
+                    KickPlayer(player.id, NP_PINGTIMEOUT);
+            }
+        }
+        return;
+    }
+    LOG.write("SERVER: Game loaded by all players after %1%\n")
+      % boost::chrono::duration_cast<boost::chrono::seconds>(SteadyClock::now() - loadStartTime);
+    // The first NWF is ready. Server has to set up "missing" commands so every future command is for the correct NWF as specified with
+    // cmdDelay. We have commands for NWF 0. When clients execute this they will send the commands for NWF cmdDelay. So commands for
+    // NWF 1..cmdDelay-1 are missing. Do this here and before the NWFDone is sent, otherwise we might get them in a wrong order when
+    // messages are sent asynchronously
+    for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
+    {
+        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo.getPlayerInfos())
+        {
+            GameMessage_GameCommand msg(player.id, nwfInfo.getPlayerCmds(player.id).checksum, std::vector<gc::GameCommandPtr>());
+            SendToAll(msg);
+            nwfInfo.addPlayerCmds(player.id, msg.cmds);
+        }
+    }
+
+    NWFServerInfo serverInfo = nwfInfo.getServerInfo();
+    // Send cmdDelay NWFDone messages
+    // First send the OK for NWF 0 which is also the game ready command
+    // Note: Do not store. It already is in NWFInfo
+    SendToAll(GameMessage_Server_NWFDone(serverInfo.gf, serverInfo.newGFLen, serverInfo.nextNWF));
+    RTTR_Assert(framesinfo.nwf_length > 0);
+    // Then the remaining OKs for the commands sent above
+    for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
+    {
+        serverInfo.gf = serverInfo.nextNWF;
+        serverInfo.nextNWF += framesinfo.nwf_length;
+        SendNWFDone(serverInfo);
+    }
+
+    // And go!
+    framesinfo.lastTime = FramesInfo::UsedClock::now();
+    state = SS_GAME;
+}
+
+void GameServer::RunStateGame()
+{
+    if(!framesinfo.isPaused)
+        ExecuteGameFrame();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // stoppt den server
 void GameServer::Stop()
 {
-    if(status == SS_STOPPED)
+    if(state == SS_STOPPED)
         return;
 
     // player verabschieden
@@ -392,11 +417,6 @@ void GameServer::Stop()
     config.Clear();
     mapinfo.Clear();
     countdown.Stop();
-
-    // KI-Player zerstören
-    for(unsigned i = 0; i < ai_players.size(); ++i)
-        delete ai_players[i];
-    ai_players.clear();
 
     // laden dicht machen
     serversocket.Close();
@@ -410,9 +430,10 @@ void GameServer::Stop()
 
     if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
         LOBBYCLIENT.DeleteServer();
+    LOBBYCLIENT.RemoveListener(this);
 
     // status
-    status = SS_STOPPED;
+    state = SS_STOPPED;
     LOG.write("server state changed to stop\n");
 }
 
@@ -424,7 +445,17 @@ bool GameServer::StartGame()
     lanAnnouncer.Stop();
 
     // Bei Savegames wird der Startwert von den Clients aus der Datei gelesen!
-    unsigned random_init = (mapinfo.type == MAPTYPE_SAVEGAME) ? 0 : VIDEODRIVER.GetTickCount();
+    unsigned random_init;
+    if(mapinfo.type == MAPTYPE_SAVEGAME)
+        random_init = 0;
+    else
+        random_init = static_cast<unsigned>(boost::chrono::high_resolution_clock::now().time_since_epoch().count());
+
+    nwfInfo.init(currentGF, 3);
+
+    // Send start first, then load the rest
+    SendToAll(GameMessage_Server_Start(random_init, nwfInfo.getNextNWF(), nwfInfo.getCmdDelay()));
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n") % random_init;
 
     // Höchsten Ping ermitteln
     unsigned highest_ping = 0;
@@ -437,60 +468,46 @@ bool GameServer::StartGame()
         }
     }
 
-    framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2 = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
+    framesinfo.gfLengthReq = framesinfo.gf_length = FramesInfo::milliseconds32_t(SPEED_GF_LENGTHS[ggs_.speed]);
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    unsigned i = 1;
-    for(; i < 20; ++i)
-    {
-        if(i * framesinfo.gf_length > highest_ping + 200)
-            break;
-    }
+    framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping));
 
-    framesinfo.nwf_length = i;
-
-    LOG.write("SERVER: Using gameframe length of %dms\n") % framesinfo.gf_length;
-    LOG.write("SERVER: Using networkframe length of %u GFs (%ums)\n") % framesinfo.nwf_length
+    LOG.write("SERVER: Using gameframe length of %d\n") % framesinfo.gf_length;
+    LOG.write("SERVER: Using networkframe length of %u GFs (%u)\n") % framesinfo.nwf_length
       % (framesinfo.nwf_length * framesinfo.gf_length);
 
-    // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_Start(random_init, framesinfo.nwf_length));
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n") % random_init;
-
-    framesinfo.lastTime = VIDEODRIVER.GetTickCount();
-
-    try
+    for(unsigned id = 0; id < playerInfos.size(); id++)
     {
-        // GameClient soll erstmal starten, damit wir von ihm die benötigten Daten für die KIs bekommen
-        GAMECLIENT.StartGame(random_init);
-    } catch(SerializedGameData::Error& error)
-    {
-        LOG.write("Error when loading game: %s\n") % error.what();
-        return false;
+        if(playerInfos[id].isUsed())
+            nwfInfo.addPlayer(id);
     }
 
-    // Init current GF
-    currentGF = GAMECLIENT.GetGFNumber();
+    // Add server info so nwfInfo can be ready but do NOT send it yet, as we wait for the player commands before sending the done msg
+    nwfInfo.addServerInfo(
+      NWFServerInfo(currentGF, framesinfo.gf_length / FramesInfo::milliseconds32_t(1), currentGF + framesinfo.nwf_length));
 
-    // Erste KI-Nachrichten schicken
-    for(unsigned i = 0; i < playerInfos.size(); ++i)
-    {
-        if(playerInfos[i].ps == PS_AI)
-        {
-            ai_players[i] = GAMECLIENT.CreateAIPlayer(i, playerInfos[i].aiInfo);
-            SendNothingNC(i);
-        }
-    }
-
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_NWF_DONE\n");
-
-    // Spielstart allen mitteilen
-    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gf_length, true));
-
-    // ab ins game wechseln
-    status = SS_GAME;
+    state = SS_LOADING;
+    loadStartTime = SteadyClock::now();
 
     return true;
+}
+
+unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration)
+{
+    BOOST_CONSTEXPR_OR_CONST unsigned maxNumGF = 20;
+    for(unsigned i = 1; i < maxNumGF; ++i)
+    {
+        if(i * framesinfo.gf_length >= minDuration)
+            return i;
+    }
+    return maxNumGF;
+}
+
+void GameServer::SendNWFDone(const NWFServerInfo& info)
+{
+    nwfInfo.addServerInfo(info);
+    SendToAll(GameMessage_Server_NWFDone(info.gf, info.newGFLen, info.nextNWF));
 }
 
 /**
@@ -522,13 +539,10 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause)
     SendToAll(GameMessage_Player_Kicked(playerId, cause));
 
     // If we are ingame, replace by KI
-    if(status == SS_GAME)
+    if(state == SS_GAME || state == SS_LOADING)
     {
         playerInfo.ps = PS_AI;
-        playerInfo.aiInfo.type = AI::DUMMY;
-        playerInfo.aiInfo.level = AI::MEDIUM;
-        ai_players[playerId] = GAMECLIENT.CreateAIPlayer(playerId, playerInfo.aiInfo);
-        SendNothingNC(playerId);
+        playerInfo.aiInfo = AI::Info(AI::DUMMY);
     } else
         CancelCountdown();
 
@@ -562,10 +576,10 @@ void GameServer::ClientWatchDog()
 
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
     {
-        if(player.hasConnectTimedOut())
+        if(player.hasTimedOut())
         {
             LOG.write(_("SERVER: Reserved slot %1% freed due to timeout\n")) % player.playerId;
-            KickPlayer(player.playerId);
+            KickPlayer(player.playerId, NP_PINGTIMEOUT);
         } else
             player.doPing();
     }
@@ -573,69 +587,47 @@ void GameServer::ClientWatchDog()
 
 void GameServer::ExecuteGameFrame()
 {
-    RTTR_Assert(status == SS_GAME);
+    RTTR_Assert(state == SS_GAME);
 
-    if(framesinfo.isPaused)
-        return;
-
-    unsigned currentTime = VIDEODRIVER.GetTickCount();
+    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
+    FramesInfo::milliseconds32_t passedTime = boost::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
 
     // prüfen ob GF vergangen
-    if(currentTime - framesinfo.lastTime >= framesinfo.gf_length || skiptogf > currentGF)
+    if(passedTime >= framesinfo.gf_length || skiptogf > currentGF)
     {
         // NWF vergangen?
-        if(currentGF % framesinfo.nwf_length == 0)
+        if(currentGF == nwfInfo.getNextNWF())
         {
             if(CheckForLaggingPlayers())
             {
                 // Check for kicking every second
-                static unsigned lastLagKickTime = 0;
-                if(VIDEODRIVER.GetTickCount() - lastLagKickTime >= 1000)
+                static FramesInfo::UsedClock::time_point lastLagKickTime;
+                if(currentTime - lastLagKickTime >= boost::chrono::seconds(1))
                 {
-                    lastLagKickTime = VIDEODRIVER.GetTickCount();
+                    lastLagKickTime = currentTime;
                     CheckAndKickLaggingPlayers();
                 }
+                // Skip the rest
+                return;
             } else
-            {
-                ExecuteNWF(currentTime);
-                // Execute RunGF AFTER the NWF is send.
-                RunGF(true);
-            }
-        } else
-        {
-            RunGF(false);
-            // Diesen Zeitpunkt merken
-            framesinfo.lastTime = currentTime;
+                ExecuteNWF();
         }
+        // Advance GF
+        ++currentGF;
+        // Normally we set lastTime = curTime (== lastTime + passedTime) where passedTime is ideally 1 GF
+        // But we might got called late, so we advance the time by 1 GF anyway so in that case we execute the next GF a bit earlier.
+        // Exception: We lag many GFs behind, then we advance by the full passedTime - 1 GF which means we are now only 1 GF behind and
+        // execute that on the next call
+        if(passedTime <= 4 * framesinfo.gf_length)
+            passedTime = framesinfo.gf_length;
+        else
+            passedTime -= framesinfo.gf_length;
+        framesinfo.lastTime += passedTime;
     }
 }
 
-void GameServer::RunGF(bool isNWF)
+void GameServer::ExecuteNWF()
 {
-    // KIs ausführen
-    BOOST_FOREACH(AIPlayer* ai_player, ai_players)
-    {
-        if(ai_player)
-            ai_player->RunGF(currentGF, isNWF);
-    }
-    ++currentGF;
-}
-
-void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
-{
-    // Advance lastExecutedTime by the GF length.
-    // This is not really the last executed time, but if we waited (or laggt) we can catch up a bit by executing the next GF earlier
-    framesinfo.lastTime += framesinfo.gf_length;
-
-    /// Handle AI
-    BOOST_FOREACH(AIPlayer* ai, ai_players)
-    {
-        if(!ai)
-            continue;
-        SendToAll(GameMessage_GameCommand(ai->GetPlayerId(), AsyncChecksum(), ai->GetGameCommands()));
-        ai->FetchGameCommands();
-    }
-
     // Check for asyncs
     if(CheckForAsync())
     {
@@ -646,36 +638,38 @@ void GameServer::ExecuteNWF(const unsigned /*currentTime*/)
         // Notify players
         std::vector<unsigned> checksumHashes;
         BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
-            checksumHashes.push_back(player.checksumOfNextNWF.front().getHash());
+            checksumHashes.push_back(nwfInfo.getPlayerCmds(player.playerId).checksum.getHash());
         SendToAll(GameMessage_Server_Async(checksumHashes));
 
         // Request async logs
         BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
         {
-            asyncLogs.push_back(AsyncLog(player.playerId, player.checksumOfNextNWF.front()));
+            asyncLogs.push_back(AsyncLog(player.playerId, nwfInfo.getPlayerCmds(player.playerId).checksum));
             player.sendMsgAsync(new GameMessage_GetAsyncLog());
         }
     }
-    // Remove first (current) msg
-    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    const NWFServerInfo serverInfo = nwfInfo.getServerInfo();
+    RTTR_Assert(serverInfo.gf == currentGF);
+    RTTR_Assert(serverInfo.nextNWF > currentGF);
+    // First save old values
+    unsigned lastNWF = nwfInfo.getLastNWF();
+    FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+    nwfInfo.execute(framesinfo);
+    if(oldGFLen != framesinfo.gf_length)
     {
-        player.checksumOfNextNWF.pop();
-        RTTR_Assert(player.checksumOfNextNWF.size() <= 1); // At most 1 additional GC-Message, otherwise the client skipped a NWF
+        LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF % oldGFLen % framesinfo.gf_length
+          % framesinfo.nwf_length;
     }
-
-    if(framesinfo.gfLenghtNew != framesinfo.gf_length)
+    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1), lastNWF + framesinfo.nwf_length);
+    if(framesinfo.gfLengthReq != framesinfo.gf_length)
     {
-        unsigned oldGfLen = framesinfo.gf_length;
-        unsigned oldnNwfLen = framesinfo.nwf_length;
-        framesinfo.ApplyNewGFLength();
-
-        LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4% to %5%\n")) % currentGF % oldGfLen % framesinfo.gf_length
-          % oldnNwfLen % framesinfo.nwf_length;
+        // Speed will change, adjust nwf length so the time will stay constant
+        using namespace boost::chrono;
+        typedef duration<double, boost::milli> MsDouble;
+        double newNWFLen = framesinfo.nwf_length * framesinfo.gf_length / duration_cast<MsDouble>(framesinfo.gfLengthReq);
+        newInfo.nextNWF = lastNWF + std::max(1, boost::math::iround(newNWFLen));
     }
-
-    framesinfo.gfLenghtNew = framesinfo.gfLenghtNew2;
-
-    SendToAll(GameMessage_Server_NWFDone(currentGF, framesinfo.gfLenghtNew));
+    SendNWFDone(newInfo);
 }
 
 bool GameServer::CheckForAsync()
@@ -683,11 +677,10 @@ bool GameServer::CheckForAsync()
     if(networkPlayers.empty())
         return false;
     bool isAsync = false;
-    const AsyncChecksum& refChecksum = networkPlayers.front().checksumOfNextNWF.front();
+    const AsyncChecksum& refChecksum = nwfInfo.getPlayerCmds(networkPlayers.front().playerId).checksum;
     BOOST_FOREACH(const GameServerPlayer& player, networkPlayers)
     {
-        RTTR_Assert(!player.checksumOfNextNWF.empty()); // Players should not be lagging at this point
-        const AsyncChecksum& curChecksum = player.checksumOfNextNWF.front();
+        const AsyncChecksum& curChecksum = nwfInfo.getPlayerCmds(player.playerId).checksum;
 
         // Checksummen nicht gleich?
         if(curChecksum != refChecksum)
@@ -715,24 +708,14 @@ void GameServer::CheckAndKickLaggingPlayers()
 
 bool GameServer::CheckForLaggingPlayers()
 {
-    bool isLagging = false;
+    if(nwfInfo.isReady())
+        return false;
     BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
     {
-        if(player.checksumOfNextNWF.empty())
-        {
+        if(nwfInfo.getPlayerInfo(player.playerId).isLagging)
             player.setLagging();
-            isLagging = true;
-        }
     }
-    return isLagging;
-}
-
-/**
- *  Sendet ein NC-Paket ohne Befehle.
- */
-void GameServer::SendNothingNC(const unsigned id)
-{
-    SendToAll(GameMessage_GameCommand(id, AsyncChecksum(), std::vector<gc::GameCommandPtr>()));
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -744,35 +727,31 @@ void GameServer::WaitForClients()
     set.Add(serversocket);
     if(set.Select(0, 0) > 0)
     {
-        if(set.InSet(serversocket))
+        RTTR_Assert(set.InSet(serversocket));
+        Socket socket = serversocket.Accept();
+
+        // Verbindung annehmen
+        if(!socket.isValid())
+            return;
+
+        unsigned newPlayerId = 0xFFFFFFFF;
+        // Geeigneten Platz suchen
+        for(unsigned playerId = 0; playerId < playerInfos.size(); ++playerId)
         {
-            Socket socket = serversocket.Accept();
-
-            // Verbindung annehmen
-            if(!socket.isValid())
-                return;
-
-            unsigned newPlayerId = 0xFFFFFFFF;
-            // Geeigneten Platz suchen
-            for(unsigned playerId = 0; playerId < playerInfos.size(); ++playerId)
+            if(playerInfos[playerId].ps == PS_FREE && !GetNetworkPlayer(playerId))
             {
-                if(playerInfos[playerId].ps == PS_FREE && !GetNetworkPlayer(playerId))
-                {
-                    networkPlayers.push_back(GameServerPlayer(playerId, socket));
-                    newPlayerId = playerId;
-                    // LOG.write(("new socket, about to tell him about his playerId: %i \n",playerId);
-                    // schleife beenden
-                    break;
-                }
+                networkPlayers.push_back(GameServerPlayer(playerId, socket));
+                newPlayerId = playerId;
+                break;
             }
-
-            GameMessage_Player_Id msg(newPlayerId);
-            MessageHandler::send(socket, msg);
-
-            // war kein platz mehr frei, wenn ja dann verbindung trennen?
-            if(newPlayerId == 0xFFFFFFFF)
-                socket.Close();
         }
+
+        GameMessage_Player_Id msg(newPlayerId);
+        MessageHandler::send(socket, msg);
+
+        // war kein platz mehr frei, wenn ja dann verbindung trennen?
+        if(newPlayerId == 0xFFFFFFFF)
+            socket.Close();
     }
 }
 
@@ -832,7 +811,7 @@ bool GameServer::OnGameMessage(const GameMessage_Pong& msg)
 // servertype
 bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -860,7 +839,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
  */
 bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -871,6 +850,12 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
         return true;
 
     std::string passwordok = (config.password == msg.password ? "true" : "false");
+    if(msg.password == config.hostPassword)
+    {
+        passwordok = "true";
+        playerInfos[msg.senderPlayerID].isHost = true;
+    } else
+        playerInfos[msg.senderPlayerID].isHost = false;
 
     player->sendMsgAsync(new GameMessage_Server_Password(passwordok));
 
@@ -892,7 +877,7 @@ bool GameServer::OnGameMessage(const GameMessage_Chat& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -957,7 +942,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
 // Spielername
 bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -979,7 +964,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 // Nation weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Nation& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -999,7 +984,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Nation& msg)
 // Team weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1019,7 +1004,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
 // Farbe weiterwechseln
 bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1038,7 +1023,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
  */
 bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1061,7 +1046,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1112,7 +1097,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 {
-    if(status != SS_CONFIG)
+    if(state != SS_CONFIG)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1172,37 +1157,37 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 // speed change message
 bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
 {
-    if(status != SS_GAME)
+    if(state != SS_GAME)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
     }
-    framesinfo.gfLenghtNew2 = msg.gf_length;
+    framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(msg.gf_length);
     return true;
 }
 
 bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
 {
-    if(status != SS_GAME)
+    int targetPlayerId = GetTargetPlayer(msg);
+    if((state != SS_GAME && state != SS_LOADING) || targetPlayerId < 0 || (state == SS_LOADING && !msg.cmds.gcs.empty()))
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
     }
-    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
-    if(!player)
-        return true;
-    // LOG.writeToFile("SERVER <<< GC %u\n") % unsigned(msg.senderPlayerID);
 
-    // Save and broadcast command
-    player->checksumOfNextNWF.push(msg.gcs.checksum);
-    player->setNotLagging();
-    SendToAll(GameMessage_GameCommand(msg.senderPlayerID, msg.gcs.checksum, msg.gcs.gcs));
+    if(!nwfInfo.addPlayerCmds(targetPlayerId, msg.cmds))
+        return true; // Ignore
+    GameServerPlayer* player = GetNetworkPlayer(targetPlayerId);
+    if(player)
+        player->setNotLagging();
+    SendToAll(GameMessage_GameCommand(targetPlayerId, msg.cmds.checksum, msg.cmds.gcs));
+
     return true;
 }
 
 bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
 {
-    if(status != SS_GAME)
+    if(state != SS_GAME)
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1263,7 +1248,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_RemoveLua& msg)
 {
-    if(status != SS_CONFIG || !IsHost(msg.senderPlayerID))
+    if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1278,7 +1263,7 @@ bool GameServer::OnGameMessage(const GameMessage_RemoveLua& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
 {
-    if(status != SS_CONFIG || !IsHost(msg.senderPlayerID))
+    if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1297,11 +1282,11 @@ bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
         // Start countdown (except its single player)
         if(networkPlayers.size() > 1)
         {
-            countdown.Start(msg.countdown, VIDEODRIVER.GetTickCount());
+            countdown.Start(msg.countdown);
             SendToAll(GameMessage_Countdown(countdown.GetRemainingSecs()));
             LOG.writeToFile("SERVER >>> Countdown started(%d)\n") % countdown.GetRemainingSecs();
         } else if(!StartGame())
-            GAMEMANAGER.ShowMenu(); // TODO: Remove access to GAMEMANAGER
+            Stop();
     }
 
     return true;
@@ -1309,7 +1294,7 @@ bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
 
 bool GameServer::OnGameMessage(const GameMessage_CancelCountdown& msg)
 {
-    if(status != SS_CONFIG || !IsHost(msg.senderPlayerID))
+    if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1319,9 +1304,26 @@ bool GameServer::OnGameMessage(const GameMessage_CancelCountdown& msg)
     return true;
 }
 
+bool GameServer::OnGameMessage(const GameMessage_Pause& msg)
+{
+    if(IsHost(msg.senderPlayerID))
+        SetPaused(msg.paused);
+    return true;
+}
+
+bool GameServer::OnGameMessage(const GameMessage_SkipToGF& msg)
+{
+    if(IsHost(msg.senderPlayerID))
+    {
+        skiptogf = msg.targetGF;
+        SendToAll(msg);
+    }
+    return true;
+}
+
 bool GameServer::OnGameMessage(const GameMessage_GGSChange& msg)
 {
-    if(status != SS_CONFIG || !IsHost(msg.senderPlayerID))
+    if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
         KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
         return true;
@@ -1408,6 +1410,8 @@ std::string GameServer::SaveAsyncLog()
     for(unsigned i = 0; i < numEntries; i++)
     {
         bool isIdentical = true;
+        if(i >= asyncLogs[0].randEntries.size())
+            break;
         const RandomEntry& refEntry = asyncLogs[0].randEntries[i];
         BOOST_FOREACH(const AsyncLog& log, asyncLogs)
         {
@@ -1531,7 +1535,7 @@ void GameServer::CheckAndSetColor(unsigned playerIdx, unsigned newColor)
 
 bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
 {
-    if(status != SS_GAME && status != SS_CONFIG)
+    if(state != SS_GAME && state != SS_CONFIG)
         return true;
     int targetPlayer = GetTargetPlayer(msg);
     if(targetPlayer < 0)
@@ -1544,6 +1548,22 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Swap& msg)
     return true;
 }
 
+bool GameServer::OnGameMessage(const GameMessage_Player_SwapConfirm& msg)
+{
+    GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
+    if(!player)
+        return true;
+    for(std::vector<GameServerPlayer::PendingSwap>::iterator it = player->pendingSwaps.begin(); it != player->pendingSwaps.end(); ++it)
+    {
+        if(it->playerId1 == msg.player && it->playerId2 == msg.player2)
+        {
+            player->pendingSwaps.erase(it);
+            break;
+        }
+    }
+    return true;
+}
+
 void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
 {
     // TODO: Swapping the player messes up the ids because our IDs are indizes. Usually this works because we use the sender player ID for
@@ -1551,7 +1571,7 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
     // messages for another player. Those will not get the adjusted ID till he gets the swap message. So there is a short time, where the
     // messages may be executed for the wrong player.
     // Idea: Use actual IDs for players in messages (unique)
-    if(status == SS_CONFIG)
+    if(state == SS_CONFIG)
     {
         // Swap player during match-making
         // Swap everything
@@ -1560,7 +1580,7 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
         // In savegames some things cannot be changed
         if(mapinfo.type == MAPTYPE_SAVEGAME)
             playerInfos[player1].FixSwappedSaveSlot(playerInfos[player2]);
-    } else if(status == SS_GAME)
+    } else if(state == SS_GAME)
     {
         // Ingame we can only switch to a KI
         if(playerInfos[player1].ps != PS_OCCUPIED || playerInfos[player2].ps != PS_AI)
@@ -1569,12 +1589,8 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
         LOG.write("GameServer::ChangePlayer %i - %i \n") % unsigned(player1) % unsigned(player2);
         using std::swap;
         swap(playerInfos[player2].ps, playerInfos[player1].ps);
-
-        // Alte KI löschen
-        delete ai_players[player2];
-        ai_players[player2] = NULL;
-        // Place a dummy AI at the original spot
-        ai_players[player1] = GAMECLIENT.CreateAIPlayer(player1, AI::Info(AI::DUMMY));
+        swap(playerInfos[player2].aiInfo, playerInfos[player1].aiInfo);
+        swap(playerInfos[player2].isHost, playerInfos[player1].isHost);
     }
     // Change ids of network players (if any). Get both first!
     GameServerPlayer* newPlayer = GetNetworkPlayer(player2);
@@ -1584,6 +1600,15 @@ void GameServer::SwapPlayer(const uint8_t player1, const uint8_t player2)
     if(oldPlayer)
         oldPlayer->playerId = player2;
     SendToAll(GameMessage_Player_Swap(player1, player2));
+    GameServerPlayer::PendingSwap pSwap;
+    pSwap.playerId1 = player1;
+    pSwap.playerId2 = player2;
+    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+    {
+        if(!player.isConnected())
+            continue;
+        player.pendingSwaps.push_back(pSwap);
+    }
 }
 
 GameServerPlayer* GameServer::GetNetworkPlayer(unsigned playerId)
@@ -1619,7 +1644,18 @@ int GameServer::GetTargetPlayer(const GameMessageWithPlayer& msg)
     if(msg.player != 0xFF)
     {
         if(msg.player < playerInfos.size() && (msg.player == msg.senderPlayerID || IsHost(msg.senderPlayerID)))
-            return msg.player;
+        {
+            unsigned result = msg.player;
+            // Apply pending swaps
+            BOOST_FOREACH(GameServerPlayer::PendingSwap& pSwap, GetNetworkPlayer(msg.senderPlayerID)->pendingSwaps)
+            {
+                if(pSwap.playerId1 == result)
+                    result = pSwap.playerId2;
+                else if(pSwap.playerId2 == result)
+                    result = pSwap.playerId1;
+            }
+            return result;
+        }
     } else if(msg.senderPlayerID < playerInfos.size())
         return msg.senderPlayerID;
     return -1;

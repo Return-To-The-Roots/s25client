@@ -24,6 +24,7 @@
 #include "GamePlayer.h"
 #include "GlobalVars.h"
 #include "Loader.h"
+#include "NWFInfo.h"
 #include "Settings.h"
 #include "SoundManager.h"
 #include "WindowManager.h"
@@ -61,7 +62,6 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
-#include "network/ClientPlayers.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
@@ -105,7 +105,7 @@ enum
 }
 
 dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
-    : Desktop(NULL), game_(game), networkPlayers(GAMECLIENT.GetPlayers()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
+    : Desktop(NULL), game_(game), nwfInfo(GAMECLIENT.GetNWFInfo()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
 {
@@ -131,8 +131,6 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
 
     AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
-    LOBBYCLIENT.SetInterface(this);
-    GAMECLIENT.SetInterface(this);
     game->world.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
@@ -174,7 +172,7 @@ dskGameInterface::~dskGameInterface()
     for(unsigned i = 0; i < borders.size(); i++)
         deletePtr(borders[i]);
     GAMECLIENT.RemoveInterface(this);
-    LOBBYCLIENT.RemoveInterface(this);
+    LOBBYCLIENT.RemoveListener(this);
 }
 
 void dskGameInterface::SetActive(bool activate)
@@ -182,11 +180,13 @@ void dskGameInterface::SetActive(bool activate)
     if(activate == IsActive())
         return;
     Desktop::SetActive(activate);
-    if(activate && GAMECLIENT.GetState() == GameClient::CS_LOADING)
+    // Do this here to allow previous screen to keep control
+    if(activate)
     {
-        // Wir sind nun ingame
-        GAMECLIENT.GameStarted();
+        GAMECLIENT.SetInterface(this);
+        LOBBYCLIENT.AddListener(this);
     }
+
     if(!activate)
     {
         isScrolling = false;
@@ -288,22 +288,24 @@ void dskGameInterface::Msg_PaintAfter()
     if(GAMECLIENT.IsReplayModeOn())
     {
         snprintf(nwf_string, 255, _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength());
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                 GAMECLIENT.GetNWFLength(), GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
     } else
         snprintf(nwf_string, 255, _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength(), GAMECLIENT.GetNWFLength(),
-                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength(), worldViewer.GetPlayer().ping);
+                 world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
+                 GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), worldViewer.GetPlayer().ping);
 
     // tournament mode?
     unsigned tmd = GAMECLIENT.GetTournamentModeDuration();
 
     if(tmd)
     {
-        // Convert gf to seconds
-        unsigned sec = (tmd - world.GetEvMgr().GetCurrentGF()) * GAMECLIENT.GetGFLength() / 1000;
-        char str[512];
-        sprintf(str, "tournament mode: %02u:%02u:%02u remaining", sec / 3600, (sec / 60) % 60, sec % 60);
+        unsigned curGF = world.GetEvMgr().GetCurrentGF();
+        std::string tournamentNotice;
+        if(curGF >= tmd)
+            tournamentNotice = _("Tournament finished");
+        else
+            tournamentNotice = (boost::format("Tournament mode: %1% remaining") % GAMECLIENT.FormatGFTime(tmd - curGF)).str();
     }
 
     NormalFont->Draw(DrawPoint(30, 1), nwf_string, 0, 0xFFFFFF00);
@@ -314,7 +316,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Laggende Spieler anzeigen in Form von Schnecken
     DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-    BOOST_FOREACH(const ClientPlayer& player, networkPlayers->players)
+    BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
     {
         if(player.isLagging)
         {
@@ -338,7 +340,7 @@ void dskGameInterface::Msg_PaintAfter()
 
     // Draw speed indicator icon
     const int startSpeed = SPEED_GF_LENGTHS[game_->ggs.speed];
-    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength()) / 10;
+    const int speedStep = startSpeed / 10 - static_cast<int>(GAMECLIENT.GetGFLength() / boost::chrono::milliseconds(10));
 
     if(speedStep != 0)
     {
@@ -696,22 +698,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.c)
     {
         case '+':
-            if(GAMECLIENT.IsReplayModeOn())
-            {
-                GAMECLIENT.IncreaseReplaySpeed();
-            } else if(game_->world.IsSinglePlayer())
-            {
+            if(GAMECLIENT.IsReplayModeOn() || game_->world.IsSinglePlayer())
                 GAMECLIENT.IncreaseSpeed();
-            }
             return true;
         case '-':
-            if(GAMECLIENT.IsReplayModeOn())
-            {
-                GAMECLIENT.DecreaseReplaySpeed();
-            } else if(game_->world.IsSinglePlayer())
-            {
+            if(GAMECLIENT.IsReplayModeOn() || game_->world.IsSinglePlayer())
                 GAMECLIENT.DecreaseSpeed();
-            }
             return true;
 
         case '1':

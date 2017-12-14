@@ -57,17 +57,19 @@ Message* GameMessage::create_game(unsigned short id)
         case NMS_PLAYER_NEW: msg = new GameMessage_Player_New(); break;
         case NMS_PLAYER_READY: msg = new GameMessage_Player_Ready(); break;
         case NMS_PLAYER_SWAP: msg = new GameMessage_Player_Swap(); break;
+        case NMS_PLAYER_SWAP_CONFIRM: msg = new GameMessage_Player_SwapConfirm(); break;
         case NMS_MAP_INFO: msg = new GameMessage_Map_Info(); break;
         case NMS_MAP_REQUEST: msg = new GameMessage_MapRequest(); break;
         case NMS_MAP_DATA: msg = new GameMessage_Map_Data(); break;
         case NMS_MAP_CHECKSUM: msg = new GameMessage_Map_Checksum(); break;
         case NMS_MAP_CHECKSUMOK: msg = new GameMessage_Map_ChecksumOK(); break;
-        case NMS_SERVER_NWF_DONE: msg = new GameMessage_Server_NWFDone; break;
-        case NMS_GAMECOMMANDS: msg = new GameMessage_GameCommand; break;
-        case NMS_PAUSE: msg = new GameMessage_Pause; break;
-        case NMS_SERVER_SPEED: msg = new GameMessage_Speed; break;
-        case NMS_GGS_CHANGE: msg = new GameMessage_GGSChange; break;
-        case NMS_REMOVE_LUA: msg = new GameMessage_RemoveLua; break;
+        case NMS_SERVER_NWF_DONE: msg = new GameMessage_Server_NWFDone(); break;
+        case NMS_GAMECOMMANDS: msg = new GameMessage_GameCommand(); break;
+        case NMS_PAUSE: msg = new GameMessage_Pause(); break;
+        case NMS_SKIP_TO_GF: msg = new GameMessage_SkipToGF(); break;
+        case NMS_SERVER_SPEED: msg = new GameMessage_Speed(); break;
+        case NMS_GGS_CHANGE: msg = new GameMessage_GGSChange(); break;
+        case NMS_REMOVE_LUA: msg = new GameMessage_RemoveLua(); break;
         case NMS_GET_ASYNC_LOG: msg = new GameMessage_GetAsyncLog(); break;
         case NMS_ASYNC_LOG: msg = new GameMessage_AsyncLog(); break;
     }

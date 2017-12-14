@@ -25,12 +25,15 @@
 #include "GameProtocol.h"
 #include "GlobalGameSettings.h"
 #include "JoinPlayerInfo.h"
+#include "NWFInfo.h"
 #include "helpers/Deleter.h"
 #include "random/Random.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/ServerType.h"
+#include "liblobby/LobbyInterface.h"
 #include "libutil/LANDiscoveryService.h"
 #include "libutil/Singleton.h"
+#include <boost/chrono.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
@@ -40,36 +43,40 @@ class GameMessage;
 class GameMessageWithPlayer;
 class GameMessage_GameCommand;
 class GameServerPlayer;
+struct AIServerPlayer;
 
-class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface
+class GameServer : public Singleton<GameServer, SingletonPolicies::WithLongevity>, public GameMessageInterface, public LobbyInterface
 {
 public:
     BOOST_STATIC_CONSTEXPR unsigned Longevity = 6;
+    typedef boost::chrono::steady_clock SteadyClock;
 
     GameServer();
     ~GameServer() override;
 
-    /// "Versucht" den Server zu starten (muss ggf. erst um Erlaubnis beim LobbyClient fragen)
-    bool TryToStart(const CreateServerInfo& csi, const std::string& map_path, const MapType map_type);
-    /// Startet den Server, muss vorher TryToStart aufgerufen werden!
-    bool Start();
+    /// Starts the server
+    bool Start(const CreateServerInfo& csi, const std::string& map_path, MapType map_type, const std::string& hostPw);
 
     void Run();
+
+    void RunStateGame();
+
+    void RunStateConfig();
+
     void Stop();
-
-    void SetPaused(bool paused);
-
-    void AIChat(const GameMessage& msg) { SendToAll(msg); }
-    AIPlayer* GetAIPlayer(unsigned playerID) { return ai_players[playerID]; }
-    unsigned skiptogf;
 
 private:
     bool StartGame();
+
+    unsigned CalcNWFLenght(FramesInfo::milliseconds32_t minDuration);
+
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
     /// Swap players ingame or during config
     void SwapPlayer(const uint8_t player1, const uint8_t player2);
 
     void SendToAll(const GameMessage& msg);
+    void SendNWFDone(const NWFServerInfo& info);
+
     /// Kick a player (free slot and set socket to invalid. Does NOT remove it from NetworkPlayers)
     void KickPlayer(uint8_t playerId, KickReason cause = NP_NOCAUSE);
 
@@ -78,12 +85,13 @@ private:
     void WaitForClients();
     void FillPlayerQueues();
 
-    /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC(const unsigned id);
-
     unsigned GetNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
     void AnnounceStatusChange();
+    void SetPaused(bool paused);
+
+    void LC_Status_Error(const std::string& error) override;
+    void LC_Created() override;
 
     bool OnGameMessage(const GameMessage_Pong& msg) override;
     bool OnGameMessage(const GameMessage_Server_Type& msg) override;
@@ -97,6 +105,7 @@ private:
     bool OnGameMessage(const GameMessage_Player_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
     bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool OnGameMessage(const GameMessage_Player_SwapConfirm& msg) override;
     bool OnGameMessage(const GameMessage_MapRequest& msg) override;
     bool OnGameMessage(const GameMessage_Map_Checksum& msg) override;
     bool OnGameMessage(const GameMessage_GameCommand& msg) override;
@@ -105,6 +114,8 @@ private:
     bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
     bool OnGameMessage(const GameMessage_Countdown& msg) override;
     bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
+    bool OnGameMessage(const GameMessage_Pause& msg) override;
+    bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
     void CancelCountdown();
     bool ArePlayersReady() const;
     /// Some player data has changed. Set non-ready and cancel countdown
@@ -116,8 +127,7 @@ private:
 
     /// Handles advancing of GFs, actions of AI and potentially the NWF
     void ExecuteGameFrame();
-    void RunGF(bool isNWF);
-    void ExecuteNWF(const unsigned currentTime);
+    void ExecuteNWF();
 
     bool CheckForAsync();
     std::string SaveAsyncLog();
@@ -132,13 +142,15 @@ private:
     /// Get the player this message concerns. which is msg.player, msg.senderPlayer or -1 on error/wrong values
     int GetTargetPlayer(const GameMessageWithPlayer& msg);
 
+    unsigned skiptogf;
+
     enum ServerState
     {
         SS_STOPPED = 0,
-        SS_CREATING_LOBBY, // Creating game lobby (Call Start() next)
         SS_CONFIG,
+        SS_LOADING,
         SS_GAME
-    } status;
+    } state;
 
     FramesInfo framesinfo;
     unsigned currentGF;
@@ -149,12 +161,10 @@ private:
         void Clear();
 
         ServerType servertype;
-        unsigned playercount;
         std::string gamename;
-        std::string password;
+        std::string hostPassword, password;
         unsigned short port;
         bool ipv6;
-        bool use_upnp;
     } config;
 
     MapInfo mapinfo;
@@ -162,6 +172,7 @@ private:
     Socket serversocket;
     std::vector<JoinPlayerInfo> playerInfos;
     std::vector<GameServerPlayer> networkPlayers;
+    NWFInfo nwfInfo;
     GlobalGameSettings ggs_;
 
     /// der Spielstartcountdown
@@ -169,27 +180,27 @@ private:
     {
         bool isActive;
         unsigned remainingSecs;
-        unsigned lasttime;
+        boost::chrono::steady_clock::time_point lasttime;
 
     public:
         CountDown();
         /// Starts a countdown at curTime of timeInSec seconds
-        void Start(unsigned timeInSec, unsigned curTime);
+        void Start(unsigned timeInSec);
         void Stop();
         /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
-        bool Update(unsigned curTime);
+        bool Update();
         bool IsActive() const { return isActive; }
         unsigned GetRemainingSecs() const { return remainingSecs; }
     } countdown;
 
-    /// Alle KI-Spieler und ihre Daten (NULL, falls ein solcher Spieler nicht existiert)
-    std::vector<AIPlayer*> ai_players;
-
     struct AsyncLog;
     /// AsyncLogs of all players
     std::vector<AsyncLog> asyncLogs;
+    /// Time at which the loading started
+    boost::chrono::steady_clock::time_point loadStartTime;
 
     LANDiscoveryService lanAnnouncer;
+    void RunStateLoading();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

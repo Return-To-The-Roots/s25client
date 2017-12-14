@@ -16,11 +16,13 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "ClientPlayers.h"
+#include "Game.h"
 #include "GamePlayer.h"
+#include "ai/AIPlayer.h"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "network/GameMessages.h"
+#include <boost/bind.hpp>
 
 /**
  *  Chatbefehl, hängt eine Textnachricht in die Sende-Queue.
@@ -90,12 +92,22 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
     } else
     {
         // old_id must be a player
-        if(GetPlayer(playerId1).ps != PS_OCCUPIED)
+        GamePlayer& player1 = GetPlayer(playerId1);
+        if(player1.ps != PS_OCCUPIED)
             return;
         // new_id must be an AI
-        if(GetPlayer(playerId2).ps != PS_AI)
+        GamePlayer& player2 = GetPlayer(playerId2);
+        if(player2.ps != PS_AI)
             return;
 
+        std::swap(player1.ps, player2.ps);
+        std::swap(player1.aiInfo, player2.aiInfo);
+        if(IsHost())
+        {
+            // Switch AIs
+            game->aiPlayers.erase_if(boost::bind(&AIPlayer::GetPlayerId, _1) == playerId2);
+            game->aiPlayers.push_back(CreateAIPlayer(playerId1, AI::Info(AI::DUMMY)));
+        }
         GetPlayer(playerId1).ps = PS_AI;
         GetPlayer(playerId2).ps = PS_OCCUPIED;
     }
@@ -111,14 +123,6 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
             gameCommands_.clear();
         }
     }
-
-    // Swap ids
-    ClientPlayer* player1 = clientPlayers->get(playerId1);
-    ClientPlayer* player2 = clientPlayers->get(playerId2);
-    if(player1)
-        player1->id = playerId2;
-    if(player2)
-        player2->id = playerId1;
 
     if(ci)
         ci->CI_PlayersSwapped(playerId1, playerId2);

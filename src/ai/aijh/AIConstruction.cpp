@@ -120,7 +120,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     {
         ConnectJob* job = connectJobs.front();
         job->ExecuteJob();
-        if(job->GetStatus() != JOB_FINISHED && job->GetStatus() != JOB_FAILED) // couldnt do job? -> move to back of list
+        if(job->GetState() != JOB_FINISHED && job->GetState() != JOB_FAILED) // couldnt do job? -> move to back of list
         {
             connectJobs.push_back(job);
             connectJobs.pop_front();
@@ -134,7 +134,7 @@ void AIConstruction::ExecuteJobs(unsigned limit)
     {
         BuildJob* job = GetBuildJob();
         job->ExecuteJob();
-        if(job->GetStatus() != JOB_FINISHED && job->GetStatus() != JOB_FAILED) // couldnt do job? -> move to back of list
+        if(job->GetState() != JOB_FINISHED && job->GetState() != JOB_FAILED) // couldnt do job? -> move to back of list
         {
             buildJobs.push_back(job);
         } else // job done of failed -> delete job

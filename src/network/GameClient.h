@@ -50,8 +50,8 @@ class Game;
 class Replay;
 class EventManager;
 struct PlayerGameCommands;
-struct ClientPlayers;
-
+class NWFInfo;
+struct CreateServerInfo;
 struct ReplayInfo;
 
 class GameClient : public Singleton<GameClient, SingletonPolicies::WithLongevity>, public GameMessageInterface, public GameCommandFactory
@@ -65,6 +65,7 @@ public:
         CS_CONNECT,
         CS_CONFIG,
         CS_LOADING,
+        CS_LOADED,
         CS_GAME
     };
 
@@ -84,11 +85,11 @@ public:
     std::string GetGameName() const { return clientconfig.gameName; }
 
     unsigned GetPlayerId() const { return mainPlayer.playerId; }
-    /// Erzeugt einen KI-Player, der mit den Daten vom GameClient gefüttert werden muss
-    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port, bool host,
                  bool use_ipv6);
+    /// Start the server and connect to it
+    bool HostGame(const CreateServerInfo& csi, const std::string& map_path, MapType map_type);
     void Run();
     void Stop();
 
@@ -102,21 +103,22 @@ public:
 
     // Initialisiert und startet das Spiel
     void StartGame(const unsigned random_init);
-    /// Wird aufgerufen, wenn das GUI fertig mit Laden ist und es losgehen kann
-    void GameStarted();
+    /// Called when the game is loaded
+    void GameLoaded();
 
     /// Beendet das Spiel, zerstört die Spielstrukturen
     void ExitGame();
 
     ClientState GetState() const { return state; }
     Replay* GetReplay();
-    boost::shared_ptr<const ClientPlayers> GetPlayers() const;
+    boost::shared_ptr<const NWFInfo> GetNWFInfo() const;
     boost::shared_ptr<GameLobby> GetGameLobby();
+    const AIPlayer* GetAIPlayer(unsigned id) const;
 
     unsigned GetGFNumber() const;
-    unsigned GetGFLength() const { return framesinfo.gf_length; }
+    FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
-    unsigned GetFrameTime() const { return framesinfo.frameTime; }
+    FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
     unsigned GetGlobalAnimation(const unsigned short max, const unsigned char factor_numerator, const unsigned char factor_denumerator,
                                 const unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
@@ -134,8 +136,6 @@ public:
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const std::string& path);
     /// Replay-Geschwindigkeit erhöhen/verringern
-    void IncreaseReplaySpeed();
-    void DecreaseReplaySpeed();
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
@@ -178,8 +178,10 @@ public:
     void SetTestPlayerId(unsigned id);
 
 private:
-    /// Fügt ein GameCommand für den Spieler hinzu und gibt bei Erfolg true zurück, ansonstn false (in der Pause oder wenn Spieler besiegt
-    /// ist)
+    /// Create an AI player for the current world
+    AIPlayer* CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
+
+    /// Add the gamecommand. Return true in success, false otherwise (paused, or defeated)
     bool AddGC(gc::GameCommandPtr gc) override;
 
     unsigned GetNumPlayers() const;
@@ -187,17 +189,17 @@ private:
     GamePlayer& GetPlayer(const unsigned id);
 
     /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
-    void ExecuteGameFrame(const bool skipping = false);
+    void ExecuteGameFrame();
     void ExecuteGameFrame_Replay();
     void ExecuteNWF();
     /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
     void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC();
+    void SendNothingNC(uint8_t player = 0xFF);
 
     /// Führt notwendige Dinge für nächsten GF aus
-    void NextGF();
+    void NextGF(bool wasNWF);
     /// Checks if its time for autosaving (if enabled) and does it
     void HandleAutosave();
 
@@ -231,6 +233,7 @@ private:
     bool OnGameMessage(const GameMessage_Map_ChecksumOK& msg) override;
 
     bool OnGameMessage(const GameMessage_Pause& msg) override;
+    bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
     bool OnGameMessage(const GameMessage_Server_NWFDone& msg) override;
     bool OnGameMessage(const GameMessage_GameCommand& msg) override;
 
@@ -251,6 +254,8 @@ private:
     /// Schreibt den Header der Replaydatei
     void StartReplayRecording(const unsigned random_init);
     void WritePlayerInfo(SavedFile& file);
+    /// Called when the game is ready to start (loaded and all players ready)
+    void OnGameStart();
 
 public:
     /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu verstecken
@@ -266,8 +271,8 @@ private:
 
     /// Game state itself (valid during LOADING and GAME state)
     boost::shared_ptr<Game> game;
-    /// Game commands to execute per player
-    boost::shared_ptr<ClientPlayers> clientPlayers;
+    /// NWF info
+    boost::shared_ptr<NWFInfo> nwfInfo;
     /// Game lobby (valid during CONFIG state)
     boost::shared_ptr<GameLobby> gameLobby;
 
@@ -290,8 +295,6 @@ private:
     FramesInfoClient framesinfo;
 
     ClientInterface* ci;
-
-    boost::interprocess::unique_ptr<AIPlayer, Deleter<AIPlayer> > human_ai;
 
     /// GameCommands, die vom Client noch an den Server gesendet werden müssen
     std::vector<gc::GameCommandPtr> gameCommands_;

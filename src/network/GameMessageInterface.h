@@ -58,10 +58,11 @@ GENERATE_GAME_MESSAGE_INTERFACE(GameMessage_Ping, GameMessage_Pong,
                                 GameMessage_Player_Id, GameMessage_Player_Name, GameMessage_Player_List, GameMessage_Player_State,
                                 GameMessage_Player_Nation, GameMessage_Player_Team, GameMessage_Player_Color, GameMessage_Player_Kicked,
                                 GameMessage_Player_Ping, GameMessage_Player_New, GameMessage_Player_Ready, GameMessage_Player_Swap,
+                                GameMessage_Player_SwapConfirm,
 
                                 GameMessage_Map_Info, GameMessage_MapRequest, GameMessage_Map_Data, GameMessage_Map_Checksum,
                                 GameMessage_Map_ChecksumOK, GameMessage_GGSChange, GameMessage_RemoveLua, GameMessage_Pause,
-                                GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Speed,
+                                GameMessage_SkipToGF, GameMessage_Server_NWFDone, GameMessage_GameCommand, GameMessage_Speed,
 
                                 GameMessage_GetAsyncLog, GameMessage_AsyncLog)
 

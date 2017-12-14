@@ -205,9 +205,9 @@ void iwAIDebug::Msg_PaintBefore()
         }
     }
 
-#define RTTR_PRINT_STATUS(status) \
-    case AIJH::status: ss << #status << std::endl; break
-    switch(currentJob->GetStatus())
+#define RTTR_PRINT_STATUS(state) \
+    case AIJH::state: ss << #state << std::endl; break
+    switch(currentJob->GetState())
     {
         RTTR_PRINT_STATUS(JOB_WAITING);
         RTTR_PRINT_STATUS(JOB_EXECUTING_START);
