@@ -29,6 +29,7 @@
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
+#include "files.h"
 
 namespace {
 enum
@@ -45,11 +46,12 @@ enum
     ID_btBack,
     ID_edtTest,
     ID_txtTest,
-    ID_cbTxtSize
+    ID_cbTxtSize,
+    ID_btHideCtrls
 };
 }
 
-dskTest::dskTest()
+dskTest::dskTest(): curBGIdx(FILE_LOAD_IDS.size())
 {
     AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
@@ -98,11 +100,12 @@ dskTest::dskTest()
     btPos.y += 11;
     AddText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
 
-    AddTextButton(ID_btDisable, DrawPoint(10, 550), Extent(200, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
-    AddTextButton(ID_btAnimate, DrawPoint(215, 550), Extent(100, 22), TC_GREEN1, "Animate", NormalFont);
-    AddTextButton(ID_btAnimateRepeat, DrawPoint(320, 550), Extent(130, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
-    AddTextButton(ID_btAnimateOscillate, DrawPoint(455, 550), Extent(130, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
-    AddTextButton(ID_btBack, DrawPoint(630, 550), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btDisable, DrawPoint(10, 540), Extent(180, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
+    AddTextButton(ID_btHideCtrls, DrawPoint(195, 540), Extent(180, 22), TC_GREEN1, "Hide all elements (H)", NormalFont);
+    AddTextButton(ID_btAnimate, DrawPoint(375, 540), Extent(100, 22), TC_GREEN1, "Animate", NormalFont);
+    AddTextButton(ID_btAnimateRepeat, DrawPoint(470, 540), Extent(130, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
+    AddTextButton(ID_btAnimateOscillate, DrawPoint(605, 540), Extent(130, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(630, 570), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
 }
 
 void dskTest::Msg_EditChange(const unsigned ctrl_id)
@@ -161,5 +164,34 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
             GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
         }
+        case ID_btHideCtrls:
+            ToggleCtrlVisibility();
     }
+}
+
+void dskTest::ToggleCtrlVisibility()
+{
+    for(int i = ID_txtTitle; i <= ID_btHideCtrls; i++)
+    {
+        Window* ctrl = GetCtrl<Window>(i);
+        if(ctrl)
+            ctrl->SetVisible(!ctrl->IsVisible());
+    }
+}
+
+bool dskTest::Msg_KeyDown(const KeyEvent & ke)
+{
+    if(ke.kt == KT_CHAR && ke.c == 'h')
+        ToggleCtrlVisibility();
+    else if(ke.kt == KT_LEFT)
+    {
+        curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : FILE_LOAD_IDS.size() - 1;
+        background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
+    } else if(ke.kt == KT_RIGHT)
+    {
+        curBGIdx = (curBGIdx < FILE_LOAD_IDS.size() - 1) ? curBGIdx + 1 : 0;
+        background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
+    } else
+        return false;
+    return true;
 }

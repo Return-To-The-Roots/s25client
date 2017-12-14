@@ -933,12 +933,6 @@ glArchivItem_Bitmap_Raw* Loader::ExtractTexture(const Rect& rect)
 
     if(int ec = image->print(buffer, NULL, 0, 0, rect.left, rect.top))
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
-    // Replace black pixels by transparent ones (background of the texture is black)
-    BOOST_FOREACH(uint8_t& pxl, buffer.getPixels())
-    {
-        if(pxl == 0)
-            pxl = libsiedler2::TRANSPARENT_INDEX;
-    }
 
     glArchivItem_Bitmap_Raw* bitmap = new glArchivItem_Bitmap_Raw();
     if(int ec = bitmap->create(buffer, image->getPalette()))

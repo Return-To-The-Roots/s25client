@@ -31,6 +31,12 @@ public:
     void Msg_EditChange(const unsigned ctrl_id) override;
     void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
+
+    void ToggleCtrlVisibility();
+
+    bool Msg_KeyDown(const KeyEvent& ke) override;
+private:
+    unsigned curBGIdx;
 };
 
 #endif // dskTest_h__
