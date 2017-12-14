@@ -137,9 +137,19 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
     typedef boost::chrono::duration<int32_t, boost::milli> milliseconds_i32_t;
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
-    unsigned gf_diff = current_ev ? (GetEvMgr().GetCurrentGF() - current_ev->startGF) : pause_walked_gf;
-    unsigned evLength = current_ev ? current_ev->length : pause_event_length;
-    milliseconds_i32_t frame_time = current_ev ? GAMECLIENT.GetFrameTime() : milliseconds_i32_t::zero();
+    unsigned gf_diff, evLength;
+    milliseconds_i32_t frame_time;
+    if(current_ev)
+    {
+        gf_diff = GetEvMgr().GetCurrentGF() - current_ev->startGF;
+        evLength = current_ev->length;
+        frame_time = GAMECLIENT.GetFrameTime();
+    } else
+    {
+        gf_diff = pause_walked_gf;
+        evLength = pause_event_length;
+        frame_time = milliseconds_i32_t::zero();
+    }
 
     // Convert to real world time
     const milliseconds_i32_t gfLength = GAMECLIENT.GetGFLength();

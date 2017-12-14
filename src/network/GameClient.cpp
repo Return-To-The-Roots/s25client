@@ -1481,9 +1481,11 @@ unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     // TODO: Move to some animation system that is part of game
-    FramesInfo::milliseconds32_t elapsedTime = (state == CS_GAME) ?
-                                                 (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime :
-                                                 FramesInfo::milliseconds32_t::zero();
+    FramesInfo::milliseconds32_t elapsedTime;
+    if(state == CS_GAME)
+        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    else
+        elapsedTime = FramesInfo::milliseconds32_t::zero();
     FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
     unsigned result = (max_val * elapsedTime) / duration;
     if(result >= max_val)
@@ -1495,8 +1497,11 @@ int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 {
     RTTR_Assert(ev);
     typedef boost::chrono::duration<int32_t, boost::milli> milliseconds32_t;
-    milliseconds32_t elapsedTime =
-      (state == CS_GAME) ? (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime : milliseconds32_t::zero();
+    milliseconds32_t elapsedTime;
+    if(state == CS_GAME)
+        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    else
+        elapsedTime = milliseconds32_t::zero();
     milliseconds32_t duration = ev->length * framesinfo.gf_length;
     return x1 + ((x2 - x1) * elapsedTime) / duration;
 }
