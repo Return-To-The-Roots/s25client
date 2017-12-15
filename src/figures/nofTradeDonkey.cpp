@@ -35,9 +35,10 @@ nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player, c
 {}
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(GoodType(sgd.PopUnsignedChar())),
-      next_dirs(sgd.PopContainer(next_dirs))
-{}
+    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GOT_NOF_TRADEDONKEY)), gt(GoodType(sgd.PopUnsignedChar()))
+{
+    sgd.PopContainer(next_dirs);
+}
 
 void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
 {

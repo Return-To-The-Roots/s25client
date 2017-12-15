@@ -188,8 +188,6 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
         sgd.PushObject(job.workplace, false);
     }
 
-    buildings.Serialize2(sgd);
-
     sgd.PushObjectContainer(ware_list, true);
     sgd.PushObjectContainer(flagworkers, false);
     sgd.PushObjectContainer(ships, true);
@@ -200,10 +198,10 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 
     BOOST_FOREACH(const Distribution& dist, distribution)
     {
-        BOOST_FOREACH(unsigned char p, dist.percent_buildings)
+        BOOST_FOREACH(uint8_t p, dist.percent_buildings)
             sgd.PushUnsignedChar(p);
         sgd.PushUnsignedInt(dist.client_buildings.size());
-        BOOST_FOREACH(unsigned char bld, dist.client_buildings)
+        BOOST_FOREACH(BuildingType bld, dist.client_buildings)
             sgd.PushUnsignedChar(bld);
         sgd.PushUnsignedInt(unsigned(dist.goals.size()));
         BOOST_FOREACH(BuildingType goal, dist.goals)
@@ -301,20 +299,17 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     hqPos = sgd.PopMapPoint();
 
-    for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
+    BOOST_FOREACH(Distribution& dist, distribution)
     {
-        for(unsigned bldType = 0; bldType < NUM_BUILDING_TYPES; ++bldType)
-        {
-            distribution[i].percent_buildings[bldType] = sgd.PopUnsignedChar();
-        }
-        list_size = sgd.PopUnsignedInt();
-        for(unsigned z = 0; z < list_size; ++z)
-            distribution[i].client_buildings.push_back(BuildingType(sgd.PopUnsignedChar()));
-        unsigned goal_count = sgd.PopUnsignedInt();
-        distribution[i].goals.resize(goal_count);
-        for(unsigned z = 0; z < goal_count; ++z)
-            distribution[i].goals[z] = BuildingType(sgd.PopUnsignedChar());
-        distribution[i].selected_goal = sgd.PopUnsignedInt();
+        BOOST_FOREACH(uint8_t& p, dist.percent_buildings)
+            p = sgd.PopUnsignedChar();
+        dist.client_buildings.resize(sgd.PopUnsignedInt());
+        BOOST_FOREACH(BuildingType& bld, dist.client_buildings)
+            bld = BuildingType(sgd.PopUnsignedChar());
+        dist.goals.resize(sgd.PopUnsignedInt());
+        BOOST_FOREACH(BuildingType& goal, dist.goals)
+            goal = BuildingType(sgd.PopUnsignedChar());
+        dist.selected_goal = sgd.PopUnsignedInt();
     }
 
     useCustomBuildOrder_ = sgd.PopBool();

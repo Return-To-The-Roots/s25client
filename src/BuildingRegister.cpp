@@ -32,11 +32,7 @@ void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushObjectContainer(warehouses, false);
     sgd.PushObjectContainer(harbors, true);
-}
-
-void BuildingRegister::Serialize2(SerializedGameData& sgd) const
-{
-    for(unsigned i = 0; i < 30; ++i)
+    for(unsigned i = 0; i < buildings.size(); ++i)
         sgd.PushObjectContainer(buildings[i], true);
     sgd.PushObjectContainer(building_sites, true);
     sgd.PushObjectContainer(military_buildings, true);
@@ -46,14 +42,24 @@ void BuildingRegister::Deserialize(SerializedGameData& sgd)
 {
     sgd.PopObjectContainer(warehouses, GOT_UNKNOWN);
     sgd.PopObjectContainer(harbors, GOT_NOB_HARBORBUILDING);
+    if(sgd.GetGameDataVersion() >= 2)
+    {
+        for(unsigned i = 0; i < buildings.size(); ++i)
+            sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
+        sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
+        sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+    }
 }
 
 void BuildingRegister::Deserialize2(SerializedGameData& sgd)
 {
-    for(unsigned i = 0; i < 30; ++i)
-        sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
-    sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
-    sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+    if(sgd.GetGameDataVersion() < 2)
+    {
+        for(unsigned i = 0; i < 30; ++i)
+            sgd.PopObjectContainer(buildings[i], GOT_NOB_USUAL);
+        sgd.PopObjectContainer(building_sites, GOT_BUILDINGSITE);
+        sgd.PopObjectContainer(military_buildings, GOT_NOB_MILITARY);
+    }
 }
 
 void BuildingRegister::Add(noBuildingSite* building_site)
