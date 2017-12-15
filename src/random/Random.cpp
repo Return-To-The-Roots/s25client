@@ -131,9 +131,9 @@ void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
     ser.PushUnsignedInt(counter);
     ser.PushSignedInt(max);
     // We save the type a) for double checking and b) for future extension
-    ser.PushString(T_PRNG::getName());
+    ser.PushLongString(T_PRNG::getName());
     rngState.serialize(ser);
-    ser.PushString(src_name);
+    ser.PushLongString(src_name);
     ser.PushUnsignedInt(src_line);
     ser.PushUnsignedInt(obj_id);
 }
@@ -143,11 +143,11 @@ void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
 {
     counter = ser.PopUnsignedInt();
     max = ser.PopSignedInt();
-    std::string name = ser.PopString();
+    std::string name = ser.PopLongString();
     if(name != T_PRNG::getName())
         throw std::runtime_error("Wrong random number generator");
     rngState.deserialize(ser);
-    src_name = ser.PopString();
+    src_name = ser.PopLongString();
     src_line = ser.PopUnsignedInt();
     obj_id = ser.PopUnsignedInt();
 }

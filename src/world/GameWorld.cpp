@@ -96,7 +96,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(0);
     else
     {
-        sgd.PushString(lua->GetScript());
+        sgd.PushLongString(lua->GetScript());
         Serializer luaSaveState = lua->Serialize();
         sgd.PushUnsignedInt(0xC0DEBA5E); // Start Lua identifier
         sgd.PushUnsignedInt(luaSaveState.GetLength());
@@ -121,7 +121,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
 
     sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
 
-    std::string luaScript = sgd.PopString();
+    std::string luaScript = sgd.PopLongString();
     if(!luaScript.empty())
     {
         if(sgd.PopUnsignedInt() != 0xC0DEBA5E)

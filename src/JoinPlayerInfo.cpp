@@ -28,13 +28,13 @@ JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) : PlayerInfo(base
 JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), originName(name), rating(0), isReady(false) {}
 
 JoinPlayerInfo::JoinPlayerInfo(Serializer& ser)
-    : PlayerInfo(ser), originName(ser.PopString()), rating(ser.PopUnsignedInt()), isReady(ser.PopBool())
+    : PlayerInfo(ser), originName(ser.PopLongString()), rating(ser.PopUnsignedInt()), isReady(ser.PopBool())
 {}
 
 void JoinPlayerInfo::Serialize(Serializer& ser) const
 {
     PlayerInfo::Serialize(ser);
-    ser.PushString(originName);
+    ser.PushLongString(originName);
     ser.PushUnsignedInt(rating);
     ser.PushBool(isReady);
 }

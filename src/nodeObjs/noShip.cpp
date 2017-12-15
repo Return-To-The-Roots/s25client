@@ -109,7 +109,8 @@ void noShip::Serialize(SerializedGameData& sgd) const
 
 noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(State(sgd.PopUnsignedChar())), seaId_(sgd.PopUnsignedShort()),
-      goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()), name(sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
+      goal_harborId(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
+      name(sgd.GetGameDataVersion() < 2 ? sgd.PopLongString() : sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
       route_(sgd.PopUnsignedInt()), lost(sgd.PopBool()), remaining_sea_attackers(sgd.PopUnsignedInt()), home_harbor(sgd.PopUnsignedInt()),
       covered_distance(sgd.PopUnsignedInt())
 {

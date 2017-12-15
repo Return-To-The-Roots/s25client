@@ -156,6 +156,30 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 
 BOOST_AUTO_TEST_SUITE(Serialization)
 
+BOOST_AUTO_TEST_CASE(Serializer)
+{
+    SerializedGameData sgd;
+    // Test corner cases of var size
+    sgd.PushVarSize(0);
+    sgd.PushVarSize(0x7F);
+    sgd.PushVarSize(0x80);
+    sgd.PushVarSize(0x3FFF);
+    sgd.PushVarSize(0x4000);
+    sgd.PushVarSize(0x1FFFFF);
+    sgd.PushVarSize(0xFFFFFFF);
+    sgd.PushVarSize(0x10000000);
+    sgd.PushVarSize(0xFFFFFFFF);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0u);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0x7Fu);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0x80u);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0x3FFFu);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0x4000u);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0x1FFFFFu);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0xFFFFFFFu);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0x10000000u);
+    BOOST_REQUIRE_EQUAL(sgd.PopVarSize(), 0xFFFFFFFFu);
+}
+
 BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
     MapPoint hqPos = world.GetPlayer(0).GetHQPos();
@@ -279,6 +303,11 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_REQUIRE_EQUAL(newUsual->is_working, usualBld->is_working);
             BOOST_REQUIRE_EQUAL(newUsual->HasWorker(), usualBld->HasWorker());
             BOOST_REQUIRE_EQUAL(newUsual->GetProductivity(), usualBld->GetProductivity());
+
+            SerializedGameData loadedSgd;
+            loadedSgd.MakeSnapshot(newWorld);
+            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(), save.sgd.GetData(),
+                                            save.sgd.GetData() + save.sgd.GetLength());
         }
     }
 }

@@ -26,10 +26,10 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskMainMenu.h"
+#include "files.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
-#include "files.h"
 
 namespace {
 enum
@@ -51,7 +51,7 @@ enum
 };
 }
 
-dskTest::dskTest(): curBGIdx(FILE_LOAD_IDS.size())
+dskTest::dskTest() : curBGIdx(FILE_LOAD_IDS.size())
 {
     AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
@@ -164,8 +164,7 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
             GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
         }
-        case ID_btHideCtrls:
-            ToggleCtrlVisibility();
+        case ID_btHideCtrls: ToggleCtrlVisibility();
     }
 }
 
@@ -179,7 +178,7 @@ void dskTest::ToggleCtrlVisibility()
     }
 }
 
-bool dskTest::Msg_KeyDown(const KeyEvent & ke)
+bool dskTest::Msg_KeyDown(const KeyEvent& ke)
 {
     if(ke.kt == KT_CHAR && ke.c == 'h')
         ToggleCtrlVisibility();

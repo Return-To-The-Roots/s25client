@@ -35,6 +35,7 @@ public:
     void ToggleCtrlVisibility();
 
     bool Msg_KeyDown(const KeyEvent& ke) override;
+
 private:
     unsigned curBGIdx;
 };
