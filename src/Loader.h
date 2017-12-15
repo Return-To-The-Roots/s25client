@@ -25,6 +25,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/AnimalConsts.h"
 #include "gameData/NationConsts.h"
@@ -71,7 +72,7 @@ public:
     /// Lädt alle allgemeinen Dateien.
     bool LoadFilesAtStart();
     /// Lädt die Spieldateien.
-    bool LoadFilesAtGame(unsigned char gfxset, const std::vector<bool>& nations);
+    bool LoadFilesAtGame(Landscape gfxset, const std::vector<bool>& nations);
     /// Lädt Dateien von Addons.
     bool LoadFilesFromAddon(const AddonId id);
     void fillCaches();
@@ -119,7 +120,7 @@ public:
     /// Returns the texture for the given terrain. For animated textures the given frame is returned
     glArchivItem_Bitmap* GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
-    unsigned char GetLastGFX() const { return lastgfx; }
+    Landscape GetLastGFX() const { return lastgfx; }
 
 private:
     template<typename T>
@@ -135,7 +136,7 @@ private:
     /// Terraintextures (animated) (currently only water and lava)
     std::map<TerrainType, libsiedler2::Archiv*> terrainTexturesAnim;
 
-    unsigned char lastgfx;
+    Landscape lastgfx;
     boost::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
     libsiedler2::Archiv* map_gfx;
     libsiedler2::Archiv* tex_gfx;

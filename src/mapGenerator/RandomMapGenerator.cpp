@@ -271,7 +271,7 @@ Map* RandomMapGenerator::Create(MapSettings settings)
     Map* map = new Map(settings.size, settings.name, settings.author);
 
     // configuration of the map settings
-    map->type = settings.type;
+    map->type = boost::underlying_cast<uint8_t>(settings.type);
     map->numPlayers = settings.numPlayers;
 
     // the actual map generation

@@ -151,7 +151,7 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
 
     std::vector<bool> nations(NUM_NATIVE_NATS, true);
 
-    LOADER.LoadFilesAtGame(0, nations);
+    LOADER.LoadFilesAtGame(Landscape::GREENLAND, nations);
 
     this->itCurEntry = entries.begin();
 

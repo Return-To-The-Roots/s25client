@@ -29,7 +29,7 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
-    world.Init(size_, LT_GREENLAND);
+    world.Init(size_, Landscape::GREENLAND);
     // Set everything to meadow
     RTTR_FOREACH_PT(MapPoint, size_)
     {
@@ -78,7 +78,7 @@ bool CreateUninitWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
-    world.Init(size_, LT_GREENLAND);
+    world.Init(size_, Landscape::GREENLAND);
     return true;
 }
 

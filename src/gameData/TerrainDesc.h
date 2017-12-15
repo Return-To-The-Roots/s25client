@@ -30,39 +30,36 @@ namespace kaguya {
 class LuaRef;
 }
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
-  BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainKind){LAND, WATER, LAVA, SNOW, MOUNTAIN} BOOST_SCOPED_ENUM_DECLARE_END(TerrainKind)
+BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
+  BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainKind, uint8_t){LAND, WATER, LAVA, SNOW, MOUNTAIN} BOOST_SCOPED_ENUM_DECLARE_END(TerrainKind)
+  /// Bitset of what can be done on that terrain
+  BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(ETerrain,
+                                     uint8_t){/// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
+                                              Unwalkable = 0,
+                                              /// Dangerous, can't go near
+                                              Unreachable = 1,
+                                              /// Can walk on
+                                              Walkable = 2,
+                                              /// Ships can drive on
+                                              Shippable = 4,
+                                              /// Can build buildings
+                                              Buildable = 8 | Walkable,
+                                              /// Can build mines
+                                              Mineable = 16 | Walkable} BOOST_SCOPED_ENUM_DECLARE_END(ETerrain)
 
     struct TerrainDesc
 {
-    /// Bitset of what can be done on that terrain
-    enum Flags
-    {
-        /// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
-        Unwalkable = 0,
-        /// Dangerous, can't go near
-        Unreachable = 1,
-        /// Can walk on
-        Walkable = 2,
-        /// Ships can drive on
-        Shippable = 4,
-        /// Can build buildings
-        Buildable = 8 | Walkable,
-        /// Can build mines
-        Mineable = 16 | Walkable
-    };
-
     std::string name;
-    LandscapeType landscape;
+    Landscape landscape;
     uint8_t s2Id;
     DescIdx<EdgeDesc> edgeType;
     int8_t edgePriority;
     TerrainKind kind;
-    Flags flags;
+    uint8_t numFrames;
+    uint8_t palAnimIdx;
+    ETerrain flags;
     std::string texturePath;
     Rect posInTexture;
-    unsigned numFrames;
-    unsigned palAnimIdx;
     unsigned minimapColor;
 
     TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& worldDesc);
@@ -73,7 +70,12 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ){NOTHING, DANGER, FLAG, CASTLE, MINE} 
     /// Returns whether corn fields can grow on the terrain (no dessert, mountain etc)
     bool IsVital() const;
     /// Return true if the terrain has the given attribute
-    bool Is(Flags what) const { return (flags & what) == what; }
+    bool Is(ETerrain what) const;
 };
+
+inline bool TerrainDesc::Is(ETerrain what) const
+{
+    return (boost::underlying_cast<uint8_t>(flags) & boost::underlying_cast<uint8_t>(what)) == boost::underlying_cast<uint8_t>(what);
+}
 
 #endif // TerrainDesc_h__

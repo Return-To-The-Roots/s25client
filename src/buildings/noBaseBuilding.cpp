@@ -260,13 +260,13 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
 
 glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
 {
-    return GetBuildingImage(type, nation, LandscapeType(LOADER.GetLastGFX()));
+    return GetBuildingImage(type, nation, Landscape(LOADER.GetLastGFX()));
 }
 
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt) //-V688
+glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, Landscape lt) //-V688
 {
     if(type == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((lt == LT_WINTERWORLD) ? 6 : 1));
+        return LOADER.GetImageN("charburner", nation * 8 + ((lt == Landscape::WINTERWORLD) ? 6 : 1));
     else
         return LOADER.GetNationImage(nation, 250 + 5 * type);
 }
@@ -302,7 +302,7 @@ glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
 glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
 {
     if(bldType_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
+        return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == Landscape::WINTERWORLD) ? 7 : 5));
     else
         return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 4);
 }

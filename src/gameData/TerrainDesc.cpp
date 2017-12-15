@@ -42,7 +42,7 @@ TerrainKind strToTerrainKind(const std::string& name)
 
 TerrainBQ getDefaultBQ(TerrainKind kind)
 {
-    switch(kind)
+    switch(boost::native_value(kind))
     {
         case TerrainKind::LAND: return TerrainBQ::CASTLE;
         case TerrainKind::WATER: return TerrainBQ::NOTHING;
@@ -53,15 +53,15 @@ TerrainBQ getDefaultBQ(TerrainKind kind)
     throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
 }
 
-TerrainDesc::Flags getDefaultFlags(TerrainKind kind)
+ETerrain getDefaultFlags(TerrainKind kind)
 {
-    switch(kind)
+    switch(boost::native_value(kind))
     {
-        case TerrainKind::LAND: return TerrainDesc::Buildable;
-        case TerrainKind::WATER: return TerrainDesc::Shippable;
+        case TerrainKind::LAND: return ETerrain::Buildable;
+        case TerrainKind::WATER: return ETerrain::Shippable;
         case TerrainKind::LAVA:
-        case TerrainKind::SNOW: return TerrainDesc::Unreachable;
-        case TerrainKind::MOUNTAIN: return TerrainDesc::Mineable;
+        case TerrainKind::SNOW: return ETerrain::Unreachable;
+        case TerrainKind::MOUNTAIN: return ETerrain::Mineable;
     }
     throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
 }
@@ -82,17 +82,17 @@ TerrainDesc::TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& 
     if(property.empty())
         flags = getDefaultFlags(kind);
     else if(property == "buildable")
-        flags = Buildable;
+        flags = ETerrain::Buildable;
     else if(property == "mineable")
-        flags = Mineable;
+        flags = ETerrain::Mineable;
     else if(property == "walkable")
-        flags = Walkable;
+        flags = ETerrain::Walkable;
     else if(property == "shippable")
-        flags = Shippable;
+        flags = ETerrain::Shippable;
     else if(property == "unwalkable")
-        flags = Unwalkable;
+        flags = ETerrain::Unwalkable;
     else if(property == "unreachable")
-        flags = Unreachable;
+        flags = ETerrain::Unreachable;
     else
         throw GameDataLoadError("Invalid property '" + property + "'");
     getOrThrow(texturePath, luaData, "texture");
@@ -106,13 +106,13 @@ TerrainDesc::TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& 
 
 TerrainBQ TerrainDesc::GetBQ() const
 {
-    if(Is(Buildable))
+    if(Is(ETerrain::Buildable))
         return TerrainBQ::CASTLE;
-    else if(Is(Mineable))
+    else if(Is(ETerrain::Mineable))
         return TerrainBQ::MINE;
-    else if(Is(Walkable))
+    else if(Is(ETerrain::Walkable))
         return TerrainBQ::FLAG;
-    else if(Is(Unreachable))
+    else if(Is(ETerrain::Unreachable))
         return TerrainBQ::DANGER;
     else
         return TerrainBQ::NOTHING;
@@ -121,10 +121,10 @@ TerrainBQ TerrainDesc::GetBQ() const
 bool TerrainDesc::IsUsableByAnimals() const
 {
     // If it is buildable land or mountain, animals can use it
-    return (kind == TerrainKind::LAND || kind == TerrainKind::MOUNTAIN) && Is(Buildable);
+    return (kind == TerrainKind::LAND || kind == TerrainKind::MOUNTAIN) && Is(ETerrain::Buildable);
 }
 
 bool TerrainDesc::IsVital() const
 {
-    return kind == TerrainKind::LAND && Is(Buildable);
+    return kind == TerrainKind::LAND && Is(ETerrain::Buildable);
 }

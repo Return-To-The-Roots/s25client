@@ -177,9 +177,9 @@ void iwMapGenerator::Apply()
     }
     switch(GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection())
     {
-        case 0: mapSettings.type = LT_GREENLAND; break;
-        case 1: mapSettings.type = LT_WINTERWORLD; break;
-        case 2: mapSettings.type = LT_WASTELAND; break;
+        case 0: mapSettings.type = Landscape::GREENLAND; break;
+        case 1: mapSettings.type = Landscape::WINTERWORLD; break;
+        case 2: mapSettings.type = Landscape::WASTELAND; break;
         default: break;
     }
 }
@@ -239,9 +239,9 @@ void iwMapGenerator::Reset()
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE);
     switch(mapSettings.type)
     {
-        case LT_GREENLAND: combo->SetSelection(0); break;
-        case LT_WINTERWORLD: combo->SetSelection(1); break;
-        case LT_WASTELAND: combo->SetSelection(2); break;
+        case Landscape::GREENLAND: combo->SetSelection(0); break;
+        case Landscape::WINTERWORLD: combo->SetSelection(1); break;
+        case Landscape::WASTELAND: combo->SetSelection(2); break;
         default: break;
     }
 }

@@ -56,7 +56,7 @@ class World : public MapBase
     friend class MapSerializer;
 
     /// Landschafts-Typ
-    LandscapeType lt;
+    Landscape lt;
 
     /// Eigenschaften von einem Punkt auf der Map
     std::vector<MapNode> nodes;
@@ -83,12 +83,12 @@ public:
     virtual ~World();
 
     /// Initialize the world
-    virtual void Init(const MapExtent& size, LandscapeType lt);
+    virtual void Init(const MapExtent& size, Landscape lt);
     /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 
     /// Return the type of the landscape
-    LandscapeType GetLandscapeType() const { return lt; }
+    Landscape GetLandscapeType() const { return lt; }
 
     /// Return the node at that point
     const MapNode& GetNode(const MapPoint pt) const;

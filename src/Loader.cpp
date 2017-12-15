@@ -58,7 +58,7 @@
 #include <sstream>
 #include <stdexcept>
 
-Loader::Loader() : lastgfx(0xFF), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
+Loader::Loader() : lastgfx(Landscape::GREENLAND), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
 {
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(NULL));
 }
@@ -327,30 +327,34 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesAtGame(unsigned char gfxset, const std::vector<bool>& nations)
+bool Loader::LoadFilesAtGame(Landscape gfxset, const std::vector<bool>& nations)
 {
-    RTTR_Assert(gfxset <= LT_WINTERWORLD);
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned> files;
 
     files += 26, 44, 45, 86, 92, // rom_bobs.lst, carrier.bob, jobs.bob, boat.lst, boot_z.lst
       58, 59, 60, 61, 62, 63,    // mis0bobs.lst, mis1bobs.lst, mis2bobs.lst, mis3bobs.lst, mis4bobs.lst, mis5bobs.lst
-      35, 36, 37, 38,            // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
-      23u + gfxset,              // map_?_z.lst
-      20u + gfxset;              // tex?.lbm
+      35, 36, 37, 38;            // afr_icon.lst, jap_icon.lst, rom_icon.lst, vik_icon.lst
 
     for(unsigned char i = 0; i < NUM_NATIVE_NATS; ++i)
     {
         // ggf. Völker-Grafiken laden
         if((i < nations.size() && nations[i]) || (i == NAT_ROMANS && NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]))
-            files += 27 + i + (gfxset == LT_WINTERWORLD) * NUM_NATIVE_NATS;
+            files += 27 + i + (gfxset == Landscape::WINTERWORLD) * NUM_NATIVE_NATS;
     }
-
-    lastgfx = 0xFF;
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
     if(!LoadFilesFromArray(files, true))
         return false;
+
+    std::string mapGFXFile = MAP_GFXSET_Z[boost::underlying_cast<uint8_t>(lastgfx)];
+    if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[23]) + "/" + mapGFXFile + ".LST", true))
+        return false;
+    map_gfx = GetInfoN(mapGFXFile);
+    std::string texGFXFile = TEX_GFXSET[boost::underlying_cast<uint8_t>(lastgfx)];
+    if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[20]) + "/" + texGFXFile + ".LBM", true))
+        return false;
+    tex_gfx = GetInfoN(texGFXFile);
 
     if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]
        && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
@@ -362,10 +366,7 @@ bool Loader::LoadFilesAtGame(unsigned char gfxset, const std::vector<bool>& nati
     lastgfx = gfxset;
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
-        nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[lastgfx][nation]);
-
-    map_gfx = GetInfoN(MAP_GFXSET_Z[lastgfx]);
-    tex_gfx = GetInfoN(TEX_GFXSET[lastgfx]);
+        nation_gfx[nation] = GetInfoN(NATION_GFXSET_Z[boost::underlying_cast<uint8_t>(lastgfx)][nation]);
 
     return true;
 }
@@ -437,7 +438,7 @@ void Loader::fillCaches()
             {
                 unsigned id = nation * 8;
 
-                bmp.add(GetImageN("charburner", id + ((lastgfx == LT_WINTERWORLD) ? 6 : 1)));
+                bmp.add(GetImageN("charburner", id + ((lastgfx == Landscape::WINTERWORLD) ? 6 : 1)));
                 bmp.addShadow(GetImageN("charburner", id + 2));
 
                 skel.add(GetImageN("charburner", id + 3));
@@ -787,7 +788,6 @@ void Loader::ClearTerrainTextures()
  */
 bool Loader::CreateTerrainTextures()
 {
-    RTTR_Assert(lastgfx <= 2);
     ClearTerrainTextures();
 
     // Ränder

@@ -109,7 +109,7 @@ void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sg
 {
     // Headinformationen
     const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
-    const LandscapeType lt = LandscapeType(sgd.PopUnsignedChar());
+    const Landscape lt = Landscape(sgd.PopUnsignedChar());
 
     // Initialisierungen
     Init(size, lt);

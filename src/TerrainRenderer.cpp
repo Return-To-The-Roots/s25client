@@ -198,7 +198,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
 
     // Add extra vertices for borders
     unsigned numTriangles = gl_vertices.size();
-    const LandscapeType lt = world.GetLandscapeType();
+    const Landscape lt = world.GetLandscapeType();
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         const unsigned pos = GetVertexIdx(pt);

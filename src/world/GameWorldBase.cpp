@@ -49,7 +49,7 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
 
 GameWorldBase::~GameWorldBase() {}
 
-void GameWorldBase::Init(const MapExtent& mapSize, LandscapeType lt)
+void GameWorldBase::Init(const MapExtent& mapSize, Landscape lt)
 {
     World::Init(mapSize, lt);
     freePathFinder->Init(mapSize);

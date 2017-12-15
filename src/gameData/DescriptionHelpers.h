@@ -36,7 +36,7 @@ T getOrDefault(const kaguya::LuaRef& luaData, const std::string& fieldName, cons
 /// Get a Rect from lua or return the default. TODO: Add kaguya conversion function and remove this
 Rect getRectOrDefault(const kaguya::LuaRef& luaData, const std::string& fieldName, const Rect& defaultValue);
 /// Get the landscape from a string
-LandscapeType strToLandscape(const std::string& name);
+Landscape strToLandscape(const std::string& name);
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation
@@ -84,14 +84,14 @@ inline Rect getRectOrDefault(const kaguya::LuaRef& luaData, const std::string& f
         return defaultValue;
 }
 
-inline LandscapeType strToLandscape(const std::string& name)
+inline Landscape strToLandscape(const std::string& name)
 {
     if(name == "greenland")
-        return LT_GREENLAND;
+        return Landscape::GREENLAND;
     else if(name == "wasteland")
-        return LT_WASTELAND;
+        return Landscape::WASTELAND;
     else if(name == "winterworld")
-        return LT_WINTERWORLD;
+        return Landscape::WINTERWORLD;
     else
         throw GameDataLoadError("Invalid landscape type: " + name);
 }

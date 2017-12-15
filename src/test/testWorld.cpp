@@ -153,7 +153,7 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
-    world.Init(MapExtent(30, 30), LT_GREENLAND);
+    world.Init(MapExtent(30, 30), Landscape::GREENLAND);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         MapNode& node = world.GetNodeWriteable(pt);

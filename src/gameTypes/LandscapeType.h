@@ -18,14 +18,11 @@
 #ifndef LandscapeType_h__
 #define LandscapeType_h__
 
-enum LandscapeType
-{
-    LT_GREENLAND = 0,
-    LT_WASTELAND,
-    LT_WINTERWORLD
-};
+#include <boost/core/scoped_enum.hpp>
 
-// Keep this in sync with LandscapeType
-static const unsigned char NUM_LTS = LT_WINTERWORLD + 1;
+BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(Landscape, uint8_t){GREENLAND, WASTELAND, WINTERWORLD} BOOST_SCOPED_ENUM_DECLARE_END(Landscape)
+
+  // Keep this in sync with LandscapeType
+  static const uint8_t NUM_LTS = 3;
 
 #endif // LandscapeType_h__

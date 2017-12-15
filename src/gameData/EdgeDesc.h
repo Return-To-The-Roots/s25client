@@ -30,7 +30,7 @@ class LuaRef;
 struct EdgeDesc
 {
     std::string name;
-    LandscapeType landscape;
+    Landscape landscape;
     std::string texturePath;
     Rect posInTexture;
 

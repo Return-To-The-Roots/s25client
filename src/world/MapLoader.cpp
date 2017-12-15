@@ -47,7 +47,7 @@ MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : w
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
-    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
+    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), Landscape(map.getHeader().getGfxSet())); //-V807
 
     InitNodes(map, exploration);
     PlaceObjects(map);

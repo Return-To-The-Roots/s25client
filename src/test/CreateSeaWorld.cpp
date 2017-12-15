@@ -64,7 +64,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
-    world.Init(size_, LT_GREENLAND);
+    world.Init(size_, Landscape::GREENLAND);
     // Set everything to water
     RTTR_FOREACH_PT(MapPoint, size_)
     {
@@ -180,7 +180,7 @@ CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers) :
 
 bool CreateWaterWorld::operator()(GameWorldGame& world) const
 {
-    world.Init(size_, LT_GREENLAND);
+    world.Init(size_, Landscape::GREENLAND);
     // Set everything to water
     RTTR_FOREACH_PT(MapPoint, size_)
     {

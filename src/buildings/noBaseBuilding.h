@@ -101,7 +101,7 @@ public:
     /// Gibt ein Bild zurück für das normale Gebäude
     glArchivItem_Bitmap* GetBuildingImage() const;
     static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation);
-    static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt);
+    static glArchivItem_Bitmap* GetBuildingImage(BuildingType type, Nation nation, Landscape lt);
     /// Gibt ein Bild zurück für das Gebäudegerüst
     glArchivItem_Bitmap* GetBuildingSkeletonImage() const;
     /// Gibt ein Bild zurück für das normale Gebäude

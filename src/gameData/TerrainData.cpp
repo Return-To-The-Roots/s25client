@@ -149,11 +149,11 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
     }
 }
 
-unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
+unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
 {
-    switch(landsCape)
+    switch(boost::native_value(landsCape))
     {
-        case LT_GREENLAND:
+        case Landscape::GREENLAND:
             switch(t)
             {
                 case TT_SNOW: return 0xFFFFFFFF;
@@ -180,7 +180,7 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
                 case TT_BUILDABLE_MOUNTAIN: return 0xFF9c8058;
             }
             break;
-        case LT_WASTELAND:
+        case Landscape::WASTELAND:
             switch(t)
             {
                 case TT_SNOW:
@@ -208,7 +208,7 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
                 case TT_BUILDABLE_MOUNTAIN: return 0xFF706454;
             }
             break;
-        case LT_WINTERWORLD:
+        case Landscape::WINTERWORLD:
             switch(t)
             {
                 case TT_SNOW: return 0xFF00286C;
@@ -238,11 +238,11 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
     throw std::logic_error("Invalid parameters given");
 }
 
-EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
+EdgeType TerrainData::GetEdgeType(Landscape landsCape, TerrainType t)
 {
-    switch(landsCape)
+    switch(boost::native_value(landsCape))
     {
-        case LT_GREENLAND:
+        case Landscape::GREENLAND:
             switch(t)
             {
                 case TT_SNOW: return ET_SNOW;
@@ -269,7 +269,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
                 case TT_LAVA4: return ET_NONE;
             }
             break;
-        case LT_WASTELAND:
+        case Landscape::WASTELAND:
             switch(t)
             {
                 case TT_SNOW:
@@ -296,7 +296,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
                 case TT_BUILDABLE_WATER: return ET_MOUNTAIN;
             }
             break;
-        case LT_WINTERWORLD:
+        case Landscape::WINTERWORLD:
             switch(t)
             {
                 case TT_SNOW:
@@ -401,7 +401,7 @@ const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
    /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
    /*TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}}};
 
-unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, TerrainType t2)
+unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2)
 {
     static boost::array<boost::array<boost::array<unsigned char, NUM_TTS>, NUM_TTS>, NUM_LTS> EDGE_TABLE;
     static bool isInitialized = false;
@@ -412,8 +412,8 @@ unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, 
             for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
                 for(int iT2 = 0; iT2 <= iT1; ++iT2)
                 {
-                    EdgeType et1 = GetEdgeType(LandscapeType(lt), TerrainType(iT1));
-                    EdgeType et2 = GetEdgeType(LandscapeType(lt), TerrainType(iT2));
+                    EdgeType et1 = GetEdgeType(Landscape(lt), TerrainType(iT1));
+                    EdgeType et2 = GetEdgeType(Landscape(lt), TerrainType(iT2));
                     if(iT1 == iT2 ||                         // Same terrain
                        !TERRAIN_DRAW_PRIORITY[lt][iT1][iT2]) // Same priority
                     {
@@ -434,7 +434,7 @@ unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, 
                 }
         isInitialized = true;
     }
-    return EDGE_TABLE[landsCape][t1][t2];
+    return EDGE_TABLE[boost::underlying_cast<uint8_t>(landsCape)][t1][t2];
 }
 
 bool TerrainData::IsUseable(TerrainType t)
@@ -505,13 +505,13 @@ bool TerrainData::IsLava(TerrainType t)
     }
 }
 
-bool TerrainData::IsSnow(LandscapeType lt, TerrainType t)
+bool TerrainData::IsSnow(Landscape lt, TerrainType t)
 {
-    switch(lt)
+    switch(boost::native_value(lt))
     {
-        case LT_GREENLAND: return t == TT_SNOW;
-        case LT_WASTELAND: return false;
-        case LT_WINTERWORLD: return t == TT_MOUNTAINMEADOW; break;
+        case Landscape::GREENLAND: return t == TT_SNOW;
+        case Landscape::WASTELAND: return false;
+        case Landscape::WINTERWORLD: return t == TT_MOUNTAINMEADOW; break;
     }
     throw std::logic_error("Invalid terrain type");
 }

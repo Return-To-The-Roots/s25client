@@ -43,15 +43,15 @@ const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /* 14 */ "",                      // unused
   /* 15 */ "<RTTR_RTTR>/languages", // die ganzen Sprachdateien
   /* 16 */ "<RTTR_RTTR>/RTTR.LST",
-  /* 17 */ "<RTTR_RTTR>/COLORS.ACT",            // Spezialpalette wegen Schriften usw
-  /* 18 */ "",                                  // unused
-  /* 19 */ "",                                  // unused
-  /* 20 */ "<RTTR_GAME>/GFX/TEXTURES/TEX5.LBM", // Grünland
-  /* 21 */ "<RTTR_GAME>/GFX/TEXTURES/TEX6.LBM", // Ödland
-  /* 22 */ "<RTTR_GAME>/GFX/TEXTURES/TEX7.LBM", // Winterwelt
-  /* 23 */ "<RTTR_GAME>/DATA/MAP_0_Z.LST",      // Grünland
-  /* 24 */ "<RTTR_GAME>/DATA/MAP_1_Z.LST",      // Ödland
-  /* 25 */ "<RTTR_GAME>/DATA/MAP_2_Z.LST",      // Winterwelt
+  /* 17 */ "<RTTR_RTTR>/COLORS.ACT",   // Spezialpalette wegen Schriften usw
+  /* 18 */ "",                         // unused
+  /* 19 */ "",                         // unused
+  /* 20 */ "<RTTR_GAME>/GFX/TEXTURES", // Terrain textures
+  /* 21 */ "",
+  /* 22 */ "",
+  /* 23 */ "<RTTR_GAME>/DATA", // S2 game data
+  /* 24 */ "",
+  /* 25 */ "",
   /* 26 */ "<RTTR_GAME>/DATA/CBOB/ROM_BOBS.LST",
   /* 27 */ "<RTTR_GAME>/DATA/MBOB/AFR_Z.LST",  // Afrikaner
   /* 28 */ "<RTTR_GAME>/DATA/MBOB/JAP_Z.LST",  // Japaner

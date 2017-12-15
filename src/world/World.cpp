@@ -32,14 +32,14 @@
 #include <boost/foreach.hpp>
 #include <set>
 
-World::World() : lt(LT_GREENLAND), noNodeObj(NULL) {}
+World::World() : lt(Landscape::GREENLAND), noNodeObj(NULL) {}
 
 World::~World()
 {
     Unload();
 }
 
-void World::Init(const MapExtent& mapSize, LandscapeType lt)
+void World::Init(const MapExtent& mapSize, Landscape lt)
 {
     RTTR_Assert(GetSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map

@@ -25,7 +25,7 @@ class glArchivItem_Map;
 
 class PreviewMinimap : public Minimap
 {
-    LandscapeType lt;
+    Landscape lt;
     std::vector<unsigned char> objects, terrain1, terrain2, shadows;
 
 public:

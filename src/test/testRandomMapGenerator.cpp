@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
     MapSettings settings;
     settings.size = MapExtent(38, 30);
     settings.numPlayers = 1;
-    settings.type = LT_GREENLAND;
+    settings.type = Landscape::GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
     MapSettings settings;
     settings.size = MapExtent(30u, 32u);
     settings.numPlayers = 2;
-    settings.type = LT_GREENLAND;
+    settings.type = Landscape::GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(InvalidConfig)
     MapSettings settings;
     settings.size = MapExtent(30u, 20u);
     settings.numPlayers = 0;
-    settings.type = LT_WASTELAND;
+    settings.type = Landscape::WASTELAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
