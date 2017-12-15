@@ -53,11 +53,14 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
     Landscape landscape;
     uint8_t s2Id;
     DescIdx<EdgeDesc> edgeType;
+    /// Priority for drawing. The terrain with the higher priority draws its edge over the neighbor
     int8_t edgePriority;
     TerrainKind kind;
     uint8_t numFrames;
     uint8_t palAnimIdx;
     ETerrain flags;
+    /// How much water can be on the terrain [0, 100]
+    uint8_t humidity;
     std::string texturePath;
     Rect posInTexture;
     unsigned minimapColor;

@@ -84,7 +84,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
 {
     // Headinformationen
     sgd.PushPoint(GetSize());
-    sgd.PushUnsignedChar(static_cast<unsigned char>(GetLandscapeType()));
+    sgd.PushUnsignedChar(boost::underlying_cast<uint8_t>(GetLandscapeType()));
 
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 

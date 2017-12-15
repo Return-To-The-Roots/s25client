@@ -66,6 +66,19 @@ ETerrain getDefaultFlags(TerrainKind kind)
     throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
 }
 
+uint8_t getDefaultHumidity(TerrainKind kind)
+{
+    switch(boost::native_value(kind))
+    {
+        case TerrainKind::LAND:
+        case TerrainKind::WATER: return 100;
+        case TerrainKind::LAVA:
+        case TerrainKind::SNOW:
+        case TerrainKind::MOUNTAIN: return 0;
+    }
+    throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
+}
+
 TerrainDesc::TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& worldDesc)
 {
     getOrThrow(name, luaData, "name");
@@ -95,6 +108,7 @@ TerrainDesc::TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& 
         flags = ETerrain::Unreachable;
     else
         throw GameDataLoadError("Invalid property '" + property + "'");
+    humidity = getOrDefault(luaData, "humidity", getDefaultHumidity(kind));
     getOrThrow(texturePath, luaData, "texture");
     posInTexture = getRectOrDefault(luaData, "pos", Rect());
     numFrames = getOrDefault(luaData, "numFrames", 1u);

@@ -237,7 +237,7 @@ void iwMapGenerator::Reset()
         combo->SetSelection(4);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE);
-    switch(mapSettings.type)
+    switch(boost::native_value(mapSettings.type))
     {
         case Landscape::GREENLAND: combo->SetSelection(0); break;
         case Landscape::WINTERWORLD: combo->SetSelection(1); break;

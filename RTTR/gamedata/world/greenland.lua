@@ -57,6 +57,9 @@ rttr:AddTerrain{
 	--        unwalkable  (can't walk on, but near)
 	--        unreachable (dangerous, can't go near), default for snow, lava
 	property = "unreachable",
+	-- Humidity in percent (0..100) which determinates how much water can be on this terrain
+	-- Defaults to 0 for lava, snow, mountain, 100 otherwise
+	humidity = 0,
 	-- Filename of the texure image
 	texture = "TEX5.LBM",
 	-- Position and size {x, y, w, h} in the image if it contains multiple textures
