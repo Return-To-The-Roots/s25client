@@ -19,13 +19,14 @@
 #define EdgeDesc_h__
 
 #include "Rect.h"
+#include "helpers/Deleter.h"
 #include "gameTypes/LandscapeType.h"
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <string>
 
 struct WorldDescription;
-namespace kaguya {
-class LuaRef;
-}
+class CheckedLuaTable;
+class glSmartBitmap;
 
 struct EdgeDesc
 {
@@ -33,8 +34,10 @@ struct EdgeDesc
     Landscape landscape;
     std::string texturePath;
     Rect posInTexture;
+    boost::shared_ptr<glSmartBitmap> texture;
 
-    EdgeDesc(const kaguya::LuaRef& luaData, const WorldDescription& worldDesc);
+    EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
+    ~EdgeDesc();
 };
 
 #endif // EdgeDesc_h__

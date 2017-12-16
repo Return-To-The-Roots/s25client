@@ -51,7 +51,7 @@ public:
     ~glSmartBitmap();
     void reset();
 
-    Extent getWidth() const { return size_; }
+    Extent getSize() const { return size_; }
     Extent getTexSize() const;
 
     bool isGenerated() const { return texture != 0; }
@@ -63,6 +63,7 @@ public:
         texture = tex;
         sharedTexture = (tex != 0);
     }
+    unsigned getTexture() const { return texture; }
 
     void calcDimensions();
 

@@ -20,69 +20,16 @@
 
 #include "Rect.h"
 #include "WorldDescription.h"
+#include "gameTypes/LandscapeType.h"
 #include <kaguya/kaguya.hpp>
+#include <set>
 #include <string>
 #include <vector>
 
 namespace descriptionHelpers {
-/// Return the value from lua or throw an error
-template<typename T>
-T getOrThrow(const kaguya::LuaRef& luaData, const std::string& fieldName);
-template<typename T>
-void getOrThrow(T& outVal, const kaguya::LuaRef& luaData, const std::string& fieldName);
-/// Return the value or use the default if it doesn't exist
-template<typename T>
-T getOrDefault(const kaguya::LuaRef& luaData, const std::string& fieldName, const T& defaultValue);
-/// Get a Rect from lua or return the default. TODO: Add kaguya conversion function and remove this
-Rect getRectOrDefault(const kaguya::LuaRef& luaData, const std::string& fieldName, const Rect& defaultValue);
+
 /// Get the landscape from a string
 Landscape strToLandscape(const std::string& name);
-
-//////////////////////////////////////////////////////////////////////////
-// Implementation
-//////////////////////////////////////////////////////////////////////////
-
-template<typename T>
-inline T getOrThrow(const kaguya::LuaRef& luaData, const std::string& fieldName)
-{
-    kaguya::LuaRef value = luaData[fieldName];
-    if(value.isNilref())
-        throw GameDataLoadError("Required field '" + fieldName + "' not found");
-    if(value.isConvertible<T>())
-        return value;
-    else
-        throw GameDataLoadError("Field '" + fieldName + "' has the wrong type");
-}
-
-template<typename T>
-inline void getOrThrow(T& outVal, const kaguya::LuaRef& luaData, const std::string& fieldName)
-{
-    outVal = getOrThrow<T>(luaData, fieldName);
-}
-
-template<typename T>
-inline T getOrDefault(const kaguya::LuaRef& luaData, const std::string& fieldName, const T& defaultValue)
-{
-    kaguya::LuaRef value = luaData[fieldName];
-    if(value.isNilref())
-        return defaultValue;
-    if(value.isConvertible<T>())
-        return value;
-    else
-        throw GameDataLoadError("Field '" + fieldName + "' has the wrong type");
-}
-
-inline Rect getRectOrDefault(const kaguya::LuaRef& luaData, const std::string& fieldName, const Rect& defaultValue)
-{
-    std::vector<unsigned> luaRect = getOrDefault(luaData, fieldName, std::vector<unsigned>());
-    if(!luaRect.empty())
-    {
-        if(luaRect.size() != 4u)
-            throw GameDataLoadError("You need 4 values for attribute '" + fieldName + "'");
-        return Rect(luaRect[0], luaRect[1], luaRect[2], luaRect[3]);
-    } else
-        return defaultValue;
-}
 
 inline Landscape strToLandscape(const std::string& name)
 {

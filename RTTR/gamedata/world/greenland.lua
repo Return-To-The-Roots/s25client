@@ -78,6 +78,7 @@ rttr:AddTerrain{
 	edgePriority = 48,
 	kind = "land",
 	property = "walkable",
+	humidity = 0,
 	texture = "TEX5.LBM",
 	pos = {48, 0, 48, 48},
 	color = 0xFFc09c7c
@@ -156,6 +157,7 @@ rttr:AddTerrain{
 	s2Id = 0,
 	edgePriority = 38,
 	kind = "land",
+	humidity = 60,
 	texture = "TEX5.LBM",
 	pos = {0, 96, 48, 48},
 	color = 0xFF649014
@@ -200,6 +202,7 @@ rttr:AddTerrain{
 	s2Id = 0xE,
 	edgePriority = 46,
 	kind = "land",
+	humidity = 30,
 	texture = "TEX5.LBM",
 	pos = {0, 144, 40, 40},
 	color = 0xFF88b028

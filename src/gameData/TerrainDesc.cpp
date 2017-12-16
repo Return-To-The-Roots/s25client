@@ -20,7 +20,8 @@
 #include "DescriptionHelpers.h"
 #include "WorldDescription.h"
 #include "helpers/converters.h"
-#include <kaguya/kaguya.hpp>
+#include "lua/CheckedLuaTable.h"
+#include "ogl/glSmartBitmap.h"
 
 using namespace descriptionHelpers;
 
@@ -79,19 +80,19 @@ uint8_t getDefaultHumidity(TerrainKind kind)
     throw GameDataError("Invalid terrain kind: " + helpers::toString(boost::underlying_cast<unsigned>(kind)));
 }
 
-TerrainDesc::TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& worldDesc)
+TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {
-    getOrThrow(name, luaData, "name");
-    landscape = strToLandscape(getOrThrow<std::string>(luaData, "landscape"));
-    s2Id = getOrDefault<uint8_t>(luaData, "s2Id", 0xFF);
-    std::string edgeTypeName = getOrThrow<std::string>(luaData, "edgeType");
+    luaData.getOrThrow(name, "name");
+    landscape = strToLandscape(luaData.getOrThrow<std::string>("landscape"));
+    s2Id = luaData.getOrDefault<uint8_t>("s2Id", 0xFF);
+    std::string edgeTypeName = luaData.getOrThrow<std::string>("edgeType");
     if(edgeTypeName != "none" && !worldDesc.edges.getIndex(edgeTypeName))
         throw GameDataLoadError("Invalid edge type: " + edgeTypeName);
     else
         edgeType = worldDesc.edges.getIndex(edgeTypeName);
-    edgePriority = getOrDefault<int8_t>(luaData, "edgePriority", 0);
-    kind = strToTerrainKind(getOrDefault<std::string>(luaData, "kind", "land"));
-    std::string property = getOrDefault<std::string>(luaData, "property", "");
+    edgePriority = luaData.getOrDefault<int8_t>("edgePriority", 0);
+    kind = strToTerrainKind(luaData.getOrDefault<std::string>("kind", "land"));
+    std::string property = luaData.getOrDefault<std::string>("property", "");
     if(property.empty())
         flags = getDefaultFlags(kind);
     else if(property == "buildable")
@@ -108,15 +109,17 @@ TerrainDesc::TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& 
         flags = ETerrain::Unreachable;
     else
         throw GameDataLoadError("Invalid property '" + property + "'");
-    humidity = getOrDefault(luaData, "humidity", getDefaultHumidity(kind));
-    getOrThrow(texturePath, luaData, "texture");
-    posInTexture = getRectOrDefault(luaData, "pos", Rect());
-    numFrames = getOrDefault(luaData, "numFrames", 1u);
+    humidity = luaData.getOrDefault("humidity", getDefaultHumidity(kind));
+    luaData.getOrThrow(texturePath, "texture");
+    posInTexture = luaData.getRectOrDefault("pos", Rect());
+    numFrames = luaData.getOrDefault("numFrames", 1u);
     if(numFrames == 0u)
         throw GameDataLoadError("Cannot have a texture with no frames!");
-    palAnimIdx = getOrDefault(luaData, "palAnimIdx", 0u);
-    minimapColor = getOrThrow<unsigned>(luaData, "color");
+    palAnimIdx = luaData.getOrDefault("palAnimIdx", 0u);
+    minimapColor = luaData.getOrThrow<unsigned>("color");
 }
+
+TerrainDesc::~TerrainDesc() {}
 
 TerrainBQ TerrainDesc::GetBQ() const
 {

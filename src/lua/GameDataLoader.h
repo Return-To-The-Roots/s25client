@@ -35,8 +35,8 @@ public:
 
 private:
     void Include(const std::string& filePath);
-    void AddTerrainEdge(const kaguya::LuaRef& data);
-    void AddTerrain(const kaguya::LuaRef& data);
+    void AddTerrainEdge(const kaguya::LuaTable& data);
+    void AddTerrain(const kaguya::LuaTable& data);
 
     boost::shared_ptr<WorldDescription> worldDesc_;
     std::string basePath_, curFile_;

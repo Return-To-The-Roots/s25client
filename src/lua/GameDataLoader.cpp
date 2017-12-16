@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameDataLoader.h"
+#include "CheckedLuaTable.h"
 #include "helpers/containerUtils.h"
 #include "gameData/EdgeDesc.h"
 #include "gameData/TerrainDesc.h"
@@ -81,12 +82,12 @@ void GameDataLoader::Include(const std::string& filepath)
     --curIncludeDepth_;
 }
 
-void GameDataLoader::AddTerrainEdge(const kaguya::LuaRef& data)
+void GameDataLoader::AddTerrainEdge(const kaguya::LuaTable& data)
 {
     worldDesc_->edges.add(EdgeDesc(data, *worldDesc_));
 }
 
-void GameDataLoader::AddTerrain(const kaguya::LuaRef& data)
+void GameDataLoader::AddTerrain(const kaguya::LuaTable& data)
 {
     worldDesc_->terrain.add(TerrainDesc(data, *worldDesc_));
 }

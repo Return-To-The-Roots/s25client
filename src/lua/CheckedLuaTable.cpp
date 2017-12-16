@@ -16,17 +16,21 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "EdgeDesc.h"
-#include "DescriptionHelpers.h"
-#include "lua/CheckedLuaTable.h"
-#include "ogl/glSmartBitmap.h"
+#include "CheckedLuaTable.h"
+#include "boost/foreach.hpp"
+#include "libutil/Log.h"
+#include <algorithm>
 
-EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription&)
+CheckedLuaTable::CheckedLuaTable(const kaguya::LuaTable& luaTable) : table(luaTable) {}
+
+CheckedLuaTable::~CheckedLuaTable()
 {
-    luaData.getOrThrow(name, "name");
-    landscape = descriptionHelpers::strToLandscape(luaData.getOrThrow<std::string>("landscape"));
-    luaData.getOrThrow(texturePath, "texture");
-    posInTexture = luaData.getRectOrDefault("pos", Rect());
+    std::vector<std::string> tableKeys = table.keys<std::string>();
+    std::sort(tableKeys.begin(), tableKeys.end());
+    std::vector<std::string> unusedKeys;
+    std::set_difference(tableKeys.begin(), tableKeys.end(), accessedKeys_.begin(), accessedKeys_.end(), std::back_inserter(unusedKeys));
+    BOOST_FOREACH(const std::string& unusedKey, unusedKeys)
+        LOG.write("\nERROR: Did not use key '%1%' in a lua table. This is most likely a bug!\n") % unusedKey;
+    // We should not throw errors in dtors
+    RTTR_AssertNoThrow(unusedKeys.empty());
 }
-
-EdgeDesc::~EdgeDesc() {}

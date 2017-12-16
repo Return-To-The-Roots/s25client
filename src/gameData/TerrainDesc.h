@@ -22,13 +22,14 @@
 #include "Rect.h"
 #include "gameTypes/LandscapeType.h"
 #include <boost/core/scoped_enum.hpp>
+#include <boost/shared_ptr.hpp>
 #include <string>
+#include <vector>
 
 struct EdgeDesc;
 struct WorldDescription;
-namespace kaguya {
-class LuaRef;
-}
+class CheckedLuaTable;
+class glSmartBitmap;
 
 BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
   BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainKind, uint8_t){LAND, WATER, LAVA, SNOW, MOUNTAIN} BOOST_SCOPED_ENUM_DECLARE_END(TerrainKind)
@@ -64,8 +65,10 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
     std::string texturePath;
     Rect posInTexture;
     unsigned minimapColor;
+    std::vector<boost::shared_ptr<glSmartBitmap> > textures;
 
-    TerrainDesc(const kaguya::LuaRef& luaData, const WorldDescription& worldDesc);
+    TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
+    ~TerrainDesc();
     /// Get the building quality of the terrain from the flags
     TerrainBQ GetBQ() const;
     /// Returns whether "regular" animals walk on that terrain (no water or snow animals)
