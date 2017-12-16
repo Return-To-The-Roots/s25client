@@ -593,11 +593,11 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     if(SETTINGS.interface.revert_mouse)
         acceleration = -acceleration;
 
-    gwv.MoveTo((mc.x - startScrollPt.x) * acceleration, (mc.y - startScrollPt.y) * acceleration);
-    VIDEODRIVER.SetMousePos(startScrollPt.x, startScrollPt.y);
+    gwv.MoveTo((mc.GetPos() - startScrollPt) * acceleration);
+    VIDEODRIVER.SetMousePos(startScrollPt);
 
     if(!SETTINGS.global.smartCursor)
-        startScrollPt = Position(mc.x, mc.y);
+        startScrollPt = mc.GetPos();
     return true;
 }
 

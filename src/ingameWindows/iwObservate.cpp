@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwObservate.h"
 #include "CollisionDetection.h"
+#include "GameManager.h"
 #include "Loader.h"
 #include "Settings.h"
 #include "controls/ctrlImageButton.h"
@@ -248,7 +249,7 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
         if(SETTINGS.interface.revert_mouse)
             acceleration = -acceleration;
 
-        view->MoveTo((DrawPoint(mc.x, mc.y) - scrollOrigin));
+        view->MoveTo((mc.GetPos() - scrollOrigin) * acceleration);
         VIDEODRIVER.SetMousePos(scrollOrigin);
     }
 
@@ -267,17 +268,20 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
 
         isScrolling = true;
         followMovableId = 0;
+        GAMEMANAGER.SetCursor(CURSOR_SCROLL);
     } else
     {
         Close();
     }
 
-    return (false);
+    return true;
 }
 
 bool iwObservate::Msg_RightUp(const MouseCoords& /*mc*/)
 {
+    if(isScrolling)
+        GAMEMANAGER.SetCursor(CURSOR_HAND);
     isScrolling = false;
 
-    return (false);
+    return true;
 }
