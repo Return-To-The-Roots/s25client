@@ -907,8 +907,8 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
                 mainPlayer.sendMsgAsync(new GameMessage_Map_Checksum(mapinfo.mapChecksum, mapinfo.luaChecksum));
                 return true;
             }
-            gameLobby.reset();
         }
+        gameLobby.reset();
     }
     mapinfo.mapData.length = msg.mapLen;
     mapinfo.luaData.length = msg.luaLen;

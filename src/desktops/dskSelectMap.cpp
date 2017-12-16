@@ -411,7 +411,7 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
 
         // Und Zeilen vorbereiten
         std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header.getNumPlayers())).str();
-        std::string size = helpers::toString(header.getWidth()) + "x" + helpers::toString(header.getWidth());
+        std::string size = helpers::toString(header.getWidth()) + "x" + helpers::toString(header.getHeight());
 
         // und einfügen
         const std::string landscapes[3] = {_("Greenland"), _("Wasteland"), _("Winter world")};

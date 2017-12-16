@@ -470,6 +470,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             int x_a, y_a, x_b, y_b;
             ss_a >> x_a >> x >> y_a;
             ss_b >> x_b >> x >> y_b;
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
             if(x_a * y_a == x_b * y_b)
                 return 0;
             else
@@ -484,6 +486,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             int num_a, num_b;
             ss_a >> num_a;
             ss_b >> num_b;
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
             if(num_a == num_b)
                 return 0;
             else
@@ -502,6 +506,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             ss_a >> d_a >> c >> m_a >> c >> y_a;
             ss_b >> d_b >> c >> m_b >> c >> y_b;
 
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
             if(y_a != y_b)
                 return (y_a < y_b) ? -1 : 1;
 
@@ -521,6 +527,8 @@ int ctrlTable::Compare(const std::string& a, const std::string& b, SortType sort
             ss_a >> h_a >> c >> min_a;
             ss_b >> h_b >> c >> min_b;
 
+            RTTR_Assert(ss_a);
+            RTTR_Assert(ss_b);
             if(h_a != h_b)
                 return (h_a < h_b) ? -1 : 1;
             if(min_a != min_b)
