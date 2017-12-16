@@ -219,7 +219,15 @@ void IngameWindow::Draw_()
     //  coded offsets and we could restyle the ingame windows easily)
     //
     Rect drawRect = GetDrawRect();
-    DrawRectangle(Rect(drawRect.getOrigin() - borderSize, drawRect.getSize() + borderSize * 2u), COLOR_BLACK);
+    Rect fullWndRect(drawRect.getOrigin() - borderSize, drawRect.getSize() + borderSize * 2u);
+    // Top
+    DrawRectangle(Rect(fullWndRect.getOrigin(), fullWndRect.getSize().x, borderSize.y), COLOR_BLACK);
+    // Left
+    DrawRectangle(Rect(fullWndRect.getOrigin(), borderSize.x, fullWndRect.getSize().y), COLOR_BLACK);
+    // Right
+    DrawRectangle(Rect(fullWndRect.right - borderSize.x, fullWndRect.top, borderSize.x, fullWndRect.getSize().y), COLOR_BLACK);
+    // Bottom
+    DrawRectangle(Rect(fullWndRect.left, fullWndRect.bottom - borderSize.y, fullWndRect.getSize().x, borderSize.y), COLOR_BLACK);
 
     // Linkes oberes Teil
     glArchivItem_Bitmap* leftUpperImg = LOADER.GetImageN("resource", 36);
