@@ -87,14 +87,14 @@ public:
     {
         GameMessage::Serialize(ser);
         ser.PushUnsignedShort(boost::underlying_cast<unsigned short>(type));
-        ser.PushString(revision);
+        ser.PushLongString(revision);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
         type = static_cast<ServerType>(ser.PopUnsignedShort());
-        revision = ser.PopString();
+        revision = ser.PopLongString();
     }
 
     bool Run(GameMessageInterface* callback) const override

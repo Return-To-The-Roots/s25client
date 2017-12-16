@@ -51,8 +51,6 @@ public:
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
     void MakeSnapshot(const GameWorld& gw);
-    /// Liest den Buffer aus einer Datei
-    void ReadFromFile(BinaryFile& file) override;
 
     /// Reads the snapshot from the internal buffer
     void ReadSnapshot(GameWorld& gw);
@@ -115,9 +113,9 @@ public:
     template<typename T>
     void PopObjectContainer(T& gos, GO_Type got);
 
-    /// Read a container of values, param NOT used. Only for automatic type deduction
+    /// Read a container of values
     template<typename T>
-    T PopContainer(const T& = T());
+    void PopContainer(T& result);
 
     template<typename T>
     Point<T> PopPoint();
@@ -182,7 +180,7 @@ template<typename T>
 void SerializedGameData::PushObjectContainer(const T& gos, const bool known)
 {
     // Anzahl
-    PushUnsignedInt(gos.size());
+    PushVarSize(gos.size());
     // einzelne Objekte
     for(typename T::const_iterator it = gos.begin(); it != gos.end(); ++it)
         PushObject(*it, known);
@@ -194,7 +192,8 @@ void SerializedGameData::PopObjectContainer(T& gos, GO_Type got)
     typedef typename T::value_type ObjectPtr;
     typedef typename helpers::remove_pointer<ObjectPtr>::type Object;
 
-    unsigned size = PopUnsignedInt();
+    unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
+    gos.clear();
     helpers::ReserveElements<T>::reserve(gos, size);
     typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(gos);
     for(unsigned i = 0; i < size; ++i)
@@ -206,7 +205,7 @@ void SerializedGameData::PushContainer(const T& container)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
-    PushUnsignedInt(container.size());
+    PushVarSize(container.size());
     for(typename T::const_iterator it = container.begin(); it != container.end(); ++it)
     {
         // Explicit template argument required for bool vector -.-
@@ -215,20 +214,19 @@ void SerializedGameData::PushContainer(const T& container)
 }
 
 template<typename T>
-T SerializedGameData::PopContainer(const T&)
+void SerializedGameData::PopContainer(T& result)
 {
     typedef typename T::value_type Type;
     BOOST_STATIC_ASSERT_MSG(boost::is_integral<Type>::value, "Only integral types are possible");
 
-    T result;
-    unsigned size = PopUnsignedInt();
+    unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
+    result.clear();
     helpers::ReserveElements<T>::reserve(result, size);
     typename helpers::GetInsertIterator<T>::iterator it = helpers::GetInsertIterator<T>::get(result);
     for(unsigned i = 0; i < size; ++i)
     {
         *it = Pop<Type>();
     }
-    return result;
 }
 
 template<typename T>

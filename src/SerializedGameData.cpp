@@ -94,7 +94,7 @@
 /// If a format change occurred that can still be handled increase this version and handle it in the loading code.
 /// If the change is to big to handle increase the version in Savegame.cpp  and remove all code referencing GetGameDataVersion. Then reset
 /// this number to 1.
-static const unsigned currentGameDataVersion = 1;
+static const unsigned currentGameDataVersion = 2;
 
 GameObject* SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
 {
@@ -225,7 +225,13 @@ void SerializedGameData::MakeSnapshot(const GameWorld& gw)
     writeEm->Serialize(*this);
     // Spieler serialisieren
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
+    {
+        if(debugMode)
+            LOG.write("Start serializing player %1% at %2%\n") % i % GetLength();
         gw.GetPlayer(i).Serialize(*this);
+        if(debugMode)
+            LOG.write("Done serializing player %1% at %2%\n") % i % GetLength();
+    }
 
     static boost::format evCtError("Event count mismatch. Expected: %1%, written: %2%");
     static boost::format objCtError("Object count mismatch. Expected: %1%, written: %2%");
@@ -271,11 +277,6 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
     readEvents.clear();
 }
 
-void SerializedGameData::ReadFromFile(BinaryFile& file)
-{
-    Serializer::ReadFromFile(file);
-}
-
 void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 {
     RTTR_Assert(!isReading);
@@ -304,12 +305,12 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     if(IsObjectSerialized(objId))
     {
         if(debugMode)
-            LOG.writeToFile("Saved known objId %u\n") % objId;
+            LOG.write("Saved known objId %u\n") % objId;
         return;
     }
 
     if(debugMode)
-        LOG.writeToFile("Saving objId %u, obj#=%u\n") % objId % writtenObjIds.size();
+        LOG.write("Saving objId %u, obj#=%u\n") % objId % writtenObjIds.size();
 
     // Objekt merken
     writtenObjIds.insert(objId);
@@ -322,8 +323,10 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     // Objekt serialisieren
     if(debugMode)
-        LOG.writeToFile("Start serializing %u\n") % objId;
+        LOG.write("Start serializing %1% at %2%\n") % objId % GetLength();
     go->Serialize(*this);
+    if(debugMode)
+        LOG.write("Done serializing %1% at %2%\n") % objId % GetLength();
 
     // Sicherheitscode reinschreiben
     PushUnsignedShort(GetSafetyCode(*go));
@@ -342,7 +345,11 @@ void SerializedGameData::PushEvent(const GameEvent* event)
     if(IsEventSerialized(instanceId))
         return;
     writtenEventIds.insert(instanceId);
+    if(debugMode)
+        LOG.write("Start serializing event %1% at %2%\n") % instanceId % GetLength();
     event->Serialize(*this);
+    if(debugMode)
+        LOG.write("Done serializing event %1% at %2%\n") % instanceId % GetLength();
     PushUnsignedShort(GetSafetyCode(*event));
 }
 

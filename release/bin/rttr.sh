@@ -48,8 +48,6 @@ else
 	shift
 fi
 
-chmod 0755 $DIR/../bin/rttr.sh $DIR/../bin/RTTR/s25update $DIR/../bin/s25client $DIR/../bin/RTTR/sound-convert >/dev/null 2>/dev/null
-
 if [ $updateonly -eq 0 ] ; then
 	cd $DIR/../
 	if ! $cmd $DIR/../bin/s25client $* ; then

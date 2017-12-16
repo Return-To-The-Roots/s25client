@@ -32,7 +32,7 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, bool lightData)
         color = PLAYER_COLORS[0];
     } else
     {
-        name = ser.PopString();
+        name = ser.PopLongString();
         nation = static_cast<Nation>(ser.PopUnsignedChar());
         color = ser.PopUnsignedInt();
         team = static_cast<Team>(ser.PopUnsignedChar());
@@ -46,7 +46,7 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
         return;
     if(!lightData || ps == PS_AI)
         aiInfo.serialize(ser);
-    ser.PushString(name);
+    ser.PushLongString(name);
     ser.PushUnsignedChar(static_cast<unsigned char>(nation));
     ser.PushUnsignedInt(color);
     ser.PushUnsignedChar(static_cast<unsigned char>(team));
