@@ -18,16 +18,21 @@
 #ifndef MapNode_h__
 #define MapNode_h__
 
+#include "LandscapeType.h"
 #include "Resource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
 #include "gameData/MaxPlayers.h"
 #include <boost/array.hpp>
 #include <list>
+#include <vector>
 
 class noBase;
 class SerializedGameData;
+struct TerrainDesc;
+struct WorldDescription;
 
 /// Eigenschaften von einem Punkt auf der Map
 struct MapNode
@@ -40,7 +45,7 @@ struct MapNode
     unsigned char shadow;
     /// Terrain (t1 is the triangle with the edge at the top exactly below this pt, t2 with the edge at the bottom on the right lower side
     /// of the pt)
-    TerrainType t1, t2;
+    DescIdx<TerrainDesc> t1, t2;
     /// Ressourcen
     Resource resources;
     /// Reservierungen
@@ -63,8 +68,9 @@ struct MapNode
     std::list<noBase*> figures;
 
     MapNode();
-    void Serialize(SerializedGameData& sgd, const unsigned numPlayers) const;
-    void Deserialize(SerializedGameData& sgd, const unsigned numPlayers);
+    void Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const;
+    void Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
+                     const std::vector<DescIdx<TerrainDesc> >& landscapeTerrains);
 };
 
 #endif // MapNode_h__

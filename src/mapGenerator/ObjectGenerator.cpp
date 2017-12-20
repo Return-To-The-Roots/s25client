@@ -18,36 +18,26 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
+#include "gameData/TerrainDesc.h"
 #include "libsiedler2/enumTypes.h"
 
-bool ObjectGenerator::IsHarborAllowed(TerrainType terrain)
+bool ObjectGenerator::IsHarborAllowed(DescIdx<TerrainDesc> terrain)
 {
-    switch(terrain)
-    {
-        case TT_STEPPE:
-        case TT_SAVANNAH:
-        case TT_MEADOW1:
-        case TT_MEADOW2:
-        case TT_MEADOW3:
-        case TT_MEADOW_FLOWERS:
-        case TT_MOUNTAINMEADOW: return true;
-        default: return false;
-    }
+    return config.terrainDesc.get(terrain).Is(ETerrain::Buildable) && config.terrainDesc.get(terrain).kind == TerrainKind::LAND;
 }
 
-void ObjectGenerator::CreateTexture(Map& map, int index, TerrainType terrain, bool harbor)
+void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor)
 {
-    uint8_t textureId = harbor && IsHarborAllowed(terrain) ? TerrainData::GetTextureIdentifier(terrain) | libsiedler2::HARBOR_MASK :
-                                                             TerrainData::GetTextureIdentifier(terrain);
-
+    uint8_t textureId = config.terrainDesc.get(terrain).s2Id;
+    if(harbor && IsHarborAllowed(terrain))
+        textureId |= libsiedler2::HARBOR_MASK;
     map.textureRsu[index] = textureId;
     map.textureLsd[index] = textureId;
 }
 
-bool ObjectGenerator::IsTexture(const Map& map, int index, TerrainType terrain)
+bool ObjectGenerator::IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain)
 {
-    return map.textureRsu[index] == TerrainData::GetTextureIdentifier(terrain)
-           || map.textureLsd[index] == TerrainData::GetTextureIdentifier(terrain);
+    return map.textureRsu[index] == config.terrainDesc.get(terrain).s2Id || map.textureLsd[index] == config.terrainDesc.get(terrain).s2Id;
 }
 
 void ObjectGenerator::CreateEmpty(Map& map, int index)

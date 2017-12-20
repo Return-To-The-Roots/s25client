@@ -25,6 +25,7 @@
 #include "PointOutput.h"
 #include "RttrConfig.h"
 #include "files.h"
+#include "initTestHelpers.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
@@ -153,11 +154,25 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
+    loadGameData(world);
+    DescIdx<TerrainDesc> tWater(0);
+    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
+    {
+        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
+            break;
+    }
+    DescIdx<TerrainDesc> tLand(0);
+    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
+    {
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+            break;
+    }
+
     world.Init(MapExtent(30, 30), Landscape::GREENLAND);
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         MapNode& node = world.GetNodeWriteable(pt);
-        node.t1 = node.t2 = TT_WATER;
+        node.t1 = node.t2 = tWater;
     }
 
     // Place multiple harbor spots next to each other so their coastal points are on the same node
@@ -184,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
         BOOST_FOREACH(const MapPoint& curPt, world.GetPointsInRadius(pt, 1))
         {
             for(unsigned dir = 0; dir < Direction::COUNT; dir++)
-                setRightTerrain(world, curPt, Direction::fromInt(dir), TT_SAVANNAH);
+                setRightTerrain(world, curPt, Direction::fromInt(dir), tLand);
         }
     }
 
@@ -200,7 +215,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     BOOST_FOREACH(const MapPoint& pt, waterPts)
     {
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
-            setRightTerrain(world, pt, Direction::fromInt(dir), TT_WATER);
+            setRightTerrain(world, pt, Direction::fromInt(dir), tWater);
     }
 
     // Check if this works

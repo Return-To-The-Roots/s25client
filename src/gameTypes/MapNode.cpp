@@ -19,25 +19,26 @@
 #include "gameTypes/MapNode.h"
 #include "SerializedGameData.h"
 #include "nodeObjs/noBase.h"
+#include "gameData/TerrainDesc.h"
+#include "gameData/WorldDescription.h"
 #include <algorithm>
 
 MapNode::MapNode()
-    : altitude(10), shadow(64), t1(TT_SNOW), t2(TT_SNOW), resources(0), reserved(false), owner(0), bq(BQ_NOTHING), seaId(0), harborId(0),
-      obj(NULL)
+    : altitude(10), shadow(64), t1(0), t2(0), resources(0), reserved(false), owner(0), bq(BQ_NOTHING), seaId(0), harborId(0), obj(NULL)
 {
     std::fill(roads.begin(), roads.end(), 0);
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
 }
 
-void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) const
+void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
     for(unsigned z = 0; z < roads.size(); ++z)
         sgd.PushUnsignedChar(roads[z]);
 
     sgd.PushUnsignedChar(altitude);
     sgd.PushUnsignedChar(shadow);
-    sgd.PushUnsignedChar(t1);
-    sgd.PushUnsignedChar(t2);
+    sgd.PushString(desc.get(t1).name);
+    sgd.PushString(desc.get(t2).name);
     sgd.PushUnsignedChar(static_cast<uint8_t>(resources.getValue()));
     sgd.PushBool(reserved);
     sgd.PushUnsignedChar(owner);
@@ -53,7 +54,8 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers) cons
     sgd.PushUnsignedInt(harborId);
 }
 
-void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
+void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
+                          const std::vector<DescIdx<TerrainDesc> >& landscapeTerrains)
 {
     for(unsigned z = 0; z < roads.size(); ++z)
     {
@@ -63,10 +65,23 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers)
 
     altitude = sgd.PopUnsignedChar();
     shadow = sgd.PopUnsignedChar();
-    t1 = TerrainType(sgd.PopUnsignedChar());
-    RTTR_Assert(t1 < NUM_TTS);
-    t2 = TerrainType(sgd.PopUnsignedChar());
-    RTTR_Assert(t2 < NUM_TTS);
+
+    if(sgd.GetGameDataVersion() < 3)
+    {
+        // TODO: Remove this and lt param
+        t1 = landscapeTerrains[sgd.PopUnsignedChar()];
+        t2 = landscapeTerrains[sgd.PopUnsignedChar()];
+    } else
+    {
+        std::string sName = sgd.PopString();
+        t1 = desc.terrain.getIndex(sName);
+        if(!t1)
+            throw SerializedGameData::Error("Terrain with name '" + sName + "' not found");
+        sName = sgd.PopString();
+        t2 = desc.terrain.getIndex(sName);
+        if(!t2)
+            throw SerializedGameData::Error("Terrain with name '" + sName + "' not found");
+    }
     resources = Resource(sgd.PopUnsignedChar());
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();

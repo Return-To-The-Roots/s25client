@@ -17,6 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
+#include "RttrConfig.h"
+#include "files.h"
+#include "lua/GameDataLoader.h"
+#include "gameData/TerrainDesc.h"
+#include "gameData/WorldDescription.h"
+#include <boost/bind.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 // Fix stupid conversion warning in boost
 #pragma warning(push)
@@ -26,19 +32,24 @@
 #include <ctime>
 #include <stdexcept>
 
-RandomConfig::RandomConfig(MapStyle mapStyle)
+bool RandomConfig::Init(MapStyle mapStyle, Landscape landscape)
 {
     uint64_t seed = static_cast<uint64_t>(time(NULL));
-    Init(mapStyle, seed);
+    return Init(mapStyle, landscape, seed);
 }
 
-RandomConfig::RandomConfig(MapStyle mapStyle, uint64_t seed)
+bool RandomConfig::Init(MapStyle mapStyle, Landscape landscape, uint64_t seed)
 {
-    Init(mapStyle, seed);
-}
-
-void RandomConfig::Init(MapStyle mapStyle, uint64_t seed)
-{
+    WorldDescription desc;
+    GameDataLoader gdLoader(desc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
+    if(!gdLoader.Load())
+        return false;
+    for(DescIdx<TerrainDesc> t(0); t.value < desc.terrain.size(); t.value++)
+    {
+        const TerrainDesc& ter = desc.get(t);
+        if(ter.landscape == landscape)
+            terrainDesc.add(ter);
+    }
     rng_.seed(static_cast<UsedRNG::result_type>(seed));
     switch(boost::native_value(mapStyle))
     {
@@ -51,28 +62,12 @@ void RandomConfig::Init(MapStyle mapStyle, uint64_t seed)
         case MapStyle::Random: CreateRandom(); break;
         default: throw std::logic_error("Invalid enum value");
     }
+    return true;
 }
 
 void RandomConfig::CreateGreenland()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_SNOW);
+    CreateDefaultTextures();
 
     const Point<double> center(0.5, 0.5);
 
@@ -90,26 +85,90 @@ void RandomConfig::CreateGreenland()
     areas.push_back(AreaDesc(center, 0.0, 2.0, 100.0, 8, 0, 5, 10, 4, 15));
 }
 
+void RandomConfig::CreateDefaultTextures(bool snowOrLava)
+{
+    // Water
+    std::vector<DescIdx<TerrainDesc> > terrains =
+      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    if(!terrains.empty())
+    {
+        for(int i = 0; i < 4; i++)
+            textures.push_back(terrains[Rand(terrains.size())]);
+    }
+    // Walkable land
+    terrains =
+      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::Is, _1, ETerrain::Walkable));
+    // Desert or similar
+    terrains = FilterTerrains(terrains, boost::bind(&TerrainDesc::GetBQ, _1) == TerrainBQ::FLAG);
+    if(!terrains.empty())
+    {
+        for(unsigned i = 1; i < terrains.size(); i++)
+        {
+            if(terrainDesc.get(terrains[0]).humidity > terrainDesc.get(terrains[i]).humidity)
+                std::swap(terrains[0], terrains[i]);
+        }
+        textures.push_back(terrains.front());
+    }
+    // Buildable land ordered by humidity
+    terrains =
+      FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    if(terrains.empty())
+        throw std::runtime_error("No buildable land found");
+    bool swapped;
+    do
+    {
+        swapped = false;
+        for(unsigned i = 1; i < terrains.size(); i++)
+        {
+            if(terrainDesc.get(terrains[i - 1]).humidity > terrainDesc.get(terrains[i]).humidity)
+            {
+                std::swap(terrains[i - 1], terrains[i]);
+                swapped = true;
+            }
+        }
+    } while(swapped);
+
+    for(int i = 0; i < std::min<int>(6, terrains.size()); i++)
+        textures.push_back(terrains[i]);
+
+    // Buildable, humid mountain
+    terrains = FindAllTerrains(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
+                               && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    if(!terrains.empty())
+    {
+        for(unsigned i = 1; i < terrains.size(); i++)
+        {
+            if(terrainDesc.get(terrains[0]).humidity < terrainDesc.get(terrains[i]).humidity)
+                std::swap(terrains[0], terrains[i]);
+        }
+        textures.push_back(terrains.front());
+    }
+    // Mountain
+    DescIdx<TerrainDesc> t =
+      FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
+    if(!t)
+        throw std::runtime_error("No mineable mountain found");
+    for(int i = 0; i < 3; i++)
+        textures.push_back(t);
+
+    if(snowOrLava)
+        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+    else
+        t = DescIdx<TerrainDesc>();
+    if(!t)
+        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAVA);
+    if(!t)
+        t = FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+    if(!!t)
+    {
+        for(int i = 0; i < 10; i++)
+            textures.push_back(t);
+    }
+}
+
 void RandomConfig::CreateRiverland()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_SNOW);
+    CreateDefaultTextures();
 
     const Point<double> center(0.5, 0.5);
 
@@ -129,24 +188,7 @@ void RandomConfig::CreateRiverland()
 
 void RandomConfig::CreateRingland()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_SNOW);
+    CreateDefaultTextures();
 
     const double rMin = DRand(0.2, 0.5);
     const double rMax = DRand(rMin + 0.1, 0.9);
@@ -166,24 +208,7 @@ void RandomConfig::CreateRingland()
 
 void RandomConfig::CreateMigration()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_SNOW);
+    CreateDefaultTextures();
 
     const Point<double> center(0.5, 0.5);
 
@@ -200,24 +225,7 @@ void RandomConfig::CreateMigration()
 
 void RandomConfig::CreateIslands()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_LAVA);
+    CreateDefaultTextures(false);
 
     const Point<double> center(0.5, 0.5);
 
@@ -234,24 +242,7 @@ void RandomConfig::CreateIslands()
 
 void RandomConfig::CreateContinent()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_SNOW);
+    CreateDefaultTextures();
 
     const Point<double> center(0.5, 0.5);
 
@@ -271,24 +262,7 @@ void RandomConfig::CreateContinent()
 
 void RandomConfig::CreateRandom()
 {
-    for(int i = 0; i < 4; i++)
-        textures.push_back(TT_WATER);
-
-    textures.push_back(TT_DESERT);
-    textures.push_back(TT_STEPPE);
-    textures.push_back(TT_SAVANNAH);
-    textures.push_back(TT_MEADOW1);
-    textures.push_back(TT_MEADOW_FLOWERS);
-    textures.push_back(TT_MEADOW2);
-    textures.push_back(TT_MEADOW2);
-
-    textures.push_back(TT_MOUNTAINMEADOW);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-    textures.push_back(TT_MOUNTAIN1);
-
-    for(int i = 0; i < 10; i++)
-        textures.push_back(TT_SNOW);
+    CreateDefaultTextures();
 
     const double p1 = DRand(0.0, 0.4);
     const double p2 = DRand(p1, p1 + 1.4);
@@ -330,4 +304,9 @@ double RandomConfig::DRand(const double min, const double max)
 {
     boost::random::uniform_real_distribution<double> distr(min, max);
     return distr(rng_);
+}
+
+const TerrainDesc& RandomConfig::GetTerrainByS2Id(uint8_t s2Id) const
+{
+    return terrainDesc.get(FindTerrain(boost::bind(&TerrainDesc::s2Id, _1) == s2Id));
 }

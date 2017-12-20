@@ -28,7 +28,6 @@
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-#include "gameData/BuildingProperties.h"
 #include "libsiedler2/prototypen.h"
 #include <boost/filesystem.hpp>
 
@@ -47,8 +46,6 @@ bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFile
         return false;
 
     const glArchivItem_Map& map = *static_cast<glArchivItem_Map*>(mapArchiv[0]);
-
-    BuildingProperties::Init();
 
     if(bfs::exists(luaFilePath))
     {
@@ -82,12 +79,6 @@ bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFile
 
 void GameWorld::Serialize(SerializedGameData& sgd) const
 {
-    // Headinformationen
-    sgd.PushPoint(GetSize());
-    sgd.PushUnsignedChar(boost::underlying_cast<uint8_t>(GetLandscapeType()));
-
-    sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
-
     MapSerializer::Serialize(*this, GetNumPlayers(), sgd);
 
     sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
@@ -107,16 +98,6 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
 
 void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sgd)
 {
-    // Headinformationen
-    const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
-    const Landscape lt = Landscape(sgd.PopUnsignedChar());
-
-    // Initialisierungen
-    Init(size, lt);
-    GameObject::ResetCounters(sgd.PopUnsignedInt());
-
-    BuildingProperties::Init();
-
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
     sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);

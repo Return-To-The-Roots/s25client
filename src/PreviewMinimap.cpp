@@ -17,11 +17,17 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PreviewMinimap.h"
+#include "RttrConfig.h"
+#include "files.h"
+#include "lua/GameDataLoader.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapGeometry.h"
 #include "gameData/MinimapConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include "gameData/WorldDescription.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libutil/Log.h"
 
 PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 {
@@ -46,6 +52,20 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     else
         CalcShadows(s2map.GetLayer(MAP_ALTITUDE));
 
+    WorldDescription worldDesc;
+    GameDataLoader gdLoader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
+    if(!gdLoader.Load())
+        LOG.write(_("Failed to load game data!"));
+    else
+    {
+        for(DescIdx<TerrainDesc> t(0); t.value < worldDesc.terrain.size(); t.value++)
+        {
+            const TerrainDesc& ter = worldDesc.get(t);
+            if(ter.landscape == lt)
+                terrain2Clr[ter.s2Id] = ter.minimapColor;
+        }
+    }
+
     CreateMapTexture();
 }
 
@@ -62,7 +82,7 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
     {
-        color = TerrainData::GetColor(lt, TerrainData::MapIdx2Terrain(t == 0 ? terrain1[GetMMIdx(pt)] : terrain2[GetMMIdx(pt)]));
+        color = terrain2Clr[t == 0 ? terrain1[GetMMIdx(pt)] : terrain2[GetMMIdx(pt)]];
 
         // Schattierung
         const int shading = shadows[GetMMIdx(pt)] - 0x40;

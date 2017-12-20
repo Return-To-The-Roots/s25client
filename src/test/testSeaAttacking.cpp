@@ -33,6 +33,7 @@
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/SettingTypeConv.h"
+#include "gameData/TerrainDesc.h"
 #include "test/SeaWorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
@@ -582,6 +583,19 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
 {
+    DescIdx<TerrainDesc> tWater(0);
+    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
+    {
+        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
+            break;
+    }
+    DescIdx<TerrainDesc> tLand(0);
+    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
+    {
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+            break;
+    }
+
     // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
     // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the walking path would go over
     // the harbor or a blocked point if we can't walk around it Harbors is attackable by default
@@ -594,21 +608,21 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
         {
             if(world.CalcDistance(pt, harborPos[1]) < 2)
                 continue;
-            world.GetNodeWriteable(pt).t1 = TT_WATER;
-            world.GetNodeWriteable(pt).t2 = TT_WATER;
+            world.GetNodeWriteable(pt).t1 = tWater;
+            world.GetNodeWriteable(pt).t2 = tWater;
         }
     }
     const MapPoint ptW = world.GetNeighbour(harborPos[1], Direction::WEST);
     // Make west point a non-coastal point by adding land to its sea points
     const MapPoint seaPtW = world.GetNeighbour(ptW, Direction::WEST);
     const MapPoint seaPtW2 = world.GetNeighbour(ptW, Direction::NORTHWEST);
-    world.GetNodeWriteable(seaPtW).t2 = TT_MEADOW1;
-    world.GetNodeWriteable(seaPtW2).t1 = TT_MEADOW1;
+    world.GetNodeWriteable(seaPtW).t2 = tLand;
+    world.GetNodeWriteable(seaPtW2).t1 = tLand;
     // Make NE pt a sea point
     const MapPoint ptNE = world.GetNeighbour(harborPos[1], Direction::NORTHEAST);
     const MapPoint seaPtN = world.GetNeighbour(ptNE, Direction::NORTHWEST);
-    world.GetNodeWriteable(seaPtN).t1 = TT_WATER;
-    world.GetNodeWriteable(seaPtN).t2 = TT_WATER;
+    world.GetNodeWriteable(seaPtN).t1 = tWater;
+    world.GetNodeWriteable(seaPtN).t2 = tWater;
 
     const MapPoint ptNW = world.GetNeighbour(harborPos[1], Direction::NORTHWEST);
     BOOST_REQUIRE(world.IsWaterPoint(world.GetNeighbour(ptNW, Direction::NORTHWEST)));

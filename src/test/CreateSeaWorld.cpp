@@ -19,6 +19,7 @@
 #include "CreateSeaWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "gameData/TerrainDesc.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
 #include <boost/test/test_tools.hpp>
@@ -64,13 +65,22 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
+    loadGameData(world);
     world.Init(size_, Landscape::GREENLAND);
     // Set everything to water
+    DescIdx<TerrainDesc> t(0);
+    const WorldDescription& desc = world.GetDescription();
+    for(; t.value < desc.terrain.size(); t.value++)
+    {
+        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::WATER)
+            break;
+    }
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
-        node.t1 = node.t2 = TT_WATER;
+        node.t1 = node.t2 = t;
     }
+
     /* We create an outlined square of land in the water so it looks like:
      * WWWWWWWWWWWWWWWWWWWWWWW  Height of water: Offset
      * WWWWWWWWWWWWWWWWWWWWWWW
@@ -94,19 +104,24 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     const MapCoord minSize = landSize * 3 + offset * 2;
     if(size_.x < minSize || size_.y < minSize)
         throw std::runtime_error("World to small");
-
+    t = DescIdx<TerrainDesc>(0);
+    for(; t.value < desc.terrain.size(); t.value++)
+    {
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+            break;
+    }
     // Vertical
     for(MapPoint pt(offset, offset); pt.y < size_.y - offset; ++pt.y)
     {
         for(pt.x = offset; pt.x < offset + landSize; ++pt.x)
         {
             MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = node.t2 = TT_MEADOW1;
+            node.t1 = node.t2 = t;
         }
         for(pt.x = size_.x - offset - landSize; pt.x < size_.x - offset; ++pt.x)
         {
             MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = node.t2 = TT_MEADOW1;
+            node.t1 = node.t2 = t;
         }
     }
     // Horizontal
@@ -115,12 +130,12 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
         for(pt.y = offset; pt.y < offset + landSize; ++pt.y)
         {
             MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = node.t2 = TT_MEADOW1;
+            node.t1 = node.t2 = t;
         }
         for(pt.y = size_.y - offset - landSize; pt.y < size_.y - offset; ++pt.y)
         {
             MapNode& node = world.GetNodeWriteable(pt);
-            node.t1 = node.t2 = TT_MEADOW1;
+            node.t1 = node.t2 = t;
         }
     }
 
@@ -180,25 +195,39 @@ CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers) :
 
 bool CreateWaterWorld::operator()(GameWorldGame& world) const
 {
+    loadGameData(world);
     world.Init(size_, Landscape::GREENLAND);
     // Set everything to water
+    DescIdx<TerrainDesc> t(0);
+    const WorldDescription& desc = world.GetDescription();
+    for(; t.value < desc.terrain.size(); t.value++)
+    {
+        if(desc.get(t).Is(ETerrain::Shippable) && desc.get(t).kind == TerrainKind::WATER)
+            break;
+    }
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
-        node.t1 = node.t2 = TT_WATER;
+        node.t1 = node.t2 = t;
     }
     const unsigned landRadius = 8;
     std::vector<MapPoint> hqPositions;
     hqPositions.push_back(MapPoint(10, 10));
     if(playerNations_.size() > 1)
         hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2));
+    t = DescIdx<TerrainDesc>(0);
+    for(; t.value < desc.terrain.size(); t.value++)
+    {
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+            break;
+    }
     BOOST_FOREACH(MapPoint hqPos, hqPositions)
     {
         std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(hqPos, landRadius);
         BOOST_FOREACH(MapPoint curPt, pts)
         {
             MapNode& node = world.GetNodeWriteable(curPt);
-            node.t1 = node.t2 = TT_MEADOW1;
+            node.t1 = node.t2 = t;
         }
     }
     BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations_, false));

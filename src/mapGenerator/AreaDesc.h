@@ -97,7 +97,7 @@ struct AreaDesc
     int maxPlayerDistance;
 
     /**
-     * Checks whether ot not the specified point is within this area.
+     * Checks whether the specified point is within this area.
      * @param point the point to check
      * @param playerDistance distance to the nearest player position in tiles
      * @param size of the map

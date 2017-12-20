@@ -23,7 +23,7 @@
 #include "RoadSegment.h"
 #include "world/World.h"
 #include "nodeObjs/noBase.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include <boost/config.hpp>
 
 struct PathConditionHuman
@@ -45,10 +45,10 @@ struct PathConditionHuman
         {
             // Note: Old version used TerrainData::IsUsable which disallowed buildable water. Refine that?
             // However we still need to check if ANY terrain is dangerous
-            const TerrainBQ bq = TerrainData::GetBuildingQuality(world.GetRightTerrain(pt, Direction::fromInt(dir)));
-            if(bq == TerrainBQ::DANGER)
+            const TerrainDesc& t = world.GetDescription().get(world.GetRightTerrain(pt, Direction::fromInt(dir)));
+            if(t.Is(ETerrain::Unreachable))
                 return false;
-            else if(bq != TerrainBQ::NOTHING)
+            else if(t.Is(ETerrain::Walkable))
                 goodTerrainFound = true;
         }
         return goodTerrainFound;
@@ -63,13 +63,13 @@ struct PathConditionHuman
             return true;
 
         // Check terrain for node transition
-        TerrainBQ bqLeft = TerrainData::GetBuildingQuality(world.GetLeftTerrain(fromPt, dir));
-        TerrainBQ bqRight = TerrainData::GetBuildingQuality(world.GetRightTerrain(fromPt, dir));
+        const TerrainDesc& tLeft = world.GetDescription().get(world.GetLeftTerrain(fromPt, dir));
+        const TerrainDesc& tRight = world.GetDescription().get(world.GetRightTerrain(fromPt, dir));
         // Don't go next to danger terrain
-        if(bqLeft == TerrainBQ::DANGER || bqRight == TerrainBQ::DANGER)
+        if(tLeft.Is(ETerrain::Unreachable) || tRight.Is(ETerrain::Unreachable))
             return false;
-        // If either terrain is buildable, then we can use this transition
-        return (bqLeft != TerrainBQ::NOTHING || bqRight != TerrainBQ::NOTHING);
+        // If either terrain is walkable, then we can use this transition
+        return (tLeft.Is(ETerrain::Walkable) || tRight.Is(ETerrain::Walkable));
     }
 };
 

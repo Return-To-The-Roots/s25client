@@ -47,7 +47,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>
@@ -55,6 +55,9 @@
 #include <boost/lambda/lambda.hpp>
 #include <algorithm>
 #include <stdexcept>
+
+namespace bl = boost::lambda;
+using bl::_1;
 
 namespace {
 void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
@@ -135,8 +138,6 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     }
     // TODO: Use C++11 lambdas to simplify this
     // TODO: Maybe remove the AIEvents where possible and call the handler functions directly
-    namespace bl = boost::lambda;
-    using bl::_1;
     NotificationManager& notifications = gwb.GetNotifications();
     subBuilding = notifications.subscribe<BuildingNote>(
       bl::if_(bl::bind(&BuildingNote::player, _1) == playerId)[bl::bind(&HandleBuildingNote, boost::ref(eventManager), _1)]);
@@ -446,14 +447,8 @@ AIResource AIPlayerJH::CalcResource(const MapPoint pt)
             if(gwb.IsOnRoad(pt))
                 return AIResource::NOTHING;
             // check for vital plant space
-            for(unsigned i = 0; i < Direction::COUNT; ++i)
-            {
-                TerrainType t = gwb.GetRightTerrain(pt, Direction::fromInt(i));
-
-                // check against valid terrains for planting
-                if(!TerrainData::IsVital(t))
-                    return AIResource::NOTHING;
-            }
+            if(!gwb.IsOfTerrain(pt, bl::bind(&TerrainDesc::IsVital, _1)))
+                return AIResource::NOTHING;
             return AIResource::PLANTSPACE;
         }
 
@@ -622,7 +617,6 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
     RTTR_Assert(pt.x < aiMap.GetWidth() && pt.y < aiMap.GetHeight());
     bool fixed = ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
                  && (res == AIResource::IRONORE || res == AIResource::COAL || res == AIResource::GOLD || res == AIResource::GRANITE);
-    int temp = 0;
     bool lastcirclevaluecalculated = false;
     bool lastvaluecalculated = false;
     // to avoid having to calculate a value twice and still move left on the same level without any problems we use this variable to
@@ -644,15 +638,13 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
             for(MapCoord step = 0; step < r; ++step, curPt = aiMap.GetNeighbour(curPt, Direction(curDir)))
             {
                 int& resMapVal = resourceMaps[boost::underlying_cast<unsigned>(res)][curPt];
-                if(fixed)
-                    temp = resMapVal;
-                else
+                if(!fixed)
                 {
                     // only do a complete calculation for the first point or when moving outward and the last value is unknown
                     if((r < 2 || !lastcirclevaluecalculated) && step < 1 && curDir < 3 && resMapVal)
                     {
-                        temp = aii.CalcResourceValue(curPt, res);
-                        circlestartvalue = temp;
+                        resMapVal = aii.CalcResourceValue(curPt, res);
+                        circlestartvalue = resMapVal;
                         lastcirclevaluecalculated = true;
                         lastvaluecalculated = true;
                     } else if(!resMapVal) // was there ever anything? if not skip it!
@@ -660,39 +652,40 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                         if(step < 1 && curDir < 3)
                             lastcirclevaluecalculated = false;
                         lastvaluecalculated = false;
-                        temp = resMapVal;
                     } else if(step < 1 && curDir < 3) // circle not yet started? -> last direction was outward (left=0)
                     {
-                        temp = aii.CalcResourceValue(curPt, res, 0, circlestartvalue);
-                        circlestartvalue = temp;
+                        resMapVal = aii.CalcResourceValue(curPt, res, 0, circlestartvalue);
+                        circlestartvalue = resMapVal;
                     } else if(lastvaluecalculated)
                     {
                         if(step > 0) // we moved direction i%6
-                            temp = aii.CalcResourceValue(curPt, res, curDir % 6, temp);
+                            resMapVal = aii.CalcResourceValue(curPt, res, curDir % 6, resMapVal);
                         else // last step was the previous direction
-                            temp = aii.CalcResourceValue(curPt, res, (curDir - 1) % 6, temp);
+                            resMapVal = aii.CalcResourceValue(curPt, res, (curDir - 1) % 6, resMapVal);
                     } else
                     {
-                        temp = aii.CalcResourceValue(curPt, res);
+                        resMapVal = aii.CalcResourceValue(curPt, res);
                         lastvaluecalculated = true;
                     }
-                    // if(resMapVal)
-                    // RTTR_Assert(temp==aii.CalcResourceValue(t2,res));
-                    // copy the value to the resource map
-                    resMapVal = temp;
                 }
-                if(res == AIResource::FISH || res == AIResource::STONES)
+                // remove permanently invalid spots to speed up future checks
+                if(resMapVal)
                 {
-                    // remove permanently invalid spots to speed up future checks
-                    TerrainType t1 = aii.GetTerrain(curPt);
-                    if(!TerrainData::IsUseable(t1) || TerrainData::IsMineable(t1) || t1 == TT_DESERT)
-                        resMapVal = 0;
-                } else //= granite,gold,iron,coal
-                {
-                    if(!TerrainData::IsMineable(aii.GetTerrain(curPt)))
-                        resMapVal = 0;
+                    if(res == AIResource::FISH)
+                    {
+                        if(!gwb.IsOfTerrain(curPt, bl::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+                            resMapVal = 0;
+                    } else if(res == AIResource::STONES)
+                    {
+                        if(!gwb.IsOfTerrain(curPt, bl::bind(&TerrainDesc::Is, _1, ETerrain::Buildable)))
+                            resMapVal = 0;
+                    } else //= granite,gold,iron,coal
+                    {
+                        if(!gwb.IsOfTerrain(curPt, bl::bind(&TerrainDesc::Is, _1, ETerrain::Mineable)))
+                            resMapVal = 0;
+                    }
                 }
-                if(temp > best_value)
+                if(resMapVal > best_value)
                 {
                     if(!aiMap[curPt].reachable || (inTerritory && !aii.IsOwnTerritory(curPt)) || aiMap[curPt].farmed)
                         continue;
@@ -706,7 +699,7 @@ MapPoint AIPlayerJH::FindBestPositionDiminishingResource(const MapPoint& pt, AIR
                     if(canUseBq(aii.GetBuildingQuality(curPt), size))
                     {
                         best = curPt;
-                        best_value = temp;
+                        best_value = resMapVal;
                         // TODO: calculate "perfect" rating and instantly return if we got that already
                     }
                 }

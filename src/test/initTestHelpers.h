@@ -19,6 +19,7 @@
 #define initTestHelpers_h__
 
 class MockupVideoDriver;
+class World;
 
 /// Initialize the ingame-Random Number Generator with the given value
 /// unless RTTR_RAND_TEST is defined in which case a random value is used
@@ -37,5 +38,7 @@ void initGUITests();
 
 /// Return the video driver. Initializes the GUI tests if required
 MockupVideoDriver* GetVideoDriver();
+
+void loadGameData(World& world);
 
 #endif // initTestHelpers_h__

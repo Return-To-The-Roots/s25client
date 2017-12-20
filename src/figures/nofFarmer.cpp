@@ -28,7 +28,8 @@
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noGrainfield.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofFarmer::nofFarmer(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FARMER, pos, player, workplace), harvest(false)
@@ -147,14 +148,8 @@ nofFarmhand::PointQuality nofFarmer::GetPointQuality(const MapPoint pt) const
                 return PQ_NOTPOSSIBLE;
         }
 
-        // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-        unsigned char good_terrains = 0;
-        for(unsigned char i = 0; i < 6; ++i)
-        {
-            if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(i))))
-                ++good_terrains;
-        }
-        if(good_terrains != 6)
+        // Terrain untersuchen
+        if(!gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
             return PQ_NOTPOSSIBLE;
 
         // Ist Platz frei?

@@ -33,7 +33,8 @@ BOOST_AUTO_TEST_CASE(MaxHeightBelowTextureCount)
                                             MapStyle::Islands, MapStyle::Continent, MapStyle::Random}};
     BOOST_FOREACH(MapStyle mapStyle, mapStyles)
     {
-        RandomConfig config(mapStyle, 0x1337);
+        RandomConfig config;
+        BOOST_REQUIRE(config.Init(mapStyle, Landscape::GREENLAND, 0x1337));
         BOOST_FOREACH(const AreaDesc& area, config.areas)
         {
             BOOST_REQUIRE_LT(area.maxElevation, config.textures.size());

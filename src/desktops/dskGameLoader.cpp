@@ -132,13 +132,20 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             break;
 
         case 4: // Welt erstellen
-            if(!LOADER.CreateTerrainTextures())
+            if(!LOADER.CreateRoadTextures())
             {
                 LC_Status_Error(_("Failed to load terrain data."));
                 return;
             }
-            // Do this here as it will init OGL
-            nextDesktop = new dskGameInterface(game);
+            try
+            {
+                // Do this here as it will init OGL
+                nextDesktop = new dskGameInterface(game);
+            } catch(std::runtime_error& e)
+            {
+                LC_Status_Error(std::string(_("Failed to init GUI: ")) + e.what());
+                return;
+            }
             // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
 
             // We are done, wait for others

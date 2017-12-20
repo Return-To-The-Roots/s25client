@@ -30,10 +30,14 @@ class CheckedLuaTable
 {
     kaguya::LuaTable table;
     std::set<std::string> accessedKeys_;
+    bool checked;
 
 public:
     CheckedLuaTable(const kaguya::LuaTable& luaTable);
     ~CheckedLuaTable();
+    /// Check and report unused entries
+    bool checkUnused(bool throwError = true);
+
     /// Return the value from lua or throw an error
     template<typename T>
     T getOrThrow(const std::string& fieldName);

@@ -18,15 +18,24 @@
 #define TERRAIN_RENDERER_H_
 
 #include "Point.h"
+#include "helpers/Deleter.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
 #include <boost/array.hpp>
+#include <boost/container/vector.hpp>
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <vector>
 
 struct Direction;
 class GameWorldViewer;
 class glArchivItem_Bitmap;
+struct TerrainDesc;
+struct WorldDescription;
+
+glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp);
 
 /// Klasse, die für das grafische Anzeigen (Rendern) des Terrains zuständig ist
 class TerrainRenderer : private boost::noncopyable
@@ -127,7 +136,7 @@ private:
     /// Map sized array of vertex related data
     std::vector<Vertex> vertices;
     /// Map sized array with terrain indices/textures (bottom, bottom right of node)
-    std::vector<boost::array<unsigned char, 2> > terrain;
+    std::vector<boost::array<DescIdx<TerrainDesc>, 2> > terrain;
 
     std::vector<Triangle> gl_vertices;
     std::vector<Triangle> gl_texcoords;
@@ -140,7 +149,8 @@ private:
 
     std::vector<Borders> borders;
 
-    boost::array<std::vector<glArchivItem_Bitmap*>, NUM_TTS> terrainTextures;
+    boost::container::vector<boost::ptr_vector<glArchivItem_Bitmap> > terrainTextures;
+    boost::container::vector<boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > > edgeTextures;
 
     /// Returns the index of a vertex. Used to access vertices and borders
     unsigned GetVertexIdx(const MapPoint pt) const
@@ -156,14 +166,14 @@ private:
     Vertex& GetVertex(const MapPoint pt) { return vertices[GetVertexIdx(pt)]; }
     const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetVertexIdx(pt)]; }
 
-    void LoadTextures();
+    void LoadTextures(const WorldDescription& desc);
 
     /// Creates and initializes (map-)vertices for the viewer
     void GenerateVertices(const GameWorldViewer& gwv);
     /// Updates (map-)vertex attributes
     void UpdateVertexPos(const MapPoint pt, const GameWorldViewer& gwv);
     void UpdateVertexColor(const MapPoint pt, const GameWorldViewer& gwv);
-    void UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv);
+    void LoadVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv);
     /// Update (map-)border vertex attributes
     void UpdateBorderVertex(const MapPoint pt);
 

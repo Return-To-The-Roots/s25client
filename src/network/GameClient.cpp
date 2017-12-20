@@ -274,7 +274,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
     {
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
         return;
     }
 
@@ -312,7 +312,11 @@ void GameClient::StartGame(const unsigned random_init)
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
-        gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath);
+        if(!gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath))
+        {
+            OnError(CE_INVALID_MAP);
+            return;
+        }
 
         /// Evtl. Goldvorkommen ändern
         Resource::Type target; // löschen
@@ -402,7 +406,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
     if(msg.player == GameMessageWithPlayer::NO_PLAYER_ID)
     {
-        OnError(CE_SERVERFULL);
+        OnError(CE_SERVER_FULL);
         return true;
     }
 
@@ -671,14 +675,14 @@ bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
         default:
         case 1:
         {
-            OnError(CE_INVALIDSERVERTYPE);
+            OnError(CE_INVALID_SERVERTYPE);
             return true;
         }
         break;
 
         case 2:
         {
-            OnError(CE_WRONGVERSION);
+            OnError(CE_WRONG_VERSION);
             return true;
         }
         break;
@@ -701,7 +705,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 
     if(msg.password != "true")
     {
-        OnError(CE_WRONGPW);
+        OnError(CE_WRONG_PW);
         return true;
     }
 
@@ -872,7 +876,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     if(portFilename.empty())
     {
         LOG.write("Invalid filename received!\n");
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
     }
     mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + portFilename;
     mapinfo.type = msg.mt;
@@ -936,19 +940,19 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
             return true;
         }
         if(!mapinfo.luaFilepath.empty() && !mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath, &mapinfo.luaChecksum))
         {
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
             return true;
         }
         RTTR_Assert(!mapinfo.luaFilepath.empty() || mapinfo.luaChecksum == 0);
 
         if(!CreateLobby())
         {
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
             return true;
         }
 
@@ -1028,7 +1032,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
         if(msg.retryAllowed)
             mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
         else
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
     }
     return true;
 }
@@ -1372,7 +1376,7 @@ bool GameClient::StartReplay(const std::string& path)
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
           % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
         replayinfo.reset();
         return false;
     }
@@ -1422,7 +1426,7 @@ bool GameClient::StartReplay(const std::string& path)
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 LOG.write(_("Error decompressing map file"));
-                OnError(CE_WRONGMAP);
+                OnError(CE_MAP_TRANSMISSION);
                 return false;
             }
             if(mapinfo.luaData.length)
@@ -1431,7 +1435,7 @@ bool GameClient::StartReplay(const std::string& path)
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
                     LOG.write(_("Error decompressing lua file"));
-                    OnError(CE_WRONGMAP);
+                    OnError(CE_MAP_TRANSMISSION);
                     return false;
                 }
             }
@@ -1450,7 +1454,7 @@ bool GameClient::StartReplay(const std::string& path)
     } catch(SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
         return false;
     }
 
@@ -1506,7 +1510,7 @@ int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 
 void GameClient::ServerLost()
 {
-    OnError(CE_CONNECTIONLOST);
+    OnError(CE_CONNECTION_LOST);
     // Stop game
     framesinfo.isPaused = true;
 }

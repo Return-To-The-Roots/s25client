@@ -22,10 +22,11 @@
 #include "mapGenerator/MapSettings.h"
 #include "mapGenerator/MapUtility.h"
 #include "gameTypes/MapTypes.h"
-
+#include "gameData/DescIdx.h"
 #include <vector>
 
 class RandomConfig;
+struct TerrainDesc;
 
 /**
  * Random map generator.
@@ -59,7 +60,7 @@ private:
      * @param textures set of textures used for different height values
      * @return the maximum height value for the terrain
      */
-    unsigned GetMaxTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
+    unsigned GetMaxTerrainHeight(const DescIdx<TerrainDesc> terrain);
 
     /**
      * Gets the minimum height to be considered as specified terrain.
@@ -67,7 +68,7 @@ private:
      * @param textures set of textures used for different height values
      * @return the minimum height value for the terrain
      */
-    unsigned GetMinTerrainHeight(const TerrainType terrain, const std::vector<TerrainType>& textures);
+    unsigned GetMinTerrainHeight(const DescIdx<TerrainDesc> terrain);
 
     /**
      * Create player positions (headquarters) for the specified map.

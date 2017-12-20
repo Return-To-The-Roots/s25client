@@ -20,19 +20,25 @@
 #include "mapGenerator/MapUtility.h"
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
+
+std::ostream& operator<<(std::ostream& os, const TerrainKind& t)
+{
+    return os << unsigned(boost::underlying_cast<uint8_t>(t));
+}
 
 namespace {
 class ObjGenFixture
 {
 protected:
     RandomConfig config;
-    ObjectGenerator objGen;
+    MapUtility helper;
 
 public:
-    ObjGenFixture() : config(MapStyle::Random, 0x1337), objGen(config) {}
+    ObjGenFixture() : helper(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, Landscape::GREENLAND, 0x1337)); }
 };
 } // namespace
 
@@ -50,8 +56,8 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Water)
 
     for(int i = 0; i < size.x * size.y; i++)
     {
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+        map.textureLsd[i] = 1;
+        map.textureRsu[i] = 1;
     }
 
     const Position position(10, 10); // any position is valid here, because everything is water
@@ -72,8 +78,8 @@ BOOST_AUTO_TEST_CASE(GetBodySize_Limit)
     Map map(size, "map", "author");
     for(int i = 0; i < size.x * size.y; i++)
     {
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+        map.textureLsd[i] = 1;
+        map.textureRsu[i] = 1;
     }
 
     const Position position(10, 10);
@@ -102,24 +108,27 @@ BOOST_AUTO_TEST_CASE(SetHill_Height)
  * Tests the MapUtility::Smooth method to ensure mountain-meadow textures are
  * replaced by meadow if they have no neighboring mountain-textures.
  */
-BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowReplaced)
+BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, ObjGenFixture)
 {
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    uint8_t mountainMeadow = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+        map.textureLsd[i] = mountainMeadow;
+        map.textureRsu[i] = mountainMeadow;
     }
 
-    MapUtility::Smooth(map);
+    helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
     {
-        BOOST_REQUIRE_EQUAL(map.textureLsd[i], TerrainData::GetTextureIdentifier(TT_MEADOW1));
-        BOOST_REQUIRE_EQUAL(map.textureRsu[i], TerrainData::GetTextureIdentifier(TT_MEADOW1));
+        BOOST_REQUIRE_EQUAL(config.GetTerrainByS2Id(map.textureLsd[i]).kind, TerrainKind::LAND);
+        BOOST_REQUIRE_EQUAL(config.GetTerrainByS2Id(map.textureRsu[i]).kind, TerrainKind::LAND);
     }
 }
 
@@ -127,33 +136,39 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowReplaced)
  * Tests the MapUtility::Smooth method to ensure mountain-meadow textures are
  * not replaced if they have neighboring mountain-textures.
  */
-BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowNotReplaced)
+BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, ObjGenFixture)
 {
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    uint8_t mountainMeadow = config.terrainDesc.get(t).s2Id;
+    t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
+                           && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
+    uint8_t mountain = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         if(i % size.x == 0) // mountain-meadow on the left
         {
-            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
-            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW);
+            map.textureLsd[i] = mountainMeadow;
+            map.textureRsu[i] = mountainMeadow;
         } else // everything else mountains
         {
-            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
-            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+            map.textureLsd[i] = mountain;
+            map.textureRsu[i] = mountain;
         }
     }
 
-    MapUtility::Smooth(map);
+    helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         if(i % size.x == 0)
         {
-            BOOST_REQUIRE_EQUAL(map.textureLsd[i], TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW));
-            BOOST_REQUIRE_EQUAL(map.textureRsu[i], TerrainData::GetTextureIdentifier(TT_MOUNTAINMEADOW));
+            BOOST_REQUIRE_EQUAL(map.textureLsd[i], mountainMeadow);
+            BOOST_REQUIRE_EQUAL(map.textureRsu[i], mountainMeadow);
         }
     }
 }
@@ -162,21 +177,24 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainMeadowNotReplaced)
  * Tests the MapUtility::Smooth method to ensure that size.y of mountain-textures
  * is increased.
  */
-BOOST_AUTO_TEST_CASE(Smooth_MountainIncreased)
+BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, ObjGenFixture)
 {
     const MapExtent size(16, 8);
     const unsigned z = 11u; // size.y of the mountain
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
+    uint8_t mountain = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         map.z[i] = z;
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MOUNTAIN1);
+        map.textureLsd[i] = mountain;
+        map.textureRsu[i] = mountain;
     }
 
-    MapUtility::Smooth(map);
+    helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -188,21 +206,23 @@ BOOST_AUTO_TEST_CASE(Smooth_MountainIncreased)
  * Tests the MapUtility::Smooth method to ensure that size.y of snow-textures
  * is increased.
  */
-BOOST_AUTO_TEST_CASE(Smooth_SnowIncreased)
+BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, ObjGenFixture)
 {
     const MapExtent size(16, 8);
     const unsigned z = 11u; // size.y of the snow area
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+    uint8_t snow = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         map.z[i] = z;
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_SNOW);
+        map.textureLsd[i] = snow;
+        map.textureRsu[i] = snow;
     }
 
-    MapUtility::Smooth(map);
+    helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -217,21 +237,24 @@ BOOST_AUTO_TEST_CASE(Smooth_SnowIncreased)
  * Tests the MapUtility::Smooth method to ensure that size.y of meadow-textures
  * are NOT increased.
  */
-BOOST_AUTO_TEST_CASE(Smooth_MeadowNotIncreased)
+BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, ObjGenFixture)
 {
     const MapExtent size(16, 8);
     const unsigned z = 11u; // size.y of the meadow area
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    uint8_t meadow = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         map.z[i] = z;
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map.textureLsd[i] = meadow;
+        map.textureRsu[i] = meadow;
     }
 
-    MapUtility::Smooth(map);
+    helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -244,52 +267,64 @@ BOOST_AUTO_TEST_CASE(Smooth_MeadowNotIncreased)
  * Tests the MapUtility::Smooth method to ensure that single textures which are surounded
  * by other textures are replaced properly.
  */
-BOOST_AUTO_TEST_CASE(Smooth_SingleTexturesReplaced)
+BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, ObjGenFixture)
 {
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
 
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    uint8_t meadow = config.terrainDesc.get(t).s2Id;
+    t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
+    uint8_t snow = config.terrainDesc.get(t).s2Id;
+
     for(int i = 0; i < size.x * size.y; i++)
     {
-        map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
-        map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+        map.textureLsd[i] = meadow;
+        map.textureRsu[i] = meadow;
     }
-    map.textureRsu[0] = TT_SNOW;
+    map.textureRsu[0] = snow;
 
-    MapUtility::Smooth(map);
+    helper.Smooth(map);
 
-    BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_MEADOW1));
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], meadow);
 }
 
 /**
  * Tests the MapUtility::SetHarbor method to ensure harbor positions are available after
  * placing a harbor in a suitable position.
  */
-BOOST_AUTO_TEST_CASE(SetHarbor_HarborPlaceAvailable)
+BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, ObjGenFixture)
 {
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    uint8_t meadow = config.terrainDesc.get(t).s2Id;
+    t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER
+                           && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    uint8_t water = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         if(i % size.x < size.x / 2)
         {
             // half of the map meadow
-            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
-            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_MEADOW1);
+            map.textureLsd[i] = meadow;
+            map.textureRsu[i] = meadow;
         } else
         {
             // half of the map water
-            map.textureLsd[i] = TerrainData::GetTextureIdentifier(TT_WATER);
-            map.textureRsu[i] = TerrainData::GetTextureIdentifier(TT_WATER);
+            map.textureLsd[i] = water;
+            map.textureRsu[i] = water;
         }
     }
 
     // place harbor in the center of the map
     const Position center(size.x / 2 - 1, size.y / 2 - 1);
-    MapUtility::SetHarbour(map, center, 0);
+    helper.SetHarbour(map, center, 0);
 
     int countHarbors = 0;
     for(int i = 0; i < size.x * size.y; i++)
@@ -314,7 +349,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_EmptyTerrain, ObjGenFixture)
     Map map(size, "map", "author");
 
     Position p(size / 2);
-    MapUtility::SetTree(map, objGen, p);
+    helper.SetTree(map, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * size.x + p.x], libsiedler2::OI_Empty);
@@ -329,15 +364,18 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
     const MapExtent size(16, 8);
 
     Map map(size, "map", "author");
+    DescIdx<TerrainDesc> t =
+      config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::humidity, _1) == 0);
+    uint8_t dessert = config.terrainDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
-        map.textureLsd[i] = TT_DESERT;
-        map.textureRsu[i] = TT_DESERT;
+        map.textureLsd[i] = dessert;
+        map.textureRsu[i] = dessert;
     }
 
     Position p(size / 2);
-    MapUtility::SetTree(map, objGen, p);
+    helper.SetTree(map, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * size.x + p.x], libsiedler2::OI_Empty);
@@ -358,7 +396,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_NonEmptyTerrain, ObjGenFixture)
     map.objectType[index] = libsiedler2::OT_Stone_Begin;
     map.objectInfo[index] = libsiedler2::OI_Stone1;
 
-    MapUtility::SetTree(map, objGen, p);
+    helper.SetTree(map, p);
 
     BOOST_REQUIRE_EQUAL(map.objectType[index], libsiedler2::OT_Stone_Begin);
     BOOST_REQUIRE_EQUAL(map.objectInfo[index], libsiedler2::OI_Stone1);
@@ -375,7 +413,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_EmptyTerrain, ObjGenFixture)
     Map map(size, "map", "author");
 
     Position p(size / 2);
-    MapUtility::SetStone(map, objGen, p);
+    helper.SetStone(map, p);
 
     BOOST_REQUIRE_NE(map.objectType[p.y * size.x + p.x], libsiedler2::OT_Empty);
     BOOST_REQUIRE_NE(map.objectInfo[p.y * size.x + p.x], libsiedler2::OI_Empty);
@@ -396,7 +434,7 @@ BOOST_FIXTURE_TEST_CASE(SetStone_NonEmptyTerrain, ObjGenFixture)
     map.objectType[index] = libsiedler2::OT_Tree1_Begin;
     map.objectInfo[index] = libsiedler2::OI_TreeOrPalm;
 
-    MapUtility::SetStone(map, objGen, p);
+    helper.SetStone(map, p);
 
     BOOST_REQUIRE_EQUAL(map.objectType[index], libsiedler2::OT_Tree1_Begin);
     BOOST_REQUIRE_EQUAL(map.objectInfo[index], libsiedler2::OI_TreeOrPalm);

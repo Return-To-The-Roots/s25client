@@ -19,6 +19,7 @@
 #include "CreateEmptyWorld.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "gameData/TerrainDesc.h"
 #include "test/initTestHelpers.h"
 #include <stdexcept>
 
@@ -29,12 +30,20 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
+    loadGameData(world);
     world.Init(size_, Landscape::GREENLAND);
-    // Set everything to meadow
+    // Set everything to buildable land
+    DescIdx<TerrainDesc> t(0);
+    const WorldDescription& desc = world.GetDescription();
+    for(; t.value < desc.terrain.size(); t.value++)
+    {
+        if(desc.get(t).Is(ETerrain::Buildable) && desc.get(t).kind == TerrainKind::LAND)
+            break;
+    }
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.GetNodeWriteable(pt);
-        node.t1 = node.t2 = TT_MEADOW1;
+        node.t1 = node.t2 = t;
     }
     if(!playerNations_.empty())
     {
@@ -78,11 +87,12 @@ bool CreateUninitWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
+    loadGameData(world);
     world.Init(size_, Landscape::GREENLAND);
     return true;
 }
 
-void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t)
+void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
     switch(Direction::Type(dir))
     {
@@ -95,7 +105,7 @@ void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, Te
     }
 }
 
-void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t)
+void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
     setRightTerrain(world, pt, Direction(dir.toUInt() + 6 - 1), t);
 }

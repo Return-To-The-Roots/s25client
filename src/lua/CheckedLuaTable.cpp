@@ -19,18 +19,37 @@
 #include "CheckedLuaTable.h"
 #include "boost/foreach.hpp"
 #include "libutil/Log.h"
+#include <boost/algorithm/string/join.hpp>
 #include <algorithm>
 
-CheckedLuaTable::CheckedLuaTable(const kaguya::LuaTable& luaTable) : table(luaTable) {}
+CheckedLuaTable::CheckedLuaTable(const kaguya::LuaTable& luaTable) : table(luaTable), checked(false) {}
 
 CheckedLuaTable::~CheckedLuaTable()
 {
+    checkUnused(false);
+}
+
+bool CheckedLuaTable::checkUnused(bool throwError)
+{
+    if(checked)
+        return true;
+    checked = true;
+
     std::vector<std::string> tableKeys = table.keys<std::string>();
     std::sort(tableKeys.begin(), tableKeys.end());
     std::vector<std::string> unusedKeys;
     std::set_difference(tableKeys.begin(), tableKeys.end(), accessedKeys_.begin(), accessedKeys_.end(), std::back_inserter(unusedKeys));
     BOOST_FOREACH(const std::string& unusedKey, unusedKeys)
         LOG.write("\nERROR: Did not use key '%1%' in a lua table. This is most likely a bug!\n") % unusedKey;
-    // We should not throw errors in dtors
-    RTTR_AssertNoThrow(unusedKeys.empty());
+    if(throwError)
+    {
+        RTTR_Assert(unusedKeys.empty());
+        if(!unusedKeys.empty())
+            throw std::runtime_error("Did not use keys " + boost::algorithm::join(unusedKeys, ", ") + " in lua table!");
+    } else
+    {
+        // We should not throw errors in dtors
+        RTTR_AssertNoThrow(unusedKeys.empty());
+    }
+    return unusedKeys.empty();
 }

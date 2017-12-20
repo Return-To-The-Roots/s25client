@@ -18,38 +18,61 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "RttrConfig.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "lua/GameDataLoader.h"
 #include "gameData/EdgeDesc.h"
-#include "gameData/TerrainData.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include "test/BQOutput.h"
+#include "test/legacy/TerrainData.h"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(GameData)
 
 BOOST_AUTO_TEST_CASE(LoadGameData)
 {
-    boost::shared_ptr<WorldDescription> worldDesc(new WorldDescription());
+    WorldDescription worldDesc;
     GameDataLoader loader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
     BOOST_REQUIRE(loader.Load());
-    BOOST_REQUIRE_EQUAL(worldDesc->edges.size(), 5u);
-    BOOST_REQUIRE_EQUAL(worldDesc->terrain.size(), NUM_TTS);
-    for(unsigned i = 0; i < NUM_TTS; i++)
+    BOOST_REQUIRE_EQUAL(worldDesc.edges.size(), 3u * 5u - 1u);
+    BOOST_REQUIRE_GE(worldDesc.terrain.size(), 3u * NUM_TTS);
+    for(unsigned l = 0; l < NUM_LTS; l++)
     {
-        TerrainType t = TerrainType(i);
-        const TerrainDesc& desc = worldDesc->terrain.get(DescIdx<TerrainDesc>(i));
-        BOOST_REQUIRE_EQUAL(desc.s2Id, TerrainData::GetTextureIdentifier(t));
-        BOOST_REQUIRE_EQUAL(!desc.edgeType ? 0 : desc.edgeType.value + 1, TerrainData::GetEdgeType(Landscape::GREENLAND, t));
-        BOOST_REQUIRE_EQUAL(desc.GetBQ(), TerrainData::GetBuildingQuality(t));
-        BOOST_REQUIRE_EQUAL(!desc.Is(ETerrain::Walkable), TerrainData::GetBuildingQuality(t) == TerrainBQ::NOTHING
-                                                            || TerrainData::GetBuildingQuality(t) == TerrainBQ::DANGER);
-        BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Mineable), TerrainData::GetBuildingQuality(t) == TerrainBQ::MINE);
-        BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Buildable), TerrainData::GetBuildingQuality(t) == TerrainBQ::CASTLE);
-        BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Shippable), TerrainData::IsUsableByShip(t));
-        BOOST_REQUIRE_EQUAL(desc.IsUsableByAnimals(), TerrainData::IsUsableByAnimals(t));
-        BOOST_REQUIRE_EQUAL(desc.IsVital(), TerrainData::IsVital(t));
+        Landscape lt = Landscape(l);
+        // indexOf(name) in these arrays should be the original RTTR index as in TerrainData
+        std::vector<std::string> tNames, eNames;
+        for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
+        {
+            if(worldDesc.get(i).landscape == lt)
+                tNames.push_back(worldDesc.get(i).name);
+        }
+        for(DescIdx<EdgeDesc> i(0); i.value < worldDesc.edges.size(); i.value++)
+        {
+            if(worldDesc.get(i).landscape == lt)
+                eNames.push_back(worldDesc.get(i).name);
+        }
+        for(unsigned i = 0; i < NUM_TTS; i++)
+        {
+            TerrainType t = TerrainType(i);
+            const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
+            BOOST_REQUIRE(desc.landscape == lt);
+            BOOST_REQUIRE_EQUAL(desc.s2Id, TerrainData::GetTextureIdentifier(t));
+            EdgeType newEdge = !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
+            BOOST_REQUIRE_EQUAL(newEdge, TerrainData::GetEdgeType(lt, t));
+            BOOST_REQUIRE_EQUAL(desc.GetBQ(), TerrainData::GetBuildingQuality(t));
+            BOOST_REQUIRE_EQUAL(!desc.Is(ETerrain::Walkable), TerrainData::GetBuildingQuality(t) == TerrainBQ::NOTHING
+                                                                || TerrainData::GetBuildingQuality(t) == TerrainBQ::DANGER);
+            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Mineable), TerrainData::GetBuildingQuality(t) == TerrainBQ::MINE);
+            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Buildable), TerrainData::GetBuildingQuality(t) == TerrainBQ::CASTLE);
+            BOOST_REQUIRE_EQUAL(desc.Is(ETerrain::Shippable), TerrainData::IsUsableByShip(t));
+            BOOST_REQUIRE_EQUAL(desc.kind == TerrainKind::SNOW, TerrainData::IsSnow(lt, t));
+            BOOST_REQUIRE_EQUAL(desc.IsUsableByAnimals() || desc.kind == TerrainKind::SNOW,
+                                TerrainData::IsUsableByAnimals(t) || TerrainData::IsSnow(lt, t));
+            BOOST_REQUIRE_EQUAL(desc.IsVital(), TerrainData::IsVital(t));
+            BOOST_REQUIRE_EQUAL(desc.minimapColor, TerrainData::GetColor(lt, t));
+        }
     }
+    // TerrainData::PrintEdgePrios();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

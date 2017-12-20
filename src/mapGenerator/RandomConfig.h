@@ -21,7 +21,11 @@
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/MapStyle.h"
 #include "random/XorShift.h"
+#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescriptionContainer.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/foreach.hpp>
 #include <vector>
 
 /**
@@ -30,8 +34,10 @@
 class RandomConfig
 {
 public:
-    RandomConfig(MapStyle mapStyle);
-    RandomConfig(MapStyle mapStyle, uint64_t seed);
+    bool Init(MapStyle mapStyle, Landscape landscape);
+    bool Init(MapStyle mapStyle, Landscape landscape, uint64_t seed);
+
+    DescriptionContainer<TerrainDesc> terrainDesc;
 
     /**
      * Description of different areas to use for random map generation.
@@ -44,7 +50,7 @@ public:
      * For example, following statement will assign water textures to landscape with the
      * height of "0": textures[0] = TT_WATER;
      */
-    std::vector<TerrainType> textures;
+    std::vector<DescIdx<TerrainDesc> > textures;
 
     /**
      * Generates a random number between 0 and max-1.
@@ -69,9 +75,20 @@ public:
      */
     double DRand(const double min, const double max);
 
+    const TerrainDesc& GetTerrainByS2Id(uint8_t s2Id) const;
+
+    template<class T_Predicate>
+    DescIdx<TerrainDesc> FindTerrain(T_Predicate predicate) const;
+    template<class T_Predicate>
+    std::vector<DescIdx<TerrainDesc> > FindAllTerrains(T_Predicate predicate) const;
+    template<class T_Predicate>
+    std::vector<DescIdx<TerrainDesc> > FilterTerrains(const std::vector<DescIdx<TerrainDesc> >& inTerrains, T_Predicate predicate) const;
+
 private:
-    void Init(MapStyle mapStyle, uint64_t seed);
     void CreateGreenland();
+
+    void CreateDefaultTextures(bool snowOrLava = true);
+
     void CreateRiverland();
     void CreateRingland();
     void CreateMigration();
@@ -82,5 +99,38 @@ private:
     typedef XorShift UsedRNG;
     UsedRNG rng_;
 };
+
+template<class T_Predicate>
+inline DescIdx<TerrainDesc> RandomConfig::FindTerrain(T_Predicate predicate) const
+{
+    for(DescIdx<TerrainDesc> t(0); t.value < terrainDesc.size(); t.value++)
+    {
+        if(predicate(terrainDesc.get(t)))
+            return t;
+    }
+    return DescIdx<TerrainDesc>();
+}
+
+template<class T_Predicate>
+inline std::vector<DescIdx<TerrainDesc> > RandomConfig::FindAllTerrains(T_Predicate predicate) const
+{
+    std::vector<DescIdx<TerrainDesc> > result;
+    for(DescIdx<TerrainDesc> t(0); t.value < terrainDesc.size(); t.value++)
+        result.push_back(t);
+    return FilterTerrains(result, predicate);
+}
+
+template<class T_Predicate>
+inline std::vector<DescIdx<TerrainDesc> > RandomConfig::FilterTerrains(const std::vector<DescIdx<TerrainDesc> >& inTerrains,
+                                                                       T_Predicate predicate) const
+{
+    std::vector<DescIdx<TerrainDesc> > result;
+    BOOST_FOREACH(DescIdx<TerrainDesc> t, inTerrains)
+    {
+        if(predicate(terrainDesc.get(t)))
+            result.push_back(t);
+    }
+    return result;
+}
 
 #endif // RandomConfig_h__

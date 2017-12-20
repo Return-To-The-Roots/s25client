@@ -283,10 +283,15 @@ void dskSelectMap::CreateRandomMap()
     // setup filepath for the random map
     std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/Random.swd";
 
-    // create a random map and save filepath
-    MapGenerator::Create(mapPath, rndMapSettings);
-
-    newRandMapPath = mapPath;
+    try
+    {
+        // create a random map and save filepath
+        MapGenerator::Create(mapPath, rndMapSettings);
+        newRandMapPath = mapPath;
+    } catch(std::runtime_error& e)
+    {
+        newRandMapPath = std::string("!") + e.what();
+    }
 }
 
 void dskSelectMap::OnMapCreated(const std::string& mapPath)
@@ -382,7 +387,12 @@ void dskSelectMap::Draw_()
     {
         // mapGenThread->join();
         // mapGenThread = NULL;
-        OnMapCreated(newRandMapPath);
+        if(newRandMapPath[0] == '!')
+        {
+            std::string errorTxt = _("Failed to generate random map.\nReason: ");
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt + newRandMapPath.substr(1), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+        } else
+            OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
     }
     Desktop::Draw_();

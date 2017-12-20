@@ -16,7 +16,7 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "World.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 
 #ifndef BQCalculator_h__
 #define BQCalculator_h__
@@ -48,9 +48,10 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     unsigned mine_hits = 0;
     unsigned flag_hits = 0;
 
+    const WorldDescription& desc = world.GetDescription();
     for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
     {
-        TerrainBQ bq = TerrainData::GetBuildingQuality(world.GetRightTerrain(pt, Direction::fromInt(dir)));
+        TerrainBQ bq = desc.get(world.GetRightTerrain(pt, Direction::fromInt(dir))).GetBQ();
         if(bq == TerrainBQ::CASTLE)
             ++building_hits;
         else if(bq == TerrainBQ::MINE)

@@ -18,11 +18,12 @@
 #ifndef ObjectGenerator_h__
 #define ObjectGenerator_h__
 
+#include "RandomConfig.h"
 #include "mapGenerator/Map.h"
 #include "gameTypes/MapTypes.h"
-#include "gameData/TerrainData.h"
+#include "gameData/DescIdx.h"
 
-class RandomConfig;
+struct TerrainDesc;
 
 /**
  * Utility class to place object, textures and animals on a map.
@@ -42,7 +43,7 @@ public:
      *      place a harbor at the position of the texture, it need to be close to water. Also keep
      *      in mind, only terrain types which allow buildings also support harbor placement.
      */
-    static void CreateTexture(Map& map, int index, TerrainType terrain, bool harbor = false);
+    void CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor = false);
 
     /**
      * Checks whether or not the specified texture is representing the specified terrain.
@@ -51,14 +52,16 @@ public:
      * @param terrain terrain to compare the input texture to
      * @return true if at least one of the texture-triangles matches the terrain, false otherwise
      */
-    static bool IsTexture(const Map& map, int index, TerrainType terrain);
+    bool IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain);
+    template<class T_Predicate>
+    bool IsTexture(const Map& map, int index, T_Predicate predicate);
 
     /**
      * Checks whether or not it is allowed to build a harbor on the specified terrain.
      * @param terrain terrain to check
      * @return true of it is allowed to build a harbor on the terrain
      */
-    static bool IsHarborAllowed(TerrainType terrain);
+    bool IsHarborAllowed(DescIdx<TerrainDesc> terrain);
 
     /**
      * Creates a new, empty object.
@@ -156,5 +159,11 @@ public:
      */
     void CreateRandomStone(Map& map, int index);
 };
+
+template<class T_Predicate>
+inline bool ObjectGenerator::IsTexture(const Map& map, int index, T_Predicate predicate)
+{
+    return predicate(config.GetTerrainByS2Id(map.textureRsu[index])) || predicate(config.GetTerrainByS2Id(map.textureLsd[index]));
+}
 
 #endif // ObjectGenerator_h__

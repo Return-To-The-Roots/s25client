@@ -21,13 +21,14 @@
 /// Fehler, die vom Client gemeldet werden
 enum ClientError
 {
-    CE_INCOMPLETEMESSAGE,
-    CE_SERVERFULL,
-    CE_WRONGPW,
-    CE_CONNECTIONLOST,
-    CE_INVALIDSERVERTYPE,
-    CE_WRONGMAP,
-    CE_WRONGVERSION
+    CE_INCOMPLETE_MESSAGE,
+    CE_SERVER_FULL,
+    CE_WRONG_PW,
+    CE_CONNECTION_LOST,
+    CE_INVALID_SERVERTYPE,
+    CE_MAP_TRANSMISSION,
+    CE_WRONG_VERSION,
+    CE_INVALID_MAP
 };
 
 const char* ClientErrorToStr(ClientError error);

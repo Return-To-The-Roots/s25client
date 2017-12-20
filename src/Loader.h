@@ -76,10 +76,8 @@ public:
     /// Lädt Dateien von Addons.
     bool LoadFilesFromAddon(const AddonId id);
     void fillCaches();
-    /// Deletes all loaded terrain textures
-    void ClearTerrainTextures();
-    /// Lädt das Terrain.
-    bool CreateTerrainTextures();
+    /// Load the textures for the roads
+    bool CreateRoadTextures();
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
@@ -87,6 +85,9 @@ public:
     bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, bool isOriginal);
     /// Load a file into the archiv
     bool LoadFile(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& archiv);
+    static glArchivItem_Bitmap* ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
+    static libsiedler2::Archiv* ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t start_index,
+                                                       uint8_t color_count);
 
 protected:
     /// Lädt alle Sounds.
@@ -94,8 +95,6 @@ protected:
 
 private:
     bool LoadArchiv(const std::string& pfad, const libsiedler2::ArchivItem_Palette* palette, libsiedler2::Archiv& archiv);
-    glArchivItem_Bitmap_Raw* ExtractTexture(const Rect& rect);
-    libsiedler2::Archiv* ExtractAnimatedTexture(const Rect& rect, uint8_t start_index, uint8_t color_count);
 
     bool LoadFilesFromArray(const std::vector<unsigned>& files, bool isOriginal);
     bool LoadLsts(unsigned dir);
@@ -109,7 +108,7 @@ public:
     libsiedler2::ArchivItem_Palette* GetPaletteN(const std::string& file, unsigned nr = 0);
     SoundEffectItem* GetSoundN(const std::string& file, unsigned nr);
     std::string GetTextN(const std::string& file, unsigned nr);
-    libsiedler2::Archiv* GetInfoN(const std::string& file);
+    libsiedler2::Archiv& GetInfoN(const std::string& file);
     glArchivItem_Bob* GetBobN(const std::string& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
@@ -117,8 +116,6 @@ public:
     glArchivItem_Bitmap* GetMapImageN(unsigned nr);
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
     glArchivItem_Bitmap* GetTexImageN(unsigned nr);
-    /// Returns the texture for the given terrain. For animated textures the given frame is returned
-    glArchivItem_Bitmap* GetTerrainTexture(TerrainType t, unsigned animationFrame = 0);
 
     Landscape GetLastGFX() const { return lastgfx; }
 
@@ -131,10 +128,6 @@ private:
         return res;
     }
     std::map<std::string, FileEntry> files_;
-    /// Terraintextures (unanimated)
-    std::map<TerrainType, glArchivItem_Bitmap*> terrainTextures;
-    /// Terraintextures (animated) (currently only water and lava)
-    std::map<TerrainType, libsiedler2::Archiv*> terrainTexturesAnim;
 
     Landscape lastgfx;
     boost::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
@@ -144,9 +137,7 @@ private:
 public:
     libsiedler2::Archiv sng_lst;
 
-    libsiedler2::Archiv borders;
     libsiedler2::Archiv roads;
-    libsiedler2::Archiv roads_points;
 
     glTexturePacker* stp;
 

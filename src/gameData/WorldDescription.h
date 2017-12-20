@@ -19,10 +19,9 @@
 #define WorldDescription_h__
 
 #include "DescriptionContainer.h"
+#include "EdgeDesc.h"
+#include "TerrainDesc.h"
 #include <stdexcept>
-
-struct TerrainDesc;
-struct EdgeDesc;
 
 struct GameDataError : public std::runtime_error
 {
@@ -40,6 +39,9 @@ struct WorldDescription
     ~WorldDescription();
     DescriptionContainer<EdgeDesc> edges;
     DescriptionContainer<TerrainDesc> terrain;
+    // Convenience accessors
+    const EdgeDesc& get(DescIdx<EdgeDesc> idx) const { return edges.get(idx); }
+    const TerrainDesc& get(DescIdx<TerrainDesc> idx) const { return terrain.get(idx); }
 };
 
 #endif // WorldDescription_h__

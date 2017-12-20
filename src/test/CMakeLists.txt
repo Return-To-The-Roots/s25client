@@ -17,7 +17,11 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake" ${CMAKE_BINARY_D
 unset(RTTR_BASE_DIR)
 unset(RTTR_LIBSIEDLER2_TEST_FILES_DIR)
 
-file(GLOB TEST_SOURCES *.cpp *.h)
+file(GLOB OTHER_SRC *.cpp *.h)
+FILE(GLOB LEGACY_FILES legacy/*.cpp legacy/*.h)
+SET(TEST_SOURCES ${OTHER_SRC} ${LEGACY_FILES})
+SOURCE_GROUP(legacy FILES ${LEGACY_FILES})
+
 add_executable(Test ${TEST_SOURCES})
 target_link_libraries(Test
 						s25Main
@@ -30,7 +34,6 @@ add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
 file(GLOB TEST_CASES test*.cpp)
 source_group(testCases FILES ${TEST_CASES})
-set(OTHER_SRC ${TEST_SOURCES})
 foreach(curFile ${TEST_CASES})
     list(REMOVE_ITEM OTHER_SRC ${curFile})
 endforeach()

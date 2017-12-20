@@ -110,6 +110,7 @@ public:
         // For consistent results
         doInitGameRNG(0);
 
+        loadGameData(world);
         world.Init(MapExtent(24, 32), Landscape::GREENLAND);
         hqPositions.push_back(MapPoint(0, 1));
         hqPositions.push_back(MapPoint(16, 17));

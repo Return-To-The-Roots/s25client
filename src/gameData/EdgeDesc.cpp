@@ -27,6 +27,7 @@ EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription&)
     landscape = descriptionHelpers::strToLandscape(luaData.getOrThrow<std::string>("landscape"));
     luaData.getOrThrow(texturePath, "texture");
     posInTexture = luaData.getRectOrDefault("pos", Rect());
+    luaData.checkUnused();
 }
 
 EdgeDesc::~EdgeDesc() {}

@@ -79,7 +79,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/GuiConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
@@ -134,7 +134,7 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
     game->world.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
-    cbb.loadEdges(*LOADER.GetInfoN("resource"));
+    cbb.loadEdges(LOADER.GetInfoN("resource"));
     cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
 
     InitPlayer();
@@ -971,11 +971,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        for(unsigned x = 0; x < Direction::COUNT; ++x)
-        {
-            if(TerrainData::IsWater(world.GetRightTerrain(cSel, Direction::fromInt(x))))
-                params = iwAction::AWFT_WATERFLAG;
-        }
+        if(world.HasTerrain(cSel, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+            params = iwAction::AWFT_WATERFLAG;
     }
 
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen

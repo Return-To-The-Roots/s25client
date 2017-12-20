@@ -26,7 +26,7 @@
 #include <boost/bind.hpp>
 #include <boost/filesystem.hpp>
 
-GameDataLoader::GameDataLoader(boost::shared_ptr<WorldDescription> worldDesc, const std::string& basePath)
+GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
     : worldDesc_(worldDesc), basePath_(bfs::canonical(basePath).make_preferred().string()), curIncludeDepth_(0), errorInIncludeFile_(false)
 {
     Register(lua);
@@ -84,10 +84,10 @@ void GameDataLoader::Include(const std::string& filepath)
 
 void GameDataLoader::AddTerrainEdge(const kaguya::LuaTable& data)
 {
-    worldDesc_->edges.add(EdgeDesc(data, *worldDesc_));
+    worldDesc_.edges.add(EdgeDesc(data, worldDesc_));
 }
 
 void GameDataLoader::AddTerrain(const kaguya::LuaTable& data)
 {
-    worldDesc_->terrain.add(TerrainDesc(data, *worldDesc_));
+    worldDesc_.terrain.add(TerrainDesc(data, worldDesc_));
 }

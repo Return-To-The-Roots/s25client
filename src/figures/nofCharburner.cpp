@@ -27,7 +27,8 @@
 #include "ogl/glArchivItem_Bitmap_Player.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noCharburnerPile.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_CHARBURNER, pos, player, workplace), harvest(false), wt(WT_WOOD)
@@ -167,20 +168,12 @@ nofFarmhand::PointQuality nofCharburner::GetPointQuality(const MapPoint pt) cons
         }
     }
 
-    // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char good_terrains = 0;
-
-    for(unsigned char i = 0; i < 6; ++i)
-    {
-        TerrainType t = gwg->GetRightTerrain(pt, Direction::fromInt(i));
-        if(TerrainData::IsVital(t) || t == TT_DESERT)
-            ++good_terrains;
-    }
-
-    if(good_terrains != 6)
+    // Terrain untersuchen (need walkable land)
+    if(gwg->IsOfTerrain(pt,
+                        boost::bind(&TerrainDesc::Is, _1, ETerrain::Walkable) && boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND))
+        return PQ_CLASS3;
+    else
         return PQ_NOTPOSSIBLE;
-
-    return PQ_CLASS3;
 }
 
 void nofCharburner::Serialize(SerializedGameData& sgd) const

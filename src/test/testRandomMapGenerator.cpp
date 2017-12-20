@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
  */
 BOOST_AUTO_TEST_CASE(Create_CorrectSize)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
+    RandomConfig config;
+    BOOST_REQUIRE(config.Init(MapStyle::Random, Landscape::GREENLAND, 0x1337));
     MapSettings settings;
     settings.size = MapExtent(38, 30);
     settings.numPlayers = 1;
@@ -54,7 +55,8 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
  */
 BOOST_AUTO_TEST_CASE(Create_Headquarters)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
+    RandomConfig config;
+    BOOST_REQUIRE(config.Init(MapStyle::Random, Landscape::GREENLAND, 0x1337));
     MapSettings settings;
     settings.size = MapExtent(30u, 32u);
     settings.numPlayers = 2;
@@ -88,7 +90,8 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 
 BOOST_AUTO_TEST_CASE(InvalidConfig)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
+    RandomConfig config;
+    BOOST_REQUIRE(config.Init(MapStyle::Random, Landscape::GREENLAND, 0x1337));
     RandomMapGenerator generator(config);
 
     MapSettings settings;

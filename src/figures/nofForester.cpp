@@ -27,7 +27,8 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noTree.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
@@ -128,16 +129,9 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
             return PQ_NOTPOSSIBLE;
     }
 
-    // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char good_terrains = 0;
-
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
-    {
-        if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(dir))))
-            ++good_terrains;
-    }
-    if(good_terrains != 6)
+    // Terrain untersuchen
+    if(gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
+        return PQ_CLASS1;
+    else
         return PQ_NOTPOSSIBLE;
-
-    return PQ_CLASS1;
 }

@@ -25,7 +25,9 @@
 void MapGenerator::Create(const std::string& filePath, const MapSettings& settings)
 {
     // create a random map generator based on the map style
-    RandomConfig config(settings.style);
+    RandomConfig config;
+    if(!config.Init(settings.style, settings.type))
+        throw std::runtime_error("Error initializing random map config");
     RandomMapGenerator generator(config);
     Map* randomMap = generator.Create(settings);
 

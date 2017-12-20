@@ -28,7 +28,7 @@
 #include "nodeObjs/noTree.h"
 #include "gameTypes/BuildingCount.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include <limits>
 class noRoadNode;
 
@@ -56,9 +56,9 @@ AIResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
 AIResource AIInterface::GetSurfaceResource(const MapPoint pt) const
 {
     NodalObjectType no = gwb.GetNO(pt)->GetType();
-    TerrainType t1 = gwb.GetNode(pt).t1;
+    DescIdx<TerrainDesc> t1 = gwb.GetNode(pt).t1;
     // valid terrain?
-    if(TerrainData::IsUseable(t1))
+    if(gwb.GetDescription().get(t1).Is(ETerrain::Walkable))
     {
         if(no == NOP_TREE)
         {
@@ -83,10 +83,11 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
     if(res == AIResource::PLANTSPACE || res == AIResource::BORDERLAND || res == AIResource::WOOD || res == AIResource::STONES)
     {
         AIResource surfaceRes = GetSurfaceResource(pt);
-        TerrainType t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
-        if(surfaceRes == res || (res == AIResource::PLANTSPACE && surfaceRes == AIResource::NOTHING && TerrainData::IsVital(t1))
+        DescIdx<TerrainDesc> t1 = gwb.GetNode(pt).t1, t2 = gwb.GetNode(pt).t2;
+        if(surfaceRes == res
+           || (res == AIResource::PLANTSPACE && surfaceRes == AIResource::NOTHING && gwb.GetDescription().get(t1).IsVital())
            || (res == AIResource::BORDERLAND && (IsBorder(pt) || !IsOwnTerritory(pt))
-               && (TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))))
+               && (gwb.GetDescription().get(t1).Is(ETerrain::Walkable) || gwb.GetDescription().get(t2).Is(ETerrain::Walkable))))
         {
             return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
         }

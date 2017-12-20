@@ -20,12 +20,14 @@
 
 #include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameData/DescIdx.h"
 #include "gameData/NationConsts.h"
 #include <vector>
 
 class World;
 class GameWorldBase;
 class glArchivItem_Map;
+struct TerrainDesc;
 
 class MapLoader
 {
@@ -33,8 +35,9 @@ class MapLoader
     const std::vector<Nation> playerNations_;
     std::vector<MapPoint> hqPositions_;
 
+    DescIdx<TerrainDesc> getTerrainFromS2(uint8_t s2Id) const;
     /// Initialize the nodes according to the map data
-    void InitNodes(const glArchivItem_Map& map, Exploration exploration);
+    bool InitNodes(const glArchivItem_Map& map, Exploration exploration);
     /// Place all objects on the nodes according to the map data.
     void PlaceObjects(const glArchivItem_Map& map);
     void PlaceAnimals(const glArchivItem_Map& map);

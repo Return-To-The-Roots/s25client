@@ -22,14 +22,12 @@
 #include "Rect.h"
 #include "gameTypes/LandscapeType.h"
 #include <boost/core/scoped_enum.hpp>
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
 struct EdgeDesc;
 struct WorldDescription;
 class CheckedLuaTable;
-class glSmartBitmap;
 
 BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
   BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainKind, uint8_t){LAND, WATER, LAVA, SNOW, MOUNTAIN} BOOST_SCOPED_ENUM_DECLARE_END(TerrainKind)
@@ -57,15 +55,13 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
     /// Priority for drawing. The terrain with the higher priority draws its edge over the neighbor
     int8_t edgePriority;
     TerrainKind kind;
-    uint8_t numFrames;
-    uint8_t palAnimIdx;
+    int8_t palAnimIdx;
     ETerrain flags;
     /// How much water can be on the terrain [0, 100]
     uint8_t humidity;
     std::string texturePath;
     Rect posInTexture;
     unsigned minimapColor;
-    std::vector<boost::shared_ptr<glSmartBitmap> > textures;
 
     TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
     ~TerrainDesc();

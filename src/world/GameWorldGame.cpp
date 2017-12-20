@@ -49,9 +49,10 @@
 #include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
+#include <boost/math/special_functions/round.hpp>
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
@@ -545,19 +546,18 @@ bool GameWorldGame::DoesDestructionChangeTerritory(const noBaseBuilding& buildin
     RTTR_FOREACH_PT(Position, region.size)
     {
         MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
-        if(GetNode(curMapPt).owner == region.GetOwner(pt))
+        const MapNode& node = GetNode(curMapPt);
+        if(node.owner == region.GetOwner(pt))
             continue;
         // AI can ignore water/snow/lava/swamp terrain (because it wouldn't help win the game)
         // So we check if any terrain is usable and if it is -> Land is important
-        TerrainType t1 = GetNode(curMapPt).t1, t2 = GetNode(curMapPt).t2;
-        if(TerrainData::IsUseable(t1) && TerrainData::IsUseable(t2))
+        if(GetDescription().get(node.t1).Is(ETerrain::Walkable) && GetDescription().get(node.t2).Is(ETerrain::Walkable))
             return true;
         // also check neighboring nodes since border will still count as player territory but not allow any buildings!
         for(unsigned dir = 0; dir < Direction::COUNT; dir++)
         {
-            t1 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t1;
-            t2 = GetNeighbourNode(curMapPt, Direction::fromInt(dir)).t2;
-            if(TerrainData::IsUseable(t1) || TerrainData::IsUseable(t2))
+            const MapNode& nNode = GetNeighbourNode(curMapPt, Direction::fromInt(dir));
+            if(GetDescription().get(nNode.t1).Is(ETerrain::Walkable) || GetDescription().get(nNode.t2).Is(ETerrain::Walkable))
                 return true;
         }
     }
@@ -1341,33 +1341,30 @@ void GameWorldGame::PlaceAndFixWater()
     {
         Resource curNodeResource = GetNode(pt).resources;
 
-        if(curNodeResource.getType() != Resource::Nothing && curNodeResource.getType() != Resource::Water)
+        if(curNodeResource.getType() == Resource::Nothing)
+        {
+            if(!waterEverywhere)
+                continue;
+        } else if(curNodeResource.getType() != Resource::Water)
         {
             // do not override maps resource.
             continue;
         }
 
-        int amount = 0;
-
-        // only set water if no desert, water, mineable mountain or lava
-        if(!(World::HasTerrain(pt, TT_DESERT) || World::HasTerrain(pt, TerrainData::IsWater)
-             || World::HasTerrain(pt, TerrainData::IsMineable) || World::HasTerrain(pt, TerrainData::IsLava)))
+        uint8_t minHumidity = 100;
+        for(unsigned i = 0; i < Direction::COUNT; ++i)
         {
-            if(waterEverywhere)
-                amount = 7;
-            // do not touch tile if waterEverywhere is disabled and no resource was stored by maploader
-            else if(curNodeResource.getType() == Resource::Nothing)
-                amount = 0;
-            else if(World::HasTerrain(pt, TT_STEPPE)) // reduce water on stepppe or savannah tiles.
-                amount = 2;
-            else if(World::HasTerrain(pt, TT_SAVANNAH))
-                amount = 4;
-            else
-                amount = 7;
+            DescIdx<TerrainDesc> t = GetRightTerrain(pt, Direction::fromInt(i));
+            uint8_t curHumidity = GetDescription().get(t).humidity;
+            if(curHumidity < minHumidity)
+            {
+                minHumidity = curHumidity;
+                if(minHumidity == 0)
+                    break;
+            }
         }
-
-        if(amount != 0)
-            curNodeResource = Resource(Resource::Water, amount);
+        if(minHumidity)
+            curNodeResource = Resource(Resource::Water, waterEverywhere ? 7 : boost::math::iround(minHumidity * 7. / 100.));
         else
             curNodeResource = Resource(Resource::Nothing);
 

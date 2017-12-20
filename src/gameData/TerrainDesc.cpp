@@ -112,11 +112,10 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
     humidity = luaData.getOrDefault("humidity", getDefaultHumidity(kind));
     luaData.getOrThrow(texturePath, "texture");
     posInTexture = luaData.getRectOrDefault("pos", Rect());
-    numFrames = luaData.getOrDefault("numFrames", 1u);
-    if(numFrames == 0u)
-        throw GameDataLoadError("Cannot have a texture with no frames!");
     palAnimIdx = luaData.getOrDefault("palAnimIdx", 0u);
     minimapColor = luaData.getOrThrow<unsigned>("color");
+
+    luaData.checkUnused();
 }
 
 TerrainDesc::~TerrainDesc() {}

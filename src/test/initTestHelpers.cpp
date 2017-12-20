@@ -18,9 +18,12 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "files.h"
+#include "lua/GameDataLoader.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "random/Random.h"
 #include "test/initTestHelpers.h"
@@ -63,6 +66,7 @@ void installSegFaultHandler()
 #else
 void installSegFaultHandler() {}
 #endif
+#include "world/World.h"
 
 void doInitGameRNG(unsigned defaultValue /*= 1337*/, const char* fileName /*= ""*/, unsigned line /*= 0*/)
 {
@@ -110,4 +114,10 @@ MockupVideoDriver* GetVideoDriver()
         video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
     }
     return video;
+}
+
+void loadGameData(World& world)
+{
+    GameDataLoader gdLoader(world.GetDescriptionWriteable(), RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
+    BOOST_REQUIRE(gdLoader.Load());
 }
