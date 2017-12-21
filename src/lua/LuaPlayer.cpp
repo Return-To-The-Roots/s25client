@@ -327,7 +327,6 @@ void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId)
     if (ai != NULL)
     {
         AIInterface aii = ai->getAIInterface();
-        GameWorldGame& world = player.GetGameWorld();
         aii.CancelPact(pt, otherPlayerId);
     }
 }

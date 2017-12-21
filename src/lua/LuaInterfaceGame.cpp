@@ -23,7 +23,6 @@
 #include "ingameWindows/iwMissionStatement.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
-#include "gameTypes/PactTypes.h"
 #include "network/GameClient.h"
 #include "ai/AIPlayer.h"
 #include "ai/AIInterface.h"
@@ -143,8 +142,8 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
     lua["RES_GRANITE"] = Resource::Granite;
     lua["RES_WATER"] = Resource::Water;
 
-    lua["NON_AGGRESSION_PACT"] = PactType::NON_AGGRESSION_PACT;
-    lua["TREATY_OF_ALLIANCE"] = PactType::TREATY_OF_ALLIANCE;
+    lua["NON_AGGRESSION_PACT"] = NON_AGGRESSION_PACT;
+    lua["TREATY_OF_ALLIANCE"] = TREATY_OF_ALLIANCE;
     // infinite pact duration, see GamePlayer::GetRemainingPactTime
     lua["DURATION_INFINITE"] = 0xFFFFFFFF;
 
