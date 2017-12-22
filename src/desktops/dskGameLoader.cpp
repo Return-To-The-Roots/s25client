@@ -111,7 +111,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             break;
 
         case 3: // Objekte laden
-            if(!LOADER.LoadFilesAtGame(game->world.GetLandscapeType(), load_nations))
+            if(!LOADER.LoadFilesAtGame(game->world.GetDescription().get(game->world.GetLandscapeType()).isWinter, load_nations))
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
@@ -132,11 +132,6 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             break;
 
         case 4: // Welt erstellen
-            if(!LOADER.CreateRoadTextures())
-            {
-                LC_Status_Error(_("Failed to load terrain data."));
-                return;
-            }
             try
             {
                 // Do this here as it will init OGL

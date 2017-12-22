@@ -58,7 +58,7 @@
 #include <sstream>
 #include <stdexcept>
 
-Loader::Loader() : lastgfx(Landscape::GREENLAND), map_gfx(NULL), tex_gfx(NULL), stp(NULL)
+Loader::Loader() : isWinterGFX_(false), map_gfx(NULL), stp(NULL)
 {
     std::fill(nation_gfx.begin(), nation_gfx.end(), static_cast<libsiedler2::Archiv*>(NULL));
 }
@@ -117,9 +117,10 @@ bool Loader::LoadFileOrDir(const std::string& file, bool isOriginal)
         // yes, load all files in the directory
         unsigned ladezeit = VIDEODRIVER.GetTickCount();
 
-        LOG.write(_("Loading LST,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % RTTRCONFIG.ExpandPath(file);
+        LOG.write(_("Loading LST,LBM,BOB,IDX,BMP,TXT,GER,ENG,INI files from \"%s\"\n")) % RTTRCONFIG.ExpandPath(file);
 
         std::vector<std::string> lst = ListDir(file, "lst", true);
+        lst = ListDir(file, "lbm", true, &lst);
         lst = ListDir(file, "bob", true, &lst);
         lst = ListDir(file, "idx", true, &lst);
         lst = ListDir(file, "bmp", true, &lst);
@@ -326,7 +327,7 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesAtGame(Landscape gfxset, const std::vector<bool>& nations)
+bool Loader::LoadFilesAtGame(bool isWinterGFX, const std::vector<bool>& nations)
 {
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned> files;
@@ -339,21 +340,20 @@ bool Loader::LoadFilesAtGame(Landscape gfxset, const std::vector<bool>& nations)
     {
         // ggf. Völker-Grafiken laden
         if((i < nations.size() && nations[i]) || (i == NAT_ROMANS && NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]))
-            files += 27 + i + (gfxset == Landscape::WINTERWORLD) * NUM_NATIVE_NATS;
+            files += 27 + i + (isWinterGFX ? NUM_NATIVE_NATS : 0);
     }
 
     // Load files, but only once. If they are modified by overrides they will still be loaded again
     if(!LoadFilesFromArray(files, true))
         return false;
 
-    std::string mapGFXFile = MAP_GFXSET_Z[boost::underlying_cast<uint8_t>(lastgfx)];
+    std::string mapGFXFile = MAP_GFXSET_Z[boost::underlying_cast<uint8_t>(isWinterGFX)];
     if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[23]) + "/" + mapGFXFile + ".LST", true))
         return false;
     map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(mapGFXFile));
-    std::string texGFXFile = TEX_GFXSET[boost::underlying_cast<uint8_t>(lastgfx)];
+    std::string texGFXFile = TEX_GFXSET[boost::underlying_cast<uint8_t>(isWinterGFX)];
     if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[20]) + "/" + texGFXFile + ".LBM", true))
         return false;
-    tex_gfx = &GetInfoN(boost::algorithm::to_lower_copy(texGFXFile));
 
     if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]
        && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
@@ -362,10 +362,10 @@ bool Loader::LoadFilesAtGame(Landscape gfxset, const std::vector<bool>& nations)
     if(!LoadLsts(96)) // lade systemweite und persönliche lst files
         return false;
 
-    lastgfx = gfxset;
+    isWinterGFX_ = isWinterGFX;
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
-        nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[boost::underlying_cast<uint8_t>(lastgfx)][nation]);
+        nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[boost::underlying_cast<uint8_t>(isWinterGFX)][nation]);
 
     return true;
 }
@@ -437,7 +437,7 @@ void Loader::fillCaches()
             {
                 unsigned id = nation * 8;
 
-                bmp.add(GetImageN("charburner", id + ((lastgfx == Landscape::WINTERWORLD) ? 6 : 1)));
+                bmp.add(GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
                 bmp.addShadow(GetImageN("charburner", id + 2));
 
                 skel.add(GetImageN("charburner", id + 3));
@@ -767,28 +767,14 @@ bool Loader::LoadFilesFromAddon(const AddonId id)
     return LoadFileOrDir(s.str(), false);
 }
 
-/**
- *  zerschneidet die Terraintexturen.
- *
- *  @return @p true bei Erfolg, @p false bei Fehler.
- */
-bool Loader::CreateRoadTextures()
-{
-    roads.clear();
-
-    // Wege
-    Rect rec_roads[4] = {Rect(192, 0, 50, 16), Rect(192, 16, 50, 16), Rect(192, 32, 50, 16), Rect(192, 160, 50, 16)};
-
-    // Wege
-    for(unsigned char i = 0; i < 4; ++i)
-        roads.push(ExtractTexture(*GetTexImageN(0), rec_roads[i]));
-
-    return true;
-}
-
 glArchivItem_Bitmap* Loader::GetImageN(const std::string& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archiv[nr]);
+}
+
+ITexture* Loader::GetTextureN(const std::string& file, unsigned nr)
+{
+    return convertChecked<ITexture*>(files_[file].archiv[nr]);
 }
 
 glArchivItem_Bitmap* Loader::GetImage(const std::string& file, const std::string& name)
@@ -839,16 +825,17 @@ glArchivItem_BitmapBase* Loader::GetNationImageN(unsigned nation, unsigned nr)
 
 glArchivItem_Bitmap* Loader::GetNationImage(unsigned nation, unsigned nr)
 {
-    glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
-    RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap*>(bmp));
-    return static_cast<glArchivItem_Bitmap*>(bmp);
+    return checkedCast<glArchivItem_Bitmap*>(GetNationImageN(nation, nr));
+}
+
+ITexture* Loader::GetNationTex(unsigned nation, unsigned nr)
+{
+    return checkedCast<ITexture*>(GetNationImage(nation, nr));
 }
 
 glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(unsigned nation, unsigned nr)
 {
-    glArchivItem_BitmapBase* bmp = GetNationImageN(nation, nr);
-    RTTR_Assert(bmp == NULL || dynamic_cast<glArchivItem_Bitmap_Player*>(bmp));
-    return static_cast<glArchivItem_Bitmap_Player*>(bmp);
+    return checkedCast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr));
 }
 
 glArchivItem_Bitmap* Loader::GetMapImageN(unsigned nr)
@@ -856,14 +843,14 @@ glArchivItem_Bitmap* Loader::GetMapImageN(unsigned nr)
     return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr));
 }
 
+ITexture* Loader::GetMapTexN(unsigned nr)
+{
+    return convertChecked<ITexture*>(map_gfx->get(nr));
+}
+
 glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
-}
-
-glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
-{
-    return dynamic_cast<glArchivItem_Bitmap*>(tex_gfx->get(nr));
 }
 
 /**
@@ -871,7 +858,12 @@ glArchivItem_Bitmap* Loader::GetTexImageN(unsigned nr)
  */
 glArchivItem_Bitmap* Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
 {
-    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
+    Extent texSize = rect.getSize();
+    if(texSize.x == 0 && rect.right < srcImg.getWidth())
+        texSize.x = srcImg.getWidth() - rect.right;
+    if(texSize.y == 0 && rect.bottom < srcImg.getHeight())
+        texSize.y = srcImg.getHeight() - rect.bottom;
+    libsiedler2::PixelBufferPaletted buffer(texSize.x, texSize.y);
 
     if(int ec = srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top))
         throw std::runtime_error(std::string("Error loading texture: ") + libsiedler2::getErrorString(ec));
@@ -891,7 +883,12 @@ glArchivItem_Bitmap* Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, c
 libsiedler2::Archiv* Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t start_index,
                                                     uint8_t color_count)
 {
-    libsiedler2::PixelBufferPaletted buffer(rect.getSize().x, rect.getSize().y);
+    Extent texSize = rect.getSize();
+    if(texSize.x == 0 && rect.right < srcImg.getWidth())
+        texSize.x = srcImg.getWidth() - rect.right;
+    if(texSize.y == 0 && rect.bottom < srcImg.getHeight())
+        texSize.y = srcImg.getHeight() - rect.bottom;
+    libsiedler2::PixelBufferPaletted buffer(texSize.x, texSize.y);
 
     srcImg.print(buffer, NULL, 0, 0, rect.left, rect.top);
 

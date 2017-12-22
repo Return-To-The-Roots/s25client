@@ -107,11 +107,6 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
 void iwBuilding::Msg_PaintBefore()
 {
     IngameWindow::Msg_PaintBefore();
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
-
-    if(bitmap)
-        bitmap->DrawFull(GetDrawPos() + DrawPoint(117, 114), COLOR_SHADOW);
 
     // Haus unbesetzt ggf ausblenden
     GetCtrl<ctrlText>(10)->SetVisible(!building->HasWorker());

@@ -23,12 +23,12 @@
 
 bool ObjectGenerator::IsHarborAllowed(DescIdx<TerrainDesc> terrain)
 {
-    return config.terrainDesc.get(terrain).Is(ETerrain::Buildable) && config.terrainDesc.get(terrain).kind == TerrainKind::LAND;
+    return config.worldDesc.get(terrain).Is(ETerrain::Buildable) && config.worldDesc.get(terrain).kind == TerrainKind::LAND;
 }
 
 void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> terrain, bool harbor)
 {
-    uint8_t textureId = config.terrainDesc.get(terrain).s2Id;
+    uint8_t textureId = config.worldDesc.get(terrain).s2Id;
     if(harbor && IsHarborAllowed(terrain))
         textureId |= libsiedler2::HARBOR_MASK;
     map.textureRsu[index] = textureId;
@@ -37,7 +37,7 @@ void ObjectGenerator::CreateTexture(Map& map, int index, DescIdx<TerrainDesc> te
 
 bool ObjectGenerator::IsTexture(const Map& map, int index, DescIdx<TerrainDesc> terrain)
 {
-    return map.textureRsu[index] == config.terrainDesc.get(terrain).s2Id || map.textureLsd[index] == config.terrainDesc.get(terrain).s2Id;
+    return map.textureRsu[index] == config.worldDesc.get(terrain).s2Id || map.textureLsd[index] == config.worldDesc.get(terrain).s2Id;
 }
 
 void ObjectGenerator::CreateEmpty(Map& map, int index)

@@ -31,7 +31,7 @@ PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& 
     : PostMsg(sendFrame, text, cat, pos), bldType(bld), nation(nation)
 {}
 
-glArchivItem_Bitmap* PostMsgWithBuilding::GetImage_() const
+ITexture* PostMsgWithBuilding::GetImage_() const
 {
     return noBaseBuilding::GetBuildingImage(bldType, nation);
 }

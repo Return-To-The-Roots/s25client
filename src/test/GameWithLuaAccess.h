@@ -110,8 +110,8 @@ public:
         // For consistent results
         doInitGameRNG(0);
 
-        loadGameData(world);
-        world.Init(MapExtent(24, 32), Landscape::GREENLAND);
+        loadGameData(world.GetDescriptionWriteable());
+        world.Init(MapExtent(24, 32));
         hqPositions.push_back(MapPoint(0, 1));
         hqPositions.push_back(MapPoint(16, 17));
         std::vector<Nation> playerNations;

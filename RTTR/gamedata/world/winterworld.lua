@@ -1,3 +1,27 @@
+rttr:AddLandscape{
+	name = __"winterworld",
+	s2Id = 2,
+	isWinter = true,
+	roads = {
+		normal = {
+			texture = "TEX7.LBM",
+			pos = {192, 0, 64, 16}
+		},
+		upgraded = {
+			texture = "TEX7.LBM",
+			pos = {192, 16, 64, 16}
+		},
+		boat = {
+			texture = "TEX7.LBM",
+			pos = {192, 32, 64, 16}
+		},
+		mountain = {
+			texture = "TEX7.LBM",
+			pos = {192, 160, 64, 16}
+		}
+	}
+}
+
 rttr:AddTerrainEdge{
 	-- Name used to reference this
 	name = "ww_snow",
@@ -45,7 +69,7 @@ rttr:AddTerrain{
 	s2Id = 2,
 	-- If this is higher than the neighbours edgePriority then it draws over the neighbour
 	-- Valid = [-128, 127], defaults to 0
-	edgePriority = 49,
+	edgePriority = 73,
 	-- What kind of terrain is this? (Used for animals, ships, etc)
 	-- Valid = land (default), water, lava, snow, mountain
 	kind = "land",
@@ -75,7 +99,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_ice",
 	s2Id = 4,
-	edgePriority = 48,
+	edgePriority = 43,
 	kind = "land",
 	property = "walkable",
 	humidity = 0,
@@ -88,7 +112,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_water",
 	s2Id = 3,
-	edgePriority = 36,
+	edgePriority = 83,
 	kind = "water",
 	property = "unwalkable",
 	texture = "TEX7.LBM",
@@ -100,7 +124,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_tundra",
 	s2Id = 0xF,
-	edgePriority = 37,
+	edgePriority = 13,
 	kind = "land",
 	texture = "TEX7.LBM",
 	pos = {144, 0, 45, 42},
@@ -111,7 +135,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_mountain",
 	s2Id = 1,
-	edgePriority = 45,
+	edgePriority = 48,
 	kind = "mountain",
 	texture = "TEX7.LBM",
 	pos = {0, 48, 48, 48},
@@ -122,7 +146,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_mountain",
 	s2Id = 0XB,
-	edgePriority = 44,
+	edgePriority = 63,
 	kind = "mountain",
 	texture = "TEX7.LBM",
 	pos = {48, 48, 48, 48},
@@ -133,7 +157,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_mountain",
 	s2Id = 0XC,
-	edgePriority = 43,
+	edgePriority = 58,
 	kind = "mountain",
 	texture = "TEX7.LBM",
 	pos = {96, 48, 48, 48},
@@ -144,7 +168,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_mountain",
 	s2Id = 0xD,
-	edgePriority = 13,
+	edgePriority = 53,
 	kind = "mountain",
 	texture = "TEX7.LBM",
 	pos = {144, 48, 48, 48},
@@ -155,7 +179,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_tundra",
 	s2Id = 0,
-	edgePriority = 38,
+	edgePriority = 18,
 	kind = "land",
 	humidity = 60,
 	texture = "TEX7.LBM",
@@ -167,7 +191,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_tundra",
 	s2Id = 8,
-	edgePriority = 41,
+	edgePriority = 23,
 	kind = "land",
 	humidity = 95,
 	texture = "TEX7.LBM",
@@ -179,7 +203,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_tundra",
 	s2Id = 9,
-	edgePriority = 40,
+	edgePriority = 28,
 	kind = "land",
 	texture = "TEX7.LBM",
 	pos = {96, 96, 48, 48},
@@ -190,7 +214,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_tundra",
 	s2Id = 0xA,
-	edgePriority = 39,
+	edgePriority = 33,
 	kind = "land",
 	texture = "TEX7.LBM",
 	pos = {144, 96, 48, 48},
@@ -201,7 +225,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_tundra",
 	s2Id = 0xE,
-	edgePriority = 46,
+	edgePriority = 8,
 	kind = "land",
 	humidity = 30,
 	texture = "TEX7.LBM",
@@ -213,7 +237,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_snow",
 	s2Id = 0x12,
-	edgePriority = 47,
+	edgePriority = 68,
 	kind = "snow",
 	property = "buildable",
 	texture = "TEX7.LBM",
@@ -225,7 +249,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_water",
 	s2Id = 5,
-	edgePriority = 35,
+	edgePriority = 78,
 	kind = "water",
 	texture = "TEX7.LBM",
 	pos = {192, 48, 55, 56},
@@ -248,7 +272,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_water",
 	s2Id = 19,
-	edgePriority = 50,
+	edgePriority = 78,
 	kind = "water",
 	property = "unwalkable",
 	texture = "TEX7.LBM",
@@ -261,7 +285,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_water",
 	s2Id = 6,
-	edgePriority = 50,
+	edgePriority = 78,
 	kind = "water",
 	property = "buildable",
 	texture = "TEX7.LBM",
@@ -274,7 +298,7 @@ rttr:AddTerrain{
 	landscape = "winterworld",
 	edgeType = "ww_mountain",
 	s2Id = 0x22,
-	edgePriority = 42,
+	edgePriority = 38,
 	kind = "mountain",
 	property = "buildable",
 	texture = "TEX7.LBM",
@@ -313,4 +337,17 @@ rttr:AddTerrain{
 	pos = {132, 223, 31, 32},
 	palAnimIdx = 11,
 	color = 0xFFc02020
+}
+rttr:AddTerrain{
+	name = "ww_ice2",
+	landscape = "winterworld",
+	edgeType = "ww_ice",
+	s2Id = 7,
+	edgePriority = 43,
+	kind = "land",
+	property = "walkable",
+	humidity = 0,
+	texture = "TEX7.LBM",
+	pos = {48, 0, 48, 48},
+	color = 0xFF0070b0
 }

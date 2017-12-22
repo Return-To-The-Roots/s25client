@@ -18,9 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapSerializer.h"
 #include "CatapultStone.h"
-#include "RttrConfig.h"
 #include "SerializedGameData.h"
-#include "files.h"
 #include "lua/GameDataLoader.h"
 #include "world/World.h"
 
@@ -28,7 +26,7 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
 {
     // Headinformationen
     sgd.PushPoint(world.GetSize());
-    sgd.PushUnsignedChar(boost::underlying_cast<uint8_t>(world.GetLandscapeType()));
+    sgd.PushString(world.GetDescription().get(world.GetLandscapeType()).name);
 
     sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
 
@@ -69,14 +67,32 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
 
 void MapSerializer::Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
+    // Initialisierungen
+    GameDataLoader gdLoader(world.GetDescriptionWriteable());
+    if(!gdLoader.Load())
+        throw SerializedGameData::Error(_("Failed to load game data!"));
+
     // Headinformationen
     const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
-    const Landscape lt = Landscape(sgd.PopUnsignedChar());
-
-    // Initialisierungen
-    GameDataLoader gdLoader(world.GetDescriptionWriteable(), RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
-    if(!gdLoader.Load())
-        throw SerializedGameData::Error(_("Could not load game data"));
+    DescIdx<LandscapeDesc> lt(0);
+    if(sgd.GetGameDataVersion() < 3)
+    {
+        uint8_t gfxSet = sgd.PopUnsignedChar();
+        for(DescIdx<LandscapeDesc> i(0); i.value < world.GetDescription().landscapes.size(); i.value++)
+        {
+            if(world.GetDescription().get(i).s2Id == gfxSet)
+            {
+                lt = i;
+                break;
+            }
+        }
+    } else
+    {
+        std::string sLandscape = sgd.PopString();
+        lt = world.GetDescription().landscapes.getIndex(sLandscape);
+        if(!lt)
+            throw SerializedGameData::Error(std::string("Invalid landscape: ") + sLandscape);
+    }
     world.Init(size, lt);
     GameObject::ResetCounters(sgd.PopUnsignedInt());
 

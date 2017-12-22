@@ -15,25 +15,38 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef EdgeDesc_h__
-#define EdgeDesc_h__
+#ifndef LandscapeDesc_h__
+#define LandscapeDesc_h__
 
-#include "DescIdx.h"
 #include "Rect.h"
+#include <boost/array.hpp>
 #include <string>
 
 struct WorldDescription;
-struct LandscapeDesc;
 class CheckedLuaTable;
 
-struct EdgeDesc
+struct RoadTextureDesc
 {
-    std::string name;
-    DescIdx<LandscapeDesc> landscape;
     std::string texturePath;
     Rect posInTexture;
-
-    EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
 };
 
-#endif // EdgeDesc_h__
+struct LandscapeDesc
+{
+    enum RoadType
+    {
+        Normal,
+        Upgraded,
+        Boat,
+        Mountain
+    };
+    BOOST_STATIC_CONSTEXPR unsigned NUM_ROADTYPES = Mountain + 1;
+    std::string name;
+    uint8_t s2Id;
+    bool isWinter;
+    boost::array<RoadTextureDesc, NUM_ROADTYPES> roadTexDesc;
+
+    LandscapeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
+};
+
+#endif // LandscapeDesc_h__

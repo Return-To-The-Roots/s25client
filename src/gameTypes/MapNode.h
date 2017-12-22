@@ -18,7 +18,6 @@
 #ifndef MapNode_h__
 #define MapNode_h__
 
-#include "LandscapeType.h"
 #include "Resource.h"
 #include "gameTypes/BuildingQuality.h"
 #include "gameTypes/FoWNode.h"

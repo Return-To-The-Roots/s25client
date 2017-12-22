@@ -26,6 +26,7 @@ class GameDataLoader : public LuaInterfaceBase
 {
 public:
     GameDataLoader(WorldDescription& worldDesc, const std::string& basePath);
+    GameDataLoader(WorldDescription& worldDesc);
     ~GameDataLoader() override;
 
     bool Load();
@@ -34,6 +35,7 @@ public:
 
 private:
     void Include(const std::string& filePath);
+    void AddLandscape(const kaguya::LuaTable& data);
     void AddTerrainEdge(const kaguya::LuaTable& data);
     void AddTerrain(const kaguya::LuaTable& data);
 

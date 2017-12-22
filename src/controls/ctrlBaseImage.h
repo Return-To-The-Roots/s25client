@@ -22,16 +22,17 @@
 
 #include "DrawPoint.h"
 #include "Rect.h"
-class glArchivItem_Bitmap;
+
+class ITexture;
 
 /// Base class for controls with an image
 class ctrlBaseImage
 {
 public:
-    ctrlBaseImage(glArchivItem_Bitmap* img = NULL);
+    ctrlBaseImage(ITexture* img = NULL);
 
-    void SetImage(glArchivItem_Bitmap* image) { img_ = image; }
-    const glArchivItem_Bitmap* GetImage() const { return img_; }
+    void SetImage(ITexture* image) { img_ = image; }
+    const ITexture* GetImage() const { return img_; }
     /// Changes the color filter used for drawing
     void SetModulationColor(unsigned modulationColor) { modulationColor_ = modulationColor; }
     unsigned GetModulationColor() const { return modulationColor_; }
@@ -43,7 +44,7 @@ public:
     void DrawImage(const DrawPoint& pos, unsigned color) const;
 
 private:
-    glArchivItem_Bitmap* img_;
+    ITexture* img_;
     unsigned modulationColor_;
 };
 

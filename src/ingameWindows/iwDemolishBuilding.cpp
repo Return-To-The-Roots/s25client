@@ -74,13 +74,3 @@ void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)
         break;
     }
 }
-
-void iwDemolishBuilding::Msg_PaintBefore()
-{
-    IngameWindow::Msg_PaintBefore();
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = building->GetBuildingImageShadow();
-
-    if(bitmap)
-        bitmap->DrawFull(GetDrawPos() + DrawPoint(104, 109), COLOR_SHADOW);
-}

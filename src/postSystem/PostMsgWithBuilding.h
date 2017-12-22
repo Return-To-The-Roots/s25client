@@ -22,7 +22,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameData/NationConsts.h"
 
-class glArchivItem_Bitmap;
+class ITexture;
 class noBaseBuilding;
 
 /// Message that is related to a building, showing the buildings image and a GoTo button
@@ -36,7 +36,7 @@ public:
     PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation,
                         const MapPoint& pos = MapPoint::Invalid());
 
-    glArchivItem_Bitmap* GetImage_() const override;
+    ITexture* GetImage_() const override;
 
 private:
     const BuildingType bldType;

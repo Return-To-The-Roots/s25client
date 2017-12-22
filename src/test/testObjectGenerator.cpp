@@ -30,7 +30,7 @@ protected:
     ObjectGenerator objGen;
 
 public:
-    ObjGenFixture() : objGen(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, Landscape::GREENLAND, 0x1337)); }
+    ObjGenFixture() : objGen(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337)); }
 };
 } // namespace
 
@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
 
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
-    uint8_t water = config.terrainDesc.get(t).s2Id;
+    uint8_t water = config.worldDesc.get(t).s2Id;
 
     /**
      * Tests the ObjectGenerator::CreateTexture method without harbor.
@@ -108,7 +108,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
 
     t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
                            && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    uint8_t meadow = config.terrainDesc.get(t).s2Id;
+    uint8_t meadow = config.worldDesc.get(t).s2Id;
     /**
      * Tests the ObjectGenerator::CreateTexture method with harbor.
      * The specified texture should be replaced with a harbor texture.

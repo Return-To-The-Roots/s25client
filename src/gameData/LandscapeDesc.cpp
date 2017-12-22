@@ -16,17 +16,23 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "EdgeDesc.h"
-#include "WorldDescription.h"
+#include "LandscapeDesc.h"
 #include "lua/CheckedLuaTable.h"
 
-EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
+LandscapeDesc::LandscapeDesc(CheckedLuaTable luaData, const WorldDescription&)
 {
+    static const boost::array<std::string, NUM_ROADTYPES> roadTypeNames = {{"normal", "upgraded", "boat", "mountain"}};
     luaData.getOrThrow(name, "name");
-    landscape = worldDesc.landscapes.getIndex(luaData.getOrThrow<std::string>("landscape"));
-    if(!landscape)
-        throw GameDataError("Invalid landscape type: " + luaData.getOrThrow<std::string>("landscape"));
-    luaData.getOrThrow(texturePath, "texture");
-    posInTexture = luaData.getRectOrDefault("pos", Rect());
+    s2Id = luaData.getOrDefault<uint8_t>("s2Id", 0xFF);
+    isWinter = luaData.getOrDefault("isWinter", false);
+    CheckedLuaTable roadData = luaData.getOrThrow<CheckedLuaTable>("roads");
+    for(unsigned i = 0; i < roadTypeNames.size(); i++)
+    {
+        CheckedLuaTable texData = roadData.getOrThrow<CheckedLuaTable>(roadTypeNames[i]);
+        texData.getOrThrow(roadTexDesc[i].texturePath, "texture");
+        roadTexDesc[i].posInTexture = texData.getRectOrDefault("pos", Rect());
+        texData.checkUnused();
+    }
+    roadData.checkUnused();
     luaData.checkUnused();
 }

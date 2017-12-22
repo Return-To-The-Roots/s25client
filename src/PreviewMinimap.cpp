@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PreviewMinimap.h"
-#include "RttrConfig.h"
-#include "files.h"
 #include "lua/GameDataLoader.h"
 #include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Map.h"
@@ -42,8 +40,6 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     mapSize.y = header.getHeight();
 
     unsigned char gfxSet = header.getGfxSet();
-    RTTR_Assert(gfxSet < NUM_LTS);
-    lt = Landscape(gfxSet);
     objects = s2map.GetLayer(MAP_TYPE);
     terrain1 = s2map.GetLayer(MAP_TERRAIN1);
     terrain2 = s2map.GetLayer(MAP_TERRAIN2);
@@ -53,14 +49,20 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
         CalcShadows(s2map.GetLayer(MAP_ALTITUDE));
 
     WorldDescription worldDesc;
-    GameDataLoader gdLoader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
+    GameDataLoader gdLoader(worldDesc);
     if(!gdLoader.Load())
         LOG.write(_("Failed to load game data!"));
     else
     {
-        for(DescIdx<TerrainDesc> t(0); t.value < worldDesc.terrain.size(); t.value++)
+        DescIdx<LandscapeDesc> lt(0);
+        for(DescIdx<LandscapeDesc> i(0); i.value < worldDesc.landscapes.size(); i.value++)
         {
-            const TerrainDesc& ter = worldDesc.get(t);
+            if(worldDesc.get(i).s2Id == gfxSet)
+                lt = i;
+        }
+        for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
+        {
+            const TerrainDesc& ter = worldDesc.get(i);
             if(ter.landscape == lt)
                 terrain2Clr[ter.s2Id] = ter.minimapColor;
         }

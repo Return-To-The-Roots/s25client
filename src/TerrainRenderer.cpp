@@ -102,6 +102,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
     terrainTextures.clear();
     edgeTextures.clear();
 
+    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
     std::set<DescIdx<TerrainDesc> > usedTerrains;
     std::set<DescIdx<EdgeDesc> > usedEdges;
     typedef boost::array<DescIdx<TerrainDesc>, 2> TerrainPair;
@@ -115,47 +116,66 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
                 DescIdx<EdgeDesc> edge = desc.get(tIdx).edgeType;
                 if(!!edge)
                     usedEdges.insert(edge);
+                DescIdx<LandscapeDesc> lt = desc.get(tIdx).landscape;
+                if(!!lt)
+                    usedLandscapes.insert(lt);
             }
         }
     }
     terrainTextures.resize(usedTerrains.rbegin()->value + 1);
     edgeTextures.resize(usedEdges.rbegin()->value + 1);
+    roadTextures.resize((usedLandscapes.rbegin()->value + 1) * LandscapeDesc::NUM_ROADTYPES);
 
-    BOOST_FOREACH(DescIdx<TerrainDesc> tIdx, usedTerrains)
+    BOOST_FOREACH(DescIdx<TerrainDesc> curIdx, usedTerrains)
     {
-        const TerrainDesc& t = desc.get(tIdx);
-        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(t.texturePath).stem().string());
+        const TerrainDesc& cur = desc.get(curIdx);
+        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
-            throw std::runtime_error("Invalid texture '" + t.texturePath + "' for terrain '" + t.name + "'");
-        if(t.palAnimIdx >= 0)
+            throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for terrain '" + cur.name + "'");
+        if(cur.palAnimIdx >= 0)
         {
-            libsiedler2::ArchivItem* animItem = LOADER.GetInfoN(textureName)[t.palAnimIdx];
+            libsiedler2::ArchivItem* animItem = LOADER.GetInfoN(textureName)[cur.palAnimIdx];
             if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BOBTYPE_PALETTE_ANIM)
-                throw std::runtime_error("Invalid palette animation'" + helpers::toString(t.palAnimIdx) + "' for '" + t.name + "'");
+                throw std::runtime_error("Invalid palette animation '" + helpers::toString(unsigned(cur.palAnimIdx)) + "' for '" + cur.name
+                                         + "'");
             libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
             libsiedler2::Archiv* textures =
-              LOADER.ExtractAnimatedTexture(*texBmp, t.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
+              LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
             for(unsigned i = 0; i < textures->size(); i++)
             {
-                terrainTextures[tIdx.value].push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
-                terrainTextures[tIdx.value].back().GetTexture(); // Init texture
+                terrainTextures[curIdx.value].push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
+                terrainTextures[curIdx.value].back().GetTexture(); // Init texture
             }
         } else
         {
-            terrainTextures[tIdx.value].push_back(LOADER.ExtractTexture(*texBmp, t.posInTexture));
-            terrainTextures[tIdx.value].back().GetTexture(); // Init texture
+            terrainTextures[curIdx.value].push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+            terrainTextures[curIdx.value].back().GetTexture(); // Init texture
         }
     }
-    BOOST_FOREACH(DescIdx<EdgeDesc> eIdx, usedEdges)
+    BOOST_FOREACH(DescIdx<EdgeDesc> curIdx, usedEdges)
     {
-        const EdgeDesc& e = desc.get(eIdx);
-        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(e.texturePath).stem().string());
+        const EdgeDesc& cur = desc.get(curIdx);
+        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
         glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
         if(!texBmp)
-            throw std::runtime_error("Invalid texture '" + e.texturePath + "' for edge '" + e.name + "'");
-        edgeTextures[eIdx.value].reset(LOADER.ExtractTexture(*texBmp, e.posInTexture));
-        edgeTextures[eIdx.value]->GetTexture(); // Init texture
+            throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
+        edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+        edgeTextures[curIdx.value]->GetTexture(); // Init texture
+    }
+    BOOST_FOREACH(DescIdx<LandscapeDesc> curIdx, usedLandscapes)
+    {
+        const LandscapeDesc& cur = desc.get(curIdx);
+        for(unsigned i = 0; i < cur.roadTexDesc.size(); i++)
+        {
+            std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.roadTexDesc[i].texturePath).stem().string());
+            glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
+            if(!texBmp)
+                throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name
+                                         + "'");
+            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i].reset(LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture));
+            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i]->GetTexture(); // Init texture
+        }
     }
 }
 
@@ -242,10 +262,10 @@ void TerrainRenderer::Init(const MapExtent& size)
 /// Gets the edge type that t1 draws over t2. 0 = None, else edgeType + 1
 static uint8_t GetEdgeType(const TerrainDesc& t1, const TerrainDesc& t2)
 {
-    if(t1.edgePriority >= t2.edgePriority)
-        return (!t1.edgeType) ? 0 : t1.edgeType.value + 1;
+    if(!t1.edgeType || t1.edgePriority <= t2.edgePriority)
+        return 0;
     else
-        return (!t2.edgeType) ? 0 : t2.edgeType.value + 1;
+        return t1.edgeType.value + 1;
 }
 
 /**
@@ -648,7 +668,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
             const glArchivItem_Bitmap& texture = *edgeTextures[borders[pos].right_left[i] - 1];
             Extent bmpSize = texture.GetSize();
             PointF texSize(texture.GetTexSize());
-            
+
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.0f, 0.0f);
             gl_texcoords[offset][1] = PointF(bmpSize.x / texSize.x, 0.0f);
             gl_texcoords[offset][i ? 0 : 2] = PointF(bmpSize.x / texSize.x / 2.f, bmpSize.y / texSize.y);
@@ -670,7 +690,7 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
             const glArchivItem_Bitmap& texture = *edgeTextures[borders[pos].top_down[i] - 1];
             Extent bmpSize = texture.GetSize();
             PointF texSize(texture.GetTexSize());
-            
+
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.0f, 0.0f);
             gl_texcoords[offset][1] = PointF(bmpSize.x / texSize.x, 0.0f);
             gl_texcoords[offset][i ? 0 : 2] = PointF(bmpSize.x / texSize.x / 2.f, bmpSize.y / texSize.y);
@@ -699,7 +719,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     // nach Texture in Listen sortieren
     std::vector<std::vector<MapTile> > sorted_textures(terrainTextures.size());
     std::vector<std::vector<BorderTile> > sorted_borders(edgeTextures.size());
-    PreparedRoads sorted_roads;
+    PreparedRoads sorted_roads(roadTextures.size());
 
     Position lastOffset(0, 0);
 
@@ -952,24 +972,33 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
                 endPos.y += totalHeight;
         }
 
-        --type;
-
-        // Wegtypen "konvertieren"
-        switch(type)
+        RoadSegment::RoadType rt = RoadSegment::RoadType(type - 1);
+        // The gfx road type is:
+        // Boat for boat roads
+        // else Mountain left or right is a mountain terrain
+        // else Upgraded for Donkey roads
+        // else Normal
+        uint8_t gfxRoadType;
+        if(rt == RoadSegment::RT_BOAT)
+            gfxRoadType = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir)).landscape.value * LandscapeDesc::NUM_ROADTYPES
+                          + LandscapeDesc::Boat;
+        else
         {
-            case RoadSegment::RT_DONKEY:
-            case RoadSegment::RT_NORMAL:
-                // Prüfen, ob Bergwege gezeichnet werden müssen, indem man guckt, ob der Weg einen
-                // Berg "streift" oder auch eine Berg wiese
-                if(desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir)).kind == TerrainKind::MOUNTAIN
-                   || desc.get(gwViewer.GetWorld().GetRightTerrain(pt, targetDir)).kind == TerrainKind::MOUNTAIN)
-                    type = 3;
-
-                break;
-            case RoadSegment::RT_BOAT: type = 2; break;
+            const TerrainDesc& lTerrain = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir));
+            if(lTerrain.kind == TerrainKind::MOUNTAIN)
+                gfxRoadType = lTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES + LandscapeDesc::Mountain;
+            else
+            {
+                const TerrainDesc& rTerrain = desc.get(gwViewer.GetWorld().GetRightTerrain(pt, targetDir));
+                if(rTerrain.kind == TerrainKind::MOUNTAIN)
+                    gfxRoadType = rTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES + LandscapeDesc::Mountain;
+                else
+                    gfxRoadType = lTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES
+                                  + ((rt == RoadSegment::RT_DONKEY) ? LandscapeDesc::Upgraded : LandscapeDesc::Normal);
+            }
         }
 
-        sorted_roads[type].push_back(PreparedRoad(type, startPos, endPos, GetColor(pt), GetColor(ta), dir));
+        sorted_roads[gfxRoadType].push_back(PreparedRoad(startPos, endPos, GetColor(pt), GetColor(ta), dir));
     }
 }
 
@@ -983,15 +1012,13 @@ struct Tex2C3Ver2
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 {
     // 2D Array: [3][4]
-    static const boost::array<Position, 12> begin_end_coords = {{Position(-3, -3), Position(-3, 3), Position(-3, 3), Position(-3, -3),
-
-                                                                 Position(3, -3), Position(-3, 3), Position(-3, 3), Position(3, -3),
-
-                                                                 Position(3, 3), Position(-3, -3), Position(-3, -3), Position(3, 3)}};
+    static const boost::array<Position, 12> begin_end_coords = {{Position(0, -3), Position(0, 3), Position(3, 3), Position(3, -3),
+                                                                 Position(2, -4), Position(-4, 2), Position(0, 6), Position(6, 0),
+                                                                 Position(4, 2), Position(-2, -4), Position(-6, 0), Position(0, 6)}};
 
     size_t maxSize = 0;
-    for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad)
-        maxSize = std::max(maxSize, itRoad->size());
+    BOOST_FOREACH(const boost::container::vector<PreparedRoad>& sorted_road, sorted_roads)
+        maxSize = std::max(maxSize, sorted_road.size());
 
     if(maxSize == 0)
         return;
@@ -1008,9 +1035,13 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     int type = 0;
     for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
+        if(itRoad->empty())
+            continue;
         Tex2C3Ver2* curVertexData = vertexData.get();
+        const glArchivItem_Bitmap& texture = *roadTextures[type];
+        PointF scaledTexSize = texture.GetSize() / PointF(texture.GetTexSize());
 
-        for(std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
+        for(PreparedRoads::value_type::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
         {
             RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
             curVertexData->tx = 0.0f;
@@ -1023,7 +1054,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
             curVertexData++;
 
             curVertexData->tx = 0.0f;
-            curVertexData->ty = 1.0f;
+            curVertexData->ty = scaledTexSize.y;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
             tmpP = it->pos + begin_end_coords[it->dir * 4 + 1];
             curVertexData->x = GLfloat(tmpP.x);
@@ -1031,8 +1062,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData++;
 
-            curVertexData->tx = 0.78f;
-            curVertexData->ty = 1.0f;
+            curVertexData->tx = scaledTexSize.x;
+            curVertexData->ty = scaledTexSize.y;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 2];
             curVertexData->x = GLfloat(tmpP.x);
@@ -1040,7 +1071,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData++;
 
-            curVertexData->tx = 0.78f;
+            curVertexData->tx = scaledTexSize.x;
             curVertexData->ty = 0.0f;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 3];
@@ -1050,7 +1081,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
             curVertexData++;
         }
 
-        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(type))->GetTexture());
+        VIDEODRIVER.BindTexture(roadTextures[type]->GetTextureNoCreate());
         glDrawArrays(GL_QUADS, 0, itRoad->size() * 4);
     }
     // Note: No glDisableClientState as we did not enable it

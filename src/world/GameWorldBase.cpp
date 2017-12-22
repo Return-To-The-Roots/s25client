@@ -47,7 +47,7 @@ GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const Globa
 
 GameWorldBase::~GameWorldBase() {}
 
-void GameWorldBase::Init(const MapExtent& mapSize, Landscape lt)
+void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(GetDescription().terrain.size() > 0); // Must have game data initialized
     BuildingProperties::Init();

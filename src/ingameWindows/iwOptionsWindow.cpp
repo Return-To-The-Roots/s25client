@@ -42,11 +42,13 @@ iwOptionsWindow::iwOptionsWindow()
     AddImage(1, DrawPoint(150, 36), LOADER.GetImageN("io", 30));
 
     // Versionszeile
-    AddFormattedText(2, DrawPoint(150, 76), _("Return To The Roots - %1%"), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, NormalFont)
+    AddFormattedText(2, DrawPoint(150, 76), "Return To The Roots - %1%", COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, NormalFont)
       % RTTR_Version::GetReadableVersion();
     // Copyright
-    AddFormattedText(3, DrawPoint(150, 96), _("© 2005 - %s Settlers Freaks"), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM,
-                     NormalFont)
+    AddFormattedText(3, DrawPoint(150, 96),
+                     "\xC2\xA9"
+                     " 2005 - %s Settlers Freaks",
+                     COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM, NormalFont)
       % RTTR_Version::GetYear();
 
     // "Tastaturbelegung"
@@ -120,7 +122,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
         case 12: // Geräusche an/aus
         {
             SETTINGS.sound.effekte = !SETTINGS.sound.effekte; //-V807
-            GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetImageN("io", 114 + !SETTINGS.sound.effekte));
+            GetCtrl<ctrlImageButton>(12)->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effekte));
 
             if(!SETTINGS.sound.effekte)
                 SOUNDMANAGER.StopAll();
@@ -130,7 +132,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
         case 13: // Musik an/aus
         {
             SETTINGS.sound.musik = !SETTINGS.sound.musik;
-            GetCtrl<ctrlImageButton>(13)->SetImage(LOADER.GetImageN("io", 116 + !SETTINGS.sound.musik));
+            GetCtrl<ctrlImageButton>(13)->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musik));
             if(SETTINGS.sound.musik)
                 MUSICPLAYER.Play();
             else

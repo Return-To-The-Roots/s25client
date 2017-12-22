@@ -70,16 +70,6 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwBuildingSite::Msg_PaintBefore()
-{
-    IngameWindow::Msg_PaintBefore();
-    // Schatten des Gebäudes (muss hier gezeichnet werden wegen schwarz und halbdurchsichtig)
-    glArchivItem_Bitmap* bitmap = buildingsite->GetBuildingImageShadow();
-
-    if(bitmap)
-        bitmap->DrawFull(GetDrawPos() + DrawPoint(113, 130), COLOR_SHADOW);
-}
-
 void iwBuildingSite::Msg_PaintAfter()
 {
     // Baukosten zeichnen

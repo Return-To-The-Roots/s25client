@@ -18,10 +18,10 @@
 #ifndef TerrainData_h__
 #define TerrainData_h__
 
+#include "LandscapeType.h"
 #include "Rect.h"
 #include "TerrainType.h"
 #include "gameTypes/BuildingQuality.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/TerrainDesc.h"
 #include <boost/array.hpp>

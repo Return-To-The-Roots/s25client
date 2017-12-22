@@ -16,10 +16,8 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-#include "RttrConfig.h"
-#include "files.h"
 #include "helpers/containerUtils.h"
-#include "lua/GameDataLoader.h"
+#include "initTestHelpers.h"
 #include "gameData/EdgeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
@@ -32,8 +30,7 @@ BOOST_AUTO_TEST_SUITE(GameData)
 BOOST_AUTO_TEST_CASE(LoadGameData)
 {
     WorldDescription worldDesc;
-    GameDataLoader loader(worldDesc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
-    BOOST_REQUIRE(loader.Load());
+    loadGameData(worldDesc);
     BOOST_REQUIRE_EQUAL(worldDesc.edges.size(), 3u * 5u - 1u);
     BOOST_REQUIRE_GE(worldDesc.terrain.size(), 3u * NUM_TTS);
     for(unsigned l = 0; l < NUM_LTS; l++)
@@ -43,19 +40,18 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
         std::vector<std::string> tNames, eNames;
         for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
         {
-            if(worldDesc.get(i).landscape == lt)
+            if(worldDesc.get(worldDesc.get(i).landscape).s2Id == l)
                 tNames.push_back(worldDesc.get(i).name);
         }
         for(DescIdx<EdgeDesc> i(0); i.value < worldDesc.edges.size(); i.value++)
         {
-            if(worldDesc.get(i).landscape == lt)
+            if(worldDesc.get(worldDesc.get(i).landscape).s2Id == l)
                 eNames.push_back(worldDesc.get(i).name);
         }
         for(unsigned i = 0; i < NUM_TTS; i++)
         {
             TerrainType t = TerrainType(i);
             const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
-            BOOST_REQUIRE(desc.landscape == lt);
             BOOST_REQUIRE_EQUAL(desc.s2Id, TerrainData::GetTextureIdentifier(t));
             EdgeType newEdge = !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
             BOOST_REQUIRE_EQUAL(newEdge, TerrainData::GetEdgeType(lt, t));

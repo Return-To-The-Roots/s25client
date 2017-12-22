@@ -233,10 +233,16 @@ ctrlButton* Window::AddColorButton(unsigned id, const DrawPoint& pos, const Exte
     return AddCtrl(new ctrlColorButton(this, id, ScaleIf(pos), ScaleIf(size), tc, fillColor, tooltip));
 }
 
+ctrlButton* Window::AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, ITexture* const image,
+                                   const std::string& tooltip)
+{
+    return AddCtrl(new ctrlImageButton(this, id, ScaleIf(pos), ScaleIf(size), tc, image, tooltip));
+}
+
 ctrlButton* Window::AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                    glArchivItem_Bitmap* const image, const std::string& tooltip)
 {
-    return AddCtrl(new ctrlImageButton(this, id, ScaleIf(pos), ScaleIf(size), tc, image, tooltip));
+    return AddImageButton(id, pos, size, tc, static_cast<ITexture*>(image), tooltip);
 }
 
 ctrlChat* Window::AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)
@@ -278,9 +284,14 @@ ctrlGroup* Window::AddGroup(unsigned id)
     return AddCtrl(new ctrlGroup(this, id));
 }
 
-ctrlImage* Window::AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
+ctrlImage* Window::AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip)
 {
     return AddCtrl(new ctrlImage(this, id, ScaleIf(pos), image, tooltip));
+}
+
+ctrlImage* Window::AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
+{
+    return AddImage(id, pos, static_cast<ITexture*>(image), tooltip);
 }
 
 ctrlList* Window::AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font)

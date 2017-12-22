@@ -114,14 +114,14 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     if(icon)
     {
         icon->SetPos(elMax(pos, DrawPoint(0, 0)));
-        const glArchivItem_Bitmap* iconImg = icon->GetImage();
+        const ITexture* iconImg = icon->GetImage();
         DrawPoint iconPos(icon->GetPos() - iconImg->GetOrigin());
         DrawPoint textPos = contentOffset + DrawPoint(paddingX, 5);
         Extent textMaxSize;
         if(iconPos.x < 100)
         {
             // icon left
-            textPos.x = iconPos.x + iconImg->getWidth() + paddingX;
+            textPos.x = iconPos.x + iconImg->GetSize().x + paddingX;
             textMaxSize.x = std::max<int>(minTextWidth, 400 - textPos.x - paddingX);
             textMaxSize.y = maxTextHeight;
         } else if(iconPos.x > 300)
@@ -129,10 +129,10 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             // icon right
             textMaxSize.x = iconPos.x - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
-        } else if(iconPos.y + iconImg->getHeight() < 50)
+        } else if(iconPos.y + iconImg->GetSize().y < 50)
         {
             // icon top
-            textPos.y = iconPos.y + iconImg->getHeight() + paddingX;
+            textPos.y = iconPos.y + iconImg->GetSize().x + paddingX;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         } else if(iconPos.y > 150)

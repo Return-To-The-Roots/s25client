@@ -141,11 +141,11 @@ void MapUtility::Smooth(Map& map)
     }
 
     DescIdx<TerrainDesc> highestNonMountain(0);
-    for(; highestNonMountain.value < cfg.terrainDesc.size(); highestNonMountain.value++)
+    for(unsigned i = 1; i < cfg.landscapeTerrains.size(); i++)
     {
-        if(cfg.terrainDesc.get(highestNonMountain).kind == TerrainKind::MOUNTAIN)
+        if(cfg.worldDesc.get(cfg.landscapeTerrains[i]).kind == TerrainKind::MOUNTAIN)
         {
-            highestNonMountain.value--;
+            highestNonMountain = cfg.landscapeTerrains[i - 1u];
             break;
         }
     }
@@ -177,19 +177,10 @@ void MapUtility::Smooth(Map& map)
 
 void MapUtility::SetHarbour(Map& map, const Position& center, int waterLevel)
 {
-    DescIdx<TerrainDesc> buildable(0);
-    for(; buildable.value < cfg.terrainDesc.size(); buildable.value++)
-    {
-        if(cfg.terrainDesc.get(buildable).Is(ETerrain::Buildable))
-            break;
-    }
-    DescIdx<TerrainDesc> buildable2(buildable.value + 1);
-    for(; buildable.value < cfg.terrainDesc.size(); buildable.value++)
-    {
-        if(cfg.terrainDesc.get(buildable).Is(ETerrain::Buildable))
-            break;
-    }
-    if(buildable2.value >= cfg.terrainDesc.size())
+    DescIdx<TerrainDesc> buildable = cfg.FindTerrain(boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    DescIdx<TerrainDesc> buildable2 = cfg.FindTerrain(boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable)
+                                                      && boost::bind(&TerrainDesc::name, _1) != cfg.worldDesc.get(buildable).name);
+    if(!buildable2)
         buildable2 = buildable;
 
     for(int x = center.x - 3; x <= center.x + 3; x++)

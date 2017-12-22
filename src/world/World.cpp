@@ -32,19 +32,22 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <set>
+#include <stdexcept>
 
-World::World() : lt(Landscape::GREENLAND), noNodeObj(NULL) {}
+World::World() : noNodeObj(NULL) {}
 
 World::~World()
 {
     Unload();
 }
 
-void World::Init(const MapExtent& mapSize, Landscape lt)
+void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(GetSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     Resize(mapSize);
+    if(!lt)
+        throw std::runtime_error("Invalid landscape");
     this->lt = lt;
     GameObject::ResetCounters();
 

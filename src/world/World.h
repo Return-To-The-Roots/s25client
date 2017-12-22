@@ -26,15 +26,16 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/HarborPos.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapNode.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
 #include "gameData/WorldDescription.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <vector>
 
+struct LandscapeDesc;
 class noNothing;
 class CatapultStone;
 class FOWObject;
@@ -57,7 +58,7 @@ class World : public MapBase
     friend class MapSerializer;
 
     /// Landschafts-Typ
-    Landscape lt;
+    DescIdx<LandscapeDesc> lt;
 
     /// Eigenschaften von einem Punkt auf der Map
     std::vector<MapNode> nodes;
@@ -81,12 +82,12 @@ public:
     virtual ~World();
 
     /// Initialize the world
-    virtual void Init(const MapExtent& size, Landscape lt);
+    virtual void Init(const MapExtent& size, DescIdx<LandscapeDesc> lt);
     /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 
     /// Return the type of the landscape
-    Landscape GetLandscapeType() const { return lt; }
+    DescIdx<LandscapeDesc> GetLandscapeType() const { return lt; }
 
     const WorldDescription& GetDescription() const { return description_; }
     WorldDescription& GetDescriptionWriteable() { return description_; }

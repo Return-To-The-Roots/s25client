@@ -21,6 +21,7 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "ITexture.h"
 #include <vector>
 
 namespace libsiedler2 {
@@ -31,7 +32,7 @@ class PixelBufferARGB;
 
 class glBitmapItem;
 
-class glSmartBitmap
+class glSmartBitmap : public ITexture
 {
 private:
     DrawPoint origin_;
@@ -51,7 +52,8 @@ public:
     ~glSmartBitmap();
     void reset();
 
-    Extent getSize() const { return size_; }
+    Position GetOrigin() const override { return origin_; }
+    Extent GetSize() const override { return size_; }
     Extent getTexSize() const;
 
     bool isGenerated() const { return texture != 0; }
@@ -68,6 +70,7 @@ public:
     void calcDimensions();
 
     void generateTexture();
+    void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFF) override { draw(dstPos, color); }
     void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     void drawPercent(DrawPoint drawPt, unsigned percent, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     /// Draw the bitmap(s) to the specified buffer at the position starting at bufOffset (must be positive)

@@ -38,7 +38,7 @@ protected:
     MapUtility helper;
 
 public:
-    ObjGenFixture() : helper(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, Landscape::GREENLAND, 0x1337)); }
+    ObjGenFixture() : helper(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337)); }
 };
 } // namespace
 
@@ -115,13 +115,17 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowReplaced, ObjGenFixture)
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    uint8_t mountainMeadow = config.terrainDesc.get(t).s2Id;
+    uint8_t mountainMeadow = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
         map.textureLsd[i] = mountainMeadow;
         map.textureRsu[i] = mountainMeadow;
     }
+
+    // Set a random harbor
+    map.textureLsd[50] = mountainMeadow | libsiedler2::HARBOR_MASK;
+    map.textureRsu[50] = mountainMeadow | libsiedler2::HARBOR_MASK;
 
     helper.Smooth(map);
 
@@ -143,10 +147,10 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, ObjGenFixture)
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    uint8_t mountainMeadow = config.terrainDesc.get(t).s2Id;
+    uint8_t mountainMeadow = config.worldDesc.get(t).s2Id;
     t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
                            && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
-    uint8_t mountain = config.terrainDesc.get(t).s2Id;
+    uint8_t mountain = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -161,6 +165,9 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainMeadowNotReplaced, ObjGenFixture)
         }
     }
 
+    // Set a random harbor
+    map.textureLsd[50] = mountainMeadow | libsiedler2::HARBOR_MASK;
+    map.textureRsu[50] = mountainMeadow | libsiedler2::HARBOR_MASK;
     helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -185,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MountainIncreased, ObjGenFixture)
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::MOUNTAIN
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Mineable));
-    uint8_t mountain = config.terrainDesc.get(t).s2Id;
+    uint8_t mountain = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -213,7 +220,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SnowIncreased, ObjGenFixture)
 
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
-    uint8_t snow = config.terrainDesc.get(t).s2Id;
+    uint8_t snow = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -245,7 +252,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, ObjGenFixture)
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    uint8_t meadow = config.terrainDesc.get(t).s2Id;
+    uint8_t meadow = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -254,6 +261,7 @@ BOOST_FIXTURE_TEST_CASE(Smooth_MeadowNotIncreased, ObjGenFixture)
         map.textureRsu[i] = meadow;
     }
 
+    helper.objGen.CreateTexture(map, 50, t, true);
     helper.Smooth(map);
 
     for(int i = 0; i < size.x * size.y; i++)
@@ -275,9 +283,9 @@ BOOST_FIXTURE_TEST_CASE(Smooth_SingleTexturesReplaced, ObjGenFixture)
 
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    uint8_t meadow = config.terrainDesc.get(t).s2Id;
+    uint8_t meadow = config.worldDesc.get(t).s2Id;
     t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::SNOW);
-    uint8_t snow = config.terrainDesc.get(t).s2Id;
+    uint8_t snow = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -302,10 +310,10 @@ BOOST_FIXTURE_TEST_CASE(SetHarbor_HarborPlaceAvailable, ObjGenFixture)
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
                                                 && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
-    uint8_t meadow = config.terrainDesc.get(t).s2Id;
+    uint8_t meadow = config.worldDesc.get(t).s2Id;
     t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER
                            && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
-    uint8_t water = config.terrainDesc.get(t).s2Id;
+    uint8_t water = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {
@@ -366,7 +374,7 @@ BOOST_FIXTURE_TEST_CASE(SetTree_DesertTerrain, ObjGenFixture)
     Map map(size, "map", "author");
     DescIdx<TerrainDesc> t =
       config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND && boost::bind(&TerrainDesc::humidity, _1) == 0);
-    uint8_t dessert = config.terrainDesc.get(t).s2Id;
+    uint8_t dessert = config.worldDesc.get(t).s2Id;
 
     for(int i = 0; i < size.x * size.y; i++)
     {

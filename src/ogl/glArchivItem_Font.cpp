@@ -213,7 +213,6 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         initFont();
 
     RTTR_Assert(isValidUTF8(text));
-    RTTR_Assert(isValidUTF8(end));
 
     // Breite bestimmen
     if(length == 0)
@@ -229,6 +228,7 @@ void glArchivItem_Font::Draw(DrawPoint pos, const std::string& text, unsigned fo
         drawEnd = false;
     } else
     {
+        RTTR_Assert(isValidUTF8(end));
         textWidth = getWidth(text, length, maxWidth, &maxNumChars);
         if(!end.empty() && maxNumChars < length)
         {

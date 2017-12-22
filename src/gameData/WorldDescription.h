@@ -20,8 +20,13 @@
 
 #include "DescriptionContainer.h"
 #include "EdgeDesc.h"
+#include "LandscapeDesc.h"
 #include "TerrainDesc.h"
 #include <stdexcept>
+
+struct LandscapeDesc;
+struct EdgeDesc;
+struct TerrainDesc;
 
 struct GameDataError : public std::runtime_error
 {
@@ -37,11 +42,35 @@ struct WorldDescription
 {
     WorldDescription();
     ~WorldDescription();
+    DescriptionContainer<LandscapeDesc> landscapes;
     DescriptionContainer<EdgeDesc> edges;
     DescriptionContainer<TerrainDesc> terrain;
     // Convenience accessors
-    const EdgeDesc& get(DescIdx<EdgeDesc> idx) const { return edges.get(idx); }
-    const TerrainDesc& get(DescIdx<TerrainDesc> idx) const { return terrain.get(idx); }
+    template<class T>
+    const T& get(DescIdx<T> idx) const
+    {
+        return getContainer<T>().get(idx);
+    }
+    template<class T>
+    const DescriptionContainer<T>& getContainer() const;
 };
+
+template<>
+inline const DescriptionContainer<LandscapeDesc>& WorldDescription::getContainer() const
+{
+    return landscapes;
+}
+
+template<>
+inline const DescriptionContainer<EdgeDesc>& WorldDescription::getContainer() const
+{
+    return edges;
+}
+
+template<>
+inline const DescriptionContainer<TerrainDesc>& WorldDescription::getContainer() const
+{
+    return terrain;
+}
 
 #endif // WorldDescription_h__

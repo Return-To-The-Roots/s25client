@@ -36,7 +36,10 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
     lua.openlib("math", luaopen_math);
 
     Register(lua);
+    // Quasi-Standard translate function
     lua["_"] = kaguya::function<std::string(const std::string&)>(boost::bind(&LuaInterfaceBase::Translate, this, _1));
+    // No-op translate (translated later)
+    lua["__"] = gettext_noop;
 }
 
 LuaInterfaceBase::~LuaInterfaceBase() {}

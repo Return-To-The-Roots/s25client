@@ -141,17 +141,18 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_REQUIRE_EQUAL(wnd->GetTitle(), "Title");
     BOOST_REQUIRE(!wnd->GetCtrls<ctrlImage>().empty());
     const ctrlImage* img = wnd->GetCtrls<ctrlImage>().front();
-    const glArchivItem_Bitmap* actImg = img->GetImage();
+    const ITexture* actImg = img->GetImage();
     const Position imgPos = img->GetPos();
     BOOST_REQUIRE_EQUAL(actImg, LOADER.GetImageN("io", 101));
     BOOST_REQUIRE_EQUAL(imgPos.x, 500);
     BOOST_REQUIRE_EQUAL(imgPos.y, 200);
     // Window must be bigger than image pos+size
-    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgPos.x + actImg->getWidth() - actImg->getNx()); //-V807
-    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgPos.y + actImg->getHeight() - actImg->getNy());
+    Position imgEndPos(imgPos + actImg->GetSize() - actImg->GetOrigin());
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgEndPos.x); //-V807
+    BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgEndPos.y);
     const ctrlButton* bt = wnd->GetCtrls<ctrlButton>().front();
     // button must be below start of image
-    BOOST_REQUIRE_GT(bt->GetPos().y, imgPos.y - actImg->getNy()); //-V807
+    BOOST_REQUIRE_GT(bt->GetPos().y, imgPos.y - actImg->GetOrigin().y); //-V807
     // and centered
     BOOST_REQUIRE_LE(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2));
     BOOST_REQUIRE_GT(bt->GetPos().x, static_cast<int>(wnd->GetSize().x / 2 - bt->GetSize().x));
@@ -163,7 +164,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     for(unsigned i = 0; i < imgPts.size(); i++)
     {
         const_cast<iwMsgbox*>(wnd)->MoveIcon(imgPts[i]);
-        Rect imgRect(img->GetPos().x - actImg->getNx(), img->GetPos().y - actImg->getNy(), actImg->getWidth(), actImg->getHeight());
+        Rect imgRect(img->GetPos() - actImg->GetOrigin(), actImg->GetSize());
         // Image must be in wnd
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().x), imgRect.right);
         BOOST_REQUIRE_GT(static_cast<int>(wnd->GetSize().y), imgRect.bottom);

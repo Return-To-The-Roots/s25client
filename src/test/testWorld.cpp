@@ -154,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldLoaded1PFixture)
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
-    loadGameData(world);
+    loadGameData(world.GetDescriptionWriteable());
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
@@ -168,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
             break;
     }
 
-    world.Init(MapExtent(30, 30), Landscape::GREENLAND);
+    world.Init(MapExtent(30, 30));
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         MapNode& node = world.GetNodeWriteable(pt);

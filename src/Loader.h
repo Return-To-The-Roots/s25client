@@ -25,7 +25,6 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/AnimalConsts.h"
 #include "gameData/NationConsts.h"
@@ -37,6 +36,7 @@
 #include <vector>
 
 struct AddonId;
+class ITexture;
 class glArchivItem_Bitmap;
 class glArchivItem_BitmapBase;
 class glArchivItem_Bitmap_Player;
@@ -72,12 +72,10 @@ public:
     /// Lädt alle allgemeinen Dateien.
     bool LoadFilesAtStart();
     /// Lädt die Spieldateien.
-    bool LoadFilesAtGame(Landscape gfxset, const std::vector<bool>& nations);
+    bool LoadFilesAtGame(bool isWinterGFX, const std::vector<bool>& nations);
     /// Lädt Dateien von Addons.
     bool LoadFilesFromAddon(const AddonId id);
     void fillCaches();
-    /// Load the textures for the roads
-    bool CreateRoadTextures();
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();
@@ -102,6 +100,8 @@ private:
 
 public:
     glArchivItem_Bitmap* GetImageN(const std::string& file, unsigned nr);
+    /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* GetTextureN(const std::string& file, unsigned nr);
     glArchivItem_Bitmap* GetImage(const std::string& file, const std::string& name);
     glArchivItem_Bitmap_Player* GetPlayerImage(const std::string& file, unsigned nr);
     glArchivItem_Font* GetFontN(const std::string& file, unsigned nr);
@@ -112,12 +112,15 @@ public:
     glArchivItem_Bob* GetBobN(const std::string& file);
     glArchivItem_BitmapBase* GetNationImageN(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetNationImage(unsigned nation, unsigned nr);
+    /// Same as GetNationImage but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* GetNationTex(unsigned nation, unsigned nr);
     glArchivItem_Bitmap_Player* GetNationPlayerImage(unsigned nation, unsigned nr);
     glArchivItem_Bitmap* GetMapImageN(unsigned nr);
+    /// Same as GetMapImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* GetMapTexN(unsigned nr);
     glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
-    glArchivItem_Bitmap* GetTexImageN(unsigned nr);
 
-    Landscape GetLastGFX() const { return lastgfx; }
+    bool IsWinterGFX() const { return isWinterGFX_; }
 
 private:
     template<typename T>
@@ -129,15 +132,12 @@ private:
     }
     std::map<std::string, FileEntry> files_;
 
-    Landscape lastgfx;
+    bool isWinterGFX_;
     boost::array<libsiedler2::Archiv*, NUM_NATS> nation_gfx;
     libsiedler2::Archiv* map_gfx;
-    libsiedler2::Archiv* tex_gfx;
 
 public:
     libsiedler2::Archiv sng_lst;
-
-    libsiedler2::Archiv roads;
 
     glTexturePacker* stp;
 

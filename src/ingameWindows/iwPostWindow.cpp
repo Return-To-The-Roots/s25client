@@ -280,12 +280,12 @@ void iwPostWindow::DisplayPostMessage()
     GetCtrl<Window>(ID_DELETE)->SetVisible(true);
 
     SetMessageText(curMsg->GetText());
-    glArchivItem_Bitmap* const img = curMsg->GetImage_();
+    ITexture* const img = curMsg->GetImage_();
     if(img)
     {
         // We have an image, show it centered
         GetCtrl<ctrlImage>(ID_IMG)->SetImage(img);
-        GetCtrl<Window>(ID_IMG)->SetPos(imgBottomCenter + img->GetOrigin() - DrawPoint(img->getWidth() / 2, img->getHeight()));
+        GetCtrl<Window>(ID_IMG)->SetPos(imgBottomCenter + img->GetOrigin() - DrawPoint(img->GetSize().x / 2, img->GetSize().y));
 
         GetCtrl<Window>(ID_IMG)->SetVisible(true);
     }

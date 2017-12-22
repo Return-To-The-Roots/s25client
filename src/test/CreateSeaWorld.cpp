@@ -65,8 +65,8 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     // For consistent results
     doInitGameRNG(0);
 
-    loadGameData(world);
-    world.Init(size_, Landscape::GREENLAND);
+    loadGameData(world.GetDescriptionWriteable());
+    world.Init(size_);
     // Set everything to water
     DescIdx<TerrainDesc> t(0);
     const WorldDescription& desc = world.GetDescription();
@@ -195,8 +195,8 @@ CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers) :
 
 bool CreateWaterWorld::operator()(GameWorldGame& world) const
 {
-    loadGameData(world);
-    world.Init(size_, Landscape::GREENLAND);
+    loadGameData(world.GetDescriptionWriteable());
+    world.Init(size_);
     // Set everything to water
     DescIdx<TerrainDesc> t(0);
     const WorldDescription& desc = world.GetDescription();

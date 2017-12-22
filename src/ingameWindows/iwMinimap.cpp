@@ -84,7 +84,7 @@ void iwMinimap::Resize(const Extent& newSize)
     GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - BUTTON_SIZE - DrawPoint(WINDOW_MAP_SPACE, BUTTON_WINDOW_SPACE));
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
-    GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", extended ? 108 : 109));
+    GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetTextureN("io", extended ? 108 : 109));
 }
 
 void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)

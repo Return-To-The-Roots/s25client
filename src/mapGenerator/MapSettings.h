@@ -19,9 +19,11 @@
 #define MapSettings_h__
 
 #include "mapGenerator/MapStyle.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameData/DescIdx.h"
 #include <string>
+
+struct LandscapeDesc;
 
 /**
  * Settings used for map generation.
@@ -30,7 +32,7 @@ struct MapSettings
 {
     MapSettings()
         : numPlayers(2), size(MapExtent::all(256)), ratioGold(9), ratioIron(36), ratioCoal(40), ratioGranite(15), minPlayerRadius(0.31),
-          maxPlayerRadius(0.51), type(Landscape::GREENLAND), style(MapStyle::Random)
+          maxPlayerRadius(0.51), type(0), style(MapStyle::Random)
     {}
 
     void Validate();
@@ -80,7 +82,7 @@ struct MapSettings
     /**
      * Landscape type used for map generation.
      */
-    Landscape type;
+    DescIdx<LandscapeDesc> type;
 
     /**
      * Style of the map.

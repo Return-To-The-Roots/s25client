@@ -20,11 +20,11 @@
 
 #include "DescIdx.h"
 #include "Rect.h"
-#include "gameTypes/LandscapeType.h"
 #include <boost/core/scoped_enum.hpp>
 #include <string>
 #include <vector>
 
+struct LandscapeDesc;
 struct EdgeDesc;
 struct WorldDescription;
 class CheckedLuaTable;
@@ -49,7 +49,7 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
     struct TerrainDesc
 {
     std::string name;
-    Landscape landscape;
+    DescIdx<LandscapeDesc> landscape;
     uint8_t s2Id;
     DescIdx<EdgeDesc> edgeType;
     /// Priority for drawing. The terrain with the higher priority draws its edge over the neighbor

@@ -154,7 +154,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
     {
         const int index = VertexUtility::GetIndexOf(pt, map.size);
         const int level = map.z[index];
-        const TerrainDesc& t = config.terrainDesc.get(textures[level]);
+        const TerrainDesc& t = config.worldDesc.get(textures[level]);
         if(t.kind == TerrainKind::WATER)
         {
             map.z[index] = GetMaxTerrainHeight(textures[level]);
@@ -182,7 +182,7 @@ void RandomMapGenerator::FillRemainingTerrain(const MapSettings& settings, Map& 
     int maxWaterIndex = -1;
     for(unsigned i = 0; i < textures.size(); i++)
     {
-        if(config.terrainDesc.get(textures[i]).kind == TerrainKind::WATER)
+        if(config.worldDesc.get(textures[i]).kind == TerrainKind::WATER)
             maxWaterIndex = i;
         else
             break;
@@ -284,7 +284,7 @@ Map* RandomMapGenerator::Create(MapSettings settings)
     Map* map = new Map(settings.size, settings.name, settings.author);
 
     // configuration of the map settings
-    map->type = boost::underlying_cast<uint8_t>(settings.type);
+    map->type = config.worldDesc.get(settings.type).s2Id;
     map->numPlayers = settings.numPlayers;
 
     // the actual map generation

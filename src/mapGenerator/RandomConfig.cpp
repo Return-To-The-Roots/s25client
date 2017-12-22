@@ -17,8 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "mapGenerator/RandomConfig.h"
-#include "RttrConfig.h"
-#include "files.h"
 #include "lua/GameDataLoader.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
@@ -29,26 +27,25 @@
 #pragma warning(disable : 4244)
 #include <boost/random/uniform_smallint.hpp>
 #pragma warning(pop)
+#include "libsiedler2/enumTypes.h"
 #include <ctime>
 #include <stdexcept>
 
-bool RandomConfig::Init(MapStyle mapStyle, Landscape landscape)
+bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape)
 {
     uint64_t seed = static_cast<uint64_t>(time(NULL));
     return Init(mapStyle, landscape, seed);
 }
 
-bool RandomConfig::Init(MapStyle mapStyle, Landscape landscape, uint64_t seed)
+bool RandomConfig::Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape, uint64_t seed)
 {
-    WorldDescription desc;
-    GameDataLoader gdLoader(desc, RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
+    GameDataLoader gdLoader(worldDesc);
     if(!gdLoader.Load())
         return false;
-    for(DescIdx<TerrainDesc> t(0); t.value < desc.terrain.size(); t.value++)
+    for(DescIdx<TerrainDesc> t(0); t.value < worldDesc.terrain.size(); t.value++)
     {
-        const TerrainDesc& ter = desc.get(t);
-        if(ter.landscape == landscape)
-            terrainDesc.add(ter);
+        if(worldDesc.get(t).landscape == landscape)
+            landscapeTerrains.push_back(t);
     }
     rng_.seed(static_cast<UsedRNG::result_type>(seed));
     switch(boost::native_value(mapStyle))
@@ -104,7 +101,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
     {
         for(unsigned i = 1; i < terrains.size(); i++)
         {
-            if(terrainDesc.get(terrains[0]).humidity > terrainDesc.get(terrains[i]).humidity)
+            if(worldDesc.get(terrains[0]).humidity > worldDesc.get(terrains[i]).humidity)
                 std::swap(terrains[0], terrains[i]);
         }
         textures.push_back(terrains.front());
@@ -120,7 +117,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
         swapped = false;
         for(unsigned i = 1; i < terrains.size(); i++)
         {
-            if(terrainDesc.get(terrains[i - 1]).humidity > terrainDesc.get(terrains[i]).humidity)
+            if(worldDesc.get(terrains[i - 1]).humidity > worldDesc.get(terrains[i]).humidity)
             {
                 std::swap(terrains[i - 1], terrains[i]);
                 swapped = true;
@@ -138,7 +135,7 @@ void RandomConfig::CreateDefaultTextures(bool snowOrLava)
     {
         for(unsigned i = 1; i < terrains.size(); i++)
         {
-            if(terrainDesc.get(terrains[0]).humidity < terrainDesc.get(terrains[i]).humidity)
+            if(worldDesc.get(terrains[0]).humidity < worldDesc.get(terrains[i]).humidity)
                 std::swap(terrains[0], terrains[i]);
         }
         textures.push_back(terrains.front());
@@ -308,5 +305,6 @@ double RandomConfig::DRand(const double min, const double max)
 
 const TerrainDesc& RandomConfig::GetTerrainByS2Id(uint8_t s2Id) const
 {
-    return terrainDesc.get(FindTerrain(boost::bind(&TerrainDesc::s2Id, _1) == s2Id));
+    s2Id &= ~(libsiedler2::HARBOR_MASK | 0x80); // Exclude harbor mask and highest bit
+    return worldDesc.get(FindTerrain(boost::bind(&TerrainDesc::s2Id, _1) == s2Id));
 }

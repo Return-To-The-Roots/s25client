@@ -21,12 +21,14 @@
 #include "mapGenerator/AreaDesc.h"
 #include "mapGenerator/MapStyle.h"
 #include "random/XorShift.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
 #include "gameData/DescriptionContainer.h"
-#include "gameData/TerrainDesc.h"
+#include "gameData/WorldDescription.h"
 #include <boost/foreach.hpp>
 #include <vector>
+
+struct LandscapeDesc;
 
 /**
  * Random map configuration.
@@ -34,10 +36,11 @@
 class RandomConfig
 {
 public:
-    bool Init(MapStyle mapStyle, Landscape landscape);
-    bool Init(MapStyle mapStyle, Landscape landscape, uint64_t seed);
+    bool Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape);
+    bool Init(MapStyle mapStyle, DescIdx<LandscapeDesc> landscape, uint64_t seed);
 
-    DescriptionContainer<TerrainDesc> terrainDesc;
+    WorldDescription worldDesc;
+    std::vector<DescIdx<TerrainDesc> > landscapeTerrains;
 
     /**
      * Description of different areas to use for random map generation.
@@ -103,9 +106,9 @@ private:
 template<class T_Predicate>
 inline DescIdx<TerrainDesc> RandomConfig::FindTerrain(T_Predicate predicate) const
 {
-    for(DescIdx<TerrainDesc> t(0); t.value < terrainDesc.size(); t.value++)
+    BOOST_FOREACH(DescIdx<TerrainDesc> t, landscapeTerrains)
     {
-        if(predicate(terrainDesc.get(t)))
+        if(predicate(worldDesc.get(t)))
             return t;
     }
     return DescIdx<TerrainDesc>();
@@ -115,7 +118,7 @@ template<class T_Predicate>
 inline std::vector<DescIdx<TerrainDesc> > RandomConfig::FindAllTerrains(T_Predicate predicate) const
 {
     std::vector<DescIdx<TerrainDesc> > result;
-    for(DescIdx<TerrainDesc> t(0); t.value < terrainDesc.size(); t.value++)
+    BOOST_FOREACH(DescIdx<TerrainDesc> t, landscapeTerrains)
         result.push_back(t);
     return FilterTerrains(result, predicate);
 }
@@ -125,9 +128,9 @@ inline std::vector<DescIdx<TerrainDesc> > RandomConfig::FilterTerrains(const std
                                                                        T_Predicate predicate) const
 {
     std::vector<DescIdx<TerrainDesc> > result;
-    BOOST_FOREACH(DescIdx<TerrainDesc> t, inTerrains)
+    BOOST_FOREACH(DescIdx<TerrainDesc> t, landscapeTerrains)
     {
-        if(predicate(terrainDesc.get(t)))
+        if(predicate(worldDesc.get(t)))
             result.push_back(t);
     }
     return result;

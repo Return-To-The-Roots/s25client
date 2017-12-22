@@ -1,3 +1,27 @@
+rttr:AddLandscape{
+	name = __"wasteland",
+	s2Id = 1,
+	isWinter = false,
+	roads = {
+		normal = {
+			texture = "TEX6.LBM",
+			pos = {192, 0, 64, 16}
+		},
+		upgraded = {
+			texture = "TEX6.LBM",
+			pos = {192, 16, 64, 16}
+		},
+		boat = {
+			texture = "TEX6.LBM",
+			pos = {192, 32, 64, 16}
+		},
+		mountain = {
+			texture = "TEX6.LBM",
+			pos = {192, 160, 64, 16}
+		}
+	}
+}
+
 rttr:AddTerrainEdge{
 	-- Name used to reference this
 	name = "wl_stone",
@@ -39,7 +63,7 @@ rttr:AddTerrain{
 	s2Id = 2,
 	-- If this is higher than the neighbours edgePriority then it draws over the neighbour
 	-- Valid = [-128, 127], defaults to 0
-	edgePriority = 49,
+	edgePriority = 0,
 	-- What kind of terrain is this? (Used for animals, ships, etc)
 	-- Valid = land (default), water, lava, snow, mountain
 	kind = "lava",
@@ -69,7 +93,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_wasteland",
 	s2Id = 4,
-	edgePriority = 48,
+	edgePriority = 51,
 	kind = "land",
 	property = "walkable",
 	humidity = 0,
@@ -82,7 +106,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_stone",
 	s2Id = 3,
-	edgePriority = 36,
+	edgePriority = 56,
 	kind = "lava",
 	property = "unwalkable",
 	texture = "TEX6.LBM",
@@ -94,7 +118,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0xF,
-	edgePriority = 37,
+	edgePriority = 46,
 	kind = "land",
 	texture = "TEX6.LBM",
 	pos = {144, 0, 48, 48},
@@ -105,7 +129,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 1,
-	edgePriority = 45,
+	edgePriority = 36,
 	kind = "mountain",
 	texture = "TEX6.LBM",
 	pos = {0, 48, 48, 48},
@@ -116,7 +140,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0XB,
-	edgePriority = 44,
+	edgePriority = 31,
 	kind = "mountain",
 	texture = "TEX6.LBM",
 	pos = {48, 48, 48, 48},
@@ -127,7 +151,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0XC,
-	edgePriority = 43,
+	edgePriority = 26,
 	kind = "mountain",
 	texture = "TEX6.LBM",
 	pos = {96, 48, 48, 48},
@@ -138,7 +162,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0xD,
-	edgePriority = 13,
+	edgePriority = 21,
 	kind = "mountain",
 	texture = "TEX6.LBM",
 	pos = {144, 48, 48, 48},
@@ -149,7 +173,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0,
-	edgePriority = 38,
+	edgePriority = 46,
 	kind = "land",
 	humidity = 60,
 	texture = "TEX6.LBM",
@@ -161,7 +185,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 8,
-	edgePriority = 41,
+	edgePriority = 46,
 	kind = "land",
 	humidity = 95,
 	texture = "TEX6.LBM",
@@ -173,7 +197,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 9,
-	edgePriority = 40,
+	edgePriority = 46,
 	kind = "land",
 	texture = "TEX6.LBM",
 	pos = {96, 96, 48, 48},
@@ -184,7 +208,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0xA,
-	edgePriority = 39,
+	edgePriority = 46,
 	kind = "land",
 	texture = "TEX6.LBM",
 	pos = {144, 96, 48, 48},
@@ -195,7 +219,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_wasteland",
 	s2Id = 0xE,
-	edgePriority = 46,
+	edgePriority = 11,
 	kind = "land",
 	humidity = 30,
 	texture = "TEX6.LBM",
@@ -207,7 +231,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_stone",
 	s2Id = 0x12,
-	edgePriority = 47,
+	edgePriority = 61,
 	kind = "mountain",
 	property = "buildable",
 	texture = "TEX6.LBM",
@@ -219,7 +243,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_moor",
 	s2Id = 5,
-	edgePriority = 35,
+	edgePriority = 16,
 	kind = "water",
 	texture = "TEX6.LBM",
 	pos = {192, 48, 55, 56},
@@ -242,7 +266,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_moor",
 	s2Id = 19,
-	edgePriority = 50,
+	edgePriority = 41,
 	kind = "water",
 	property = "unwalkable",
 	texture = "TEX6.LBM",
@@ -255,7 +279,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_moor",
 	s2Id = 6,
-	edgePriority = 50,
+	edgePriority = 66,
 	kind = "water",
 	property = "buildable",
 	texture = "TEX6.LBM",
@@ -268,7 +292,7 @@ rttr:AddTerrain{
 	landscape = "wasteland",
 	edgeType = "wl_mountain",
 	s2Id = 0x22,
-	edgePriority = 42,
+	edgePriority = 6,
 	kind = "mountain",
 	property = "buildable",
 	texture = "TEX6.LBM",
@@ -307,4 +331,17 @@ rttr:AddTerrain{
 	pos = {132, 223, 31, 32},
 	palAnimIdx = 11,
 	color = 0xFFC32020
+}
+rttr:AddTerrain{
+	name = "wl_wasteland2",
+	landscape = "wasteland",
+	edgeType = "wl_wasteland",
+	s2Id = 7,
+	edgePriority = 51,
+	kind = "land",
+	property = "walkable",
+	humidity = 0,
+	texture = "TEX6.LBM",
+	pos = {48, 0, 48, 48},
+	color = 0xFF9c7c64
 }

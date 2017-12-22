@@ -18,10 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
 #include "PointOutput.h"
-#include "RttrConfig.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
-#include "files.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
@@ -50,11 +48,21 @@ MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : w
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
-    GameDataLoader gdLoader(world_.GetDescriptionWriteable(), RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world");
+    GameDataLoader gdLoader(world_.GetDescriptionWriteable());
     if(!gdLoader.Load())
         return false;
 
-    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), Landscape(map.getHeader().getGfxSet())); //-V807
+    uint8_t gfxSet = map.getHeader().getGfxSet();
+    DescIdx<LandscapeDesc> lt(0);
+    for(DescIdx<LandscapeDesc> i(0); i.value < world_.GetDescription().landscapes.size(); i.value++)
+    {
+        if(world_.GetDescription().get(i).s2Id == gfxSet)
+        {
+            lt = i;
+            break;
+        }
+    }
+    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
 
     if(!InitNodes(map, exploration))
         return false;

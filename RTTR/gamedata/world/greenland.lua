@@ -1,3 +1,38 @@
+rttr:AddLandscape{
+	-- Name used to reference this
+	name = __"greenland",
+	-- Id used in the original S2. Defaults to 0xFF (not in S2)
+	s2Id = 0,
+	-- Set true if you want winter textures to be used
+	isWinter = false,
+	-- Road textures used for this terrain
+	roads = {
+		-- Regular road
+		normal = {
+			-- Filename of the texture image
+			texture = "TEX5.LBM",
+			-- Position and size {x, y, w, h} in the image if it contains multiple textures
+			-- Can be left out. A size of 0 (w and/or h) is interpreted as the remaining image
+			pos = {192, 0, 64, 16}
+		},
+		-- Upgraded road (with 2nd carrier)
+		upgraded = {
+			texture = "TEX5.LBM",
+			pos = {192, 16, 64, 16}
+		},
+		-- Boat road
+		boat = {
+			texture = "TEX5.LBM",
+			pos = {192, 32, 64, 16}
+		},
+		-- Road on a mountain or mountain side
+		mountain = {
+			texture = "TEX5.LBM",
+			pos = {192, 160, 64, 16}
+		}
+	}
+}
+
 rttr:AddTerrainEdge{
 	-- Name used to reference this
 	name = "gl_snow",

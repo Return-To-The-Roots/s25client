@@ -55,9 +55,10 @@ class ctrlVarDeepening;
 class ctrlVarText;
 class ctrlMultiSelectGroup;
 
+class glArchivItem_Bitmap;
 class glArchivItem_Map;
 class glArchivItem_Font;
-class glArchivItem_Bitmap;
+class ITexture;
 
 struct KeyEvent;
 class MouseCoords;
@@ -140,6 +141,8 @@ public:
                               glArchivItem_Font* font, const std::string& tooltip = "");
     ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, const unsigned fillColor,
                                const std::string& tooltip = "");
+    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, ITexture* const image,
+                               const std::string& tooltip = "");
     ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
                                glArchivItem_Bitmap* const image, const std::string& tooltip = "");
     ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
@@ -153,6 +156,7 @@ public:
     ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     ctrlGroup* AddGroup(unsigned id);
+    ctrlImage* AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
     ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
     ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font);
     ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, glArchivItem_Font* font,
@@ -274,7 +278,7 @@ protected:
     void DrawControls();
     /// prüft ob koordinaten in einer gesperrten Region liegt.
     bool TestWindowInRegion(Window* window, const Position& pos) const;
-    /// zeichnet das Fenster. (virtuelle Memberfunktion)
+    /// zeichnet das Fenster.
     virtual void Draw_() = 0;
     /// Weiterleitung von Nachrichten von abgeleiteten Klassen erlaubt oder nicht?
     virtual bool IsMessageRelayAllowed() const;

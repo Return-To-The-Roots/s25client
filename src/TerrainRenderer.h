@@ -89,16 +89,13 @@ private:
 
     struct PreparedRoad
     {
-        unsigned char type;
         Position pos, pos2;
         float color1, color2;
         unsigned char dir;
 
-        PreparedRoad(unsigned char type, Position pos, Position pos2, float color1, float color2, unsigned char dir)
-            : type(type), pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir)
+        PreparedRoad(Position pos, Position pos2, float color1, float color2, unsigned char dir)
+            : pos(pos), pos2(pos2), color1(color1), color2(color2), dir(dir)
         {}
-
-        bool operator<(const PreparedRoad& b) const { return (type < b.type); }
     };
 
     struct Vertex
@@ -129,7 +126,7 @@ private:
         boost::array<unsigned, 2> top_down_offset;
     };
 
-    typedef boost::array<std::vector<PreparedRoad>, 4> PreparedRoads;
+    typedef boost::container::vector<boost::container::vector<PreparedRoad> > PreparedRoads;
 
     /// Size of the map
     MapExtent size_;
@@ -149,8 +146,11 @@ private:
 
     std::vector<Borders> borders;
 
+    typedef boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > BmpPtr;
     boost::container::vector<boost::ptr_vector<glArchivItem_Bitmap> > terrainTextures;
-    boost::container::vector<boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > > edgeTextures;
+    boost::container::vector<BmpPtr> edgeTextures;
+    /// Flat 2D array: [Landscape][RoadType]
+    boost::container::vector<BmpPtr> roadTextures;
 
     /// Returns the index of a vertex. Used to access vertices and borders
     unsigned GetVertexIdx(const MapPoint pt) const

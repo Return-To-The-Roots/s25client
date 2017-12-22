@@ -18,8 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "GameDataLoader.h"
 #include "CheckedLuaTable.h"
+#include "RttrConfig.h"
+#include "files.h"
 #include "helpers/containerUtils.h"
 #include "gameData/EdgeDesc.h"
+#include "gameData/LandscapeDesc.h"
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 #include "libutil/Log.h"
@@ -28,6 +31,16 @@
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const std::string& basePath)
     : worldDesc_(worldDesc), basePath_(bfs::canonical(basePath).make_preferred().string()), curIncludeDepth_(0), errorInIncludeFile_(false)
+{
+    Register(lua);
+
+    lua["rttr"] = this;
+    lua["include"] = kaguya::function<void(const std::string&)>(boost::bind(&GameDataLoader::Include, this, _1));
+}
+
+GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
+    : worldDesc_(worldDesc), basePath_(bfs::canonical(RTTRCONFIG.ExpandPath(FILE_PATHS[1]) + "/world").make_preferred().string()),
+      curIncludeDepth_(0), errorInIncludeFile_(false)
 {
     Register(lua);
 
@@ -48,7 +61,7 @@ bool GameDataLoader::Load()
             return false;
     } catch(std::exception& e)
     {
-        LOG.write("Error while loading game data: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
+        LOG.write("Failed to load game data!\nReason: %1%\nCurrent file being processed: %2%\n") % e.what() % curFile_;
         return false;
     }
     return !errorInIncludeFile_;
@@ -57,6 +70,7 @@ bool GameDataLoader::Load()
 void GameDataLoader::Register(kaguya::State& state)
 {
     state["RTTRGameData"].setClass(kaguya::UserdataMetatable<GameDataLoader, LuaInterfaceBase>()
+                                     .addFunction("AddLandscape", &GameDataLoader::AddLandscape)
                                      .addFunction("AddTerrainEdge", &GameDataLoader::AddTerrainEdge)
                                      .addFunction("AddTerrain", &GameDataLoader::AddTerrain));
 }
@@ -80,6 +94,11 @@ void GameDataLoader::Include(const std::string& filepath)
     curFile_ = oldCurFile;
     RTTR_Assert(curIncludeDepth_ > 0);
     --curIncludeDepth_;
+}
+
+void GameDataLoader::AddLandscape(const kaguya::LuaTable& data)
+{
+    worldDesc_.landscapes.add(LandscapeDesc(data, worldDesc_));
 }
 
 void GameDataLoader::AddTerrainEdge(const kaguya::LuaTable& data)

@@ -15,34 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DescriptionHelpers_h__
-#define DescriptionHelpers_h__
+#ifndef ITexture_h__
+#define ITexture_h__
 
-#include "Rect.h"
-#include "WorldDescription.h"
-#include "gameTypes/LandscapeType.h"
-#include <kaguya/kaguya.hpp>
-#include <set>
-#include <string>
-#include <vector>
+#include "Point.h"
 
-namespace descriptionHelpers {
-
-/// Get the landscape from a string
-Landscape strToLandscape(const std::string& name);
-
-inline Landscape strToLandscape(const std::string& name)
+class ITexture
 {
-    if(name == "greenland")
-        return Landscape::GREENLAND;
-    else if(name == "wasteland")
-        return Landscape::WASTELAND;
-    else if(name == "winterworld")
-        return Landscape::WINTERWORLD;
-    else
-        throw GameDataLoadError("Invalid landscape type: " + name);
-}
+protected:
+    virtual ~ITexture(){};
 
-} // namespace descriptionHelpers
+public:
+    virtual Position GetOrigin() const = 0;
+    virtual Extent GetSize() const = 0;
+    virtual void DrawFull(const Position& dstPos, unsigned color) = 0;
+};
 
-#endif // DescriptionHelpers_h__
+#endif // ITexture_h__

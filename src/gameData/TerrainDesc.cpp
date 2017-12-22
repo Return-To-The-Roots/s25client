@@ -17,13 +17,10 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainDesc.h"
-#include "DescriptionHelpers.h"
 #include "WorldDescription.h"
 #include "helpers/converters.h"
 #include "lua/CheckedLuaTable.h"
 #include "ogl/glSmartBitmap.h"
-
-using namespace descriptionHelpers;
 
 TerrainKind strToTerrainKind(const std::string& name)
 {
@@ -38,7 +35,7 @@ TerrainKind strToTerrainKind(const std::string& name)
     else if(name == "mountain")
         return TerrainKind::MOUNTAIN;
     else
-        throw GameDataLoadError("Invalid terrain kind: " + name);
+        throw GameDataError("Invalid terrain kind: " + name);
 }
 
 TerrainBQ getDefaultBQ(TerrainKind kind)
@@ -83,11 +80,13 @@ uint8_t getDefaultHumidity(TerrainKind kind)
 TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {
     luaData.getOrThrow(name, "name");
-    landscape = strToLandscape(luaData.getOrThrow<std::string>("landscape"));
+    landscape = worldDesc.landscapes.getIndex(luaData.getOrThrow<std::string>("landscape"));
+    if(!landscape)
+        throw GameDataError("Invalid landscape type: " + luaData.getOrThrow<std::string>("landscape"));
     s2Id = luaData.getOrDefault<uint8_t>("s2Id", 0xFF);
     std::string edgeTypeName = luaData.getOrThrow<std::string>("edgeType");
     if(edgeTypeName != "none" && !worldDesc.edges.getIndex(edgeTypeName))
-        throw GameDataLoadError("Invalid edge type: " + edgeTypeName);
+        throw GameDataError("Invalid edge type: " + edgeTypeName);
     else
         edgeType = worldDesc.edges.getIndex(edgeTypeName);
     edgePriority = luaData.getOrDefault<int8_t>("edgePriority", 0);
@@ -108,12 +107,12 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
     else if(property == "unreachable")
         flags = ETerrain::Unreachable;
     else
-        throw GameDataLoadError("Invalid property '" + property + "'");
+        throw GameDataError("Invalid property '" + property + "'");
     humidity = luaData.getOrDefault("humidity", getDefaultHumidity(kind));
     luaData.getOrThrow(texturePath, "texture");
     posInTexture = luaData.getRectOrDefault("pos", Rect());
-    palAnimIdx = luaData.getOrDefault("palAnimIdx", 0u);
-    minimapColor = luaData.getOrThrow<unsigned>("color");
+    palAnimIdx = luaData.getOrDefault<int8_t>("palAnimIdx", -1);
+    luaData.getOrThrow(minimapColor, "color");
 
     luaData.checkUnused();
 }
