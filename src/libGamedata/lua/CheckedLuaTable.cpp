@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h" // IWYU pragma: keep
 #include "CheckedLuaTable.h"
 #include "boost/foreach.hpp"
 #include "libutil/Log.h"

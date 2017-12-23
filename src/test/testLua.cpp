@@ -47,7 +47,7 @@ BOOST_FIXTURE_TEST_SUITE(LuaTestSuite, LuaTestsFixture)
 
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
-    BOOST_REQUIRE_THROW(executeLua("assert(false)"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("assert(false)"), LuaExecutionError);
     BOOST_REQUIRE_NE(getLog(), "");
 }
 
@@ -66,7 +66,6 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     BOOST_REQUIRE_EQUAL(lua.GetScript(), script);
 
     // Test failing load
-    GLOBALVARS.isTest = false;
     // Invalid code
     script = "assertTypo(rue)";
     BOOST_REQUIRE(!lua.LoadScriptString(script));
@@ -79,13 +78,6 @@ BOOST_AUTO_TEST_CASE(ScriptLoading)
     BOOST_REQUIRE_EQUAL(lua.GetScript(), "");
     RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
 
-    GLOBALVARS.isTest = true;
-    BOOST_REQUIRE_THROW(lua.LoadScriptString(script), std::runtime_error);
-    RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
-    BOOST_REQUIRE_THROW(lua.LoadScript(luaFile2.filePath), std::runtime_error);
-    RTTR_REQUIRE_LOG_CONTAINS("assertTypo", false);
-
-    GLOBALVARS.isTest = false;
     script = "msg1='foo'\nmsg2='bar'\nmsg3='\xF1'\nmsg4='ok'";
     BOOST_REQUIRE(!lua.LoadScriptString(script));
     RTTR_REQUIRE_LOG_CONTAINS("invalid UTF8 char at line 3", false);
@@ -261,9 +253,9 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     executeLua("assert(rttr:GetPlayer(2))");
     // Invalid player
     BOOST_REQUIRE_EQUAL(getLog(), "");
-    BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(3))"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(3))"), LuaExecutionError);
     BOOST_REQUIRE_NE(getLog(), "");
-    BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(-1))"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("assert(rttr:GetPlayer(-1))"), LuaExecutionError);
     BOOST_REQUIRE_NE(getLog(), "");
 
     executeLua("assert(rttr:GetWorld())");
@@ -637,9 +629,10 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // All events need to work w/o having them
     LuaInterfaceGame& lua = world.GetLua();
     lua.EventStart(true);
-    Serializer serData1 = lua.Serialize();
-    BOOST_REQUIRE_EQUAL(serData1.GetLength(), 0u);
-    BOOST_REQUIRE(lua.Deserialize(serData1));
+    Serializer serData;
+    BOOST_REQUIRE(lua.Serialize(serData));
+    BOOST_REQUIRE_EQUAL(serData.GetLength(), 0u);
+    BOOST_REQUIRE(lua.Deserialize(serData));
     lua.EventOccupied(1, pt1);
     lua.EventExplored(1, pt2, 0);
     lua.EventGameFrame(0);
@@ -657,22 +650,23 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.EventStart(false);
     BOOST_REQUIRE_EQUAL(getLog(), "start: false\n");
 
+    // Returning false should not save anything
+    executeLua("function onSave(serializer)\n"
+               "serializer:PushInt(42)\n  return false\nend");
+    serData.Clear();
+    BOOST_REQUIRE(!lua.Serialize(serData));
+    BOOST_REQUIRE_EQUAL(serData.GetLength(), 0u);
+
     executeLua("function onSave(serializer)\n"
                "serializer:PushInt(42)\n"
                "serializer:PushBool(true)\n"
                "serializer:PushBool(false)\n"
                "serializer:PushString('Hello World!')\n"
                "rttr:Log('saved')\n  return true\nend");
-    Serializer serData2 = lua.Serialize();
+    serData.Clear();
+    BOOST_REQUIRE(lua.Serialize(serData));
     BOOST_REQUIRE_EQUAL(getLog(), "saved\n");
-    BOOST_REQUIRE_GT(serData2.GetLength(), 0u);
-
-    // Returning false should not save anything but should also print an error
-    executeLua("function onSave(serializer)\n"
-               "serializer:PushInt(42)\n  return false\nend");
-    Serializer serData3 = lua.Serialize();
-    BOOST_REQUIRE_EQUAL(serData3.GetLength(), 0u);
-    BOOST_REQUIRE_NE(getLog(), "");
+    BOOST_REQUIRE_GT(serData.GetLength(), 0u);
 
     executeLua("function onLoad(serializer)\n"
                "assert(serializer:PopInt() == 42)\n"
@@ -680,42 +674,33 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
                "assert(serializer:PopBool() == false)\n"
                "assert(serializer:PopString() == 'Hello World!')\n"
                "rttr:Log('loaded')\n  return true\nend");
-    BOOST_REQUIRE(lua.Deserialize(serData2));
+    BOOST_REQUIRE(lua.Deserialize(serData));
     BOOST_REQUIRE_EQUAL(getLog(), "loaded\n");
-    BOOST_REQUIRE_EQUAL(serData2.GetBytesLeft(), 0u);
+    BOOST_REQUIRE_EQUAL(serData.GetBytesLeft(), 0u);
 
-    // Throwing an error in onSave/onLoad should be caught
-    GLOBALVARS.isTest = false;
+    // Errors in onSave/onLoad should result in false returned even with throw disabled
+    executeLua("function onSave(serializer)\n  serializer:PushInt(42)\n  assert(false)\nend");
+    serData.Clear();
+    BOOST_REQUIRE_THROW(lua.Serialize(serData), LuaExecutionError);
+    BOOST_REQUIRE_NE(getLog(), "");
+
+    lua.SetThrowOnError(false);
 
     executeLua("function onSave(serializer)\n  serializer:PushInt(42)\n  assert(false)\nend");
-    Serializer serData4 = lua.Serialize();
-    BOOST_REQUIRE_EQUAL(serData3.GetLength(), 0u);
+    serData.Clear();
+    BOOST_REQUIRE(!lua.Serialize(serData));
+    BOOST_REQUIRE_EQUAL(serData.GetLength(), 0u);
     BOOST_REQUIRE_NE(getLog(), "");
-    // And in test mode it throws
-    GLOBALVARS.isTest = true;
-    BOOST_REQUIRE_THROW(lua.Serialize(), std::runtime_error);
-    BOOST_REQUIRE_NE(getLog(), "");
-    GLOBALVARS.isTest = false;
 
     // Error from C++
-    BOOST_REQUIRE(!lua.Deserialize(serData2));
+    BOOST_REQUIRE(!lua.Deserialize(serData));
     BOOST_REQUIRE_NE(getLog(), "");
-    // Error from Lua
-    executeLua("function onLoad(serializer)\n  assert(false)\nend");
-    BOOST_REQUIRE(!lua.Deserialize(serData4));
-    BOOST_REQUIRE_NE(getLog(), "");
-    // And in test mode it throws
-    GLOBALVARS.isTest = true;
-    BOOST_REQUIRE_THROW(lua.Deserialize(serData4), std::runtime_error);
-    BOOST_REQUIRE_NE(getLog(), "");
-    GLOBALVARS.isTest = false;
 
     // False returned
     executeLua("function onLoad(serializer)\n  return false\nend");
-    BOOST_REQUIRE(!lua.Deserialize(serData4));
-    BOOST_REQUIRE_NE(getLog(), "");
+    BOOST_REQUIRE(!lua.Deserialize(serData));
     // Re-enable
-    GLOBALVARS.isTest = true;
+    lua.SetThrowOnError(true);
 
     executeLua("function onOccupied(player_id, x, y)\n  rttr:Log('occupied: '..player_id..'('..x..', '..y..')')\nend");
     lua.EventOccupied(1, pt1);

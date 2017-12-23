@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h" // IWYU pragma: keep
 #include "LuaHelpers.h"
-#include <stdexcept>
+#include "LuaInterfaceBase.h"
 
 namespace lua {
 
 void assertTrue(bool testValue, const std::string& error)
 {
     if(!testValue)
-        throw std::runtime_error(error);
+        throw LuaExecutionError(error);
 }
 
 } // namespace lua

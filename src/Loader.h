@@ -72,7 +72,7 @@ public:
     /// Lädt alle allgemeinen Dateien.
     bool LoadFilesAtStart();
     /// Lädt die Spieldateien.
-    bool LoadFilesAtGame(bool isWinterGFX, const std::vector<bool>& nations);
+    bool LoadFilesAtGame(uint8_t s2GFXId, bool isWinterGFX, const std::vector<bool>& nations);
     /// Lädt Dateien von Addons.
     bool LoadFilesFromAddon(const AddonId id);
     void fillCaches();

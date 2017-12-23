@@ -207,31 +207,21 @@ void LuaInterfaceGame::Register(kaguya::State& state)
                                         .addFunction("PopString", &Serializer::PopString));
 }
 
-Serializer LuaInterfaceGame::Serialize()
+bool LuaInterfaceGame::Serialize(Serializer& luaSaveState)
 {
     kaguya::LuaRef save = lua["onSave"];
     if(save.type() == LUA_TFUNCTION)
     {
-        Serializer luaSaveState;
-        lua.setErrorHandler(ErrorHandlerThrow);
-        try
+        ClearErrorOccured();
+        if(save.call<bool>(kaguya::standard::ref(luaSaveState)) && !HasErrorOccurred())
+            return true;
+        else
         {
-            if(!save.call<bool>(kaguya::standard::ref(luaSaveState)))
-            {
-                LOG.write("Lua state could not be saved!");
-                luaSaveState.Clear();
-            }
-            lua.setErrorHandler(ErrorHandler);
-            return luaSaveState;
-        } catch(std::exception& e)
-        {
-            lua.setErrorHandler(ErrorHandler);
-            LOG.write("Error during saving: %s\n") % e.what();
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
+            luaSaveState.Clear();
+            return false;
         }
-    }
-    return Serializer();
+    } else
+        return true;
 }
 
 bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
@@ -239,26 +229,8 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
     kaguya::LuaRef load = lua["onLoad"];
     if(load.type() == LUA_TFUNCTION)
     {
-        lua.setErrorHandler(ErrorHandlerThrow);
-        try
-        {
-            bool result = load.call<bool>(kaguya::standard::ref(luaSaveState));
-            lua.setErrorHandler(ErrorHandler);
-            if(result)
-                return true;
-            else
-            {
-                LOG.write("Lua state was not loaded correctly!");
-                return false;
-            }
-        } catch(std::exception& e)
-        {
-            lua.setErrorHandler(ErrorHandler);
-            LOG.write("Error during loading: %s\n") % e.what();
-            if(GLOBALVARS.isTest)
-                throw std::runtime_error("Error during lua call");
-            return false;
-        }
+        ClearErrorOccured();
+        return load.call<bool>(kaguya::standard::ref(luaSaveState)) && !HasErrorOccurred();
     } else
         return true;
 }
@@ -325,7 +297,7 @@ void LuaInterfaceGame::PostMessageWithLocation(unsigned playerIdx, const std::st
 LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
 {
     if(playerIdx >= gw.GetNumPlayers())
-        throw std::runtime_error("Invalid player idx");
+        throw LuaExecutionError("Invalid player idx");
     return LuaPlayer(game, gw.GetPlayer(playerIdx));
 }
 

@@ -26,14 +26,16 @@
 /// Provide lua execution methods and check if lua values equal given value
 class LuaBaseFixture
 {
+private:
+    LuaInterfaceGameBase* luaBase_;
+
 protected:
-    LuaInterfaceGameBase* luaBase;
+    void setLua(LuaInterfaceGameBase* lua) { luaBase_ = lua; }
 
 public:
-    LuaBaseFixture() { GLOBALVARS.isTest = true; }
-    ~LuaBaseFixture() { GLOBALVARS.isTest = false; }
+    LuaBaseFixture() : luaBase_(NULL) {}
 
-    void executeLua(const std::string& luaCode) { luaBase->LoadScriptString(luaCode); }
+    void executeLua(const std::string& luaCode) { luaBase_->LoadScriptString(luaCode); }
     void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
 
     boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)

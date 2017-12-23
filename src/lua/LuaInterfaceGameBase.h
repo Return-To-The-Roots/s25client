@@ -18,7 +18,7 @@
 #ifndef LuaInterfaceGameBase_h__
 #define LuaInterfaceGameBase_h__
 
-#include "LuaInterfaceBase.h"
+#include "lua/LuaInterfaceBase.h"
 
 class LuaInterfaceGameBase : public LuaInterfaceBase
 {

@@ -48,7 +48,7 @@ class NWFInfo;
 class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface
 {
 public:
-    dskGameInterface(boost::shared_ptr<Game> game);
+    dskGameInterface(boost::shared_ptr<Game> game, bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;

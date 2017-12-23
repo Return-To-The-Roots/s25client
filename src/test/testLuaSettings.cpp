@@ -57,7 +57,7 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
 
     LuaSettingsTestsFixture() : lua(*this)
     {
-        luaBase = &lua;
+        setLua(&lua);
 
         players.resize(3);
         players[0].ps = PS_OCCUPIED;
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_SUITE(LuaTestSuiteSettings, LuaSettingsTestsFixture)
 
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
-    BOOST_REQUIRE_THROW(executeLua("assert(false)"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("assert(false)"), LuaExecutionError);
     BOOST_REQUIRE_NE(getLog(), "");
 }
 

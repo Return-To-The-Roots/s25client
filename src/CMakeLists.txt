@@ -15,7 +15,6 @@ INCLUDE_DIRECTORIES(SYSTEM
 	${BZIP2_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIR}
-	${RTTR_CONTRIB_DIR}/kaguya/include
 	)
 
 ################################################################################
@@ -38,19 +37,6 @@ if(APPLE)
 	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/macos)
 	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL)
 ENDif()
-
-################################################################################
-# LUA
-################################################################################
-
-SET(LUA_VERSION "52")
-
-FIND_PACKAGE(LUA REQUIRED)
-
-INCLUDE_DIRECTORIES(SYSTEM ${LUA_INCLUDE_DIR})
-
-include(GatherDll)
-gather_dll(LUA)
 
 ################################################################################
 # OpenGL
@@ -106,7 +92,7 @@ if(MSVC)
     FORCE_ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /SAFESEH:NO)
 ENDIF()
 
-
+add_subdirectory(libGamedata)
 include(s25Main.cmake)
 add_subdirectory(s25client)
 add_subdirectory(test)

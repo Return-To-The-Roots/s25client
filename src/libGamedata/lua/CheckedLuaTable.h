@@ -70,16 +70,18 @@ public:
     Rect getRectOrDefault(const std::string& fieldName, const Rect& defaultValue);
 };
 
+namespace kaguya {
 template<>
-struct kaguya::lua_type_traits<CheckedLuaTable>
+struct lua_type_traits<CheckedLuaTable>
 {
-    typedef kaguya::lua_type_traits<kaguya::LuaTable> Base;
+    typedef lua_type_traits<kaguya::LuaTable> Base;
     typedef CheckedLuaTable get_type;
 
     static bool strictCheckType(lua_State* l, int index) { return Base::strictCheckType(l, index); }
     static bool checkType(lua_State* l, int index) { return Base::checkType(l, index); }
-    static get_type get(lua_State* l, int index) { return Base::get(l, index); }
+    static get_type get(lua_State* l, int index) { return CheckedLuaTable(Base::get(l, index)); }
 };
+} // namespace kaguya
 
 //////////////////////////////////////////////////////////////////////////
 // Implementation

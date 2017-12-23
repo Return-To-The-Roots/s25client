@@ -24,8 +24,8 @@
 #include "buildings/nobHQ.h"
 #include "helpers/converters.h"
 #include "lua/LuaHelpers.h"
+#include "lua/LuaInterfaceBase.h"
 #include "ai/AIPlayer.h"
-#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
@@ -129,8 +129,8 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             else if(curPolyStart < 0) // We don't have a current polygon? Can only happen for multiple nils (old style)
                 LOG.write("Duplicate nils found in SetRestrictedArea\n");
             else if(pts.size() - static_cast<unsigned>(curPolyStart) < 3)
-                throw std::runtime_error(std::string("Invalid polygon (less than 3 points) found at index ")
-                                         + helpers::toString(std::distance(inPoints.cbegin(), it)));
+                throw LuaExecutionError(std::string("Invalid polygon (less than 3 points) found at index ")
+                                        + helpers::toString(std::distance(inPoints.cbegin(), it)));
             else if(pts[curPolyStart] != pts.back()) // Close polygon if not already done
                 pts.push_back(pts[curPolyStart]);
             curPolyStart = -1;
@@ -152,7 +152,7 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             ++it;
             int y = *it;
             if(x < 0 || y < 0)
-                throw std::runtime_error("Points must be positive");
+                throw LuaExecutionError("Points must be positive");
             MapPoint pt(x, y);
             if(pt == MapPoint(0, 0))
             {
@@ -207,7 +207,7 @@ bool LuaPlayer::AddWares(const std::map<GoodType, unsigned>& wares)
         if(unsigned(it->first) < NUM_WARE_TYPES)
             goods.Add(it->first, it->second);
         else
-            throw std::runtime_error((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError((std::string("Invalid ware in AddWares: ") + helpers::toString(it->first)).c_str());
     }
 
     warehouse->AddGoods(goods, true);
@@ -228,7 +228,7 @@ bool LuaPlayer::AddPeople(const std::map<Job, unsigned>& people)
         if(unsigned(it->first) < NUM_JOB_TYPES)
             goods.Add(it->first, it->second);
         else
-            throw std::runtime_error((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
+            throw LuaExecutionError((std::string("Invalid job in AddPeople: ") + helpers::toString(it->first)).c_str());
     }
 
     warehouse->AddGoods(goods, true);

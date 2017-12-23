@@ -1576,8 +1576,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char player)
 
 bool GameClient::SaveToFile(const std::string& filename)
 {
-    GameMessage_Chat saveAnnouncement(0xFF, CD_SYSTEM, "Saving game...");
-    mainPlayer.sendMsg(saveAnnouncement);
+    mainPlayer.sendMsg(GameMessage_Chat(0xFF, CD_SYSTEM, "Saving game..."));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -1597,11 +1596,17 @@ bool GameClient::SaveToFile(const std::string& filename)
     // Enable/Disable debugging of savegames
     save.sgd.debugMode = SETTINGS.global.debugMode;
 
-    // Spiel serialisieren
-    save.sgd.MakeSnapshot(game);
-
-    // Und alles speichern
-    return save.Save(filename, mapinfo.title);
+    try
+    {
+        // Spiel serialisieren
+        save.sgd.MakeSnapshot(game);
+        // Und alles speichern
+        return save.Save(filename, mapinfo.title);
+    } catch(std::exception& e)
+    {
+        OnGameMessage(GameMessage_Chat(0xFF, CD_SYSTEM, std::string("Error during saving: ") + e.what()));
+        return false;
+    }
 }
 
 void GameClient::ResetVisualSettings()

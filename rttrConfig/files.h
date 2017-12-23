@@ -145,10 +145,8 @@ BOOST_CONSTEXPR_OR_CONST unsigned NUM_NATIONS = 5;
 const boost::array<const std::string, NUM_NATIONS> SUPPRESS_UNUSED NATION_ICON_IDS = {
   {"afr_icon", "jap_icon", "rom_icon", "vik_icon", "bab_icon"}};
 
-const helpers::SimpleMultiArray<const std::string, NUM_GFXSETS, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {
-  {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"},
-   {"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"},
-   {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
+const helpers::SimpleMultiArray<const std::string, 2, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {
+  {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"}, {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
 
 const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
 

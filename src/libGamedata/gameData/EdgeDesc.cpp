@@ -15,7 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "GlobalVars.h"
+#include "commonDefines.h" // IWYU pragma: keep
+#include "EdgeDesc.h"
+#include "WorldDescription.h"
+#include "lua/CheckedLuaTable.h"
 
-GlobalVars::GlobalVars() : notdone(true), ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false) {}
+EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
+{
+    luaData.getOrThrow(name, "name");
+    landscape = worldDesc.landscapes.getIndex(luaData.getOrThrow<std::string>("landscape"));
+    if(!landscape)
+        throw GameDataError("Invalid landscape type: " + luaData.getOrThrow<std::string>("landscape"));
+    luaData.getOrThrow(texturePath, "texture");
+    posInTexture = luaData.getRectOrDefault("pos", Rect());
+    luaData.checkUnused();
+}

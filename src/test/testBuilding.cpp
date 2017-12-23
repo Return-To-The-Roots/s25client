@@ -212,7 +212,6 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     // Set player
     GAMECLIENT.SetTestPlayerId(0);
 
-    GLOBALVARS.isTest = true;
     dskGameInterface gameDesktop(this->game);
     const GameWorldViewer& gwv = gameDesktop.GetViewer();
     // Start at a position a bit away from the HQ so all points are castles

@@ -111,7 +111,9 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             break;
 
         case 3: // Objekte laden
-            if(!LOADER.LoadFilesAtGame(game->world.GetDescription().get(game->world.GetLandscapeType()).isWinter, load_nations))
+        {
+            const LandscapeDesc& lt = game->world.GetDescription().get(game->world.GetLandscapeType());
+            if(!LOADER.LoadFilesAtGame(lt.s2Id, lt.isWinter, load_nations))
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
@@ -130,7 +132,7 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
             text->SetText(_("Game crate was picked and spread out..."));
             break;
-
+        }
         case 4: // Welt erstellen
             try
             {

@@ -327,7 +327,7 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesAtGame(bool isWinterGFX, const std::vector<bool>& nations)
+bool Loader::LoadFilesAtGame(uint8_t s2GFXId, bool isWinterGFX, const std::vector<bool>& nations)
 {
     using namespace boost::assign; // Adds the vector += operator
     std::vector<unsigned> files;
@@ -347,13 +347,21 @@ bool Loader::LoadFilesAtGame(bool isWinterGFX, const std::vector<bool>& nations)
     if(!LoadFilesFromArray(files, true))
         return false;
 
-    std::string mapGFXFile = MAP_GFXSET_Z[boost::underlying_cast<uint8_t>(isWinterGFX)];
-    if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[23]) + "/" + mapGFXFile + ".LST", true))
-        return false;
-    map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(mapGFXFile));
-    std::string texGFXFile = TEX_GFXSET[boost::underlying_cast<uint8_t>(isWinterGFX)];
-    if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[20]) + "/" + texGFXFile + ".LBM", true))
-        return false;
+    // TODO: Load directly from description
+    if(s2GFXId < MAP_GFXSET_Z.size())
+    {
+        std::string mapGFXFile = MAP_GFXSET_Z[s2GFXId];
+        if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[23]) + "/" + mapGFXFile + ".LST", true))
+            return false;
+        map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(mapGFXFile));
+    } else
+        map_gfx = NULL;
+    if(s2GFXId < TEX_GFXSET.size())
+    {
+        std::string texGFXFile = TEX_GFXSET[s2GFXId];
+        if(!LoadFileOrDir(RTTRCONFIG.ExpandPath(FILE_PATHS[20]) + "/" + texGFXFile + ".LBM", true))
+            return false;
+    }
 
     if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS]
        && !LoadFileOrDir(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/LSTS/GAME/Babylonier"), true))
@@ -365,7 +373,7 @@ bool Loader::LoadFilesAtGame(bool isWinterGFX, const std::vector<bool>& nations)
     isWinterGFX_ = isWinterGFX;
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
-        nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[boost::underlying_cast<uint8_t>(isWinterGFX)][nation]);
+        nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]);
 
     return true;
 }

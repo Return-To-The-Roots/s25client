@@ -20,7 +20,14 @@
 
 #include <kaguya/kaguya.hpp>
 #include <map>
+#include <stdexcept>
 #include <string>
+
+class LuaExecutionError : public std::runtime_error
+{
+public:
+    LuaExecutionError(const std::string& msg) : std::runtime_error(msg) {}
+};
 
 /// Base class for all lua script handlers
 class LuaInterfaceBase
@@ -31,6 +38,11 @@ public:
     bool LoadScript(const std::string& scriptPath);
     bool LoadScriptString(const std::string& script);
     const std::string& GetScript() const { return script_; }
+    /// Disable or re-enable throwing an exception on error.
+    /// Note: If error throwing is disabled you have to use HasErrorOccurred to detect an error situation
+    void SetThrowOnError(bool doThrow);
+    bool HasErrorOccurred() const { return errorOccured_; }
+    void ClearErrorOccured() { errorOccured_ = false; }
 
 protected:
     LuaInterfaceBase();
@@ -47,10 +59,12 @@ protected:
 
     std::string Translate(const std::string& key);
 
-    static void ErrorHandler(int status, const char* message);
-    static void ErrorHandlerThrow(int status, const char* message);
+    void ErrorHandlerNoThrow(int status, const char* message);
+    void ErrorHandler(int status, const char* message);
 
 private:
+    /// Sticky flag to signal an occurred error during execution of lua code
+    bool errorOccured_;
     std::map<std::string, std::string> translations_;
 
     static std::map<std::string, std::string> GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);

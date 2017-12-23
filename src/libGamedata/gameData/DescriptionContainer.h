@@ -31,7 +31,7 @@ struct DescriptionContainer
     /// Add a new description. Throws if one with the same name already exists
     DescIdx<T> add(T desc);
     /// Return the number of descriptions stored
-    unsigned size() const { return items.size(); }
+    unsigned size() const { return static_cast<unsigned>(items.size()); }
     /// Return the index of the item with the given name
     DescIdx<T> getIndex(const std::string& name) const;
     /// Return the entry with the given name or NULL
@@ -53,7 +53,8 @@ inline DescIdx<T> DescriptionContainer<T>::add(T item)
 {
     if(!getIndex(item.name))
     {
-        RTTR_Assert(size() < DescIdx<T>::INVALID);
+        if(size() >= DescIdx<T>::INVALID)
+            throw std::runtime_error("To many entries!");
         DescIdx<T> idx(size());
         items.push_back(item);
         name2Idx[item.name] = idx.value;

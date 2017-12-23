@@ -88,7 +88,15 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     else
     {
         sgd.PushLongString(GetLua().GetScript());
-        Serializer luaSaveState = GetLua().Serialize();
+        Serializer luaSaveState;
+        try
+        {
+            if(!GetLua().Serialize(luaSaveState))
+                throw SerializedGameData::Error(_("Failed to save lua state!"));
+        } catch(std::exception& e)
+        {
+            throw SerializedGameData::Error(std::string(_("Failed to save lua state!")) + _("Error: ") + e.what());
+        }
         sgd.PushUnsignedInt(0xC0DEBA5E); // Start Lua identifier
         sgd.PushUnsignedInt(luaSaveState.GetLength());
         sgd.PushRawData(luaSaveState.GetData(), luaSaveState.GetLength());
@@ -127,6 +135,13 @@ void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sg
             SetLua(NULL);
             throw SerializedGameData::Error(_("Wrong version for lua script."));
         }
-        GetLua().Deserialize(luaSaveState);
+        try
+        {
+            if(!GetLua().Deserialize(luaSaveState))
+                throw SerializedGameData::Error(_("Failed to load lua state!"));
+        } catch(std::exception& e)
+        {
+            throw SerializedGameData::Error(std::string(_("Failed to load lua state!")) + _("Error: ") + e.what());
+        }
     }
 }

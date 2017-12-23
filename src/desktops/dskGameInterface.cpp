@@ -22,7 +22,6 @@
 #include "Game.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
-#include "GlobalVars.h"
 #include "Loader.h"
 #include "NWFInfo.h"
 #include "Settings.h"
@@ -104,7 +103,7 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
+dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, bool initOGL)
     : Desktop(NULL), game_(game), nwfInfo(GAMECLIENT.GetNWFInfo()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
@@ -138,7 +137,7 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
     cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
 
     InitPlayer();
-    if(!GLOBALVARS.isTest)
+    if(initOGL)
         worldViewer.InitTerrainRenderer();
 }
 

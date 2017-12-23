@@ -15,9 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
+#include "commonDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceBase.h"
-#include "GlobalVars.h"
 #include "mygettext/mygettext.h"
 #include "mygettext/utils.h"
 #include "libutf8/utf8.h"
@@ -27,7 +26,7 @@
 #include <boost/nowide/fstream.hpp>
 #include <algorithm>
 
-LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
+LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), errorOccured_(false)
 {
     lua.openlib("base", luaopen_base);
     lua.openlib("package", luaopen_package);
@@ -36,6 +35,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib())
     lua.openlib("math", luaopen_math);
 
     Register(lua);
+    lua.setErrorHandler(boost::bind(&LuaInterfaceBase::ErrorHandler, this, _1, _2));
     // Quasi-Standard translate function
     lua["_"] = kaguya::function<std::string(const std::string&)>(boost::bind(&LuaInterfaceBase::Translate, this, _1));
     // No-op translate (translated later)
@@ -49,22 +49,18 @@ void LuaInterfaceBase::Register(kaguya::State& state)
     state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
                                  .addFunction("Log", &LuaInterfaceBase::Log)
                                  .addFunction("RegisterTranslations", &LuaInterfaceBase::RegisterTranslations));
-    state.setErrorHandler(ErrorHandler);
+}
+
+void LuaInterfaceBase::ErrorHandlerNoThrow(int status, const char* message)
+{
+    LOG.write(_("Lua error: %s\n")) % (message ? message : "Unknown");
+    errorOccured_ = true;
 }
 
 void LuaInterfaceBase::ErrorHandler(int status, const char* message)
 {
-    LOG.write(_("Lua error: %s\n")) % (message ? message : "Unknown");
-    if(GLOBALVARS.isTest)
-    {
-        GLOBALVARS.errorOccured = true;
-        throw std::runtime_error(message);
-    }
-}
-
-void LuaInterfaceBase::ErrorHandlerThrow(int status, const char* message)
-{
-    throw std::runtime_error(message ? message : "Unknown error");
+    ErrorHandlerNoThrow(status, message);
+    throw LuaExecutionError(message ? message : "Unknown error");
 }
 
 bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
@@ -96,7 +92,13 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script)
         return false;
     else
         script_ = script;
+
     return true;
+}
+
+void LuaInterfaceBase::SetThrowOnError(bool doThrow)
+{
+    lua.setErrorHandler(boost::bind(doThrow ? &LuaInterfaceBase::ErrorHandler : &LuaInterfaceBase::ErrorHandlerNoThrow, this, _1, _2));
 }
 
 std::map<std::string, std::string> LuaInterfaceBase::GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code)
