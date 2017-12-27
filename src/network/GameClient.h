@@ -130,6 +130,10 @@ public:
     void Command_SetColor(unsigned newColor);
     void Command_SetReady(bool isReady);
 
+    /// Called internally when the game is ready to start (loaded and all players ready)
+    /// And a 2nd time when the GUI is ready which actually starty the game
+    void OnGameStart();
+
     void IncreaseSpeed();
     void DecreaseSpeed();
 
@@ -254,8 +258,6 @@ private:
     /// Schreibt den Header der Replaydatei
     void StartReplayRecording(const unsigned random_init);
     void WritePlayerInfo(SavedFile& file);
-    /// Called when the game is ready to start (loaded and all players ready)
-    void OnGameStart();
 
 public:
     /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu verstecken

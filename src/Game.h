@@ -43,14 +43,15 @@ public:
     /// Does the remaining initializations for starting the game
     void Start(bool startFromSave);
     void RunGF();
-    bool IsGameFinished() const { return gameFinished; }
+    bool IsStarted() const { return started; }
+    bool IsGameFinished() const { return finished; }
 
 private:
     /// Updates the statistics
     void StatisticStep();
     /// Check if the objective was reached (if set)
     void CheckObjective();
-    bool gameFinished;
+    bool started, finished;
 };
 
 #endif // Game_h__

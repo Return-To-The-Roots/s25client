@@ -185,6 +185,8 @@ void dskGameInterface::SetActive(bool activate)
     {
         GAMECLIENT.SetInterface(this);
         LOBBYCLIENT.AddListener(this);
+        if(!game_->IsStarted())
+            GAMECLIENT.OnGameStart();
     }
 
     if(!activate)

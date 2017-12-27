@@ -352,7 +352,6 @@ void GameClient::GameLoaded()
 {
     RTTR_Assert(state == CS_LOADING);
 
-    game->Start(mapinfo.savegame);
     state = CS_LOADED;
 
     if(replayMode)
@@ -372,7 +371,6 @@ void GameClient::GameLoaded()
             }
         }
         SendNothingNC();
-        framesinfo.isPaused = false;
     }
 }
 
@@ -1203,11 +1201,10 @@ bool GameClient::OnGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 /// testet ob ein Netwerkframe abgelaufen ist und führt dann ggf die Befehle aus
 void GameClient::ExecuteGameFrame()
 {
-    const unsigned curGF = GetGFNumber();
-    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
-
     if(framesinfo.isPaused)
         return; // Pause
+
+    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
 
     if(framesinfo.forcePauseLen.count())
     {
@@ -1217,6 +1214,7 @@ void GameClient::ExecuteGameFrame()
             return; // Pause
     }
 
+    const unsigned curGF = GetGFNumber();
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
     if(skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
@@ -1333,13 +1331,18 @@ void GameClient::WritePlayerInfo(SavedFile& file)
 
 void GameClient::OnGameStart()
 {
-    RTTR_Assert(state == CS_LOADED);
-    GAMEMANAGER.ResetAverageFPS();
-    framesinfo.lastTime = FramesInfo::UsedClock::now();
-    framesinfo.isPaused = replayMode;
-    state = CS_GAME;
-    if(ci)
-        ci->CI_GameStarted(game);
+    if(state == CS_LOADED)
+    {
+        GAMEMANAGER.ResetAverageFPS();
+        framesinfo.lastTime = FramesInfo::UsedClock::now();
+        state = CS_GAME;
+        if(ci)
+            ci->CI_GameStarted(game);
+    } else if(state == CS_GAME && !game->IsStarted())
+    {
+        framesinfo.isPaused = replayMode;
+        game->Start(mapinfo.savegame);
+    }
 }
 
 void GameClient::SetTestPlayerId(unsigned id)
