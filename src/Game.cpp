@@ -23,17 +23,20 @@
 #include "lua/LuaInterfaceGame.h"
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
-    : ggs(settings), em(new EventManager(startGF)), world(players, ggs, *em), gameFinished(false)
+    : ggs(settings), em(new EventManager(startGF)), world(players, ggs, *em), started(false), finished(false)
 {}
 
 Game::Game(const GlobalGameSettings& settings, EventManager* em, const std::vector<PlayerInfo>& players)
-    : ggs(settings), em(em), world(players, ggs, *em), gameFinished(false)
+    : ggs(settings), em(em), world(players, ggs, *em), started(false), finished(false)
 {}
 
 Game::~Game() {}
 
 void Game::Start(bool startFromSave)
 {
+    if(started)
+        return;
+    started = true;
     if(startFromSave)
         CheckObjective();
     else
@@ -76,7 +79,7 @@ void Game::StatisticStep()
 void Game::CheckObjective()
 {
     // Check objective if there is one
-    if(gameFinished || (ggs.objective != GO_CONQUER3_4 && ggs.objective != GO_TOTALDOMINATION))
+    if(finished || (ggs.objective != GO_CONQUER3_4 && ggs.objective != GO_TOTALDOMINATION))
         return;
 
     // check winning condition
@@ -125,22 +128,22 @@ void Game::CheckObjective()
     {
         case GO_CONQUER3_4: // at least 3/4 of the land
             if((max * 4 >= sum * 3) && (best != 0xFFFF))
-                gameFinished = true;
+                finished = true;
             if((maxteam * 4 >= sum * 3) && (bestteam != 0xFFFF))
-                gameFinished = true;
+                finished = true;
             break;
 
         case GO_TOTALDOMINATION: // whole populated land
             if((max == sum) && (best != 0xFFFF))
-                gameFinished = true;
+                finished = true;
             if((maxteam == sum) && (bestteam != 0xFFFF))
-                gameFinished = true;
+                finished = true;
             break;
         default: break;
     }
 
     // We have a winner!
-    if(gameFinished)
+    if(finished)
     {
         if(maxteam <= best)
             world.GetGameInterface()->GI_Winner(best);
