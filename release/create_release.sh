@@ -94,6 +94,8 @@ echo "Savegame version:   $SAVEGAMEVERSION"
 
 unpackedPath=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
 
+rm -rf "${unpackedPath}"
+
 # save build version
 cp -v build_version_defines.h build_version_defines.h.bak
 

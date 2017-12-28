@@ -131,8 +131,8 @@ case "$SYSTEM_NAME" in
 		echo "extraction of debug symbols for Apple currently not supported" >&2
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25edit
-		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/video/libvideoSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}lib/share/s25rttr/driver/audio/libaudioSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}lib/driver/video/libvideoSDL.dylib
+		i686-apple-darwin10-strip -S ${DESTDIR}lib/driver/audio/libaudioSDL.dylib
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s25update
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/sound-convert
 		i686-apple-darwin10-strip -S ${DESTDIR}bin/RTTR/s-c_resample
