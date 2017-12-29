@@ -36,6 +36,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
 #include <boost/test/unit_test.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace {
 struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
@@ -262,10 +263,13 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             std::vector<PlayerInfo> players;
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-            GlobalGameSettings newGGS = save.ggs;
+            GlobalGameSettings& newGGS = save.ggs;
             TestEventManager newEm(loadSave.start_gf);
             GameWorld newWorld(players, newGGS, newEm);
-            save.sgd.ReadSnapshot(newWorld);
+            Game newGame(newGGS, loadSave.start_gf, players);
+            boost::shared_ptr<Game> sharedGame;
+            sharedGame.reset(&newGame);
+            save.sgd.ReadSnapshot(sharedGame, newWorld);
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());

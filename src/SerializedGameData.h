@@ -29,12 +29,14 @@
 #include <map>
 #include <set>
 #include <stdexcept>
+#include <boost/weak_ptr.hpp>
 
 class GameObject;
 class GameWorld;
 class EventManager;
 class BinaryFile;
 class GameEvent;
+class Game;
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
@@ -53,7 +55,7 @@ public:
     void MakeSnapshot(const GameWorld& gw);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(GameWorld& gw);
+    void ReadSnapshot(boost::weak_ptr<Game> game, GameWorld& gw);
 
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 

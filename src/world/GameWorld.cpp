@@ -37,7 +37,7 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFilePath)
+bool GameWorld::LoadMap(boost::weak_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -52,7 +52,7 @@ bool GameWorld::LoadMap(const std::string& mapFilePath, const std::string& luaFi
 
     if(bfs::exists(luaFilePath))
     {
-        lua.reset(new LuaInterfaceGame(*this));
+        lua.reset(new LuaInterfaceGame(game));
         if(!lua->LoadScript(luaFilePath) || !lua->CheckScriptVersion())
         {
             lua.reset();
@@ -105,7 +105,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void GameWorld::Deserialize(SerializedGameData& sgd)
+void GameWorld::Deserialize(boost::weak_ptr<Game> game, SerializedGameData& sgd)
 {
     // Headinformationen
     const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
@@ -135,7 +135,7 @@ void GameWorld::Deserialize(SerializedGameData& sgd)
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
-        lua.reset(new LuaInterfaceGame(*this));
+        lua.reset(new LuaInterfaceGame(game));
         if(!lua->LoadScriptString(luaScript))
         {
             lua.reset();

@@ -309,7 +309,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     GameWorld& gameWorld = game->world;
     if(mapinfo.savegame)
-        mapinfo.savegame->sgd.ReadSnapshot(gameWorld);
+        mapinfo.savegame->sgd.ReadSnapshot(game, gameWorld);
     else
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
@@ -317,7 +317,7 @@ void GameClient::StartGame(const unsigned random_init)
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
-        gameWorld.LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
+        gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath);
 
         /// Evtl. Goldvorkommen ändern
         Resource::Type target; // löschen

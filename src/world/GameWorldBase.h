@@ -52,7 +52,6 @@ class GameWorldBase : public World
     EventManager& em;
 
 protected:
-    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
     /// Interface zum GUI
     GameInterface* gi;
     /// harbor building sites created by ships
@@ -62,6 +61,8 @@ public:
     GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
 
+
+    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, LandscapeType lt) override;
     // Remaining initialization after loading (BQ...)

@@ -218,8 +218,8 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
 
     for(unsigned i = 0; i < 2; i++)
     {
-        BOOST_CHECK(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.em.GetCurrentGF())));
-        world.em.ExecuteNextGF();
+        BOOST_CHECK(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.GetEvMgr().GetCurrentGF())));
+        world.GetEvMgr().ExecuteNextGF();
     }
 
     StoreChat storeChat;

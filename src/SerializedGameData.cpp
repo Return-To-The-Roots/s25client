@@ -247,7 +247,7 @@ void SerializedGameData::MakeSnapshot(const GameWorld& gw)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(GameWorld& gw)
+void SerializedGameData::ReadSnapshot(boost::weak_ptr<Game> game, GameWorld& gw)
 {
     Prepare(true);
 
@@ -255,7 +255,7 @@ void SerializedGameData::ReadSnapshot(GameWorld& gw)
 
     expectedNumObjects = PopUnsignedInt();
 
-    gw.Deserialize(*this);
+    gw.Deserialize(game, *this);
     em->Deserialize(*this);
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);

@@ -29,11 +29,12 @@
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
+#include "Game.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
 
-LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
+LuaInterfaceGame::LuaInterfaceGame(boost::weak_ptr<Game> game) : game(game), gw(game.lock()->world)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name

@@ -33,18 +33,23 @@
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
+#include "Game.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <vector>
 
-class GameWorldWithLuaAccess : public GameWorldGame
+class GameWithLuaAccess : public Game
 {
 public:
     GlobalGameSettings ggs;
-    EventManager em;
+    GameWithLuaAccess() : Game(ggs, (unsigned int)0, CreatePlayers()) { createLua(); }
 
-    GameWorldWithLuaAccess() : GameWorldGame(CreatePlayers(), ggs, em), em(0) { createLua(); }
-
-    void createLua() { lua.reset(new LuaInterfaceGame(*this)); }
+    void createLua() { 
+        //boost::shared_ptr<Game> game = boost::make_shared<Game>(*this);
+        //world.lua.reset(new LuaInterfaceGame(game));
+    }
 
     static std::vector<PlayerInfo> CreatePlayers()
     {
@@ -70,10 +75,14 @@ public:
 
 struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture
 {
-    GameWorldWithLuaAccess world;
+public:
+    GameWithLuaAccess game;
+    GameWorld& world;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture() { luaBase = &world.GetLua(); }
+    LuaTestsFixture() : world(game.world) { 
+        luaBase = &game.world.GetLua(); 
+    }
 
     void initWorld()
     {
