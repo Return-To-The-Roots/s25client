@@ -35,7 +35,7 @@ protected:
 public:
     LuaBaseFixture() : luaBase_(NULL) {}
 
-    void executeLua(const std::string& luaCode) { luaBase_->LoadScriptString(luaCode); }
+    void executeLua(const std::string& luaCode) { luaBase_->LoadScriptString(luaCode, true); }
     void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
 
     boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)

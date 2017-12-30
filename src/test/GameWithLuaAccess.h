@@ -102,7 +102,7 @@ public:
 
     LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world) { 
         game->world.SetLua(new LuaInterfaceGame(game));
-        luaBase = &game->world.GetLua(); 
+        setLua(&game->world.GetLua());
     }
 
     void initWorld()

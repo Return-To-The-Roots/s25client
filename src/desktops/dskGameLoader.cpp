@@ -112,20 +112,17 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
         case 3: // Objekte laden
         {
+            LOADER.ClearOverrideFolders();
+            LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
+            LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
+            if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+                LOADER.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
+
             const LandscapeDesc& lt = game->world.GetDescription().get(game->world.GetLandscapeType());
             if(!LOADER.LoadFilesAtGame(lt.s2Id, lt.isWinter, load_nations))
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
-            }
-
-            if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
-            {
-                if(!LOADER.LoadFilesFromAddon(AddonId::CATAPULT_GRAPHICS))
-                {
-                    LC_Status_Error(_("Failed to load addon objects."));
-                    return;
-                }
             }
 
             LOADER.fillCaches();

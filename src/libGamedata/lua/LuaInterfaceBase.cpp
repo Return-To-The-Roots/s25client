@@ -76,23 +76,36 @@ bool LuaInterfaceBase::LoadScript(const std::string& scriptPath)
     }
     if(!ValidateUTF8(tmpScript))
         return false;
-    if(!lua.dofile(scriptPath))
+    try
+    {
+        if(!lua.dofile(scriptPath))
+            return false;
+        else
+            script_ = tmpScript;
+    } catch(LuaExecutionError&)
+    {
         return false;
-    else
-        script_ = tmpScript;
+    }
     return true;
 }
 
-bool LuaInterfaceBase::LoadScriptString(const std::string& script)
+bool LuaInterfaceBase::LoadScriptString(const std::string& script, bool rethrowError)
 {
     script_.clear();
     if(!ValidateUTF8(script))
         return false;
-    if(!lua.dostring(script))
+    try
+    {
+        if(!lua.dostring(script))
         return false;
     else
         script_ = script;
-
+    } catch(LuaExecutionError&)
+    {
+        if(rethrowError)
+            throw;
+        return false;
+    }
     return true;
 }
 

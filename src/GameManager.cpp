@@ -239,7 +239,7 @@ bool GameManager::Run()
 bool GameManager::ShowSplashscreen()
 {
     libsiedler2::Archiv arSplash;
-    if(!LOADER.LoadFile(RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp"), NULL, arSplash))
+    if(!LOADER.LoadFile(arSplash, RTTRCONFIG.ExpandPath("<RTTR_RTTR>/splash.bmp")))
         return false;
     glArchivItem_Bitmap* image = dynamic_cast<glArchivItem_Bitmap*>(arSplash[0]);
     if(!image)

@@ -36,13 +36,15 @@ public:
     static void Register(kaguya::State& state);
 
     bool LoadScript(const std::string& scriptPath);
-    bool LoadScriptString(const std::string& script);
+    bool LoadScriptString(const std::string& script, bool rethrowError = false);
     const std::string& GetScript() const { return script_; }
     /// Disable or re-enable throwing an exception on error.
     /// Note: If error throwing is disabled you have to use HasErrorOccurred to detect an error situation
     void SetThrowOnError(bool doThrow);
     bool HasErrorOccurred() const { return errorOccured_; }
     void ClearErrorOccured() { errorOccured_ = false; }
+
+    kaguya::State& GetState() { return lua; }
 
 protected:
     LuaInterfaceBase();
