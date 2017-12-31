@@ -20,6 +20,7 @@
 #include "WorldDescription.h"
 #include "helpers/converters.h"
 #include "lua/CheckedLuaTable.h"
+#include "lua/LuaHelpers.h"
 
 TerrainKind strToTerrainKind(const std::string& name)
 {
@@ -109,6 +110,7 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
         throw GameDataError("Invalid property '" + property + "'");
     humidity = luaData.getOrDefault("humidity", getDefaultHumidity(kind));
     luaData.getOrThrow(texturePath, "texture");
+    lua::validatePath(texturePath);
     posInTexture = luaData.getRectOrDefault("pos", Rect());
     palAnimIdx = luaData.getOrDefault<int8_t>("palAnimIdx", -1);
     luaData.getOrThrow(minimapColor, "color");

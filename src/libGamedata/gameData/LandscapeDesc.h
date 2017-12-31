@@ -42,6 +42,7 @@ struct LandscapeDesc
     };
     BOOST_STATIC_CONSTEXPR unsigned NUM_ROADTYPES = Mountain + 1;
     std::string name;
+    std::string mapGfxPath;
     uint8_t s2Id;
     bool isWinter;
     boost::array<RoadTextureDesc, NUM_ROADTYPES> roadTexDesc;

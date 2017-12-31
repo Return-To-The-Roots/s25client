@@ -19,6 +19,7 @@
 #include "EdgeDesc.h"
 #include "WorldDescription.h"
 #include "lua/CheckedLuaTable.h"
+#include "lua/LuaHelpers.h"
 
 EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {
@@ -27,6 +28,7 @@ EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
     if(!landscape)
         throw GameDataError("Invalid landscape type: " + luaData.getOrThrow<std::string>("landscape"));
     luaData.getOrThrow(texturePath, "texture");
+    lua::validatePath(texturePath);
     posInTexture = luaData.getRectOrDefault("pos", Rect());
     luaData.checkUnused();
 }

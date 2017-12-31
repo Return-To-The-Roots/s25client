@@ -85,9 +85,11 @@ public:
     /// Lädt alle allgemeinen Dateien.
     bool LoadFilesAtStart();
     /// Lädt die Spieldateien.
-    bool LoadFilesAtGame(uint8_t s2GFXId, bool isWinterGFX, const std::vector<bool>& nations);
+    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations);
     /// Load all files from the override folders that have not been use yet
     bool LoadOverrideFiles();
+    /// Load all given files with the default palette
+    bool LoadFiles(const std::vector<std::string>& files);
 
     /// Creates archives with empty files for the GUI (for testing purposes)
     void LoadDummyGUIFiles();

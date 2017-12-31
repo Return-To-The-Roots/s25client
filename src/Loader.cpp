@@ -356,7 +356,7 @@ void Loader::LoadDummyGUIFiles()
  *
  *  @return @p true bei Erfolg, @p false bei Fehler.
  */
-bool Loader::LoadFilesAtGame(uint8_t s2GFXId, bool isWinterGFX, const std::vector<bool>& nations)
+bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<bool>& nations)
 {
     if(NAT_BABYLONIANS < nations.size() && nations[NAT_BABYLONIANS])
         AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME/Babylonier", false);
@@ -381,28 +381,17 @@ bool Loader::LoadFilesAtGame(uint8_t s2GFXId, bool isWinterGFX, const std::vecto
 
     const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
 
-    // TODO: Load directly from description
-    if(s2GFXId < MAP_GFXSET_Z.size())
-    {
-        std::string mapGFXFile = MAP_GFXSET_Z[s2GFXId];
-        if(!LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[23]) + "/" + mapGFXFile + ".LST", pal5))
-            return false;
-        map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(mapGFXFile));
-    } else
-        map_gfx = NULL;
-    if(s2GFXId < TEX_GFXSET.size())
-    {
-        std::string texGFXFile = TEX_GFXSET[s2GFXId];
-        if(!LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[20]) + "/" + texGFXFile + ".LBM", pal5))
-            return false;
-    }
+    std::string mapGFXFile = RTTRCONFIG.ExpandPath(mapGfxPath);
+    if(!LoadFile(mapGFXFile, pal5))
+        return false;
+    map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).filename().string()));
 
     isWinterGFX_ = isWinterGFX;
 
     for(unsigned nation = 0; nation < NUM_NATS; ++nation)
         nation_gfx[nation] = &GetInfoN(NATION_GFXSET_Z[isWinterGFX ? 1 : 0][nation]);
 
-    return LoadOverrideFiles();
+    return true;
 }
 
 bool Loader::LoadOverrideFiles()
@@ -412,6 +401,23 @@ bool Loader::LoadOverrideFiles()
         if(!LoadOverrideDirectory(overrideFolder.path))
             return false;
     }
+    return true;
+}
+
+bool Loader::LoadFiles(const std::vector<std::string>& files)
+{
+    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    // load the files
+    BOOST_FOREACH(const std::string& curFile, files)
+    {
+        std::string filePath = RTTRCONFIG.ExpandPath(curFile);
+        if(!LoadFile(filePath, pal5))
+        {
+            LOG.write(_("Failed to load %s\n")) % filePath;
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -1060,17 +1066,9 @@ bool Loader::LoadOverrideDirectory(const std::string& path)
  */
 bool Loader::LoadFilesFromArray(const std::vector<unsigned>& files)
 {
-    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
-    // load the files
+    std::vector<std::string> sFiles;
+    sFiles.reserve(files.size());
     BOOST_FOREACH(unsigned curFileIdx, files)
-    {
-        std::string filePath = RTTRCONFIG.ExpandPath(FILE_PATHS[curFileIdx]);
-        if(!LoadFile(filePath, pal5))
-        {
-            LOG.write(_("Failed to load %s\n")) % filePath;
-            return false;
-        }
-    }
-
-    return true;
+        sFiles.push_back(FILE_PATHS[curFileIdx]);
+    return LoadFiles(sFiles);
 }

@@ -24,6 +24,8 @@ namespace lua {
 
 /// If the given value is not true, a runtime error with the given description is thrown
 void assertTrue(bool testValue, const std::string& error);
+/// Validate the path. A valid path starts with '<RTTR_' and contains no '..'
+void validatePath(const std::string& path);
 
 } // namespace lua
 

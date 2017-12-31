@@ -97,9 +97,9 @@ bool LuaInterfaceBase::LoadScriptString(const std::string& script, bool rethrowE
     try
     {
         if(!lua.dostring(script))
-        return false;
-    else
-        script_ = script;
+            return false;
+        else
+            script_ = script;
     } catch(LuaExecutionError&)
     {
         if(rethrowError)

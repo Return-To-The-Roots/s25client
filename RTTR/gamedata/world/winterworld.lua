@@ -1,22 +1,25 @@
+texFile = "<RTTR_GAME>/GFX/TEXTURES/TEX7.LBM";
+
 rttr:AddLandscape{
 	name = __"winterworld",
+	mapGfx = "<RTTR_GAME>/DATA/MAP_2_Z.LST",
 	s2Id = 2,
 	isWinter = true,
 	roads = {
 		normal = {
-			texture = "TEX7.LBM",
+			texture = texFile,
 			pos = {192, 0, 64, 16}
 		},
 		upgraded = {
-			texture = "TEX7.LBM",
+			texture = texFile,
 			pos = {192, 16, 64, 16}
 		},
 		boat = {
-			texture = "TEX7.LBM",
+			texture = texFile,
 			pos = {192, 32, 64, 16}
 		},
 		mountain = {
-			texture = "TEX7.LBM",
+			texture = texFile,
 			pos = {192, 160, 64, 16}
 		}
 	}
@@ -28,7 +31,7 @@ rttr:AddTerrainEdge{
 	-- Landscape to which this applies by default
 	landscape = "winterworld",
 	-- Filename of the texture image
-	texture = "TEX7.LBM",
+	texture = texFile,
 	-- Position and size {x, y, w, h} in the image if it contains multiple textures
 	-- Can be left out. A size of 0 (w and/or h) is interpreted as the remaining image
 	pos = {192, 176, 64, 16}
@@ -36,25 +39,25 @@ rttr:AddTerrainEdge{
 rttr:AddTerrainEdge{
 	name = "ww_mountain",
 	landscape = "winterworld",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 192, 64, 16}
 }
 rttr:AddTerrainEdge{
 	name = "ww_ice",
 	landscape = "winterworld",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 208, 64, 16}
 }
 rttr:AddTerrainEdge{
 	name = "ww_tundra",
 	landscape = "winterworld",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 224, 64, 16}
 }
 rttr:AddTerrainEdge{
 	name = "ww_water",
 	landscape = "winterworld",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 240, 64, 16}
 }
 
@@ -85,7 +88,7 @@ rttr:AddTerrain{
 	-- Defaults to 0 for lava, snow, mountain, 100 otherwise
 	humidity = 0,
 	-- Filename of the texture image
-	texture = "TEX7.LBM",
+	texture = texFile,
 	-- Position and size {x, y, w, h} in the image if it contains multiple textures
 	-- Can be left out. A size of 0 (w and/or h) is interpreted as the remaining image
 	pos = {0, 0, 30, 30},
@@ -103,7 +106,7 @@ rttr:AddTerrain{
 	kind = "land",
 	property = "walkable",
 	humidity = 0,
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {48, 0, 48, 48},
 	color = 0xFF0070b0
 }
@@ -115,7 +118,7 @@ rttr:AddTerrain{
 	edgePriority = 83,
 	kind = "water",
 	property = "unwalkable",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {96, 0, 30, 30},
 	color = 0xFF00286c
 }
@@ -126,7 +129,7 @@ rttr:AddTerrain{
 	s2Id = 0xF,
 	edgePriority = 13,
 	kind = "land",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {144, 0, 45, 42},
 	color = 0xFF7c84ac
 }
@@ -137,7 +140,7 @@ rttr:AddTerrain{
 	s2Id = 1,
 	edgePriority = 48,
 	kind = "mountain",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {0, 48, 48, 48},
 	color = 0xFF54586c
 }
@@ -148,7 +151,7 @@ rttr:AddTerrain{
 	s2Id = 0XB,
 	edgePriority = 63,
 	kind = "mountain",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {48, 48, 48, 48},
 	color = 0xFF60607c
 }
@@ -159,7 +162,7 @@ rttr:AddTerrain{
 	s2Id = 0XC,
 	edgePriority = 58,
 	kind = "mountain",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {96, 48, 48, 48},
 	color = 0xFF686c8c
 }
@@ -170,7 +173,7 @@ rttr:AddTerrain{
 	s2Id = 0xD,
 	edgePriority = 53,
 	kind = "mountain",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {144, 48, 48, 48},
 	color = 0xFF686c8c
 }
@@ -182,7 +185,7 @@ rttr:AddTerrain{
 	edgePriority = 18,
 	kind = "land",
 	humidity = 60,
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {0, 96, 48, 48},
 	color = 0xFFa0accc
 }
@@ -194,7 +197,7 @@ rttr:AddTerrain{
 	edgePriority = 23,
 	kind = "land",
 	humidity = 95,
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {48, 96, 48, 48},
 	color = 0xFFb0a494
 }
@@ -205,7 +208,7 @@ rttr:AddTerrain{
 	s2Id = 9,
 	edgePriority = 28,
 	kind = "land",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {96, 96, 48, 48},
 	color = 0xFF88a874
 }
@@ -216,7 +219,7 @@ rttr:AddTerrain{
 	s2Id = 0xA,
 	edgePriority = 33,
 	kind = "land",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {144, 96, 48, 48},
 	color = 0xFFa0accc
 }
@@ -228,7 +231,7 @@ rttr:AddTerrain{
 	edgePriority = 8,
 	kind = "land",
 	humidity = 30,
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {0, 144, 44, 41},
 	color = 0xFF88b15e
 }
@@ -240,7 +243,7 @@ rttr:AddTerrain{
 	edgePriority = 68,
 	kind = "snow",
 	property = "buildable",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {48, 144, 48, 48},
 	color = 0xFF94a0c0
 }
@@ -251,7 +254,7 @@ rttr:AddTerrain{
 	s2Id = 5,
 	edgePriority = 78,
 	kind = "water",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 48, 55, 56},
 	palAnimIdx = 10,
 	color = 0xFF1038a4
@@ -262,7 +265,7 @@ rttr:AddTerrain{
 	edgeType = "none",
 	s2Id = 0x10,
 	kind = "lava",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 104, 55, 56},
 	palAnimIdx = 11,
 	color = 0xFFc02020
@@ -275,7 +278,7 @@ rttr:AddTerrain{
 	edgePriority = 78,
 	kind = "water",
 	property = "unwalkable",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 48, 55, 56},
 	palAnimIdx = 10,
 	color = 0xFF1038a4
@@ -288,7 +291,7 @@ rttr:AddTerrain{
 	edgePriority = 78,
 	kind = "water",
 	property = "buildable",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {192, 48, 55, 56},
 	palAnimIdx = 10,
 	color = 0xFF1038a4
@@ -301,7 +304,7 @@ rttr:AddTerrain{
 	edgePriority = 38,
 	kind = "mountain",
 	property = "buildable",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {48, 48, 48, 48},
 	color = 0xFF60607c
 }
@@ -311,7 +314,7 @@ rttr:AddTerrain{
 	edgeType = "none",
 	s2Id = 0x14,
 	kind = "lava",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {66, 223, 31, 32},
 	palAnimIdx = 11,
 	color = 0xFFc02020
@@ -322,7 +325,7 @@ rttr:AddTerrain{
 	edgeType = "none",
 	s2Id = 0x15,
 	kind = "lava",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {99, 223, 31, 32},
 	palAnimIdx = 11,
 	color = 0xFFc02020
@@ -333,7 +336,7 @@ rttr:AddTerrain{
 	edgeType = "none",
 	s2Id = 0x16,
 	kind = "lava",
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {132, 223, 31, 32},
 	palAnimIdx = 11,
 	color = 0xFFc02020
@@ -347,7 +350,7 @@ rttr:AddTerrain{
 	kind = "land",
 	property = "walkable",
 	humidity = 0,
-	texture = "TEX7.LBM",
+	texture = texFile,
 	pos = {48, 0, 48, 48},
 	color = 0xFF0070b0
 }

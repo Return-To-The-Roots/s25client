@@ -18,18 +18,23 @@
 #include "commonDefines.h" // IWYU pragma: keep
 #include "LandscapeDesc.h"
 #include "lua/CheckedLuaTable.h"
+#include "lua/LuaHelpers.h"
 
 LandscapeDesc::LandscapeDesc(CheckedLuaTable luaData, const WorldDescription&)
 {
     static const boost::array<std::string, NUM_ROADTYPES> roadTypeNames = {{"normal", "upgraded", "boat", "mountain"}};
     luaData.getOrThrow(name, "name");
+    luaData.getOrThrow(mapGfxPath, "mapGfx");
+    lua::validatePath(mapGfxPath);
     s2Id = luaData.getOrDefault<uint8_t>("s2Id", 0xFF);
     isWinter = luaData.getOrDefault("isWinter", false);
+
     CheckedLuaTable roadData = luaData.getOrThrow<CheckedLuaTable>("roads");
     for(unsigned i = 0; i < roadTypeNames.size(); i++)
     {
         CheckedLuaTable texData = roadData.getOrThrow<CheckedLuaTable>(roadTypeNames[i]);
         texData.getOrThrow(roadTexDesc[i].texturePath, "texture");
+        lua::validatePath(roadTexDesc[i].texturePath);
         roadTexDesc[i].posInTexture = texData.getRectOrDefault("pos", Rect());
         texData.checkUnused();
     }

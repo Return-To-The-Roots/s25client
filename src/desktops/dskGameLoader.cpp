@@ -24,6 +24,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "addons/const_addons.h"
+#include "boost/foreach.hpp"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
 #include "dskDirectIP.h"
@@ -31,11 +32,13 @@
 #include "dskLobby.h"
 #include "dskSinglePlayer.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"
+#include <set>
 #include <vector>
 
 /**
@@ -119,7 +122,8 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
                 LOADER.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
 
             const LandscapeDesc& lt = game->world.GetDescription().get(game->world.GetLandscapeType());
-            if(!LOADER.LoadFilesAtGame(lt.s2Id, lt.isWinter, load_nations))
+            if(!LOADER.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !LOADER.LoadFiles(GatherRequiredTexturePaths())
+               || !LOADER.LoadOverrideFiles())
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
@@ -156,6 +160,47 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
     ++position;
     timer->Start(interval);
+}
+
+std::vector<std::string> dskGameLoader::GatherRequiredTexturePaths() const
+{
+    std::vector<std::string> textures;
+    std::set<DescIdx<TerrainDesc> > usedTerrains;
+    RTTR_FOREACH_PT(MapPoint, game->world.GetSize())
+    {
+        const MapNode& node = game->world.GetNode(pt);
+        usedTerrains.insert(node.t1);
+        usedTerrains.insert(node.t2);
+    }
+    std::set<DescIdx<EdgeDesc> > usedEdges;
+    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
+
+    BOOST_FOREACH(DescIdx<TerrainDesc> tIdx, usedTerrains)
+    {
+        const TerrainDesc& t = game->world.GetDescription().get(tIdx);
+        if(!helpers::contains(textures, t.texturePath))
+            textures.push_back(t.texturePath);
+        usedEdges.insert(t.edgeType);
+        usedLandscapes.insert(t.landscape);
+    }
+    BOOST_FOREACH(DescIdx<EdgeDesc> eIdx, usedEdges)
+    {
+        if(!eIdx)
+            continue;
+        const EdgeDesc& e = game->world.GetDescription().get(eIdx);
+        if(!helpers::contains(textures, e.texturePath))
+            textures.push_back(e.texturePath);
+    }
+    BOOST_FOREACH(DescIdx<LandscapeDesc> lIdx, usedLandscapes)
+    {
+        const LandscapeDesc& e = game->world.GetDescription().get(lIdx);
+        BOOST_FOREACH(const RoadTextureDesc& r, e.roadTexDesc)
+        {
+            if(!helpers::contains(textures, r.texturePath))
+                textures.push_back(r.texturePath);
+        }
+    }
+    return textures;
 }
 
 /**
