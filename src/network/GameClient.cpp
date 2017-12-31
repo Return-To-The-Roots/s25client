@@ -72,6 +72,7 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
 #include <iostream>
+#include "lua/LuaInterfaceBase.h"
 
 void GameClient::ClientConfig::Clear()
 {
@@ -1217,55 +1218,66 @@ void GameClient::ExecuteGameFrame()
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
     if(skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
-        if(replayMode)
+        try
         {
-            // In replay mode we have all commands in the file -> Execute them
-            ExecuteGameFrame_Replay();
-        } else
-        {
-            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
-            bool isNWF = (curGF == nwfInfo->getNextNWF());
-            // Is it time for a NWF, handle that first
-            if(isNWF)
+            if(replayMode)
             {
-                // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
-                // -> Don't execute GF, don't autosave etc.
-                if(!nwfInfo->isReady())
+                // In replay mode we have all commands in the file -> Execute them
+                ExecuteGameFrame_Replay();
+            } else
+            {
+                RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+                bool isNWF = (curGF == nwfInfo->getNextNWF());
+                // Is it time for a NWF, handle that first
+                if(isNWF)
                 {
-                    // If a player is a few GFs behind, he will never catch up and always lag
-                    // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
-                    // Do not reset frameTime or lastTime as this will mess up interpolation for drawing
-                    framesinfo.forcePauseStart = currentTime;
-                    framesinfo.forcePauseLen = (rand() * 4 * framesinfo.gf_length) / RAND_MAX;
-                    return;
+                    // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
+                    // -> Don't execute GF, don't autosave etc.
+                    if(!nwfInfo->isReady())
+                    {
+                        // If a player is a few GFs behind, he will never catch up and always lag
+                        // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
+                        // Do not reset frameTime or lastTime as this will mess up interpolation for drawing
+                        framesinfo.forcePauseStart = currentTime;
+                        framesinfo.forcePauseLen = (rand() * 4 * framesinfo.gf_length) / RAND_MAX;
+                        return;
+                    }
+
+                    RTTR_Assert(nwfInfo->getServerInfo().gf == curGF);
+
+                    ExecuteNWF();
+
+                    FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+                    nwfInfo->execute(framesinfo);
+                    if(oldGFLen != framesinfo.gf_length)
+                    {
+                        LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
+                            % framesinfo.nwf_length;
+                    }
                 }
 
-                RTTR_Assert(nwfInfo->getServerInfo().gf == curGF);
+                NextGF(isNWF);
+                RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+                HandleAutosave();
 
-                ExecuteNWF();
-
-                FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
-                nwfInfo->execute(framesinfo);
-                if(oldGFLen != framesinfo.gf_length)
-                {
-                    LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
-                      % framesinfo.nwf_length;
-                }
+                // GF-Ende im Replay aktualisieren
+                if(replayinfo && replayinfo->replay.IsRecording())
+                    replayinfo->replay.UpdateLastGF(curGF);
             }
 
-            NextGF(isNWF);
-            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
-            HandleAutosave();
-
-            // GF-Ende im Replay aktualisieren
-            if(replayinfo && replayinfo->replay.IsRecording())
-                replayinfo->replay.UpdateLastGF(curGF);
+            // Store this timestamp
+            framesinfo.lastTime = currentTime;
+            // Reset frameTime
+            framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
+        } catch(LuaExecutionError& e)
+        {
+            if(ci)
+            {
+                SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
+                ci->CI_Error(CE_INVALID_MAP);
+            }
+            Stop();
         }
-
-        // Store this timestamp
-        framesinfo.lastTime = currentTime;
-        // Reset frameTime
-        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
 
     } else
     {
@@ -1569,6 +1581,8 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
 void GameClient::SystemChat(const std::string& text, unsigned char player)
 {
+    if(!ci)
+        return;
     if(player == 0xFF)
         player = mainPlayer.playerId;
     ci->CI_Chat(player, CD_SYSTEM, text);
