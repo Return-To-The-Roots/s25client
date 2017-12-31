@@ -1349,9 +1349,9 @@ void GameWorldGame::PlaceAndFixWater()
 
         int amount = 0;
 
-        // only set water if no desert, water, mountain or lava
+        // only set water if no desert, water, mineable mountain or lava
         if(!(World::HasTerrain(pt, TT_DESERT) || World::HasTerrain(pt, TerrainData::IsWater)
-             || World::HasTerrain(pt, TerrainData::IsMountain) || World::HasTerrain(pt, TerrainData::IsLava)))
+             || World::HasTerrain(pt, TerrainData::IsMineable) || World::HasTerrain(pt, TerrainData::IsLava)))
         {
             if(waterEverywhere)
                 amount = 7;
@@ -1367,9 +1367,8 @@ void GameWorldGame::PlaceAndFixWater()
         }
 
         if(amount != 0)
-        {
             curNodeResource = Resource(Resource::Water, amount);
-        } else
+        else
             curNodeResource = Resource(Resource::Nothing);
 
         SetResource(pt, curNodeResource);
