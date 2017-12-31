@@ -23,6 +23,7 @@
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
+#include "lua/LuaInterfaceGame.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
@@ -50,6 +51,7 @@ class GameWorldBase : public World
     std::vector<GamePlayer> players;
     const GlobalGameSettings& gameSettings;
     EventManager& em;
+    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
 
 protected:
     /// Interface zum GUI
@@ -62,7 +64,6 @@ public:
     ~GameWorldBase() override;
 
 
-    boost::interprocess::unique_ptr<LuaInterfaceGame, Deleter<LuaInterfaceGame> > lua;
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, LandscapeType lt) override;
     // Remaining initialization after loading (BQ...)
@@ -191,6 +192,7 @@ public:
 
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
+    void SetLua(LuaInterfaceGame* newLua);
 
 protected:
     /// Called when the visibility of point changed for a player

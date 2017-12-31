@@ -37,7 +37,7 @@ GameWorld::GameWorld(const std::vector<PlayerInfo>& playerInfos, const GlobalGam
 {}
 
 /// Lädt eine Karte
-bool GameWorld::LoadMap(boost::weak_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
+bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFilePath, const std::string& luaFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -52,10 +52,10 @@ bool GameWorld::LoadMap(boost::weak_ptr<Game> game, const std::string& mapFilePa
 
     if(bfs::exists(luaFilePath))
     {
-        lua.reset(new LuaInterfaceGame(game));
-        if(!lua->LoadScript(luaFilePath) || !lua->CheckScriptVersion())
+        SetLua(new LuaInterfaceGame(game));
+        if(!GetLua().LoadScript(luaFilePath) || !GetLua().CheckScriptVersion())
         {
-            lua.reset();
+            SetLua(NULL);
             return false;
         }
     }
@@ -92,12 +92,12 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
 
     sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
 
-    if(!lua)
+    if(!HasLua())
         sgd.PushUnsignedInt(0);
     else
     {
-        sgd.PushLongString(lua->GetScript());
-        Serializer luaSaveState = lua->Serialize();
+        sgd.PushLongString(GetLua().GetScript());
+        Serializer luaSaveState = GetLua().Serialize();
         sgd.PushUnsignedInt(0xC0DEBA5E); // Start Lua identifier
         sgd.PushUnsignedInt(luaSaveState.GetLength());
         sgd.PushRawData(luaSaveState.GetData(), luaSaveState.GetLength());
@@ -105,7 +105,7 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void GameWorld::Deserialize(boost::weak_ptr<Game> game, SerializedGameData& sgd)
+void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sgd)
 {
     // Headinformationen
     const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
@@ -135,17 +135,17 @@ void GameWorld::Deserialize(boost::weak_ptr<Game> game, SerializedGameData& sgd)
             throw SerializedGameData::Error(_("Invalid end-id for lua data"));
 
         // Now init and load lua
-        lua.reset(new LuaInterfaceGame(game));
-        if(!lua->LoadScriptString(luaScript))
+        SetLua(new LuaInterfaceGame(game));
+        if(!GetLua().LoadScriptString(luaScript))
         {
-            lua.reset();
+            SetLua(NULL);
             throw SerializedGameData::Error(_("Lua script failed to load."));
         }
-        if(!lua->CheckScriptVersion())
+        if(!GetLua().CheckScriptVersion())
         {
-            lua.reset();
+            SetLua(NULL);
             throw SerializedGameData::Error(_("Wrong version for lua script."));
         }
-        lua->Deserialize(luaSaveState);
+        GetLua().Deserialize(luaSaveState);
     }
 }

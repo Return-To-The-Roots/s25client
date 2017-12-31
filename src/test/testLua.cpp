@@ -29,7 +29,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
-#include "test/GameWorldWithLuaAccess.h"
+#include "test/GameWithLuaAccess.h"
 #include "test/helperFuncs.h"
 #include "test/initTestHelpers.h"
 #include "libutil/Serializer.h"
@@ -199,7 +199,9 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
     hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
 
-    BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GD_BOARDS), 0u);
+    unsigned numBoards = hqs[0]->GetNumRealWares(GD_BOARDS);
+
+    BOOST_REQUIRE_GT(numBoards, 0u);
 
     executeLua("rttr:ClearResources()");
     for(unsigned i = 0; i < hqs.size(); i++)

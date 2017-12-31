@@ -309,7 +309,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     GameWorld& gameWorld = game->world;
     if(mapinfo.savegame)
-        mapinfo.savegame->sgd.ReadSnapshot(game, gameWorld);
+        mapinfo.savegame->sgd.ReadSnapshot(game);
     else
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
@@ -1599,7 +1599,7 @@ bool GameClient::SaveToFile(const std::string& filename)
     save.sgd.debugMode = SETTINGS.global.debugMode;
 
     // Spiel serialisieren
-    save.sgd.MakeSnapshot(game->world);
+    save.sgd.MakeSnapshot(game);
 
     // Und alles speichern
     return save.Save(filename, mapinfo.title);

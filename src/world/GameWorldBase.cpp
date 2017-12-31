@@ -697,3 +697,11 @@ void GameWorldBase::RecalcBQ(const MapPoint pt)
     if(SetBQ(pt, calcBQ(pt, boost::bind(&GameWorldBase::IsOnRoad, this, _1))))
         GetNotifications().publish(NodeNote(NodeNote::BQ, pt));
 }
+
+void GameWorldBase::SetLua(LuaInterfaceGame* newLua)
+{
+    if (newLua != NULL)
+        lua.reset(newLua);
+    else
+        lua.reset();
+}

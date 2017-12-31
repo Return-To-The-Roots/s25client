@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorldWithLuaAccess_h__
-#define GameWorldWithLuaAccess_h__
+#ifndef GameWithLuaAccess_h__
+#define GameWithLuaAccess_h__
 
 #include "BufferedWriter.h"
 #include "EventManager.h"
@@ -44,12 +44,7 @@ class GameWithLuaAccess : public Game
 {
 public:
     GlobalGameSettings ggs;
-    GameWithLuaAccess() : Game(ggs, (unsigned int)0, CreatePlayers()) { createLua(); }
-
-    void createLua() { 
-        //boost::shared_ptr<Game> game = boost::make_shared<Game>(*this);
-        //world.lua.reset(new LuaInterfaceGame(game));
-    }
+    GameWithLuaAccess() : Game(ggs, (unsigned int)0, CreatePlayers()) { }
 
     static std::vector<PlayerInfo> CreatePlayers()
     {
@@ -76,12 +71,13 @@ public:
 struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture
 {
 public:
-    GameWithLuaAccess game;
+    boost::shared_ptr<GameWithLuaAccess> game;
     GameWorld& world;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture() : world(game.world) { 
-        luaBase = &game.world.GetLua(); 
+    LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world) { 
+        game->world.SetLua(new LuaInterfaceGame(game));
+        luaBase = &game->world.GetLua(); 
     }
 
     void initWorld()
@@ -99,4 +95,4 @@ public:
     }
 };
 
-#endif // GameWorldWithLuaAccess_h__
+#endif // GameWithLuaAccess_h__

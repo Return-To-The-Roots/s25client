@@ -210,7 +210,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     save.ggs = ggs;
     save.start_gf = em.GetCurrentGF();
-    save.sgd.MakeSnapshot(world);
+    save.sgd.MakeSnapshot(game);
 
     TmpFile tmpFile;
     BOOST_REQUIRE(tmpFile.isValid());
@@ -263,13 +263,10 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             std::vector<PlayerInfo> players;
             for(unsigned j = 0; j < 4; j++)
                 players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
-            GlobalGameSettings& newGGS = save.ggs;
-            TestEventManager newEm(loadSave.start_gf);
-            GameWorld newWorld(players, newGGS, newEm);
-            Game newGame(newGGS, loadSave.start_gf, players);
-            boost::shared_ptr<Game> sharedGame;
-            sharedGame.reset(&newGame);
-            save.sgd.ReadSnapshot(sharedGame, newWorld);
+            boost::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
+            GameWorld& newWorld = sharedGame->world;
+            save.sgd.ReadSnapshot(sharedGame);
+            TestEventManager newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());
@@ -309,7 +306,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_REQUIRE_EQUAL(newUsual->GetProductivity(), usualBld->GetProductivity());
 
             SerializedGameData loadedSgd;
-            loadedSgd.MakeSnapshot(newWorld);
+            loadedSgd.MakeSnapshot(sharedGame);
             BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(), save.sgd.GetData(),
                                             save.sgd.GetData() + save.sgd.GetLength());
         }
@@ -443,7 +440,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 
     map.savegame->ggs = ggs;
     map.savegame->start_gf = em.GetCurrentGF();
-    map.savegame->sgd.MakeSnapshot(world);
+    map.savegame->sgd.MakeSnapshot(game);
 
     Replay replay;
     BOOST_REQUIRE(!replay.IsValid());
@@ -465,7 +462,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_REQUIRE(replay.IsRecording());
     BOOST_REQUIRE(!replay.IsReplaying());
 
-    PlayerGameCommands cmds = GetTestCommands().create(game).result;
+    PlayerGameCommands cmds = GetTestCommands().create(*game).result;
     AddReplayCmds(replay, cmds);
     replay.StopRecording();
     BOOST_REQUIRE(!replay.IsValid());

@@ -29,7 +29,7 @@
 #include <map>
 #include <set>
 #include <stdexcept>
-#include <boost/weak_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 class GameObject;
 class GameWorld;
@@ -52,10 +52,10 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(const GameWorld& gw);
+    void MakeSnapshot(boost::shared_ptr<Game> game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(boost::weak_ptr<Game> game, GameWorld& gw);
+    void ReadSnapshot(boost::shared_ptr<Game> game);
 
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 
