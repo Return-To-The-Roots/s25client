@@ -57,6 +57,7 @@ struct LogAccessor
         BOOST_REQUIRE(logWriter);
         logWriterBuff = boost::dynamic_pointer_cast<BufferedWriter>(logWriter->origWriter);
         BOOST_REQUIRE(logWriterBuff);
+        flush();
     }
 
     /// Clear the last line so it won't be written and reset duplicates avoidance as we may want the same entry again
@@ -64,6 +65,12 @@ struct LogAccessor
     {
         logWriter->reset();
         logWriterBuff->curText.clear();
+    }
+    void flush()
+    {
+        logWriter->reset();
+        logWriterBuff->flush();
+        logWriter->reset();
     }
     std::string getLog(bool clear = true)
     {
@@ -96,7 +103,6 @@ struct LogAccessor
 #define RTTR_REQUIRE_LOG_CONTAINS(content, allowEmpty)                                                                           \
     do                                                                                                                           \
     {                                                                                                                            \
-        LogAccessor logAcc;                                                                                                      \
         const std::string log = logAcc.getLog();                                                                                 \
         BOOST_REQUIRE_MESSAGE((allowEmpty) || !log.empty(), "Log does not contain: " << (content));                              \
         BOOST_REQUIRE_MESSAGE(log.empty() || log.find(content) < log.find('\n'), "Unexpected log: " << log << "\n"               \

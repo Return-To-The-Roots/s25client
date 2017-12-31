@@ -125,6 +125,7 @@ public:
 
 BOOST_AUTO_TEST_CASE(PrefixPath)
 {
+    LogAccessor logAcc;
     bfs::path prefixPath = RTTRCONFIG.GetPrefixPath();
     BOOST_REQUIRE(!prefixPath.empty());
     BOOST_REQUIRE(bfs::exists(prefixPath));

@@ -171,6 +171,7 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public LogAcc
 
 BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 {
+    LogAccessor logAcc;
     GamePlayer& player = world.GetPlayer(0);
     nobBaseWarehouse& hq = *world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
     testNumGoodsHQ();

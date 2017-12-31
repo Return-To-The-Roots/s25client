@@ -36,6 +36,7 @@ BOOST_AUTO_TEST_SUITE(Production)
 
 BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 {
+    LogAccessor logAcc;
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
     Inventory goods;

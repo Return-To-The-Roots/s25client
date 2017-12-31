@@ -53,6 +53,7 @@ BOOST_AUTO_TEST_CASE(AssertionThrows)
 
 BOOST_AUTO_TEST_CASE(ScriptLoading)
 {
+    LogAccessor logAcc;
     std::string script = "assert(true)";
     LuaInterfaceGame& lua = world.GetLua();
     BOOST_REQUIRE(lua.LoadScriptString(script));
@@ -490,6 +491,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
 
 BOOST_AUTO_TEST_CASE(RestrictedArea)
 {
+    LogAccessor logAcc;
     initWorld();
 
     const GamePlayer& player = world.GetPlayer(1);
@@ -549,6 +551,7 @@ BOOST_AUTO_TEST_CASE(RestrictedArea)
 
 BOOST_AUTO_TEST_CASE(World)
 {
+    LogAccessor logAcc;
     initWorld();
     executeLua("world = rttr:GetWorld()");
 

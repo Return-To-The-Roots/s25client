@@ -161,6 +161,7 @@ BOOST_AUTO_TEST_CASE(Events)
 
 BOOST_AUTO_TEST_CASE(SettingsFunctions)
 {
+    LogAccessor logAcc;
     executeLua("assert(rttr:GetPlayer(0))");
     executeLua("assert(rttr:GetPlayer(1))");
     executeLua("assert(rttr:GetPlayer(2))");
@@ -248,6 +249,7 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
 
 BOOST_AUTO_TEST_CASE(PlayerSettings)
 {
+    LogAccessor logAcc;
     executeLua("player = rttr:GetPlayer(0)");
     executeLua("player1 = rttr:GetPlayer(1)");
     executeLua("player:SetNation(NAT_ROMANS)");

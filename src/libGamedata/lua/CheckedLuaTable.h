@@ -20,7 +20,6 @@
 
 #include "Rect.h"
 #include "gameData/WorldDescription.h"
-#include <boost/move/move.hpp>
 #include <kaguya/kaguya.hpp>
 #include <set>
 #include <string>
@@ -31,30 +30,12 @@ class CheckedLuaTable
 {
     kaguya::LuaTable table;
     std::set<std::string> accessedKeys_;
-    bool checked;
+    bool checkEnabled; // When this is a movable only class this can be true on ctor
 
-    // Don't copy or we will get errors due to not accessed keys. Move only
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(CheckedLuaTable)
 public:
     CheckedLuaTable(const kaguya::LuaTable& luaTable);
     ~CheckedLuaTable();
 
-    CheckedLuaTable(BOOST_RV_REF(CheckedLuaTable) other) // Move constructor
-        : table(boost::move(other.table)), accessedKeys_(boost::move(other.accessedKeys_))
-    {
-        other.checked = true;
-    }
-
-    CheckedLuaTable& operator=(BOOST_RV_REF(CheckedLuaTable) other) // Move assignment
-    {
-        if(this != &other)
-        {
-            table = boost::move(other.table);
-            accessedKeys_ = boost::move(other.accessedKeys_);
-            other.checked = true;
-        }
-        return *this;
-    }
     /// Check and report unused entries
     bool checkUnused(bool throwError = true);
 

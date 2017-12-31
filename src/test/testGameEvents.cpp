@@ -224,6 +224,7 @@ BOOST_AUTO_TEST_CASE(RemoveEvent)
 
 BOOST_AUTO_TEST_CASE(InvalidEvent)
 {
+    LogAccessor logAcc;
 #if RTTR_ENABLE_ASSERTS
     RTTR_AssertEnableBreak = false;
     EventManager evMgr(100);

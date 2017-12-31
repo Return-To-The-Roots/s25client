@@ -34,6 +34,7 @@ struct LocaleFixture : private LogAccessor
 {
     LocaleFixture()
     {
+        LogAccessor logAcc;
         LOADER.LoadFile(RTTRCONFIG.ExpandPath(FILE_PATHS[95]) + "/languages.ini", NULL, true);
         RTTR_REQUIRE_LOG_CONTAINS("Loading", true);
     }

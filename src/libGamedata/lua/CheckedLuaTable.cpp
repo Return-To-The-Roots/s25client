@@ -22,18 +22,17 @@
 #include <boost/algorithm/string/join.hpp>
 #include <algorithm>
 
-CheckedLuaTable::CheckedLuaTable(const kaguya::LuaTable& luaTable) : table(luaTable), checked(false) {}
+CheckedLuaTable::CheckedLuaTable(const kaguya::LuaTable& luaTable) : table(luaTable), checkEnabled(false) {}
 
 CheckedLuaTable::~CheckedLuaTable()
 {
-    checkUnused(false);
+    if(checkEnabled)
+        checkUnused(false);
 }
 
 bool CheckedLuaTable::checkUnused(bool throwError)
 {
-    if(checked)
-        return true;
-    checked = true;
+    checkEnabled = false;
 
     std::vector<std::string> tableKeys = table.keys<std::string>();
     std::sort(tableKeys.begin(), tableKeys.end());
