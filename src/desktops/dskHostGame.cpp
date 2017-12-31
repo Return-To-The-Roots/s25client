@@ -317,7 +317,15 @@ void dskHostGame::SetActive(bool activate /*= true*/)
     if(activate && !wasActivated && lua && gameLobby->isHost())
     {
         wasActivated = true;
-        lua->EventSettingsReady();
+        try
+        {
+            lua->EventSettingsReady();
+        } catch(LuaExecutionError&)
+        {
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
+                                            MSB_OK, MSB_EXCLAMATIONRED, 1));
+            lua.reset();
+        }
     }
 }
 

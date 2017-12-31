@@ -384,7 +384,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     std::string mapGFXFile = RTTRCONFIG.ExpandPath(mapGfxPath);
     if(!LoadFile(mapGFXFile, pal5))
         return false;
-    map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).filename().string()));
+    map_gfx = &GetInfoN(boost::algorithm::to_lower_copy(bfs::path(mapGFXFile).stem().string()));
 
     isWinterGFX_ = isWinterGFX;
 

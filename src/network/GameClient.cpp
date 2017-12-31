@@ -44,6 +44,7 @@
 #include "factories/AIFactory.h"
 #include "files.h"
 #include "helpers/Deleter.h"
+#include "lua/LuaInterfaceBase.h"
 #include "network/ClientInterface.h"
 #include "network/GameMessages.h"
 #include "network/GameServer.h"
@@ -72,7 +73,6 @@
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cerrno>
 #include <iostream>
-#include "lua/LuaInterfaceBase.h"
 
 void GameClient::ClientConfig::Clear()
 {
@@ -512,12 +512,20 @@ bool GameClient::OnGameMessage(const GameMessage_Player_State& msg)
         return true;
 
     JoinPlayerInfo& playerInfo = gameLobby->getPlayer(msg.player);
+    bool wasUsed = playerInfo.isUsed();
     playerInfo.ps = msg.ps;
     playerInfo.aiInfo = msg.aiInfo;
     playerInfo.InitRating();
 
     if(ci)
-        ci->CI_PlayerDataChanged(msg.player);
+    {
+        if(playerInfo.isUsed())
+            ci->CI_NewPlayer(msg.player);
+        else if(wasUsed)
+            ci->CI_PlayerLeft(msg.player);
+        else
+            ci->CI_PlayerDataChanged(msg.player);
+    }
     return true;
 }
 
@@ -1252,7 +1260,7 @@ void GameClient::ExecuteGameFrame()
                     if(oldGFLen != framesinfo.gf_length)
                     {
                         LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
-                            % framesinfo.nwf_length;
+                          % framesinfo.nwf_length;
                     }
                 }
 
