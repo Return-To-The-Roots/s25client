@@ -101,7 +101,7 @@ rttr:AddTerrain{
 	property = "walkable",
 	humidity = 0,
 	texture = texFile,
-	pos = {48, 0, 48, 48},
+	pos = {48, 0, 32, 31},
 	color = 0xFF9c7c64
 }
 rttr:AddTerrain{
@@ -124,7 +124,7 @@ rttr:AddTerrain{
 	edgePriority = 46,
 	kind = "land",
 	texture = texFile,
-	pos = {144, 0, 48, 48},
+	pos = {144, 0, 32, 31},
 	color = 0xFF444850
 }
 rttr:AddTerrain{
@@ -135,7 +135,7 @@ rttr:AddTerrain{
 	edgePriority = 36,
 	kind = "mountain",
 	texture = texFile,
-	pos = {0, 48, 48, 48},
+	pos = {0, 48, 32, 31},
 	color = 0xFF706c54
 }
 rttr:AddTerrain{
@@ -146,7 +146,7 @@ rttr:AddTerrain{
 	edgePriority = 31,
 	kind = "mountain",
 	texture = texFile,
-	pos = {48, 48, 48, 48},
+	pos = {48, 48, 32, 31},
 	color = 0xFF706454
 }
 rttr:AddTerrain{
@@ -157,7 +157,7 @@ rttr:AddTerrain{
 	edgePriority = 26,
 	kind = "mountain",
 	texture = texFile,
-	pos = {96, 48, 48, 48},
+	pos = {96, 48, 32, 31},
 	color = 0xFF684c24
 }
 rttr:AddTerrain{
@@ -168,7 +168,7 @@ rttr:AddTerrain{
 	edgePriority = 21,
 	kind = "mountain",
 	texture = texFile,
-	pos = {144, 48, 48, 48},
+	pos = {144, 48, 32, 31},
 	color = 0xFF684c24
 }
 rttr:AddTerrain{
@@ -180,7 +180,7 @@ rttr:AddTerrain{
 	kind = "land",
 	humidity = 60,
 	texture = texFile,
-	pos = {0, 96, 48, 48},
+	pos = {0, 96, 32, 31},
 	color = 0xFF444850
 }
 rttr:AddTerrain{
@@ -192,7 +192,7 @@ rttr:AddTerrain{
 	kind = "land",
 	humidity = 95,
 	texture = texFile,
-	pos = {48, 96, 48, 48},
+	pos = {48, 96, 32, 31},
 	color = 0xFF5c5840
 }
 rttr:AddTerrain{
@@ -203,7 +203,7 @@ rttr:AddTerrain{
 	edgePriority = 46,
 	kind = "land",
 	texture = texFile,
-	pos = {96, 96, 48, 48},
+	pos = {96, 96, 32, 31},
 	color = 0xFF646048
 }
 rttr:AddTerrain{
@@ -214,7 +214,7 @@ rttr:AddTerrain{
 	edgePriority = 46,
 	kind = "land",
 	texture = texFile,
-	pos = {144, 96, 48, 48},
+	pos = {144, 96, 32, 31},
 	color = 0xFF646048
 }
 rttr:AddTerrain{
@@ -226,7 +226,7 @@ rttr:AddTerrain{
 	kind = "land",
 	humidity = 30,
 	texture = texFile,
-	pos = {0, 144, 48, 48},
+	pos = {0, 144, 32, 31},
 	color = 0xFF88b028
 }
 rttr:AddTerrain{
@@ -238,7 +238,7 @@ rttr:AddTerrain{
 	kind = "mountain",
 	property = "buildable",
 	texture = texFile,
-	pos = {48, 144, 37, 31},
+	pos = {48, 144, 32, 31},
 	color = 0xFF001820
 }
 rttr:AddTerrain{
@@ -249,7 +249,8 @@ rttr:AddTerrain{
 	edgePriority = 16,
 	kind = "water",
 	texture = texFile,
-	pos = {192, 48, 55, 56},
+	pos = {193, 49, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 10,
 	color = 0xFF454520
 }
@@ -260,7 +261,8 @@ rttr:AddTerrain{
 	s2Id = 0x10,
 	kind = "lava",
 	texture = texFile,
-	pos = {192, 104, 55, 56},
+	pos = {193, 105, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 11,
 	color = 0xFFC32020
 }
@@ -273,7 +275,8 @@ rttr:AddTerrain{
 	kind = "water",
 	property = "unwalkable",
 	texture = texFile,
-	pos = {192, 48, 55, 56},
+	pos = {193, 49, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 10,
 	color = 0xFF454520
 }
@@ -286,7 +289,8 @@ rttr:AddTerrain{
 	kind = "water",
 	property = "buildable",
 	texture = texFile,
-	pos = {192, 48, 55, 56},
+	pos = {193, 49, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 10,
 	color = 0xFF454520
 }
@@ -299,7 +303,7 @@ rttr:AddTerrain{
 	kind = "mountain",
 	property = "buildable",
 	texture = texFile,
-	pos = {48, 48, 48, 48},
+	pos = {48, 48, 32, 31},
 	color = 0xFF706454
 }
 rttr:AddTerrain{
@@ -309,7 +313,8 @@ rttr:AddTerrain{
 	s2Id = 0x14,
 	kind = "lava",
 	texture = texFile,
-	pos = {66, 223, 31, 32},
+	pos = {66, 222, 31, 33},
+	texType = "stacked",
 	palAnimIdx = 11,
 	color = 0xFFC32020
 }
@@ -320,7 +325,8 @@ rttr:AddTerrain{
 	s2Id = 0x15,
 	kind = "lava",
 	texture = texFile,
-	pos = {99, 223, 31, 32},
+	pos = {99, 222, 31, 33},
+	texType = "stacked",
 	palAnimIdx = 11,
 	color = 0xFFC32020
 }
@@ -331,7 +337,8 @@ rttr:AddTerrain{
 	s2Id = 0x16,
 	kind = "lava",
 	texture = texFile,
-	pos = {132, 223, 31, 32},
+	pos = {132, 222, 31, 33},
+	texType = "stacked",
 	palAnimIdx = 11,
 	color = 0xFFC32020
 }
@@ -345,6 +352,6 @@ rttr:AddTerrain{
 	property = "walkable",
 	humidity = 0,
 	texture = texFile,
-	pos = {48, 0, 48, 48},
+	pos = {48, 0, 32, 31},
 	color = 0xFF9c7c64
 }

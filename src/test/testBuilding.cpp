@@ -212,7 +212,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     // Set player
     GAMECLIENT.SetTestPlayerId(0);
 
-    dskGameInterface gameDesktop(this->game);
+    dskGameInterface gameDesktop(this->game, false);
     const GameWorldViewer& gwv = gameDesktop.GetViewer();
     // Start at a position a bit away from the HQ so all points are castles
     const MapPoint roadPt = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() - Position(6, 6));

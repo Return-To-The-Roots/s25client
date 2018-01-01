@@ -34,6 +34,7 @@
 #include "gameData/TerrainDesc.h"
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem_PaletteAnimation.h"
+#include "libutil/Log.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/foreach.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
@@ -101,6 +102,7 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
 {
     terrainTextures.clear();
     edgeTextures.clear();
+    roadTextures.clear();
 
     std::set<DescIdx<LandscapeDesc> > usedLandscapes;
     std::set<DescIdx<TerrainDesc> > usedTerrains;
@@ -137,21 +139,46 @@ void TerrainRenderer::LoadTextures(const WorldDescription& desc)
         {
             libsiedler2::ArchivItem* animItem = LOADER.GetInfoN(textureName)[cur.palAnimIdx];
             if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BOBTYPE_PALETTE_ANIM)
-                throw std::runtime_error("Invalid palette animation '" + helpers::toString(unsigned(cur.palAnimIdx)) + "' for '" + cur.name
-                                         + "'");
-            libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
-            libsiedler2::Archiv* textures =
-              LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
-            for(unsigned i = 0; i < textures->size(); i++)
             {
-                terrainTextures[curIdx.value].push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
-                terrainTextures[curIdx.value].back().GetTexture(); // Init texture
+                LOG.write("Invalid palette animation '%1%' for '%2%'") % unsigned(cur.palAnimIdx) % cur.name;
+                terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+                terrainTextures[curIdx.value].textures.back().GetTexture();
+            } else
+            {
+                libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
+                libsiedler2::Archiv* textures =
+                  LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
+                for(unsigned i = 0; i < textures->size(); i++)
+                {
+                    terrainTextures[curIdx.value].textures.push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
+                    terrainTextures[curIdx.value].textures.back().GetTexture();
+                }
             }
         } else
         {
-            terrainTextures[curIdx.value].push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
-            terrainTextures[curIdx.value].back().GetTexture(); // Init texture
+            terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+            terrainTextures[curIdx.value].textures.back().GetTexture();
         }
+        TerrainDesc::Triangle trianglePos = cur.GetRSUTriangle();
+        Position texOrigin = cur.posInTexture.getOrigin();
+        const glArchivItem_Bitmap& texture = terrainTextures[curIdx.value].textures[0];
+        Triangle& rsuCoord = terrainTextures[curIdx.value].rsuCoords;
+        PointF texSize(texture.GetTexSize());
+        rsuCoord[0] = PointF(trianglePos.tip - texOrigin);
+        rsuCoord[1] = PointF(trianglePos.left - texOrigin);
+        rsuCoord[2] = PointF(trianglePos.right - texOrigin);
+        // Normalize to texture size
+        for(unsigned i = 0; i < 3; i++)
+            rsuCoord[i] /= texSize;
+
+        Triangle& usdCoord = terrainTextures[curIdx.value].usdCoords;
+        trianglePos = cur.GetUSDTriangle();
+        usdCoord[0] = PointF(trianglePos.left - texOrigin);
+        usdCoord[1] = PointF(trianglePos.tip - texOrigin);
+        usdCoord[2] = PointF(trianglePos.right - texOrigin);
+        // Normalize to texture size
+        for(unsigned i = 0; i < 3; i++)
+            usdCoord[i] /= texSize;
     }
     BOOST_FOREACH(DescIdx<EdgeDesc> curIdx, usedEdges)
     {
@@ -413,48 +440,8 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
     const DescIdx<TerrainDesc> t2 = terrain[nodeIdx][1];
 
     const unsigned triangleIdx = GetTriangleIdx(pt);
-    Triangle& texCoord = gl_texcoords[triangleIdx];
-    const glArchivItem_Bitmap& texture = terrainTextures[t1.value][0];
-    Extent bmpSize = texture.GetSize();
-    unsigned usedSize = std::min(bmpSize.x, bmpSize.y);
-    // Make even to start at whole pixels
-    usedSize &= ~1;
-    PointF offset((bmpSize - Extent::all(usedSize)) / 2u);
-
-    // Tip
-    texCoord[0].x = static_cast<float>(usedSize / 2u);
-    texCoord[0].y = 0.f;
-    // Left
-    texCoord[1].x = 0.f;
-    texCoord[1].y = static_cast<float>(usedSize / 2u);
-    // Right
-    texCoord[2].x = static_cast<float>(usedSize);
-    texCoord[2].y = texCoord[1].y;
-    // Normalize to texture size
-    PointF texSize(texture.GetTexSize());
-    for(unsigned i = 0; i < 3; i++)
-        texCoord[i] = (texCoord[i] + offset) / texSize;
-
-    Triangle& texCoord2 = gl_texcoords[triangleIdx + 1];
-    const glArchivItem_Bitmap& texture2 = terrainTextures[t2.value][0];
-    bmpSize = texture2.GetSize();
-    usedSize = std::min(bmpSize.x, bmpSize.y);
-    // Make even to start at whole pixels
-    usedSize &= ~1;
-    offset = PointF((bmpSize - Extent::all(usedSize)) / 2u);
-    // Left
-    texCoord2[0].x = 0.f;
-    texCoord2[0].y = static_cast<float>(usedSize / 2u);
-    // Tip
-    texCoord2[1].x = static_cast<float>(usedSize / 2u);
-    texCoord2[1].y = static_cast<float>(usedSize);
-    // Right
-    texCoord2[2].x = static_cast<float>(usedSize);
-    texCoord2[2].y = texCoord2[0].y;
-    // Normalize to texture size
-    texSize = PointF(texture2.GetTexSize());
-    for(unsigned i = 0; i < 3; i++)
-        texCoord2[i] = (texCoord2[i] + offset) / texSize;
+    gl_texcoords[triangleIdx] = terrainTextures[t1.value].rsuCoords;
+    gl_texcoords[triangleIdx + 1] = terrainTextures[t2.value].usdCoords;
 
     if(updateVBO && vboBuffersUsed)
     {
@@ -847,13 +834,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
         if(sorted_textures[t].empty())
             continue;
         unsigned animationFrame;
-        unsigned numFrames = terrainTextures[t].size();
+        unsigned numFrames = terrainTextures[t].textures.size();
         if(numFrames > 1)
             animationFrame = GAMECLIENT.GetGlobalAnimation(numFrames, 5 * numFrames, 16, 0); // We have 5/16 per frame
         else
             animationFrame = 0;
 
-        VIDEODRIVER.BindTexture(terrainTextures[t][animationFrame].GetTextureNoCreate());
+        VIDEODRIVER.BindTexture(terrainTextures[t].textures[animationFrame].GetTextureNoCreate());
 
         for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
         {

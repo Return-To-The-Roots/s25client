@@ -61,6 +61,7 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
+#include "lua/GameDataLoader.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
@@ -71,6 +72,7 @@
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
+#include "random/Random.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
@@ -626,7 +628,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     {
         default: break;
         case KT_RETURN: // Chatfenster öffnen
-            WINDOWMANAGER.Show(new iwChat);
+            WINDOWMANAGER.Show(new iwChat(this));
             return true;
 
         case KT_SPACE: // Bauqualitäten anzeigen
@@ -994,6 +996,30 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings);
     WINDOWMANAGER.Show(actionwindow, true);
+}
+
+void dskGameInterface::OnChatCommand(const std::string& cmd)
+{
+    if(cmd == "apocalypsis")
+        GAMECLIENT.CheatArmageddon();
+    else if(cmd == "surrender")
+        GAMECLIENT.Surrender();
+    else if(cmd == "async")
+        (void)RANDOM.Rand(__FILE__, __LINE__, 0, 255);
+    else if(cmd == "segfault")
+    {
+        char* x = NULL;
+        *x = 1; //-V522 // NOLINT
+    } else if(cmd == "reload")
+    {
+        WorldDescription newDesc;
+        GameDataLoader gdLoader(newDesc);
+        if(gdLoader.Load())
+        {
+            const_cast<GameWorld&>(game_->world).GetDescriptionWriteable() = newDesc;
+            worldViewer.InitTerrainRenderer();
+        }
+    }
 }
 
 void dskGameInterface::GI_BuildRoad()

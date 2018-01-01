@@ -21,13 +21,13 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
 #include "network/GameClient.h"
-#include "random/Random.h"
 #include "gameData/const_gui_ids.h"
 
 unsigned char iwChat::chat_dest = CD_ALL;
 
-iwChat::iwChat()
-    : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"), LOADER.GetImageN("resource", 41))
+iwChat::iwChat(Window* parent)
+    : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"), LOADER.GetImageN("resource", 41), false,
+                   true, parent)
 {
     // Eingabefeld für Chattext
     AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TC_GREY, NormalFont);
@@ -61,31 +61,18 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
     Close();
 
     ctrlEdit* edit = GetCtrl<ctrlEdit>(0);
-
-    if(edit->GetText() == "apocalypsis")
-    {
-        GAMECLIENT.CheatArmageddon();
-        return;
-    } else if(edit->GetText() == "surrender")
-    {
-        GAMECLIENT.Surrender();
-        return;
-    } else if(edit->GetText() == "async!")
-    {
-        (void)RANDOM.Rand(__FILE__, __LINE__, 0, 255);
-        return;
-    } else if(edit->GetText() == "segfault!")
-    {
-        char* x = NULL;
-
-        *x = 1; //-V522 // NOLINT
-
-        return;
-    }
-
-    if(chat_dest != CD_ALL && chat_dest != CD_ALLIES && chat_dest != CD_ENEMIES)
-        chat_dest = CD_ALL;
-    GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest));
-
+    std::string text = edit->GetText();
     edit->SetText("");
+
+    if(text.size() > 3u && text[0] == '!')
+    {
+        IChatCmdListener* listener = dynamic_cast<IChatCmdListener*>(GetParent());
+        if(listener)
+            listener->OnChatCommand(text.substr(1));
+    } else
+    {
+        if(chat_dest != CD_ALL && chat_dest != CD_ALLIES && chat_dest != CD_ENEMIES)
+            chat_dest = CD_ALL;
+        GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest));
+    }
 }

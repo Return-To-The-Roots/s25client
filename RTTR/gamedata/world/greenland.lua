@@ -103,7 +103,12 @@ rttr:AddTerrain{
 	texture = texFile,
 	-- Position and size {x, y, w, h} in the image if it contains multiple textures
 	-- Can be left out. A size of 0 (w and/or h) is interpreted as the remaining image
-	pos = {0, 0, 48, 48},
+	pos = {0, 0, 32, 31},
+	-- How are the texture triangles positioned? Default: overlapped
+	-- overlapped: USD and RSU triangle overlap (like S2)
+	-- stacked: RSU on top, USD below forming a rotated rectangle
+	-- rotated: Similar to stacked but tips are left (RSU) and right (USD)
+	texType = "overlapped",
 	-- Index of the palette animation in the file, default -1 for no animation
 	palAnimIdx = -1,
 	-- Color used to display this on the minimap
@@ -119,7 +124,7 @@ rttr:AddTerrain{
 	property = "walkable",
 	humidity = 0,
 	texture = texFile,
-	pos = {48, 0, 48, 48},
+	pos = {48, 0, 32, 31},
 	color = 0xFFc09c7c
 }
 rttr:AddTerrain{
@@ -131,7 +136,7 @@ rttr:AddTerrain{
 	kind = "land",
 	property = "unwalkable",
 	texture = texFile,
-	pos = {96, 0, 48, 48},
+	pos = {96, 0, 32, 31},
 	color = 0xFF649014
 }
 rttr:AddTerrain{
@@ -142,7 +147,7 @@ rttr:AddTerrain{
 	edgePriority = 35,
 	kind = "land",
 	texture = texFile,
-	pos = {144, 0, 48, 48},
+	pos = {144, 0, 32, 31},
 	color = 0xFF48780c
 }
 rttr:AddTerrain{
@@ -153,7 +158,7 @@ rttr:AddTerrain{
 	edgePriority = 55,
 	kind = "mountain",
 	texture = texFile,
-	pos = {0, 48, 48, 48},
+	pos = {0, 48, 32, 31},
 	color = 0xFF9c8058
 }
 rttr:AddTerrain{
@@ -164,7 +169,7 @@ rttr:AddTerrain{
 	edgePriority = 50,
 	kind = "mountain",
 	texture = texFile,
-	pos = {48, 48, 48, 48},
+	pos = {48, 48, 32, 31},
 	color = 0xFF9c8058
 }
 rttr:AddTerrain{
@@ -175,7 +180,7 @@ rttr:AddTerrain{
 	edgePriority = 45,
 	kind = "mountain",
 	texture = texFile,
-	pos = {96, 48, 48, 48},
+	pos = {96, 48, 32, 31},
 	color = 0xFF9c8058
 }
 rttr:AddTerrain{
@@ -186,7 +191,7 @@ rttr:AddTerrain{
 	edgePriority = 40,
 	kind = "mountain",
 	texture = texFile,
-	pos = {144, 48, 48, 48},
+	pos = {144, 48, 32, 31},
 	color = 0xFF8c7048
 }
 rttr:AddTerrain{
@@ -198,7 +203,7 @@ rttr:AddTerrain{
 	kind = "land",
 	humidity = 60,
 	texture = texFile,
-	pos = {0, 96, 48, 48},
+	pos = {0, 96, 32, 31},
 	color = 0xFF649014
 }
 rttr:AddTerrain{
@@ -210,7 +215,7 @@ rttr:AddTerrain{
 	kind = "land",
 	humidity = 95,
 	texture = texFile,
-	pos = {48, 96, 48, 48},
+	pos = {48, 96, 32, 31},
 	color = 0xFF48780c
 }
 rttr:AddTerrain{
@@ -221,7 +226,7 @@ rttr:AddTerrain{
 	edgePriority = 25,
 	kind = "land",
 	texture = texFile,
-	pos = {96, 96, 48, 48},
+	pos = {96, 96, 32, 31},
 	color = 0xFF649014
 }
 rttr:AddTerrain{
@@ -232,7 +237,7 @@ rttr:AddTerrain{
 	edgePriority = 20,
 	kind = "land",
 	texture = texFile,
-	pos = {144, 96, 48, 48},
+	pos = {144, 96, 32, 31},
 	color = 0xFF407008
 }
 rttr:AddTerrain{
@@ -244,7 +249,7 @@ rttr:AddTerrain{
 	kind = "land",
 	humidity = 30,
 	texture = texFile,
-	pos = {0, 144, 48, 48},
+	pos = {0, 144, 32, 31},
 	color = 0xFF88b028
 }
 rttr:AddTerrain{
@@ -257,7 +262,7 @@ rttr:AddTerrain{
 	humidity = 100,
 	property = "buildable",
 	texture = texFile,
-	pos = {48, 144, 48, 48},
+	pos = {48, 144, 32, 31},
 	color = 0xFF9c8058
 }
 rttr:AddTerrain{
@@ -268,7 +273,8 @@ rttr:AddTerrain{
 	edgePriority = 5,
 	kind = "water",
 	texture = texFile,
-	pos = {192, 48, 55, 56},
+	pos = {193, 49, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 10,
 	color = 0xFF1038a4
 }
@@ -279,7 +285,8 @@ rttr:AddTerrain{
 	s2Id = 0x10,
 	kind = "lava",
 	texture = texFile,
-	pos = {192, 104, 55, 56},
+	pos = {193, 105, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 11,
 	color = 0xFFc02020
 }
@@ -292,7 +299,8 @@ rttr:AddTerrain{
 	kind = "water",
 	property = "unwalkable",
 	texture = texFile,
-	pos = {192, 48, 55, 56},
+	pos = {193, 49, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 10,
 	color = 0xFF1038a4
 }
@@ -305,7 +313,8 @@ rttr:AddTerrain{
 	kind = "water",
 	property = "buildable",
 	texture = texFile,
-	pos = {192, 48, 55, 56},
+	pos = {193, 49, 53, 54},
+	texType = "rotated",
 	palAnimIdx = 10,
 	color = 0xFF1038a4
 }
@@ -318,7 +327,7 @@ rttr:AddTerrain{
 	kind = "mountain",
 	property = "buildable",
 	texture = texFile,
-	pos = {48, 48, 48, 48},
+	pos = {48, 48, 32, 31},
 	color = 0xFF9c8058
 }
 rttr:AddTerrain{
@@ -328,7 +337,8 @@ rttr:AddTerrain{
 	s2Id = 0x14,
 	kind = "lava",
 	texture = texFile,
-	pos = {66, 223, 31, 32},
+	pos = {66, 222, 31, 33},
+	texType = "stacked",
 	palAnimIdx = 11,
 	color = 0xFFc02020
 }
@@ -339,7 +349,8 @@ rttr:AddTerrain{
 	s2Id = 0x15,
 	kind = "lava",
 	texture = texFile,
-	pos = {99, 223, 31, 32},
+	pos = {99, 222, 31, 33},
+	texType = "stacked",
 	palAnimIdx = 11,
 	color = 0xFFc02020
 }
@@ -350,7 +361,8 @@ rttr:AddTerrain{
 	s2Id = 0x16,
 	kind = "lava",
 	texture = texFile,
-	pos = {132, 223, 31, 32},
+	pos = {132, 222, 31, 33},
+	texType = "stacked",
 	palAnimIdx = 11,
 	color = 0xFFc02020
 }
@@ -364,6 +376,6 @@ rttr:AddTerrain{
 	property = "walkable",
 	humidity = 0,
 	texture = texFile,
-	pos = {48, 0, 48, 48},
+	pos = {48, 0, 32, 31},
 	color = 0xFFc09c7c
 }

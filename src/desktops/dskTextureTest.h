@@ -14,32 +14,35 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
-#ifndef iwCHAT_H_INCLUDED
-#define iwCHAT_H_INCLUDED
 
 #pragma once
 
-#include "IngameWindow.h"
+#ifndef dskTextureTest_h__
+#define dskTextureTest_h__
 
-class IChatCmdListener
+#include "desktops/dskMenuBase.h"
+#include "helpers/Deleter.h"
+#include "gameData/WorldDescription.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+
+class glArchivItem_Bitmap;
+
+class dskTextureTest : public dskMenuBase
 {
 public:
-    virtual void OnChatCommand(const std::string& cmd) = 0;
-};
+    dskTextureTest();
 
-class iwChat : public IngameWindow
-{
-private:
-    /// Chat-Destination auch merken, wenn das Fenster zugegangen ist
-    static unsigned char chat_dest;
+    void Load();
 
-public:
-    iwChat(Window* parent);
+    void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
+    void Msg_ButtonClick(const unsigned ctrl_id) override;
+    void Msg_PaintAfter() override;
+    bool Msg_KeyDown(const KeyEvent& ke) override;
 
 private:
-    void Msg_PaintBefore() override;
-    void Msg_OptionGroupChange(const unsigned ctrl_id, const int selection) override;
-    void Msg_EditEnter(const unsigned ctrl_id) override;
+    WorldDescription desc;
+    boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > curTexture;
+    DescIdx<TerrainDesc> curTerrainIdx;
 };
 
-#endif // !iwCHAT_H_INCLUDED
+#endif // dskTextureTest_h__

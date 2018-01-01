@@ -126,6 +126,12 @@ private:
         boost::array<unsigned, 2> top_down_offset;
     };
 
+    struct TerrainTexture
+    {
+        boost::ptr_vector<glArchivItem_Bitmap> textures;
+        Triangle usdCoords, rsuCoords;
+    };
+
     typedef boost::container::vector<boost::container::vector<PreparedRoad> > PreparedRoads;
 
     /// Size of the map
@@ -147,7 +153,7 @@ private:
     std::vector<Borders> borders;
 
     typedef boost::interprocess::unique_ptr<glArchivItem_Bitmap, Deleter<glArchivItem_Bitmap> > BmpPtr;
-    boost::container::vector<boost::ptr_vector<glArchivItem_Bitmap> > terrainTextures;
+    boost::container::vector<TerrainTexture> terrainTextures;
     boost::container::vector<BmpPtr> edgeTextures;
     /// Flat 2D array: [Landscape][RoadType]
     boost::container::vector<BmpPtr> roadTextures;

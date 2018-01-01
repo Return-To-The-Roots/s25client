@@ -38,6 +38,18 @@ TerrainKind strToTerrainKind(const std::string& name)
         throw GameDataError("Invalid terrain kind: " + name);
 }
 
+ETexType strToTexType(const std::string& name)
+{
+    if(name == "overlapped")
+        return ETexType::Overlapped;
+    else if(name == "stacked")
+        return ETexType::Stacked;
+    else if(name == "rotated")
+        return ETexType::Rotated;
+    else
+        throw GameDataError("Invalid texture type: " + name);
+}
+
 TerrainBQ getDefaultBQ(TerrainKind kind)
 {
     switch(boost::native_value(kind))
@@ -112,6 +124,7 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
     luaData.getOrThrow(texturePath, "texture");
     lua::validatePath(texturePath);
     posInTexture = luaData.getRectOrDefault("pos", Rect());
+    texType = strToTexType(luaData.getOrDefault<std::string>("texType", "overlapped"));
     palAnimIdx = luaData.getOrDefault<int8_t>("palAnimIdx", -1);
     luaData.getOrThrow(minimapColor, "color");
 
@@ -143,4 +156,80 @@ bool TerrainDesc::IsUsableByAnimals() const
 bool TerrainDesc::IsVital() const
 {
     return kind == TerrainKind::LAND && Is(ETerrain::Buildable);
+}
+
+TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
+{
+    Triangle result;
+    PointF middleBottom((posInTexture.left + posInTexture.right) / 2.f, posInTexture.bottom + 0.f);
+    PointF leftMiddle;
+    if(texType == ETexType::Stacked || texType == ETexType::Rotated)
+    {
+        // Integer rounding up
+        leftMiddle = PointF(Position(posInTexture.left, (posInTexture.top + posInTexture.bottom + 1) / 2));
+        // When cutting the 2 triangles from a square, we want a 45 deg angle (height = 0.5*width) to avoid using outside pixels
+        // So if we can make those equal by removing half a pixel to the bottom middle position, we do this
+        if(middleBottom.x - leftMiddle.x == middleBottom.y - 0.5f - leftMiddle.y)
+            middleBottom.y -= 0.5;
+    }
+    switch(boost::native_value(texType))
+    {
+        case ETexType::Overlapped:
+        default:
+            result.tip = middleBottom;
+            result.left = PointF(posInTexture.getOrigin());
+            result.right = PointF(Position(posInTexture.right, posInTexture.top));
+            break;
+        case ETexType::Stacked:
+            result.tip = middleBottom;
+            result.left = leftMiddle;
+            result.right = PointF(posInTexture.right + 0.f, result.left.y);
+            if(result.tip.x - result.left.x == result.tip.y - 0.5f - result.left.y)
+                result.tip.y -= 0.5;
+            break;
+        case ETexType::Rotated:
+            result.tip = PointF(posInTexture.right + 0.f, leftMiddle.y);
+            result.left = middleBottom;
+            result.right = leftMiddle;
+            break;
+    }
+    return result;
+}
+
+TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
+{
+    Triangle result;
+    PointF middleTop((posInTexture.left + posInTexture.right) / 2.f, posInTexture.top + 0.f);
+    PointF leftMiddle;
+    if(texType == ETexType::Stacked || texType == ETexType::Rotated)
+    {
+        // Integer rounding down
+        leftMiddle = PointF(Position(posInTexture.left, (posInTexture.top + posInTexture.bottom) / 2));
+        // When cutting the 2 triangles from a square, we want a 45 deg angle (height = 0.5*width) to avoid using outside pixels
+        // So if we can make those equal by adding half a pixel to the top middle position, we do this
+        if(middleTop.x - leftMiddle.x == leftMiddle.y - (middleTop.y + 0.5f))
+            middleTop.y += 0.5;
+    }
+    switch(boost::native_value(texType))
+    {
+        case ETexType::Overlapped:
+        default:
+            result.tip = middleTop;
+            result.left = PointF(posInTexture.left + 0.5f, posInTexture.bottom + 0.f);
+            result.right = PointF(posInTexture.right - 0.5f, posInTexture.bottom + 0.f);
+            break;
+        case ETexType::Stacked:
+            result.tip = middleTop;
+            result.left = leftMiddle;
+            result.right = PointF(posInTexture.right + 0.f, result.left.y);
+            if(result.tip.x - result.left.x == result.left.y - result.tip.y - 0.5f)
+                result.tip.y += 0.5;
+            break;
+        case ETexType::Rotated:
+            result.tip = leftMiddle;
+            result.left = PointF(posInTexture.right + 0.f, result.tip.y);
+            result.right = middleTop;
+            break;
+    }
+    return result;
 }

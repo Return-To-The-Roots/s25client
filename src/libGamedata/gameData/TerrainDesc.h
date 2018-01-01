@@ -46,8 +46,15 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
                                               /// Can build mines
                                               Mineable = 16 | Walkable} BOOST_SCOPED_ENUM_DECLARE_END(ETerrain)
 
-    struct TerrainDesc
+    BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(ETexType, uint8_t){Overlapped, Stacked, Rotated} BOOST_SCOPED_ENUM_DECLARE_END(ETexType)
+
+      struct TerrainDesc
 {
+    typedef Point<float> PointF;
+    struct Triangle
+    {
+        PointF tip, left, right;
+    };
     std::string name;
     DescIdx<LandscapeDesc> landscape;
     uint8_t s2Id;
@@ -59,6 +66,7 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
     ETerrain flags;
     /// How much water can be on the terrain [0, 100]
     uint8_t humidity;
+    ETexType texType;
     std::string texturePath;
     Rect posInTexture;
     unsigned minimapColor;
@@ -73,6 +81,10 @@ BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(TerrainBQ, uint8_t){NOTHING, DANGER, FLAG, CA
     bool IsVital() const;
     /// Return true if the terrain has the given attribute
     bool Is(ETerrain what) const;
+    /// Get the position of the up side down triangle
+    Triangle GetUSDTriangle() const;
+    /// Get the position of right side up down triangle
+    Triangle GetRSUTriangle() const;
 };
 
 inline bool TerrainDesc::Is(ETerrain what) const
