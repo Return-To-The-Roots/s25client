@@ -266,7 +266,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             boost::shared_ptr<Game> sharedGame(new Game(save.ggs, loadSave.start_gf, players));
             GameWorld& newWorld = sharedGame->world;
             save.sgd.ReadSnapshot(sharedGame);
-            TestEventManager newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
+            TestEventManager& newEm = static_cast<TestEventManager&>(sharedGame->world.GetEvMgr());
 
             BOOST_REQUIRE_EQUAL(newWorld.GetSize(), world.GetSize());
             BOOST_REQUIRE_EQUAL(newEm.GetCurrentGF(), em.GetCurrentGF());
