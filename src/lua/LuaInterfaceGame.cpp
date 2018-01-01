@@ -34,7 +34,7 @@
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
 
-LuaInterfaceGame::LuaInterfaceGame(boost::weak_ptr<Game> game) : game(game), gw(game.lock()->world)
+LuaInterfaceGame::LuaInterfaceGame(boost::weak_ptr<Game> gameInstance) : gw(gameInstance.lock()->world), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name

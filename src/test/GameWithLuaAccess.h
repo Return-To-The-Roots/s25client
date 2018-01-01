@@ -43,8 +43,7 @@
 class GameWithLuaAccess : public Game
 {
 public:
-    GlobalGameSettings ggs;
-    GameWithLuaAccess() : Game(ggs, (unsigned int)0, CreatePlayers()) { }
+    GameWithLuaAccess() : Game(GlobalGameSettings(), (unsigned int)0, CreatePlayers()) { }
 
     static std::vector<PlayerInfo> CreatePlayers()
     {

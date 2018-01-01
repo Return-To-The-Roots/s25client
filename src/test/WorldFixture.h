@@ -106,7 +106,7 @@ struct WorldFixture
     GameWorld& world;
     T_WorldCreator worldCreator;
     WorldFixture()
-        : game(boost::shared_ptr<Game>(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer())))),
+        : game(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
           em(static_cast<TestEventManager&>(*game->em)), ggs(const_cast<GlobalGameSettings&>(game->ggs)), world(game->world),
           worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {

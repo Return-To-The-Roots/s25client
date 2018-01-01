@@ -199,9 +199,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     hqs[0] = world.GetSpecObj<nobHQ>(world.GetPlayer(0).GetHQPos());
     hqs[1] = world.GetSpecObj<nobHQ>(world.GetPlayer(1).GetHQPos());
 
-    unsigned numBoards = hqs[0]->GetNumRealWares(GD_BOARDS);
-
-    BOOST_REQUIRE_GT(numBoards, 0u);
+    BOOST_REQUIRE_GT(hqs[0]->GetNumRealWares(GD_BOARDS), 0u);
 
     executeLua("rttr:ClearResources()");
     for(unsigned i = 0; i < hqs.size(); i++)

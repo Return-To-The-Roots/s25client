@@ -192,7 +192,7 @@ public:
 
     bool HasLua() const { return lua.get() != NULL; }
     LuaInterfaceGame& GetLua() const { return *lua.get(); }
-    void SetLua(LuaInterfaceGame* newLua);
+    void SetLua(LuaInterfaceGame* newLua) { lua.reset(newLua); }
 
 protected:
     /// Called when the visibility of point changed for a player
