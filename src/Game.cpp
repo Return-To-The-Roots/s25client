@@ -21,6 +21,7 @@
 #include "GamePlayer.h"
 #include "ai/AIPlayer.h"
 #include "lua/LuaInterfaceGame.h"
+#include <boost/foreach.hpp>
 
 Game::Game(const GlobalGameSettings& settings, unsigned startGF, const std::vector<PlayerInfo>& players)
     : ggs(settings), em(new EventManager(startGF)), world(players, ggs, *em), started(false), finished(false)
@@ -150,4 +151,14 @@ void Game::CheckObjective()
         else
             world.GetGameInterface()->GI_TeamWinner(bestteam);
     }
+}
+
+AIPlayer* Game::GetAIPlayer(unsigned id)
+{
+    BOOST_FOREACH(AIPlayer& ai, aiPlayers)
+    {
+        if (ai.GetPlayerId() == id)
+            return &ai;
+    }
+    return NULL;
 }

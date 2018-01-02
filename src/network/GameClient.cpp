@@ -244,12 +244,7 @@ const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
 {
     if(!game)
         return NULL;
-    BOOST_FOREACH(const AIPlayer& ai, game->aiPlayers)
-    {
-        if(ai.GetPlayerId() == id)
-            return &ai;
-    }
-    return NULL;
+    return game->GetAIPlayer(id);
 }
 
 /**

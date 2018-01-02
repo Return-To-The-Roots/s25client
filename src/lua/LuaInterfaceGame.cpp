@@ -327,7 +327,7 @@ LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
 {
     if(playerIdx >= gw.GetNumPlayers())
         throw std::runtime_error("Invalid player idx");
-    return LuaPlayer(gw.GetPlayer(playerIdx));
+    return LuaPlayer(game, gw.GetPlayer(playerIdx));
 }
 
 LuaWorld LuaInterfaceGame::GetWorld()
@@ -390,7 +390,8 @@ bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char cancele
 
 void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration)
 {
-    const AIPlayer* ai = GAMECLIENT.GetAIPlayer(targetPlayerId);
+    Game& gameInst = *game.lock();
+    AIPlayer* ai =  gameInst.GetAIPlayer(targetPlayerId);
     if (ai != NULL)
     {
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];

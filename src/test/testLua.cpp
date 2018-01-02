@@ -750,4 +750,54 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     BOOST_REQUIRE_EQUAL(getLog(), (resFmt % 2 % pt3 % "Water" % 5).str());
 }
 
+BOOST_AUTO_TEST_CASE(LuaPacts)
+{
+    initWorld();
+    GamePlayer& player = world.GetPlayer(0);
+    
+    executeLua("player = rttr:GetPlayer(1)");
+    // accept every pact from player
+    executeLua("function onSuggestPact(pactType, suggestedBy, target, duration) return suggestedBy == 0 end");
+    // log created pacts to test callback
+    executeLua("function onPactCreated(pt, suggestedByPlayerId, targetPlayerId, duration) rttr:Log('Pact created') end");
+    // log canceled pacts to test callback
+    executeLua("function onPactCanceled(pt, canceledByPlayerId, targetPlayerId) rttr:Log('Pact canceled') end");
+
+    // create alliance and check players state
+    player.SuggestPact(1, TREATY_OF_ALLIANCE, 0xFFFFFFFF);
+    game->executeAICommands();
+    BOOST_REQUIRE(player.IsAlly(1));
+    executeLua("assert(player:IsAlly(0))");
+    BOOST_REQUIRE(!player.IsAttackable(1));
+    executeLua("assert(not player:IsAttackable(0))");
+
+    // check if callback onPactCreated was executed
+    BOOST_REQUIRE_EQUAL(getLog(), "Pact created\n");
+
+    // cancel pact by lua request
+    executeLua("player:CancelPact(TREATY_OF_ALLIANCE, 0)");
+    game->executeAICommands();
+    player.CancelPact(TREATY_OF_ALLIANCE, 1);
+    BOOST_REQUIRE(!player.IsAlly(1));
+    executeLua("assert(not player:IsAlly(0))");
+    BOOST_REQUIRE(player.IsAttackable(1));
+    executeLua("assert(player:IsAttackable(0))");
+
+    // check if callback onPactCanceled was executed
+    BOOST_REQUIRE_EQUAL(getLog(), "Pact canceled\n");
+
+    // accept cancel-request via lua callback
+    executeLua("function onCancelPactRequest(pt, player, ai) return true end");
+    player.SuggestPact(1, NON_AGGRESSION_PACT, 0xFFFFFFFF);
+    game->executeAICommands();
+    // non aggression was created
+    BOOST_REQUIRE(!player.IsAttackable(1));
+    BOOST_REQUIRE_EQUAL(getLog(), "Pact created\n");
+
+    // cancel pact by player and check state
+    player.CancelPact(NON_AGGRESSION_PACT, 1);
+    BOOST_REQUIRE(player.IsAttackable(1));  
+    BOOST_REQUIRE_EQUAL(getLog(), "Pact canceled\n");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

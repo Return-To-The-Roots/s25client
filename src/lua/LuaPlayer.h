@@ -23,20 +23,23 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/PactTypes.h"
+#include <boost/weak_ptr.hpp>
 #include <kaguya/kaguya.hpp>
 #include <map>
 
 class GamePlayer;
+class Game;
 
 class LuaPlayer : public LuaPlayerBase
 {
+    boost::weak_ptr<Game> game;
     GamePlayer& player;
 
 protected:
     const BasePlayerInfo& GetPlayer() const override;
 
 public:
-    LuaPlayer(GamePlayer& player) : player(player) {}
+    LuaPlayer(boost::weak_ptr<Game> game, GamePlayer& player) : game(game), player(player) {}
     static void Register(kaguya::State& state);
 
     void EnableBuilding(BuildingType bld, bool notify);

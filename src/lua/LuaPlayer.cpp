@@ -19,6 +19,7 @@
 #include "LuaPlayer.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "Game.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
 #include "helpers/converters.h"
@@ -313,7 +314,8 @@ bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
 
 void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, const unsigned duration)
 {
-    const AIPlayer* ai = GAMECLIENT.GetAIPlayer(player.GetPlayerId());
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(otherPlayerId);
     if (ai != NULL)
     {
         AIInterface aii = ai->getAIInterface();
@@ -323,7 +325,8 @@ void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, cons
 
 void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId) 
 {
-    const AIPlayer* ai = GAMECLIENT.GetAIPlayer(player.GetPlayerId());
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(otherPlayerId);
     if (ai != NULL)
     {
         AIInterface aii = ai->getAIInterface();
