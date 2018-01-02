@@ -21,7 +21,7 @@
 #include "gameTypes/ServerType.h"
 #include <string>
 
-/// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
+/// Struktur zur Weitergabe der Spiel-ErÃ¶ffnungsdaten
 struct CreateServerInfo
 {
     ServerType type;      /// Typ des Servers.
