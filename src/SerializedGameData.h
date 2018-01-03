@@ -29,12 +29,14 @@
 #include <map>
 #include <set>
 #include <stdexcept>
+#include <boost/shared_ptr.hpp>
 
 class GameObject;
 class GameWorld;
 class EventManager;
 class BinaryFile;
 class GameEvent;
+class Game;
 
 /// Kümmert sich um das Serialisieren der GameDaten fürs Speichern und Resynchronisieren
 class SerializedGameData : public Serializer
@@ -50,10 +52,10 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(const GameWorld& gw);
+    void MakeSnapshot(boost::shared_ptr<Game> game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(GameWorld& gw);
+    void ReadSnapshot(boost::shared_ptr<Game> game);
 
     unsigned GetGameDataVersion() const { return gameDataVersion; }
 

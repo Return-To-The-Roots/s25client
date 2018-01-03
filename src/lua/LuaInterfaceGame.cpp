@@ -24,14 +24,17 @@
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "network/GameClient.h"
+#include "ai/AIPlayer.h"
+#include "ai/AIInterface.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
+#include "Game.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
 
-LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
+LuaInterfaceGame::LuaInterfaceGame(boost::weak_ptr<Game> gameInstance) : gw(gameInstance.lock()->world), game(gameInstance)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) lua[#name] = name
@@ -139,6 +142,11 @@ LuaInterfaceGame::LuaInterfaceGame(GameWorldGame& gw) : gw(gw)
     lua["RES_COAL"] = Resource::Coal;
     lua["RES_GRANITE"] = Resource::Granite;
     lua["RES_WATER"] = Resource::Water;
+
+    lua["NON_AGGRESSION_PACT"] = NON_AGGRESSION_PACT;
+    lua["TREATY_OF_ALLIANCE"] = TREATY_OF_ALLIANCE;
+    // infinite pact duration, see GamePlayer::GetRemainingPactTime
+    lua["DURATION_INFINITE"] = 0xFFFFFFFF;
 
 #undef ADD_LUA_CONST
 #define ADD_LUA_CONST(name) lua[#name] = iwMissionStatement::name
@@ -319,7 +327,7 @@ LuaPlayer LuaInterfaceGame::GetPlayer(unsigned playerIdx)
 {
     if(playerIdx >= gw.GetNumPlayers())
         throw std::runtime_error("Invalid player idx");
-    return LuaPlayer(gw.GetPlayer(playerIdx));
+    return LuaPlayer(game, gw.GetPlayer(playerIdx));
 }
 
 LuaWorld LuaInterfaceGame::GetWorld()
@@ -370,4 +378,49 @@ void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint p
     kaguya::LuaRef onResourceFound = lua["onResourceFound"];
     if(onResourceFound.type() == LUA_TFUNCTION)
         onResourceFound.call<void>(player, pt.x, pt.y, type, quantity);
+}
+
+bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId)
+{
+    kaguya::LuaRef onPactCancel = lua["onCancelPactRequest"];
+    if (onPactCancel.type() == LUA_TFUNCTION)
+        return onPactCancel.call<bool>(pt, canceledByPlayerId, targetPlayerId);
+    return true; // always accept pact cancel if there is no handler
+}
+
+void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration)
+{
+    Game& gameInst = *game.lock();
+    AIPlayer* ai =  gameInst.GetAIPlayer(targetPlayerId);
+    if (ai != NULL)
+    {
+        kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
+        if (onPactCancel.type() == LUA_TFUNCTION)
+        {
+            AIInterface aii = ai->getAIInterface();
+            bool luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
+            if (luaResult)
+                aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
+            else
+                aii.CancelPact(pt, suggestedByPlayerId);
+        }
+    }
+}
+
+void LuaInterfaceGame::EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId)
+{
+    kaguya::LuaRef onPactCanceled = lua["onPactCanceled"];
+    if (onPactCanceled.type() == LUA_TFUNCTION)
+    {
+        onPactCanceled.call<void>(pt, canceledByPlayerId, targetPlayerId);
+    }
+}
+
+void LuaInterfaceGame::EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration)
+{
+    kaguya::LuaRef onPactCreated = lua["onPactCreated"];
+    if (onPactCreated.type() == LUA_TFUNCTION)
+    {
+        onPactCreated.call<void>(pt, suggestedByPlayerId, targetPlayerId, duration);
+    }
 }

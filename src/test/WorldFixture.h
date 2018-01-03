@@ -27,6 +27,8 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////
@@ -98,14 +100,14 @@ template<class T_WorldCreator, unsigned T_numPlayers = 0, unsigned T_width = Wor
          unsigned T_height = WorldDefault<T_numPlayers>::height>
 struct WorldFixture
 {
-    Game game;
+    boost::shared_ptr<Game> game;
     TestEventManager& em;
     GlobalGameSettings& ggs;
     GameWorld& world;
     T_WorldCreator worldCreator;
     WorldFixture()
-        : game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer())),
-          em(static_cast<TestEventManager&>(*game.em)), ggs(const_cast<GlobalGameSettings&>(game.ggs)), world(game.world),
+        : game(new Game(GlobalGameSettings(), new TestEventManager, std::vector<PlayerInfo>(T_numPlayers, GetPlayer()))),
+          em(static_cast<TestEventManager&>(*game->em)), ggs(const_cast<GlobalGameSettings&>(game->ggs)), world(game->world),
           worldCreator(MapExtent(T_width, T_height), T_numPlayers)
     {
         // Fast moving ships

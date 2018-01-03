@@ -20,6 +20,7 @@
 #include "CatapultStone.h"
 #include "EventManager.h"
 #include "FOWObjects.h"
+#include "Game.h"
 #include "GameEvent.h"
 #include "GameObject.h"
 #include "GamePlayer.h"
@@ -209,10 +210,11 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(const GameWorld& gw)
+void SerializedGameData::MakeSnapshot(boost::shared_ptr<Game> game)
 {
     Prepare(false);
-
+    
+    GameWorld& gw = game->world;
     writeEm = &gw.GetEvMgr();
 
     // Anzahl Objekte reinschreiben (used for safety checks only)
@@ -247,15 +249,16 @@ void SerializedGameData::MakeSnapshot(const GameWorld& gw)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(GameWorld& gw)
+void SerializedGameData::ReadSnapshot(boost::shared_ptr<Game> game)
 {
     Prepare(true);
 
+    GameWorld& gw = game->world;
     em = &gw.GetEvMgr();
 
     expectedNumObjects = PopUnsignedInt();
 
-    gw.Deserialize(*this);
+    gw.Deserialize(game, *this);
     em->Deserialize(*this);
     for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
         gw.GetPlayer(i).Deserialize(*this);

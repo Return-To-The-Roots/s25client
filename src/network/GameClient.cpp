@@ -244,12 +244,7 @@ const AIPlayer* GameClient::GetAIPlayer(unsigned id) const
 {
     if(!game)
         return NULL;
-    BOOST_FOREACH(const AIPlayer& ai, game->aiPlayers)
-    {
-        if(ai.GetPlayerId() == id)
-            return &ai;
-    }
-    return NULL;
+    return game->GetAIPlayer(id);
 }
 
 /**
@@ -309,7 +304,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     GameWorld& gameWorld = game->world;
     if(mapinfo.savegame)
-        mapinfo.savegame->sgd.ReadSnapshot(gameWorld);
+        mapinfo.savegame->sgd.ReadSnapshot(game);
     else
     {
         RTTR_Assert(mapinfo.type != MAPTYPE_SAVEGAME);
@@ -317,7 +312,7 @@ void GameClient::StartGame(const unsigned random_init)
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
-        gameWorld.LoadMap(mapinfo.filepath, mapinfo.luaFilepath);
+        gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath);
 
         /// Evtl. Goldvorkommen ändern
         Resource::Type target; // löschen
@@ -1599,7 +1594,7 @@ bool GameClient::SaveToFile(const std::string& filename)
     save.sgd.debugMode = SETTINGS.global.debugMode;
 
     // Spiel serialisieren
-    save.sgd.MakeSnapshot(game->world);
+    save.sgd.MakeSnapshot(game);
 
     // Und alles speichern
     return save.Save(filename, mapinfo.title);

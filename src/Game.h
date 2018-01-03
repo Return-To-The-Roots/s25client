@@ -45,6 +45,7 @@ public:
     void RunGF();
     bool IsStarted() const { return started; }
     bool IsGameFinished() const { return finished; }
+    AIPlayer* GetAIPlayer(unsigned id);
 
 private:
     /// Updates the statistics

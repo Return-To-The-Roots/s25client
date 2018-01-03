@@ -20,17 +20,20 @@
 
 #include "LuaInterfaceBase.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/PactTypes.h"
+#include <boost/weak_ptr.hpp>
 #include <string>
 
 class GameWorldGame;
 class LuaPlayer;
 class LuaWorld;
 class Serializer;
+class Game;
 
 class LuaInterfaceGame : public LuaInterfaceBase
 {
 public:
-    LuaInterfaceGame(GameWorldGame& gw);
+    LuaInterfaceGame(boost::weak_ptr<Game> game);
     virtual ~LuaInterfaceGame();
 
     static void Register(kaguya::State& state);
@@ -43,7 +46,14 @@ public:
     void EventStart(bool isFirstStart);
     void EventGameFrame(unsigned number);
     void EventResourceFound(unsigned char player, const MapPoint pt, unsigned char type, unsigned char quantity);
-
+    // Called if player wants to cancel a pact
+    bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    // Called if player suggests a pact
+    void EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration);
+    // called if pact was canceled
+    void EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    // called if pact was created
+    void EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration);
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;
@@ -58,7 +68,7 @@ public:
 
 private:
     GameWorldGame& gw;
-
+    boost::weak_ptr<Game> game;
     LuaPlayer GetPlayer(unsigned playerIdx);
     LuaWorld GetWorld();
 };

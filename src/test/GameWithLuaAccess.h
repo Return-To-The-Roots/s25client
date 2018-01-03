@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GameWorldWithLuaAccess_h__
-#define GameWorldWithLuaAccess_h__
+#ifndef GameWithLuaAccess_h__
+#define GameWithLuaAccess_h__
 
 #include "BufferedWriter.h"
 #include "EventManager.h"
@@ -33,18 +33,43 @@
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
+#include "Game.h"
+#include "test/GCExecutor.h"
+#include "factories/AIFactory.h"
+#include "ai/AIPlayer.h"
 #include <boost/test/unit_test.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/foreach.hpp>
+#include <boost/make_shared.hpp>
 #include <vector>
 
-class GameWorldWithLuaAccess : public GameWorldGame
+class GameWithLuaAccess : public Game
 {
 public:
-    GlobalGameSettings ggs;
-    EventManager em;
+    GameWithLuaAccess() : Game(GlobalGameSettings(), (unsigned int)0, CreatePlayers())
+    {
+        for (unsigned id = 0; id < world.GetNumPlayers(); id++)
+        {
+            GamePlayer& player = world.GetPlayer(id);
+            if (!player.isHuman() && player.isUsed())
+                aiPlayers.push_back(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
+        }
+    }
 
-    GameWorldWithLuaAccess() : GameWorldGame(CreatePlayers(), ggs, em), em(0) { createLua(); }
-
-    void createLua() { lua.reset(new LuaInterfaceGame(*this)); }
+    void executeAICommands() {
+        AIPlayer* ai = GetAIPlayer(1);
+        std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
+        for (unsigned i = 0; i < 5; i++)
+        {
+            world.GetEvMgr().ExecuteNextGF();
+            ai->RunGF(world.GetEvMgr().GetCurrentGF(), i == 0);
+        }
+        BOOST_FOREACH(gc::GameCommandPtr& gc, aiGcs)
+        {
+            gc->Execute(world, 1);
+        }
+    }
 
     static std::vector<PlayerInfo> CreatePlayers()
     {
@@ -68,12 +93,17 @@ public:
     }
 };
 
-struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture
+struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture, GCExecutor
 {
-    GameWorldWithLuaAccess world;
+public:
+    boost::shared_ptr<GameWithLuaAccess> game;
+    GameWorld& world;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture() { luaBase = &world.GetLua(); }
+    LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world) { 
+        game->world.SetLua(new LuaInterfaceGame(game));
+        luaBase = &game->world.GetLua(); 
+    }
 
     void initWorld()
     {
@@ -88,6 +118,8 @@ struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture
         playerNations.push_back(world.GetPlayer(1).nation);
         BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations, false));
     }
+
+    virtual GameWorldGame& GetWorld() { return world; }
 };
 
-#endif // GameWorldWithLuaAccess_h__
+#endif // GameWithLuaAccess_h__

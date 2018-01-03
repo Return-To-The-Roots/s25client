@@ -26,7 +26,7 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Font.h"
-#include "test/GameWorldWithLuaAccess.h"
+#include "test/GameWithLuaAccess.h"
 #include <boost/assign/std/vector.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(LuaGUITestSuite, LuaTestsFixture)

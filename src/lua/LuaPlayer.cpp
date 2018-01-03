@@ -19,10 +19,13 @@
 #include "LuaPlayer.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "Game.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
 #include "helpers/converters.h"
 #include "lua/LuaHelpers.h"
+#include "ai/AIPlayer.h"
+#include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
@@ -59,6 +62,10 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
                                .addFunction("Surrender", &LuaPlayer::Surrender)
+                               .addFunction("IsAlly", &LuaPlayer::IsAlly)
+                               .addFunction("IsAttackable", &LuaPlayer::IsAttackable)
+                               .addFunction("SuggestPact", &LuaPlayer::SuggestPact)
+                               .addFunction("CancelPact", &LuaPlayer::CancelPact)
                                // Old names
                                .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
                                .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
@@ -293,4 +300,36 @@ void LuaPlayer::Surrender(bool destroyBlds)
 kaguya::standard::tuple<unsigned, unsigned> LuaPlayer::GetHQPos() const
 {
     return kaguya::standard::tuple<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
+}
+
+bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
+{
+    return player.IsAlly(otherPlayerId);
+}
+
+bool LuaPlayer::IsAttackable(unsigned char otherPlayerId) 
+{
+    return player.IsAttackable(otherPlayerId);
+}
+
+void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, const unsigned duration)
+{
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
+    if (ai != NULL)
+    {
+        AIInterface aii = ai->getAIInterface();
+        aii.SuggestPact(otherPlayerId, pt, duration);
+    }
+}
+
+void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId) 
+{
+    Game& gameInst = *game.lock();
+    AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
+    if (ai != NULL)
+    {
+        AIInterface aii = ai->getAIInterface();
+        aii.CancelPact(pt, otherPlayerId);
+    }
 }
