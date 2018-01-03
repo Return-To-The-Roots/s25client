@@ -34,6 +34,7 @@
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
 #include "Game.h"
+#include "test/GCExecutor.h"
 #include "factories/AIFactory.h"
 #include "ai/AIPlayer.h"
 #include <boost/test/unit_test.hpp>
@@ -50,7 +51,9 @@ public:
     {
         for (unsigned id = 0; id < world.GetNumPlayers(); id++)
         {
-            aiPlayers.push_back(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
+            GamePlayer& player = world.GetPlayer(id);
+            if (!player.isHuman() && player.isUsed())
+                aiPlayers.push_back(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
         }
     }
 
@@ -66,7 +69,6 @@ public:
         {
             gc->Execute(world, 1);
         }
-
     }
 
     static std::vector<PlayerInfo> CreatePlayers()
@@ -91,7 +93,7 @@ public:
     }
 };
 
-struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture
+struct LuaTestsFixture : public LogAccessor, public LuaBaseFixture, GCExecutor
 {
 public:
     boost::shared_ptr<GameWithLuaAccess> game;
@@ -116,6 +118,8 @@ public:
         playerNations.push_back(world.GetPlayer(1).nation);
         BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations, false));
     }
+
+    virtual GameWorldGame& GetWorld() { return world; }
 };
 
 #endif // GameWithLuaAccess_h__

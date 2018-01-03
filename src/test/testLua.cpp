@@ -29,6 +29,7 @@
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
+#include "postSystem/DiplomacyPostQuestion.h"
 #include "test/GameWithLuaAccess.h"
 #include "test/helperFuncs.h"
 #include "test/initTestHelpers.h"
@@ -798,6 +799,17 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     player.CancelPact(NON_AGGRESSION_PACT, 1);
     BOOST_REQUIRE(player.IsAttackable(1));  
     BOOST_REQUIRE_EQUAL(getLog(), "Pact canceled\n");
+
+    PostBox* postbox = world.GetPostMgr().AddPostBox(0);
+    // Suggest Pact from Lua
+    executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
+    game->executeAICommands();
+    const DiplomacyPostQuestion* msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox->GetMsg(0));
+    this->AcceptPact(msg->GetPactId(), TREATY_OF_ALLIANCE, 1);
+    BOOST_REQUIRE(!player.IsAttackable(1));
+    executeLua("assert(not player:IsAttackable(0))");
+
+    BOOST_REQUIRE_EQUAL(getLog(), "Pact created\n");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
