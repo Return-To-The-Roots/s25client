@@ -170,7 +170,7 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
         // When cutting the 2 triangles from a square, we want a 45 deg angle (height = 0.5*width) to avoid using outside pixels
         // So if we can make those equal by removing half a pixel to the bottom middle position, we do this
         if(middleBottom.x - leftMiddle.x == middleBottom.y - 0.5f - leftMiddle.y)
-            middleBottom.y -= 0.5;
+            middleBottom.y -= 0.5f;
     }
     switch(boost::native_value(texType))
     {
@@ -185,7 +185,7 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
             result.left = leftMiddle;
             result.right = PointF(posInTexture.right + 0.f, result.left.y);
             if(result.tip.x - result.left.x == result.tip.y - 0.5f - result.left.y)
-                result.tip.y -= 0.5;
+                result.tip.y -= 0.5f;
             break;
         case ETexType::Rotated:
             result.tip = PointF(posInTexture.right + 0.f, leftMiddle.y);
@@ -208,7 +208,7 @@ TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
         // When cutting the 2 triangles from a square, we want a 45 deg angle (height = 0.5*width) to avoid using outside pixels
         // So if we can make those equal by adding half a pixel to the top middle position, we do this
         if(middleTop.x - leftMiddle.x == leftMiddle.y - (middleTop.y + 0.5f))
-            middleTop.y += 0.5;
+            middleTop.y += 0.5f;
     }
     switch(boost::native_value(texType))
     {
@@ -223,7 +223,7 @@ TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
             result.left = leftMiddle;
             result.right = PointF(posInTexture.right + 0.f, result.left.y);
             if(result.tip.x - result.left.x == result.left.y - result.tip.y - 0.5f)
-                result.tip.y += 0.5;
+                result.tip.y += 0.5f;
             break;
         case ETexType::Rotated:
             result.tip = leftMiddle;
