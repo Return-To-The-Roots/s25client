@@ -72,8 +72,11 @@ public:
     /// Gets the type of ware this donkey is carrying
     GoodType GetCarriedWare() const { return gt; }
 
-    /// Sets the sucessor in the caravane
+    /// Sets the successor in the caravane
     void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
+
+    // get the successor in the caravane
+    nofTradeDonkey* GetSuccessor() { return successor; }
 
     /// Inform successor that the caravane is canceled
     void CancelTradeCaravane();

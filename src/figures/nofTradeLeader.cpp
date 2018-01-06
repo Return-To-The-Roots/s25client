@@ -18,12 +18,17 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofTradeLeader.h"
 #include "GamePlayer.h"
+#include "GameObject.h"
+#include "gameData/JobConsts.h"
+#include "EventManager.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "nofTradeDonkey.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
+#include <boost/format.hpp>
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
                                const MapPoint goalPos)
@@ -48,17 +53,29 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 
 void nofTradeLeader::GoalReached()
 {
+    noBase* nob = gwg->GetNO(goalPos);
+    nobBaseWarehouse* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
     if(successor)
     {
+        unsigned amountWares = 0;
+        Job jobType = successor->GetJobType();
+        GoodType goodType = successor->GetCarriedWare();
+        nofTradeDonkey* successorDonkey = successor;
+        while (successorDonkey != NULL) {
+            amountWares++;
+            successorDonkey = successorDonkey->GetSuccessor();
+        }
+        GamePlayer& owner = gwg->GetPlayer(player);
+        std::string waresName = _(goodType == GD_NOTHING ? JOB_NAMES[jobType] : WARE_NAMES[goodType]);
+        std::string text = boost::str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
+        SendPostMessage(targetWarehouse->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), text,PostCategory::Economy, *targetWarehouse));
         successor->AddNextDir(REACHED_GOAL);
         successor = NULL;
     }
 
-    noBase* nob = gwg->GetNO(goalPos);
-    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(nob));
-    gwg->GetPlayer(static_cast<nobBaseWarehouse*>(nob)->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
+    gwg->GetPlayer(targetWarehouse->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
     gwg->RemoveFigure(pos, this);
-    static_cast<nobBaseWarehouse*>(nob)->AddFigure(this);
+    targetWarehouse->AddFigure(this);
 }
 
 void nofTradeLeader::Walked()

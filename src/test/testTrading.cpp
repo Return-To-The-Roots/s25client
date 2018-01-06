@@ -20,6 +20,9 @@
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "helperFuncs.h"
+#include "gameData/JobConsts.h"
+#include "postSystem/PostBox.h"
+#include "postSystem/PostMsgWithBuilding.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>
@@ -270,4 +273,42 @@ BOOST_FIXTURE_TEST_CASE(TradeFail, TradeFixture)
     testExpectedWares();
 }
 
+BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
+{
+    initGameRNG();
+    PostBox* postbox = world.GetPostMgr().AddPostBox(0);
+
+    this->TradeOverLand(players[0]->GetHQPos(), GD_NOTHING, JOB_WOODCUTTER, 2);
+    numHelpers -= 1;
+    numWoodcutters -= 2;
+    testAfterLeaving(2);
+
+    unsigned distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
+    RTTR_SKIP_GFS(20 * distance);
+    // warriors are recruited
+    numHelpers -= numSwords;
+
+    const PostMsg* post = postbox->GetMsg(0);
+    BOOST_REQUIRE(post);
+    const PostMsgWithBuilding* msg = dynamic_cast<const PostMsgWithBuilding*>(post);
+    BOOST_REQUIRE(msg->GetText().find('2') != std::string::npos);
+    BOOST_REQUIRE(msg->GetText().find(_(JOB_NAMES[JOB_WOODCUTTER])) != std::string::npos);
+    BOOST_REQUIRE(msg->GetText().find(players[1]->name) != std::string::npos);
+
+    this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
+    numHelpers -= 1;
+    numDonkeys -= 2;
+    numBoards -= 2;
+    testAfterLeaving(2);
+
+    distance = world.CalcDistance(curWh->GetPos(), players[0]->GetHQPos()) + 2;
+    RTTR_SKIP_GFS(20 * distance);
+
+    const PostMsg* post2 = postbox->GetMsg(1);
+    BOOST_REQUIRE(post2);
+    const PostMsgWithBuilding* msg2 = dynamic_cast<const PostMsgWithBuilding*>(post2);
+    BOOST_REQUIRE(msg2->GetText().find('2') != std::string::npos);
+    BOOST_REQUIRE(msg2->GetText().find(_(WARE_NAMES[GD_BOARDS])) != std::string::npos);
+    BOOST_REQUIRE(msg2->GetText().find(players[1]->name) != std::string::npos);
+}
 BOOST_AUTO_TEST_SUITE_END()
