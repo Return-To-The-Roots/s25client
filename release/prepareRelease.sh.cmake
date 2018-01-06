@@ -25,6 +25,7 @@ SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
 SYSTEM_ARCH=@PLATFORM_ARCH@
 IS_CROSS_COMPILE=@CMAKE_CROSSCOMPILING@
 RTTR_BINDIR=@RTTR_BINDIR@
+RTTR_EXTRA_BINDIR=@RTTR_EXTRA_BINDIR@
 RTTR_DATADIR=@RTTR_DATADIR@
 RTTR_LIBDIR=@RTTR_LIBDIR@
 RTTR_DRIVERDIR=@RTTR_DRIVERDIR@
@@ -37,7 +38,7 @@ if [ -z "${RTTR_SRCDIR}" ] ; then
 fi
 
 echo "## Installing for \"${SYSTEM_NAME}\""
-echo "## Using Binary Dir \"${RTTR_BINDIR}\""
+echo "## Using Binary Dir \"${RTTR_BINDIR}\", \"${RTTR_EXTRA_BINDIR}\""
 echo "## Using Data Dir \"${RTTR_DATADIR}\""
 echo "## Using Library Dir \"${RTTR_LIBDIR}\""
 
@@ -61,6 +62,12 @@ rm -vf ${DESTDIR}${RTTR_DRIVERDIR}/audio/libaudio*.{a,lib}
 extract_debug_symbols()
 {
 	local FILE=$1
+	
+	if [ "$SYSTEM_NAME" == "Darwin" ]; then
+		# Can't extract symbols for apple, so jsut strip them
+		i686-apple-darwin10-strip -S ${DESTDIR}$FILE
+		return 0
+	fi
 
 	objcopyArch=""
 	case "$SYSTEM_ARCH" in
@@ -125,36 +132,21 @@ extract_debug_symbols()
 
 mecho --blue "## Extracting debug info from files and saving them into dbg"
 
-# strip out debug symbols into external file
+binaries=()
 case "$SYSTEM_NAME" in
 	Darwin)
 		echo "extraction of debug symbols for Apple currently not supported" >&2
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25client
-		i686-apple-darwin10-strip -S ${DESTDIR}bin/s25edit
-		i686-apple-darwin10-strip -S ${DESTDIR}lib/driver/video/libvideoSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}lib/driver/audio/libaudioSDL.dylib
-		i686-apple-darwin10-strip -S ${DESTDIR}libexec/RTTR/s25update
-		i686-apple-darwin10-strip -S ${DESTDIR}libexec/RTTR/sound-convert
-		i686-apple-darwin10-strip -S ${DESTDIR}libexec/RTTR/s-c_resample
-	;;
-	Windows)
-		extract_debug_symbols s25client.exe
-		extract_debug_symbols s25edit.exe
-		extract_debug_symbols driver/video/libvideoWinAPI.dll
-		extract_debug_symbols driver/video/libvideoSDL.dll
-		extract_debug_symbols driver/audio/libaudioSDL.dll
-		extract_debug_symbols RTTR/s25update.exe
-		extract_debug_symbols RTTR/sound-convert.exe
-		extract_debug_symbols RTTR/s-c_resample.exe
+		exe_suffix=""
+		lib_suffix=".dylib"
 	;;
 	Linux|FreeBSD)
-		extract_debug_symbols bin/s25client
-		extract_debug_symbols bin/s25edit
-		extract_debug_symbols share/s25rttr/driver/video/libvideoSDL.so
-		extract_debug_symbols share/s25rttr/driver/audio/libaudioSDL.so
-		extract_debug_symbols libexec/RTTR/s25update
-		extract_debug_symbols libexec/RTTR/sound-convert
-		extract_debug_symbols libexec/RTTR/s-c_resample
+		exe_suffix=""
+		lib_suffix=".so"
+	;;
+	Windows)
+		exe_suffix=".exe"
+		lib_suffix=".dll"
+		binaries+=( "${RTTR_DRIVERDIR}/video/libvideoWinAPI.dll" )
 	;;
 	*)
 		echo "$SYSTEM_NAME not supported" >&2
@@ -162,29 +154,40 @@ case "$SYSTEM_NAME" in
 	;;
 esac
 
+binaries+=( "${RTTR_BINDIR}/"{s25client,s25edit}${exe_suffix} )
+binaries+=( "${RTTR_EXTRA_BINDIR}/"{s25update,sound-convert,s-c_resample}${exe_suffix} )
+binaries+=( "${RTTR_DRIVERDIR}/"{video/libvideoSDL,audio/libaudioSDL}${lib_suffix} )
+
+# strip out debug symbols into external file
+for binary in "${binaries[@]}" ; do
+	extract_debug_symbols $binary
+done
+
 mecho --blue "## Performing additional tasks"
 
 case "$SYSTEM_NAME" in
 	Darwin)
 		# create app-bundle for apple
 		# app anlegen
-		mkdir -vp ${DESTDIR}s25client.app/Contents/{MacOS,Resources} || exit 1
+		contentsPath="${DESTDIR}s25client.app/Contents"
+		mkdir -vp ${contentsPath}/{MacOS,Resources} || exit 1
+		macOSPath="${contentsPath}/MacOS"
+		frameworksPath="${macOSPath}/Frameworks"
 
 		# frameworks kopieren
-		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/{SDL,SDL_mixer}.framework || exit 1
+		mkdir -vp ${frameworksPath} || exit 1
+		mkdir -vp ${frameworksPath}/{SDL,SDL_mixer}.framework || exit 1
 
-		if [ -d /Library/Frameworks ] ; then
-			cp -r /Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-			cp -r /Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-		else
-			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
-			cp -r /usr/lib/apple/SDKs/Library/Frameworks/SDL_mixer.framework ${DESTDIR}s25client.app/Contents/MacOS/Frameworks || exit 1
+		srcFrameworksPath="/Library/Frameworks"
+		if [ ! -d /Library/Frameworks ] ; then
+			srcFrameworksPath="/usr/lib/apple/SDKs/Library/Frameworks"
 		fi
+		cp -r ${srcFrameworksPath}/SDL.framework ${frameworksPath} || exit 1
+		cp -r ${srcFrameworksPath}/SDL_mixer.framework ${frameworksPath} || exit 1
 
 		# remove headers and additional libraries from the frameworks
-		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Headers -exec rm -rf {} \;
-		find ${DESTDIR}s25client.app/Contents/MacOS/Frameworks/ -name Resources -exec rm -rf {} \;
+		find ${frameworksPath}/ -name Headers -exec rm -rf {} \;
+		find ${frameworksPath}/ -name Resources -exec rm -rf {} \;
 
 		SDK=/Developer/SDKs/MacOSX10.5.sdk
 		if [ ! -d $SDK ] ; then
@@ -195,7 +198,7 @@ case "$SYSTEM_NAME" in
 		for LIBSUFFIX in miniupnpc.5 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
 			LIB=/usr/lib/lib${LIBSUFFIX}.dylib
 			if [ -f $SDK$LIB ] ; then
-				cp -rv $SDK$LIB ${DESTDIR}s25client.app/Contents/MacOS || exit 1
+				cp -rv $SDK$LIB ${macOSPath} || exit 1
 			else
 				echo "$LIB was not found in $SDK" >&2
 				exit 1
@@ -206,22 +209,24 @@ case "$SYSTEM_NAME" in
 		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/lib || exit 1
 
 		# binaries und paketdaten kopieren
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.terminal ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/icon.icns ${DESTDIR}s25client.app/Contents/Resources/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${DESTDIR}s25client.app/Contents/ || exit 1
-		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${DESTDIR}s25client.app/Contents/ || exit 1
-		mv -v ${DESTDIR}bin/* ${DESTDIR}s25client.app/Contents/MacOS/bin/ || exit 1
-		mv -v ${DESTDIR}lib/* ${DESTDIR}s25client.app/Contents/MacOS/lib/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${macOSPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.terminal ${macOSPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/icon.icns ${contentsPath}/Resources/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${contentsPath}/ || exit 1
+		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${contentsPath}/ || exit 1
+		mv -v ${DESTDIR}bin/* ${macOSPath}/bin/ || exit 1
+		mv -v ${DESTDIR}lib/* ${macOSPath}/lib/ || exit 1
 		
-		chmod +x ${DESTDIR}s25client.app/Contents/MacOS/* || exit 1
+		chmod +x ${macOSPath}/rttr.command || exit 1
+		chmod +x ${macOSPath}/bin/* || exit 1
+		chmod +x ${macOSPath}/lib/* || exit 1
 
 		# remove dirs if empty
 		rmdir ${DESTDIR}bin
 		rmdir ${DESTDIR}lib
 
 		# RTTR-Ordner kopieren
-		mv -v ${DESTDIR}share ${DESTDIR}s25client.app/Contents/MacOS/ || exit 1
+		mv -v ${DESTDIR}share ${macOSPath}/ || exit 1
 	;;
 	Windows)
 		mingw=/usr
