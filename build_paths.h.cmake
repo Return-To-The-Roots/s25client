@@ -10,6 +10,9 @@
 ///	set binary directory (normal ./bin)
 #cmakedefine RTTR_BINDIR "@RTTR_BINDIR@"
 
+///	set extra binary directory (normal ./libexec)
+#cmakedefine RTTR_EXTRA_BINDIR "@RTTR_EXTRA_BINDIR@"
+
 ///	set data directory (normal ./share/s25rttr)
 #cmakedefine RTTR_DATADIR "@RTTR_DATADIR@"
 

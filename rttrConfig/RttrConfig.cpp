@@ -133,6 +133,7 @@ bool RttrConfig::Init()
     homePath = System::getHomePath();
     pathMappings.clear();
     pathMappings["BIN"] = RTTR_BINDIR;
+    pathMappings["EXTRA_BIN"] = RTTR_EXTRA_BINDIR;
     pathMappings["DATA"] = RTTR_DATADIR;
     pathMappings["GAME"] = RTTR_GAMEDIR;
     pathMappings["LIB"] = RTTR_LIBDIR;

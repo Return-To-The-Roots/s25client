@@ -83,7 +83,7 @@ const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /* 54 */ "",                               // unused
   /* 55 */ "<RTTR_USERDATA>/LSTS/SOUND.LST", // Die konvertierte sound.lst
   /* 56 */ "<RTTR_RTTR>/sound.scs",          // Das konvertier-script
-  /* 57 */ "<RTTR_BIN>/RTTR",                // Basispfad für den Soundconverter
+  /* 57 */ "<RTTR_EXTRA_BIN>",               // Basispfad für den Soundconverter
   /* 58 */ "<RTTR_GAME>/DATA/MIS0BOBS.LST",
   /* 59 */ "<RTTR_GAME>/DATA/MIS1BOBS.LST",
   /* 60 */ "<RTTR_GAME>/DATA/MIS2BOBS.LST",
