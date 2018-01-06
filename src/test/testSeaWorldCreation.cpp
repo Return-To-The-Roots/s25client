@@ -92,6 +92,7 @@ BOOST_AUTO_TEST_CASE(GetShipDir)
 
 BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
 {
+    LogAccessor logAcc;
     // Point 0,0 is definitely inside the sea
     BOOST_REQUIRE(world.IsWaterPoint(MapPoint(0, 0)));
     BOOST_REQUIRE(world.IsSeaPoint(MapPoint(0, 0)));

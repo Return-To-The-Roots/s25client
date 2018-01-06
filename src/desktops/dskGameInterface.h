@@ -25,6 +25,7 @@
 #include "Messenger.h"
 #include "customborderbuilder.h"
 #include "ingameWindows/iwAction.h"
+#include "ingameWindows/iwChat.h"
 #include "network/ClientInterface.h"
 #include "notifications/Subscribtion.h"
 #include "world/GameWorldView.h"
@@ -45,10 +46,10 @@ struct BuildingNote;
 struct KeyEvent;
 class NWFInfo;
 
-class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface
+class dskGameInterface : public Desktop, public ClientInterface, public GameInterface, public LobbyInterface, public IChatCmdListener
 {
 public:
-    dskGameInterface(boost::shared_ptr<Game> game);
+    dskGameInterface(boost::shared_ptr<Game> game, bool initOGL = true);
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;
@@ -109,6 +110,8 @@ public:
                           const bool enable_military_buildings);
 
     const GameWorldViewer& GetViewer() const { return worldViewer; }
+
+    void OnChatCommand(const std::string& cmd) override;
 
 private:
     /// Initializes player specific stuff after start or player swap

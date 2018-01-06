@@ -44,6 +44,7 @@
 #include "factories/AIFactory.h"
 #include "files.h"
 #include "helpers/Deleter.h"
+#include "lua/LuaInterfaceBase.h"
 #include "network/ClientInterface.h"
 #include "network/GameMessages.h"
 #include "network/GameServer.h"
@@ -274,7 +275,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, true, true))
     {
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
         return;
     }
 
@@ -312,7 +313,11 @@ void GameClient::StartGame(const unsigned random_init)
         for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
             gameWorld.GetPlayer(i).MakeStartPacts();
 
-        gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath);
+        if(!gameWorld.LoadMap(game, mapinfo.filepath, mapinfo.luaFilepath))
+        {
+            OnError(CE_INVALID_MAP);
+            return;
+        }
 
         /// Evtl. Goldvorkommen ändern
         Resource::Type target; // löschen
@@ -402,7 +407,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Id& msg)
     // haben wir eine ungültige ID erhalten? (aka Server-Voll)
     if(msg.player == GameMessageWithPlayer::NO_PLAYER_ID)
     {
-        OnError(CE_SERVERFULL);
+        OnError(CE_SERVER_FULL);
         return true;
     }
 
@@ -507,12 +512,20 @@ bool GameClient::OnGameMessage(const GameMessage_Player_State& msg)
         return true;
 
     JoinPlayerInfo& playerInfo = gameLobby->getPlayer(msg.player);
+    bool wasUsed = playerInfo.isUsed();
     playerInfo.ps = msg.ps;
     playerInfo.aiInfo = msg.aiInfo;
     playerInfo.InitRating();
 
     if(ci)
-        ci->CI_PlayerDataChanged(msg.player);
+    {
+        if(playerInfo.isUsed())
+            ci->CI_NewPlayer(msg.player);
+        else if(wasUsed)
+            ci->CI_PlayerLeft(msg.player);
+        else
+            ci->CI_PlayerDataChanged(msg.player);
+    }
     return true;
 }
 
@@ -671,14 +684,14 @@ bool GameClient::OnGameMessage(const GameMessage_Server_TypeOK& msg)
         default:
         case 1:
         {
-            OnError(CE_INVALIDSERVERTYPE);
+            OnError(CE_INVALID_SERVERTYPE);
             return true;
         }
         break;
 
         case 2:
         {
-            OnError(CE_WRONGVERSION);
+            OnError(CE_WRONG_VERSION);
             return true;
         }
         break;
@@ -701,7 +714,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Password& msg)
 
     if(msg.password != "true")
     {
-        OnError(CE_WRONGPW);
+        OnError(CE_WRONG_PW);
         return true;
     }
 
@@ -872,7 +885,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     if(portFilename.empty())
     {
         LOG.write("Invalid filename received!\n");
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
     }
     mapinfo.filepath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/" + portFilename;
     mapinfo.type = msg.mt;
@@ -936,19 +949,19 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Data& msg)
     {
         if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath, &mapinfo.mapChecksum))
         {
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
             return true;
         }
         if(!mapinfo.luaFilepath.empty() && !mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath, &mapinfo.luaChecksum))
         {
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
             return true;
         }
         RTTR_Assert(!mapinfo.luaFilepath.empty() || mapinfo.luaChecksum == 0);
 
         if(!CreateLobby())
         {
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
             return true;
         }
 
@@ -1028,7 +1041,7 @@ bool GameClient::OnGameMessage(const GameMessage_Map_ChecksumOK& msg)
         if(msg.retryAllowed)
             mainPlayer.sendMsgAsync(new GameMessage_MapRequest(false));
         else
-            OnError(CE_WRONGMAP);
+            OnError(CE_MAP_TRANSMISSION);
     }
     return true;
 }
@@ -1213,55 +1226,66 @@ void GameClient::ExecuteGameFrame()
     // Is it time for the next GF? If we are skipping, it is always time for the next GF
     if(skiptogf > curGF || (currentTime - framesinfo.lastTime) >= framesinfo.gf_length)
     {
-        if(replayMode)
+        try
         {
-            // In replay mode we have all commands in the file -> Execute them
-            ExecuteGameFrame_Replay();
-        } else
-        {
-            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
-            bool isNWF = (curGF == nwfInfo->getNextNWF());
-            // Is it time for a NWF, handle that first
-            if(isNWF)
+            if(replayMode)
             {
-                // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
-                // -> Don't execute GF, don't autosave etc.
-                if(!nwfInfo->isReady())
+                // In replay mode we have all commands in the file -> Execute them
+                ExecuteGameFrame_Replay();
+            } else
+            {
+                RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+                bool isNWF = (curGF == nwfInfo->getNextNWF());
+                // Is it time for a NWF, handle that first
+                if(isNWF)
                 {
-                    // If a player is a few GFs behind, he will never catch up and always lag
-                    // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
-                    // Do not reset frameTime or lastTime as this will mess up interpolation for drawing
-                    framesinfo.forcePauseStart = currentTime;
-                    framesinfo.forcePauseLen = (rand() * 4 * framesinfo.gf_length) / RAND_MAX;
-                    return;
+                    // If a player is lagging (we did not got his commands) "pause" the game by skipping the rest of this function
+                    // -> Don't execute GF, don't autosave etc.
+                    if(!nwfInfo->isReady())
+                    {
+                        // If a player is a few GFs behind, he will never catch up and always lag
+                        // Hence, pause up to 4 GFs randomly before trying again to execute this NWF
+                        // Do not reset frameTime or lastTime as this will mess up interpolation for drawing
+                        framesinfo.forcePauseStart = currentTime;
+                        framesinfo.forcePauseLen = (rand() * 4 * framesinfo.gf_length) / RAND_MAX;
+                        return;
+                    }
+
+                    RTTR_Assert(nwfInfo->getServerInfo().gf == curGF);
+
+                    ExecuteNWF();
+
+                    FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+                    nwfInfo->execute(framesinfo);
+                    if(oldGFLen != framesinfo.gf_length)
+                    {
+                        LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
+                          % framesinfo.nwf_length;
+                    }
                 }
 
-                RTTR_Assert(nwfInfo->getServerInfo().gf == curGF);
+                NextGF(isNWF);
+                RTTR_Assert(curGF <= nwfInfo->getNextNWF());
+                HandleAutosave();
 
-                ExecuteNWF();
-
-                FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
-                nwfInfo->execute(framesinfo);
-                if(oldGFLen != framesinfo.gf_length)
-                {
-                    LOG.write("Client: Speed changed at %1% from %2% to %3% (NWF: %4%)\n") % curGF % oldGFLen % framesinfo.gf_length
-                      % framesinfo.nwf_length;
-                }
+                // GF-Ende im Replay aktualisieren
+                if(replayinfo && replayinfo->replay.IsRecording())
+                    replayinfo->replay.UpdateLastGF(curGF);
             }
 
-            NextGF(isNWF);
-            RTTR_Assert(curGF <= nwfInfo->getNextNWF());
-            HandleAutosave();
-
-            // GF-Ende im Replay aktualisieren
-            if(replayinfo && replayinfo->replay.IsRecording())
-                replayinfo->replay.UpdateLastGF(curGF);
+            // Store this timestamp
+            framesinfo.lastTime = currentTime;
+            // Reset frameTime
+            framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
+        } catch(LuaExecutionError& e)
+        {
+            if(ci)
+            {
+                SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
+                ci->CI_Error(CE_INVALID_MAP);
+            }
+            Stop();
         }
-
-        // Store this timestamp
-        framesinfo.lastTime = currentTime;
-        // Reset frameTime
-        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
 
     } else
     {
@@ -1372,7 +1396,7 @@ bool GameClient::StartReplay(const std::string& path)
     {
         LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
           % (replayinfo->replay.GetLastErrorMsg().empty() ? _("Unknown") : replayinfo->replay.GetLastErrorMsg());
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
         replayinfo.reset();
         return false;
     }
@@ -1422,7 +1446,7 @@ bool GameClient::StartReplay(const std::string& path)
             if(!mapinfo.mapData.DecompressToFile(mapinfo.filepath))
             {
                 LOG.write(_("Error decompressing map file"));
-                OnError(CE_WRONGMAP);
+                OnError(CE_MAP_TRANSMISSION);
                 return false;
             }
             if(mapinfo.luaData.length)
@@ -1431,7 +1455,7 @@ bool GameClient::StartReplay(const std::string& path)
                 if(!mapinfo.luaData.DecompressToFile(mapinfo.luaFilepath))
                 {
                     LOG.write(_("Error decompressing lua file"));
-                    OnError(CE_WRONGMAP);
+                    OnError(CE_MAP_TRANSMISSION);
                     return false;
                 }
             }
@@ -1450,7 +1474,7 @@ bool GameClient::StartReplay(const std::string& path)
     } catch(SerializedGameData::Error& error)
     {
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
-        OnError(CE_WRONGMAP);
+        OnError(CE_INVALID_MAP);
         return false;
     }
 
@@ -1506,7 +1530,7 @@ int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
 
 void GameClient::ServerLost()
 {
-    OnError(CE_CONNECTIONLOST);
+    OnError(CE_CONNECTION_LOST);
     // Stop game
     framesinfo.isPaused = true;
 }
@@ -1565,6 +1589,8 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
 
 void GameClient::SystemChat(const std::string& text, unsigned char player)
 {
+    if(!ci)
+        return;
     if(player == 0xFF)
         player = mainPlayer.playerId;
     ci->CI_Chat(player, CD_SYSTEM, text);
@@ -1572,8 +1598,7 @@ void GameClient::SystemChat(const std::string& text, unsigned char player)
 
 bool GameClient::SaveToFile(const std::string& filename)
 {
-    GameMessage_Chat saveAnnouncement(0xFF, CD_SYSTEM, "Saving game...");
-    mainPlayer.sendMsg(saveAnnouncement);
+    mainPlayer.sendMsg(GameMessage_Chat(0xFF, CD_SYSTEM, "Saving game..."));
 
     // Mond malen
     Position moonPos = VIDEODRIVER.GetMousePos();
@@ -1593,11 +1618,17 @@ bool GameClient::SaveToFile(const std::string& filename)
     // Enable/Disable debugging of savegames
     save.sgd.debugMode = SETTINGS.global.debugMode;
 
-    // Spiel serialisieren
-    save.sgd.MakeSnapshot(game);
-
-    // Und alles speichern
-    return save.Save(filename, mapinfo.title);
+    try
+    {
+        // Spiel serialisieren
+        save.sgd.MakeSnapshot(game);
+        // Und alles speichern
+        return save.Save(filename, mapinfo.title);
+    } catch(std::exception& e)
+    {
+        OnGameMessage(GameMessage_Chat(0xFF, CD_SYSTEM, std::string("Error during saving: ") + e.what()));
+        return false;
+    }
 }
 
 void GameClient::ResetVisualSettings()

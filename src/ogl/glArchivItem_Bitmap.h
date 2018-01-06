@@ -20,34 +20,32 @@
 #pragma once
 
 #include "DrawPoint.h"
+#include "ITexture.h"
 #include "Rect.h"
 #include "glArchivItem_BitmapBase.h"
 #include "libsiedler2/ArchivItem_Bitmap.h"
 #include "libutil/colors.h"
 
 /// Basisklasse für GL-Bitmapitems.
-class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase
+class glArchivItem_Bitmap : public virtual libsiedler2::baseArchivItem_Bitmap, public glArchivItem_BitmapBase, public ITexture
 {
 public:
     glArchivItem_Bitmap();
     glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
     /// Draw the texture in the given rect, stretching if required
-    /// equivalent to Draw(origin, w, h, 0, 0, 0, 0, color)
     void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE);
     /// Draw the texture to the given position with full size
-    /// equivalent to Draw(dst, 0, 0, 0, 0, 0, 0, color)
-    void DrawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE);
+    void DrawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE) override;
     /// Draw a rectangular part of the texture. offset specifies the offset from the origin of the texture
-    /// equivalent to Draw(origin, 0, 0, x, y, w, h, color)
-    /// or            Draw(origin, w, h, x, y, w, h, color)
     void DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
     /// Draw a rectangular part of the texture from the origin of it
     void DrawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
     /// Draw only percent% of the height of the image
-    /// equivalent to Draw(dst + DrawPoint(0, image->getHeight() - image->getHeight() * percent / 100), 0, 0, 0, (image->getHeight() -
-    /// image->getHeight() * percent / 100), 0, image->getHeight() * percent / 100)
     void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
+
+    virtual Position GetOrigin() const override { return glArchivItem_BitmapBase::GetOrigin(); }
+    virtual Extent GetSize() const override { return glArchivItem_BitmapBase::GetSize(); }
 
 protected:
     /// Draw the texture.

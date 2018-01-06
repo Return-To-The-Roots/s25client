@@ -272,11 +272,12 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
         // Play Order
         case 15:
         {
-            GetCtrl<ctrlImageButton>(15)->SetImage(GetCtrl<ctrlImageButton>(15)->GetImage() == LOADER.GetImageN("io", 107) ?
-                                                     LOADER.GetImageN("io", 225) :
-                                                     LOADER.GetImageN("io", 107));
-            GetCtrl<ctrlImageButton>(15)->SetTooltip(
-              GetCtrl<ctrlImageButton>(15)->GetImage() == LOADER.GetImageN("io", 107) ? _("Playback in this order") : _("Random playback"));
+            GetCtrl<ctrlImageButton>(15)->SetImage(GetCtrl<ctrlImageButton>(15)->GetImage() == LOADER.GetTextureN("io", 107) ?
+                                                     LOADER.GetTextureN("io", 225) :
+                                                     LOADER.GetTextureN("io", 107));
+            GetCtrl<ctrlImageButton>(15)->SetTooltip(GetCtrl<ctrlImageButton>(15)->GetImage() == LOADER.GetTextureN("io", 107) ?
+                                                       _("Playback in this order") :
+                                                       _("Random playback"));
             changed = true;
         }
         break;
@@ -382,7 +383,7 @@ void iwMusicPlayer::SetRepeats(unsigned repeats)
 
 void iwMusicPlayer::SetRandomPlayback(const bool random_playback)
 {
-    GetCtrl<ctrlImageButton>(15)->SetImage(random_playback ? LOADER.GetImageN("io", 225) : LOADER.GetImageN("io", 107));
+    GetCtrl<ctrlImageButton>(15)->SetImage(random_playback ? LOADER.GetTextureN("io", 225) : LOADER.GetTextureN("io", 107));
 }
 
 void iwMusicPlayer::SetCurrentSong(const unsigned selection)
@@ -405,7 +406,7 @@ unsigned iwMusicPlayer::GetRepeats() const
 
 bool iwMusicPlayer::GetRandomPlayback() const
 {
-    return !(GetCtrl<ctrlImageButton>(15)->GetImage() == LOADER.GetImageN("io", 107));
+    return !(GetCtrl<ctrlImageButton>(15)->GetImage() == LOADER.GetTextureN("io", 107));
 }
 
 /// Updatet die Playlist - Combo

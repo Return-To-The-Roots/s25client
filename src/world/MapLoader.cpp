@@ -20,6 +20,7 @@
 #include "PointOutput.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
+#include "lua/GameDataLoader.h"
 #include "ogl/glArchivItem_Map.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
@@ -31,7 +32,7 @@
 #include "nodeObjs/noTree.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/MaxPlayers.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libutil/Log.h"
 #include <boost/foreach.hpp>
@@ -47,9 +48,24 @@ MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : w
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
-    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), LandscapeType(map.getHeader().getGfxSet())); //-V807
+    GameDataLoader gdLoader(world_.GetDescriptionWriteable());
+    if(!gdLoader.Load())
+        return false;
 
-    InitNodes(map, exploration);
+    uint8_t gfxSet = map.getHeader().getGfxSet();
+    DescIdx<LandscapeDesc> lt(0);
+    for(DescIdx<LandscapeDesc> i(0); i.value < world_.GetDescription().landscapes.size(); i.value++)
+    {
+        if(world_.GetDescription().get(i).s2Id == gfxSet)
+        {
+            lt = i;
+            break;
+        }
+    }
+    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
+
+    if(!InitNodes(map, exploration))
+        return false;
     PlaceObjects(map);
     PlaceAnimals(map);
     if(!InitSeasAndHarbors(world_))
@@ -90,7 +106,19 @@ void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
     }
 }
 
-void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
+DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
+{
+    const WorldDescription& desc = world_.GetDescription();
+    for(DescIdx<TerrainDesc> tId(0); tId.value < desc.terrain.size(); tId.value++)
+    {
+        const TerrainDesc& t = desc.get(tId);
+        if(t.s2Id == s2Id && t.landscape == world_.GetLandscapeType())
+            return tId;
+    }
+    return DescIdx<TerrainDesc>();
+}
+
+bool MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
 {
     // Init node data (everything except the objects and figures)
     RTTR_FOREACH_PT(MapPoint, world_.GetSize())
@@ -102,14 +130,16 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         unsigned char t1 = map.GetMapDataAt(MAP_TERRAIN1, pt.x, pt.y), t2 = map.GetMapDataAt(MAP_TERRAIN2, pt.x, pt.y);
 
         // Hafenplatz?
-        if(TerrainData::IsHarborSpot(t1))
+        if((t1 & libsiedler2::HARBOR_MASK) != 0)
             world_.harbor_pos.push_back(pt);
 
         // Will be set later
         node.harborId = 0;
 
-        node.t1 = TerrainData::MapIdx2Terrain(t1);
-        node.t2 = TerrainData::MapIdx2Terrain(t2);
+        node.t1 = getTerrainFromS2(t1 & 0x3F); // Only lower 6 bits
+        node.t2 = getTerrainFromS2(t2 & 0x3F); // Only lower 6 bits
+        if(!node.t1 || !node.t2)
+            return false;
 
         unsigned char mapResource = map.GetMapDataAt(MAP_RESOURCES, pt.x, pt.y);
         Resource resource;
@@ -159,6 +189,7 @@ void MapLoader::InitNodes(const glArchivItem_Map& map, Exploration exploration)
         node.obj = NULL; // Will be overwritten later...
         RTTR_Assert(node.figures.empty());
     }
+    return true;
 }
 
 void MapLoader::PlaceObjects(const glArchivItem_Map& map)

@@ -71,6 +71,9 @@ bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
 
 void dskSplash::LoadFiles()
 {
+    LOADER.ClearOverrideFolders();
+    LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS");
+    LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS");
     if(LOADER.LoadFilesAtStart())
     {
         isLoaded = true;

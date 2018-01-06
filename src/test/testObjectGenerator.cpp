@@ -19,6 +19,7 @@
 #include "mapGenerator/ObjectGenerator.h"
 #include "mapGenerator/RandomConfig.h"
 #include "libsiedler2/enumTypes.h"
+#include <boost/bind.hpp>
 #include <boost/test/unit_test.hpp>
 
 namespace {
@@ -29,40 +30,11 @@ protected:
     ObjectGenerator objGen;
 
 public:
-    ObjGenFixture() : config(MapStyle::Random, 0x1337), objGen(config) {}
+    ObjGenFixture() : objGen(config) { BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337)); }
 };
 } // namespace
 
 BOOST_AUTO_TEST_SUITE(ObjectGeneratorTest)
-
-/**
- * Tests the ObjectGenerator::IsHarborAllowed method to ensure the method returns correct
- * values for all terrain types.
- */
-BOOST_AUTO_TEST_CASE(IsHarborAllowed_TerrainType)
-{
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SNOW), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA2), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA3), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_LAVA4), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_WATER_NOSHIP), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_DESERT), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN1), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN2), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN3), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAIN4), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SWAMPLAND), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_BUILDABLE_WATER), false);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_STEPPE), true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_SAVANNAH), true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW1), true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW2), true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW3), true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MEADOW_FLOWERS), true);
-    BOOST_REQUIRE_EQUAL(ObjectGenerator::IsHarborAllowed(TT_MOUNTAINMEADOW), true);
-}
 
 /**
  * Tests the ObjectGenerator::CreateDuck method with a likelihood of 100%. A duck should
@@ -108,46 +80,48 @@ BOOST_AUTO_TEST_CASE(IsTree_Empty)
     BOOST_REQUIRE_EQUAL(ObjectGenerator::IsTree(map, 0), false);
 }
 
-/**
- * Tests the ObjectGenerator::CreateTexture method without harbor.
- * The specified texture should be replaced.
- */
-BOOST_AUTO_TEST_CASE(CreateTexture_NoHarbor)
+BOOST_FIXTURE_TEST_CASE(CreateTexture_Harbor, ObjGenFixture)
 {
     Map map(MapExtent(16, 8), "name", "author");
 
-    ObjectGenerator::CreateTexture(map, 0, TT_WATER, false);
+    DescIdx<TerrainDesc> t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER
+                                                && boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
+    uint8_t water = config.worldDesc.get(t).s2Id;
 
-    BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_WATER));
-    BOOST_REQUIRE_EQUAL(map.textureLsd[0], TerrainData::GetTextureIdentifier(TT_WATER));
-}
+    /**
+     * Tests the ObjectGenerator::CreateTexture method without harbor.
+     * The specified texture should be replaced.
+     */
+    objGen.CreateTexture(map, 0, t, false);
 
-/**
- * Tests the ObjectGenerator::CreateTexture method with harbor.
- * The specified texture should be replaced with a harbor texture.
- */
-BOOST_AUTO_TEST_CASE(CreateTexture_Harbor)
-{
-    Map map(MapExtent(16, 8), "name", "author");
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], water);
+    BOOST_REQUIRE_EQUAL(map.textureLsd[0], water);
 
-    ObjectGenerator::CreateTexture(map, 0, TT_MEADOW1, true);
+    /**
+     * Tests the ObjectGenerator::CreateTexture method with harbor but non-harbor texture.
+     * The specified texture should be replaced without a harbor texture.
+     */
+    objGen.CreateTexture(map, 0, t, true);
 
-    BOOST_REQUIRE_EQUAL(map.textureRsu[0], (TerrainData::GetTextureIdentifier(TT_MEADOW1) | libsiedler2::HARBOR_MASK));
-    BOOST_REQUIRE_EQUAL(map.textureLsd[0], (TerrainData::GetTextureIdentifier(TT_MEADOW1) | libsiedler2::HARBOR_MASK));
-}
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], water);
+    BOOST_REQUIRE_EQUAL(map.textureLsd[0], water);
 
-/**
- * Tests the ObjectGenerator::CreateTexture method with harbor but non-harbor texture.
- * The specified texture should be replaced without a harbor texture.
- */
-BOOST_AUTO_TEST_CASE(CreateTexture_HarborNotSupported)
-{
-    Map map(MapExtent(16, 8), "name", "author");
+    t = config.FindTerrain(boost::bind(&TerrainDesc::kind, _1) == TerrainKind::LAND
+                           && boost::bind(&TerrainDesc::Is, _1, ETerrain::Buildable));
+    uint8_t meadow = config.worldDesc.get(t).s2Id;
+    /**
+     * Tests the ObjectGenerator::CreateTexture method with harbor.
+     * The specified texture should be replaced with a harbor texture.
+     */
+    objGen.CreateTexture(map, 0, t, false);
 
-    ObjectGenerator::CreateTexture(map, 0, TT_WATER, true);
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], meadow);
+    BOOST_REQUIRE_EQUAL(map.textureLsd[0], meadow);
 
-    BOOST_REQUIRE_EQUAL(map.textureRsu[0], TerrainData::GetTextureIdentifier(TT_WATER));
-    BOOST_REQUIRE_EQUAL(map.textureLsd[0], TerrainData::GetTextureIdentifier(TT_WATER));
+    objGen.CreateTexture(map, 0, t, true);
+
+    BOOST_REQUIRE_EQUAL(map.textureRsu[0], (meadow | libsiedler2::HARBOR_MASK));
+    BOOST_REQUIRE_EQUAL(map.textureLsd[0], (meadow | libsiedler2::HARBOR_MASK));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

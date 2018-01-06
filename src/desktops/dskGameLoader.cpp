@@ -24,6 +24,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "addons/const_addons.h"
+#include "boost/foreach.hpp"
 #include "controls/ctrlText.h"
 #include "controls/ctrlTimer.h"
 #include "dskDirectIP.h"
@@ -31,11 +32,13 @@
 #include "dskLobby.h"
 #include "dskSinglePlayer.h"
 #include "files.h"
+#include "helpers/containerUtils.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"
+#include <set>
 #include <vector>
 
 /**
@@ -111,34 +114,36 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             break;
 
         case 3: // Objekte laden
-            if(!LOADER.LoadFilesAtGame(game->world.GetLandscapeType(), load_nations))
+        {
+            LOADER.ClearOverrideFolders();
+            LOADER.AddOverrideFolder("<RTTR_RTTR>/LSTS/GAME");
+            LOADER.AddOverrideFolder("<RTTR_USERDATA>/LSTS/GAME");
+            if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
+                LOADER.AddAddonFolder(AddonId::CATAPULT_GRAPHICS);
+
+            const LandscapeDesc& lt = game->world.GetDescription().get(game->world.GetLandscapeType());
+            if(!LOADER.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, load_nations) || !LOADER.LoadFiles(GatherRequiredTexturePaths())
+               || !LOADER.LoadOverrideFiles())
             {
                 LC_Status_Error(_("Failed to load map objects."));
                 return;
-            }
-
-            if(game->world.GetGGS().isEnabled(AddonId::CATAPULT_GRAPHICS))
-            {
-                if(!LOADER.LoadFilesFromAddon(AddonId::CATAPULT_GRAPHICS))
-                {
-                    LC_Status_Error(_("Failed to load addon objects."));
-                    return;
-                }
             }
 
             LOADER.fillCaches();
 
             text->SetText(_("Game crate was picked and spread out..."));
             break;
-
+        }
         case 4: // Welt erstellen
-            if(!LOADER.CreateTerrainTextures())
+            try
             {
-                LC_Status_Error(_("Failed to load terrain data."));
+                // Do this here as it will init OGL
+                nextDesktop = new dskGameInterface(game);
+            } catch(std::runtime_error& e)
+            {
+                LC_Status_Error(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
             }
-            // Do this here as it will init OGL
-            nextDesktop = new dskGameInterface(game);
             // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
 
             // We are done, wait for others
@@ -155,6 +160,47 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
 
     ++position;
     timer->Start(interval);
+}
+
+std::vector<std::string> dskGameLoader::GatherRequiredTexturePaths() const
+{
+    std::vector<std::string> textures;
+    std::set<DescIdx<TerrainDesc> > usedTerrains;
+    RTTR_FOREACH_PT(MapPoint, game->world.GetSize())
+    {
+        const MapNode& node = game->world.GetNode(pt);
+        usedTerrains.insert(node.t1);
+        usedTerrains.insert(node.t2);
+    }
+    std::set<DescIdx<EdgeDesc> > usedEdges;
+    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
+
+    BOOST_FOREACH(DescIdx<TerrainDesc> tIdx, usedTerrains)
+    {
+        const TerrainDesc& t = game->world.GetDescription().get(tIdx);
+        if(!helpers::contains(textures, t.texturePath))
+            textures.push_back(t.texturePath);
+        usedEdges.insert(t.edgeType);
+        usedLandscapes.insert(t.landscape);
+    }
+    BOOST_FOREACH(DescIdx<EdgeDesc> eIdx, usedEdges)
+    {
+        if(!eIdx)
+            continue;
+        const EdgeDesc& e = game->world.GetDescription().get(eIdx);
+        if(!helpers::contains(textures, e.texturePath))
+            textures.push_back(e.texturePath);
+    }
+    BOOST_FOREACH(DescIdx<LandscapeDesc> lIdx, usedLandscapes)
+    {
+        const LandscapeDesc& e = game->world.GetDescription().get(lIdx);
+        BOOST_FOREACH(const RoadTextureDesc& r, e.roadTexDesc)
+        {
+            if(!helpers::contains(textures, r.texturePath))
+                textures.push_back(r.texturePath);
+        }
+    }
+    return textures;
 }
 
 /**

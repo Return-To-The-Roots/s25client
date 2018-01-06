@@ -16,14 +16,14 @@
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rttrDefines.h" // IWYU pragma: keep
-
+#include "test/initTestHelpers.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "desktops/Desktop.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "lua/GameDataLoader.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "random/Random.h"
-#include "test/initTestHelpers.h"
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 #include <iostream>
@@ -110,4 +110,10 @@ MockupVideoDriver* GetVideoDriver()
         video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
     }
     return video;
+}
+
+void loadGameData(WorldDescription& worldDesc)
+{
+    GameDataLoader gdLoader(worldDesc);
+    BOOST_REQUIRE(gdLoader.Load());
 }

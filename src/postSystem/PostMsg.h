@@ -25,7 +25,7 @@
 #include <string>
 
 struct BasePlayerInfo;
-class glArchivItem_Bitmap;
+class ITexture;
 
 class PostMsg
 {
@@ -34,7 +34,7 @@ public:
     PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const MapPoint& pt,
             SoundEffect soundEffect = SoundEffect::Pidgeon);
     PostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, SoundEffect soundEffect = SoundEffect::Pidgeon);
-    /// Reponse to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
+    /// Response to a diplomacy question. Last parameter states if the pact was accepted(true) or canceled(false)
     PostMsg(unsigned sendFrame, PactType pt, const BasePlayerInfo& otherPlayer, bool acceptedOrCanceled,
             SoundEffect soundEffect = SoundEffect::Pidgeon);
     virtual ~PostMsg() {}
@@ -46,7 +46,7 @@ public:
     MapPoint GetPos() const { return pt_; }
     SoundEffect GetSoundEffect() const { return soundEffect_; }
     /// Get Associated image or NULL if none exists
-    virtual glArchivItem_Bitmap* GetImage_() const { return NULL; }
+    virtual ITexture* GetImage_() const { return NULL; }
 
 protected:
     void SetText(const std::string& text) { text_ = text; }

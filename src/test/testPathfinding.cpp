@@ -22,6 +22,7 @@
 #include "nodeObjs/noGranite.h"
 #include "gameTypes/Direction_Output.h"
 #include "gameData/GameConsts.h"
+#include "gameData/TerrainDesc.h"
 #include "test/initTestHelpers.h"
 #include <boost/assign/std/vector.hpp>
 #include <boost/foreach.hpp>
@@ -40,7 +41,7 @@ typedef WorldFixture<CreateEmptyWorld, 0> WorldFixtureEmpty0P;
 typedef WorldFixture<CreateEmptyWorld, 1> WorldFixtureEmpty1P;
 
 /// Sets all terrain to the given terrain
-void clearWorld(GameWorldGame& world, TerrainType terrain)
+void clearWorld(GameWorldGame& world, DescIdx<TerrainDesc> terrain)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
@@ -49,7 +50,7 @@ void clearWorld(GameWorldGame& world, TerrainType terrain)
     }
 }
 
-void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, TerrainType tBlue, TerrainType tWhite)
+void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tBlue, DescIdx<TerrainDesc> tWhite)
 {
     // test case 1: Everything is covered in blue terrain (e.g. water) which is walkable on the shore
     // so the white terrain creates all possible shore orientations
@@ -69,8 +70,8 @@ void setupTestcase1(GameWorldGame& world, const MapPoint& startPt, TerrainType t
     world.GetNodeWriteable(curPt).t2 = tWhite;
 }
 
-void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, TerrainType tWalkable, TerrainType tOther, bool bothTerrain,
-                       Direction dir)
+void setupTestcase2to4(GameWorldGame& world, const MapPoint& startPt, DescIdx<TerrainDesc> tWalkable, DescIdx<TerrainDesc> tOther,
+                       bool bothTerrain, Direction dir)
 {
     // test cases 2-4: Everything covered in walkable terrain (white) and we want to walk 3 steps into a specified direction
     // after 1 step we encounter other terrain at both(2) or the left(3/4) side of the path
@@ -89,13 +90,16 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
     std::vector<Direction> testDirections;
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
     testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
-    std::vector<TerrainType> friendlyTerrains;
-    friendlyTerrains += TT_DESERT, TT_MEADOW_FLOWERS, TT_MOUNTAIN1, TT_MOUNTAIN2, TT_MOUNTAIN3, TT_MOUNTAIN4, TT_SAVANNAH, TT_MEADOW1,
-      TT_MEADOW2, TT_MEADOW3, TT_STEPPE, TT_MOUNTAINMEADOW, TT_BUILDABLE_WATER, TT_BUILDABLE_MOUNTAIN;
+    std::vector<DescIdx<TerrainDesc> > friendlyTerrains;
+    for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
+    {
+        if(world.GetDescription().get(t).Is(ETerrain::Walkable))
+            friendlyTerrains.push_back(t);
+    }
 
     const MapPoint startPt(0, 6);
 
-    BOOST_FOREACH(TerrainType friendlyTerrain, friendlyTerrains)
+    BOOST_FOREACH(DescIdx<TerrainDesc> friendlyTerrain, friendlyTerrains)
     {
         clearWorld(world, friendlyTerrain);
         BOOST_FOREACH(Direction dir, testDirections)
@@ -118,7 +122,19 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
 {
     const MapPoint startPt(5, 2);
-    setupTestcase1(world, startPt, TT_WATER, TT_STEPPE);
+    DescIdx<TerrainDesc> tWater(0);
+    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
+    {
+        if(world.GetDescription().get(tWater).kind == TerrainKind::WATER && !world.GetDescription().get(tWater).Is(ETerrain::Walkable))
+            break;
+    }
+    DescIdx<TerrainDesc> tLand(0);
+    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
+    {
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+            break;
+    }
+    setupTestcase1(world, startPt, tWater, tLand);
     // 4 steps right
     MapPoint endPt = world.MakeMapPoint(Position(startPt.x + 4, startPt.y));
     unsigned length;
@@ -155,13 +171,23 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     std::vector<Direction> testDirections;
     // Test cases 2         a)                 b)                     c)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
-    std::vector<TerrainType> deepWaterTerrains;
-    deepWaterTerrains += TT_WATER, TT_WATER_NOSHIP, TT_SWAMPLAND;
-    BOOST_FOREACH(TerrainType deepWater, deepWaterTerrains)
+    std::vector<DescIdx<TerrainDesc> > deepWaterTerrains;
+    for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
+    {
+        if(!world.GetDescription().get(t).Is(ETerrain::Walkable) && !world.GetDescription().get(t).Is(ETerrain::Unreachable))
+            deepWaterTerrains.push_back(t);
+    }
+    DescIdx<TerrainDesc> tLand(0);
+    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
+    {
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+            break;
+    }
+    BOOST_FOREACH(DescIdx<TerrainDesc> deepWater, deepWaterTerrains)
     {
         BOOST_FOREACH(Direction dir, testDirections)
         {
-            setupTestcase2to4(world, startPt, TT_STEPPE, deepWater, true, dir);
+            setupTestcase2to4(world, startPt, tLand, deepWater, true, dir);
             // 3 steps in dir
             MapPoint endPt(startPt);
             for(unsigned i = 0; i < 3; i++)
@@ -207,14 +233,23 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
     testDirections += Direction::EAST, Direction::SOUTHEAST, Direction::NORTHEAST;
     // Test cases 4         a)                 b)                     c)
     testDirections += Direction::WEST, Direction::SOUTHWEST, Direction::NORTHWEST;
-    std::vector<TerrainType> deadlyTerrains;
-    deadlyTerrains += TT_SNOW, TT_LAVA, TT_LAVA2, TT_LAVA3, TT_LAVA4;
-
-    BOOST_FOREACH(TerrainType deadlyTerrain, deadlyTerrains)
+    std::vector<DescIdx<TerrainDesc> > deadlyTerrains;
+    for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
+    {
+        if(world.GetDescription().get(t).Is(ETerrain::Unreachable))
+            deadlyTerrains.push_back(t);
+    }
+    DescIdx<TerrainDesc> tLand(0);
+    for(; tLand.value < world.GetDescription().terrain.size(); tLand.value++)
+    {
+        if(world.GetDescription().get(tLand).kind == TerrainKind::LAND && world.GetDescription().get(tLand).Is(ETerrain::Walkable))
+            break;
+    }
+    BOOST_FOREACH(DescIdx<TerrainDesc> deadlyTerrain, deadlyTerrains)
     {
         BOOST_FOREACH(Direction dir, testDirections)
         {
-            setupTestcase2to4(world, startPt, TT_STEPPE, deadlyTerrain, false, dir);
+            setupTestcase2to4(world, startPt, tLand, deadlyTerrain, false, dir);
             // 3 steps in dir
             MapPoint endPt(startPt);
             for(unsigned i = 0; i < 3; i++)

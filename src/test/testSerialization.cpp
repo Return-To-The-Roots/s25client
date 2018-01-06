@@ -38,6 +38,12 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
 
+template<class T>
+std::ostream& operator<<(std::ostream& os, const DescIdx<T>& d)
+{
+    return os << d.value;
+}
+
 namespace {
 struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
 {

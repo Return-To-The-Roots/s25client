@@ -107,7 +107,7 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
         case 0:
         {
             GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[selection] * 5));
+              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[selection] * 5));
         }
         break;
     }
@@ -185,7 +185,7 @@ void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
             list->SetSelection(0);
 
             GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetNationImage(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
+              LOADER.GetNationTex(gwv.GetPlayer().nation, 250 + GAMECLIENT.visual_settings.build_order[0] * 5));
 
             settings_changed = true;
         }

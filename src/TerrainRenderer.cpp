@@ -22,6 +22,8 @@
 #include "Loader.h"
 #include "Settings.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "helpers/containerUtils.h"
+#include "helpers/converters.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
@@ -29,10 +31,15 @@
 #include "world/GameWorldViewer.h"
 #include "world/MapGeometry.h"
 #include "gameData/MapConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include "libsiedler2/Archiv.h"
+#include "libsiedler2/ArchivItem_PaletteAnimation.h"
+#include "libutil/Log.h"
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/foreach.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
+#include <set>
 
 /* Terrain rendering works like that:
  * Every point is associated with 2 triangles:
@@ -51,6 +58,11 @@
  * Drawing then binds a texture and draws all adjacent vertices with the same texture in one call by
  * providing an index and a count into the above arrays.
  */
+
+glArchivItem_Bitmap* new_clone(const glArchivItem_Bitmap& bmp)
+{
+    return dynamic_cast<glArchivItem_Bitmap*>(bmp.clone());
+}
 
 TerrainRenderer::TerrainRenderer() : size_(0, 0), vbo_vertices(0), vbo_texcoords(0), vbo_colors(0), vboBuffersUsed(false) {}
 
@@ -86,20 +98,110 @@ TerrainRenderer::PointF TerrainRenderer::GetNeighbourBorderPos(const MapPoint pt
     return GetBorderPos(t, triangle) + PointF(offset);
 }
 
-void TerrainRenderer::LoadTextures()
+void TerrainRenderer::LoadTextures(const WorldDescription& desc)
 {
-    for(unsigned i = 0; i < terrainTextures.size(); i++)
+    terrainTextures.clear();
+    edgeTextures.clear();
+    roadTextures.clear();
+
+    std::set<DescIdx<LandscapeDesc> > usedLandscapes;
+    std::set<DescIdx<TerrainDesc> > usedTerrains;
+    std::set<DescIdx<EdgeDesc> > usedEdges;
+    typedef boost::array<DescIdx<TerrainDesc>, 2> TerrainPair;
+    BOOST_FOREACH(const TerrainPair& ts, terrain)
     {
-        TerrainType tt = TerrainType(i);
-        unsigned numFrames = TerrainData::GetNumFrames(tt);
-        terrainTextures[i].resize(numFrames);
-        for(unsigned j = 0; j < numFrames; j++)
+        BOOST_FOREACH(const DescIdx<TerrainDesc>& tIdx, ts)
         {
-            glArchivItem_Bitmap* bmp = LOADER.GetTerrainTexture(tt, j);
-            if(!bmp)
-                throw std::runtime_error("Terrain texture not found!");
-            terrainTextures[i][j] = bmp;
-            bmp->GetTexture(); // Init texture
+            if(!helpers::contains(usedTerrains, tIdx))
+            {
+                usedTerrains.insert(tIdx);
+                DescIdx<EdgeDesc> edge = desc.get(tIdx).edgeType;
+                if(!!edge)
+                    usedEdges.insert(edge);
+                DescIdx<LandscapeDesc> lt = desc.get(tIdx).landscape;
+                if(!!lt)
+                    usedLandscapes.insert(lt);
+            }
+        }
+    }
+    terrainTextures.resize(usedTerrains.rbegin()->value + 1);
+    edgeTextures.resize(usedEdges.rbegin()->value + 1);
+    roadTextures.resize((usedLandscapes.rbegin()->value + 1) * LandscapeDesc::NUM_ROADTYPES);
+
+    BOOST_FOREACH(DescIdx<TerrainDesc> curIdx, usedTerrains)
+    {
+        const TerrainDesc& cur = desc.get(curIdx);
+        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
+        glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
+        if(!texBmp)
+            throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for terrain '" + cur.name + "'");
+        if(cur.palAnimIdx >= 0)
+        {
+            libsiedler2::ArchivItem* animItem = LOADER.GetInfoN(textureName)[cur.palAnimIdx];
+            if(!texBmp->getPalette() || !animItem || animItem->getBobType() != libsiedler2::BOBTYPE_PALETTE_ANIM)
+            {
+                LOG.write("Invalid palette animation '%1%' for '%2%'") % unsigned(cur.palAnimIdx) % cur.name;
+                terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+                terrainTextures[curIdx.value].textures.back().GetTexture();
+            } else
+            {
+                libsiedler2::ArchivItem_PaletteAnimation& anim = static_cast<libsiedler2::ArchivItem_PaletteAnimation&>(*animItem);
+                libsiedler2::Archiv* textures =
+                  LOADER.ExtractAnimatedTexture(*texBmp, cur.posInTexture, anim.firstClr, anim.lastClr - anim.firstClr + 1);
+                for(unsigned i = 0; i < textures->size(); i++)
+                {
+                    terrainTextures[curIdx.value].textures.push_back(dynamic_cast<glArchivItem_Bitmap*>(textures->release(i)));
+                    terrainTextures[curIdx.value].textures.back().GetTexture();
+                }
+            }
+        } else
+        {
+            terrainTextures[curIdx.value].textures.push_back(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+            terrainTextures[curIdx.value].textures.back().GetTexture();
+        }
+        TerrainDesc::Triangle trianglePos = cur.GetRSUTriangle();
+        Position texOrigin = cur.posInTexture.getOrigin();
+        const glArchivItem_Bitmap& texture = terrainTextures[curIdx.value].textures[0];
+        Triangle& rsuCoord = terrainTextures[curIdx.value].rsuCoords;
+        PointF texSize(texture.GetTexSize());
+        rsuCoord[0] = PointF(trianglePos.tip - texOrigin);
+        rsuCoord[1] = PointF(trianglePos.left - texOrigin);
+        rsuCoord[2] = PointF(trianglePos.right - texOrigin);
+        // Normalize to texture size
+        for(unsigned i = 0; i < 3; i++)
+            rsuCoord[i] /= texSize;
+
+        Triangle& usdCoord = terrainTextures[curIdx.value].usdCoords;
+        trianglePos = cur.GetUSDTriangle();
+        usdCoord[0] = PointF(trianglePos.left - texOrigin);
+        usdCoord[1] = PointF(trianglePos.tip - texOrigin);
+        usdCoord[2] = PointF(trianglePos.right - texOrigin);
+        // Normalize to texture size
+        for(unsigned i = 0; i < 3; i++)
+            usdCoord[i] /= texSize;
+    }
+    BOOST_FOREACH(DescIdx<EdgeDesc> curIdx, usedEdges)
+    {
+        const EdgeDesc& cur = desc.get(curIdx);
+        std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.texturePath).stem().string());
+        glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
+        if(!texBmp)
+            throw std::runtime_error("Invalid texture '" + cur.texturePath + "' for edge '" + cur.name + "'");
+        edgeTextures[curIdx.value].reset(LOADER.ExtractTexture(*texBmp, cur.posInTexture));
+        edgeTextures[curIdx.value]->GetTexture(); // Init texture
+    }
+    BOOST_FOREACH(DescIdx<LandscapeDesc> curIdx, usedLandscapes)
+    {
+        const LandscapeDesc& cur = desc.get(curIdx);
+        for(unsigned i = 0; i < cur.roadTexDesc.size(); i++)
+        {
+            std::string textureName = boost::algorithm::to_lower_copy(bfs::path(cur.roadTexDesc[i].texturePath).stem().string());
+            glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
+            if(!texBmp)
+                throw std::runtime_error("Invalid texture '" + cur.roadTexDesc[i].texturePath + "' for road in landscape '" + cur.name
+                                         + "'");
+            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i].reset(LOADER.ExtractTexture(*texBmp, cur.roadTexDesc[i].posInTexture));
+            roadTextures[curIdx.value * cur.NUM_ROADTYPES + i]->GetTexture(); // Init texture
         }
     }
 }
@@ -111,7 +213,7 @@ void TerrainRenderer::GenerateVertices(const GameWorldViewer& gwv)
     {
         UpdateVertexPos(pt, gwv);
         UpdateVertexColor(pt, gwv);
-        UpdateVertexTerrain(pt, gwv);
+        LoadVertexTerrain(pt, gwv);
     }
 
     // Ränder generieren
@@ -145,7 +247,7 @@ void TerrainRenderer::UpdateVertexColor(const MapPoint pt, const GameWorldViewer
     }
 }
 
-void TerrainRenderer::UpdateVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv)
+void TerrainRenderer::LoadVertexTerrain(const MapPoint pt, const GameWorldViewer& gwv)
 {
     const MapNode& node = gwv.GetNode(pt);
     terrain[GetVertexIdx(pt)][0] = node.t1;
@@ -184,6 +286,15 @@ void TerrainRenderer::Init(const MapExtent& size)
     gl_colors.resize(gl_vertices.size());
 }
 
+/// Gets the edge type that t1 draws over t2. 0 = None, else edgeType + 1
+static uint8_t GetEdgeType(const TerrainDesc& t1, const TerrainDesc& t2)
+{
+    if(!t1.edgeType || t1.edgePriority <= t2.edgePriority)
+        return 0;
+    else
+        return t1.edgeType.value + 1;
+}
+
 /**
  *  erzeugt die OpenGL-Vertices.
  */
@@ -192,34 +303,33 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     const GameWorldBase& world = gwv.GetWorld();
     Init(world.GetSize());
 
-    LoadTextures();
-
     GenerateVertices(gwv);
+    const WorldDescription& desc = world.GetDescription();
+    LoadTextures(desc);
 
     // Add extra vertices for borders
     unsigned numTriangles = gl_vertices.size();
-    const LandscapeType lt = world.GetLandscapeType();
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         const unsigned pos = GetVertexIdx(pt);
-        const TerrainType t1 = TerrainType(terrain[pos][0]);
-        const TerrainType t2 = TerrainType(terrain[pos][1]);
-        const TerrainType t3 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::EAST))][0]);
-        const TerrainType t4 = TerrainType(terrain[GetVertexIdx(GetNeighbour(pt, Direction::SOUTHWEST))][1]);
+        const TerrainDesc& t1 = desc.get(terrain[pos][0]);
+        const TerrainDesc& t2 = desc.get(terrain[pos][1]);
+        const TerrainDesc& t3 = desc.get(terrain[GetVertexIdx(GetNeighbour(pt, Direction::EAST))][0]);
+        const TerrainDesc& t4 = desc.get(terrain[GetVertexIdx(GetNeighbour(pt, Direction::SOUTHWEST))][1]);
 
-        if((borders[pos].left_right[0] = TerrainData::GetEdgeType(lt, t2, t1)))
+        if((borders[pos].left_right[0] = GetEdgeType(t2, t1)))
             borders[pos].left_right_offset[0] = numTriangles++;
-        if((borders[pos].left_right[1] = TerrainData::GetEdgeType(lt, t1, t2)))
+        if((borders[pos].left_right[1] = GetEdgeType(t1, t2)))
             borders[pos].left_right_offset[1] = numTriangles++;
 
-        if((borders[pos].right_left[0] = TerrainData::GetEdgeType(lt, t3, t2)))
+        if((borders[pos].right_left[0] = GetEdgeType(t3, t2)))
             borders[pos].right_left_offset[0] = numTriangles++;
-        if((borders[pos].right_left[1] = TerrainData::GetEdgeType(lt, t2, t3)))
+        if((borders[pos].right_left[1] = GetEdgeType(t2, t3)))
             borders[pos].right_left_offset[1] = numTriangles++;
 
-        if((borders[pos].top_down[0] = TerrainData::GetEdgeType(lt, t4, t1)))
+        if((borders[pos].top_down[0] = GetEdgeType(t4, t1)))
             borders[pos].top_down_offset[0] = numTriangles++;
-        if((borders[pos].top_down[1] = TerrainData::GetEdgeType(lt, t1, t4)))
+        if((borders[pos].top_down[1] = GetEdgeType(t1, t4)))
             borders[pos].top_down_offset[1] = numTriangles++;
     }
 
@@ -326,52 +436,12 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, bool updateVBO)
 void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
 {
     const unsigned nodeIdx = GetVertexIdx(pt);
-    const TerrainType t1 = TerrainType(terrain[nodeIdx][0]);
-    const TerrainType t2 = TerrainType(terrain[nodeIdx][1]);
+    const DescIdx<TerrainDesc> t1 = terrain[nodeIdx][0];
+    const DescIdx<TerrainDesc> t2 = terrain[nodeIdx][1];
 
     const unsigned triangleIdx = GetTriangleIdx(pt);
-    Triangle& texCoord = gl_texcoords[triangleIdx];
-    const glArchivItem_Bitmap* texture = terrainTextures[t1][0];
-    Extent bmpSize = texture->GetSize();
-    unsigned usedSize = std::min(bmpSize.x, bmpSize.y);
-    // Make even to start at whole pixels
-    usedSize &= ~1;
-    PointF offset((bmpSize - Extent::all(usedSize)) / 2u);
-
-    // Tip
-    texCoord[0].x = static_cast<float>(usedSize / 2u);
-    texCoord[0].y = 0.f;
-    // Left
-    texCoord[1].x = 0.f;
-    texCoord[1].y = static_cast<float>(usedSize / 2u);
-    // Right
-    texCoord[2].x = static_cast<float>(usedSize);
-    texCoord[2].y = texCoord[1].y;
-    // Normalize to texture size
-    PointF texSize(texture->GetTexSize());
-    for(unsigned i = 0; i < 3; i++)
-        texCoord[i] = (texCoord[i] + offset) / texSize;
-
-    Triangle& texCoord2 = gl_texcoords[triangleIdx + 1];
-    texture = terrainTextures[t2][0];
-    bmpSize = texture->GetSize();
-    usedSize = std::min(bmpSize.x, bmpSize.y);
-    // Make even to start at whole pixels
-    usedSize &= ~1;
-    offset = PointF((bmpSize - Extent::all(usedSize)) / 2u);
-    // Left
-    texCoord2[0].x = 0.f;
-    texCoord2[0].y = static_cast<float>(usedSize / 2u);
-    // Tip
-    texCoord2[1].x = static_cast<float>(usedSize / 2u);
-    texCoord2[1].y = static_cast<float>(usedSize);
-    // Right
-    texCoord2[2].x = static_cast<float>(usedSize);
-    texCoord2[2].y = texCoord2[0].y;
-    // Normalize to texture size
-    texSize = PointF(texture->GetTexSize());
-    for(unsigned i = 0; i < 3; i++)
-        texCoord2[i] = (texCoord2[i] + offset) / texSize;
+    gl_texcoords[triangleIdx] = terrainTextures[t1.value].rsuCoords;
+    gl_texcoords[triangleIdx + 1] = terrainTextures[t2.value].usdCoords;
 
     if(updateVBO && vboBuffersUsed)
     {
@@ -560,9 +630,13 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
             if(!first_offset)
                 first_offset = offset;
 
+            const glArchivItem_Bitmap& texture = *edgeTextures[borders[pos].left_right[i] - 1];
+            Extent bmpSize = texture.GetSize();
+            PointF texSize(texture.GetTexSize());
+
             gl_texcoords[offset][i ? 0 : 2] = PointF(0.0f, 0.0f);
-            gl_texcoords[offset][1] = PointF(1.0f, 0.0f);
-            gl_texcoords[offset][i ? 2 : 0] = PointF(0.5f, 1.0f);
+            gl_texcoords[offset][1] = PointF(bmpSize.x / texSize.x, 0.0f);
+            gl_texcoords[offset][i ? 2 : 0] = PointF(bmpSize.x / texSize.x / 2.f, bmpSize.y / texSize.y);
 
             ++count_borders;
         }
@@ -578,9 +652,13 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
             if(!first_offset)
                 first_offset = offset;
 
+            const glArchivItem_Bitmap& texture = *edgeTextures[borders[pos].right_left[i] - 1];
+            Extent bmpSize = texture.GetSize();
+            PointF texSize(texture.GetTexSize());
+
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.0f, 0.0f);
-            gl_texcoords[offset][1] = PointF(1.0f, 0.0f);
-            gl_texcoords[offset][i ? 0 : 2] = PointF(0.5f, 1.0f);
+            gl_texcoords[offset][1] = PointF(bmpSize.x / texSize.x, 0.0f);
+            gl_texcoords[offset][i ? 0 : 2] = PointF(bmpSize.x / texSize.x / 2.f, bmpSize.y / texSize.y);
 
             ++count_borders;
         }
@@ -596,9 +674,13 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
             if(!first_offset)
                 first_offset = offset;
 
+            const glArchivItem_Bitmap& texture = *edgeTextures[borders[pos].top_down[i] - 1];
+            Extent bmpSize = texture.GetSize();
+            PointF texSize(texture.GetTexSize());
+
             gl_texcoords[offset][i ? 2 : 0] = PointF(0.0f, 0.0f);
-            gl_texcoords[offset][1] = PointF(1.0f, 0.0f);
-            gl_texcoords[offset][i ? 0 : 2] = PointF(0.5f, 1.0f);
+            gl_texcoords[offset][1] = PointF(bmpSize.x / texSize.x, 0.0f);
+            gl_texcoords[offset][i ? 0 : 2] = PointF(bmpSize.x / texSize.x / 2.f, bmpSize.y / texSize.y);
 
             ++count_borders;
         }
@@ -622,9 +704,9 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     RTTR_Assert(!borders.empty());
 
     // nach Texture in Listen sortieren
-    boost::array<std::vector<MapTile>, NUM_TTS> sorted_textures;
-    boost::array<std::vector<BorderTile>, 5> sorted_borders;
-    PreparedRoads sorted_roads;
+    std::vector<std::vector<MapTile> > sorted_textures(terrainTextures.size());
+    std::vector<std::vector<BorderTile> > sorted_borders(edgeTextures.size());
+    PreparedRoads sorted_roads(roadTextures.size());
 
     Position lastOffset(0, 0);
 
@@ -639,7 +721,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
             Position posOffset;
             MapPoint tP = ConvertCoords(Position(x, y), &posOffset);
 
-            unsigned char t = terrain[GetVertexIdx(tP)][0];
+            unsigned char t = terrain[GetVertexIdx(tP)][0].value;
             if(posOffset != lastOffset)
                 lastTerrain = 255;
 
@@ -652,7 +734,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
                 lastTerrain = t;
             }
 
-            t = terrain[GetVertexIdx(tP)][1];
+            t = terrain[GetVertexIdx(tP)][1].value;
 
             if(t == lastTerrain)
                 ++sorted_textures[t].back().count;
@@ -701,15 +783,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     if(water)
     {
         unsigned water_count = 0;
-
-        for(unsigned char t = 0; t < NUM_TTS; ++t)
+        const WorldDescription& desc = gwv.GetWorld().GetDescription();
+        for(DescIdx<TerrainDesc> t(0); t.value < sorted_textures.size(); ++t.value)
         {
-            if(!TerrainData::IsWater(TerrainType(t)))
+            if(desc.get(t).kind != TerrainKind::WATER)
                 continue;
-            for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
-            {
-                water_count += it->count;
-            }
+            BOOST_FOREACH(const MapTile& tile, sorted_textures[t.value])
+                water_count += tile.count;
         }
 
         Position diff = lastPt - firstPt;
@@ -749,18 +829,18 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     glDisable(GL_BLEND);
 
     glPushMatrix();
-    for(unsigned char t = 0; t < NUM_TTS; ++t)
+    for(unsigned t = 0; t < sorted_textures.size(); ++t)
     {
         if(sorted_textures[t].empty())
             continue;
         unsigned animationFrame;
-        unsigned numFrames = TerrainData::GetNumFrames(TerrainType(t));
+        unsigned numFrames = terrainTextures[t].textures.size();
         if(numFrames > 1)
             animationFrame = GAMECLIENT.GetGlobalAnimation(numFrames, 5 * numFrames, 16, 0); // We have 5/16 per frame
         else
             animationFrame = 0;
 
-        VIDEODRIVER.BindTexture(terrainTextures[t][animationFrame]->GetTexture());
+        VIDEODRIVER.BindTexture(terrainTextures[t].textures[animationFrame].GetTextureNoCreate());
 
         for(std::vector<MapTile>::iterator it = sorted_textures[t].begin(); it != sorted_textures[t].end(); ++it)
         {
@@ -781,11 +861,11 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
     lastOffset = Position(0, 0);
     glPushMatrix();
-    for(unsigned short i = 0; i < 5; ++i)
+    for(unsigned i = 0; i < sorted_borders.size(); ++i)
     {
         if(sorted_borders[i].empty())
             continue;
-        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.borders.get(i))->GetTexture());
+        VIDEODRIVER.BindTexture(edgeTextures[i]->GetTextureNoCreate());
 
         for(std::vector<BorderTile>::iterator it = sorted_borders[i].begin(); it != sorted_borders[i].end(); ++it)
         {
@@ -842,6 +922,7 @@ MapPoint TerrainRenderer::ConvertCoords(const Position pt, Position* offset) con
 void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
                                        const Position& offset) const
 {
+    const WorldDescription& desc = gwViewer.GetWorld().GetDescription();
     Position startPos = Position(GetVertexPos(pt)) + offset;
 
     Visibility visibility = gwViewer.GetVisibility(pt);
@@ -878,28 +959,33 @@ void TerrainRenderer::PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWo
                 endPos.y += totalHeight;
         }
 
-        --type;
-
-        // Wegtypen "konvertieren"
-        switch(type)
+        RoadSegment::RoadType rt = RoadSegment::RoadType(type - 1);
+        // The gfx road type is:
+        // Boat for boat roads
+        // else Mountain left or right is a mountain terrain
+        // else Upgraded for Donkey roads
+        // else Normal
+        uint8_t gfxRoadType;
+        if(rt == RoadSegment::RT_BOAT)
+            gfxRoadType = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir)).landscape.value * LandscapeDesc::NUM_ROADTYPES
+                          + LandscapeDesc::Boat;
+        else
         {
-            case RoadSegment::RT_DONKEY:
-            case RoadSegment::RT_NORMAL:
+            const TerrainDesc& lTerrain = desc.get(gwViewer.GetWorld().GetLeftTerrain(pt, targetDir));
+            if(lTerrain.kind == TerrainKind::MOUNTAIN)
+                gfxRoadType = lTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES + LandscapeDesc::Mountain;
+            else
             {
-                TerrainType t1 = gwViewer.GetWorld().GetLeftTerrain(pt, targetDir);
-                TerrainType t2 = gwViewer.GetWorld().GetRightTerrain(pt, targetDir);
-
-                // Prüfen, ob Bergwege gezeichnet werden müssen, indem man guckt, ob der Weg einen
-                // Berg "streift" oder auch eine Berg wiese
-                if(TerrainData::IsMountain(t1) || TerrainData::IsMountain(t2))
-                    type = 3;
-
-                break;
+                const TerrainDesc& rTerrain = desc.get(gwViewer.GetWorld().GetRightTerrain(pt, targetDir));
+                if(rTerrain.kind == TerrainKind::MOUNTAIN)
+                    gfxRoadType = rTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES + LandscapeDesc::Mountain;
+                else
+                    gfxRoadType = lTerrain.landscape.value * LandscapeDesc::NUM_ROADTYPES
+                                  + ((rt == RoadSegment::RT_DONKEY) ? LandscapeDesc::Upgraded : LandscapeDesc::Normal);
             }
-            case RoadSegment::RT_BOAT: type = 2; break;
         }
 
-        sorted_roads[type].push_back(PreparedRoad(type, startPos, endPos, GetColor(pt), GetColor(ta), dir));
+        sorted_roads[gfxRoadType].push_back(PreparedRoad(startPos, endPos, GetColor(pt), GetColor(ta), dir));
     }
 }
 
@@ -913,15 +999,13 @@ struct Tex2C3Ver2
 void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 {
     // 2D Array: [3][4]
-    static const boost::array<Position, 12> begin_end_coords = {{Position(-3, -3), Position(-3, 3), Position(-3, 3), Position(-3, -3),
-
-                                                                 Position(3, -3), Position(-3, 3), Position(-3, 3), Position(3, -3),
-
-                                                                 Position(3, 3), Position(-3, -3), Position(-3, -3), Position(3, 3)}};
+    static const boost::array<Position, 12> begin_end_coords = {{Position(0, -3), Position(0, 3), Position(3, 3), Position(3, -3),
+                                                                 Position(2, -4), Position(-4, 2), Position(0, 6), Position(6, 0),
+                                                                 Position(4, 2), Position(-2, -4), Position(-6, 0), Position(0, 6)}};
 
     size_t maxSize = 0;
-    for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad)
-        maxSize = std::max(maxSize, itRoad->size());
+    BOOST_FOREACH(const boost::container::vector<PreparedRoad>& sorted_road, sorted_roads)
+        maxSize = std::max(maxSize, sorted_road.size());
 
     if(maxSize == 0)
         return;
@@ -938,9 +1022,13 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
     int type = 0;
     for(PreparedRoads::const_iterator itRoad = sorted_roads.begin(); itRoad != sorted_roads.end(); ++itRoad, ++type)
     {
+        if(itRoad->empty())
+            continue;
         Tex2C3Ver2* curVertexData = vertexData.get();
+        const glArchivItem_Bitmap& texture = *roadTextures[type];
+        PointF scaledTexSize = texture.GetSize() / PointF(texture.GetTexSize());
 
-        for(std::vector<PreparedRoad>::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
+        for(PreparedRoads::value_type::const_iterator it = itRoad->begin(); it != itRoad->end(); ++it)
         {
             RTTR_Assert(it->dir < 3); // begin_end_coords has 3 dir entries
             curVertexData->tx = 0.0f;
@@ -953,7 +1041,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
             curVertexData++;
 
             curVertexData->tx = 0.0f;
-            curVertexData->ty = 1.0f;
+            curVertexData->ty = scaledTexSize.y;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color1;
             tmpP = it->pos + begin_end_coords[it->dir * 4 + 1];
             curVertexData->x = GLfloat(tmpP.x);
@@ -961,8 +1049,8 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData++;
 
-            curVertexData->tx = 0.78f;
-            curVertexData->ty = 1.0f;
+            curVertexData->tx = scaledTexSize.x;
+            curVertexData->ty = scaledTexSize.y;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 2];
             curVertexData->x = GLfloat(tmpP.x);
@@ -970,7 +1058,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
 
             curVertexData++;
 
-            curVertexData->tx = 0.78f;
+            curVertexData->tx = scaledTexSize.x;
             curVertexData->ty = 0.0f;
             curVertexData->r = curVertexData->g = curVertexData->b = it->color2;
             tmpP = it->pos2 + begin_end_coords[it->dir * 4 + 3];
@@ -980,7 +1068,7 @@ void TerrainRenderer::DrawWays(const PreparedRoads& sorted_roads) const
             curVertexData++;
         }
 
-        VIDEODRIVER.BindTexture(dynamic_cast<glArchivItem_Bitmap*>(LOADER.roads.get(type))->GetTexture());
+        VIDEODRIVER.BindTexture(roadTextures[type]->GetTextureNoCreate());
         glDrawArrays(GL_QUADS, 0, itRoad->size() * 4);
     }
     // Note: No glDisableClientState as we did not enable it

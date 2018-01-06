@@ -920,8 +920,6 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
     }
     // Even when nothing changed we send the data because the other players might have expected a change
 
-    SendToAll(GameMessage_Player_State(playerID, player.ps, player.aiInfo));
-
     if(player.ps == PS_AI)
     {
         player.SetAIName(playerID);
@@ -930,6 +928,8 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
     // If slot is filled, check current color
     if(player.isUsed())
         CheckAndSetColor(playerID, player.color);
+    SendToAll(GameMessage_Player_State(playerID, player.ps, player.aiInfo));
+
     if(oldPs != player.ps)
         player.isReady = (player.ps == PS_AI);
     SendToAll(GameMessage_Player_Ready(playerID, player.isReady));

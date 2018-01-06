@@ -22,7 +22,7 @@
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/MinimapConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include "libsiedler2/ColorARGB.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv)
@@ -144,7 +144,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
  */
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
-    unsigned color = TerrainData::GetColor(gwv.GetWorld().GetLandscapeType(), (t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2); //-V807
+    unsigned color = gwv.GetWorld().GetDescription().get((t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2).minimapColor; //-V807
 
     // Schattierung
     int shadow = gwv.GetNode(pt).shadow;

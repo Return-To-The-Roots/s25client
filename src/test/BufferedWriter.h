@@ -27,18 +27,22 @@ class BufferedWriter : public TextWriterInterface
 {
 public:
     BufferedWriter(boost::shared_ptr<TextWriterInterface> writer) : origWriter(writer) {}
-    ~BufferedWriter() override;
+    ~BufferedWriter() override { flush(); }
     void writeText(const std::string& txt, unsigned color) override;
+    void flush();
 
     boost::shared_ptr<TextWriterInterface> origWriter;
     std::string curText;
 };
 
-inline BufferedWriter::~BufferedWriter()
+inline void BufferedWriter::flush()
 {
     // Flush remaining txt
     if(!curText.empty())
+    {
         origWriter->writeText(curText, 0);
+        curText.clear();
+    }
 }
 
 inline void BufferedWriter::writeText(const std::string& txt, unsigned color)

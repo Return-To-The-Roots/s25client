@@ -38,10 +38,12 @@
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwPleaseWait.h"
 #include "ingameWindows/iwSave.h"
+#include "lua/GameDataLoader.h"
 #include "mapGenerator/MapGenerator.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
 #include "ogl/glArchivItem_Map.h"
+#include "gameData/WorldDescription.h"
 #include "liblobby/LobbyClient.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
 #include "libsiedler2/ErrorCodes.h"
@@ -51,26 +53,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 //#include <boost/thread.hpp>
-
-/** @class dskSelectMap
- *
- *  Klasse des Map-Auswahl Desktops.
- */
-
-/** @var dskSelectMap::type
- *
- *  Typ des Servers.
- */
-
-/** @var dskSelectMap::name
- *
- *  Name des Servers.
- */
-
-/** @var dskSelectMap::pass
- *
- *  Passwort des Servers.
- */
 
 /**
  *  Konstruktor von @p dskSelectMap.
@@ -82,6 +64,17 @@
 dskSelectMap::dskSelectMap(const CreateServerInfo& csi)
     : Desktop(LOADER.GetImageN("setup015", 0)), csi(csi), mapGenThread(NULL), waitWnd(NULL)
 {
+    WorldDescription desc;
+    GameDataLoader gdLoader(desc);
+    if(!gdLoader.Load())
+    {
+        LC_Status_Error(_("Failed to load game data!"));
+        return;
+    }
+
+    for(DescIdx<LandscapeDesc> i(0); i.value < desc.landscapes.size(); i.value++)
+        landscapeNames[desc.get(i).s2Id] = _(desc.get(i).name);
+
     // Die Tabelle für die Maps
     AddTable(1, DrawPoint(110, 35), Extent(680, 400), TC_GREY, NormalFont, 6, _("Name"), 250, ctrlTable::SRT_STRING, _("Author"), 216,
              ctrlTable::SRT_STRING, _("Player"), 170, ctrlTable::SRT_NUMBER, _("Type"), 180, ctrlTable::SRT_STRING, _("Size"), 134,
@@ -281,12 +274,17 @@ void dskSelectMap::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned se
 void dskSelectMap::CreateRandomMap()
 {
     // setup filepath for the random map
-    std::string mapPath = RTTRCONFIG.ExpandPath(FILE_PATHS[48]) + "/Random.swd";
+    std::string mapPath = (bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[48])) / "Random.swd").string();
 
-    // create a random map and save filepath
-    MapGenerator::Create(mapPath, rndMapSettings);
-
-    newRandMapPath = mapPath;
+    try
+    {
+        // create a random map and save filepath
+        MapGenerator::Create(mapPath, rndMapSettings);
+        newRandMapPath = mapPath;
+    } catch(std::runtime_error& e)
+    {
+        newRandMapPath = std::string("!") + e.what();
+    }
 }
 
 void dskSelectMap::OnMapCreated(const std::string& mapPath)
@@ -382,7 +380,12 @@ void dskSelectMap::Draw_()
     {
         // mapGenThread->join();
         // mapGenThread = NULL;
-        OnMapCreated(newRandMapPath);
+        if(newRandMapPath[0] == '!')
+        {
+            std::string errorTxt = _("Failed to generate random map.\nReason: ");
+            WINDOWMANAGER.Show(new iwMsgbox(_("Error"), errorTxt + newRandMapPath.substr(1), NULL, MSB_OK, MSB_EXCLAMATIONRED));
+        } else
+            OnMapCreated(newRandMapPath);
         newRandMapPath.clear();
     }
     Desktop::Draw_();
@@ -413,15 +416,12 @@ void dskSelectMap::FillTable(const std::vector<std::string>& files)
         std::string players = (boost::format(_("%d Player")) % static_cast<unsigned>(header.getNumPlayers())).str();
         std::string size = helpers::toString(header.getWidth()) + "x" + helpers::toString(header.getHeight());
 
-        // und einfügen
-        const std::string landscapes[3] = {_("Greenland"), _("Wasteland"), _("Winter world")};
-
         std::string name = cvStringToUTF8(header.getName());
         if(hasLua)
             name += " (*)";
         std::string author = cvStringToUTF8(header.getAuthor());
 
-        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapes[header.getGfxSet()].c_str(), size.c_str(),
+        table->AddRow(0, name.c_str(), author.c_str(), players.c_str(), landscapeNames[header.getGfxSet()].c_str(), size.c_str(),
                       filePath.c_str());
     }
 }

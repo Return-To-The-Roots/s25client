@@ -15,17 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LandscapeType_h__
-#define LandscapeType_h__
+#include "commonDefines.h" // IWYU pragma: keep
+#include "EdgeDesc.h"
+#include "WorldDescription.h"
+#include "lua/CheckedLuaTable.h"
+#include "lua/LuaHelpers.h"
 
-enum LandscapeType
+EdgeDesc::EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
 {
-    LT_GREENLAND = 0,
-    LT_WASTELAND,
-    LT_WINTERWORLD
-};
-
-// Keep this in sync with LandscapeType
-static const unsigned char NUM_LTS = LT_WINTERWORLD + 1;
-
-#endif // LandscapeType_h__
+    luaData.getOrThrow(name, "name");
+    landscape = worldDesc.landscapes.getIndex(luaData.getOrThrow<std::string>("landscape"));
+    if(!landscape)
+        throw GameDataError("Invalid landscape type: " + luaData.getOrThrow<std::string>("landscape"));
+    luaData.getOrThrow(texturePath, "texture");
+    lua::validatePath(texturePath);
+    posInTexture = luaData.getRectOrDefault("pos", Rect());
+    luaData.checkUnused();
+}

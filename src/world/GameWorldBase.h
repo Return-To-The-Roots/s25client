@@ -65,7 +65,7 @@ public:
 
 
     // Grundlegende Initialisierungen
-    void Init(const MapExtent& mapSize, LandscapeType lt) override;
+    void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
     // Remaining initialization after loading (BQ...)
     void InitAfterLoad();
 

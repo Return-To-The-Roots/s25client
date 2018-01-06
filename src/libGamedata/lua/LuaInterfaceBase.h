@@ -20,55 +20,53 @@
 
 #include <kaguya/kaguya.hpp>
 #include <map>
+#include <stdexcept>
 #include <string>
-#include <utility>
 
+class LuaExecutionError : public std::runtime_error
+{
+public:
+    LuaExecutionError(const std::string& msg) : std::runtime_error(msg) {}
+};
+
+/// Base class for all lua script handlers
 class LuaInterfaceBase
 {
 public:
-    LuaInterfaceBase();
-    virtual ~LuaInterfaceBase();
-
     static void Register(kaguya::State& state);
 
     bool LoadScript(const std::string& scriptPath);
-    bool LoadScriptString(const std::string& script);
+    bool LoadScriptString(const std::string& script, bool rethrowError = false);
     const std::string& GetScript() const { return script_; }
+    /// Disable or re-enable throwing an exception on error.
+    /// Note: If error throwing is disabled you have to use HasErrorOccurred to detect an error situation
+    void SetThrowOnError(bool doThrow);
+    bool HasErrorOccurred() const { return errorOccured_; }
+    void ClearErrorOccured() { errorOccured_ = false; }
 
-    bool CheckScriptVersion();
-
-    /// Return version of the interface. Changes here reflect breaking changes
-    static unsigned GetVersion();
-    /// Get the feature level of this version. Reset on Version increase, increase for added features
-    static unsigned GetFeatureLevel();
+    kaguya::State& GetState() { return lua; }
 
 protected:
+    LuaInterfaceBase();
+    virtual ~LuaInterfaceBase();
+
     kaguya::State lua;
     std::string script_;
 
-    bool ValidateUTF8();
+    bool ValidateUTF8(const std::string& scriptTxt);
 
     /// Write a string to log and stdout
     void Log(const std::string& msg);
-    /// Return true, if local player is the host
-    bool IsHost() const;
-    /// Return the index of the local player
-    unsigned GetLocalPlayerIdx() const;
-    /// Show a message box with given title and text.
-    /// If isError is true, a red exclamation mark is shown, otherwise a green one is shown
-    void MsgBox(const std::string& title, const std::string& msg, bool isError);
-    void MsgBox2(const std::string& title, const std::string& msg) { MsgBox(title, msg, false); }
-    /// Shows a message with a custom icon. Image with iconIdx must exist in iconFile and iconFile must be loaded!
-    void MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx);
-    void MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx, int iconX, int iconY);
     void RegisterTranslations(const kaguya::LuaRef& luaTranslations);
 
     std::string Translate(const std::string& key);
 
-    static void ErrorHandler(int status, const char* message);
-    static void ErrorHandlerThrow(int status, const char* message);
+    void ErrorHandlerNoThrow(int status, const char* message);
+    void ErrorHandler(int status, const char* message);
 
 private:
+    /// Sticky flag to signal an occurred error during execution of lua code
+    bool errorOccured_;
     std::map<std::string, std::string> translations_;
 
     static std::map<std::string, std::string> GetTranslation(const kaguya::LuaRef& luaTranslations, const std::string& code);

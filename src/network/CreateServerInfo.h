@@ -21,14 +21,14 @@
 #include "gameTypes/ServerType.h"
 #include <string>
 
-/// Struktur zur Weitergabe der Spiel-Eröffnungsdaten
+/// Data struct for game creation
 struct CreateServerInfo
 {
-    ServerType type;      /// Typ des Servers.
-    unsigned short port;  /// Port des Servers
-    std::string gamename; /// Name des Servers.
-    std::string password; /// Passwort des Servers.
-    bool ipv6;            /// Soll IPv6 verwendet werden?
+    ServerType type;
+    unsigned short port;
+    std::string gamename;
+    std::string password;
+    bool ipv6; // IPv6 or IPv4
     bool use_upnp;
 };
 

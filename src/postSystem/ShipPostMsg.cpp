@@ -24,7 +24,7 @@ ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCatego
     : PostMsg(sendFrame, text, cat, ship.GetPos())
 {}
 
-glArchivItem_Bitmap* ShipPostMsg::GetImage_() const
+ITexture* ShipPostMsg::GetImage_() const
 {
-    return LOADER.GetImageN("boot_z", 12);
+    return LOADER.GetTextureN("boot_z", 12);
 }

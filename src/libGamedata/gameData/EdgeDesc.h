@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2017 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,7 +15,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "GlobalVars.h"
+#ifndef EdgeDesc_h__
+#define EdgeDesc_h__
 
-GlobalVars::GlobalVars() : notdone(true), ext_vbo(false), ext_swapcontrol(false), isTest(false), errorOccured(false) {}
+#include "DescIdx.h"
+#include "Rect.h"
+#include <string>
+
+struct WorldDescription;
+struct LandscapeDesc;
+class CheckedLuaTable;
+
+struct EdgeDesc
+{
+    std::string name;
+    DescIdx<LandscapeDesc> landscape;
+    std::string texturePath;
+    Rect posInTexture;
+
+    EdgeDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
+};
+
+#endif // EdgeDesc_h__

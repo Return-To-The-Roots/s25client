@@ -127,3 +127,8 @@ void GameLobbyController::RemoveLuaScript()
 {
     GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_RemoveLua());
 }
+
+void GameLobbyController::SetName(unsigned playerIdx, const std::string& name)
+{
+    GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_Player_Name(playerIdx, name));
+}

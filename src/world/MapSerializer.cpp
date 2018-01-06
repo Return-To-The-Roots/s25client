@@ -19,14 +19,21 @@
 #include "world/MapSerializer.h"
 #include "CatapultStone.h"
 #include "SerializedGameData.h"
+#include "lua/GameDataLoader.h"
 #include "world/World.h"
 
 void MapSerializer::Serialize(const World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
+    // Headinformationen
+    sgd.PushPoint(world.GetSize());
+    sgd.PushString(world.GetDescription().get(world.GetLandscapeType()).name);
+
+    sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
+
     // Alle Weltpunkte serialisieren
     for(std::vector<MapNode>::const_iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
-        it->Serialize(sgd, numPlayers);
+        it->Serialize(sgd, numPlayers, world.GetDescription());
     }
 
     // Katapultsteine serialisieren
@@ -60,11 +67,50 @@ void MapSerializer::Serialize(const World& world, const unsigned numPlayers, Ser
 
 void MapSerializer::Deserialize(World& world, const unsigned numPlayers, SerializedGameData& sgd)
 {
+    // Initialisierungen
+    GameDataLoader gdLoader(world.GetDescriptionWriteable());
+    if(!gdLoader.Load())
+        throw SerializedGameData::Error(_("Failed to load game data!"));
+
+    // Headinformationen
+    const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
+    DescIdx<LandscapeDesc> lt(0);
+    if(sgd.GetGameDataVersion() < 3)
+    {
+        uint8_t gfxSet = sgd.PopUnsignedChar();
+        for(DescIdx<LandscapeDesc> i(0); i.value < world.GetDescription().landscapes.size(); i.value++)
+        {
+            if(world.GetDescription().get(i).s2Id == gfxSet)
+            {
+                lt = i;
+                break;
+            }
+        }
+    } else
+    {
+        std::string sLandscape = sgd.PopString();
+        lt = world.GetDescription().landscapes.getIndex(sLandscape);
+        if(!lt)
+            throw SerializedGameData::Error(std::string("Invalid landscape: ") + sLandscape);
+    }
+    world.Init(size, lt);
+    GameObject::ResetCounters(sgd.PopUnsignedInt());
+
+    std::vector<DescIdx<TerrainDesc> > landscapeTerrains;
+    if(sgd.GetGameDataVersion() < 3)
+    {
+        // Assumes the order of the terrain in the description file is the same as in the prior RTTR versions
+        for(DescIdx<TerrainDesc> t(0); t.value < world.GetDescription().terrain.size(); t.value++)
+        {
+            if(world.GetDescription().get(t).landscape == lt)
+                landscapeTerrains.push_back(t);
+        }
+    }
     // Alle Weltpunkte
     MapPoint curPos(0, 0);
     for(std::vector<MapNode>::iterator it = world.nodes.begin(); it != world.nodes.end(); ++it)
     {
-        it->Deserialize(sgd, numPlayers);
+        it->Deserialize(sgd, numPlayers, world.GetDescription(), landscapeTerrains);
         if(it->harborId)
         {
             HarborPos p(curPos);

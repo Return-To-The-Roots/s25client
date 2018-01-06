@@ -21,7 +21,7 @@
 #define PathConditionShip_h__
 
 #include "world/World.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include <boost/config.hpp>
 
 struct PathConditionShip
@@ -37,8 +37,8 @@ struct PathConditionShip
     BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // We must have shippable water on both sides
-        return TerrainData::IsUsableByShip(world.GetLeftTerrain(fromPt, dir))
-               && TerrainData::IsUsableByShip(world.GetRightTerrain(fromPt, dir));
+        return world.GetDescription().get(world.GetLeftTerrain(fromPt, dir)).Is(ETerrain::Shippable)
+               && world.GetDescription().get(world.GetRightTerrain(fromPt, dir)).Is(ETerrain::Shippable);
     }
 };
 

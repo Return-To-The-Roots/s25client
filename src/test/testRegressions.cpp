@@ -32,6 +32,7 @@
 #include "gameTypes/Direction_Output.h"
 #include "gameData/MapConsts.h"
 #include "gameData/ShieldConsts.h"
+#include "gameData/TerrainDesc.h"
 #include "test/CreateEmptyWorld.h"
 #include "test/WorldFixture.h"
 #include "test/initTestHelpers.h"
@@ -170,6 +171,7 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public LogAcc
 
 BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 {
+    LogAccessor logAcc;
     GamePlayer& player = world.GetPlayer(0);
     nobBaseWarehouse& hq = *world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
     testNumGoodsHQ();
@@ -270,11 +272,17 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
             BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, dir)));
     }
     // Not on non-vital terrain
-    world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t1 = TT_MOUNTAINMEADOW;
+    DescIdx<TerrainDesc> tUnvital(0);
+    for(; tUnvital.value < world.GetDescription().terrain.size(); tUnvital.value++)
+    {
+        if(!world.GetDescription().get(tUnvital).IsVital())
+            break;
+    }
+    world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t1 = tUnvital;
     BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 2)));
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 3)));
     BOOST_REQUIRE(farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 4)));
-    world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t2 = TT_MOUNTAINMEADOW;
+    world.GetNodeWriteable(world.GetNeighbour2(farmPt, 3)).t2 = tUnvital;
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 3)));
     BOOST_REQUIRE(!farmer->IsPointAvailable(world.GetNeighbour2(farmPt, 4)));
     // Env obj is allowed

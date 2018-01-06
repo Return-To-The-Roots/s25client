@@ -22,7 +22,6 @@
 #include "Game.h"
 #include "GameManager.h"
 #include "GamePlayer.h"
-#include "GlobalVars.h"
 #include "Loader.h"
 #include "NWFInfo.h"
 #include "Settings.h"
@@ -62,6 +61,7 @@
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwTextfile.h"
 #include "ingameWindows/iwTrade.h"
+#include "lua/GameDataLoader.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
 #include "notifications/NotificationManager.h"
@@ -72,6 +72,7 @@
 #include "pathfinding/FindPathForRoad.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
+#include "random/Random.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "nodeObjs/noFlag.h"
@@ -79,7 +80,7 @@
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
 #include "gameData/GuiConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include "gameData/const_gui_ids.h"
 #include "liblobby/LobbyClient.h"
 #include "libutil/Log.h"
@@ -104,7 +105,7 @@ enum
 };
 }
 
-dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
+dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, bool initOGL)
     : Desktop(NULL), game_(game), nwfInfo(GAMECLIENT.GetNWFInfo()), worldViewer(GAMECLIENT.GetPlayerId(), game->world),
       gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetScreenSize()), cbb(*LOADER.GetPaletteN("pal5")), actionwindow(NULL), roadwindow(NULL),
       minimap(worldViewer), isScrolling(false), zoomLvl(ZOOM_DEFAULT_INDEX), isCheatModeOn(false)
@@ -134,11 +135,11 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game)
     game->world.SetGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(NULL));
-    cbb.loadEdges(*LOADER.GetInfoN("resource"));
+    cbb.loadEdges(LOADER.GetInfoN("resource"));
     cbb.buildBorder(VIDEODRIVER.GetScreenSize(), borders);
 
     InitPlayer();
-    if(!GLOBALVARS.isTest)
+    if(initOGL)
         worldViewer.InitTerrainRenderer();
 }
 
@@ -627,7 +628,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     {
         default: break;
         case KT_RETURN: // Chatfenster öffnen
-            WINDOWMANAGER.Show(new iwChat);
+            WINDOWMANAGER.Show(new iwChat(this));
             return true;
 
         case KT_SPACE: // Bauqualitäten anzeigen
@@ -971,11 +972,8 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Sind wir am Wasser?
     if(action_tabs.setflag)
     {
-        for(unsigned x = 0; x < Direction::COUNT; ++x)
-        {
-            if(TerrainData::IsWater(world.GetRightTerrain(cSel, Direction::fromInt(x))))
-                params = iwAction::AWFT_WATERFLAG;
-        }
+        if(world.HasTerrain(cSel, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER))
+            params = iwAction::AWFT_WATERFLAG;
     }
 
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
@@ -998,6 +996,30 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
 
     actionwindow = new iwAction(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings);
     WINDOWMANAGER.Show(actionwindow, true);
+}
+
+void dskGameInterface::OnChatCommand(const std::string& cmd)
+{
+    if(cmd == "apocalypsis")
+        GAMECLIENT.CheatArmageddon();
+    else if(cmd == "surrender")
+        GAMECLIENT.Surrender();
+    else if(cmd == "async")
+        (void)RANDOM.Rand(__FILE__, __LINE__, 0, 255);
+    else if(cmd == "segfault")
+    {
+        char* x = NULL;
+        *x = 1; //-V522 // NOLINT
+    } else if(cmd == "reload")
+    {
+        WorldDescription newDesc;
+        GameDataLoader gdLoader(newDesc);
+        if(gdLoader.Load())
+        {
+            const_cast<GameWorld&>(game_->world).GetDescriptionWriteable() = newDesc;
+            worldViewer.InitTerrainRenderer();
+        }
+    }
 }
 
 void dskGameInterface::GI_BuildRoad()

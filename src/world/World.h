@@ -26,14 +26,16 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/HarborPos.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapNode.h"
 #include "gameTypes/MapTypes.h"
+#include "gameData/DescIdx.h"
+#include "gameData/WorldDescription.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <list>
 #include <vector>
 
+struct LandscapeDesc;
 class noNothing;
 class CatapultStone;
 class FOWObject;
@@ -56,7 +58,7 @@ class World : public MapBase
     friend class MapSerializer;
 
     /// Landschafts-Typ
-    LandscapeType lt;
+    DescIdx<LandscapeDesc> lt;
 
     /// Eigenschaften von einem Punkt auf der Map
     std::vector<MapNode> nodes;
@@ -66,13 +68,10 @@ class World : public MapBase
     /// Alle Hafenpositionen
     std::vector<HarborPos> harbor_pos;
 
+    WorldDescription description_;
+
     boost::interprocess::unique_ptr<noBase, Deleter<noBase> > noNodeObj;
     void Resize(const MapExtent& newSize) override;
-
-protected:
-    /// Internal method for access to nodes with write access
-    MapNode& GetNodeInt(const MapPoint pt);
-    MapNode& GetNeighbourNodeInt(const MapPoint pt, Direction dir);
 
 public:
     /// Currently flying catapult stones
@@ -83,12 +82,15 @@ public:
     virtual ~World();
 
     /// Initialize the world
-    virtual void Init(const MapExtent& size, LandscapeType lt);
+    virtual void Init(const MapExtent& size, DescIdx<LandscapeDesc> lt);
     /// Clean up (free objects and reset world to uninitialized state)
     virtual void Unload();
 
     /// Return the type of the landscape
-    LandscapeType GetLandscapeType() const { return lt; }
+    DescIdx<LandscapeDesc> GetLandscapeType() const { return lt; }
+
+    const WorldDescription& GetDescription() const { return description_; }
+    WorldDescription& GetDescriptionWriteable() { return description_; }
 
     /// Return the node at that point
     const MapNode& GetNode(const MapPoint pt) const;
@@ -142,24 +144,22 @@ public:
 
     /// Return the terrain to the right when walking from the point in the given direction
     /// 0 = left upper triangle, 1 = triangle above, ..., 4 = triangle below
-    TerrainType GetRightTerrain(const MapPoint pt, Direction dir) const;
+    DescIdx<TerrainDesc> GetRightTerrain(const MapPoint pt, Direction dir) const;
     /// Return the terrain to the left when walking from the point in the given direction
-    TerrainType GetLeftTerrain(const MapPoint pt, Direction dir) const;
+    DescIdx<TerrainDesc> GetLeftTerrain(const MapPoint pt, Direction dir) const;
     /// Create the FOW-objects, -streets, etc for a point and player
     void SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime);
     unsigned GetNumSeas() const { return seas.size(); }
-    // Return if all surrounding terrains match the given predicate
-    bool IsOfTerrain(const MapPoint pt, bool (*terrainPredicate)(TerrainType)) const;
-    // Return if a map point is fully surrounded by a given TerrainType
-    bool IsOfTerrain(const MapPoint pt, const TerrainType t) const;
     /// Return whether a node is inside a (shippable) sea (surrounded by shippable water)
     bool IsSeaPoint(const MapPoint pt) const;
     /// Return true, if the point is surrounded by water
     bool IsWaterPoint(const MapPoint pt) const;
-    // Return if any neighbour node match the given predicate
-    bool HasTerrain(const MapPoint pt, bool (*terrainPredicate)(TerrainType)) const;
-    // Return if a any neighbour node matches the given TerrainType
-    bool HasTerrain(const MapPoint pt, const TerrainType t) const;
+    /// Return true if all surrounding terrains match the given predicate
+    template<class T_Predicate>
+    bool IsOfTerrain(const MapPoint pt, T_Predicate predicate) const;
+    /// Return true if any surrounding terrain (description) matches the predicate
+    template<class T_Predicate>
+    bool HasTerrain(const MapPoint pt, T_Predicate predicate) const;
 
     unsigned GetSeaSize(const unsigned seaId) const;
     /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
@@ -192,6 +192,10 @@ public:
     void RemoveCatapultStone(CatapultStone* cs);
 
 protected:
+    /// Internal method for access to nodes with write access
+    MapNode& GetNodeInt(const MapPoint pt);
+    MapNode& GetNeighbourNodeInt(const MapPoint pt, Direction dir);
+
     /// Notify derived classes of changed altitude
     virtual void AltitudeChanged(const MapPoint pt) = 0;
     /// Notify derived classes of changed visibility
@@ -228,6 +232,31 @@ inline const MapNode& World::GetNeighbourNode(const MapPoint pt, Direction dir) 
 inline MapNode& World::GetNeighbourNodeInt(const MapPoint pt, Direction dir)
 {
     return GetNodeInt(GetNeighbour(pt, dir));
+}
+
+template<class T_Predicate>
+inline bool World::IsOfTerrain(const MapPoint pt, T_Predicate predicate) const
+{
+    // NOTE: This is '!HasTerrain(pt, !predicate)'
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    {
+        DescIdx<TerrainDesc> t = GetRightTerrain(pt, Direction::fromInt(i));
+        if(!predicate(GetDescription().get(t)))
+            return false;
+    }
+    return true;
+}
+
+template<class T_Predicate>
+inline bool World::HasTerrain(const MapPoint pt, T_Predicate predicate) const
+{
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    {
+        DescIdx<TerrainDesc> t = GetRightTerrain(pt, Direction::fromInt(i));
+        if(predicate(GetDescription().get(t)))
+            return true;
+    }
+    return false;
 }
 
 #endif // World_h__

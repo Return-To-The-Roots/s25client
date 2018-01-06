@@ -47,8 +47,6 @@ public:
         : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
     {}
 
-    TerrainType GetTerrain(MapPoint pt) const { return gwb.GetNode(pt).t1; }
-
     unsigned char GetPlayerId() const { return playerID_; }
     unsigned GetNumPlayers() const { return gwb.GetNumPlayers(); }
 

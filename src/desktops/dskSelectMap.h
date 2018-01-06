@@ -76,6 +76,8 @@ private:
     boost::thread* mapGenThread;
     std::string newRandMapPath;
     IngameWindow* waitWnd;
+    /// Mapping of s2 ids to landscape names
+    std::map<uint8_t, std::string> landscapeNames;
     /// Maps that we already know are broken
     std::vector<std::string> brokenMapPaths;
 };

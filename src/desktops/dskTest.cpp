@@ -26,6 +26,7 @@
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlText.h"
 #include "desktops/dskMainMenu.h"
+#include "desktops/dskTextureTest.h"
 #include "files.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
@@ -43,6 +44,7 @@ enum
     ID_btAnimate,
     ID_btAnimateRepeat,
     ID_btAnimateOscillate,
+    ID_btTextureTest,
     ID_btBack,
     ID_edtTest,
     ID_txtTest,
@@ -100,12 +102,13 @@ dskTest::dskTest() : curBGIdx(FILE_LOAD_IDS.size())
     btPos.y += 11;
     AddText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
 
-    AddTextButton(ID_btDisable, DrawPoint(10, 540), Extent(180, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
-    AddTextButton(ID_btHideCtrls, DrawPoint(195, 540), Extent(180, 22), TC_GREEN1, "Hide all elements (H)", NormalFont);
-    AddTextButton(ID_btAnimate, DrawPoint(375, 540), Extent(100, 22), TC_GREEN1, "Animate", NormalFont);
-    AddTextButton(ID_btAnimateRepeat, DrawPoint(470, 540), Extent(130, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
-    AddTextButton(ID_btAnimateOscillate, DrawPoint(605, 540), Extent(130, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
-    AddTextButton(ID_btBack, DrawPoint(630, 570), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btDisable, DrawPoint(10, 540), Extent(150, 22), TC_GREEN1, "Enable/Disable buttons", NormalFont);
+    AddTextButton(ID_btAnimate, DrawPoint(165, 540), Extent(80, 22), TC_GREEN1, "Animate", NormalFont);
+    AddTextButton(ID_btAnimateRepeat, DrawPoint(250, 540), Extent(110, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
+    AddTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
+    AddTextButton(ID_btHideCtrls, DrawPoint(480, 540), Extent(140, 22), TC_GREEN1, "Hide all elements (H)", NormalFont);
+    AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(110, 22), TC_GREEN1, "Texture test", NormalFont);
+    AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
 }
 
 void dskTest::Msg_EditChange(const unsigned ctrl_id)
@@ -132,6 +135,7 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_btBack: WINDOWMANAGER.Switch(new dskMainMenu); break;
+        case ID_btTextureTest: WINDOWMANAGER.Switch(new dskTextureTest); break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {

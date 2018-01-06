@@ -51,13 +51,14 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
         GetJoinPlayer(playerIdx).ps = state;
         GetJoinPlayer(playerIdx).aiInfo = aiInfo;
     }
+    void SetName(unsigned playerIdx, const std::string& name) override { GetJoinPlayer(playerIdx).name = name; }
     void SetColor(unsigned playerIdx, unsigned newColor) override { GetJoinPlayer(playerIdx).color = newColor; }
     void SetTeam(unsigned playerIdx, Team newTeam) override { GetJoinPlayer(playerIdx).team = newTeam; }
     void SetNation(unsigned playerIdx, Nation newNation) override { GetJoinPlayer(playerIdx).nation = newNation; }
 
     LuaSettingsTestsFixture() : lua(*this)
     {
-        luaBase = &lua;
+        setLua(&lua);
 
         players.resize(3);
         players[0].ps = PS_OCCUPIED;
@@ -95,7 +96,7 @@ BOOST_FIXTURE_TEST_SUITE(LuaTestSuiteSettings, LuaSettingsTestsFixture)
 
 BOOST_AUTO_TEST_CASE(AssertionThrows)
 {
-    BOOST_REQUIRE_THROW(executeLua("assert(false)"), std::runtime_error);
+    BOOST_REQUIRE_THROW(executeLua("assert(false)"), LuaExecutionError);
     BOOST_REQUIRE_NE(getLog(), "");
 }
 
@@ -161,6 +162,7 @@ BOOST_AUTO_TEST_CASE(Events)
 
 BOOST_AUTO_TEST_CASE(SettingsFunctions)
 {
+    LogAccessor logAcc;
     executeLua("assert(rttr:GetPlayer(0))");
     executeLua("assert(rttr:GetPlayer(1))");
     executeLua("assert(rttr:GetPlayer(2))");
@@ -248,6 +250,7 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
 
 BOOST_AUTO_TEST_CASE(PlayerSettings)
 {
+    LogAccessor logAcc;
     executeLua("player = rttr:GetPlayer(0)");
     executeLua("player1 = rttr:GetPlayer(1)");
     executeLua("player:SetNation(NAT_ROMANS)");
@@ -264,6 +267,9 @@ BOOST_AUTO_TEST_CASE(PlayerSettings)
 
     executeLua("player:SetTeam(TM_TEAM2)");
     BOOST_REQUIRE_EQUAL(players[0].team, TM_TEAM2);
+
+    executeLua("player:SetName(\"Foo\")");
+    BOOST_CHECK(isLuaEqual("player:GetName()", "'Foo'"));
 
     executeLua("player:SetColor(2)");
     BOOST_REQUIRE_EQUAL(players[0].color, PLAYER_COLORS[2]);

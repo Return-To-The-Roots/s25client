@@ -19,14 +19,14 @@
 #define PreviewMinimap_h__
 
 #include "Minimap.h"
-#include "gameTypes/LandscapeType.h"
+#include <map>
 
 class glArchivItem_Map;
 
 class PreviewMinimap : public Minimap
 {
-    LandscapeType lt;
     std::vector<unsigned char> objects, terrain1, terrain2, shadows;
+    std::map<uint8_t, uint32_t> terrain2Clr;
 
 public:
     explicit PreviewMinimap(const glArchivItem_Map* const s2map);

@@ -18,17 +18,20 @@
 #ifndef MapUtility_h__
 #define MapUtility_h__
 
+#include "ObjectGenerator.h"
 #include "Point.h"
 
 struct Map;
-class ObjectGenerator;
 
 /**
  * Utility for map generation.
  */
 class MapUtility
 {
+    const RandomConfig& cfg;
+
 public:
+    MapUtility(RandomConfig& cfg) : cfg(cfg), objGen(cfg) {}
     /**
      * Smooths the textures of the map for better visual appearance by post-processing
      * the specified map. Single textures which are surrounded by other textures are replaced
@@ -38,7 +41,7 @@ public:
      * textures.
      * @param map map to smooth textures for
      */
-    static void Smooth(Map& map);
+    void Smooth(Map& map);
 
     /**
      * Creates a hill at the specified center with the specified height.
@@ -55,14 +58,14 @@ public:
      * @param center center point for the harbor position
      * @param waterLevel the height level of the surrounding water
      */
-    static void SetHarbour(Map& map, const Position& center, int waterLevel);
+    void SetHarbour(Map& map, const Position& center, int waterLevel);
 
     /**
      * Places a tree to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the tree
      */
-    static void SetTree(Map& map, ObjectGenerator& objGen, const Position& position);
+    void SetTree(Map& map, const Position& position);
 
     /**
      * Sets stone on the map around the specified center within the specified radius.
@@ -71,14 +74,14 @@ public:
      * @param center center point for stone placement
      * @param radius radius around the center to place stone in
      */
-    static void SetStones(Map& map, ObjectGenerator& objGen, const Position& center, double radius);
+    void SetStones(Map& map, const Position& center, double radius);
 
     /**
      * Places a stone to the specified position if possible.
      * @param map map to modify the terrain for
      * @param position position of the stone
      */
-    static void SetStone(Map& map, ObjectGenerator& objGen, const Position& position);
+    void SetStone(Map& map, const Position& position);
 
     /**
      * Computes the size of a terrain body starting from the specified position.
@@ -100,6 +103,8 @@ public:
      * @return the point on the circle with the specified index
      */
     static Position ComputePointOnCircle(int index, int points, const Position& center, double radius);
+
+    ObjectGenerator objGen;
 };
 
 #endif // MapUtility_h__

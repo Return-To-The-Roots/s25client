@@ -20,7 +20,6 @@
 #pragma once
 
 #include "Desktop.h"
-
 #include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
 
@@ -40,6 +39,7 @@ public:
 private:
     void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
     void Msg_Timer(const unsigned ctrl_id) override;
+    std::vector<std::string> GatherRequiredTexturePaths() const;
 
     unsigned position;
     boost::shared_ptr<Game> game;

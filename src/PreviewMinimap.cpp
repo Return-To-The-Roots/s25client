@@ -17,11 +17,15 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "PreviewMinimap.h"
+#include "lua/GameDataLoader.h"
+#include "mygettext/mygettext.h"
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapGeometry.h"
 #include "gameData/MinimapConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include "gameData/WorldDescription.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
+#include "libutil/Log.h"
 
 PreviewMinimap::PreviewMinimap(const glArchivItem_Map* const s2map)
 {
@@ -36,8 +40,6 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
     mapSize.y = header.getHeight();
 
     unsigned char gfxSet = header.getGfxSet();
-    RTTR_Assert(gfxSet < NUM_LTS);
-    lt = LandscapeType(gfxSet);
     objects = s2map.GetLayer(MAP_TYPE);
     terrain1 = s2map.GetLayer(MAP_TERRAIN1);
     terrain2 = s2map.GetLayer(MAP_TERRAIN2);
@@ -45,6 +47,26 @@ void PreviewMinimap::SetMap(const glArchivItem_Map& s2map)
         shadows = s2map.GetLayer(MAP_SHADOWS);
     else
         CalcShadows(s2map.GetLayer(MAP_ALTITUDE));
+
+    WorldDescription worldDesc;
+    GameDataLoader gdLoader(worldDesc);
+    if(!gdLoader.Load())
+        LOG.write(_("Failed to load game data!"));
+    else
+    {
+        DescIdx<LandscapeDesc> lt(0);
+        for(DescIdx<LandscapeDesc> i(0); i.value < worldDesc.landscapes.size(); i.value++)
+        {
+            if(worldDesc.get(i).s2Id == gfxSet)
+                lt = i;
+        }
+        for(DescIdx<TerrainDesc> i(0); i.value < worldDesc.terrain.size(); i.value++)
+        {
+            const TerrainDesc& ter = worldDesc.get(i);
+            if(ter.landscape == lt)
+                terrain2Clr[ter.s2Id] = ter.minimapColor;
+        }
+    }
 
     CreateMapTexture();
 }
@@ -62,7 +84,7 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
     {
-        color = TerrainData::GetColor(lt, TerrainData::MapIdx2Terrain(t == 0 ? terrain1[GetMMIdx(pt)] : terrain2[GetMMIdx(pt)]));
+        color = terrain2Clr[t == 0 ? terrain1[GetMMIdx(pt)] : terrain2[GetMMIdx(pt)]];
 
         // Schattierung
         const int shading = shadows[GetMMIdx(pt)] - 0x40;

@@ -38,7 +38,7 @@ LuaInterfaceSettings::~LuaInterfaceSettings() {}
 void LuaInterfaceSettings::Register(kaguya::State& state)
 {
     state["RTTRSettings"].setClass(
-      kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceBase>()
+      kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceGameBase>()
         .addFunction("GetNumPlayers", &LuaInterfaceSettings::GetNumPlayers)
         .addFunction("GetPlayer", &LuaInterfaceSettings::GetPlayer)
         .addOverloadedFunctions("SetAddon", &LuaInterfaceSettings::SetAddon, &LuaInterfaceSettings::SetBoolAddon)

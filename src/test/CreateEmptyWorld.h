@@ -22,9 +22,11 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include "gameTypes/Nation.h"
+#include "gameData/DescIdx.h"
 #include <vector>
 
 class GameWorldGame;
+struct TerrainDesc;
 
 /// Creates an empty world, with meadow terrain and the given number of players
 struct CreateEmptyWorld
@@ -47,7 +49,7 @@ private:
     MapExtent size_;
 };
 
-void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t);
-void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, TerrainType t);
+void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
+void setLeftTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t);
 
 #endif // CreateEmptyWorld_h__

@@ -253,56 +253,21 @@ BlockingManner noBaseBuilding::GetBM() const
 }
 
 /// Gibt ein Bild zurück für das normale Gebäude
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage() const
+ITexture* noBaseBuilding::GetBuildingImage() const
 {
-    return GetBuildingImage(bldType_, nation, gwg->GetLandscapeType());
+    return GetBuildingImage(bldType_, nation);
 }
 
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
+ITexture* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation) //-V688
 {
-    return GetBuildingImage(type, nation, LandscapeType(LOADER.GetLastGFX()));
-}
-
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImage(BuildingType type, Nation nation, LandscapeType lt) //-V688
-{
-    if(type == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((lt == LT_WINTERWORLD) ? 6 : 1));
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * type);
-}
-
-/// Gibt ein Bild zurück für das Gebäudegerüst
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImage() const
-{
-    if(bldType_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + 3);
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 2);
-}
-
-/// Gibt ein Bild zurück für das normale Gebäude
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingImageShadow() const
-{
-    if(bldType_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + 2);
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 1);
-}
-
-/// Gibt ein Bild zurück für das Gebäudegerüst
-glArchivItem_Bitmap* noBaseBuilding::GetBuildingSkeletonImageShadow() const
-{
-    if(bldType_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + 4);
-    else
-        return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 3);
+    return &LOADER.building_cache[nation][type][0];
 }
 
 /// Gibt ein Bild zurück für die Tür des Gebäudes
 glArchivItem_Bitmap* noBaseBuilding::GetDoorImage() const
 {
     if(bldType_ == BLD_CHARBURNER)
-        return LOADER.GetImageN("charburner", nation * 8 + ((gwg->GetLandscapeType() == LT_WINTERWORLD) ? 7 : 5));
+        return LOADER.GetImageN("charburner", nation * 8 + (LOADER.IsWinterGFX() ? 7 : 5));
     else
         return LOADER.GetNationImage(nation, 250 + 5 * bldType_ + 4);
 }

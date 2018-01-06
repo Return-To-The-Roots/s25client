@@ -136,7 +136,7 @@ inline T safeDiff(T a, T b)
 template<typename T, typename T_Src>
 inline T checkedCast(T_Src src)
 {
-    RTTR_Assert(dynamic_cast<T>(src));
+    RTTR_Assert(!src || dynamic_cast<T>(src));
     return static_cast<T>(src);
 }
 

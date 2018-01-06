@@ -27,7 +27,8 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "nodeObjs/noTree.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofFarmhand(JOB_FORESTER, pos, player, workplace)
@@ -82,15 +83,15 @@ void nofForester::WorkFinished()
         gwg->DestroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
-        const unsigned char NUM_AVAILABLE_TREESS[3] = {6, 3, 4};
+        const unsigned char NUM_AVAILABLE_TREES[3] = {6, 3, 4};
         const unsigned char AVAILABLE_TREES[3][8] = {
           {0, 1, 2, 6, 7, 8, 0xFF, 0xFF}, {0, 1, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}, {0, 1, 6, 8, 0xFF, 0xFF, 0xFF, 0xFF}};
+        uint8_t landscapeType = std::min<uint8_t>(gwg->GetLandscapeType().value, 2);
 
         // jungen Baum einsetzen
-        gwg->SetNO(pos, new noTree(pos,
-                                   AVAILABLE_TREES[gwg->GetLandscapeType()][RANDOM.Rand(__FILE__, __LINE__, GetObjId(),
-                                                                                        NUM_AVAILABLE_TREESS[gwg->GetLandscapeType()])],
-                                   0));
+        gwg->SetNO(
+          pos, new noTree(
+                 pos, AVAILABLE_TREES[landscapeType][RANDOM.Rand(__FILE__, __LINE__, GetObjId(), NUM_AVAILABLE_TREES[landscapeType])], 0));
 
         // BQ drumherum neu berechnen
         gwg->RecalcBQAroundPoint(pos);
@@ -128,16 +129,9 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt) const
             return PQ_NOTPOSSIBLE;
     }
 
-    // Terrain untersuchen (nur auf Wiesen und Savanne und Steppe pflanzen
-    unsigned char good_terrains = 0;
-
-    for(unsigned char dir = 0; dir < Direction::COUNT; ++dir)
-    {
-        if(TerrainData::IsVital(gwg->GetRightTerrain(pt, Direction::fromInt(dir))))
-            ++good_terrains;
-    }
-    if(good_terrains != 6)
+    // Terrain untersuchen
+    if(gwg->IsOfTerrain(pt, boost::bind(&TerrainDesc::IsVital, _1)))
+        return PQ_CLASS1;
+    else
         return PQ_NOTPOSSIBLE;
-
-    return PQ_CLASS1;
 }

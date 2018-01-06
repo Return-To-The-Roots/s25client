@@ -151,12 +151,6 @@ void terminateProgramm()
 
 void handleException(void* pCtx = NULL)
 {
-    if(GLOBALVARS.isTest)
-    {
-        bnw::cerr << std::endl << "ERROR: Test failed!" << std::endl;
-        terminateProgramm();
-    }
-
     if(shouldSendDebugData())
     {
 #ifdef _WIN32
@@ -435,9 +429,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    GLOBALVARS.isTest = options.count("test") > 0;
-    GLOBALVARS.errorOccured = false;
-
     int result;
     try
     {
@@ -445,16 +436,6 @@ int main(int argc, char** argv)
     } catch(RttrExitException& e)
     {
         result = e.code;
-    }
-    if(GLOBALVARS.isTest)
-    {
-        if(result || GLOBALVARS.errorOccured)
-        {
-            bnw::cerr << std::endl << std::endl << "ERROR: Test failed!" << std::endl;
-            if(!result)
-                result = 1;
-        } else
-            bnw::cout << std::endl << std::endl << "Test passed!" << std::endl;
     }
     if(result)
         WaitForEnter();

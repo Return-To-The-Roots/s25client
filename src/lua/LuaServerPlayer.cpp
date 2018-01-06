@@ -43,7 +43,8 @@ void LuaServerPlayer::Register(kaguya::State& state)
                                .addFunction("SetTeam", &LuaServerPlayer::SetTeam)
                                .addFunction("SetColor", &LuaServerPlayer::SetColor)
                                .addFunction("Close", &LuaServerPlayer::Close)
-                               .addFunction("SetAI", &LuaServerPlayer::SetAI));
+                               .addFunction("SetAI", &LuaServerPlayer::SetAI)
+                               .addFunction("SetName", &LuaServerPlayer::SetName));
 }
 
 void LuaServerPlayer::SetNation(Nation nat)
@@ -90,4 +91,9 @@ void LuaServerPlayer::SetAI(unsigned level)
         default: lua::assertTrue(false, "Invalid AI level");
     }
     lobbyServerController_.SetPlayerState(playerId, PS_AI, info);
+}
+
+void LuaServerPlayer::SetName(const std::string& name)
+{
+    lobbyServerController_.SetName(playerId, name);
 }

@@ -19,21 +19,23 @@
 #define LuaBaseFixture_h__
 
 #include "GlobalVars.h"
-#include "lua/LuaInterfaceBase.h"
+#include "lua/LuaInterfaceGameBase.h"
 #include <boost/format.hpp>
 #include <boost/test/unit_test.hpp>
 
 /// Provide lua execution methods and check if lua values equal given value
 class LuaBaseFixture
 {
+private:
+    LuaInterfaceGameBase* luaBase_;
+
 protected:
-    LuaInterfaceBase* luaBase;
+    void setLua(LuaInterfaceGameBase* lua) { luaBase_ = lua; }
 
 public:
-    LuaBaseFixture() { GLOBALVARS.isTest = true; }
-    ~LuaBaseFixture() { GLOBALVARS.isTest = false; }
+    LuaBaseFixture() : luaBase_(NULL) {}
 
-    void executeLua(const std::string& luaCode) { luaBase->LoadScriptString(luaCode); }
+    void executeLua(const std::string& luaCode) { luaBase_->LoadScriptString(luaCode, true); }
     void executeLua(const boost::format& luaCode) { executeLua(luaCode.str()); }
 
     boost::test_tools::predicate_result isLuaEqual(const std::string& luaVal, const std::string& expectedValue)

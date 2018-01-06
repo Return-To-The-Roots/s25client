@@ -31,7 +31,6 @@ public:
 
 protected:
     void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
     void Msg_PaintAfter() override;
 
 private:

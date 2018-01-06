@@ -18,7 +18,7 @@
 #ifndef LuaInterfaceSettings_h__
 #define LuaInterfaceSettings_h__
 
-#include "LuaInterfaceBase.h"
+#include "LuaInterfaceGameBase.h"
 #include <string>
 #include <vector>
 
@@ -26,7 +26,7 @@ class LuaServerPlayer;
 class IGameLobbyController;
 struct AddonId;
 
-class LuaInterfaceSettings : public LuaInterfaceBase
+class LuaInterfaceSettings : public LuaInterfaceGameBase
 {
 public:
     LuaInterfaceSettings(IGameLobbyController& lobbyServerController);

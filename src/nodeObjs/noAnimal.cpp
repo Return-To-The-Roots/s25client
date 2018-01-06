@@ -27,7 +27,7 @@
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 
 #include "ogl/glSmartBitmap.h"
 #include "libutil/colors.h"
@@ -258,24 +258,23 @@ unsigned char noAnimal::FindDir()
     {
         Direction d(dtmp + doffset);
 
-        TerrainType t1 = gwg->GetLeftTerrain(pos, d);
-        TerrainType t2 = gwg->GetRightTerrain(pos, d);
+        DescIdx<TerrainDesc> tLeft = gwg->GetLeftTerrain(pos, d);
+        DescIdx<TerrainDesc> tRight = gwg->GetRightTerrain(pos, d);
 
         if(species == SPEC_DUCK)
         {
             // Enten schwimmen nur auf dem Wasser --> muss daher Wasser sein
-            if(TerrainData::IsWater(t1) && TerrainData::IsWater(t2))
+            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::WATER && gwg->GetDescription().get(tRight).kind == TerrainKind::WATER)
                 return d.toUInt();
         } else if(species == SPEC_POLARBEAR)
         {
             // Polarbären laufen nur auf Schnee rum
-            LandscapeType lt = gwg->GetLandscapeType();
-            if(TerrainData::IsSnow(lt, t1) && TerrainData::IsSnow(lt, t2))
+            if(gwg->GetDescription().get(tLeft).kind == TerrainKind::SNOW && gwg->GetDescription().get(tRight).kind == TerrainKind::SNOW)
                 return d.toUInt();
         } else
         {
             // Die anderen Tiere dürfen nur auf Wiesen,Savannen usw. laufen, nicht auf Bergen oder in der Wüste!
-            if(!TerrainData::IsUsableByAnimals(t1) || !TerrainData::IsUsableByAnimals(t2))
+            if(!gwg->GetDescription().get(tLeft).IsUsableByAnimals() || !gwg->GetDescription().get(tRight).IsUsableByAnimals())
                 continue;
 
             // Außerdem dürfen keine Hindernisse im Weg sein

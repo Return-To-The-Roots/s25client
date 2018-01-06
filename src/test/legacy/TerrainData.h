@@ -18,16 +18,16 @@
 #ifndef TerrainData_h__
 #define TerrainData_h__
 
+#include "LandscapeType.h"
 #include "Rect.h"
+#include "TerrainType.h"
 #include "gameTypes/BuildingQuality.h"
-#include "gameTypes/LandscapeType.h"
 #include "gameTypes/MapTypes.h"
-#include <boost/core/scoped_enum.hpp>
+#include "gameData/TerrainDesc.h"
+#include <boost/array.hpp>
 
-BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerrainBQ){NOTHING, DANGER, FLAG, CASTLE, MINE} BOOST_SCOPED_ENUM_DECLARE_END(TerrainBQ)
-
-  /// Static class returning properties of terrain types
-  class TerrainData
+/// Static class returning properties of terrain types
+class TerrainData
 {
     // Disallow construction, only static methods
     TerrainData();
@@ -46,12 +46,14 @@ public:
     /// Gets the start color for the animation (extraction)
     static unsigned char GetStartColor(TerrainType t);
     /// Returns the color for the terrain
-    static unsigned GetColor(LandscapeType landsCape, TerrainType t);
+    static unsigned GetColor(Landscape landsCape, TerrainType t);
     /// Gets the edge type for a terrain type
-    static EdgeType GetEdgeType(LandscapeType landsCape, TerrainType t);
+    static EdgeType GetEdgeType(Landscape landsCape, TerrainType t);
     /// Gets the edge type that t1 draws over t2
     /// 0: None, 1: Snow, 2: Mountain, 3: Desert, 4: Meadow, 5: Water
-    static unsigned char GetEdgeType(LandscapeType landsCape, TerrainType t1, TerrainType t2);
+    static unsigned char GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2);
+    static void PrintEdgePrios();
+    static const boost::array<int, NUM_TTS>& GetEdgePrios(Landscape landsCape);
     /// Returns whether the given map terrain index is a harbour spot
     static bool IsHarborSpot(unsigned char mapIdx) { return (mapIdx & 0x40) != 0; }
     /// Returns whether the given terrain type can be used (is not deadly)
@@ -67,7 +69,7 @@ public:
     /// Returns whether the given terrain is any kind of lava
     static bool IsLava(TerrainType t);
     /// Returns whether the given terrain is any kind of snow
-    static bool IsSnow(LandscapeType landsCape, TerrainType t);
+    static bool IsSnow(Landscape landsCape, TerrainType t);
     /// Returns whether the given terrain is a mountain
     static bool IsMountain(TerrainType t);
     /// Returns whether the given terrain is a mineable mountain

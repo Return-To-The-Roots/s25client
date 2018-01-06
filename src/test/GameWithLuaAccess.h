@@ -102,7 +102,7 @@ public:
 
     LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world) { 
         game->world.SetLua(new LuaInterfaceGame(game));
-        luaBase = &game->world.GetLua(); 
+        setLua(&game->world.GetLua());
     }
 
     void initWorld()
@@ -110,7 +110,8 @@ public:
         // For consistent results
         doInitGameRNG(0);
 
-        world.Init(MapExtent(24, 32), LT_GREENLAND);
+        loadGameData(world.GetDescriptionWriteable());
+        world.Init(MapExtent(24, 32));
         hqPositions.push_back(MapPoint(0, 1));
         hqPositions.push_back(MapPoint(16, 17));
         std::vector<Nation> playerNations;

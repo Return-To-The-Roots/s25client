@@ -25,14 +25,12 @@
 class GlobalVars : public Singleton<GlobalVars>
 {
 public:
-    GlobalVars();
+    GlobalVars() : notdone(true), ext_vbo(false), ext_swapcontrol(false) {}
 
 public:
     bool notdone;
     bool ext_vbo;
     bool ext_swapcontrol;
-    bool isTest;       // Whether we are in test mode
-    bool errorOccured; // Whether an error has occured (for test validation)
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -17,17 +17,16 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwMapGenerator.h"
-
 #include "Loader.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlProgress.h"
-
 #include "helpers/containerUtils.h"
+#include "lua/GameDataLoader.h"
 #include "gameData/MaxPlayers.h"
+#include "gameData/WorldDescription.h"
 #include "gameData/const_gui_ids.h"
 #include "libutil/colors.h"
-
 #include <boost/format.hpp>
 #include <string>
 
@@ -50,6 +49,14 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
                    true),
       mapSettings(settings)
 {
+    WorldDescription desc;
+    GameDataLoader gdLoader(desc);
+    if(!gdLoader.Load())
+    {
+        Close();
+        return;
+    }
+
     AddTextButton(0, DrawPoint(20, 360), Extent(100, 20), TC_RED2, _("Back"), NormalFont);
     AddTextButton(1, DrawPoint(130, 360), Extent(100, 20), TC_GREEN2, _("Apply"), NormalFont);
 
@@ -84,9 +91,8 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 
     AddText(3, DrawPoint(20, 170), _("Landscape"), COLOR_YELLOW, 0, NormalFont);
     combo = AddComboBox(CTRL_MAP_TYPE, DrawPoint(20, 190), Extent(210, 20), TC_GREY, NormalFont, 100);
-    combo->AddString(_("Greenland"));
-    combo->AddString(_("Winterworld"));
-    combo->AddString(_("Wasteland"));
+    for(unsigned i = 0; i < desc.landscapes.size(); i++)
+        combo->AddString(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
     AddText(4, DrawPoint(20, 225), _("Gold:"), COLOR_YELLOW, 0, NormalFont);
     AddProgress(CTRL_RATIO_GOLD, DrawPoint(100, 220), Extent(130, 20), TC_GREY, 139, 138, 100);
@@ -175,13 +181,9 @@ void iwMapGenerator::Apply()
             break;
         default: break;
     }
-    switch(GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection())
-    {
-        case 0: mapSettings.type = LT_GREENLAND; break;
-        case 1: mapSettings.type = LT_WINTERWORLD; break;
-        case 2: mapSettings.type = LT_WASTELAND; break;
-        default: break;
-    }
+    int mapType = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE)->GetSelection();
+    if(mapType >= 0)
+        mapSettings.type = DescIdx<LandscapeDesc>(mapType);
 }
 
 void iwMapGenerator::Reset()
@@ -237,11 +239,5 @@ void iwMapGenerator::Reset()
         combo->SetSelection(4);
 
     combo = GetCtrl<ctrlComboBox>(CTRL_MAP_TYPE);
-    switch(mapSettings.type)
-    {
-        case LT_GREENLAND: combo->SetSelection(0); break;
-        case LT_WINTERWORLD: combo->SetSelection(1); break;
-        case LT_WASTELAND: combo->SetSelection(2); break;
-        default: break;
-    }
+    combo->SetSelection(mapSettings.type.value);
 }

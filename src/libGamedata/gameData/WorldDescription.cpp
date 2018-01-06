@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2016 - 2017 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -15,16 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef LuaHelpers_h__
-#define LuaHelpers_h__
+#include "commonDefines.h" // IWYU pragma: keep
+#include "WorldDescription.h"
+#include "EdgeDesc.h"
+#include "TerrainDesc.h"
 
-#include <string>
+WorldDescription::~WorldDescription() {}
 
-namespace lua {
-
-/// If the given value is not true, a runtime error with the given description is thrown
-void assertTrue(bool testValue, const std::string& error);
-
-} // namespace lua
-
-#endif // LuaHelpers_h__
+WorldDescription::WorldDescription() {}

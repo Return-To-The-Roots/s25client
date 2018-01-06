@@ -42,6 +42,7 @@ public:
     void SetColor(unsigned colorOrIdx);
     void Close();
     void SetAI(unsigned level);
+    void SetName(const std::string& name);
 };
 
 #endif // LuaServerPlayer_h__

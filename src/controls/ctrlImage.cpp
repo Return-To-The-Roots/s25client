@@ -20,7 +20,7 @@
 #include "CollisionDetection.h"
 #include "driver/MouseCoords.h"
 
-ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip)
+ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip)
     : Window(parent, id, pos), ctrlBaseTooltip(tooltip), ctrlBaseImage(image)
 {}
 

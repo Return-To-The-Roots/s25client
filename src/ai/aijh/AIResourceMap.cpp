@@ -22,7 +22,7 @@
 #include "boost/foreach.hpp"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobUsual.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 
 namespace AIJH {
 
@@ -40,22 +40,19 @@ void AIResourceMap::Init()
     RTTR_FOREACH_PT(MapPoint, mapSize)
     {
         const Node& node = aiMap[pt];
-        if(node.res == res && res == AIResource::FISH)
-        {
+        if(res == AIResource::FISH && node.res == res)
             Change(pt, 1);
-        } else if(node.res == res && res != AIResource::BORDERLAND && TerrainData::IsUseable(aii.GetTerrain(pt)))
+        else if(aii.gwb.GetDescription().get(aii.gwb.GetNode(pt).t1).Is(ETerrain::Walkable))
         {
-            Change(pt, 1);
-        } else if(res == AIResource::BORDERLAND && aii.IsBorder(pt))
-        {
-            // only count border area that is actually passable terrain
-            if(TerrainData::IsUseable(aii.GetTerrain(pt)))
+            if(res != AIResource::BORDERLAND && node.res == res)
                 Change(pt, 1);
-        }
-        if(node.res == AIResource::MULTIPLE && TerrainData::IsUseable(aii.GetTerrain(pt)))
-        {
-            if(aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)
+            else if(res == AIResource::BORDERLAND && aii.IsBorder(pt))
                 Change(pt, 1);
+            else if(node.res == AIResource::MULTIPLE)
+            {
+                if(aii.GetSubsurfaceResource(pt) == res || aii.GetSurfaceResource(pt) == res)
+                    Change(pt, 1);
+            }
         }
     }
 }

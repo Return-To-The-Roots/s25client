@@ -27,7 +27,7 @@
 #endif
 #endif // !RTTR_ENABLE_ASSERTS
 
-void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function);
+void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function, bool throwException = true);
 bool RTTR_IsBreakOnAssertFailureEnabled();
 /// If true(default), a breakpoint is triggered on assert (if available)
 /// Note: This breakpoint can be globally disabled by setting the environment variable
@@ -36,8 +36,9 @@ extern bool RTTR_AssertEnableBreak;
 
 /* Some aspects about RTTR_Assert:
     - do-while(false) so it can be used in conditions: if(foo) RTTR_Assert(bar);
-    - Don't forget parantheses around cond: RTTR_Assert(true||false);
+    - Don't forget parantheses around cond for cases like: RTTR_Assert(true||false);
     - Use sizeof for disabled assert to avoid unused value warnings and actual code generation
+    - RTTR_AssertNoThrow which does just logging and triggers a breakpoint but does not throw (e.g. for dtors)
  */
 #if RTTR_ENABLE_ASSERTS
 #define RTTR_Assert(cond)                                                      \
@@ -50,12 +51,23 @@ extern bool RTTR_AssertEnableBreak;
             RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME); \
         }                                                                      \
     } while(false)
+#define RTTR_AssertNoThrow(cond)                                                      \
+    do                                                                                \
+    {                                                                                 \
+        if(!(cond))                                                                   \
+        {                                                                             \
+            if(RTTR_IsBreakOnAssertFailureEnabled())                                  \
+                RTTR_BREAKPOINT;                                                      \
+            RTTR_AssertFailure(#cond, __FILE__, __LINE__, RTTR_FUNCTION_NAME, false); \
+        }                                                                             \
+    } while(false)
 #else
 #define RTTR_Assert(cond)   \
     do                      \
     {                       \
         (void)sizeof(cond); \
     } while(false)
+#define RTTR_AssertNoThrow RTTR_Assert
 #endif
 
 #endif // RTTRAssert_h__

@@ -36,21 +36,21 @@
 #include "nodeObjs/noMovable.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
 GameWorldBase::GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em)
     : roadPathFinder(new RoadPathFinder(*this)), freePathFinder(new FreePathFinder(*this)), players(players), gameSettings(gameSettings),
       em(em), gi(NULL)
-{
-    BuildingProperties::Init();
-}
+{}
 
 GameWorldBase::~GameWorldBase() {}
 
-void GameWorldBase::Init(const MapExtent& mapSize, LandscapeType lt)
+void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
+    RTTR_Assert(GetDescription().terrain.size() > 0); // Must have game data initialized
+    BuildingProperties::Init();
     World::Init(mapSize, lt);
     freePathFinder->Init(mapSize);
 }
@@ -126,7 +126,7 @@ bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) con
 
         for(unsigned char i = 0; i < 6; ++i)
         {
-            TerrainBQ bq = TerrainData::GetBuildingQuality(GetRightTerrain(pt, Direction::fromInt(i)));
+            TerrainBQ bq = GetDescription().get(GetRightTerrain(pt, Direction::fromInt(i))).GetBQ();
             if(bq == TerrainBQ::DANGER)
                 return false;
             else if(bq != TerrainBQ::NOTHING)

@@ -27,7 +27,7 @@
 // Konstanten
 const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /*  0 */ "<RTTR_CONFIG>/CONFIG.INI",         // die Einstellungsdatei
-  /*  1 */ "",                                 // unused
+  /*  1 */ "<RTTR_RTTR>/gamedata",             // Path to the gamedata
   /*  2 */ "",                                 // unused
   /*  3 */ "",                                 // unused
   /*  4 */ "",                                 // unused
@@ -43,15 +43,15 @@ const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /* 14 */ "",                      // unused
   /* 15 */ "<RTTR_RTTR>/languages", // die ganzen Sprachdateien
   /* 16 */ "<RTTR_RTTR>/RTTR.LST",
-  /* 17 */ "<RTTR_RTTR>/COLORS.ACT",            // Spezialpalette wegen Schriften usw
-  /* 18 */ "",                                  // unused
-  /* 19 */ "",                                  // unused
-  /* 20 */ "<RTTR_GAME>/GFX/TEXTURES/TEX5.LBM", // Grünland
-  /* 21 */ "<RTTR_GAME>/GFX/TEXTURES/TEX6.LBM", // Ödland
-  /* 22 */ "<RTTR_GAME>/GFX/TEXTURES/TEX7.LBM", // Winterwelt
-  /* 23 */ "<RTTR_GAME>/DATA/MAP_0_Z.LST",      // Grünland
-  /* 24 */ "<RTTR_GAME>/DATA/MAP_1_Z.LST",      // Ödland
-  /* 25 */ "<RTTR_GAME>/DATA/MAP_2_Z.LST",      // Winterwelt
+  /* 17 */ "<RTTR_RTTR>/COLORS.ACT",   // Spezialpalette wegen Schriften usw
+  /* 18 */ "",                         // unused
+  /* 19 */ "",                         // unused
+  /* 20 */ "<RTTR_GAME>/GFX/TEXTURES", // Terrain textures
+  /* 21 */ "",
+  /* 22 */ "",
+  /* 23 */ "<RTTR_GAME>/DATA", // S2 game data
+  /* 24 */ "",
+  /* 25 */ "",
   /* 26 */ "<RTTR_GAME>/DATA/CBOB/ROM_BOBS.LST",
   /* 27 */ "<RTTR_GAME>/DATA/MBOB/AFR_Z.LST",  // Afrikaner
   /* 28 */ "<RTTR_GAME>/DATA/MBOB/JAP_Z.LST",  // Japaner
@@ -145,13 +145,11 @@ BOOST_CONSTEXPR_OR_CONST unsigned NUM_NATIONS = 5;
 const boost::array<const std::string, NUM_NATIONS> SUPPRESS_UNUSED NATION_ICON_IDS = {
   {"afr_icon", "jap_icon", "rom_icon", "vik_icon", "bab_icon"}};
 
-const helpers::SimpleMultiArray<const std::string, NUM_GFXSETS, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {
-  {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"},
-   {"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"},
-   {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
+const helpers::SimpleMultiArray<const std::string, 2, NUM_NATIONS> SUPPRESS_UNUSED NATION_GFXSET_Z = {
+  {{"afr_z", "jap_z", "rom_z", "vik_z", "bab_z"}, {"wafr_z", "wjap_z", "wrom_z", "wvik_z", "wbab_z"}}};
 
-const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"map_0_z", "map_1_z", "map_2_z"}};
+const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED MAP_GFXSET_Z = {{"MAP_0_Z", "MAP_1_Z", "MAP_2_Z"}};
 
-const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{"tex5", "tex6", "tex7"}};
+const boost::array<const std::string, NUM_GFXSETS> SUPPRESS_UNUSED TEX_GFXSET = {{"TEX5", "TEX6", "TEX7"}};
 
 #endif // FILES_H_INCLUDED

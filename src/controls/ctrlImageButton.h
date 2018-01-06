@@ -29,8 +29,8 @@ class glArchivItem_Bitmap;
 class ctrlImageButton : public ctrlButton, public ctrlBaseImage
 {
 public:
-    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc,
-                    glArchivItem_Bitmap* const image, const std::string& tooltip);
+    ctrlImageButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, const TextureColor tc, ITexture* const image,
+                    const std::string& tooltip);
 
 protected:
     void DrawContent() const override;

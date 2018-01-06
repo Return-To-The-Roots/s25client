@@ -36,7 +36,6 @@ public:
 
 private:
     void Msg_ButtonClick(const unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
 };
 
 #endif // !iwDEMOLISHBUILDING_H_INCLUDED

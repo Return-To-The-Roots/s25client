@@ -28,7 +28,6 @@
 #include "ogl/glArchivItem_Map.h"
 #include "world/MapLoader.h"
 #include "world/MapSerializer.h"
-#include "gameData/BuildingProperties.h"
 #include "libsiedler2/prototypen.h"
 #include <boost/filesystem.hpp>
 
@@ -47,8 +46,6 @@ bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFile
         return false;
 
     const glArchivItem_Map& map = *static_cast<glArchivItem_Map*>(mapArchiv[0]);
-
-    BuildingProperties::Init();
 
     if(bfs::exists(luaFilePath))
     {
@@ -82,12 +79,6 @@ bool GameWorld::LoadMap(boost::shared_ptr<Game> game, const std::string& mapFile
 
 void GameWorld::Serialize(SerializedGameData& sgd) const
 {
-    // Headinformationen
-    sgd.PushPoint(GetSize());
-    sgd.PushUnsignedChar(static_cast<unsigned char>(GetLandscapeType()));
-
-    sgd.PushUnsignedInt(GameObject::GetObjIDCounter());
-
     MapSerializer::Serialize(*this, GetNumPlayers(), sgd);
 
     sgd.PushObjectContainer(harbor_building_sites_from_sea, true);
@@ -97,7 +88,15 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
     else
     {
         sgd.PushLongString(GetLua().GetScript());
-        Serializer luaSaveState = GetLua().Serialize();
+        Serializer luaSaveState;
+        try
+        {
+            if(!GetLua().Serialize(luaSaveState))
+                throw SerializedGameData::Error(_("Failed to save lua state!"));
+        } catch(std::exception& e)
+        {
+            throw SerializedGameData::Error(std::string(_("Failed to save lua state!")) + _("Error: ") + e.what());
+        }
         sgd.PushUnsignedInt(0xC0DEBA5E); // Start Lua identifier
         sgd.PushUnsignedInt(luaSaveState.GetLength());
         sgd.PushRawData(luaSaveState.GetData(), luaSaveState.GetLength());
@@ -107,16 +106,6 @@ void GameWorld::Serialize(SerializedGameData& sgd) const
 
 void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sgd)
 {
-    // Headinformationen
-    const MapExtent size = sgd.PopPoint<MapExtent::ElementType>();
-    const LandscapeType lt = LandscapeType(sgd.PopUnsignedChar());
-
-    // Initialisierungen
-    Init(size, lt);
-    GameObject::ResetCounters(sgd.PopUnsignedInt());
-
-    BuildingProperties::Init();
-
     MapSerializer::Deserialize(*this, GetNumPlayers(), sgd);
 
     sgd.PopObjectContainer(harbor_building_sites_from_sea, GOT_BUILDINGSITE);
@@ -146,6 +135,13 @@ void GameWorld::Deserialize(boost::shared_ptr<Game> game, SerializedGameData& sg
             SetLua(NULL);
             throw SerializedGameData::Error(_("Wrong version for lua script."));
         }
-        GetLua().Deserialize(luaSaveState);
+        try
+        {
+            if(!GetLua().Deserialize(luaSaveState))
+                throw SerializedGameData::Error(_("Failed to load lua state!"));
+        } catch(std::exception& e)
+        {
+            throw SerializedGameData::Error(std::string(_("Failed to load lua state!")) + _("Error: ") + e.what());
+        }
     }
 }

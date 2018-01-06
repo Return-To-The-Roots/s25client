@@ -21,6 +21,12 @@
 
 #include "IngameWindow.h"
 
+class IChatCmdListener
+{
+public:
+    virtual void OnChatCommand(const std::string& cmd) = 0;
+};
+
 class iwChat : public IngameWindow
 {
 private:
@@ -28,7 +34,7 @@ private:
     static unsigned char chat_dest;
 
 public:
-    iwChat();
+    iwChat(Window* parent);
 
 private:
     void Msg_PaintBefore() override;

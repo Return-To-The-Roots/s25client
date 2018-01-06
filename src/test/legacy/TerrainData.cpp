@@ -18,6 +18,8 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainData.h"
 #include <boost/array.hpp>
+#include <iostream>
+#include <list>
 
 unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
 {
@@ -38,9 +40,9 @@ unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
         case TT_STEPPE: return 0x0E;
         case TT_MOUNTAINMEADOW: return 0x12;
         case TT_WATER: return 0x05;
-        case TT_WATER_NOSHIP: return 0x06;
+        case TT_WATER_NOSHIP: return 0x13;
         case TT_BUILDABLE_MOUNTAIN: return 0x22;
-        case TT_BUILDABLE_WATER: return 0x13;
+        case TT_BUILDABLE_WATER: return 0x06;
         case TT_LAVA: return 0x10;
         case TT_LAVA2: return 0x14;
         case TT_LAVA3: return 0x15;
@@ -149,11 +151,11 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
     }
 }
 
-unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
+unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
 {
-    switch(landsCape)
+    switch(boost::native_value(landsCape))
     {
-        case LT_GREENLAND:
+        case Landscape::GREENLAND:
             switch(t)
             {
                 case TT_SNOW: return 0xFFFFFFFF;
@@ -180,7 +182,7 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
                 case TT_BUILDABLE_MOUNTAIN: return 0xFF9c8058;
             }
             break;
-        case LT_WASTELAND:
+        case Landscape::WASTELAND:
             switch(t)
             {
                 case TT_SNOW:
@@ -208,7 +210,7 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
                 case TT_BUILDABLE_MOUNTAIN: return 0xFF706454;
             }
             break;
-        case LT_WINTERWORLD:
+        case Landscape::WINTERWORLD:
             switch(t)
             {
                 case TT_SNOW: return 0xFF00286C;
@@ -238,11 +240,11 @@ unsigned TerrainData::GetColor(LandscapeType landsCape, TerrainType t)
     throw std::logic_error("Invalid parameters given");
 }
 
-EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
+EdgeType TerrainData::GetEdgeType(Landscape landsCape, TerrainType t)
 {
-    switch(landsCape)
+    switch(boost::native_value(landsCape))
     {
-        case LT_GREENLAND:
+        case Landscape::GREENLAND:
             switch(t)
             {
                 case TT_SNOW: return ET_SNOW;
@@ -269,7 +271,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
                 case TT_LAVA4: return ET_NONE;
             }
             break;
-        case LT_WASTELAND:
+        case Landscape::WASTELAND:
             switch(t)
             {
                 case TT_SNOW:
@@ -296,7 +298,7 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
                 case TT_BUILDABLE_WATER: return ET_MOUNTAIN;
             }
             break;
-        case LT_WINTERWORLD:
+        case Landscape::WINTERWORLD:
             switch(t)
             {
                 case TT_SNOW:
@@ -332,28 +334,28 @@ EdgeType TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t)
 /// -1: T2 draws over T1 (If T1 is inside T2 then you'd get a dented shape)
 const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
   // Greenland
-  {/*TT_SNOW*/ {},
-   /*TT_DESERT*/ {-1},
-   /*TT_SWAMPLAND*/ {-1, -1},
-   /*TT_MEADOW_FLOWERS*/ {-1, -1, 1},
-   /*TT_MOUNTAIN1*/ {-1, -1, 1, 1},
-   /*TT_MOUNTAIN2*/ {-1, -1, 1, 1, -1},
-   /*TT_MOUNTAIN3*/ {-1, -1, 1, 1, -1, -1},
-   /*TT_MOUNTAIN4*/ {-1, -1, 1, 1, -1, -1, -1},
-   /*TT_SAVANNAH*/ {-1, -1, 1, -1, -1, -1, -1, -1},
-   /*TT_MEADOW1*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1},
-   /*TT_MEADOW2*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1},
-   /*TT_MEADOW3*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1},
-   /*TT_STEPPE*/ {-1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-   /*TT_MOUNTAINMEADOW*/ {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-   /*TT_WATER*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-   /*TT_WATER_NOSHIP*/ {1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1, 1},
-   /*TT_BUILDABLE_WATER*/ {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1},
-   /*TT_BUILDABLE_MOUNTAIN*/ {-1, -1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, -1, 0, 1, 1, -1, -1},
-   /*TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
-   /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
-   /*TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}},
+  {/*00 TT_SNOW*/ {},
+   /*01 TT_DESERT*/ {-1},
+   /*02 TT_SWAMPLAND*/ {-1, -1},
+   /*03 TT_MEADOW_FLOWERS*/ {-1, -1, 1},
+   /*04 TT_MOUNTAIN1*/ {-1, -1, 1, 1},
+   /*05 TT_MOUNTAIN2*/ {-1, -1, 1, 1, -1},
+   /*06 TT_MOUNTAIN3*/ {-1, -1, 1, 1, -1, -1},
+   /*07 TT_MOUNTAIN4*/ {-1, -1, 1, 1, -1, -1, -1},
+   /*08 TT_SAVANNAH*/ {-1, -1, 1, -1, -1, -1, -1, -1},
+   /*09 TT_MEADOW1*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1},
+   /*10 TT_MEADOW2*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1},
+   /*11 TT_MEADOW3*/ {-1, -1, 1, -1, -1, -1, -1, -1, 1, -1, -1},
+   /*12 TT_STEPPE*/ {-1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+   /*13 TT_MOUNTAINMEADOW*/ {-1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+   /*14 TT_WATER*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+   /*15 TT_LAVA*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
+   /*16 TT_WATER_NOSHIP*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+   /*17 TT_BUILDABLE_WATER*/ {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0},
+   /*18 TT_BUILDABLE_MOUNTAIN*/ {-1, -1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, -1, 0, 1, 1, -1, -1},
+   /*19 TT_LAVA2*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1},
+   /*20 TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
+   /*21 TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}},
   // Wasteland
   {/*TT_SNOW*/ {},
    /*TT_DESERT*/ {1},
@@ -401,7 +403,7 @@ const signed char TERRAIN_DRAW_PRIORITY[NUM_LTS][NUM_TTS][NUM_TTS] = {
    /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
    /*TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}}};
 
-unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, TerrainType t2)
+unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2)
 {
     static boost::array<boost::array<boost::array<unsigned char, NUM_TTS>, NUM_TTS>, NUM_LTS> EDGE_TABLE;
     static bool isInitialized = false;
@@ -412,8 +414,8 @@ unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, 
             for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
                 for(int iT2 = 0; iT2 <= iT1; ++iT2)
                 {
-                    EdgeType et1 = GetEdgeType(LandscapeType(lt), TerrainType(iT1));
-                    EdgeType et2 = GetEdgeType(LandscapeType(lt), TerrainType(iT2));
+                    EdgeType et1 = GetEdgeType(Landscape(lt), TerrainType(iT1));
+                    EdgeType et2 = GetEdgeType(Landscape(lt), TerrainType(iT2));
                     if(iT1 == iT2 ||                         // Same terrain
                        !TERRAIN_DRAW_PRIORITY[lt][iT1][iT2]) // Same priority
                     {
@@ -434,7 +436,55 @@ unsigned char TerrainData::GetEdgeType(LandscapeType landsCape, TerrainType t1, 
                 }
         isInitialized = true;
     }
-    return EDGE_TABLE[landsCape][t1][t2];
+    return EDGE_TABLE[boost::underlying_cast<uint8_t>(landsCape)][t1][t2];
+}
+
+void CheckPriorities(Landscape lt, const boost::array<int, NUM_TTS>& terrainPrios)
+{
+    for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
+        std::cout << iT1 << ": " << terrainPrios[iT1] << std::endl;
+    unsigned numWrong = 0;
+    for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
+    {
+        for(int iT2 = 0; iT2 < NUM_TTS; ++iT2)
+        {
+            unsigned oldEdge = TerrainData::GetEdgeType(lt, TerrainType(iT1), TerrainType(iT2));
+            unsigned newEdge;
+            if(terrainPrios[iT1] > terrainPrios[iT2])
+                newEdge = TerrainData::GetEdgeType(lt, TerrainType(iT1));
+            else
+                newEdge = 0;
+            if(oldEdge != newEdge)
+            {
+                std::cout << iT1 << "x" << iT2 << ": " << newEdge << "!=" << oldEdge << std::endl;
+                numWrong++;
+            }
+        }
+    }
+    std::cout << numWrong << " different entries" << std::endl;
+}
+
+const boost::array<int, NUM_TTS>& TerrainData::GetEdgePrios(Landscape landsCape)
+{
+    static const boost::array<int, NUM_TTS> prioGL = {{}};
+    static const boost::array<int, NUM_TTS> prioWL = {{}};
+    static const boost::array<int, NUM_TTS> prioWW = {{}};
+    switch(boost::native_value(landsCape))
+    {
+        default:
+        case Landscape::GREENLAND: return prioGL;
+        case Landscape::WASTELAND: return prioWL;
+        case Landscape::WINTERWORLD: return prioWW;
+    }
+}
+
+void TerrainData::PrintEdgePrios()
+{
+    for(int lt = 0; lt < NUM_LTS; ++lt)
+    {
+        std::cout << "Calculation landscape " << lt << std::endl;
+        CheckPriorities(Landscape(lt), GetEdgePrios(Landscape(lt)));
+    }
 }
 
 bool TerrainData::IsUseable(TerrainType t)
@@ -447,8 +497,7 @@ bool TerrainData::IsUsableByShip(TerrainType t)
 {
     switch(t)
     {
-        case TT_WATER:
-        case TT_BUILDABLE_WATER: return true;
+        case TT_WATER: return true;
         default: return false;
     }
 }
@@ -463,7 +512,8 @@ bool TerrainData::IsUsableByAnimals(TerrainType t)
         case TT_MEADOW2:
         case TT_MEADOW3:
         case TT_STEPPE:
-        case TT_MOUNTAINMEADOW: return true;
+        case TT_MOUNTAINMEADOW:
+        case TT_BUILDABLE_MOUNTAIN: return true;
         default: return false;
     }
 }
@@ -505,13 +555,13 @@ bool TerrainData::IsLava(TerrainType t)
     }
 }
 
-bool TerrainData::IsSnow(LandscapeType lt, TerrainType t)
+bool TerrainData::IsSnow(Landscape lt, TerrainType t)
 {
-    switch(lt)
+    switch(boost::native_value(lt))
     {
-        case LT_GREENLAND: return t == TT_SNOW;
-        case LT_WASTELAND: return false;
-        case LT_WINTERWORLD: return t == TT_MOUNTAINMEADOW; break;
+        case Landscape::GREENLAND: return t == TT_SNOW;
+        case Landscape::WASTELAND: return false;
+        case Landscape::WINTERWORLD: return t == TT_MOUNTAINMEADOW; break;
     }
     throw std::logic_error("Invalid terrain type");
 }
@@ -532,14 +582,7 @@ bool TerrainData::IsMountain(TerrainType t)
 
 bool TerrainData::IsMineable(TerrainType t)
 {
-    switch(t)
-    {
-        case TT_MOUNTAIN1:
-        case TT_MOUNTAIN2:
-        case TT_MOUNTAIN3:
-        case TT_MOUNTAIN4: return true;
-        default: return false;
-    }
+    return GetBuildingQuality(t) == TerrainBQ::MINE;
 }
 
 TerrainBQ TerrainData::GetBuildingQuality(TerrainType t)

@@ -18,7 +18,7 @@
 #ifndef LuaInterfaceGame_h__
 #define LuaInterfaceGame_h__
 
-#include "LuaInterfaceBase.h"
+#include "LuaInterfaceGameBase.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include <boost/weak_ptr.hpp>
@@ -30,7 +30,7 @@ class LuaWorld;
 class Serializer;
 class Game;
 
-class LuaInterfaceGame : public LuaInterfaceBase
+class LuaInterfaceGame : public LuaInterfaceGameBase
 {
 public:
     LuaInterfaceGame(boost::weak_ptr<Game> game);
@@ -38,7 +38,7 @@ public:
 
     static void Register(kaguya::State& state);
 
-    Serializer Serialize();
+    bool Serialize(Serializer& luaSaveState);
     bool Deserialize(Serializer& luaState);
 
     void EventExplored(unsigned player, const MapPoint pt, unsigned char owner);

@@ -28,22 +28,26 @@
 #include "RoadSegment.h"
 #include "helpers/containerUtils.h"
 #include "gameTypes/ShipDirection.h"
-#include "gameData/TerrainData.h"
+#include "gameData/TerrainDesc.h"
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <set>
+#include <stdexcept>
 
-World::World() : lt(LT_GREENLAND), noNodeObj(NULL) {}
+World::World() : noNodeObj(NULL) {}
 
 World::~World()
 {
     Unload();
 }
 
-void World::Init(const MapExtent& mapSize, LandscapeType lt)
+void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(GetSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
     Resize(mapSize);
+    if(!lt)
+        throw std::runtime_error("Invalid landscape");
     this->lt = lt;
     GameObject::ResetCounters();
 
@@ -262,7 +266,7 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         return nodeBQ;
 }
 
-TerrainType World::GetRightTerrain(const MapPoint pt, Direction dir) const
+DescIdx<TerrainDesc> World::GetRightTerrain(const MapPoint pt, Direction dir) const
 {
     switch(Direction::Type(dir))
     {
@@ -276,7 +280,7 @@ TerrainType World::GetRightTerrain(const MapPoint pt, Direction dir) const
     throw std::logic_error("Invalid direction");
 }
 
-TerrainType World::GetLeftTerrain(const MapPoint pt, Direction dir) const
+DescIdx<TerrainDesc> World::GetLeftTerrain(const MapPoint pt, Direction dir) const
 {
     // We can find the left terrain by going a bit more left/counter-clockwise and take the right terrain
     return GetRightTerrain(pt, dir - 1u);
@@ -302,60 +306,14 @@ void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
     fow.boundary_stones = GetNode(pt).boundary_stones;
 }
 
-bool World::IsOfTerrain(const MapPoint pt, bool (*terrainPredicate)(TerrainType)) const
-{
-    if(!terrainPredicate)
-        return false;
-
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
-    {
-        if(!terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
-            return false;
-    }
-    return true;
-}
-
-bool World::IsOfTerrain(const MapPoint pt, const TerrainType t) const
-{
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
-    {
-        if(GetRightTerrain(pt, Direction::fromInt(i)) != t)
-            return false;
-    }
-    return true;
-}
-
-bool World::HasTerrain(const MapPoint pt, bool (*terrainPredicate)(TerrainType)) const
-{
-    if(!terrainPredicate)
-        return false;
-
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
-    {
-        if(terrainPredicate(GetRightTerrain(pt, Direction::fromInt(i))))
-            return true;
-    }
-    return false;
-}
-
-bool World::HasTerrain(const MapPoint pt, const TerrainType t) const
-{
-    for(unsigned i = 0; i < Direction::COUNT; ++i)
-    {
-        if(GetRightTerrain(pt, Direction::fromInt(i)) == t)
-            return true;
-    }
-    return false;
-}
-
 bool World::IsSeaPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, TerrainData::IsUsableByShip);
+    return World::IsOfTerrain(pt, boost::bind(&TerrainDesc::Is, _1, ETerrain::Shippable));
 }
 
 bool World::IsWaterPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, TerrainData::IsWater);
+    return World::IsOfTerrain(pt, boost::bind(&TerrainDesc::kind, _1) == TerrainKind::WATER);
 }
 
 unsigned World::GetSeaSize(const unsigned seaId) const

@@ -19,6 +19,7 @@
 #define BQOutput_h__
 
 #include "gameTypes/BuildingQuality.h"
+#include "gameData/TerrainDesc.h"
 #include <boost/array.hpp>
 #include <iosfwd>
 
@@ -26,6 +27,13 @@ const boost::array<const char*, 6> bqNames = {{"Nothing", "Flag", "Hut", "House"
 inline std::ostream& operator<<(std::ostream& stream, BuildingQuality bq)
 {
     return stream << bqNames[bq];
+}
+
+const boost::array<const char*, 6> bqNames2 = {{"Nothing", "Danger", "Flag", "Castle", "Mine"}};
+
+inline std::ostream& operator<<(std::ostream& stream, TerrainBQ bq)
+{
+    return stream << bqNames2[boost::underlying_cast<unsigned>(bq)];
 }
 
 #endif // BQOutput_h__

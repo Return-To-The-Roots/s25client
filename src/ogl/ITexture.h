@@ -15,16 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#include "rttrDefines.h" // IWYU pragma: keep
-#include "LuaHelpers.h"
-#include <stdexcept>
+#ifndef ITexture_h__
+#define ITexture_h__
 
-namespace lua {
+#include "Point.h"
 
-void assertTrue(bool testValue, const std::string& error)
+class ITexture
 {
-    if(!testValue)
-        throw std::runtime_error(error);
-}
+protected:
+    virtual ~ITexture(){};
 
-} // namespace lua
+public:
+    virtual Position GetOrigin() const = 0;
+    virtual Extent GetSize() const = 0;
+    virtual void DrawFull(const Position& dstPos, unsigned color) = 0;
+};
+
+#endif // ITexture_h__

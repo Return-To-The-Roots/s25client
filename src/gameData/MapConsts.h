@@ -19,11 +19,9 @@
 
 #pragma once
 
-/// Width and height of a triangle.
-/// Original: Water/Lave textures are 55x56 -> TR=55x28
-/// We can only use 54 pixels as otherwise we would draw outside pixels in OGL, hence we adjust our triangle size
-BOOST_CONSTEXPR_OR_CONST int TR_W = 54;
-BOOST_CONSTEXPR_OR_CONST int TR_H = 27;
+/// Width and height of a triangle. Measured from a screenshot of the original
+BOOST_CONSTEXPR_OR_CONST int TR_W = 56;
+BOOST_CONSTEXPR_OR_CONST int TR_H = 28;
 
 /// Number of pixels the node is adjusted in y per altitude step
 BOOST_CONSTEXPR_OR_CONST int HEIGHT_FACTOR = 5;

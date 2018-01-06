@@ -34,11 +34,11 @@ BOOST_AUTO_TEST_SUITE(RandomMapGeneratorTest)
  */
 BOOST_AUTO_TEST_CASE(Create_CorrectSize)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
+    RandomConfig config;
+    BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337));
     MapSettings settings;
     settings.size = MapExtent(38, 30);
     settings.numPlayers = 1;
-    settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
@@ -54,11 +54,11 @@ BOOST_AUTO_TEST_CASE(Create_CorrectSize)
  */
 BOOST_AUTO_TEST_CASE(Create_Headquarters)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
+    RandomConfig config;
+    BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337));
     MapSettings settings;
     settings.size = MapExtent(30u, 32u);
     settings.numPlayers = 2;
-    settings.type = LT_GREENLAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
@@ -88,13 +88,13 @@ BOOST_AUTO_TEST_CASE(Create_Headquarters)
 
 BOOST_AUTO_TEST_CASE(InvalidConfig)
 {
-    RandomConfig config(MapStyle::Random, 0x1337);
+    RandomConfig config;
+    BOOST_REQUIRE(config.Init(MapStyle::Random, DescIdx<LandscapeDesc>(0), 0x1337));
     RandomMapGenerator generator(config);
 
     MapSettings settings;
     settings.size = MapExtent(30u, 20u);
     settings.numPlayers = 0;
-    settings.type = LT_WASTELAND;
     settings.minPlayerRadius = 0.2;
     settings.maxPlayerRadius = 0.3;
 
