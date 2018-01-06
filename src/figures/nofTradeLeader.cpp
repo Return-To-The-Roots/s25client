@@ -54,8 +54,7 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 void nofTradeLeader::GoalReached()
 {
     noBase* nob = gwg->GetNO(goalPos);
-    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(nob));
-    nobBaseWarehouse* targetWarehouse = static_cast<nobBaseWarehouse*>(nob);
+    nobBaseWarehouse* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
     if(successor)
     {
         unsigned amountWares = 0;
