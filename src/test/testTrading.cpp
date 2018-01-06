@@ -291,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     BOOST_REQUIRE(post);
     const PostMsgWithBuilding* msg = dynamic_cast<const PostMsgWithBuilding*>(post);
     BOOST_REQUIRE(msg->GetText().find('2') != std::string::npos);
-    BOOST_REQUIRE(msg->GetText().find(JOB_NAMES[JOB_WOODCUTTER]) != std::string::npos);
+    BOOST_REQUIRE(msg->GetText().find(_(JOB_NAMES[JOB_WOODCUTTER])) != std::string::npos);
     BOOST_REQUIRE(msg->GetText().find(players[1]->name) != std::string::npos);
 
     this->TradeOverLand(players[0]->GetHQPos(), GD_BOARDS, JOB_NOTHING, 2);
@@ -307,7 +307,7 @@ BOOST_FIXTURE_TEST_CASE(TradeMessages, TradeFixture)
     BOOST_REQUIRE(post2);
     const PostMsgWithBuilding* msg2 = dynamic_cast<const PostMsgWithBuilding*>(post2);
     BOOST_REQUIRE(msg2->GetText().find('2') != std::string::npos);
-    BOOST_REQUIRE(msg2->GetText().find(WARE_NAMES[GD_BOARDS]) != std::string::npos);
+    BOOST_REQUIRE(msg2->GetText().find(_(WARE_NAMES[GD_BOARDS])) != std::string::npos);
     BOOST_REQUIRE(msg2->GetText().find(players[1]->name) != std::string::npos);
 }
 BOOST_AUTO_TEST_SUITE_END()
