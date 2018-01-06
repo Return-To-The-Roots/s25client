@@ -25,11 +25,11 @@
 #include "gameTypes/GO_Type.h"
 #include "gameTypes/MapCoordinates.h"
 #include "libutil/Serializer.h"
+#include <boost/shared_ptr.hpp>
 #include <boost/static_assert.hpp>
 #include <map>
 #include <set>
 #include <stdexcept>
-#include <boost/shared_ptr.hpp>
 
 class GameObject;
 class GameWorld;

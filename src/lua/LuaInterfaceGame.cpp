@@ -18,18 +18,18 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
+#include "Game.h"
 #include "GlobalVars.h"
 #include "WindowManager.h"
+#include "ai/AIInterface.h"
+#include "ai/AIPlayer.h"
 #include "ingameWindows/iwMissionStatement.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
 #include "network/GameClient.h"
-#include "ai/AIPlayer.h"
-#include "ai/AIInterface.h"
 #include "postSystem/PostMsg.h"
 #include "world/GameWorldGame.h"
 #include "gameTypes/Resource.h"
-#include "Game.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
 #include <boost/nowide/fstream.hpp>
@@ -354,23 +354,24 @@ void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint p
 bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId)
 {
     kaguya::LuaRef onPactCancel = lua["onCancelPactRequest"];
-    if (onPactCancel.type() == LUA_TFUNCTION)
+    if(onPactCancel.type() == LUA_TFUNCTION)
         return onPactCancel.call<bool>(pt, canceledByPlayerId, targetPlayerId);
     return true; // always accept pact cancel if there is no handler
 }
 
-void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration)
+void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+                                        const unsigned duration)
 {
     Game& gameInst = *game.lock();
-    AIPlayer* ai =  gameInst.GetAIPlayer(targetPlayerId);
-    if (ai != NULL)
+    AIPlayer* ai = gameInst.GetAIPlayer(targetPlayerId);
+    if(ai != NULL)
     {
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
-        if (onPactCancel.type() == LUA_TFUNCTION)
+        if(onPactCancel.type() == LUA_TFUNCTION)
         {
             AIInterface aii = ai->getAIInterface();
             bool luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
-            if (luaResult)
+            if(luaResult)
                 aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
             else
                 aii.CancelPact(pt, suggestedByPlayerId);
@@ -381,16 +382,17 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
 void LuaInterfaceGame::EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId)
 {
     kaguya::LuaRef onPactCanceled = lua["onPactCanceled"];
-    if (onPactCanceled.type() == LUA_TFUNCTION)
+    if(onPactCanceled.type() == LUA_TFUNCTION)
     {
         onPactCanceled.call<void>(pt, canceledByPlayerId, targetPlayerId);
     }
 }
 
-void LuaInterfaceGame::EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId, const unsigned duration)
+void LuaInterfaceGame::EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+                                        const unsigned duration)
 {
     kaguya::LuaRef onPactCreated = lua["onPactCreated"];
-    if (onPactCreated.type() == LUA_TFUNCTION)
+    if(onPactCreated.type() == LUA_TFUNCTION)
     {
         onPactCreated.call<void>(pt, suggestedByPlayerId, targetPlayerId, duration);
     }

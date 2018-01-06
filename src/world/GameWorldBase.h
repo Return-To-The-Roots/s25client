@@ -20,10 +20,10 @@
 
 #include "buildings/nobBaseMilitary.h"
 #include "helpers/Deleter.h"
+#include "lua/LuaInterfaceGame.h"
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
-#include "lua/LuaInterfaceGame.h"
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <vector>
 
@@ -62,7 +62,6 @@ protected:
 public:
     GameWorldBase(const std::vector<GamePlayer>& players, const GlobalGameSettings& gameSettings, EventManager& em);
     ~GameWorldBase() override;
-
 
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;

@@ -21,8 +21,8 @@
 #include "world/GameWorldGame.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/MapCoordinates.h"
-#include <string>
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 class SerializedGameData;
 class Game;

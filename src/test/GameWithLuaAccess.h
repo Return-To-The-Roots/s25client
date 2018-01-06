@@ -20,28 +20,28 @@
 
 #include "BufferedWriter.h"
 #include "EventManager.h"
+#include "Game.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "GlobalVars.h"
 #include "LuaBaseFixture.h"
+#include "ai/AIPlayer.h"
+#include "factories/AIFactory.h"
 #include "helperFuncs.h"
 #include "lua/LuaInterfaceGame.h"
 #include "world/GameWorldGame.h"
 #include "world/MapLoader.h"
+#include "test/GCExecutor.h"
 #include "test/initTestHelpers.h"
 #include "libutil/AvoidDuplicatesWriter.h"
 #include "libutil/Log.h"
 #include "libutil/StringStreamWriter.h"
 #include "libutil/colors.h"
-#include "Game.h"
-#include "test/GCExecutor.h"
-#include "factories/AIFactory.h"
-#include "ai/AIPlayer.h"
-#include <boost/test/unit_test.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/test/unit_test.hpp>
+#include <boost/weak_ptr.hpp>
 #include <vector>
 
 class GameWithLuaAccess : public Game
@@ -49,18 +49,19 @@ class GameWithLuaAccess : public Game
 public:
     GameWithLuaAccess() : Game(GlobalGameSettings(), (unsigned int)0, CreatePlayers())
     {
-        for (unsigned id = 0; id < world.GetNumPlayers(); id++)
+        for(unsigned id = 0; id < world.GetNumPlayers(); id++)
         {
             GamePlayer& player = world.GetPlayer(id);
-            if (!player.isHuman() && player.isUsed())
+            if(!player.isHuman() && player.isUsed())
                 aiPlayers.push_back(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
         }
     }
 
-    void executeAICommands() {
+    void executeAICommands()
+    {
         AIPlayer* ai = GetAIPlayer(1);
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
-        for (unsigned i = 0; i < 5; i++)
+        for(unsigned i = 0; i < 5; i++)
         {
             world.GetEvMgr().ExecuteNextGF();
             ai->RunGF(world.GetEvMgr().GetCurrentGF(), i == 0);
@@ -100,7 +101,8 @@ public:
     GameWorld& world;
     std::vector<MapPoint> hqPositions;
 
-    LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world) { 
+    LuaTestsFixture() : game(new GameWithLuaAccess), world(game->world)
+    {
         game->world.SetLua(new LuaInterfaceGame(game));
         setLua(&game->world.GetLua());
     }

@@ -213,7 +213,7 @@ void SerializedGameData::Prepare(bool reading)
 void SerializedGameData::MakeSnapshot(boost::shared_ptr<Game> game)
 {
     Prepare(false);
-    
+
     GameWorld& gw = game->world;
     writeEm = &gw.GetEvMgr();
 

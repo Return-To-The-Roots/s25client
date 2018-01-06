@@ -35,8 +35,8 @@
 #include "libutil/tmpFile.h"
 #include <boost/filesystem/operations.hpp>
 #include <boost/foreach.hpp>
-#include <boost/test/unit_test.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/test/unit_test.hpp>
 
 template<class T>
 std::ostream& operator<<(std::ostream& os, const DescIdx<T>& d)

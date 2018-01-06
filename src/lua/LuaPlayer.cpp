@@ -18,14 +18,14 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "LuaPlayer.h"
 #include "EventManager.h"
-#include "GamePlayer.h"
 #include "Game.h"
+#include "GamePlayer.h"
+#include "ai/AIPlayer.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHQ.h"
 #include "helpers/converters.h"
 #include "lua/LuaHelpers.h"
 #include "lua/LuaInterfaceBase.h"
-#include "ai/AIPlayer.h"
 #include "notifications/BuildingNote.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorldGame.h"
@@ -307,7 +307,7 @@ bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
     return player.IsAlly(otherPlayerId);
 }
 
-bool LuaPlayer::IsAttackable(unsigned char otherPlayerId) 
+bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
 {
     return player.IsAttackable(otherPlayerId);
 }
@@ -316,18 +316,18 @@ void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const PactType pt, cons
 {
     Game& gameInst = *game.lock();
     AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
-    if (ai != NULL)
+    if(ai != NULL)
     {
         AIInterface aii = ai->getAIInterface();
         aii.SuggestPact(otherPlayerId, pt, duration);
     }
 }
 
-void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId) 
+void LuaPlayer::CancelPact(const PactType pt, unsigned char otherPlayerId)
 {
     Game& gameInst = *game.lock();
     AIPlayer* ai = gameInst.GetAIPlayer(player.GetPlayerId());
-    if (ai != NULL)
+    if(ai != NULL)
     {
         AIInterface aii = ai->getAIInterface();
         aii.CancelPact(pt, otherPlayerId);

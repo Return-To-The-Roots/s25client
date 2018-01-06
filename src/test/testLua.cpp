@@ -23,13 +23,13 @@
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
+#include "postSystem/DiplomacyPostQuestion.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsg.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
 #include "nodeObjs/noStaticObject.h"
 #include "gameTypes/Resource.h"
-#include "postSystem/DiplomacyPostQuestion.h"
 #include "test/GameWithLuaAccess.h"
 #include "test/helperFuncs.h"
 #include "test/initTestHelpers.h"
@@ -743,7 +743,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 {
     initWorld();
     GamePlayer& player = world.GetPlayer(0);
-    
+
     executeLua("player = rttr:GetPlayer(1)");
     // accept every pact from player
     executeLua("function onSuggestPact(pactType, suggestedBy, target, duration) return suggestedBy == 0 end");
@@ -785,7 +785,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
 
     // cancel pact by player and check state
     player.CancelPact(NON_AGGRESSION_PACT, 1);
-    BOOST_REQUIRE(player.IsAttackable(1));  
+    BOOST_REQUIRE(player.IsAttackable(1));
     BOOST_REQUIRE_EQUAL(getLog(), "Pact canceled\n");
 
     PostBox* postbox = world.GetPostMgr().AddPostBox(0);

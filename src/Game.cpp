@@ -157,7 +157,7 @@ AIPlayer* Game::GetAIPlayer(unsigned id)
 {
     BOOST_FOREACH(AIPlayer& ai, aiPlayers)
     {
-        if (ai.GetPlayerId() == id)
+        if(ai.GetPlayerId() == id)
             return &ai;
     }
     return NULL;

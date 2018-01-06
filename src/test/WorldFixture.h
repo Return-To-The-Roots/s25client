@@ -26,9 +26,9 @@
 #include "world/GameWorld.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Nation.h"
-#include <boost/test/unit_test.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/test/unit_test.hpp>
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////
