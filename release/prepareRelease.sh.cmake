@@ -64,7 +64,7 @@ extract_debug_symbols()
 	local FILE=$1
 	
 	if [ "$SYSTEM_NAME" == "Darwin" ]; then
-		# Can't extract symbols for apple, so jsut strip them
+		# Can't extract symbols for apple, so just strip them
 		i686-apple-darwin10-strip -S ${DESTDIR}$FILE
 		return 0
 	fi
@@ -195,8 +195,8 @@ case "$SYSTEM_NAME" in
 		fi
 
 		# copy libs
-		for LIBSUFFIX in miniupnpc.5 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
-			LIB=/usr/lib/lib${LIBSUFFIX}.dylib
+		for LIBNAME in miniupnpc.5 boost_system boost_filesystem boost_iostreams boost_thread boost_locale boost_program_options ; do
+			LIB=/usr/lib/lib${LIBNAME}.dylib
 			if [ -f $SDK$LIB ] ; then
 				cp -rv $SDK$LIB ${macOSPath} || exit 1
 			else
@@ -205,8 +205,9 @@ case "$SYSTEM_NAME" in
 			fi
 		done
 
-		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/bin || exit 1
-		mkdir -vp ${DESTDIR}s25client.app/Contents/MacOS/lib || exit 1
+		mkdir -vp ${macOSPath}/bin || exit 1
+		mkdir -vp ${macOSPath}/libexec || exit 1
+		mkdir -vp ${macOSPath}/lib || exit 1
 
 		# binaries und paketdaten kopieren
 		cp -v ${RTTR_SRCDIR}/release/bin/macos/rttr.command ${macOSPath}/ || exit 1
@@ -215,15 +216,17 @@ case "$SYSTEM_NAME" in
 		cp -v ${RTTR_SRCDIR}/release/bin/macos/PkgInfo ${contentsPath}/ || exit 1
 		cp -v ${RTTR_SRCDIR}/release/bin/macos/Info.plist ${contentsPath}/ || exit 1
 		mv -v ${DESTDIR}bin/* ${macOSPath}/bin/ || exit 1
+		mv -v ${DESTDIR}libexec/* ${macOSPath}/libexec/ || exit 1
 		mv -v ${DESTDIR}lib/* ${macOSPath}/lib/ || exit 1
 		
 		chmod +x ${macOSPath}/rttr.command || exit 1
 		chmod +x ${macOSPath}/bin/* || exit 1
-		chmod +x ${macOSPath}/lib/* || exit 1
+		chmod +x ${macOSPath}/libexec/s25rttr/* || exit 1
 
 		# remove dirs if empty
 		rmdir ${DESTDIR}bin
 		rmdir ${DESTDIR}lib
+		rmdir ${DESTDIR}libexec
 
 		# RTTR-Ordner kopieren
 		mv -v ${DESTDIR}share ${macOSPath}/ || exit 1
