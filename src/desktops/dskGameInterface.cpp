@@ -316,15 +316,17 @@ void dskGameInterface::Msg_PaintAfter()
     // Replaydateianzeige in der linken unteren Ecke
     if(GAMECLIENT.IsReplayModeOn())
         NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetScreenSize().y), GAMECLIENT.GetReplayFileName(), FontStyle::BOTTOM, 0xFFFFFF00);
-
-    // Laggende Spieler anzeigen in Form von Schnecken
-    DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
-    BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
+    else
     {
-        if(player.isLagging)
+        // Laggende Spieler anzeigen in Form von Schnecken
+        DrawPoint snailPos(VIDEODRIVER.GetScreenSize().x - 70, 35);
+        BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo->getPlayerInfos())
         {
-            LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world.GetPlayer(player.id).color);
-            snailPos.x -= 40;
+            if(player.isLagging)
+            {
+                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE, game_->world.GetPlayer(player.id).color);
+                snailPos.x -= 40;
+            }
         }
     }
 
