@@ -171,7 +171,8 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
         // So if we can make those equal by removing half a pixel to the bottom middle position, we do this
         if(middleBottom.x - leftMiddle.x == middleBottom.y - 0.5f - leftMiddle.y)
             middleBottom.y -= 0.5f;
-    }
+    } else
+        leftMiddle = PointF(0, 0); // Unused but silences warnings
     switch(boost::native_value(texType))
     {
         case ETexType::Overlapped:
@@ -209,7 +210,8 @@ TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
         // So if we can make those equal by adding half a pixel to the top middle position, we do this
         if(middleTop.x - leftMiddle.x == leftMiddle.y - (middleTop.y + 0.5f))
             middleTop.y += 0.5f;
-    }
+    } else
+        leftMiddle = PointF(0, 0); // Unused but silences warnings
     switch(boost::native_value(texType))
     {
         case ETexType::Overlapped:
