@@ -105,6 +105,8 @@ const GlobalGameSettings& GameLobbyController::GetGGS() const
 
 void GameLobbyController::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
 {
+    // Already change this here or future changes will be ignored before the server acknowledges the change
+    lobby->getSettings() = ggs;
     GAMECLIENT.GetMainPlayer().sendMsgAsync(new GameMessage_GGSChange(ggs));
 }
 
