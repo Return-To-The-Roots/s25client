@@ -23,6 +23,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "libutil/Log.h"
 #include "libutil/Serializer.h"
+#include <boost/foreach.hpp>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
@@ -31,22 +32,16 @@ GlobalGameSettings::GlobalGameSettings()
     : speed(GS_NORMAL), objective(GO_NONE), startWares(SWR_NORMAL), lockedTeams(false), exploration(EXP_FOGOFWAR), teamView(true),
       randomStartPosition(false)
 {
-    // register addons
-    clearAddons();
+    registerAllAddons();
 }
 
 GlobalGameSettings::GlobalGameSettings(const GlobalGameSettings& ggs)
     : speed(ggs.speed), objective(ggs.objective), startWares(ggs.startWares), lockedTeams(ggs.lockedTeams), exploration(ggs.exploration),
       teamView(ggs.teamView), randomStartPosition(ggs.randomStartPosition)
 {
-    // register addons
-    clearAddons();
-    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
-    {
-        unsigned status = 0;
-        AddonId id = ggs.getAddon(i, status)->getId();
-        setSelection(id, status);
-    }
+    registerAllAddons();
+    BOOST_FOREACH(const AddonWithState& addon, ggs.addons)
+        setSelection(addon.addon->getId(), addon.status);
 }
 
 GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
@@ -60,12 +55,8 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
     exploration = ggs.exploration;
     teamView = ggs.teamView;
     randomStartPosition = ggs.randomStartPosition;
-    for(unsigned i = 0; i < ggs.getNumAddons(); i++)
-    {
-        unsigned status = 0;
-        AddonId id = ggs.getAddon(i, status)->getId();
-        setSelection(id, status);
-    }
+    BOOST_FOREACH(const AddonWithState& addon, ggs.addons)
+        setSelection(addon.addon->getId(), addon.status);
 
     return *this;
 }
@@ -73,69 +64,72 @@ GlobalGameSettings& GlobalGameSettings::operator=(const GlobalGameSettings& ggs)
 GlobalGameSettings::~GlobalGameSettings()
 {
     // clear memory and dont register addons again
-    clearAddons(false);
+    clearAddons();
 }
 
 /**
  *  clears the addon memory.
- *
- *  if @p recreate is @p true then the addons are re-registered
- *  and set to defaults
  */
-void GlobalGameSettings::clearAddons(bool recreate)
+void GlobalGameSettings::clearAddons()
 {
     for(AddonContainer::iterator it = addons.begin(); it != addons.end(); ++it)
         delete it->addon;
 
     addons.clear();
+}
 
-    if(recreate)
-    {
-        registerAddon(new AddonLimitCatapults);
-        registerAddon(new AddonInexhaustibleMines);
-        registerAddon(new AddonRefundMaterials);
-        registerAddon(new AddonExhaustibleWater);
-        registerAddon(new AddonRefundOnEmergency);
-        registerAddon(new AddonManualRoadEnlargement);
-        registerAddon(new AddonCatapultGraphics);
-        registerAddon(new AddonMetalworksBehaviorOnZero);
+void GlobalGameSettings::registerAllAddons()
+{
+    registerAddon(new AddonLimitCatapults);
+    registerAddon(new AddonInexhaustibleMines);
+    registerAddon(new AddonRefundMaterials);
+    registerAddon(new AddonExhaustibleWater);
+    registerAddon(new AddonRefundOnEmergency);
+    registerAddon(new AddonManualRoadEnlargement);
+    registerAddon(new AddonCatapultGraphics);
+    registerAddon(new AddonMetalworksBehaviorOnZero);
 
-        registerAddon(new AddonDemolitionProhibition);
-        registerAddon(new AddonCharburner);
-        registerAddon(new AddonTrade);
+    registerAddon(new AddonDemolitionProhibition);
+    registerAddon(new AddonCharburner);
+    registerAddon(new AddonTrade);
 
-        registerAddon(new AddonChangeGoldDeposits);
-        registerAddon(new AddonMaxWaterwayLength);
-        registerAddon(new AddonCustomBuildSequence);
-        registerAddon(new AddonStatisticsVisibility);
+    registerAddon(new AddonChangeGoldDeposits);
+    registerAddon(new AddonMaxWaterwayLength);
+    registerAddon(new AddonCustomBuildSequence);
+    registerAddon(new AddonStatisticsVisibility);
 
-        registerAddon(new AddonDefenderBehavior);
-        registerAddon(new AddonAIDebugWindow);
+    registerAddon(new AddonDefenderBehavior);
+    registerAddon(new AddonAIDebugWindow);
 
-        registerAddon(new AddonNoCoinsDefault);
+    registerAddon(new AddonNoCoinsDefault);
 
-        registerAddon(new AddonAdjustMilitaryStrength);
+    registerAddon(new AddonAdjustMilitaryStrength);
 
-        registerAddon(new AddonToolOrdering);
+    registerAddon(new AddonToolOrdering);
 
-        registerAddon(new AddonMilitaryAid);
-        registerAddon(new AddonInexhaustibleGraniteMines);
-        registerAddon(new AddonMaxRank);
-        registerAddon(new AddonSeaAttack);
-        registerAddon(new AddonInexhaustibleFish);
+    registerAddon(new AddonMilitaryAid);
+    registerAddon(new AddonInexhaustibleGraniteMines);
+    registerAddon(new AddonMaxRank);
+    registerAddon(new AddonSeaAttack);
+    registerAddon(new AddonInexhaustibleFish);
 
-        registerAddon(new AddonShipSpeed);
-        registerAddon(new AddonMoreAnimals);
-        registerAddon(new AddonBurnDuration);
-        registerAddon(new AddonNoAlliedPush);
-        registerAddon(new AddonBattlefieldPromotion);
-        registerAddon(new AddonHalfCostMilEquip);
-        registerAddon(new AddonMilitaryControl);
+    registerAddon(new AddonShipSpeed);
+    registerAddon(new AddonMoreAnimals);
+    registerAddon(new AddonBurnDuration);
+    registerAddon(new AddonNoAlliedPush);
+    registerAddon(new AddonBattlefieldPromotion);
+    registerAddon(new AddonHalfCostMilEquip);
+    registerAddon(new AddonMilitaryControl);
 
-        registerAddon(new AddonMilitaryHitpoints);
+    registerAddon(new AddonMilitaryHitpoints);
 
-        registerAddon(new AddonNumScoutsExploration);
-    }
+    registerAddon(new AddonNumScoutsExploration);
+}
+
+void GlobalGameSettings::resetAddons()
+{
+    BOOST_FOREACH(AddonWithState& addon, addons)
+        addon.status = addon.addon->getDefaultStatus();
 }
 
 const Addon* GlobalGameSettings::getAddon(unsigned nr, unsigned& status) const
@@ -188,7 +182,7 @@ void GlobalGameSettings::registerAddon(Addon* addon)
  */
 void GlobalGameSettings::LoadSettings()
 {
-    clearAddons();
+    resetAddons();
 
     for(std::map<unsigned, unsigned>::iterator it = SETTINGS.addons.configuration.begin(); it != SETTINGS.addons.configuration.end(); ++it)
         setSelection((AddonId::type_)it->first, it->second);
@@ -200,8 +194,8 @@ void GlobalGameSettings::LoadSettings()
 void GlobalGameSettings::SaveSettings() const
 {
     SETTINGS.addons.configuration.clear();
-    for(AddonContainer::const_iterator it = addons.begin(); it != addons.end(); ++it)
-        SETTINGS.addons.configuration.insert(std::make_pair(it->addon->getId(), it->status));
+    BOOST_FOREACH(const AddonWithState& addon, addons)
+        SETTINGS.addons.configuration.insert(std::make_pair(addon.addon->getId(), addon.status));
 }
 
 /**
@@ -220,10 +214,10 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
     ser.PushBool(randomStartPosition);
 
     ser.PushUnsignedInt(addons.size());
-    for(AddonContainer::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    BOOST_FOREACH(const AddonWithState& addon, addons)
     {
-        ser.PushUnsignedInt(it->addon->getId());
-        ser.PushUnsignedInt(it->status);
+        ser.PushUnsignedInt(addon.addon->getId());
+        ser.PushUnsignedInt(addon.status);
 
         // LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(it->addon->getId()) % it->status;
     }
@@ -244,7 +238,7 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     unsigned count = ser.PopUnsignedInt();
 
-    clearAddons();
+    resetAddons();
 
     // LOG.writeToFile("<<< Addon Status:\n");
 

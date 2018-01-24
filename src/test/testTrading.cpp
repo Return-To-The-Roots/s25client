@@ -20,9 +20,9 @@
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "helperFuncs.h"
-#include "gameData/JobConsts.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsgWithBuilding.h"
+#include "gameData/JobConsts.h"
 #include "test/WorldWithGCExecution.h"
 #include "test/initTestHelpers.h"
 #include <boost/foreach.hpp>

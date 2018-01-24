@@ -17,10 +17,9 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "nofTradeLeader.h"
-#include "GamePlayer.h"
-#include "GameObject.h"
-#include "gameData/JobConsts.h"
 #include "EventManager.h"
+#include "GameObject.h"
+#include "GamePlayer.h"
 #include "SerializedGameData.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "nofTradeDonkey.h"
@@ -28,6 +27,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
 #include <boost/format.hpp>
 
 nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, const TradeRoute& tr, const MapPoint homePos,
@@ -61,14 +61,17 @@ void nofTradeLeader::GoalReached()
         Job jobType = successor->GetJobType();
         GoodType goodType = successor->GetCarriedWare();
         nofTradeDonkey* successorDonkey = successor;
-        while (successorDonkey != NULL) {
+        while(successorDonkey != NULL)
+        {
             amountWares++;
             successorDonkey = successorDonkey->GetSuccessor();
         }
         GamePlayer& owner = gwg->GetPlayer(player);
         std::string waresName = _(goodType == GD_NOTHING ? JOB_NAMES[jobType] : WARE_NAMES[goodType]);
-        std::string text = boost::str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
-        SendPostMessage(targetWarehouse->GetPlayer(), new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), text,PostCategory::Economy, *targetWarehouse));
+        std::string text =
+          boost::str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares % waresName % owner.name);
+        SendPostMessage(targetWarehouse->GetPlayer(),
+                        new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy, *targetWarehouse));
         successor->AddNextDir(REACHED_GOAL);
         successor = NULL;
     }

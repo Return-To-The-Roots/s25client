@@ -51,7 +51,12 @@ public:
     const Addon* getAddon(unsigned nr, unsigned& status) const;
     const Addon* getAddon(unsigned nr) const;
     /// clears the addon memory.
-    void clearAddons(bool recreate = true);
+    void clearAddons();
+
+    void registerAllAddons();
+
+    /// Reset all addons to their defaults
+    void resetAddons();
 
     bool isEnabled(AddonId id) const;
     unsigned getSelection(AddonId id) const;

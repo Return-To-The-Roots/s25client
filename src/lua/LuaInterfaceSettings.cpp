@@ -109,11 +109,7 @@ void LuaInterfaceSettings::SetBoolAddon(AddonId id, bool value)
 void LuaInterfaceSettings::ResetAddons()
 {
     GlobalGameSettings ggs = lobbyServerController_.GetGGS();
-    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
-    {
-        const Addon* addon = ggs.getAddon(i);
-        ggs.setSelection(addon->getId(), addon->getDefaultStatus());
-    }
+    ggs.resetAddons();
     lobbyServerController_.ChangeGlobalGameSettings(ggs);
 }
 
