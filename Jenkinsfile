@@ -17,6 +17,8 @@ def transformIntoStep(arch, wspwd) {
                         unstash 'source'
 
                         sh """set -x
+						      git clean -f
+                              git submodule foreach git clean -fxd
                               BARCH=--arch=c.${arch}
                               if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${arch}" ] ; then
                                   BARCH=
