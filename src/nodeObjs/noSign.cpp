@@ -30,7 +30,12 @@
  *  @param[in] y        Y-Position
  *  @param[in] resource Typ der Ressource
  */
-noSign::noSign(const MapPoint pos, Resource resource) : noDisappearingEnvObject(pos, 8500, 500), resource(resource) {}
+noSign::noSign(const MapPoint pos, Resource resource) : noDisappearingEnvObject(pos, 8500, 500), resource(resource)
+{
+    // As this is only for drawing we set the type to nothing if the resource is depleted
+    if(resource.getAmount() == 0u)
+        this->resource.setType(Resource::Nothing);
+}
 
 void noSign::Serialize_noSign(SerializedGameData& sgd) const
 {
