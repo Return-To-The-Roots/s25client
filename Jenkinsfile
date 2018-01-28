@@ -17,8 +17,11 @@ def transformIntoStep(arch, wspwd) {
                         unstash 'source'
 
                         sh """set -x
-						      git clean -f
+                              git clean -f
                               git submodule foreach git clean -fxd
+                              echo "Git status for main and sub repos:"
+                              git status
+                              git submodule foreach git status
                               BARCH=--arch=c.${arch}
                               if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${arch}" ] ; then
                                   BARCH=
@@ -37,13 +40,15 @@ def transformIntoStep(arch, wspwd) {
                                   PARAMS=create_stable
                                   COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force && cat build_version_defines.h'
                               fi
+                              BUILD_CMD="cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$COMMANDS && make \$PARAMS"
+                              echo "Executing: \$BUILD_CMD"
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                         "cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$COMMANDS && make \$PARAMS"
+                                                         "\$BUILD_CMD"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT
