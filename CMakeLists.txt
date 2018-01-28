@@ -209,7 +209,7 @@ ELSE()
 	else()
 		SET(DEFAULT_DRIVERDIR "${RTTR_LIBDIR}/driver")
 	endif()
-	SET(RTTR_EXTRA_BINDIR "${CMAKE_LIBEXEC_DIR}/s25rttr" CACHE STRING "Path to binaries used internally")
+	SET(RTTR_EXTRA_BINDIR "${CMAKE_INSTALL_LIBEXECDIR}/s25rttr" CACHE STRING "Path to binaries used internally")
 	SET(RTTR_DRIVERDIR "${DEFAULT_DRIVERDIR}" CACHE STRING "Directory for driver objects")
 ENDIF()
 
