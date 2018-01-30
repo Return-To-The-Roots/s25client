@@ -5,7 +5,7 @@ IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
 	CMAKE_POLICY(SET CMP0042 OLD)
 ENDIF()
 IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
-    # Simplified variable expansion. No change for usual variable references so use faster one
+	# Simplified variable expansion. No change for usual variable references so use faster one
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
@@ -25,21 +25,23 @@ list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR}")
 # Fill RTTR_CONTRIB_DIR_VS and append to CMAKE_PREFIX_PATH
 # Set CMAKE_LIBRARY_ARCHITECTURE
 IF (MSVC)
-	SET(RTTR_CONTRIB_DIR_VS "${RTTR_CONTRIB_DIR}/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
-	IF(NOT EXISTS ${RTTR_CONTRIB_DIR_VS} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR_VS})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR_VS} first!")
-	ENDIF()
-	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
-		list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR_VS}/VS2015")
-	ENDIF()
-	list(APPEND CMAKE_PREFIX_PATH ${RTTR_CONTRIB_DIR_VS} ${RTTR_CONTRIB_DIR_VS}/buildTools)
-
 	IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
 		SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE INTERNAL "")
 	ELSE()
 		SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE INTERNAL "")
 	ENDIF()
 	MESSAGE(STATUS "Building for MSVC: ${CMAKE_LIBRARY_ARCHITECTURE}")
+
+	SET(RTTR_CONTRIB_DIR_VS "${RTTR_CONTRIB_DIR}/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
+	IF(NOT EXISTS ${RTTR_CONTRIB_DIR_VS} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR_VS})
+		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR_VS} first!")
+	ENDIF()
+	SET(CONTRIB_DLL_DIR "${RTTR_CONTRIB_DIR_VS}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
+	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
+		list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR_VS}/VS2015")
+	ENDIF()
+	list(APPEND CMAKE_PREFIX_PATH ${RTTR_CONTRIB_DIR_VS})
+	list(APPEND CMAKE_PROGRAM_PATH ${RTTR_CONTRIB_DIR_VS}/buildTools ${CONTRIB_DLL_DIR})
 ENDIF()
 
 INCLUDE(CMakeMacroSetCCache)
@@ -68,8 +70,8 @@ IF(WIN32)
 		SET(PLATFORM_ARCH "x86_64")
 	ELSEIF (CMAKE_SIZEOF_VOID_P EQUAL 4)
 		SET(PLATFORM_ARCH "i386")
-    ELSE()
-		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")    
+	ELSE()
+		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")
 	ENDIF ()
 ELSE()
 	IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
@@ -117,9 +119,9 @@ ENDIF()
 FIND_PACKAGE(Boost 1.55.0)
 IF(NOT Boost_FOUND)
 	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set (as CMake or environment variable) "
-    "BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
-    "BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
-    "since cmake was unable to find boost!")
+	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
+	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
+	"since cmake was unable to find boost!")
 ELSEIF("${BOOST_LIBRARYDIR}" STREQUAL "")
 	list(APPEND CMAKE_PREFIX_PATH "${Boost_INCLUDE_DIR}/stage")
 ENDIF()
@@ -152,7 +154,7 @@ find_package(ClangFormat 5.0.0)
 ################################################################################
 
 if(WIN32)
-    set(bzip2ContribDir "${RTTR_CONTRIB_DIR}/bzip2-1.0.6")
+	set(bzip2ContribDir "${RTTR_CONTRIB_DIR}/bzip2-1.0.6")
 	IF(IS_DIRECTORY "${bzip2ContribDir}" )
 		SET(SOURCES_BZIP
 			${bzip2ContribDir}/blocksort.c
@@ -163,10 +165,10 @@ if(WIN32)
 			${bzip2ContribDir}/huffman.c
 			${bzip2ContribDir}/randtable.c
 		)
-        add_library(bzip2 STATIC ${SOURCES_BZIP})
-        set(BZIP2_FOUND TRUE)
-        set(BZIP2_LIBRARIES bzip2)
-        set(BZIP2_INCLUDE_DIR ${bzip2ContribDir})
+		add_library(bzip2 STATIC ${SOURCES_BZIP})
+		set(BZIP2_FOUND TRUE)
+		set(BZIP2_LIBRARIES bzip2)
+		set(BZIP2_INCLUDE_DIR ${bzip2ContribDir})
 	ENDIF()
 ENDIF()
 
@@ -220,24 +222,24 @@ set(RTTR_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE INTERNAL "Used for configu
 # Output directories
 set(RTTR_OUTPUT_DIR ${CMAKE_BINARY_DIR})
 if(CMAKE_CONFIGURATION_TYPES)
-    set(RTTR_OUTPUT_DIR_DEBUG ${RTTR_OUTPUT_DIR}/Debug)
-    set(RTTR_OUTPUT_DIR_RELEASE ${RTTR_OUTPUT_DIR}/Release)
-    set(RTTR_OUTPUT_DIR_RELWITHDEBINFO ${RTTR_OUTPUT_DIR}/RelWithDebInfo)
-    set(RTTR_OUTPUT_DIR_MINSIZEREL ${RTTR_OUTPUT_DIR}/MinSizeRel)
+	set(RTTR_OUTPUT_DIR_DEBUG ${RTTR_OUTPUT_DIR}/Debug)
+	set(RTTR_OUTPUT_DIR_RELEASE ${RTTR_OUTPUT_DIR}/Release)
+	set(RTTR_OUTPUT_DIR_RELWITHDEBINFO ${RTTR_OUTPUT_DIR}/RelWithDebInfo)
+	set(RTTR_OUTPUT_DIR_MINSIZEREL ${RTTR_OUTPUT_DIR}/MinSizeRel)
 else()
-    set(RTTR_OUTPUT_DIR_DEBUG ${RTTR_OUTPUT_DIR})
-    set(RTTR_OUTPUT_DIR_RELEASE ${RTTR_OUTPUT_DIR})
-    set(RTTR_OUTPUT_DIR_RELWITHDEBINFO ${RTTR_OUTPUT_DIR})
-    set(RTTR_OUTPUT_DIR_MINSIZEREL ${RTTR_OUTPUT_DIR})
+	set(RTTR_OUTPUT_DIR_DEBUG ${RTTR_OUTPUT_DIR})
+	set(RTTR_OUTPUT_DIR_RELEASE ${RTTR_OUTPUT_DIR})
+	set(RTTR_OUTPUT_DIR_RELWITHDEBINFO ${RTTR_OUTPUT_DIR})
+	set(RTTR_OUTPUT_DIR_MINSIZEREL ${RTTR_OUTPUT_DIR})
 endif()
 
 # Helper function to set output dirs. See below for usage example
 macro(rttr_set_output_dir type subDir)
-    set(CMAKE_${type}_OUTPUT_DIRECTORY ${RTTR_OUTPUT_DIR}/${subDir})
-    set(CMAKE_${type}_OUTPUT_DIRECTORY_DEBUG ${RTTR_OUTPUT_DIR_DEBUG}/${subDir})
-    set(CMAKE_${type}_OUTPUT_DIRECTORY_RELEASE ${RTTR_OUTPUT_DIR_RELEASE}/${subDir})
-    set(CMAKE_${type}_OUTPUT_DIRECTORY_RELWITHDEBINFO ${RTTR_OUTPUT_DIR_RELWITHDEBINFO}/${subDir})
-    set(CMAKE_${type}_OUTPUT_DIRECTORY_MINSIZEREL ${RTTR_OUTPUT_DIR_MINSIZEREL}/${subDir})
+	set(CMAKE_${type}_OUTPUT_DIRECTORY ${RTTR_OUTPUT_DIR}/${subDir})
+	set(CMAKE_${type}_OUTPUT_DIRECTORY_DEBUG ${RTTR_OUTPUT_DIR_DEBUG}/${subDir})
+	set(CMAKE_${type}_OUTPUT_DIRECTORY_RELEASE ${RTTR_OUTPUT_DIR_RELEASE}/${subDir})
+	set(CMAKE_${type}_OUTPUT_DIRECTORY_RELWITHDEBINFO ${RTTR_OUTPUT_DIR_RELWITHDEBINFO}/${subDir})
+	set(CMAKE_${type}_OUTPUT_DIRECTORY_MINSIZEREL ${RTTR_OUTPUT_DIR_MINSIZEREL}/${subDir})
 endmacro()
 rttr_set_output_dir(RUNTIME ${RTTR_BINDIR})
 rttr_set_output_dir(LIBRARY ${RTTR_LIBDIR})
@@ -259,8 +261,8 @@ MACRO(CheckAndAddFlag flag)
 	SET(VarName ${checkedFlag})
 	STRING(REPLACE "+" "X" VarName ${VarName})
 	STRING(REGEX REPLACE "[=-]" "_" VarName ${VarName})
-    CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
-    CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
+	CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
+	CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
 	IF (CXX_FLAG_${VarName}_SUPPORTED)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
 	ENDIF ()
@@ -285,32 +287,32 @@ ELSE ()
 	IF(RTTR_ENABLE_WERROR)
 		CheckAndAddFlag("-Werror")
 	ENDIF()
-    CheckAndAddFlag("-pedantic")
-    CheckAndAddFlag("-Wpedantic")
-    CheckAndAddFlag("-Wparentheses")
-    CheckAndAddFlag("-Wno-error=type-limits")
-    CheckAndAddFlag("-Wfloat-conversion")
-    CheckAndAddFlag("-Wno-long-long")
-    CheckAndAddFlag("-Wno-deprecated-register")
-    CheckAndAddFlag("-Wno-unknown-pragmas")
-    CheckAndAddFlag("-Wno-c++11-extensions")
-    CheckAndAddFlag("-fno-strict-aliasing")
-    CheckAndAddFlag("-Qunused-arguments")
+	CheckAndAddFlag("-pedantic")
+	CheckAndAddFlag("-Wpedantic")
+	CheckAndAddFlag("-Wparentheses")
+	CheckAndAddFlag("-Wno-error=type-limits")
+	CheckAndAddFlag("-Wfloat-conversion")
+	CheckAndAddFlag("-Wno-long-long")
+	CheckAndAddFlag("-Wno-deprecated-register")
+	CheckAndAddFlag("-Wno-unknown-pragmas")
+	CheckAndAddFlag("-Wno-c++11-extensions")
+	CheckAndAddFlag("-fno-strict-aliasing")
+	CheckAndAddFlag("-Qunused-arguments")
 
-    CHECK_CXX_SOURCE_COMPILES("
-        #if __cplusplus >= 201103L
-        int main() {}
-        #endif" COMPILER_IN_CXX11_MODE)
-    IF(COMPILER_IN_CXX11_MODE)
-        CheckAndAddFlag("-Wsuggest-override")
-        CheckAndAddFlag("-Wno-error=suggest-override")
-    else()
-    	ADD_DEFINITIONS(-Doverride=)
-    ENDIF(COMPILER_IN_CXX11_MODE)
-    
-    # Variadic macros are part of C99 but supported by all big compilers in C++03
-    CheckAndAddFlag("-Wno-variadic-macros")
-    CheckAndAddFlag("-Wno-c99-extensions")
+	CHECK_CXX_SOURCE_COMPILES("
+		#if __cplusplus >= 201103L
+		int main() {}
+		#endif" COMPILER_IN_CXX11_MODE)
+	IF(COMPILER_IN_CXX11_MODE)
+		CheckAndAddFlag("-Wsuggest-override")
+		CheckAndAddFlag("-Wno-error=suggest-override")
+	else()
+		ADD_DEFINITIONS(-Doverride=)
+	ENDIF(COMPILER_IN_CXX11_MODE)
+	
+	# Variadic macros are part of C99 but supported by all big compilers in C++03
+	CheckAndAddFlag("-Wno-variadic-macros")
+	CheckAndAddFlag("-Wno-c99-extensions")
 ENDIF (MSVC)
 
 ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
@@ -323,18 +325,18 @@ ENDIF()
 
 CHECK_INCLUDE_FILE(valgrind/memcheck.h HAVE_MEMCHECK_H)
 IF(HAVE_MEMCHECK_H)
-    ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
+	ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
 ENDIF()
 
 # Clang bug workaround
 if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-    try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
-    if(NOT ${CHECK_CLANG_INLINE})
-        add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
-    endif()
+	try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
+	if(NOT ${CHECK_CLANG_INLINE})
+		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
+	endif()
 
-    # Some workaround flags for execssive warnings in clang
-    CheckAndAddFlag(-Wno-unused-local-typedefs)
+	# Some workaround flags for execssive warnings in clang
+	CheckAndAddFlag(-Wno-unused-local-typedefs)
 endif()
 
 ################################################################################
@@ -375,7 +377,7 @@ file(COPY ${CMAKE_BINARY_DIR}/CMakeFiles/prepareRelease.sh
 	DESTINATION "."
 	FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
 	GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    
+	
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/copyDepsToBuildDir.cmake CMakeFiles @ONLY)
 
 IF (NOT WIN32)
@@ -396,14 +398,13 @@ enable_testing()
 
 # Add dlls from contrib folder
 if(MSVC)
-    SET(CONTRIB_DLL_DIR "${RTTR_CONTRIB_DIR_VS}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
-    if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
-        MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
-    else()
-        FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
-        include(GatherDll)
-        gather_dll_add(${CONTRIB_DLLS})
-    ENDIF()
+	if(NOT EXISTS "${CONTRIB_DLL_DIR}/libcurl.dll")
+		MESSAGE(WARNING "Folder with DLLs not found in ${CONTRIB_DLL_DIR}. You may not be able to execute directly from VS")
+	else()
+		FILE(GLOB CONTRIB_DLLS ${CONTRIB_DLL_DIR}/*.dll)
+		include(GatherDll)
+		gather_dll_add(${CONTRIB_DLLS})
+	ENDIF()
 endif()
 
 ################################################################################
@@ -442,11 +443,11 @@ SET(RTTR_BUILD_LOBBY_CLIENT TRUE)
 ADD_SUBDIRECTORY(liblobby)
 ADD_SUBDIRECTORY(s-c)
 if(RTTR_BUILD_UPDATER)
-    ADD_SUBDIRECTORY(s25update)
+	ADD_SUBDIRECTORY(s25update)
 endif()
 
 if(HAVE_STRUCT_TIMESPEC)
-    add_definitions(-DHAVE_STRUCT_TIMESPEC)
+	add_definitions(-DHAVE_STRUCT_TIMESPEC)
 endif()
 add_subdirectory(common)
 ADD_SUBDIRECTORY(driver)
@@ -459,9 +460,9 @@ if(RTTR_BUILD_EDITOR)
 endif()
 
 if(ClangFormat_FOUND)
-    add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
-    add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
-    add_ClangFormat_target("file")
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/driver true)
+	add_ClangFormat_folder(${CMAKE_CURRENT_SOURCE_DIR}/src true)
+	add_ClangFormat_target("file")
 endif()
 
 ################################################################################
