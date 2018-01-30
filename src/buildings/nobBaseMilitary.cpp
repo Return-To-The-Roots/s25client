@@ -165,7 +165,7 @@ nofAttacker* nobBaseMilitary::FindAggressor(nofAggressiveDefender* defender)
         if(gwg->CalcDistance(attackerPos, defenderPos) <= 5)
         {
             // Check it further (e.g. if they have to walk around a river...)
-            if(gwg->FindHumanPath(attackerPos, defenderPos, 5) != 0xFF)
+            if(gwg->FindHumanPath(attackerPos, defenderPos, 5) != INVALID_DIR)
             {
                 (*it)->LetsFight(defender);
                 return (*it);

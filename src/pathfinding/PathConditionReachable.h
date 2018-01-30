@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2018 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -17,47 +17,42 @@
 
 #pragma once
 
-#ifndef PathConditionHuman_h__
-#define PathConditionHuman_h__
+#ifndef PathConditionReachable_h__
+#define PathConditionReachable_h__
 
-#include "RoadSegment.h"
-#include "pathfinding/PathConditionReachable.h"
 #include "world/World.h"
-#include "nodeObjs/noBase.h"
-#include "gameData/TerrainDesc.h"
-#include <boost/config.hpp>
 
-struct PathConditionHuman : PathConditionReachable
+struct PathConditionReachable
 {
-    PathConditionHuman(const World& world) : PathConditionReachable(world) {}
+    const World& world;
+
+    PathConditionReachable(const World& world) : world(world) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
     BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
     {
-        // Node blocked -> Can't go there
-        const BlockingManner bm = world.GetNO(pt)->GetBM();
-        if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
-            return false;
-        return PathConditionReachable::IsNodeOk(pt);
+        bool goodTerrainFound = false;
+        for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
+        {
+            const TerrainDesc& t = world.GetDescription().get(world.GetRightTerrain(pt, Direction::fromInt(dir)));
+            if(t.Is(ETerrain::Unreachable))
+                return false;
+            else if(t.Is(ETerrain::Walkable))
+                goodTerrainFound = true;
+        }
+        return goodTerrainFound;
     }
-
     // Called for every node
     BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
-        // If there is a road (but no boat road) we can pass
-        unsigned char road = world.GetPointRoad(fromPt, dir);
-        if(road && road != RoadSegment::RT_BOAT + 1)
-            return true;
-
         // Check terrain for node transition
         const TerrainDesc& tLeft = world.GetDescription().get(world.GetLeftTerrain(fromPt, dir));
         const TerrainDesc& tRight = world.GetDescription().get(world.GetRightTerrain(fromPt, dir));
         // Don't go next to danger terrain
         if(tLeft.Is(ETerrain::Unreachable) || tRight.Is(ETerrain::Unreachable))
             return false;
-        // If either terrain is walkable, then we can use this transition
-        return (tLeft.Is(ETerrain::Walkable) || tRight.Is(ETerrain::Walkable));
+        return true;
     }
 };
 
-#endif // PathConditionHuman_h__
+#endif // PathConditionReachable_h__

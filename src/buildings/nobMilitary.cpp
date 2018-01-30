@@ -36,6 +36,7 @@
 #include "notifications/BuildingNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "pathfinding/FindPathReachable.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "random/Random.h"
 #include "world/GameWorldGame.h"
@@ -328,8 +329,14 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
         {
             unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
 
+            // check if military building is reachable
+            if(gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE)
+               && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+            {
+                frontier_distance = 0;
+            }
             // in nahem Umkreis, also Grenzen berühren sich
-            if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius()) // warum erzeugtn das ne warning in vs2008?
+            else if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius()) // warum erzeugtn das ne warning in vs2008?
             {
                 // Grenznähe entsprechend setzen
                 frontier_distance = 3;
