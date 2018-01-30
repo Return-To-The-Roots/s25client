@@ -29,6 +29,7 @@
 #include "../../../../win32/s25clientResources.h"
 #include "libutil/ucString.h"
 #include <SDL_syswm.h>
+
 namespace {
 struct DeleterReleaseDC
 {
@@ -361,10 +362,22 @@ bool VideoSDL::SwapBuffers()
  */
 bool VideoSDL::MessageLoop()
 {
+    static bool mouseMoved = false;
+#ifdef WIN32
+    // There is a bug caused by Windows where queering the mouse position to soon after resetting it will report the old mouse position.
+    // SDL_PollEvent in fullscreen mode does exactly that: Query mouse position relative to window center, if different reset position and
+    // report move Hence calling SDL_PollEvent fast enough after a mouse move will report the same movement until the mouse position is
+    // actually adjusted leading to "jumps" of the cursor (#806).
+    // We work around this by not calling SDL_PollEvent to soon after a mouse move event. Idea and a better implementation is from
+    // https://github.com/joncampbell123/dosbox-x/commit/f343dc2ec012699d04584b898925e3501a9b913c but that requires a change of SDL and
+    // recompilation which is not worth it as SDL2 is not vulnerable to this
+    static Uint32 lastMouseMove = 0;
+    static const Uint32 mousePollIntervall = 1000 / 60; // 60 FPS
+    if(isFullscreen_ && SDL_GetTicks() - lastMouseMove < mousePollIntervall)
+        return true;
+#endif
+
     SDL_Event ev;
-
-    static bool mouse_motion = 0;
-
     while(SDL_PollEvent(&ev))
     {
         switch(ev.type)
@@ -491,20 +504,29 @@ bool VideoSDL::MessageLoop()
             break;
             case SDL_MOUSEMOTION:
             {
-                if(!mouse_motion)
+                // Handle only 1st mouse move
+                if(!mouseMoved)
                 {
+#ifdef WIN32
+                    if(isFullscreen_)
+                        lastMouseMove = SDL_GetTicks();
+#endif
                     mouse_xy.x = ev.motion.x;
                     mouse_xy.y = ev.motion.y;
 
-                    mouse_motion = 1;
                     CallBack->Msg_MouseMove(mouse_xy);
+#ifdef WIN32
+                    if(isFullscreen_)
+                        return true; // Stop calling SDL_PollEvent
+#endif
+                    mouseMoved = true;
                 }
             }
             break;
         }
     }
 
-    mouse_motion = 0;
+    mouseMoved = false;
     return true;
 }
 
