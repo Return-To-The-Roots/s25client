@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
     for(; tUnwalkable.value < world.GetDescription().terrain.size(); tUnwalkable.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tUnwalkable);
-        if(fieldDesc.kind == TerrainKind::WATER && (!fieldDesc.Is(ETerrain::Walkable) || fieldDesc.Is(ETerrain::Unreachable)))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
             break;
     }
 
@@ -164,7 +164,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
     for(; tUnwalkable.value < world.GetDescription().terrain.size(); tUnwalkable.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tUnwalkable);
-        if(fieldDesc.kind == TerrainKind::WATER && (!fieldDesc.Is(ETerrain::Walkable) || fieldDesc.Is(ETerrain::Unreachable)))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
             break;
     }
 
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
     for(; tUnwalkable.value < world.GetDescription().terrain.size(); tUnwalkable.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tUnwalkable);
-        if(fieldDesc.kind == TerrainKind::WATER && (!fieldDesc.Is(ETerrain::Walkable) || fieldDesc.Is(ETerrain::Unreachable)))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
             break;
     }
 
@@ -272,9 +272,9 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
 BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
 {
     GamePlayer& p0 = world.GetPlayer(0);
-    MapPoint milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
+    MapPoint milBld0Pos = p0.GetHQPos() + MapPoint(5, 0);
     GamePlayer& p1 = world.GetPlayer(1);
-    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
+    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(5, 0);
     nobMilitary* milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_ROMANS));
     nobMilitary* milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
 
@@ -282,7 +282,7 @@ BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
     for(; tUnwalkable.value < world.GetDescription().terrain.size(); tUnwalkable.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tUnwalkable);
-        if(fieldDesc.kind == TerrainKind::WATER && (!fieldDesc.Is(ETerrain::Walkable) || fieldDesc.Is(ETerrain::Unreachable)))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
             break;
     }
 
@@ -320,7 +320,7 @@ BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
         unsigned distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0, 1u); // far
+        BOOST_REQUIRE_EQUAL(distance0, 3u); // far
     }
 }
 
