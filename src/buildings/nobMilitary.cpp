@@ -152,8 +152,9 @@ void nobMilitary::Serialize_nobMilitary(SerializedGameData& sgd) const
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
     : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()), coinsDisabled(sgd.PopBool()),
-      coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()),
-      capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()), is_regulating_troops(false)
+      coinsDisabledVirtual(coinsDisabled), frontier_distance(FrontierDistance(sgd.PopUnsignedChar())), size(sgd.PopUnsignedChar()),
+      capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()), goldorder_event(sgd.PopEvent()), upgrade_event(sgd.PopEvent()),
+      is_regulating_troops(false)
 {
     sgd.PopObjectContainer(ordered_troops, GOT_NOF_PASSIVESOLDIER);
     sgd.PopObjectContainer(ordered_coins, GOT_WARE);
@@ -320,7 +321,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 {
     // Umgebung nach Militärgebäuden absuchen
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
-    frontier_distance = 0;
+    frontier_distance = FAR_BORDER;
 
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
@@ -333,13 +334,13 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             if(gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE)
                && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             {
-                frontier_distance = 0;
+                frontier_distance = FAR_BORDER;
             }
             // in nahem Umkreis, also Grenzen berühren sich
             else if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius()) // warum erzeugtn das ne warning in vs2008?
             {
                 // Grenznähe entsprechend setzen
-                frontier_distance = 3;
+                frontier_distance = NEAR_BORDER;
 
                 // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
                 if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
@@ -350,7 +351,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             {
                 // Grenznähe entsprechend setzen
                 if(!frontier_distance)
-                    frontier_distance = 1;
+                    frontier_distance = MID_BORDER;
 
                 // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
                 if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
@@ -364,7 +365,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 {
                     // Grenznähe entsprechend setzen
                     if(!frontier_distance)
-                        frontier_distance = 1;
+                        frontier_distance = MID_BORDER;
 
                     // dort auch entsprechend setzen
                     mil->NewEnemyMilitaryBuilding(1);
@@ -374,11 +375,11 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
     }
 
     // Evtl. Hafenpunkte in der N? mit ber?htigen
-    if(frontier_distance <= 1)
+    if(frontier_distance <= MID_BORDER)
         if(gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
         {
             // if(gwg->IsAHarborInSeaAttackDistance(MapPoint(x,y)))
-            frontier_distance = 2;
+            frontier_distance = HARBOR;
         }
 
     // Truppen schicken
@@ -388,17 +389,17 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 {
     // Neues Grenzgebäude in der Nähe --> Distanz entsprechend setzen
-    if(distance == 3)
+    if(distance == NEAR_BORDER)
     {
         // Nah
-        frontier_distance = 3;
+        frontier_distance = NEAR_BORDER;
     }
     // in mittlerem Umkreis?
-    else if(distance == 1)
+    else if(distance == MID_BORDER)
     {
         // Mittel (nur wenns vorher auf weit weg war)
         if(!frontier_distance)
-            frontier_distance = 1;
+            frontier_distance = MID_BORDER;
     }
 
     RegulateTroops();
