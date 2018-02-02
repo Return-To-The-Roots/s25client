@@ -40,10 +40,10 @@ public:
     /// Distance to the next enemy border
     enum FrontierDistance
     {
-        FAR_BORDER = 0, /// next military building is far away
-        MID_BORDER,     /// Next military building is in reachable range
-        HARBOR,         /// Military building is near a harbor
-        NEAR_BORDER,    /// Military building is next to a border
+        DIST_FAR = 0, /// next military building is far away
+        DIST_MID,     /// Next military building is in reachable range
+        DIST_HARBOR,  /// Military building is near a harbor
+        DIST_NEAR     /// Military building is next to a border
     };
 
 private:

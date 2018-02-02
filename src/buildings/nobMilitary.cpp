@@ -321,7 +321,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 {
     // Umgebung nach Militärgebäuden absuchen
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
-    frontier_distance = FAR_BORDER;
+    frontier_distance = DIST_FAR;
 
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
@@ -334,13 +334,13 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             if(gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE)
                && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             {
-                frontier_distance = FAR_BORDER;
+                frontier_distance = DIST_FAR;
             }
             // in nahem Umkreis, also Grenzen berühren sich
             else if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius()) // warum erzeugtn das ne warning in vs2008?
             {
                 // Grenznähe entsprechend setzen
-                frontier_distance = NEAR_BORDER;
+                frontier_distance = DIST_NEAR;
 
                 // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
                 if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
@@ -351,7 +351,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             {
                 // Grenznähe entsprechend setzen
                 if(!frontier_distance)
-                    frontier_distance = MID_BORDER;
+                    frontier_distance = DIST_MID;
 
                 // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
                 if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
@@ -365,7 +365,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 {
                     // Grenznähe entsprechend setzen
                     if(!frontier_distance)
-                        frontier_distance = MID_BORDER;
+                        frontier_distance = DIST_MID;
 
                     // dort auch entsprechend setzen
                     mil->NewEnemyMilitaryBuilding(1);
@@ -375,11 +375,11 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
     }
 
     // Evtl. Hafenpunkte in der N? mit ber?htigen
-    if(frontier_distance <= MID_BORDER)
+    if(frontier_distance <= DIST_MID)
         if(gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
         {
             // if(gwg->IsAHarborInSeaAttackDistance(MapPoint(x,y)))
-            frontier_distance = HARBOR;
+            frontier_distance = DIST_HARBOR;
         }
 
     // Truppen schicken
@@ -389,19 +389,18 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 void nobMilitary::NewEnemyMilitaryBuilding(const unsigned short distance)
 {
     // Neues Grenzgebäude in der Nähe --> Distanz entsprechend setzen
-    if(distance == NEAR_BORDER)
+    if(distance == DIST_NEAR)
     {
         // Nah
-        frontier_distance = NEAR_BORDER;
+        frontier_distance = DIST_NEAR;
     }
     // in mittlerem Umkreis?
-    else if(distance == MID_BORDER)
+    else if(distance == DIST_MID)
     {
         // Mittel (nur wenns vorher auf weit weg war)
         if(!frontier_distance)
-            frontier_distance = MID_BORDER;
+            frontier_distance = DIST_MID;
     }
-
     RegulateTroops();
 }
 

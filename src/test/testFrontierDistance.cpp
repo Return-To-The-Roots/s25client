@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
             break;
     }
 
@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
         for(; tUnreachable.value < world.GetDescription().terrain.size(); tUnreachable.value++)
         {
             TerrainDesc fieldDesc = world.GetDescription().get(tUnreachable);
-            if(fieldDesc.kind == searchedTerrain && (!fieldDesc.Is(ETerrain::Walkable) || fieldDesc.Is(ETerrain::Unreachable)))
+            if(fieldDesc.kind == searchedTerrain && fieldDesc.Is(ETerrain::Unreachable))
                 break;
         }
 
@@ -164,7 +164,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
             break;
     }
 
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
             break;
     }
 
@@ -282,7 +282,7 @@ BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable) && !fieldDesc.Is(ETerrain::Unreachable))
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
             break;
     }
 
