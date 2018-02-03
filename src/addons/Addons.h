@@ -67,4 +67,6 @@
 
 #include "addons/AddonNumScoutsExploration.h"
 
+#include "addons/AddonFrontierDistanceReachable.h"
+
 #endif // !ADDONS_H_INCLUDED

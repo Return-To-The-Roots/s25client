@@ -36,6 +36,17 @@ class GameEvent;
 /// Stellt ein Militärgebäude beliebiger Größe (also von Baracke bis Festung) dar
 class nobMilitary : public nobBaseMilitary
 {
+public:
+    /// Distance to the next enemy border
+    enum FrontierDistance
+    {
+        DIST_FAR = 0, /// next military building is far away
+        DIST_MID,     /// Next military building is in reachable range
+        DIST_HARBOR,  /// Military building is near a harbor
+        DIST_NEAR     /// Military building is next to a border
+    };
+
+private:
     /// wurde das Gebäude gerade neu gebaut (muss also die Landgrenze beim Eintreffen von einem Soldaten neu berechnet werden?)
     bool new_built;
     /// Anzahl der Goldmünzen im Gebäude
@@ -43,7 +54,7 @@ class nobMilitary : public nobBaseMilitary
     /// Gibt an, ob Goldmünzen gesperrt worden (letzteres nur visuell, um Netzwerk-Latenzen zu verstecken)
     bool coinsDisabled, coinsDisabledVirtual;
     /// Entfernung zur freindlichen Grenze (woraus sich dann die Besatzung ergibt) von 0-3, 0 fern, 3 nah, 2 Hafen!
-    unsigned char frontier_distance;
+    FrontierDistance frontier_distance;
     /// Größe bzw Typ des Militärgebäudes (0 = Baracke, 3 = Festung)
     unsigned char size;
     /// Bestellte Soldaten
@@ -121,7 +132,7 @@ public:
     bool IsUseless() const;
     bool IsAttackable(unsigned playerIdx) const override;
     /// Gibt Distanz zurück
-    unsigned char GetFrontierDistance() const { return frontier_distance; }
+    FrontierDistance GetFrontierDistance() const { return frontier_distance; }
 
     /// Berechnet die gewünschte Besatzung je nach Grenznähe
     unsigned CalcRequiredNumTroops() const;

@@ -36,8 +36,9 @@
 // 00A Marcus
 // 00B Ribosom
 // 00C Flamefire
+// 00D Shawn8901
 
-// Do not forget to add your Addon to GlobalGameSettings::reset @ GlobalGameSettings.cpp!
+// Do not forget to add your Addon to GlobalGameSettings::clearAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
 
 // AAA = Author
@@ -72,7 +73,9 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  MILITARY_HITPOINTS = 0x00B00000,
 
-                 NUM_SCOUTS_EXPLORATION = 0x00C00000)
+                 NUM_SCOUTS_EXPLORATION = 0x00C00000,
+
+                 FRONTIER_DISTANCE_REACHABLE = 0x00D0000)
 //-V:AddonId:801
 
 enum AddonGroup

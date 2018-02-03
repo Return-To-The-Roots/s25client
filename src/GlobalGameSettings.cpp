@@ -124,6 +124,8 @@ void GlobalGameSettings::registerAllAddons()
     registerAddon(new AddonMilitaryHitpoints);
 
     registerAddon(new AddonNumScoutsExploration);
+
+    registerAddon(new AddonFrontierDistanceReachable);
 }
 
 void GlobalGameSettings::resetAddons()
