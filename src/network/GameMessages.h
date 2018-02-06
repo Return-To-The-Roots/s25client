@@ -531,25 +531,30 @@ public:
     }
 };
 
-/// gehende Player-Kicked-Nachricht
 class GameMessage_Player_Kicked : public GameMessageWithPlayer
 {
 public:
     KickReason cause;
+    /// Meta param to determine the origin of the kick
+    uint32_t param;
 
     GameMessage_Player_Kicked() : GameMessageWithPlayer(NMS_PLAYER_KICKED) {} //-V730
-    GameMessage_Player_Kicked(uint8_t player, KickReason cause) : GameMessageWithPlayer(NMS_PLAYER_KICKED, player), cause(cause) {}
+    GameMessage_Player_Kicked(uint8_t player, KickReason cause, uint32_t param)
+        : GameMessageWithPlayer(NMS_PLAYER_KICKED, player), cause(cause), param(param)
+    {}
 
     void Serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::Serialize(ser);
         ser.PushUnsignedChar(cause);
+        ser.PushUnsignedInt(param);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::Deserialize(ser);
         cause = KickReason(ser.PopUnsignedChar());
+        param = ser.PopUnsignedInt();
     }
 
     bool Run(GameMessageInterface* callback) const override { return callback->OnGameMessage(*this); }

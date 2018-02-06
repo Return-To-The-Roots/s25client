@@ -78,7 +78,7 @@ private:
     void SendNWFDone(const NWFServerInfo& info);
 
     /// Kick a player (free slot and set socket to invalid. Does NOT remove it from NetworkPlayers)
-    void KickPlayer(uint8_t playerId, KickReason cause = NP_NOCAUSE);
+    void KickPlayer(uint8_t playerId, KickReason cause, uint32_t param);
 
     void ClientWatchDog();
 

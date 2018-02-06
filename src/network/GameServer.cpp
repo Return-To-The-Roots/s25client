@@ -355,7 +355,7 @@ void GameServer::RunStateLoading()
             BOOST_FOREACH(const NWFPlayerInfo& player, nwfInfo.getPlayerInfos())
             {
                 if(player.isLagging)
-                    KickPlayer(player.id, NP_PINGTIMEOUT);
+                    KickPlayer(player.id, NP_PINGTIMEOUT, __LINE__);
             }
         }
         return;
@@ -523,7 +523,7 @@ void GameServer::SendToAll(const GameMessage& msg)
     }
 }
 
-void GameServer::KickPlayer(uint8_t playerId, KickReason cause)
+void GameServer::KickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
 {
     if(playerId >= playerInfos.size())
         return;
@@ -536,7 +536,7 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause)
         return;
     playerInfo.ps = PS_FREE;
 
-    SendToAll(GameMessage_Player_Kicked(playerId, cause));
+    SendToAll(GameMessage_Player_Kicked(playerId, cause, param));
 
     // If we are ingame, replace by KI
     if(state == SS_GAME || state == SS_LOADING)
@@ -547,7 +547,7 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause)
         CancelCountdown();
 
     AnnounceStatusChange();
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d)\n") % unsigned(playerId) % unsigned(cause);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d)\n") % unsigned(playerId) % unsigned(cause) % unsigned(param);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -569,7 +569,7 @@ void GameServer::ClientWatchDog()
             if(set.InSet(player.socket))
             {
                 LOG.write(_("SERVER: Error on socket of player %1%, bye bye!\n")) % player.playerId;
-                KickPlayer(player.playerId, NP_CONNECTIONLOST);
+                KickPlayer(player.playerId, NP_CONNECTIONLOST, __LINE__);
             }
         }
     }
@@ -579,7 +579,7 @@ void GameServer::ClientWatchDog()
         if(player.hasTimedOut())
         {
             LOG.write(_("SERVER: Reserved slot %1% freed due to timeout\n")) % player.playerId;
-            KickPlayer(player.playerId, NP_PINGTIMEOUT);
+            KickPlayer(player.playerId, NP_PINGTIMEOUT, __LINE__);
         } else
             player.doPing();
     }
@@ -699,7 +699,7 @@ void GameServer::CheckAndKickLaggingPlayers()
     {
         const unsigned timeOut = player.getLagTimeOut();
         if(timeOut == 0)
-            KickPlayer(player.playerId, NP_PINGTIMEOUT);
+            KickPlayer(player.playerId, NP_PINGTIMEOUT, __LINE__);
         else if(timeOut <= 30
                 && (timeOut % 5 == 0 || timeOut < 5)) // Notify every 5s if max 30s are remaining, if less than 5s notify every second
             LOG.write(_("SERVER: Kicking player %1% in %2% seconds\n")) % player.playerId % timeOut;
@@ -782,7 +782,7 @@ void GameServer::FillPlayerQueues()
                     if(!player.receiveMsgs())
                     {
                         LOG.write(_("SERVER: Receiving Message for player %1% failed, kicking...\n")) % player.playerId;
-                        KickPlayer(player.playerId, NP_CONNECTIONLOST);
+                        KickPlayer(player.playerId, NP_CONNECTIONLOST, __LINE__);
                     } else
                         msgReceived = true;
                 }
@@ -813,7 +813,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
 
@@ -830,7 +830,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Type& msg)
     player->sendMsgAsync(new GameMessage_Server_TypeOK(typeok));
 
     if(typeok != 0)
-        KickPlayer(msg.senderPlayerID, NP_CONNECTIONLOST);
+        KickPlayer(msg.senderPlayerID, NP_CONNECTIONLOST, __LINE__);
     return true;
 }
 
@@ -841,7 +841,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
 
@@ -860,7 +860,7 @@ bool GameServer::OnGameMessage(const GameMessage_Server_Password& msg)
     player->sendMsgAsync(new GameMessage_Server_Password(passwordok));
 
     if(passwordok == "false")
-        KickPlayer(msg.senderPlayerID, NP_WRONGPASSWORD);
+        KickPlayer(msg.senderPlayerID, NP_WRONGPASSWORD, __LINE__);
     return true;
 }
 
@@ -879,7 +879,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     // Can't do this. Have to have a joined player
@@ -896,7 +896,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_State& msg)
     {
         // oh ein spieler, weg mit ihm!
         if(GetNetworkPlayer(playerID))
-            KickPlayer(playerID, NP_NOCAUSE);
+            KickPlayer(playerID, NP_NOCAUSE, __LINE__);
 
         if(mapinfo.type == MAPTYPE_SAVEGAME)
         {
@@ -944,7 +944,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Name& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     int playerID = GetTargetPlayer(msg);
@@ -966,7 +966,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Nation& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     int playerID = GetTargetPlayer(msg);
@@ -986,7 +986,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     int playerID = GetTargetPlayer(msg);
@@ -1006,7 +1006,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     int playerID = GetTargetPlayer(msg);
@@ -1025,7 +1025,7 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Ready& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     int playerID = GetTargetPlayer(msg);
@@ -1048,7 +1048,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
@@ -1062,7 +1062,7 @@ bool GameServer::OnGameMessage(const GameMessage_MapRequest& msg)
     } else if(player->mapDataSent)
     {
         // Don't send again
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
     } else
     {
         // Send map data
@@ -1099,7 +1099,7 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
 {
     if(state != SS_CONFIG)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     GameServerPlayer* player = GetNetworkPlayer(msg.senderPlayerID);
@@ -1119,13 +1119,13 @@ bool GameServer::OnGameMessage(const GameMessage_Map_Checksum& msg)
     if(!checksumok)
     {
         if(player->mapDataSent)
-            KickPlayer(msg.senderPlayerID, NP_WRONGCHECKSUM);
+            KickPlayer(msg.senderPlayerID, NP_WRONGCHECKSUM, __LINE__);
     } else
     {
         JoinPlayerInfo& playerInfo = playerInfos[msg.senderPlayerID];
         // Used? Then we got this twice or some error happened. Remove him
         if(playerInfo.isUsed())
-            KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+            KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         else
         {
             // den anderen Spielern mitteilen das wir einen neuen haben
@@ -1159,7 +1159,7 @@ bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
 {
     if(state != SS_GAME)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(msg.gf_length);
@@ -1171,7 +1171,7 @@ bool GameServer::OnGameMessage(const GameMessage_GameCommand& msg)
     int targetPlayerId = GetTargetPlayer(msg);
     if((state != SS_GAME && state != SS_LOADING) || targetPlayerId < 0 || (state == SS_LOADING && !msg.cmds.gcs.empty()))
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
 
@@ -1189,7 +1189,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
 {
     if(state != SS_GAME)
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     bool foundPlayer = false;
@@ -1241,7 +1241,7 @@ bool GameServer::OnGameMessage(const GameMessage_AsyncLog& msg)
     BOOST_FOREACH(const AsyncLog& log, asyncLogs)
     {
         if(log.checksum != hostChecksum)
-            KickPlayer(log.playerId, NP_ASYNC);
+            KickPlayer(log.playerId, NP_ASYNC, __LINE__);
     }
     return true;
 }
@@ -1250,7 +1250,7 @@ bool GameServer::OnGameMessage(const GameMessage_RemoveLua& msg)
 {
     if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     mapinfo.luaFilepath.clear();
@@ -1265,7 +1265,7 @@ bool GameServer::OnGameMessage(const GameMessage_Countdown& msg)
 {
     if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
 
@@ -1296,7 +1296,7 @@ bool GameServer::OnGameMessage(const GameMessage_CancelCountdown& msg)
 {
     if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
 
@@ -1325,7 +1325,7 @@ bool GameServer::OnGameMessage(const GameMessage_GGSChange& msg)
 {
     if(state != SS_CONFIG || !IsHost(msg.senderPlayerID))
     {
-        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG);
+        KickPlayer(msg.senderPlayerID, NP_INVALIDMSG, __LINE__);
         return true;
     }
     ggs_ = msg.ggs;

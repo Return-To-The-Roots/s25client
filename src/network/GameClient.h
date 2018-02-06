@@ -139,7 +139,6 @@ public:
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const std::string& path);
-    /// Replay-Geschwindigkeit erhöhen/verringern
     void SetPause(bool pause);
     void TogglePause() { SetPause(!framesinfo.isPaused); }
     /// Schaltet FoW im Replaymodus ein/aus
