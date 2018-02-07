@@ -547,7 +547,7 @@ void GameServer::KickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
         CancelCountdown();
 
     AnnounceStatusChange();
-    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d)\n") % unsigned(playerId) % unsigned(cause) % unsigned(param);
+    LOG.writeToFile("SERVER >>> BROADCAST: NMS_PLAYERKICKED(%d,%d,%d)\n") % unsigned(playerId) % unsigned(cause) % unsigned(param);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

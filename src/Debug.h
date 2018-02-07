@@ -19,6 +19,7 @@
 
 #include "random/Random.h"
 #include "libutil/Socket.h"
+#include <vector>
 
 class BinaryFile;
 
@@ -31,13 +32,15 @@ public:
     DebugInfo();
     ~DebugInfo();
 
+    static std::vector<void*> GetStackTrace(void* ctx = NULL);
+
     bool Send(const void* buffer, int length);
     bool SendSigned(int32_t i);
     bool SendUnsigned(uint32_t i);
     bool SendString(const char* str, unsigned len = 0);
     bool SendString(const std::string& str);
 
-    bool SendStackTrace(void* ctx = NULL);
+    bool SendStackTrace(const std::vector<void*>& stacktrace);
     bool SendReplay();
     bool SendAsyncLog(const std::string& asyncLogFilepath);
     bool SendFile(BinaryFile& file);

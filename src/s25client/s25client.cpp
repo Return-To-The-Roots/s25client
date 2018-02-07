@@ -31,6 +31,7 @@
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/LocaleHelper.h"
 #include "libutil/Log.h"
+#include "libutil/StringConversion.h"
 #include "libutil/System.h"
 #include "libutil/error.h"
 
@@ -66,6 +67,7 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -151,16 +153,26 @@ void terminateProgramm()
 
 void handleException(void* pCtx = NULL)
 {
+    std::vector<void*> stacktrace = DebugInfo::GetStackTrace(pCtx);
+    try
+    {
+        LogTarget target = (LOG.getFileWriter()) ? LogTarget::FileAndStderr : LogTarget::Stderr;
+        LOG.write("RttR crashed. Backtrace:\n", target);
+        // Don't let locale mess up addresses
+        s25util::ClassicImbuedStream<std::stringstream> ss;
+        BOOST_FOREACH(void* p, stacktrace)
+            ss << p << "\n";
+        LOG.write(ss.str(), target);
+    } catch(...)
+    {
+        // Could not write stacktrace. Ignore errors
+    }
     if(shouldSendDebugData())
     {
-#ifdef _WIN32
-        // TODO: Why?
-        VIDEODRIVER.DestroyScreen();
-#endif // _WIN32
         DebugInfo di;
 
         di.SendReplay();
-        di.SendStackTrace(pCtx);
+        di.SendStackTrace(stacktrace);
     }
 
     if(SETTINGS.global.submit_debug_data == 0)

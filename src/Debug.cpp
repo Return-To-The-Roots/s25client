@@ -132,7 +132,7 @@ bool captureBacktrace(std::vector<void*>& stacktrace, LPCONTEXT ctx = NULL)
             stacktrace.resize(i);
             break;
         }
-        LOG.write("Reading stack frame %1%\n") % i;
+        LOG.write("Reading stack frame %1%\n", LogTarget::Stdout) % i;
         stacktrace[i] = (void*)frame.AddrPC.Offset;
     }
 
@@ -190,6 +190,18 @@ DebugInfo::~DebugInfo()
     sock.Close();
 }
 
+std::vector<void*> DebugInfo::GetStackTrace(void* ctx)
+{
+    std::vector<void*> stacktrace(256);
+#ifdef _MSC_VER
+    if(!captureBacktrace(stacktrace, static_cast<LPCONTEXT>(ctx)))
+        stacktrace.clear();
+#else
+    captureBacktrace(stacktrace);
+#endif
+    return stacktrace;
+}
+
 bool DebugInfo::Send(const void* buffer, int length)
 {
     char* ptr = (char*)buffer;
@@ -242,15 +254,8 @@ bool DebugInfo::SendString(const std::string& str)
     return SendString(str.c_str(), str.length() + 1); // +1 to include NULL terminator
 }
 
-bool DebugInfo::SendStackTrace(void* ctx)
+bool DebugInfo::SendStackTrace(const std::vector<void*>& stacktrace)
 {
-    std::vector<void*> stacktrace(256);
-#ifdef _MSC_VER
-    if(!captureBacktrace(stacktrace, static_cast<LPCONTEXT>(ctx)))
-        return false;
-#else
-    captureBacktrace(stacktrace);
-#endif
     if(stacktrace.empty())
         return false;
 

@@ -612,7 +612,7 @@ bool GameClient::OnGameMessage(const GameMessage_Player_Kicked& msg)
     {
         if(msg.player >= gameLobby->getNumPlayers())
             return true;
-        GetPlayer(msg.player).ps = PS_FREE;
+        gameLobby->getPlayer(msg.player).ps = PS_FREE;
     } else if(state == CS_LOADING || state == CS_LOADED || state == CS_GAME)
     {
         // Im Spiel anzeigen, dass der Spieler das Spiel verlassen hat
@@ -820,7 +820,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
     std::stringstream checksum_list;
     for(unsigned i = 0; i < msg.checksums.size(); ++i)
     {
-        checksum_list << game->world.GetPlayer(i).name << ": " << msg.checksums[i];
+        checksum_list << GetPlayer(i).name << ": " << msg.checksums[i];
         if(i + 1 < msg.checksums.size())
             checksum_list << ", ";
     }
@@ -835,7 +835,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_Async& msg)
 
     std::string fileName = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
     fileName += "_" + s25util::toStringClassic(mainPlayer.playerId) + "_";
-    fileName += game->world.GetPlayer(mainPlayer.playerId).name;
+    fileName += GetPlayer(mainPlayer.playerId).name;
 
     std::string filePathSave = RTTRCONFIG.ExpandPath(FILE_PATHS[85]) + "/" + makePortableFileName(fileName + ".sav");
     std::string filePathLog = RTTRCONFIG.ExpandPath(FILE_PATHS[47]) + "/" + makePortableFileName(fileName + "Player.log");
@@ -1344,8 +1344,8 @@ void GameClient::WritePlayerInfo(SavedFile& file)
 {
     RTTR_Assert(state == CS_LOADING || state == CS_LOADED || state == CS_GAME);
     // Spielerdaten
-    for(unsigned i = 0; i < game->world.GetNumPlayers(); ++i)
-        file.AddPlayer(game->world.GetPlayer(i));
+    for(unsigned i = 0; i < GetNumPlayers(); ++i)
+        file.AddPlayer(GetPlayer(i));
 }
 
 void GameClient::OnGameStart()
