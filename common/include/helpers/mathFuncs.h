@@ -25,6 +25,17 @@ namespace helpers {
 int gcd(int a, int b);
 /// Returns the result of "divident / divisor" rounded to the nearest integer value
 unsigned roundedDiv(unsigned dividend, unsigned divisor);
+/// Clamp the value into [min, max]
+template<typename T>
+T clamp(T val, T min, T max)
+{
+    if(val <= min)
+        return min;
+    else if(val >= max)
+        return max;
+    else
+        return val;
+}
 } // namespace helpers
 
 #endif // mathFuncs_h__

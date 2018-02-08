@@ -1627,6 +1627,8 @@ void GameServer::SetPaused(bool paused)
         return;
     framesinfo.isPaused = paused;
     SendToAll(GameMessage_Pause(framesinfo.isPaused));
+    BOOST_FOREACH(GameServerPlayer& player, networkPlayers)
+        player.setNotLagging();
 }
 
 JoinPlayerInfo& GameServer::GetJoinPlayer(unsigned playerIdx)
