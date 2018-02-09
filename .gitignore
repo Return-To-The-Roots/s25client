@@ -56,6 +56,7 @@
 /build/install_manifest.txt
 /build/ipch
 /build/lib
+/build/libexec
 /build/libendian
 /build/liblobby
 /build/libsiedler2

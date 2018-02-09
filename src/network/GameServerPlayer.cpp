@@ -26,7 +26,7 @@
 using boost::chrono::seconds;
 
 template<class T_Duration>
-inline BOOST_CONSTEXPR typename boost::enable_if<boost::chrono::detail::is_duration<T_Duration>, int>::type
+inline typename boost::enable_if<boost::chrono::detail::is_duration<T_Duration>, int>::type
 toIntSeconds(const T_Duration& duration)
 {
     seconds sec = boost::chrono::duration_cast<seconds>(duration);
