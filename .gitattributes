@@ -15,6 +15,10 @@
 *.hh text
 *.sh text
 *.md text
+*.rc text
+*.def text
+*.depend text
+INSTALL text
 
 # Compiled Object files
 *.slo binary
