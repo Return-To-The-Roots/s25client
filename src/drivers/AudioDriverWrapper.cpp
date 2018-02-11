@@ -21,11 +21,11 @@
 #include "Settings.h"
 #include "VideoDriverWrapper.h"
 #include "driver/AudioInterface.h"
+#include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Sound.h"
+#include "libutil/Log.h"
 #include "libutil/tmpFile.h"
 #include <ostream>
-#include "libutil/Log.h"
-#include "mygettext/mygettext.h"
 
 AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(NULL), loadedFromDll(false) {}
 

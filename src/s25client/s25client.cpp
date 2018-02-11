@@ -277,7 +277,7 @@ bool InitDirectories()
     LOG.write("Starting in %s\n", LogTarget::Stdout) % curPath;
 
     // diverse dirs anlegen
-    boost::array<unsigned, 8> dirs = {{94, 41, 47, 48, 51, 85, 98, 99}}; // settingsdir muss zuerst angelegt werden (94)
+    boost::array<unsigned, 9> dirs = {{94, 41, 47, 48, 51, 85, 98, 99, 100}}; // settingsdir muss zuerst angelegt werden (94)
 
     std::string oldSettingsDir;
 

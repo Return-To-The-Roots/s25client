@@ -24,13 +24,12 @@
 #include "WindowManager.h"
 #include "driver/VideoInterface.h"
 #include "helpers/roundToNextPow2.h"
+#include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
 #include <algorithm>
 #include <ctime>
 #include <sstream>
-#include "libutil/Log.h"
-#include "mygettext/mygettext.h"
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #include <valgrind/memcheck.h>
 #endif

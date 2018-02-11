@@ -50,6 +50,7 @@ enum KeyType
     KT_END,  // Ende
     KT_HOME, // Pos1
     KT_ESCAPE,
+    KT_PRINT,
     KT_CHAR = 0xFFFFFFFF
 };
 

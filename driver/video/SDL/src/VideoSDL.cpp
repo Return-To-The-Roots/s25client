@@ -293,9 +293,9 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
 #ifdef _WIN32
     // Grabbing input in fullscreen is very buggy on windows. For one the mouse might jump (#806) which can be fixed by patching SDL:
     // https://github.com/joncampbell123/dosbox-x/commit/f343dc2ec012699d04584b898925e3501a9b913c
-    // But doing that on the build server is to much work as SDL2 has fixed that already. The work-around in user code (this file) did not work (#809)
-    // Furthermore there is a bug (maybe SDL 1.2.14 only), that the cursor gets locked to the top left corner when alt-tab is used (#811)
-    // So we force SDL to not grab the input
+    // But doing that on the build server is to much work as SDL2 has fixed that already. The work-around in user code (this file) did not
+    // work (#809) Furthermore there is a bug (maybe SDL 1.2.14 only), that the cursor gets locked to the top left corner when alt-tab is
+    // used (#811) So we force SDL to not grab the input
     if(isFullscreen_)
     {
         // This is a hack (flags should be read-only) but we cannot ungrab input in fullscreen mode
@@ -438,6 +438,7 @@ bool VideoSDL::MessageLoop()
                     case SDLK_HOME: ke.kt = KT_HOME; break;
                     case SDLK_END: ke.kt = KT_END; break;
                     case SDLK_ESCAPE: ke.kt = KT_ESCAPE; break;
+                    case SDLK_PRINT: ke.kt = KT_PRINT; break;
                     case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
                     case SDLK_v:
                         if(SDL_GetModState() & KMOD_CTRL)
@@ -460,6 +461,8 @@ bool VideoSDL::MessageLoop()
                 {
                     ke.kt = KT_CHAR;
                     ke.c = ev.key.keysym.unicode;
+                    if(ke.c == 0u)
+                        break;
                 }
 
                 CallBack->Msg_KeyDown(ke);
