@@ -158,9 +158,9 @@ void iwMusicPlayer::Msg_ListChooseItem(const unsigned ctrl_id, const unsigned se
     changed = false;
 }
 
-std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& combo_str)
+std::string iwMusicPlayer::GetFullPlaylistPath(const std::string& name)
 {
-    return (RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + combo_str + ".pll");
+    return (RTTRCONFIG.ExpandPath(FILE_PATHS[90]) + "/" + name + ".pll");
 }
 
 void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
@@ -340,7 +340,7 @@ void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
                 valid = false;
 
             Playlist pl;
-            if(!pl.SaveAs(GetFullPlaylistPath(msg), true))
+            if(!pl.SaveAs(msg, true))
                 valid = false;
 
             if(valid)
