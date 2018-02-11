@@ -80,12 +80,7 @@ unsigned GameServerPlayer::getLagTimeOut() const
     if(!isLagging)
         return LAG_TIMEOUT;
     int timeout = toIntSeconds(lagStartTime + seconds(LAG_TIMEOUT) - Clock::now());
-    timeout = std::max(0, timeout);
-    seconds elapsed = boost::chrono::duration_cast<seconds>(Clock::now() - lagStartTime);
-    int timeout2 = (elapsed > seconds(LAG_TIMEOUT)) ? 0 : static_cast<int>((seconds(LAG_TIMEOUT) - elapsed).count());
-    if(timeout != timeout2)
-        LOG.write("Different timeouts: %1%!=%2%") % timeout % timeout2;
-    return static_cast<unsigned>(timeout);
+    return static_cast<unsigned>(std::max(0, timeout));
 }
 
 void GameServerPlayer::setLagging()
