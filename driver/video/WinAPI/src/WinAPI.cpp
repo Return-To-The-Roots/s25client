@@ -564,6 +564,7 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
         case VK_END: ke.kt = KT_END; break;
         case VK_HOME: ke.kt = KT_HOME; break;
         case VK_ESCAPE: ke.kt = KT_ESCAPE; break;
+        case VK_PRINT: ke.kt = KT_PRINT; break;
         default:
         {
             // Die 12 F-Tasten

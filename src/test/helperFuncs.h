@@ -107,8 +107,8 @@ struct LogAccessor
         BOOST_REQUIRE_MESSAGE((allowEmpty) || !log.empty(), "Log does not contain: " << (content));                              \
         BOOST_REQUIRE_MESSAGE(log.empty() || log.find(content) < log.find('\n'), "Unexpected log: " << log << "\n"               \
                                                                                                     << "Expected: " << content); \
-    \
-} while(false)
+                                                                                                                                 \
+    } while(false)
 
 #define RTTR_REQUIRE_ASSERT(stmt)                              \
     do                                                         \

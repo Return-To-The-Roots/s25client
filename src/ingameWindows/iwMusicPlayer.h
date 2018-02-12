@@ -57,8 +57,8 @@ public:
     /// Updatet die Playlist- Combo, selektiert entsprechenden Eintrag, falls vorhanden
     void UpdatePlaylistCombo(const std::string& highlight_entry);
 
-    /// Hilfsfunktion, die vollständigen Pfad zu einem Combobox-Eintrag liefert
-    static std::string GetFullPlaylistPath(const std::string& combo_str);
+    /// Get the full path to a playlist by its name
+    static std::string GetFullPlaylistPath(const std::string& name);
 
 private:
     void Msg_ListChooseItem(const unsigned ctrl_id, const unsigned selection) override;

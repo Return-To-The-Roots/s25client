@@ -21,7 +21,9 @@
 #include "Settings.h"
 #include "VideoDriverWrapper.h"
 #include "driver/AudioInterface.h"
+#include "mygettext/mygettext.h"
 #include "libsiedler2/ArchivItem_Sound.h"
+#include "libutil/Log.h"
 #include "libutil/tmpFile.h"
 #include <ostream>
 
@@ -76,10 +78,8 @@ void AudioDriverWrapper::SetMusicVolume(uint8_t volume)
 
 std::string AudioDriverWrapper::GetName() const
 {
-    if(audiodriver_)
-        return audiodriver_->GetName();
-    else
-        return "";
+    const char* name = (audiodriver_) ? audiodriver_->GetName() : NULL;
+    return (name) ? name : "";
 }
 
 /// Lädt den Treiber
@@ -111,6 +111,8 @@ bool AudioDriverWrapper::LoadDriver(IAudioDriver* audioDriver)
         UnloadDriver();
         return false;
     }
+
+    LOG.write(_("Loaded audio driver \"%1%\"\n")) % GetName();
 
     return true;
 }

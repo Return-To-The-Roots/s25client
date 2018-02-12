@@ -24,6 +24,7 @@
 #include "lua/GameDataLoader.h"
 #include "mockupDrivers/MockupVideoDriver.h"
 #include "random/Random.h"
+#include "test/helperFuncs.h"
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 #include <iostream>
@@ -90,7 +91,9 @@ void initGUITests()
 {
     installSegFaultHandler();
     BOOST_TEST_CHECKPOINT("Load video driver");
+    LogAccessor logAcc;
     VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
+    RTTR_REQUIRE_LOG_CONTAINS("Loaded", false);
     VIDEODRIVER.CreateScreen(800, 600, false);
     BOOST_TEST_CHECKPOINT("Load dummy files");
     LOADER.LoadDummyGUIFiles();

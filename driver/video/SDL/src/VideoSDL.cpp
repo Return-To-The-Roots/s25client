@@ -267,14 +267,17 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
 
     bool enteredWndMode = !screen || (isFullscreen_ && !fullscreen);
 
-    this->isFullscreen_ = fullscreen;
-
-    screenSize_ = (isFullscreen_) ? FindClosestVideoMode(newSize) : newSize;
+    screenSize_ = (fullscreen) ? FindClosestVideoMode(newSize) : newSize;
 
     if(enteredWndMode)
         SDL_putenv(CENTER_ENV);
+
     screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32,
-                              SDL_HWSURFACE | SDL_OPENGL | (this->isFullscreen_ ? SDL_FULLSCREEN : SDL_RESIZABLE));
+                              SDL_HWSURFACE | SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : SDL_RESIZABLE));
+    // Fallback to non-fullscreen
+    if(!screen && fullscreen)
+        screen = SDL_SetVideoMode(screenSize_.width, screenSize_.height, 32, SDL_HWSURFACE | SDL_OPENGL | SDL_RESIZABLE);
+
     if(enteredWndMode)
         SDL_putenv(UNCENTER_ENV);
 
@@ -285,7 +288,22 @@ bool VideoSDL::SetVideoMode(const VideoMode& newSize, bool fullscreen)
         return false;
     }
 
+    isFullscreen_ = (screen->flags & SDL_FULLSCREEN) != 0;
+
 #ifdef _WIN32
+    // Grabbing input in fullscreen is very buggy on windows. For one the mouse might jump (#806) which can be fixed by patching SDL:
+    // https://github.com/joncampbell123/dosbox-x/commit/f343dc2ec012699d04584b898925e3501a9b913c
+    // But doing that on the build server is to much work as SDL2 has fixed that already. The work-around in user code (this file) did not
+    // work (#809) Furthermore there is a bug (maybe SDL 1.2.14 only), that the cursor gets locked to the top left corner when alt-tab is
+    // used (#811) So we force SDL to not grab the input
+    if(isFullscreen_)
+    {
+        // This is a hack (flags should be read-only) but we cannot ungrab input in fullscreen mode
+        screen->flags &= ~SDL_FULLSCREEN;
+        SDL_WM_GrabInput(SDL_GRAB_OFF);
+        screen->flags |= SDL_FULLSCREEN;
+    }
+
     SDL_SysWMinfo info;
     // get window handle from SDL
     SDL_VERSION(&info.version);
@@ -363,19 +381,6 @@ bool VideoSDL::SwapBuffers()
 bool VideoSDL::MessageLoop()
 {
     static bool mouseMoved = false;
-#ifdef WIN32
-    // There is a bug caused by Windows where queering the mouse position to soon after resetting it will report the old mouse position.
-    // SDL_PollEvent in fullscreen mode does exactly that: Query mouse position relative to window center, if different reset position and
-    // report move Hence calling SDL_PollEvent fast enough after a mouse move will report the same movement until the mouse position is
-    // actually adjusted leading to "jumps" of the cursor (#806).
-    // We work around this by not calling SDL_PollEvent to soon after a mouse move event. Idea and a better implementation is from
-    // https://github.com/joncampbell123/dosbox-x/commit/f343dc2ec012699d04584b898925e3501a9b913c but that requires a change of SDL and
-    // recompilation which is not worth it as SDL2 is not vulnerable to this
-    static Uint32 lastMouseMove = 0;
-    static const Uint32 mousePollIntervall = 1000 / 60; // 60 FPS
-    if(isFullscreen_ && SDL_GetTicks() - lastMouseMove < mousePollIntervall)
-        return true;
-#endif
 
     SDL_Event ev;
     while(SDL_PollEvent(&ev))
@@ -433,6 +438,7 @@ bool VideoSDL::MessageLoop()
                     case SDLK_HOME: ke.kt = KT_HOME; break;
                     case SDLK_END: ke.kt = KT_END; break;
                     case SDLK_ESCAPE: ke.kt = KT_ESCAPE; break;
+                    case SDLK_PRINT: ke.kt = KT_PRINT; break;
                     case SDLK_BACKQUOTE: ev.key.keysym.unicode = '^'; break;
                     case SDLK_v:
                         if(SDL_GetModState() & KMOD_CTRL)
@@ -455,6 +461,8 @@ bool VideoSDL::MessageLoop()
                 {
                     ke.kt = KT_CHAR;
                     ke.c = ev.key.keysym.unicode;
+                    if(ke.c == 0u)
+                        break;
                 }
 
                 CallBack->Msg_KeyDown(ke);
@@ -507,18 +515,10 @@ bool VideoSDL::MessageLoop()
                 // Handle only 1st mouse move
                 if(!mouseMoved)
                 {
-#ifdef WIN32
-                    if(isFullscreen_)
-                        lastMouseMove = SDL_GetTicks();
-#endif
                     mouse_xy.x = ev.motion.x;
                     mouse_xy.y = ev.motion.y;
 
                     CallBack->Msg_MouseMove(mouse_xy);
-#ifdef WIN32
-                    if(isFullscreen_)
-                        return true; // Stop calling SDL_PollEvent
-#endif
                     mouseMoved = true;
                 }
             }

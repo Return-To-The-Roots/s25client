@@ -19,17 +19,24 @@
 #include "WindowManager.h"
 #include "CollisionDetection.h"
 #include "Loader.h"
+#include "RttrConfig.h"
 #include "Settings.h"
 #include "Window.h"
 #include "desktops/Desktop.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "files.h"
 #include "ingameWindows/IngameWindow.h"
 #include "ogl/FontStyle.h"
 #include "ogl/SoundEffectItem.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/const_gui_ids.h"
+#include "libsiedler2/ArchivItem_Bitmap_Raw.h"
+#include "libsiedler2/ErrorCodes.h"
+#include "libsiedler2/PixelBufferARGB.h"
+#include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
+#include "libutil/MyTime.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
 
@@ -678,7 +685,9 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
         Extent newScreenSize = !SETTINGS.video.fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize; //-V807
         VIDEODRIVER.ResizeScreen(newScreenSize.x, newScreenSize.y, !SETTINGS.video.fullscreen);
         SETTINGS.video.fullscreen = VIDEODRIVER.IsFullscreen();
-    } else
+    } else if(ke.kt == KT_PRINT)
+        TakeScreenshot();
+    else
         RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
 }
 
@@ -849,6 +858,23 @@ void WindowManager::CloseMarkedIngameWnds()
         Close(*it);
         it = std::find_if(windows.begin(), windows.end(), IsWndMarkedForClose());
     }
+}
+
+void WindowManager::TakeScreenshot()
+{
+    Extent screenSize = VIDEODRIVER.GetScreenSize();
+    libsiedler2::PixelBufferARGB buffer(screenSize.x, screenSize.y);
+    glReadPixels(0, 0, screenSize.x, screenSize.y, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
+    libsiedler2::ArchivItem_Bitmap_Raw* bmp = new libsiedler2::ArchivItem_Bitmap_Raw;
+    libsiedler2::Archiv archive;
+    archive.push(bmp);
+    bmp->create(buffer);
+    bmp->flipVertical();
+    bfs::path outFilepath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[100])) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
+    if(int ec = libsiedler2::Write(outFilepath.string(), archive))
+        LOG.write(_("Error writing screenshot: %1%\n")) % libsiedler2::getErrorString(ec);
+    else
+        LOG.write(_("Screenshot saved to %1%\n")) % outFilepath;
 }
 
 void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip)

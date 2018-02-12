@@ -24,6 +24,7 @@
 #include "WindowManager.h"
 #include "driver/VideoInterface.h"
 #include "helpers/roundToNextPow2.h"
+#include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
 #include <algorithm>
@@ -78,6 +79,8 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
         UnloadDriver();
         return false;
     }
+
+    LOG.write(_("Loaded video driver \"%1%\"\n")) % GetName();
 
     isOglEnabled_ = videodriver->IsOpenGL();
 
@@ -458,7 +461,8 @@ unsigned VideoDriverWrapper::GetTickCount()
 
 std::string VideoDriverWrapper::GetName() const
 {
-    return (videodriver) ? videodriver->GetName() : "";
+    const char* name = (videodriver) ? videodriver->GetName() : NULL;
+    return (name) ? name : "";
 }
 
 /**

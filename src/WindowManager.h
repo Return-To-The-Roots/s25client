@@ -105,6 +105,7 @@ private:
     typedef std::list<IngameWindow*> IgwList;                   /// Fensterlistentyp
     typedef std::list<IngameWindow*>::iterator IgwListIterator; /// Fensterlistentypiterator
 
+    void TakeScreenshot();
     /// wechselt einen Desktop
     void DoDesktopSwitch();
     /// Actually close all ingame windows marked for closing

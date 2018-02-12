@@ -21,9 +21,12 @@
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
+#include "MusicPlayer.h"
+#include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlTimer.h"
 #include "dskMainMenu.h"
+#include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/oglIncludes.h"
 #include "libutil/error.h"
@@ -79,6 +82,10 @@ void dskSplash::LoadFiles()
         isLoaded = true;
         AddTimer(2, 5000);
         SetFpsDisplay(true);
+        MUSICPLAYER.Load(iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist));
+        if(SETTINGS.sound.musik)
+            MUSICPLAYER.Play();
+
     } else
     {
         s25util::error(_("Some files failed to load.\n"

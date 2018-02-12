@@ -19,7 +19,6 @@
 #include "GameManager.h"
 #include "GlobalVars.h"
 #include "Loader.h"
-#include "MusicPlayer.h"
 #include "RttrConfig.h"
 #include "Settings.h"
 #include "SoundManager.h"
@@ -31,7 +30,6 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/converters.h"
 #include "helpers/win32_nanosleep.h" // IWYU pragma: keep
-#include "ingameWindows/iwMusicPlayer.h"
 #include "network/GameClient.h"
 #include "network/GameServer.h"
 #include "ogl/glArchivItem_Bitmap.h"
@@ -87,10 +85,6 @@ bool GameManager::Start()
     LOG.write(_("\nStarting the game\n"));
     if(!ShowSplashscreen())
         return false;
-
-    std::string playlist = iwMusicPlayer::GetFullPlaylistPath(SETTINGS.sound.playlist);
-    if(MUSICPLAYER.Load(playlist))
-        MUSICPLAYER.Play();
 
     return true;
 }

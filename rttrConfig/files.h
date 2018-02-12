@@ -126,7 +126,7 @@ const boost::array<const char*, 104> SUPPRESS_UNUSED FILE_PATHS = {{
   /* 97 */ "",                                  // unused
   /* 98 */ "<RTTR_USERDATA>/LSTS",              // persönliche lstfiles (immer bei start geladen)
   /* 99 */ "<RTTR_USERDATA>/LSTS/GAME",         // persönliche lstfiles (immer bei spielstart geladen)
-  /*100 */ "",                                  // unused
+  /*100 */ "<RTTR_USERDATA>/screenshots",       // Screenshots
   /*101 */ "",                                  // unused
   /*102 */ "<RTTR_GAME>/GFX/PICS/SETUP013.LBM", // Optionen
   /*103 */ "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"  // Freies Spiel
