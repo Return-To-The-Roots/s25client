@@ -26,8 +26,7 @@
 using boost::chrono::seconds;
 
 template<class T_Duration>
-inline typename boost::enable_if<boost::chrono::detail::is_duration<T_Duration>, int>::type
-toIntSeconds(const T_Duration& duration)
+inline typename boost::enable_if<boost::chrono::detail::is_duration<T_Duration>, int>::type toIntSeconds(const T_Duration& duration)
 {
     seconds sec = boost::chrono::duration_cast<seconds>(duration);
     return static_cast<int>(helpers::clamp<seconds::rep>(sec.count(), std::numeric_limits<int>::min(), std::numeric_limits<int>::max()));

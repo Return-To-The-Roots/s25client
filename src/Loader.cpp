@@ -280,7 +280,8 @@ bool Loader::LoadSounds()
         // die konvertierte muss nicht extra geladen werden, da sie im override-ordner landet
     }
 
-    std::vector<std::string> oggFiles = ListDir(RTTRCONFIG.ExpandPath(FILE_PATHS[50]), "ogg");
+    const std::string oggPath = RTTRCONFIG.ExpandPath(FILE_PATHS[50]);
+    std::vector<std::string> oggFiles = ListDir(oggPath, "ogg");
 
     unsigned i = 0;
     sng_lst.alloc(oggFiles.size());
@@ -290,6 +291,14 @@ bool Loader::LoadSounds()
         if(!LoadArchiv(sng, *it))
             return false;
         sng_lst.set(i++, sng.release(0));
+    }
+
+    if(sng_lst.empty())
+    {
+        LOG.write(
+          _("WARNING: Did not find the music files.\n\tYou have to run the updater once or copy the .ogg files manually to \"%1%\" or you "
+            "won't be able to hear the music.\n"))
+          % oggPath;
     }
 
     return true;

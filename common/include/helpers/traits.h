@@ -25,8 +25,9 @@
 
 // Based on code from https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Member_Detector
 #define CREATE_MEMBER_DETECTOR(X)                                \
-    \
-template<typename T> class HasAnyMemberCalled_##X                \
+                                                                 \
+    template<typename T>                                         \
+    class HasAnyMemberCalled_##X                                 \
     {                                                            \
         struct Fallback                                          \
         {                                                        \
@@ -51,8 +52,7 @@ template<typename T> class HasAnyMemberCalled_##X                \
         {                                                        \
             value = sizeof(func<Derived>(0)) == 2                \
         };                                                       \
-    \
-};
+    };
 
 namespace helpers {
 

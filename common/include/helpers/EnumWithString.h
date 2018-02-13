@@ -60,8 +60,8 @@ struct ignore_assign
 /// Declares the enum. Used when DEFINE_[EnumName] is not defined
 /// Do not use directly. Use ENUM_WITH_STRING
 #define DECL_ENUM_WITH_STRING(EnumName, ...)                                                   \
-    \
-struct EnumName                                                                                \
+                                                                                               \
+    struct EnumName                                                                            \
     {                                                                                          \
         enum type_                                                                             \
         {                                                                                      \
@@ -81,8 +81,7 @@ struct EnumName                                                                 
         static const char* names_[count_];                                                     \
         static void init_();                                                                   \
         static void free_();                                                                   \
-    \
-};
+    };
 
 /// Declares and defines the enum. Used when DEFINE_[EnumName] is defined
 /// Do not use directly. Use ENUM_WITH_STRING
