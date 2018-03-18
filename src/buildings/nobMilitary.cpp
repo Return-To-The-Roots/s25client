@@ -358,16 +358,14 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
 
             // override own frontier distance, if its nearer to a border
             if(newFrontierDistance > frontier_distance)
-            {
                 frontier_distance = newFrontierDistance;
-            }
 
             // set calculated frontier distance to checked building.
             if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
                 static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(newFrontierDistance);
         }
     }
-    // check for habor points
+    // check for harbor points
     if(frontier_distance <= DIST_MID && gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
         frontier_distance = DIST_HARBOR;
 
