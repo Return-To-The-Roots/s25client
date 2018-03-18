@@ -323,6 +323,8 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
     sortedMilitaryBlds buildings = gwg->LookForMilitaryBuildings(pos, 3);
     frontier_distance = DIST_FAR;
 
+    const bool frontierDistanceCheck = gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE);
+
     for(sortedMilitaryBlds::iterator it = buildings.begin(); it != buildings.end(); ++it)
     {
         // feindliches Militärgebäude?
@@ -341,7 +343,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
                 newFrontierDistance = DIST_MID;
             } else if((*it)->GetGOT() == GOT_NOB_MILITARY)
             {
-                nobMilitary* mil = dynamic_cast<nobMilitary*>(*it);
+                nobMilitary* mil = static_cast<nobMilitary*>(*it);
                 if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
                 {
                     newFrontierDistance = DIST_MID;
@@ -349,7 +351,7 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
             }
 
             // if new frontier distance is in military range, check if its reachable.
-            if(gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE) && newFrontierDistance >= DIST_MID
+            if(frontierDistanceCheck && newFrontierDistance >= DIST_MID
                && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             {
                 // building is not reachable, so its "far" away.
