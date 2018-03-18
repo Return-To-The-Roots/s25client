@@ -51,19 +51,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos)
-            {
-                continue;
-            }
-            if(curPoint == p0.GetHQPos())
-            {
-                continue;
-            }
-            if(curPoint == milBld1Pos)
-            {
-                continue;
-            }
-            if(curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
             {
                 continue;
             }
@@ -113,19 +101,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
             for(int x = 1; x < world.GetWidth(); x++)
             {
                 MapPoint curPoint(x, y);
-                if(curPoint == milBld0Pos)
-                {
-                    continue;
-                }
-                if(curPoint == p0.GetHQPos())
-                {
-                    continue;
-                }
-                if(curPoint == milBld1Pos)
-                {
-                    continue;
-                }
-                if(curPoint == p1.GetHQPos())
+                if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
                 {
                     continue;
                 }
@@ -173,19 +149,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos)
-            {
-                continue;
-            }
-            if(curPoint == p0.GetHQPos())
-            {
-                continue;
-            }
-            if(curPoint == milBld1Pos)
-            {
-                continue;
-            }
-            if(curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
             {
                 continue;
             }
@@ -232,19 +196,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos)
-            {
-                continue;
-            }
-            if(curPoint == p0.GetHQPos())
-            {
-                continue;
-            }
-            if(curPoint == milBld1Pos)
-            {
-                continue;
-            }
-            if(curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
             {
                 continue;
             }

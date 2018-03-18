@@ -329,60 +329,49 @@ void nobMilitary::LookForEnemyBuildings(const nobBaseMilitary* const exception)
         if(*it != exception && (*it)->GetPlayer() != player && gwg->GetPlayer((*it)->GetPlayer()).IsAttackable(player))
         {
             unsigned distance = gwg->CalcDistance(pos, (*it)->GetPos());
+            FrontierDistance newFrontierDistance = DIST_FAR;
 
-            // check if military building is reachable
-            if(gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE)
-               && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+            if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius())
             {
-                frontier_distance = DIST_FAR;
-            }
-            // in nahem Umkreis, also Grenzen berühren sich
-            else if(distance <= MILITARY_RADIUS[size] + (*it)->GetMilitaryRadius()) // warum erzeugtn das ne warning in vs2008?
-            {
-                // Grenznähe entsprechend setzen
-                frontier_distance = DIST_NEAR;
-
-                // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
-                if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
-                    static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(3);
+                newFrontierDistance = DIST_NEAR;
             }
             // in mittlerem Umkreis, also theoretisch angreifbar?
             else if(distance < BASE_ATTACKING_DISTANCE + (GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
             {
-                // Grenznähe entsprechend setzen
-                if(!frontier_distance)
-                    frontier_distance = DIST_MID;
-
-                // Wenns ein richtiges Militärgebäude ist, dann dort auch entsprechend setzen
-                if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
-                    static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(1);
-            }
-            // andere Richtung muss auch getestet werden, zumindest wenns eine normaler Militärgebäude ist, Bug 389843
-            else if((*it)->GetGOT() == GOT_NOB_MILITARY)
+                newFrontierDistance = DIST_MID;
+            } else if((*it)->GetGOT() == GOT_NOB_MILITARY)
             {
                 nobMilitary* mil = dynamic_cast<nobMilitary*>(*it);
                 if(distance < BASE_ATTACKING_DISTANCE + (mil->GetMaxTroopsCt() - 1) * EXTENDED_ATTACKING_DISTANCE)
                 {
-                    // Grenznähe entsprechend setzen
-                    if(!frontier_distance)
-                        frontier_distance = DIST_MID;
-
-                    // dort auch entsprechend setzen
-                    mil->NewEnemyMilitaryBuilding(1);
+                    newFrontierDistance = DIST_MID;
                 }
             }
+
+            // if new frontier distance is in military range, check if its reachable.
+            if(gwg->GetGGS().isEnabled(AddonId::FRONTIER_DISTANCE_REACHABLE) && newFrontierDistance >= DIST_MID
+               && !DoesReachablePathExist(*gwg, (*it)->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+            {
+                // building is not reachable, so its "far" away.
+                newFrontierDistance = DIST_FAR;
+            }
+
+            // override own frontier distance, if its nearer to a border
+            if(newFrontierDistance > frontier_distance)
+            {
+                frontier_distance = newFrontierDistance;
+            }
+
+            // set calculated frontier distance to checked building.
+            if(BuildingProperties::IsMilitary((*it)->GetBuildingType()))
+                static_cast<nobMilitary*>(*it)->NewEnemyMilitaryBuilding(newFrontierDistance);
         }
     }
+    // check for habor points
+    if(frontier_distance <= DIST_MID && gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
+        frontier_distance = DIST_HARBOR;
 
-    // Evtl. Hafenpunkte in der N? mit ber?htigen
-    if(frontier_distance <= DIST_MID)
-        if(gwg->CalcDistanceToNearestHarbor(pos) < SEAATTACK_DISTANCE + 2)
-        {
-            // if(gwg->IsAHarborInSeaAttackDistance(MapPoint(x,y)))
-            frontier_distance = DIST_HARBOR;
-        }
-
-    // Truppen schicken
+    // send troops
     RegulateTroops();
 }
 
