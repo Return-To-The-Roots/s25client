@@ -221,7 +221,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 {
     GamePlayer& p0 = world.GetPlayer(0);
     MapPoint milBld0Pos = p0.GetHQPos() + MapPoint(5, 0);
@@ -268,6 +268,83 @@ BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
         BOOST_REQUIRE_EQUAL(distance0, distance1);
         BOOST_REQUIRE_EQUAL(distance0 + i * 100, 3u + i * 100); // near
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
+{
+    this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);
+
+    GamePlayer& p0 = world.GetPlayer(0);
+    GamePlayer& p1 = world.GetPlayer(1);
+
+    MapPoint p0HQ = p0.GetHQPos();
+    MapPoint p1HQ = p1.GetHQPos();
+
+    DescIdx<TerrainDesc> tWater(0);
+    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
+    {
+        TerrainDesc fieldDesc = world.GetDescription().get(tWater);
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
+            break;
+    }
+
+    unsigned middle = world.GetWidth() / 2;
+
+    for(unsigned y = 1; y < world.GetHeight(); y++)
+    {
+        for(unsigned x = 1; x < world.GetWidth(); x++)
+        {
+            MapPoint curPoint(x, y);
+
+            // get an island
+            if(curPoint.x < 10 || curPoint.x > world.GetWidth() - 10 || curPoint.y < 10 || curPoint.y > world.GetHeight() - 10)
+            {
+                MapNode& mapPoint = world.GetNodeWriteable(curPoint);
+                mapPoint.t1 = tWater;
+                mapPoint.t2 = tWater;
+                continue;
+            }
+
+            // get bottleneck'ed passage on south of the island
+            if((curPoint.x >= middle - 2 && curPoint.x <= middle + 2) && (curPoint.y > 20))
+            {
+                MapNode& mapPoint = world.GetNodeWriteable(curPoint);
+                mapPoint.t1 = tWater;
+                mapPoint.t2 = tWater;
+                continue;
+            }
+
+            // get some water from the bottle neck to the west/east of the island
+            if(curPoint.x > 12 && curPoint.x < world.GetWidth() - 12 && curPoint.y > 20 && curPoint.y < 25)
+            {
+                MapNode& mapPoint = world.GetNodeWriteable(curPoint);
+                mapPoint.t1 = tWater;
+                mapPoint.t2 = tWater;
+                continue;
+            }
+        }
+    }
+
+    // side of p1 outside the bottle neck, this building will cause the bug
+    MapPoint p1Far(middle + 5, 30);
+    BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Far, p1.GetPlayerId(), NAT_ROMANS);
+
+    // p1 s building, which should cause a frontier distance "near"
+    MapPoint p1Near(middle + 5, 15); // side of p0 in bottleneck
+    nobMilitary* milBld1 =
+      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
+
+    // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40 units).
+    // It will override the NEAR-Distance, while iteration.
+    MapPoint p0Near(middle - 5, 15);
+    nobMilitary* milBld0 =
+      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
+
+    unsigned distance0 = milBld0->GetFrontierDistance();
+    unsigned distance1 = milBld1->GetFrontierDistance();
+
+    BOOST_REQUIRE_EQUAL(distance0, 3u);
+    BOOST_REQUIRE_EQUAL(distance1, 3u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
