@@ -277,9 +277,6 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
     GamePlayer& p0 = world.GetPlayer(0);
     GamePlayer& p1 = world.GetPlayer(1);
 
-    MapPoint p0HQ = p0.GetHQPos();
-    MapPoint p1HQ = p1.GetHQPos();
-
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
