@@ -270,6 +270,30 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
     }
 }
 
+//
+//  Bug #815 can be simplified to the following setup. Players HQ don't matter.
+//  In general its a simple island, with a T seperating the players HQs.
+//  The design is used, to have both P1s military buildings within the LookForMilitaryBuilding calucation
+//  and get a FRONTIER_DISTANCE_UNREACHABLE - behavior because of the terrain.
+//
+//  - and | represent water fields.
+//
+//  ---------------------------------------------
+//  |                                           |
+//  |         P0(WT/NEAR)     P1(WT/NEAR)       |
+//  |      WILL GET BUGED                       |
+//  |    ----------------------------------     |
+//  |    ---------------||-----------------     |
+//  |                   ||                      |
+//  |                   ||    P1 (WT/FAR)       |
+//  |                   ||    >40 Fields away   |
+//  |                   ||                      |
+//  |      P0(HQ)       ||        P1(HQ)        |
+//  |                   ||                      |
+//  |                   ||                      |
+//  |                   ||                      |
+//  ---------------------------------------------
+//
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
 {
     this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);
@@ -302,7 +326,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
                 continue;
             }
 
-            // get bottleneck'ed passage on south of the island
+            // get bottleneck'ed passage on north of the island
             if((curPoint.x >= middle - 2 && curPoint.x <= middle + 2) && (curPoint.y > 20))
             {
                 MapNode& mapPoint = world.GetNodeWriteable(curPoint);
@@ -327,12 +351,12 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
     BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Far, p1.GetPlayerId(), NAT_ROMANS);
 
     // p1 s building, which should cause a frontier distance "near"
-    MapPoint p1Near(middle + 5, 15); // side of p0 in bottleneck
+    MapPoint p1Near(middle + 5, 15);
     nobMilitary* milBld1 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
 
     // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40 units).
-    // It will override the NEAR-Distance, while iteration.
+    // It will override the NEAR-Distance from P1Near, when evaluating P1Far
     MapPoint p0Near(middle - 5, 15);
     nobMilitary* milBld0 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
