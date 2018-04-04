@@ -51,19 +51,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos)
-            {
-                continue;
-            }
-            if(curPoint == p0.GetHQPos())
-            {
-                continue;
-            }
-            if(curPoint == milBld1Pos)
-            {
-                continue;
-            }
-            if(curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
             {
                 continue;
             }
@@ -113,19 +101,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
             for(int x = 1; x < world.GetWidth(); x++)
             {
                 MapPoint curPoint(x, y);
-                if(curPoint == milBld0Pos)
-                {
-                    continue;
-                }
-                if(curPoint == p0.GetHQPos())
-                {
-                    continue;
-                }
-                if(curPoint == milBld1Pos)
-                {
-                    continue;
-                }
-                if(curPoint == p1.GetHQPos())
+                if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
                 {
                     continue;
                 }
@@ -173,19 +149,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos)
-            {
-                continue;
-            }
-            if(curPoint == p0.GetHQPos())
-            {
-                continue;
-            }
-            if(curPoint == milBld1Pos)
-            {
-                continue;
-            }
-            if(curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
             {
                 continue;
             }
@@ -232,19 +196,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos)
-            {
-                continue;
-            }
-            if(curPoint == p0.GetHQPos())
-            {
-                continue;
-            }
-            if(curPoint == milBld1Pos)
-            {
-                continue;
-            }
-            if(curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
             {
                 continue;
             }
@@ -269,7 +221,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 {
     GamePlayer& p0 = world.GetPlayer(0);
     MapPoint milBld0Pos = p0.GetHQPos() + MapPoint(5, 0);
@@ -316,6 +268,104 @@ BOOST_FIXTURE_TEST_CASE(IslandTest, FrontierWorldMiddle)
         BOOST_REQUIRE_EQUAL(distance0, distance1);
         BOOST_REQUIRE_EQUAL(distance0 + i * 100, 3u + i * 100); // near
     }
+}
+
+//
+//  Bug #815 can be simplified to the following setup. Players HQ don't matter.
+//  In general its a simple island, with a T seperating the players HQs.
+//  The design is used, to have both P1s military buildings within the LookForMilitaryBuilding calucation
+//  and get a FRONTIER_DISTANCE_UNREACHABLE - behavior because of the terrain.
+//
+//  - and | represent water fields.
+//
+//  ---------------------------------------------
+//  |                                           |
+//  |         P0(WT/NEAR)     P1(WT/NEAR)       |
+//  |      WILL GET BUGED                       |
+//  |    ----------------------------------     |
+//  |    ---------------||-----------------     |
+//  |                   ||                      |
+//  |                   ||    P1 (WT/FAR)       |
+//  |                   ||    >40 Fields away   |
+//  |                   ||                      |
+//  |      P0(HQ)       ||        P1(HQ)        |
+//  |                   ||                      |
+//  |                   ||                      |
+//  |                   ||                      |
+//  ---------------------------------------------
+//
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
+{
+    this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);
+
+    GamePlayer& p0 = world.GetPlayer(0);
+    GamePlayer& p1 = world.GetPlayer(1);
+
+    DescIdx<TerrainDesc> tWater(0);
+    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
+    {
+        TerrainDesc fieldDesc = world.GetDescription().get(tWater);
+        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
+            break;
+    }
+
+    unsigned middle = world.GetWidth() / 2;
+
+    for(unsigned y = 1; y < world.GetHeight(); y++)
+    {
+        for(unsigned x = 1; x < world.GetWidth(); x++)
+        {
+            MapPoint curPoint(x, y);
+
+            // get an island
+            if(curPoint.x < 10 || curPoint.x > world.GetWidth() - 10 || curPoint.y < 10 || curPoint.y > world.GetHeight() - 10)
+            {
+                MapNode& mapPoint = world.GetNodeWriteable(curPoint);
+                mapPoint.t1 = tWater;
+                mapPoint.t2 = tWater;
+                continue;
+            }
+
+            // get bottleneck'ed passage on north of the island
+            if((curPoint.x >= middle - 2 && curPoint.x <= middle + 2) && (curPoint.y > 20))
+            {
+                MapNode& mapPoint = world.GetNodeWriteable(curPoint);
+                mapPoint.t1 = tWater;
+                mapPoint.t2 = tWater;
+                continue;
+            }
+
+            // get some water from the bottle neck to the west/east of the island
+            if(curPoint.x > 12 && curPoint.x < world.GetWidth() - 12 && curPoint.y > 20 && curPoint.y < 25)
+            {
+                MapNode& mapPoint = world.GetNodeWriteable(curPoint);
+                mapPoint.t1 = tWater;
+                mapPoint.t2 = tWater;
+                continue;
+            }
+        }
+    }
+
+    // side of p1 outside the bottle neck, this building will cause the bug
+    MapPoint p1Far(middle + 5, 30);
+    BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Far, p1.GetPlayerId(), NAT_ROMANS);
+
+    // p1 s building, which should cause a frontier distance "near"
+    MapPoint p1Near(middle + 5, 15);
+    nobMilitary* milBld1 =
+      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p1Near, p1.GetPlayerId(), NAT_ROMANS));
+
+    // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40 units).
+    // It will override the NEAR-Distance from P1Near, when evaluating P1Far
+    MapPoint p0Near(middle - 5, 15);
+    nobMilitary* milBld0 =
+      dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
+
+    unsigned distance0 = milBld0->GetFrontierDistance();
+    unsigned distance1 = milBld1->GetFrontierDistance();
+
+    BOOST_REQUIRE_EQUAL(distance0, 3u);
+    BOOST_REQUIRE_EQUAL(distance1, 3u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
