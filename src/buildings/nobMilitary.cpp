@@ -991,9 +991,14 @@ void nobMilitary::Capture(const unsigned char new_owner)
     // Check if we need to change the coin order
     unsigned coinOrder = gwg->GetGGS().getSelection(AddonId::COINS_CAPTURED_BLD);
     if(coinOrder == 1)
-        SetCoinsAllowed(true);
-    else if(coinOrder == 2)
-        SetCoinsAllowed(false);
+    {
+        coinsDisabled = false;
+        coinsDisabledVirtual = false;
+    } else if(coinOrder == 2)
+    {
+        coinsDisabled = true;
+        coinsDisabledVirtual = true;
+    }
 }
 
 void nobMilitary::NeedOccupyingTroops()
