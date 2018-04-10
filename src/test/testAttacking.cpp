@@ -190,9 +190,9 @@ template<unsigned T_numPlayers = 2, unsigned T_width = AttackDefaults::width, un
 struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
 {
     typedef AttackFixtureBase<T_numPlayers, T_width, T_height> Parent;
-    using Parent::MakeVisible;
     using Parent::curPlayer;
     using Parent::hqPos;
+    using Parent::MakeVisible;
     using Parent::world;
 
     /// Tested positions for military buildings
@@ -435,6 +435,82 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     {
         BOOST_REQUIRE_EQUAL(world.GetNode(pt).owner, curPlayer + 1u);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonEnable, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 1); // addon is active on second run
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRank(milBld1Pos, 1, 1);
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    // ensure that coins are disabled
+    milBld1->SetCoinsAllowed(false);
+    BOOST_REQUIRE(milBld1->IsGoldDisabled());
+
+    // Start attack ->1 (weak one first)
+    this->Attack(milBld1Pos, 1, false);
+    this->Attack(milBld1Pos, 5, false);
+    BOOST_REQUIRE_EQUAL(milBld0->GetNumTroops(), 1u);
+    BOOST_REQUIRE_EQUAL(milBld1->GetNumTroops(), 2u);
+    // Run till attackers reach bld. 1 Soldier will leave for them.
+    // 1 stays inside till an attacker is at door
+    // 20 GFs/node + 30 GFs for leaving
+    const unsigned distance = world.CalcDistance(milBld0Pos, milBld1Pos);
+    RTTR_EXEC_TILL(distance * 20 + 30, milBld1->GetNumTroops() == 1);
+
+    // Lets fight
+    RTTR_EXEC_TILL(1000, milBld1->IsBeingCaptured());
+    // Let others in
+    RTTR_EXEC_TILL(200, !milBld1->IsBeingCaptured());
+    // Building conquered
+    BOOST_REQUIRE_EQUAL(milBld1->GetPlayer(), curPlayer);
+
+    // check if coins were enabled after building was captured
+    BOOST_REQUIRE(!milBld1->IsGoldDisabled());
+}
+
+BOOST_FIXTURE_TEST_CASE(ConquerBldCoinAddonDisable, AttackFixture<>)
+{
+    this->ggs.setSelection(AddonId::COINS_CAPTURED_BLD, 2); // addon is active on second run
+
+    initGameRNG();
+    AddSoldiers(milBld0Pos, 1, 5);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRank(milBld1Pos, 1, 1);
+    BuildRoadForBlds(milBld0Pos, hqPos[0]);
+    // Finish recruiting, carrier outhousing etc.
+    RTTR_SKIP_GFS(400);
+
+    // ensure that coins are enabled
+    milBld1->SetCoinsAllowed(true);
+    BOOST_REQUIRE(!milBld1->IsGoldDisabled());
+
+    // Start attack ->1 (weak one first)
+    this->Attack(milBld1Pos, 1, false);
+    this->Attack(milBld1Pos, 5, false);
+    BOOST_REQUIRE_EQUAL(milBld0->GetNumTroops(), 1u);
+    BOOST_REQUIRE_EQUAL(milBld1->GetNumTroops(), 2u);
+    // Run till attackers reach bld. 1 Soldier will leave for them.
+    // 1 stays inside till an attacker is at door
+    // 20 GFs/node + 30 GFs for leaving
+    const unsigned distance = world.CalcDistance(milBld0Pos, milBld1Pos);
+    RTTR_EXEC_TILL(distance * 20 + 30, milBld1->GetNumTroops() == 1);
+
+    // Lets fight
+    RTTR_EXEC_TILL(1000, milBld1->IsBeingCaptured());
+    // Let others in
+    RTTR_EXEC_TILL(200, !milBld1->IsBeingCaptured());
+    // Building conquered
+    BOOST_REQUIRE_EQUAL(milBld1->GetPlayer(), curPlayer);
+
+    // check if coins were disabled after building was captured
+    BOOST_REQUIRE(milBld1->IsGoldDisabled());
 }
 
 typedef AttackFixture<4, 32, 34> AttackFixture4P;

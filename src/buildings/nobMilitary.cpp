@@ -860,9 +860,10 @@ unsigned nobMilitary::GetSoldiersStrength() const
 /// is there a max rank soldier in the building?
 bool nobMilitary::HasMaxRankSoldier() const
 {
+    unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
     for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
-        if((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() >= maxRank)
             return true;
     }
     return false;
@@ -986,6 +987,13 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, bldType_));
+
+    // Check if we need to change the coin order
+    unsigned coinOrder = gwg->GetGGS().getSelection(AddonId::COINS_CAPTURED_BLD);
+    if(coinOrder == 1)
+        SetCoinsAllowed(true);
+    else if(coinOrder == 2)
+        SetCoinsAllowed(false);
 }
 
 void nobMilitary::NeedOccupyingTroops()
