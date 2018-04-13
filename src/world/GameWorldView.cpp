@@ -293,8 +293,9 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
                     continue;
 
+                const bool targetsFlag = GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start;
                 if((gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
-                   || (gwv.GetBQ(curPt) == BQ_FLAG))
+                   || (gwv.GetBQ(curPt) == BQ_FLAG) || targetsFlag)
                 {
                     unsigned id;
                     switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
@@ -311,12 +312,18 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                         case -5: id = 66; break;
                         default: id = 60; break;
                     }
-
-                    LOADER.GetMapImageN(id)->DrawFull(curPos);
+                    if(!targetsFlag)
+                        LOADER.GetMapImageN(id)->DrawFull(curPos);
+                    else
+                    {
+                        DrawPoint lastPos = GetWorld().GetNodePos(rb.point) - offset + curOffset;
+                        DrawPoint halfWayPos = (curPos + lastPos) / 2;
+                        LOADER.GetMapImageN(id)->DrawFull(halfWayPos);
+                    }
                 }
 
                 // Flaggenanschluss? --> extra zeichnen
-                if(GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start)
+                if(targetsFlag)
                     LOADER.GetMapImageN(20)->DrawFull(curPos);
 
                 if(!rb.route.empty() && rb.route.back() + 3u == Direction::fromInt(dir))
