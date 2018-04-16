@@ -24,14 +24,14 @@
 #include "mygettext/mygettext.h"
 
 /**
-*  Addon which controls the behavior of the coin order after capturing the military building
+*  Addon which controls if coins should be enabled/disabled on capture
 */
 class AddonCoinsCapturedBld: public AddonList
 {
 public:
     AddonCoinsCapturedBld()
-        : AddonList(AddonId::COINS_CAPTURED_BLD, ADDONGROUP_MILITARY, _("Sets the coin order for captured buildings"),
-            _("Sets the coin order captured military buildings."), 0)
+        : AddonList(AddonId::COINS_CAPTURED_BLD, ADDONGROUP_MILITARY, _("Coins on captured buildings"),
+            _("Change the coin setting for captured military buildings."), 0)
     {
         this->addOption(_("Keep setting"));
         this->addOption(_("Enable"));
