@@ -127,6 +127,7 @@ void GlobalGameSettings::registerAllAddons()
 
     registerAddon(new AddonFrontierDistanceReachable);
     registerAddon(new AddonCoinsCapturedBld);
+    registerAddon(new AddonImprovedWareOrder);
 }
 
 void GlobalGameSettings::resetAddons()

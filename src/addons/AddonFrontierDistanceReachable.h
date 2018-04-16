@@ -34,4 +34,4 @@ public:
     {}
 };
 
-#endif
+#endif // !ADDONFRONTIERDISTANCEREACHABLE_H_INCLUDED

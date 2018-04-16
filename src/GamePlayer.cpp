@@ -826,45 +826,50 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
 
 Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding* goal)
 {
-    /// Gibt es ein Lagerhaus mit dieser Ware?
-    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasMinWares(ware, 1), false, true);
+    if(emergency)
+    {
+        if(ware == GD_STONES && goal->GetBuildingType() != BLD_SAWMILL)
+            return NULL;
 
-    if(wh)
+        if(ware == GD_BOARDS && (goal->GetBuildingType() != BLD_WOODCUTTER && goal->GetBuildingType() != BLD_SAWMILL))
+            return NULL;
+    }
+
+    // Look for available ware in a warehouse
+    unsigned int nearestWarehouse = std::numeric_limits<unsigned>::max();
+    nobBaseWarehouse* wh = FindWarehouse(*goal, FW::HasMinWares(ware, 1), false, true, &nearestWarehouse);
+
+    // Look for ware waiting on the road or on the way to storehouse (if addon is enabled)
+    unsigned nearestWare = std::numeric_limits<unsigned>::max();
+    Ware* bestWare = NULL;
+    const bool improvedWareOrder = gwg->GetGGS().isEnabled(AddonId::IMPROVED_WARE_ORDER);
+    if(!wh || improvedWareOrder)
     {
-        // Prüfe ob Notfallprogramm aktiv
-        if(!emergency)
-            return wh->OrderWare(ware, goal);
-        else
-        {
-            // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if((ware != GD_BOARDS && ware != GD_STONES) || goal->GetBuildingType() == BLD_WOODCUTTER
-               || goal->GetBuildingType() == BLD_SAWMILL)
-                return wh->OrderWare(ware, goal);
-            else
-                return NULL;
-        }
-    } else // no warehouse can deliver the ware -> check all our wares for lost wares that might match the order
-    {
-        unsigned bestLength = std::numeric_limits<unsigned>::max();
-        Ware* bestWare = NULL;
         BOOST_FOREACH(Ware* curWare, ware_list)
         {
-            if(curWare->IsLostWare() && curWare->type == ware)
+            noBaseBuilding* wareGoal = curWare->GetGoal();
+            // Ware is redirectable if its lost (has no goal) or its goal is a storehouse
+            if(curWare->type == ware && (curWare->IsLostWare() || (improvedWareOrder && wareGoal->GetBuildingType() == BLD_STOREHOUSE)))
             {
-                // got a lost ware with a road to goal -> find best
                 unsigned curLength = curWare->CheckNewGoalForLostWare(goal);
-                if(curLength < bestLength)
+                if(curLength < nearestWare)
                 {
-                    bestLength = curLength;
+                    nearestWare = curLength;
                     bestWare = curWare;
                 }
             }
         }
-        if(bestWare)
-        {
-            bestWare->SetNewGoalForLostWare(goal);
-            return bestWare;
-        }
+    }
+
+    // order ware in Warehouse if is near then available ware
+    if(wh && nearestWarehouse < nearestWare)
+    {
+        return wh->OrderWare(ware, goal);
+    } else if(bestWare) // any ware was found
+    {
+        // Change Goal for Ware from NULL/Warehouse to orderer.
+        bestWare->SetNewGoalForLostWare(goal);
+        return bestWare;
     }
     return NULL;
 }
