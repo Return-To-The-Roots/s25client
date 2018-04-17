@@ -860,9 +860,10 @@ unsigned nobMilitary::GetSoldiersStrength() const
 /// is there a max rank soldier in the building?
 bool nobMilitary::HasMaxRankSoldier() const
 {
+    const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
     for(SortedTroops::const_reverse_iterator it = troops.rbegin(); it != troops.rend(); ++it)
     {
-        if((*it)->GetRank() >= gwg->GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() >= maxRank)
             return true;
     }
     return false;
@@ -986,6 +987,20 @@ void nobMilitary::Capture(const unsigned char new_owner)
 
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Captured, player, pos, bldType_));
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::Lost, old_player, pos, bldType_));
+
+    // Check if we need to change the coin order
+
+    switch(gwg->GetGGS().getSelection(AddonId::COINS_CAPTURED_BLD))
+    {
+        case 1: // enable coin order
+            coinsDisabled = false;
+            coinsDisabledVirtual = false;
+            break;
+        case 2: // disable coin order
+            coinsDisabled = true;
+            coinsDisabledVirtual = true;
+            break;
+    }
 }
 
 void nobMilitary::NeedOccupyingTroops()
@@ -1109,11 +1124,12 @@ unsigned nobMilitary::CalcCoinsPoints() const
     // Wenn hier schon Münzen drin sind oder welche bestellt sind, wirkt sich das natürlich negativ auf die "Wichtigkeit" aus
     points -= (numCoins + ordered_coins.size()) * 30;
 
+    const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
     // Beförderbare Soldaten zählen
     BOOST_FOREACH(const nofPassiveSoldier* soldier, troops)
     {
         // Solange es kein Max Rank ist, kann der Soldat noch befördert werden
-        if(soldier->GetRank() < gwg->GetGGS().GetMaxMilitaryRank())
+        if(soldier->GetRank() < maxRank)
             points += 20;
     }
 
@@ -1170,9 +1186,10 @@ void nobMilitary::PrepareUpgrading()
     // Noch Soldaten, die befördert werden können?
     bool soldiers_available = false;
 
+    const unsigned maxRank = gwg->GetGGS().GetMaxMilitaryRank();
     for(SortedTroops::iterator it = troops.begin(); it != troops.end(); ++it)
     {
-        if((*it)->GetRank() < gwg->GetGGS().GetMaxMilitaryRank())
+        if((*it)->GetRank() < maxRank)
         {
             // es wurde ein Soldat gefunden, der befördert werden kann
             soldiers_available = true;

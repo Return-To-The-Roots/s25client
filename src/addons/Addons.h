@@ -68,5 +68,6 @@
 #include "addons/AddonNumScoutsExploration.h"
 
 #include "addons/AddonFrontierDistanceReachable.h"
+#include "addons/AddonCoinsCapturedBld.h"
 
 #endif // !ADDONS_H_INCLUDED

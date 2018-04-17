@@ -38,12 +38,15 @@
 // 00C Flamefire
 // 00D Shawn8901
 
-// Do not forget to add your Addon to GlobalGameSettings::clearAddons @ GlobalGameSettings.cpp!
+// Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
 
 // AAA = Author
 // NNNNN = Number
 //                                   AAANNNNN
+//
+// Add the #include for your AddonXXX.h in Addons.h!
+//
 ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x00000001, REFUND_MATERIALS = 0x00000002,
                  EXHAUSTIBLE_WATER = 0x00000003, REFUND_ON_EMERGENCY = 0x00000004, MANUAL_ROAD_ENLARGEMENT = 0x00000005,
                  CATAPULT_GRAPHICS = 0x00000006, METALWORKSBEHAVIORONZERO = 0x00000007,
@@ -75,7 +78,7 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  NUM_SCOUTS_EXPLORATION = 0x00C00000,
 
-                 FRONTIER_DISTANCE_REACHABLE = 0x00D0000)
+                 FRONTIER_DISTANCE_REACHABLE = 0x00D0000, COINS_CAPTURED_BLD = 0x00D0001)
 //-V:AddonId:801
 
 enum AddonGroup
