@@ -227,13 +227,13 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    MapPoint road_points[6];
+    std::vector<MapPoint> road_points;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RM_DISABLED)
     {
-        for(unsigned i = 0; i < 6; ++i)
-            road_points[i] = GetWorld().GetNeighbour(rb.point, Direction::fromInt(i));
+        for(unsigned i = 0; i < Direction::COUNT; ++i)
+            road_points.push_back(GetWorld().GetNeighbour(rb.point, Direction::fromInt(i)));
 
         const unsigned index = GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
@@ -248,6 +248,14 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             Position curOffset;
             MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
             Position curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
+
+            // we dont own curPt, no need for any rendering...
+            if(!gwv.IsOwner(curPt))
+                continue;
+
+            // check if curPt is on the border
+            if(!GetWorld().IsPlayerTerritory(curPt))
+                continue;
 
             /// Current point indicated by Mouse
             if(drawMouse && selPt == curPt)
@@ -267,7 +275,6 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                         default: break;
                     }
                 }
-
                 LOADER.GetMapImageN(mid)->DrawFull(curPos);
             }
 
@@ -275,59 +282,64 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             if(selectedPt == curPt)
                 LOADER.GetMapImageN(20)->DrawFull(curPos);
 
-            // Wegbauzeug
+            // not building roads, no further action needed
             if(rb.mode == RM_DISABLED)
                 continue;
 
+            // we are in road build mode
+            // highlight current route pt
             if(rb.point == curPt)
-                LOADER.GetMapImageN(21)->DrawFull(curPos);
-
-            int altitude = GetWorld().GetNode(rb.point).altitude;
-
-            for(unsigned dir = 0; dir < Direction::COUNT; ++dir)
             {
-                if(road_points[dir] != curPt)
-                    continue;
+                LOADER.GetMapImageN(21)->DrawFull(curPos);
+                continue;
+            }
 
-                // test on maximal water way length
-                if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
-                    continue;
+            // ensure that curPt is a neighbour of rb.point
+            if(!helpers::contains(road_points, curPt))
+            {
+                continue;
+            }
 
-                const bool targetsFlag = GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start;
-                if((gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt) && gwv.IsOwner(curPt) && GetWorld().IsPlayerTerritory(curPt))
-                   || (gwv.GetBQ(curPt) == BQ_FLAG) || targetsFlag)
+            // test on maximal water way length
+            if(rb.mode == RM_BOAT && maxWaterWayLen != 0 && rb.route.size() >= maxWaterWayLen)
+                continue;
+
+            // render special icon for route revert
+            if(!rb.route.empty() && GetWorld().GetNeighbour(rb.point, rb.route.back() + 3u) == curPt)
+            {
+                LOADER.GetMapImageN(67)->DrawFull(curPos);
+                continue;
+            }
+
+            // is a flag but not the route start flag, as it would revert the route.
+            const bool targetFlag = GetWorld().GetNO(curPt)->GetType() == NOP_FLAG && curPt != rb.start;
+            int altitude = GetWorld().GetNode(rb.point).altitude;
+            if(targetFlag || gwv.IsRoadAvailable(rb.mode == RM_BOAT, curPt))
+            {
+                unsigned id;
+                switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
                 {
-                    unsigned id;
-                    switch(int(GetWorld().GetNode(curPt).altitude) - altitude)
-                    {
-                        case 1: id = 61; break;
-                        case 2:
-                        case 3: id = 62; break;
-                        case 4:
-                        case 5: id = 63; break;
-                        case -1: id = 64; break;
-                        case -2:
-                        case -3: id = 65; break;
-                        case -4:
-                        case -5: id = 66; break;
-                        default: id = 60; break;
-                    }
-                    if(!targetsFlag)
-                        LOADER.GetMapImageN(id)->DrawFull(curPos);
-                    else
-                    {
-                        DrawPoint lastPos = GetWorld().GetNodePos(rb.point) - offset + curOffset;
-                        DrawPoint halfWayPos = (curPos + lastPos) / 2;
-                        LOADER.GetMapImageN(id)->DrawFull(halfWayPos);
-                    }
+                    case 1: id = 61; break;
+                    case 2:
+                    case 3: id = 62; break;
+                    case 4:
+                    case 5: id = 63; break;
+                    case -1: id = 64; break;
+                    case -2:
+                    case -3: id = 65; break;
+                    case -4:
+                    case -5: id = 66; break;
+                    default: id = 60; break;
                 }
-
-                // Flaggenanschluss? --> extra zeichnen
-                if(targetsFlag)
+                if(!targetFlag)
+                    LOADER.GetMapImageN(id)->DrawFull(curPos);
+                else
+                {
+                    DrawPoint lastPos = GetWorld().GetNodePos(rb.point) - offset + curOffset;
+                    DrawPoint halfWayPos = (curPos + lastPos) / 2;
+                    LOADER.GetMapImageN(id)->DrawFull(halfWayPos);
                     LOADER.GetMapImageN(20)->DrawFull(curPos);
-
-                if(!rb.route.empty() && rb.route.back() + 3u == Direction::fromInt(dir))
-                    LOADER.GetMapImageN(67)->DrawFull(curPos);
+                }
             }
         }
     }
