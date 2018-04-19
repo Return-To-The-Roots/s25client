@@ -227,13 +227,13 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    std::vector<MapPoint> road_points;
+    std::array<MapPoint, 6> road_points;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RM_DISABLED)
     {
         for(unsigned i = 0; i < Direction::COUNT; ++i)
-            road_points.push_back(GetWorld().GetNeighbour(rb.point, Direction::fromInt(i)));
+            road_points[i] = GetWorld().GetNeighbour(rb.point, Direction::fromInt(i));
 
         const unsigned index = GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
@@ -248,14 +248,6 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             Position curOffset;
             MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
             Position curPos = GetWorld().GetNodePos(curPt) - offset + curOffset;
-
-            // we dont own curPt, no need for any rendering...
-            if(!gwv.IsOwner(curPt))
-                continue;
-
-            // check if curPt is on the border
-            if(!GetWorld().IsPlayerTerritory(curPt))
-                continue;
 
             /// Current point indicated by Mouse
             if(drawMouse && selPt == curPt)
@@ -286,6 +278,10 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             if(rb.mode == RM_DISABLED)
                 continue;
 
+            // we dont own curPt, no need for any rendering...
+            if(!gwv.IsPlayerTerritory(curPt))
+                continue;
+
             // we are in road build mode
             // highlight current route pt
             if(rb.point == curPt)
@@ -295,7 +291,8 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // ensure that curPt is a neighbour of rb.point
-            if(!helpers::contains(road_points, curPt))
+            unsigned int roadIdx = helpers::indexOf(road_points, curPt);
+            if(roadIdx == -1)
             {
                 continue;
             }
@@ -305,7 +302,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 continue;
 
             // render special icon for route revert
-            if(!rb.route.empty() && GetWorld().GetNeighbour(rb.point, rb.route.back() + 3u) == curPt)
+            if(!rb.route.empty() && road_points[(rb.route.back().toUInt() + 3u) % Direction::COUNT] == curPt)
             {
                 LOADER.GetMapImageN(67)->DrawFull(curPos);
                 continue;

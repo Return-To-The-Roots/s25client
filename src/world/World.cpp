@@ -243,6 +243,23 @@ bool World::IsPlayerTerritory(const MapPoint pt) const
     return true;
 }
 
+bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) const
+{
+    const unsigned char ptOwner = GetNode(pt).owner;
+
+    if(ptOwner != owner)
+        return false;
+
+    // Neighbour nodes must belong to this player
+    for(unsigned i = 0; i < Direction::COUNT; ++i)
+    {
+        if(GetNeighbourNode(pt, Direction::fromInt(i)).owner != owner)
+            return false;
+    }
+
+    return true;
+}
+
 BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
 {
     return AdjustBQ(pt, player, GetNode(pt).bq);

@@ -121,6 +121,9 @@ public:
 
     /// Check if the point completely belongs to a player (if false but point itself belongs to player then it is a border)
     bool IsPlayerTerritory(const MapPoint pt) const;
+    /// Checks if the point complyetly belongs to a given player (if false but point itself belongs to player then it is a border)
+    bool IsPlayerTerritory(const MapPoint pt, const unsigned char owner) const;
+
     /// Return the BQ for the given player at the point (including ownership constraints)
     BuildingQuality GetBQ(const MapPoint pt, const unsigned char player) const;
     /// Incorporates node ownership into the given BQ
