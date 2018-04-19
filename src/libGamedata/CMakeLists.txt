@@ -15,9 +15,33 @@ SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 # LUA
 ################################################################################
 
-SET(LUA_VERSION "52")
+if(NOT LUA_DIR)
+	if(MSVC)
+		# Library is in contrib archive which is in prefix path.
+		# We just need to set LUA_DIR so the includes can be found
+		set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua")
+	elseif(WIN32 OR CYGWIN)
+		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
+		elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win32")
+		endif()
+	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+		if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
+			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin32")
+		elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
+			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin64")
+		endif()
+	elseif(APPLE)
+		set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
+	endif()
+endif()
 
-FIND_PACKAGE(LUA REQUIRED)
+if(CMAKE_VERSION VERSION_LESS 3.2)
+	find_package(LUA 5.2.1 EXACT REQUIRED)
+else()
+	find_package(LUA 5.2 EXACT REQUIRED)
+endif()
 
 include(GatherDll)
 gather_dll(LUA)
@@ -27,13 +51,10 @@ ADD_LIBRARY(gamedata STATIC ${SOURCES_OTHER} ${SOURCES_SUBDIRS})
 target_include_directories(gamedata PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(gamedata SYSTEM PUBLIC ${LUA_INCLUDE_DIR} ${RTTR_CONTRIB_DIR}/kaguya/include)
 TARGET_LINK_LIBRARIES(gamedata
-	PUBLIC s25util
-	PUBLIC mygettext
-	PUBLIC s25Common
-	PUBLIC rttrConfig
-	PUBLIC ${LUA_LIBRARY}
+	s25util
+	mygettext
+	s25Common
+	rttrConfig
+	lua::lua
 )
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	TARGET_LINK_LIBRARIES(gamedata PUBLIC dl)
-ENDif()
