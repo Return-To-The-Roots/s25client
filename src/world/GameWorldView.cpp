@@ -227,7 +227,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    std::array<MapPoint, 6> road_points;
+    boost::array<MapPoint, 6> road_points;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RM_DISABLED)
@@ -302,7 +302,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 continue;
 
             // render special icon for route revert
-            if(!rb.route.empty() && road_points[(rb.route.back().toUInt() + 3u) % Direction::COUNT] == curPt)
+            if(!rb.route.empty() && road_points[(rb.route.back() + 3u).toUInt()] == curPt)
             {
                 LOADER.GetMapImageN(67)->DrawFull(curPos);
                 continue;

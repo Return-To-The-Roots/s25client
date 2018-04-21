@@ -156,7 +156,7 @@ public:
                                   MapPoint* enemy_territory);
 
     /// Return whether this is a border node (node belongs to player, but not all others around)
-    bool IsBorderNode(const MapPoint pt, const unsigned char player) const;
+    bool IsBorderNode(const MapPoint pt, const unsigned char owner) const;
 
     // Konvertiert Ressourcen zwischen Typen hin und her oder löscht sie.
     // Für Spiele ohne Gold.
