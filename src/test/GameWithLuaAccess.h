@@ -122,7 +122,7 @@ public:
         BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations, false));
     }
 
-    virtual GameWorldGame& GetWorld() { return world; }
+    virtual GameWorldGame& GetWorld() override { return world; }
 };
 
 #endif // GameWithLuaAccess_h__
