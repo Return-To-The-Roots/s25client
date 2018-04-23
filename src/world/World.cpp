@@ -233,7 +233,7 @@ bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) cons
 {
     const unsigned char ptOwner = GetNode(pt).owner;
 
-    if(owner != '0' && ptOwner != owner)
+    if(owner != 0 && ptOwner != owner)
         return false;
 
     // Neighbour nodes must belong to this player

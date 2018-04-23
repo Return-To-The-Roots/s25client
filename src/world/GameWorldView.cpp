@@ -291,7 +291,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // ensure that curPt is a neighbour of rb.point
-            if(helpers::contains(road_points, curPt))
+            if(!helpers::contains(road_points, curPt))
             {
                 continue;
             }
