@@ -15,12 +15,18 @@ SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 # LUA
 ################################################################################
 
-if(NOT LUA_DIR)
+# If not set we set hints for the LUA library. Those can be overwritten by
+# setting CMAKE_PREFIX_PATH properly
+# Note: We only set those for the libraries we use for official builds. Normally
+# those should be on the build server but we make them available here for convenience.
+
+if(NOT ENV{LUA_DIR})
 	if(MSVC)
 		# Library is in contrib archive which is in prefix path.
-		# We just need to set LUA_DIR so the includes can be found
-		set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua")
+		# We just need to the includes to be found
+		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 	elseif(WIN32 OR CYGWIN)
+		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
 		elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -28,33 +34,39 @@ if(NOT LUA_DIR)
 		endif()
 	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
-			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin32")
+			list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/lin32")
 		elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
-			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/lin64")
+			list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/lin64")
 		endif()
 	elseif(APPLE)
-		set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
+		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+		set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
 	endif()
 endif()
 
+# CMake < 3.2 treats version 5.2.x as not equal to 5.2 but we want to allow all 5.2 versions
 if(CMAKE_VERSION VERSION_LESS 3.2)
-	find_package(LUA 5.2.1 EXACT REQUIRED)
+	find_package(Lua 5.2 REQUIRED)
+	if(LUA_FOUND AND NOT LUA_VERSION_STRING VERSION_LESS 5.3)
+		message(FATAL_ERROR "Lua version ${LUA_VERSION_STRING} found but required is 5.2")
+	endif()
 else()
-	find_package(LUA 5.2 EXACT REQUIRED)
+	find_package(Lua 5.2 EXACT REQUIRED)
 endif()
 
 include(GatherDll)
 gather_dll(LUA)
 
-include_directories(${UTF8_INCLUDE_DIR})
 ADD_LIBRARY(gamedata STATIC ${SOURCES_OTHER} ${SOURCES_SUBDIRS})
 target_include_directories(gamedata PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(gamedata SYSTEM PUBLIC ${LUA_INCLUDE_DIR} ${RTTR_CONTRIB_DIR}/kaguya/include)
-TARGET_LINK_LIBRARIES(gamedata
+target_include_directories(gamedata SYSTEM PUBLIC ${RTTR_CONTRIB_DIR}/kaguya/include ${LUA_INCLUDE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
+TARGET_LINK_LIBRARIES(gamedata PUBLIC
 	s25util
 	mygettext
 	s25Common
 	rttrConfig
-	lua::lua
+	${LUA_LIBRARIES}
 )
 
