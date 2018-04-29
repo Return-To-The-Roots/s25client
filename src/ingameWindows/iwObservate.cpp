@@ -39,7 +39,7 @@ const Extent MediumWndSize(300, 250);
 const Extent BigWndSize(340, 310);
 
 iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
-    : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, Extent(260, 190), _("Observation window"), NULL),
+    : IngameWindow(gwv.GetWorld().CreateGUIID(selectedPt), IngameWindow::posAtMouse, SmallWndSize, _("Observation window"), NULL),
       parentView(gwv), view(new GameWorldView(gwv.GetViewer(), Position(GetDrawPos() * DrawPoint(10, 15)), GetSize() - Extent::all(20))),
       selectedPt(selectedPt), lastWindowPos(Point<unsigned short>::Invalid()), isScrolling(false), zoomLvl(0), followMovableId(0)
 {
@@ -134,19 +134,16 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
         case 4:
             int diff = GetSize().x;
 
-            if(GetSize().x == 260)
+            if(GetSize() == SmallWndSize)
             {
-                SetWidth(300);
-                SetHeight(250);
-            } else if(GetSize().x == 300)
+                Resize(MediumWndSize);
+            } else if(GetSize() == MediumWndSize)
             {
-                SetWidth(340);
-                SetHeight(310);
+                Resize(BigWndSize);
                 GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 108));
             } else
             {
-                SetWidth(260);
-                SetHeight(190);
+                Resize(SmallWndSize);
                 GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetImageN("io", 109));
             }
 
