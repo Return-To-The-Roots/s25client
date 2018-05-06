@@ -1302,9 +1302,9 @@ void GameWorldGame::RecalcMovingVisibilities(const MapPoint pt, const unsigned c
     }
 }
 
-bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char player) const
+bool GameWorldGame::IsBorderNode(const MapPoint pt, const unsigned char owner) const
 {
-    return (GetNode(pt).owner == player && !IsPlayerTerritory(pt));
+    return (GetNode(pt).owner == owner && !IsPlayerTerritory(pt, owner));
 }
 
 /**

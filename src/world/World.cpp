@@ -229,14 +229,17 @@ void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
     AltitudeChanged(pt);
 }
 
-bool World::IsPlayerTerritory(const MapPoint pt) const
+bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) const
 {
-    const unsigned char owner = GetNode(pt).owner;
+    const unsigned char ptOwner = GetNode(pt).owner;
+
+    if(owner != 0 && ptOwner != owner)
+        return false;
 
     // Neighbour nodes must belong to this player
     for(unsigned i = 0; i < Direction::COUNT; ++i)
     {
-        if(GetNeighbourNode(pt, Direction::fromInt(i)).owner != owner)
+        if(GetNeighbourNode(pt, Direction::fromInt(i)).owner != ptOwner)
             return false;
     }
 
@@ -250,7 +253,7 @@ BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) cons
 
 BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
 {
-    if(nodeBQ == BQ_NOTHING || GetNode(pt).owner != player + 1 || !IsPlayerTerritory(pt))
+    if(nodeBQ == BQ_NOTHING || !IsPlayerTerritory(pt, player + 1))
         return BQ_NOTHING;
     // If we could build a building, but the buildings flag point is at the border, we can only build a flag
     if(nodeBQ != BQ_FLAG && !IsPlayerTerritory(GetNeighbour(pt, Direction::SOUTHEAST)))
