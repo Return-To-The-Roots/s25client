@@ -15,28 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef COINSCAPTUREDBLD_H_INCLUDED
-#define COINSCAPTUREDBLD_H_INCLUDED
+#ifndef ADDONIMPROVEDWAREORDER_H_INCLUDED
+#define ADDONIMPROVEDWAREORDER_H_INCLUDED
 
 #pragma once
 
-#include "AddonList.h"
-#include "mygettext/mygettext.h"
+#include "AddonBool.h"
 
-/**
- *  Addon which controls if coins should be enabled/disabled on capture
- */
-class AddonCoinsCapturedBld : public AddonList
+class AddonImprovedWareOrder : public AddonBool
 {
 public:
-    AddonCoinsCapturedBld()
-        : AddonList(AddonId::COINS_CAPTURED_BLD, ADDONGROUP_MILITARY, _("Coins on captured buildings"),
-                    _("Change the coin setting for captured military buildings."), 0)
-    {
-        this->addOption(_("Keep setting"));
-        this->addOption(_("Enable"));
-        this->addOption(_("Disable"));
-    }
+    AddonImprovedWareOrder()
+        : AddonBool(AddonId::IMPROVED_WARE_ORDER, ADDONGROUP_GAMEPLAY | ADDONGROUP_ECONOMY, _("Improved ware order"),
+                    _("Ware with storehouse as goal can be redirected to another building."), 0)
+    {}
 };
 
-#endif // !COINSCAPTUREDBLD_H_INCLUDED
+#endif // !ADDONIMPROVEDWAREORDER_H_INCLUDED
