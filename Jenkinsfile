@@ -40,7 +40,7 @@ def transformIntoStep(arch, wspwd) {
                                   PARAMS=create_stable
                                   COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force && cat build_version_defines.h'
                               fi
-                              DIR_CFG="-DRTTR_EXTRA_BINDIR=libexec/s25rttr"
+                              DIR_CFG="-DRTTR_EXTRA_BINDIR=libexec/s25rttr -DLUA_DIR=/workdir/contrib/lua"
                               BUILD_CMD="cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$DIR_CFG \$COMMANDS && make \$PARAMS"
                               echo "Executing: \$BUILD_CMD"
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
