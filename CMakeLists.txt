@@ -13,6 +13,8 @@ PROJECT(s25client)
 
 ################################################################################
 
+message(STATUS "Using CMake ${CMAKE_VERSION}")
+
 IF (DEFINED CMAKE_TOOLCHAIN_FILE)
 	MESSAGE(STATUS "Used Toolchain definition file '${CMAKE_TOOLCHAIN_FILE}'")
 ENDIF()

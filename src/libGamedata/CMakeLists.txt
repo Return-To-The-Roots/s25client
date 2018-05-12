@@ -21,6 +21,9 @@ SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 # those should be on the build server but we make them available here for convenience.
 
 if(NOT ENV{LUA_DIR})
+	if(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/lua/include/lua.h")
+		message(WARNING "Could not find lua.h in contrib")
+	endif()
 	if(MSVC)
 		# Library is in contrib archive which is in prefix path.
 		# We just need to the includes to be found
@@ -28,9 +31,9 @@ if(NOT ENV{LUA_DIR})
 	elseif(WIN32 OR CYGWIN)
 		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
+			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
 		elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-			set(LUA_DIR "${CMAKE_SOURCE_DIR}/contrib/lua/win32")
+			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/win32")
 		endif()
 	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
