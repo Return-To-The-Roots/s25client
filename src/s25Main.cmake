@@ -50,19 +50,22 @@ SET(s25Main_SRCS
 	${SOURCES_SUBDIRS}
 )
 
-include_directories(${UTF8_INCLUDE_DIR})
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
 ADD_DEPENDENCIES(s25Main updateversion)
-target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-TARGET_LINK_LIBRARIES(s25Main
-	PUBLIC siedler2
-	PUBLIC lobby_c
-	PUBLIC s25util
-	PUBLIC mygettext
-	PUBLIC s25Common
-	PUBLIC rttrConfig
-	PUBLIC gamedata
-	PUBLIC ${BZIP2_LIBRARIES}
-	PUBLIC ${OPENGL_gl_LIBRARY}
-	PUBLIC ${Boost_LIBRARIES}
+target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
+TARGET_LINK_LIBRARIES(s25Main PUBLIC
+	siedler2
+	lobby_c
+	s25util
+	mygettext
+	s25Common
+	rttrConfig
+	gamedata
+	${BZIP2_LIBRARIES}
+	${OPENGL_gl_LIBRARY}
+	${Boost_LIBRARIES}
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	TARGET_LINK_LIBRARIES(s25Main PUBLIC ${CMAKE_DL_LIBS}) # For dynamic driver loading (DriverWrapper)
+endif()
