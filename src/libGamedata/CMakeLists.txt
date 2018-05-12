@@ -16,7 +16,7 @@ SOURCE_GROUP(other FILES ${SOURCES_OTHER})
 ################################################################################
 
 # If not set we set hints for the LUA library. Those can be overwritten by
-# setting CMAKE_PREFIX_PATH properly
+# setting  CMAKE_FIND_ROOT_PATH properly
 # Note: We only set those for the libraries we use for official builds. Normally
 # those should be on the build server but we make them available here for convenience.
 
@@ -24,12 +24,15 @@ if(NOT ENV{LUA_DIR})
 	if(NOT EXISTS "${CMAKE_SOURCE_DIR}/contrib/lua/include/lua.h")
 		message(WARNING "Could not find lua.h in contrib")
 	endif()
+
+	set(LUA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/contrib/lua/include)
+
 	if(MSVC)
 		# Library is in contrib archive which is in prefix path.
 		# We just need to the includes to be found
-		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+		list(APPEND  CMAKE_FIND_ROOT_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 	elseif(WIN32 OR CYGWIN)
-		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+		list(APPEND  CMAKE_FIND_ROOT_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/win64")
 		elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -37,14 +40,14 @@ if(NOT ENV{LUA_DIR})
 		endif()
 	elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 		if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
-			list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+			list(APPEND  CMAKE_FIND_ROOT_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/lin32")
 		elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
-			list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+			list(APPEND  CMAKE_FIND_ROOT_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 			set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/lin64")
 		endif()
 	elseif(APPLE)
-		list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
+		list(APPEND  CMAKE_FIND_ROOT_PATH "${CMAKE_SOURCE_DIR}/contrib/lua")
 		set(ENV{LUA_DIR} "${CMAKE_SOURCE_DIR}/contrib/lua/mac")
 	endif()
 endif()
