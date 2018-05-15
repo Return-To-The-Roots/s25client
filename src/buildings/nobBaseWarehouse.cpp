@@ -104,14 +104,12 @@ void nobBaseWarehouse::DestroyBuilding()
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
 
     // move soldiers from reserve to inventory.
-    if(!GAMECLIENT.IsReplayModeOn() && GAMECLIENT.GetPlayerId() == player)
+    for (unsigned rank = 0; rank < gwg->GetGGS().GetMaxMilitaryRank(); ++rank)
     {
-        for(unsigned rank = 0; rank < gwg->GetGGS().GetMaxMilitaryRank(); ++rank)
-        {
-            if(reserve_soldiers_available[rank] > 0)
-                inventory.real.Add(SOLDIER_JOBS[rank], reserve_soldiers_available[rank]);
-        }
+        if (reserve_soldiers_available[rank] > 0)
+            inventory.real.Add(SOLDIER_JOBS[rank], reserve_soldiers_available[rank]);
     }
+    
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
     gwg->AddFigure(pos, new BurnedWarehouse(pos, player, inventory.real.people));
