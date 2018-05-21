@@ -9,9 +9,9 @@ see more information on http://www.rttr.info
 
 # Current Build Info
 
-Travis CI: ![Travis CI Build Info](https://travis-ci.org/Return-To-The-Roots/s25client.svg?branch=master)
+Travis CI: [![Travis CI Build Info](https://travis-ci.org/Return-To-The-Roots/s25client.svg?branch=master)](https://travis-ci.org/Return-To-The-Roots/s25client)
 
-Appveyor: ![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)
+Appveyor: [![Appveyor CI Build Info](https://ci.appveyor.com/api/projects/status/ufw8v9mi80va1me7/branch/master?svg=true)](https://ci.appveyor.com/project/Flow86/s25client/branch/master)
 
 Coverage:
 [![Coverage Status](https://coveralls.io/repos/github/Return-To-The-Roots/s25client/badge.svg?branch=master)](https://coveralls.io/github/Return-To-The-Roots/s25client?branch=master)
