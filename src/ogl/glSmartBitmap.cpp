@@ -50,7 +50,7 @@ void glSmartBitmap::reset()
     items.clear();
 }
 
-Extent glSmartBitmap::getTexSize() const
+Extent glSmartBitmap::getRequiredTexSize() const
 {
     Extent texSize(size_);
     if(hasPlayer)
@@ -60,20 +60,26 @@ Extent glSmartBitmap::getTexSize() const
 
 void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp, bool transferOwnership /*= false*/)
 {
-    if(bmp)
-        items.push_back(glBitmapItem(bmp, transferOwnership));
+    if(!bmp)
+        return;
+    items.push_back(glBitmapItem(bmp, transferOwnership));
+    calcDimensions();
 }
 
 void glSmartBitmap::add(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership /*= false*/)
 {
-    if(bmp)
-        items.push_back(glBitmapItem(bmp, false, transferOwnership));
+    if(!bmp)
+        return;
+    items.push_back(glBitmapItem(bmp, false, transferOwnership));
+    calcDimensions();
 }
 
 void glSmartBitmap::addShadow(libsiedler2::baseArchivItem_Bitmap* bmp, bool transferOwnership /*= false*/)
 {
-    if(bmp)
-        items.push_back(glBitmapItem(bmp, true, transferOwnership));
+    if(!bmp)
+        return;
+    items.push_back(glBitmapItem(bmp, true, transferOwnership));
+    calcDimensions();
 }
 
 void glSmartBitmap::calcDimensions()
@@ -200,11 +206,7 @@ void glSmartBitmap::generateTexture()
             return;
     }
 
-    calcDimensions();
-
-    size_ = VIDEODRIVER.calcPreferredTextureSize(size_);
-
-    const Extent bufSize = getTexSize();
+    const Extent bufSize = VIDEODRIVER.calcPreferredTextureSize(getRequiredTexSize());
 
     libsiedler2::PixelBufferARGB buffer(bufSize.x, bufSize.y);
     drawTo(buffer);
@@ -216,14 +218,27 @@ void glSmartBitmap::generateTexture()
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bufSize.x, bufSize.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 
-    texCoords[0].x = texCoords[1].x = 0.0f;
-    texCoords[2].x = texCoords[3].x = hasPlayer ? 0.5f : 1.0f;
+    typedef Point<float> PointF;
 
-    texCoords[0].y = texCoords[3].y = texCoords[4].y = texCoords[7].y = 0.0f;
-    texCoords[1].y = texCoords[2].y = texCoords[5].y = texCoords[6].y = 1.0f;
-
-    texCoords[4].x = texCoords[5].x = 0.5f;
-    texCoords[6].x = texCoords[7].x = 1.0f;
+    /* 0--3/4--7
+     * |  |    |
+     * 1--2/5--6
+     **/
+    texCoords[0] = PointF::all(0);
+    texCoords[2] = PointF(getRequiredTexSize()) / PointF(bufSize);
+    if(hasPlayer)
+    {
+        texCoords[6] = texCoords[2];
+        texCoords[2].x /= 2.f;
+    }
+    texCoords[1] = PointF(texCoords[0].x, texCoords[2].y);
+    texCoords[3] = PointF(texCoords[2].x, texCoords[0].y);
+    if(hasPlayer)
+    {
+        texCoords[4] = texCoords[3];
+        texCoords[5] = texCoords[2];
+        texCoords[7] = PointF(texCoords[6].x, texCoords[4].y);
+    }
 }
 
 void glSmartBitmap::draw(DrawPoint drawPt, unsigned color, unsigned player_color)

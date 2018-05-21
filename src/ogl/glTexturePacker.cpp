@@ -27,8 +27,8 @@
 
 bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
 {
-    const Extent sizeA = a->getTexSize();
-    const Extent sizeB = b->getTexSize();
+    const Extent sizeA = a->getRequiredTexSize();
+    const Extent sizeB = b->getRequiredTexSize();
     return (sizeA.x * sizeA.y) > (sizeB.x * sizeB.y);
 }
 
@@ -56,7 +56,7 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
     unsigned total = 0;
     BOOST_FOREACH(glSmartBitmap* bmp, list)
     {
-        Extent texSize = bmp->getTexSize();
+        Extent texSize = bmp->getRequiredTexSize();
         maxBmpSize = elMax(maxBmpSize, texSize);
 
         total += texSize.x * texSize.y;
@@ -176,9 +176,6 @@ bool glTexturePacker::packHelper(std::vector<glSmartBitmap*>& list)
 
 bool glTexturePacker::pack()
 {
-    BOOST_FOREACH(glSmartBitmap* bmp, items)
-        bmp->calcDimensions();
-
     std::sort(items.begin(), items.end(), isSizeGreater);
 
     if(packHelper(items))

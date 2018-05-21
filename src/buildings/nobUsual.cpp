@@ -552,7 +552,7 @@ void nobUsual::OnOutOfResources()
     SendPostMessage(player, new PostMsgWithBuilding(GetEvMgr().GetCurrentGF(), error, PostCategory::Economy, *this));
     gwg->GetNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, GetPos(), GetBuildingType()));
 
-    if (GAMECLIENT.GetPlayerId() == player && gwg->GetGGS().isEnabled(AddonId::DEMOLISH_BLD_WO_RES))
+    if(GAMECLIENT.GetPlayerId() == player && gwg->GetGGS().isEnabled(AddonId::DEMOLISH_BLD_WO_RES))
     {
         GAMECLIENT.DestroyBuilding(GetPos());
     }

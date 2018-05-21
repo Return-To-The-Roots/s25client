@@ -26,7 +26,7 @@ bool glTexturePackerNode::insert(glSmartBitmap* b, libsiedler2::PixelBufferARGB&
 
     todo.push_back(this);
 
-    const Extent texSize = b->getTexSize();
+    const Extent texSize = b->getRequiredTexSize();
 
     while(!todo.empty())
     {

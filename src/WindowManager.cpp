@@ -299,7 +299,7 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
 
     // Sound abspielen
     SoundEffectItem* sound = LOADER.GetSoundN("sound", 112);
-    if (sound)
+    if(sound)
         sound->Play(255, false);
 
     // haben wir überhaupt fenster?

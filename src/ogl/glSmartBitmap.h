@@ -45,6 +45,9 @@ private:
 
     std::vector<glBitmapItem> items;
 
+    /// Calculate size, origin and hasPlayer based on current images
+    void calcDimensions();
+
 public:
     Point<float> texCoords[8];
 
@@ -54,7 +57,8 @@ public:
 
     Position GetOrigin() const override { return origin_; }
     Extent GetSize() const override { return size_; }
-    Extent getTexSize() const;
+    /// Return the space required on the texture
+    Extent getRequiredTexSize() const;
 
     bool isGenerated() const { return texture != 0; }
     bool isPlayer() const { return hasPlayer; }
@@ -66,8 +70,6 @@ public:
         sharedTexture = (tex != 0);
     }
     unsigned getTexture() const { return texture; }
-
-    void calcDimensions();
 
     void generateTexture();
     void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFF) override { draw(dstPos, color); }
