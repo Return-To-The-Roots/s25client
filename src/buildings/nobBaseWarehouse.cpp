@@ -21,6 +21,7 @@
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "SerializedGameData.h"
 #include "Ware.h"
 #include "factories/JobFactory.h"
@@ -101,6 +102,14 @@ void nobBaseWarehouse::DestroyBuilding()
     // restliche Warenbestände von der Inventur wieder abziehen
     for(unsigned i = 0; i < NUM_WARE_TYPES; ++i)
         gwg->GetPlayer(player).DecreaseInventoryWare(GoodType(i), inventory[GoodType(i)]);
+
+    // move soldiers from reserve to inventory.
+    for (unsigned rank = 0; rank < gwg->GetGGS().GetMaxMilitaryRank(); ++rank)
+    {
+        if (reserve_soldiers_available[rank] > 0)
+            inventory.real.Add(SOLDIER_JOBS[rank], reserve_soldiers_available[rank]);
+    }
+    
 
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
     gwg->AddFigure(pos, new BurnedWarehouse(pos, player, inventory.real.people));
