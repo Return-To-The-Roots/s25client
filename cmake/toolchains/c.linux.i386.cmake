@@ -11,9 +11,7 @@ SET(CMAKE_RANLIB i686-pc-linux-gnu-ranlib CACHE PATH "" FORCE)
 SET(CMAKE_AR i686-pc-linux-gnu-ar CACHE PATH "" FORCE)
 
 # set search prefix
-SET(CMAKE_PREFIX_PATH "/usr/i686-pc-linux-gnu")
-SET(CMAKE_FIND_ROOT_PATH ${CMAKE_PREFIX_PATH})
-SET(BOOST_ROOT ${CMAKE_PREFIX_PATH})
+SET(CMAKE_FIND_ROOT_PATH "/usr/i686-pc-linux-gnu")
 
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
