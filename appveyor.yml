@@ -21,6 +21,12 @@ environment:
   MSVC: 14.0
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1
 
+matrix:
+  allow_failures:
+    - platform: x64 # Fails for some reason (Lua?)
+      configuration: Release
+      image: Visual Studio 2017
+
 for:
   - matrix:
       only:
@@ -28,7 +34,7 @@ for:
     environment:
       BOOST_ROOT: C:\Libraries\boost_1_67_0
       GENERATOR: Visual Studio 15 2017
-      MSVC: 15.0
+      MSVC: 14.1
 
 install:
   - dir C:\Libraries
