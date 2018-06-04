@@ -5,6 +5,7 @@ branches:
   
 image:
   - Visual Studio 2015
+  - Visual Studio 2017
 
 configuration:
   - Debug
@@ -19,6 +20,15 @@ environment:
   GENERATOR: Visual Studio 14 2015
   MSVC: 14.0
   RTTR_DISABLE_ASSERT_BREAKPOINT: 1
+
+for:
+  - matrix:
+      only:
+        - image: Visual Studio 2017
+    environment:
+      BOOST_ROOT: C:\Libraries\boost_1_64_0
+      GENERATOR: Visual Studio 15 2017
+      MSVC: 15.0
 
 install:
   - dir C:\Libraries
