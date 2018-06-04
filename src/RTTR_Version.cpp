@@ -17,6 +17,7 @@
 
 #include "build_version_defines.h"
 #include "RTTR_Version.h"
+#include <algorithm>
 #include <cstring>
 
 /// Copy the string from src into dst ensuring zero termination
