@@ -7,10 +7,10 @@ rm -vf CMakeCache.txt cmake_install.cmake Makefile install_manifest.txt prepareR
 rm -vrf CMakeFiles Testing bugle build_paths.h build_version.h build_version_defines.h postinstall.sh CTestTestfile.cmake
 rm -vf *.bak *~ .DS_Store
 # Symlinks
-rm -vf bin share s25rttr
+rm -vrf bin lib libexec share s25rttr test
 
 # Unterverzeichnisse entfernen
-for I in `grep ADD_SUBDIRECTORY ../CMakeLists.txt | cut -d '(' -f 2 \
+for I in `grep -i ADD_SUBDIRECTORY ../CMakeLists.txt | cut -d '(' -f 2 \
           | cut -d ')' -f 1` ; do
 	rm -vrf "$I"
 done
