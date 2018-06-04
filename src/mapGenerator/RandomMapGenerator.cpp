@@ -243,8 +243,9 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
 
         uint8_t res = libsiedler2::R_None;
 
-        if(tRsu.kind == TerrainKind::WATER && tLsd.kind == TerrainKind::WATER) {
-                res = libsiedler2::R_Fish;
+        if(tRsu.kind == TerrainKind::WATER && tLsd.kind == TerrainKind::WATER)
+        {
+            res = libsiedler2::R_Fish;
         } else if(tRsu.IsVital() && tLsd.IsVital())
         {
             int nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::NORTHWEST), map.size);
@@ -267,8 +268,7 @@ void RandomMapGenerator::SetResources(const MapSettings& settings, Map& map)
             const TerrainDesc& t3 = config.GetTerrainByS2Id(map.textureLsd[nb]);
             nb = VertexUtility::GetIndexOf(GetNeighbour(pt, Direction::EAST), map.size);
             const TerrainDesc& t4 = config.GetTerrainByS2Id(map.textureRsu[nb]);
-            if(t1.Is(ETerrain::Mineable) && t2.Is(ETerrain::Mineable) && t3.Is(ETerrain::Mineable)
-               && t4.Is(ETerrain::Mineable))
+            if(t1.Is(ETerrain::Mineable) && t2.Is(ETerrain::Mineable) && t3.Is(ETerrain::Mineable) && t4.Is(ETerrain::Mineable))
                 res = helper.objGen.CreateRandomResource(settings.ratioGold, settings.ratioIron, settings.ratioCoal, settings.ratioGranite);
         }
 
