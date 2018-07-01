@@ -163,68 +163,51 @@ void nofMetalworker::CheckForOrders()
 
 GoodType nofMetalworker::GetOrderedTool()
 {
-    // qx:tools
-    int maxPrio = -1;
-    int tool = -1;
-
     GamePlayer& owner = gwg->GetPlayer(player);
+    std::vector<uint8_t> random_array;
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
-        if(owner.GetToolsOrdered(i) > 0u && static_cast<int>(owner.GetToolPriority(i)) > maxPrio)
-        {
-            maxPrio = owner.GetToolPriority(i);
-            tool = i;
-        }
+        if(owner.GetToolsOrdered(i) == 0)
+            continue;
+        random_array.insert(random_array.end(), owner.GetToolPriority(i), i);
     }
+    if(random_array.empty())
+        return GD_NOTHING;
 
-    if(tool != -1)
-    {
-        owner.ToolOrderProcessed(tool);
+    unsigned toolIdx = random_array[RANDOM_RAND(GetObjId(), random_array.size())];
 
-        if(HasToolOrder() == 0)
-            SendPostMessage(player,
-                            new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
+    owner.ToolOrderProcessed(toolIdx);
 
-        return TOOLS[tool];
-    }
-    return GD_NOTHING;
+    if(!HasToolOrder())
+        SendPostMessage(player, new PostMsg(GetEvMgr().GetCurrentGF(), _("Completed the ordered amount of tools."), PostCategory::Economy));
+
+    return TOOLS[toolIdx];
 }
 
 GoodType nofMetalworker::GetRandomTool()
 {
-    const GamePlayer& owner = gwg->GetPlayer(player);
+    GamePlayer& owner = gwg->GetPlayer(player);
 
-    // Je nach Werkzeugeinstellungen zufällig ein Werkzeug produzieren, je größer der Balken,
-    // desto höher jeweils die Wahrscheinlichkeit
-    unsigned short all_size = 0;
-
+    // Fill array where the # of occurrences of a tool is its priority
+    // Drawing a random entry will make higher priority items more likely
+    std::vector<uint8_t> random_array;
+    random_array.reserve(TOOLS.size());
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
-        all_size += owner.GetToolPriority(i);
+    {
+        random_array.insert(random_array.end(), owner.GetToolPriority(i), i);
+    }
 
     // if they're all zero
-    if(all_size == 0)
+    if(random_array.empty())
     {
-        // do nothing if addon is enabled, otherwise produce random ware (orig S2 behaviour)
+        // do nothing if addon is enabled, otherwise produce random ware (orig S2 behavior)
         if(gwg->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
             return GD_NOTHING;
         else
-            return TOOLS[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), TOOLS.size())];
+            return TOOLS[RANDOM_RAND(GetObjId(), TOOLS.size())];
     }
 
-    // Ansonsten Array mit den Werkzeugtypen erstellen und davon dann eins zufällig zurückliefern, je höher Wahr-
-    // scheinlichkeit (Balken), desto öfter im Array enthalten
-    std::vector<unsigned char> random_array(all_size);
-    unsigned curIdx = 0;
-
-    for(unsigned i = 0; i < NUM_TOOLS; ++i)
-    {
-        for(unsigned g = 0; g < owner.GetToolPriority(i); ++g)
-            random_array[curIdx++] = i;
-    }
-
-    GoodType tool = TOOLS[random_array[RANDOM.Rand(__FILE__, __LINE__, GetObjId(), all_size)]];
-
-    return tool;
+    return TOOLS[random_array[RANDOM_RAND(GetObjId(), random_array.size())]];
 }
 
 GoodType nofMetalworker::ProduceWare()
