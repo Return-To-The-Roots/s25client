@@ -169,7 +169,8 @@ GoodType nofMetalworker::GetOrderedTool()
     {
         if(owner.GetToolsOrdered(i) == 0)
             continue;
-        random_array.insert(random_array.end(), owner.GetToolPriority(i), i);
+        unsigned toolPriority = std::max(owner.GetToolPriority(i), 1u);
+        random_array.insert(random_array.end(), toolPriority, i);
     }
     if(random_array.empty())
         return GD_NOTHING;
