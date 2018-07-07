@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 # Editable Variables
 CMAKE_COMMAND=cmake
 

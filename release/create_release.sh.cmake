@@ -1,11 +1,10 @@
 #!/bin/bash
 
-TYPE=$1
-SRCDIR=$2
+set -euxo pipefail
 
 usage()
 {
-	echo "$0 [nightly|stable] srcdir"
+	echo "$0 [nightly|stable]"
 	echo "set environment FORCE to 1 to force update of archive"
 	exit 1
 }
@@ -18,37 +17,32 @@ cleanup()
 
 error()
 {
+    if [ $# != 0 ]; then
+        echo "ERROR: $1"
+    fi
 	cleanup
 	exit 1
 }
 
-if [ -z "$TYPE" ] ; then
+if [[ $# != 1 }] ; then
 	usage
 fi
 
-if [ ! -d "$SRCDIR" ] ; then
-	usage
-fi
+TYPE=$1
+
+# Configured by CMake
+SRCDRC=@CMAKE_SOURCE_DIR@
+PLATFORM_NAME=@PLATFORM_NAME@
+PLATFORM_ARCH=@PLATFORM_ARCH@
 
 RELEASEDEF=$SRCDIR/release/release.$TYPE.def
 source $RELEASEDEF || error
 
-if [ ! -d "$TARGET" ] ; then
-	echo "ERROR: $RELEASEDEF does not contain TARGET"
-	error
-fi
+[ -d "$TARGET" ] || error "$RELEASEDEF does not contain TARGET"
 
-# get arch
-PLATFORM_NAME="$(grep PLATFORM_NAME:INTERNAL= CMakeCache.txt | head -n 1 | cut -d '=' -f 2)"
-PLATFORM_ARCH="$(grep PLATFORM_ARCH:INTERNAL= CMakeCache.txt | head -n 1 | cut -d '=' -f 2)"
-if [[ -z ${PLATFORM_NAME} ]]; then
-	echo "ERROR: PLATFORM_NAME not found"
-	error
-fi
-if [[ -z ${PLATFORM_ARCH} ]]; then
-	echo "ERROR: PLATFORM_ARCH not found"
-	error
-fi
+[[ -n "${PLATFORM_NAME}" ]] || error "PLATFORM_NAME not found"
+[[ -n "${PLATFORM_ARCH}" ]] || error "PLATFORM_ARCH not found"
+
 ARCH="${PLATFORM_NAME}.${PLATFORM_ARCH}"
 
 # current and new package directory

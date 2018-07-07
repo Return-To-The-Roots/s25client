@@ -99,4 +99,5 @@ add_subdirectory(s25client)
 add_subdirectory(test)
 
 # Copy the RTTR folder with the updated translations to the directory of the client.
-ADD_CUSTOM_COMMAND(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIGURATION> -P ${CMAKE_BINARY_DIR}/CMakeFiles/copyDepsToBuildDir.cmake)
+configure_file(${CMAKE_SOURCE_DIR}/copyDepsToBuildDir.cmake . @ONLY)
+ADD_CUSTOM_COMMAND(TARGET translations POST_BUILD COMMAND ${CMAKE_COMMAND} -D CMAKE_BUILD_TYPE=$<CONFIGURATION> -P ${CMAKE_CURRENT_BINARY_DIR}/copyDepsToBuildDir.cmake)

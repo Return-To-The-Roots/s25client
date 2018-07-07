@@ -21,36 +21,12 @@ ENDIF()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libutil/cmake/Modules")
 
-set(RTTR_CONTRIB_DIR ${CMAKE_SOURCE_DIR}/contrib)
-list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR}")
+INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
+ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Please create a build directory and run cmake there.")
 
-# Fill RTTR_CONTRIB_DIR_VS and append to CMAKE_PREFIX_PATH
-# Set CMAKE_LIBRARY_ARCHITECTURE
-IF (MSVC)
-	IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
-		SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE INTERNAL "")
-	ELSE()
-		SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE INTERNAL "")
-	ENDIF()
-	MESSAGE(STATUS "Building for MSVC: ${CMAKE_LIBRARY_ARCHITECTURE}")
-
-	SET(RTTR_CONTRIB_DIR_VS "${RTTR_CONTRIB_DIR}/full-contrib-msvc" CACHE PATH "Path to base dir from contrib package")
-	IF(NOT EXISTS ${RTTR_CONTRIB_DIR_VS} OR NOT IS_DIRECTORY ${RTTR_CONTRIB_DIR_VS})
-		MESSAGE(FATAL_ERROR "You have to extract contrib/full-contrib-msvc.rar to ${RTTR_CONTRIB_DIR_VS} first!")
-	ENDIF()
-	SET(CONTRIB_DLL_DIR "${RTTR_CONTRIB_DIR_VS}/bin/${CMAKE_LIBRARY_ARCHITECTURE}")
-	IF(MSVC_VERSION GREATER 1800) # MSVC 2015
-		list(APPEND CMAKE_PREFIX_PATH "${RTTR_CONTRIB_DIR_VS}/VS2015")
-	ENDIF()
-	list(APPEND CMAKE_PREFIX_PATH ${RTTR_CONTRIB_DIR_VS})
-	list(APPEND CMAKE_PROGRAM_PATH ${RTTR_CONTRIB_DIR_VS}/buildTools ${CONTRIB_DLL_DIR})
-ENDIF()
-
-INCLUDE(CMakeMacroSetCCache)
 INCLUDE(CMakeMacroAddFlags)
 INCLUDE(CMakeMacroForceAddFlags)
 INCLUDE(CMakeMacroCorrectLib)
-INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
 INCLUDE(CMakeDetectOsXArchs)
 include(CheckStructHasMember)
 INCLUDE(CheckCXXCompilerFlag)
@@ -58,121 +34,36 @@ INCLUDE(CheckCCompilerFlag)
 INCLUDE(CheckIncludeFile)
 
 ################################################################################
-# Unify variables:
-#   PLATFORM_NAME in lowercase (windows, linux,...)
-#   PLATFORM_ARCH: i386, x86_64, universal
-################################################################################
-
-STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
-SET(PLATFORM_NAME ${PLATFORM_NAME} CACHE INTERNAL "Do not change")
-
-# Set PLATFORM_ARCH
-IF(WIN32)
-	IF (CMAKE_SIZEOF_VOID_P EQUAL 8)
-		SET(PLATFORM_ARCH "x86_64")
-	ELSEIF (CMAKE_SIZEOF_VOID_P EQUAL 4)
-		SET(PLATFORM_ARCH "i386")
-	ELSE()
-		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")
-	ENDIF ()
-ELSE()
-	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
-		SET(PLATFORM_ARCH "i386")
-	elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
-		SET(PLATFORM_ARCH "x86_64")
-	ELSEIF(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND APPLE)
-		SET(PLATFORM_ARCH "universal")
-	ELSE()
-		MESSAGE(FATAL_ERROR "Unknown processor arch: ${CMAKE_SYSTEM_PROCESSOR}")
-	ENDIF()
-ENDIF()
-# Fill cache for post-processing tools
-SET(PLATFORM_ARCH ${PLATFORM_ARCH} CACHE INTERNAL "Do not change")
-
-################################################################################
 # Include platform specific config files
+################################################################################
 
+STRING(TOLOWER ${CMAKE_SYSTEM_NAME} LOWER_SYSTEM_NAME)
 IF (CMAKE_CROSSCOMPILING)
-	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
+	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
 	#Include cross-compile platform config
-	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${PLATFORM_NAME}.cmake")
-		MESSAGE(STATUS "Using cross-platform config cmake/c.${PLATFORM_NAME}.cmake")
-		INCLUDE("cmake/c.${PLATFORM_NAME}.cmake")
+	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${LOWER_SYSTEM_NAME}.cmake")
+		MESSAGE(STATUS "Using cross-platform config cmake/c.${LOWER_SYSTEM_NAME}.cmake")
+		INCLUDE("cmake/c.${LOWER_SYSTEM_NAME}.cmake")
 	ENDIF()
-ELSE (CMAKE_CROSSCOMPILING)
-	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${PLATFORM_ARCH}")
-ENDIF (CMAKE_CROSSCOMPILING)
+ELSE()
+	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
+ENDIF()
 
 #Include generic platform config
 OPTION(RTTR_ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
-MESSAGE(STATUS "Using platform config cmake/${PLATFORM_NAME}.cmake")
-INCLUDE("cmake/${PLATFORM_NAME}.cmake")
+MESSAGE(STATUS "Using platform config cmake/${LOWER_SYSTEM_NAME}.cmake")
+INCLUDE("cmake/${LOWER_SYSTEM_NAME}.cmake")
 
 ################################################################################
-# Boost
-################################################################################
-
-include(RttrBoostCfg)
-
-IF(EXISTS "${RTTR_CONTRIB_DIR}/boost" AND IS_DIRECTORY "${RTTR_CONTRIB_DIR}/boost")
-	SET(BOOST_ROOT ${RTTR_CONTRIB_DIR}/boost CACHE PATH "Path to find boost at")
-ENDIF()
-
-FIND_PACKAGE(Boost 1.55.0)
-IF(NOT Boost_FOUND)
-	MESSAGE(FATAL_ERROR "You have to install boost into contrib/boost or set (as CMake or environment variable) "
-	"BOOST_ROOT (currently: '${BOOST_ROOT}', Environment: '$ENV{BOOST_ROOT}'), "
-	"BOOST_INCLUDEDIR (currently: '${BOOST_INCLUDEDIR}', Environment: '$ENV{BOOST_INCLUDEDIR}'), "
-	"since cmake was unable to find boost!")
-ELSEIF("${BOOST_LIBRARYDIR}" STREQUAL "")
-	list(APPEND CMAKE_PREFIX_PATH "${Boost_INCLUDE_DIR}/stage")
-ENDIF()
-
-SET(TMP_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
-IF(TMP_BOOST_VERSION VERSION_LESS 1.56)
-	IF(MSVC AND MSVC_VERSION EQUAL 1800)
-		# See https://svn.boost.org/trac/boost/ticket/9332
-		MESSAGE(FATAL_ERROR "Boost 1.55 contains a bug so that it does not work with MSVC 2013. Use a newer boost version or a different Visual Studio")
-	ENDIF()
-	MESSAGE(STATUS "Boost version smaller than 1.56 detected. Using backport 1.55-1.56")
-	INCLUDE_DIRECTORIES("${RTTR_CONTRIB_DIR}/backport/boost_1.55-1.56")
-ENDIF()
-IF(TMP_BOOST_VERSION VERSION_LESS 1.58)
-	MESSAGE(STATUS "Boost version smaller than 1.58 detected. Using backport 1.56-1.58")
-	INCLUDE_DIRECTORIES("${RTTR_CONTRIB_DIR}/backport/boost_1.56-1.58")
-ELSE()
-	MESSAGE(STATUS "Boost ${Boost_VERSION} detected. No backport required")
-ENDIF()
-UNSET(TMP_BOOST_VERSION)
+# Add contrib libraries. Might need different compile flags
+# Need to use include() so we can set and add variables/libraries to current scope
+include("${CMAKE_CURRENT_SOURCE_DIR}/contrib.cmake")
 
 ################################################################################
 # ClangFormat
 ################################################################################
 
 find_package(ClangFormat 5.0.0)
-
-################################################################################
-# Bzip2 sources
-################################################################################
-
-if(WIN32)
-	set(bzip2ContribDir "${RTTR_CONTRIB_DIR}/bzip2-1.0.6")
-	IF(IS_DIRECTORY "${bzip2ContribDir}" )
-		SET(SOURCES_BZIP
-			${bzip2ContribDir}/blocksort.c
-			${bzip2ContribDir}/bzlib.c
-			${bzip2ContribDir}/compress.c
-			${bzip2ContribDir}/crctable.c
-			${bzip2ContribDir}/decompress.c
-			${bzip2ContribDir}/huffman.c
-			${bzip2ContribDir}/randtable.c
-		)
-		add_library(bzip2 STATIC ${SOURCES_BZIP})
-		set(BZIP2_FOUND TRUE)
-		set(BZIP2_LIBRARIES bzip2)
-		set(BZIP2_INCLUDE_DIR ${bzip2ContribDir})
-	ENDIF()
-ENDIF()
 
 ################################################################################
 # Set paths.
@@ -224,30 +115,33 @@ set(RTTR_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE INTERNAL "Used for configu
 # Output directories
 set(RTTR_OUTPUT_DIR ${CMAKE_BINARY_DIR})
 if(CMAKE_CONFIGURATION_TYPES)
-	set(RTTR_OUTPUT_DIR_DEBUG ${RTTR_OUTPUT_DIR}/Debug)
-	set(RTTR_OUTPUT_DIR_RELEASE ${RTTR_OUTPUT_DIR}/Release)
-	set(RTTR_OUTPUT_DIR_RELWITHDEBINFO ${RTTR_OUTPUT_DIR}/RelWithDebInfo)
-	set(RTTR_OUTPUT_DIR_MINSIZEREL ${RTTR_OUTPUT_DIR}/MinSizeRel)
-else()
-	set(RTTR_OUTPUT_DIR_DEBUG ${RTTR_OUTPUT_DIR})
-	set(RTTR_OUTPUT_DIR_RELEASE ${RTTR_OUTPUT_DIR})
-	set(RTTR_OUTPUT_DIR_RELWITHDEBINFO ${RTTR_OUTPUT_DIR})
-	set(RTTR_OUTPUT_DIR_MINSIZEREL ${RTTR_OUTPUT_DIR})
+    foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
+        string(TOUPPER ${type} _UPPER_TYPE)
+        set(RTTR_OUTPUT_DIR_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR}/${type})
+    endforeach()
+elseif(CMAKE_BUILD_TYPE)
+    string(TOUPPER ${CMAKE_BUILD_TYPE} _UPPER_TYPE)
+    set(RTTR_OUTPUT_DIR_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR})
 endif()
 
-# Helper function to set output dirs. See below for usage example
-macro(rttr_set_output_dir type subDir)
-	set(CMAKE_${type}_OUTPUT_DIRECTORY ${RTTR_OUTPUT_DIR}/${subDir})
-	set(CMAKE_${type}_OUTPUT_DIRECTORY_DEBUG ${RTTR_OUTPUT_DIR_DEBUG}/${subDir})
-	set(CMAKE_${type}_OUTPUT_DIRECTORY_RELEASE ${RTTR_OUTPUT_DIR_RELEASE}/${subDir})
-	set(CMAKE_${type}_OUTPUT_DIRECTORY_RELWITHDEBINFO ${RTTR_OUTPUT_DIR_RELWITHDEBINFO}/${subDir})
-	set(CMAKE_${type}_OUTPUT_DIRECTORY_MINSIZEREL ${RTTR_OUTPUT_DIR_MINSIZEREL}/${subDir})
+# Helper function to set output dirs for all configurations
+# output_type is RUNTIME, LIBRARY, ...
+# subDir is the subdirectory in RTTR_OUTPUT_DIR_XXX
+macro(rttr_set_output_dir output_type subDir)
+    if(CMAKE_CONFIGURATION_TYPES)
+        foreach(type IN LISTS CMAKE_CONFIGURATION_TYPES)
+            string(TOUPPER ${type} _UPPER_TYPE)
+            set(CMAKE_${output_type}_OUTPUT_DIRECTORY_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR_${_UPPER_TYPE}}/${subDir})
+        endforeach()
+    elseif(CMAKE_BUILD_TYPE)
+        string(TOUPPER ${CMAKE_BUILD_TYPE} _UPPER_TYPE)
+        set(CMAKE_${output_type}_OUTPUT_DIRECTORY_${_UPPER_TYPE} ${RTTR_OUTPUT_DIR}/${subDir})
+    else()
+        set(CMAKE_${output_type}_OUTPUT_DIRECTORY ${RTTR_OUTPUT_DIR}/${subDir})
+    endif()
 endmacro()
 rttr_set_output_dir(RUNTIME ${RTTR_BINDIR})
 rttr_set_output_dir(LIBRARY ${RTTR_LIBDIR})
-
-# ensure out of source build
-ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Please go to the build directory and run './cmake.sh [options]' there.")
 
 ################################################################################
 # Definitions and flags
@@ -260,9 +154,8 @@ MACRO(CheckAndAddFlag flag)
 	# We cannot check for -Wno-foo as this won't throw a warning so we must check for the -Wfoo option directly
 	# http://stackoverflow.com/questions/38785168/cc1plus-unrecognized-command-line-option-warning-on-any-other-warning
 	STRING(REGEX REPLACE "^-Wno-" "-W" checkedFlag ${flag})
-	SET(VarName ${checkedFlag})
-	STRING(REPLACE "+" "X" VarName ${VarName})
-	STRING(REGEX REPLACE "[=-]" "_" VarName ${VarName})
+    # Remove special chars
+    string(MAKE_C_IDENTIFIER ${checkedFlag} VarName)
 	CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
 	CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
 	IF (CXX_FLAG_${VarName}_SUPPORTED)
@@ -369,27 +262,13 @@ endif()
 # Configure files
 ################################################################################
 
-# Make sure this exists
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/CMakeFiles)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake"
-			   build_paths.h @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake"
-		   CMakeFiles/prepareRelease.sh @ONLY)
-file(COPY ${CMAKE_BINARY_DIR}/CMakeFiles/prepareRelease.sh
-	DESTINATION "."
-	FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-	GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-	
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/copyDepsToBuildDir.cmake CMakeFiles @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake" build_paths.h @ONLY)
 
 IF (NOT WIN32)
-	CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake"
-			   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh @ONLY)
-	file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/start.sh
-		DESTINATION "."
-		FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-		GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    include(ConfigureExecutable)
+	configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
 ENDIF()
+
 file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
 
@@ -422,6 +301,36 @@ foreach(curDirVar BINDIR DATADIR LIBDIR DOCDIR DRIVERDIR)
 	endif()
 endforeach()
 option(RTTR_BUILD_UPDATER "Build auto-updater. Not advised when changing the default paths as the updater is configured specifically for the official builds." ${RTTR_BUILD_UPDATER_DEF})
+################################################################################
+# Set variables used by the release scripts and the updater:
+#   PLATFORM_NAME in lowercase (windows, linux,...)
+#   PLATFORM_ARCH: i386, x86_64, universal
+################################################################################
+
+STRING(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM_NAME)
+
+# Set PLATFORM_ARCH
+IF(WIN32)
+	IF (CMAKE_SIZEOF_VOID_P EQUAL 8)
+		SET(PLATFORM_ARCH "x86_64")
+	ELSEIF (CMAKE_SIZEOF_VOID_P EQUAL 4)
+		SET(PLATFORM_ARCH "i386")
+	ELSE()
+		MESSAGE(FATAL_ERROR "Unknown platform for sizeof(void*)=${CMAKE_SIZEOF_VOID_P}")
+	ENDIF ()
+ELSE()
+	if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "i.86")
+		SET(PLATFORM_ARCH "i386")
+	elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "amd64|AMD64|x86_64")
+		SET(PLATFORM_ARCH "x86_64")
+	ELSEIF(("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "universal" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "") AND APPLE)
+		SET(PLATFORM_ARCH "universal")
+	ELSE()
+		MESSAGE(STATUS "Unofficial build with processor arch: ${CMAKE_SYSTEM_PROCESSOR}. Skipping release scripts and updater.")
+        unset(PLATFORM_ARCH)
+        set(RTTR_BUILD_UPDATER OFF CACHE INTERNAL "Disabled")
+	ENDIF()
+ENDIF()
 
 # Add this first as it defines dependencies for other projects (e.g. nowide and utf8)
 ADD_SUBDIRECTORY(libutil)
@@ -501,22 +410,20 @@ install(FILES "${RTTR_S2_PLACEHOLDER_PATH}" DESTINATION "${RTTR_GAMEDIR}")
 # Custom targets
 ################################################################################
 
-IF(NOT CMAKE_HOST_WIN32)
-	# Special cleanup command "make mrproper"
-	ADD_CUSTOM_TARGET(mrproper
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build/cleanup.sh"
-					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-	)
+IF(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
+    include(ConfigureExecutable)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/release/prepareRelease.sh.cmake" . prepareRelease.sh)
+    configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh.cmake" . create_release.sh)
 
 	# Create nightly release
 	ADD_CUSTOM_TARGET(create_nightly
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "nightly" "${CMAKE_SOURCE_DIR}"
+					  COMMAND "${CMAKE_CURRENT_BINARY_DIR_DIR}/create_release.sh" nightly
 					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 
 	# Create stable release
 	ADD_CUSTOM_TARGET(create_stable
-					  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/release/create_release.sh" "stable" "${CMAKE_SOURCE_DIR}"
+					  COMMAND "${CMAKE_CURRENT_BINARY_DIR_DIR}/create_release.sh" stable
 					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 ENDIF()
