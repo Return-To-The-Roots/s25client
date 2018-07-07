@@ -28,8 +28,8 @@
 #include "dskMainMenu.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/oglIncludes.h"
 #include "libutil/error.h"
+#include <glad/glad.h>
 
 dskSplash::dskSplash(glArchivItem_Bitmap* splashImg) : Desktop(splashImg), isLoading(false), isLoaded(false)
 {

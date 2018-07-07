@@ -557,16 +557,9 @@ void VideoSDL::ListVideoModes(std::vector<VideoMode>& video_modes) const
     }
 }
 
-/**
- *  Funktion zum Holen einer Subfunktion.
- *
- *  @param[in] function Name der Funktion welche geholt werden soll.
- *
- *  @return Adresse der Funktion bei Erfolg, @p NULL bei Fehler
- */
-void* VideoSDL::GetFunction(const char* function) const
+OpenGL_Loader_Proc VideoSDL::GetLoaderFunction() const
 {
-    return SDL_GL_GetProcAddress(function);
+    return SDL_GL_GetProcAddress;
 }
 
 /**

@@ -40,31 +40,6 @@ if(APPLE)
 ENDif()
 
 ################################################################################
-# OpenGL
-################################################################################
-
-find_path(OGLEXT_INCLUDE_DIR NAMES GL/glext.h OpenGL/glext.h)
-if(NOT OGLEXT_INCLUDE_DIR)
-    set(OGLEXT_INCLUDE_DIR ${RTTR_CONTRIB_DIR}/openGL/include CACHE PATH "" FORCE)
-elseif(WIN32)
-    # On windows the ARB function signatures might not be defined due to an old glExt version
-    # So if they are not we use our new ones
-    include(CheckCXXSourceCompiles)
-    set(CMAKE_REQUIRED_INCLUDES ${OGLEXT_INCLUDE_DIR})
-    check_cxx_source_compiles("
-        #include <windows.h>
-        #include <GL/gl.h>
-        #include <GL/glext.h>
-        PFNGLGENBUFFERSARBPROC test;
-        int main(){}" OGL_ARB_FUNCS_EXIST)
-    set(CMAKE_REQUIRED_INCLUDES )
-    if(NOT OGL_ARB_FUNCS_EXIST)
-        set(OGLEXT_INCLUDE_DIR ${RTTR_CONTRIB_DIR}/openGL/include CACHE PATH "" FORCE)
-    endif()
-endif()
-include_directories(BEFORE SYSTEM ${OGLEXT_INCLUDE_DIR})
-
-################################################################################
 
 SET(RTTR_Assert_Enabled 2 CACHE STRING "Status of RTTR assertions: 0=Disabled, 1=Enabled, 2=Default(Enabled only in debug)")
 IF("${RTTR_Assert_Enabled}" EQUAL 0)

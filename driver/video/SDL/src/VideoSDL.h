@@ -60,7 +60,7 @@ public:
     unsigned long GetTickCount() const override;
 
     /// Funktion zum Holen einer Subfunktion.
-    void* GetFunction(const char* function) const override;
+    OpenGL_Loader_Proc GetLoaderFunction() const override;
 
     /// Listet verfügbare Videomodi auf
     void ListVideoModes(std::vector<VideoMode>& video_modes) const override;

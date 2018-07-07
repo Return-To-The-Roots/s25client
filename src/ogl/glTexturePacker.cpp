@@ -20,10 +20,10 @@
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glSmartBitmap.h"
 #include "ogl/glTexturePackerNode.h"
-#include "oglIncludes.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include <boost/foreach.hpp>
 #include <algorithm>
+#include <glad/glad.h>
 
 bool isSizeGreater(glSmartBitmap* a, glSmartBitmap* b)
 {

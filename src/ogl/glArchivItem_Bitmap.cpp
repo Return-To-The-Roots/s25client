@@ -19,8 +19,8 @@
 #include "glArchivItem_Bitmap.h"
 #include "Point.h"
 #include "drivers/VideoDriverWrapper.h"
-#include "ogl/oglIncludes.h"
 #include "libsiedler2/PixelBufferARGB.h"
+#include <glad/glad.h>
 #include <vector>
 
 glArchivItem_Bitmap::glArchivItem_Bitmap() {}

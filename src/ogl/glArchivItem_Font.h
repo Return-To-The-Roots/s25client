@@ -22,12 +22,12 @@
 #include "DrawPoint.h"
 #include "Rect.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/oglIncludes.h"
 #include "libsiedler2/ArchivItem_Font.h"
 #include "libutil/colors.h"
 #include "libutil/ucString.h"
 #include <boost/array.hpp>
 #include <boost/smart_ptr/scoped_ptr.hpp>
+#include <glad/glad.h>
 #include <map>
 #include <string>
 #include <vector>

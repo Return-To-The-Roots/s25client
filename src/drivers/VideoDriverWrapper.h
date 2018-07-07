@@ -50,6 +50,7 @@ public:
     void RenewViewport();
     /// zerstört das Fenster.
     bool DestroyScreen();
+    void setVsync(bool enabled);
     /// räumt die Texturen auf
     void CleanUp();
     /// erstellt eine Textur

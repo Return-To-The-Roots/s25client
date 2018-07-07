@@ -17,20 +17,12 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskOptions.h"
-
 #include "GlobalGameSettings.h"
-#include "Loader.h"
-#include "WindowManager.h"
-
 #include "GlobalVars.h"
-#include "Settings.h"
-
-#include "dskMainMenu.h"
-
-#include "languages.h"
-
-#include "ExtensionList.h"
+#include "Loader.h"
 #include "MusicPlayer.h"
+#include "Settings.h"
+#include "WindowManager.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlGroup.h"
@@ -38,12 +30,14 @@
 #include "controls/ctrlProgress.h"
 #include "drivers/AudioDriverWrapper.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "dskMainMenu.h"
 #include "helpers/converters.h"
 #include "helpers/mathFuncs.h"
 #include "ingameWindows/iwAddons.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ingameWindows/iwTextfile.h"
+#include "languages.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
 #include <boost/lexical_cast.hpp>
@@ -185,7 +179,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->AddText(54, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK);
 
-    if(!GLOBALVARS.ext_vbo) // VBO unterstützt?
+    if(!GLOBALVARS.hasVBO) // VBO unterstützt?
         optiongroup->AddText(56, DrawPoint(280, 230), _("not supported"), COLOR_YELLOW, 0, NormalFont);
     else
         optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
@@ -291,7 +285,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
             break;
             case 1:
             {
-                if(GLOBALVARS.ext_swapcontrol)
+                if(GLOBALVARS.hasVSync)
                     cbFrameRate->AddString(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
                 if(SETTINGS.video.vsync == 1)
                     cbFrameRate->SetSelection(1);
@@ -309,7 +303,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
                 }
 
                 if(SETTINGS.video.vsync == Settings::SCREEN_REFRESH_RATES[i])
-                    cbFrameRate->SetSelection(i - (GLOBALVARS.ext_swapcontrol ? 0 : 1));
+                    cbFrameRate->SetSelection(i - (GLOBALVARS.hasVSync ? 0 : 1));
             }
             break;
         }
@@ -317,7 +311,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "VBO" setzen
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(55);
-    if(GLOBALVARS.ext_vbo)
+    if(GLOBALVARS.hasVBO)
         optiongroup->SetSelection((SETTINGS.video.vbo ? 56 : 57));
     else
         optiongroup->SetSelection(57);
@@ -421,16 +415,16 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
                 case 0: { SETTINGS.video.vsync = 0;
                 }
                 break;
-                case 1: { SETTINGS.video.vsync = (GLOBALVARS.ext_swapcontrol ? 1 : Settings::SCREEN_REFRESH_RATES[2]);
+                case 1: { SETTINGS.video.vsync = (GLOBALVARS.hasVSync ? 1 : Settings::SCREEN_REFRESH_RATES[2]);
                 }
                 break;
-                default: { SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection + (GLOBALVARS.ext_swapcontrol ? 0 : 1)];
+                default: { SETTINGS.video.vsync = Settings::SCREEN_REFRESH_RATES[selection + (GLOBALVARS.hasVSync ? 0 : 1)];
                 }
                 break;
             }
 
-            if(GLOBALVARS.ext_swapcontrol)
-                wglSwapIntervalEXT((SETTINGS.video.vsync == 1));
+            if(GLOBALVARS.hasVSync)
+                VIDEODRIVER.setVsync(SETTINGS.video.vsync == 1);
         }
         break;
         case 59: // Videotreiber

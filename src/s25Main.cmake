@@ -57,6 +57,7 @@ TARGET_LINK_LIBRARIES(s25Main PUBLIC
 	s25Common
 	rttrConfig
 	gamedata
+    glad
 	${BZIP2_LIBRARIES}
 	${OPENGL_gl_LIBRARY}
 	${Boost_LIBRARIES}

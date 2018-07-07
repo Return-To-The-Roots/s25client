@@ -460,22 +460,20 @@ unsigned long VideoWinAPI::GetTickCount() const
     return ::GetTickCount();
 }
 
-/**
- *  Funktion zum Holen einer Subfunktion.
- *
- *  @param[in] function Name der Funktion welche geholt werden soll.
- *
- *  @return Adresse der Funktion bei Erfolg, @p NULL bei Fehler
- */
-void* VideoWinAPI::GetFunction(const char* function) const
+void* wglGetProcAddress_Wrapper(const char* name)
 {
     union
     {
         PROC procAddress;
         void* func;
     }; // Avoid warning about pointer conversion
-    procAddress = wglGetProcAddress(function);
+    procAddress = wglGetProcAddress(name);
     return func;
+}
+
+OpenGL_Loader_Proc VideoWinAPI::GetLoaderFunction() const
+{
+    return wglGetProcAddress_Wrapper;
 }
 
 /// Listet verfügbare Videomodi auf

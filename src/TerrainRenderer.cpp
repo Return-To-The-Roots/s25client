@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "TerrainRenderer.h"
-#include "ExtensionList.h"
 #include "GlobalVars.h"
 #include "Loader.h"
 #include "Settings.h"
@@ -26,7 +25,6 @@
 #include "helpers/converters.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include "ogl/oglIncludes.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "world/MapGeometry.h"
@@ -39,6 +37,7 @@
 #include <boost/foreach.hpp>
 #include <boost/smart_ptr/scoped_array.hpp>
 #include <cstdlib>
+#include <glad/glad.h>
 #include <set>
 
 /* Terrain rendering works like that:
@@ -353,7 +352,7 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
         UpdateBorderTriangleTerrain(pt, false);
     }
 
-    if(SETTINGS.video.vbo && GLOBALVARS.ext_vbo)
+    if(SETTINGS.video.vbo && GLOBALVARS.hasVBO)
     {
         // Create and fill the 3 VBOs for vertices, texCoords and colors
         GLuint vbos[3];
@@ -822,8 +821,8 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
     }
 
     // Modulate2x
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+    glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
 
     // Alphablending aus
     glDisable(GL_BLEND);

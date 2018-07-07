@@ -18,11 +18,11 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "ctrlButton.h"
 #include "CollisionDetection.h"
-#include "ExtensionList.h"
 #include "Loader.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
+#include <glad/glad.h>
 
 ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& tooltip)
     : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true), isChecked(false),
@@ -127,8 +127,8 @@ void ctrlButton::Draw_()
                 texture = tc * 2;
             if(isIlluminated)
             {
-                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-                glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+                glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+                glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
             }
             LOADER.GetImageN("io", texture)->DrawPart(Rect(GetDrawPos(), GetSize()), DrawPoint::all(0), color);
             if(isIlluminated)

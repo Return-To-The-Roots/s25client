@@ -24,6 +24,9 @@
 #include <string>
 #include <vector>
 
+/// Function type for loading OpenGL methods
+typedef void* (*OpenGL_Loader_Proc)(const char* name);
+
 class IVideoDriver
 {
 public:
@@ -54,7 +57,7 @@ public:
     virtual unsigned long GetTickCount() const = 0;
 
     /// Funktion zum Holen einer Subfunktion.
-    virtual void* GetFunction(const char* function) const = 0;
+    virtual OpenGL_Loader_Proc GetLoaderFunction() const = 0;
 
     virtual void ListVideoModes(std::vector<VideoMode>& video_modes) const = 0;
 

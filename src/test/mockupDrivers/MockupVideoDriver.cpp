@@ -91,11 +91,6 @@ unsigned long MockupVideoDriver::GetTickCount() const
     return tickCount_;
 }
 
-void* MockupVideoDriver::GetFunction(const char* function) const
-{
-    return NULL;
-}
-
 void MockupVideoDriver::ListVideoModes(std::vector<VideoMode>& video_modes) const {}
 
 void MockupVideoDriver::SetMousePos(int x, int y)

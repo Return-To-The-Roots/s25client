@@ -17,7 +17,6 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
-#include "ExtensionList.h"
 #include "GlobalVars.h"
 #include "RTTR_Version.h"
 #include "Settings.h"
@@ -29,10 +28,20 @@
 #include "libutil/error.h"
 #include <algorithm>
 #include <ctime>
+#include <glad/glad.h>
 #include <sstream>
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
 #include <valgrind/memcheck.h>
 #endif
+
+// WGL_EXT_swap_control
+#ifdef _WIN32
+typedef BOOL(APIENTRY* PFNWGLSWAPINTERVALFARPROC)(int);
+#else
+typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
+#endif
+
+PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
 
 VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), loadedFromDll(false), isOglEnabled_(false), texture_pos(0), texture_current(0)
 {
@@ -138,8 +147,8 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     WINDOWMANAGER.Msg_ScreenResize(Extent(screen_width, screen_height));
 
     // VSYNC ggf abschalten/einschalten
-    if(GLOBALVARS.ext_swapcontrol)
-        wglSwapIntervalEXT((SETTINGS.video.vsync == 1));
+    if(GLOBALVARS.hasVSync)
+        setVsync(SETTINGS.video.vsync == 1);
 
     return true;
 }
@@ -202,6 +211,12 @@ bool VideoDriverWrapper::DestroyScreen()
     videodriver->DestroyScreen();
 
     return true;
+}
+
+void VideoDriverWrapper::setVsync(bool enabled)
+{
+    if(wglSwapIntervalEXT)
+        wglSwapIntervalEXT(enabled ? 1 : 0);
 }
 
 /**
@@ -414,39 +429,19 @@ void VideoDriverWrapper::RenewViewport()
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
+    if(!gladLoadGLLoader(videodriver->GetLoaderFunction()))
+    {
+        return false;
+    }
 // auf VSync-Extension testen
 #ifdef _WIN32
-    if((GLOBALVARS.ext_swapcontrol = hasExtension("WGL_EXT_swap_control")))
-    {
-        if((wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"))) == NULL)
-            GLOBALVARS.ext_swapcontrol = false;
-    }
+    if(hasExtension("WGL_EXT_swap_control"))
+        wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("wglSwapIntervalEXT"));
 #else
-    /*if((GLOBALVARS.ext_swapcontrol = hasExtension("GLX_SGI_swap_control")))
-    {*/
-    // fix for buggy video driver...
-    GLOBALVARS.ext_swapcontrol = true;
-    if((wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"))) == NULL)
-        GLOBALVARS.ext_swapcontrol = false;
-//}
+    wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"));
 #endif
-
-    // auf VertexBufferObject-Extension testen
-    if((GLOBALVARS.ext_vbo = hasExtension("GL_ARB_vertex_buffer_object")))
-    {
-#ifndef __APPLE__
-        if((glBindBufferARB = pto2ptf<PFNGLBINDBUFFERARBPROC>(loadExtension("glBindBufferARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glDeleteBuffersARB = pto2ptf<PFNGLDELETEBUFFERSARBPROC>(loadExtension("glDeleteBuffersARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glGenBuffersARB = pto2ptf<PFNGLGENBUFFERSARBPROC>(loadExtension("glGenBuffersARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glBufferDataARB = pto2ptf<PFNGLBUFFERDATAARBPROC>(loadExtension("glBufferDataARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-        else if((glBufferSubDataARB = pto2ptf<PFNGLBUFFERSUBDATAARBPROC>(loadExtension("glBufferSubDataARB"))) == NULL)
-            GLOBALVARS.ext_vbo = false;
-#endif // ! __APPLE__
-    }
+    GLOBALVARS.hasVSync = wglSwapIntervalEXT != NULL;
+    GLOBALVARS.hasVBO = GLAD_GL_ARB_vertex_buffer_object != 0;
 
     return true;
 }
@@ -480,7 +475,7 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
         return (NULL);
     }
 
-    return videodriver->GetFunction(extension.c_str());
+    return videodriver->GetLoaderFunction()(extension.c_str());
 }
 
 int VideoDriverWrapper::GetMouseX() const

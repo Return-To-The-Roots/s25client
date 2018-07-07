@@ -20,13 +20,13 @@
 #include "Loader.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glBitmapItem.h"
-#include "oglIncludes.h"
 #include "libsiedler2/ArchivItem_Bitmap.h"
 #include "libsiedler2/ArchivItem_Bitmap_Player.h"
 #include "libsiedler2/PixelBufferARGB.h"
 #include "libutil/colors.h"
 #include <boost/foreach.hpp>
 #include <climits>
+#include <glad/glad.h>
 #include <limits>
 
 glSmartBitmap::glSmartBitmap() : origin_(0, 0), size_(0, 0), sharedTexture(false), texture(0), hasPlayer(false) {}

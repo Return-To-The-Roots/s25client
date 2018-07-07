@@ -18,7 +18,6 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "Window.h"
 #include "CollisionDetection.h"
-#include "ExtensionList.h"
 #include "Loader.h"
 #include "RescaleWindowProp.h"
 #include "controls/controls.h"
@@ -28,6 +27,7 @@
 #include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <cstdarg>
+#include <glad/glad.h>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
     : parent_(parent), id_(id), pos_(pos), size_(size), active_(false), visible_(true), scale_(false), isInMouseRelay(false),
@@ -518,8 +518,8 @@ void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool
     if(illuminated)
     {
         // Modulate2x anmachen
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
     }
 
     DrawPoint contentPos = origin + DrawPoint(2, 2);
