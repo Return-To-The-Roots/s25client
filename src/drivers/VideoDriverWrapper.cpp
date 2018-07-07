@@ -433,6 +433,12 @@ bool VideoDriverWrapper::LoadAllExtensions()
     {
         return false;
     }
+    LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
+    if(!GLAD_GL_VERSION_1_3)
+    {
+        s25util::fatal_error(_("OpenGL 1.3 is not supported. Try updating your GPU drivers or hardware!"));
+        return false;
+    }
 // auf VSync-Extension testen
 #ifdef _WIN32
     if(hasExtension("WGL_EXT_swap_control"))
