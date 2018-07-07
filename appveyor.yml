@@ -44,6 +44,7 @@ install:
   - cd ..
 
 before_build:
+  - mkdir build
   - cd build
   - if %platform% == Win32 (set BOOST_LIBDIR=lib32-msvc-%MSVC%) else ((set BOOST_LIBDIR=lib64-msvc-%MSVC%) && (set GENERATOR=%GENERATOR% Win64))
   - echo "Configuring %GENERATOR% for %configuration% on %platform% with boost=%BOOST_ROOT%\%BOOST_LIBDIR%"

@@ -22,26 +22,32 @@ def transformIntoStep(arch, wspwd) {
                               echo "Git status for main and sub repos:"
                               git status
                               git submodule foreach git status
-                              BARCH=--arch=c.${arch}
-                              if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${arch}" ] ; then
-                                  BARCH=
+                              TOOLCHAIN=
+                              if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" != "${arch}" ] ; then
+                                  TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/c.${arch}.cmake
                               fi
-                              PARAMS=
+                              MAKE_TARGET=
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
                                   -v /srv/backup/www/s25client:/archive \
                                   "
-                              COMMANDS=
+                              PREBUILD_COMMANDS=
 
                               if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
                                   VOLUMES=""
                               elif [ "${env.BRANCH_NAME}" == "master" ] ; then
-                                  PARAMS=create_nightly
+                                  MAKE_TARGET=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                                  PARAMS=create_stable
-                                  COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force && cat build_version_defines.h'
+                                  MAKE_TARGET=create_stable
+                                  PREBUILD_COMMANDS='&& rm -f build_version_defines.h.force && \
+                                    make updateversion && \
+                                    sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && \
+                                    touch build_version_defines.h.force && \
+                                    cat build_version_defines.h'
                               fi
-                              DIR_CFG="-DRTTR_EXTRA_BINDIR=libexec/s25rttr"
-                              BUILD_CMD="cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$DIR_CFG \$COMMANDS && make \$PARAMS"
+                              BUILD_CMD="mkdir build && cd build && \
+                                cmake .. -DCMAKE_PREFIX_PATH=. \$TOOLCHAIN -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
+                                \$PREBUILD_COMMANDS && \
+                                make \$MAKE_TARGET"
                               echo "Executing: \$BUILD_CMD"
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \

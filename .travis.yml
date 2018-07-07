@@ -69,7 +69,7 @@ matrix:
                 export PATH=${DEPS_DIR}/cmake/bin:${PATH}
               - cd ${TRAVIS_BUILD_DIR}
           #                                                             Travis libs are x64 only
-          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="--no-arch=i386" GCOV="gcov"
+          env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03 ADDITIONAL_CMAKE_FLAGS="-DRTTR_NOi386=ON" GCOV="gcov"
     exclude:
         - compiler: clang
           env: BUILD_TYPE=Debug CXX_FLAGS=-std=c++03
@@ -136,8 +136,8 @@ script:
     - lcov --version 2>/dev/null || true
     # Fail if any command failed
     - set -e
-    - cd build
-    - ./cmake.sh --prefix=. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" --generator="Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
+    - mkdir build && cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
     # Travis uses 2 cores
     - make -j2
     # Execute tests

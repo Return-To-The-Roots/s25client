@@ -1,6 +1,8 @@
 #!/bin/sh
 
-thisDir=`dirname $0`
+# Run IWYU (Include-What-You_Use) on the current build
+# Execute in the build folder (e.g. s25client/build)
+# Optional first argument: Folder containing iwyu_tool.py
 
 iwyuBinary=`which include-what-you-use`
 
@@ -22,16 +24,11 @@ if [ ! -f "$iwyuTool" ]; then
     exit 1
 fi
 
-cd "$thisDir"
-
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
 
 if [ $? -ne 0 ]; then
-    cd -
     echo "Error during cmake -> exit"
     exit 1
 fi
 
 $iwyuTool -p .
-
-cd -

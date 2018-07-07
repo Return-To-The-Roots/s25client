@@ -47,12 +47,13 @@ All of them can be installed via homebrew
 ### Steps:
 ```
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
-cd s25client/build
-./cmake.sh --prefix=.
+cd s25client
+mkdir build && cd build
+cmake ..
 make
 ```
 
-MacOSX defaults to XCode generator. If you don't have XCode installed, use `./cmake.sh --prefix=. --generator="Unix Makefiles"` instead.
+MacOSX defaults to XCode generator. If you don't have XCode installed, use `cmake .. -G "Unix Makefiles"` instead.
 
 Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
 (The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
@@ -93,7 +94,7 @@ Note that due to the use of submodules you always need to `git pull && git submo
     Notice: Don't forget to add the toolset parameter if you already used it before
 - Use cmake-gui:
   - "Where is the source code": Select checked out directory
-  - "Where to build the binaries": Select "build" directory
+  - "Where to build the binaries": Select "build" directory (create if required)
   - Press configure
   - Select your compiler version (i.e Visual Studio 2010 x86)
   - If it can't find boost:
