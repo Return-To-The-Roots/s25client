@@ -1,4 +1,3 @@
-# this one is important
 SET(CMAKE_SYSTEM_NAME Darwin)
 SET(CMAKE_SYSTEM_PROCESSOR powerpc)
 

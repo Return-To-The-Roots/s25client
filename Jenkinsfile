@@ -105,7 +105,7 @@ catchError() {
     milestone label: 'Checkout complete'
 
     stage("Building") {
-        String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
+        String[] archs = ["windows.i686", "windows.x86_64", "linux.i686", "linux.x86_64", "apple.universal" ]
         def parallel_map = [:]
 
         for(int i = 0; i < archs.size(); i++) {

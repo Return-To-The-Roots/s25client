@@ -1,35 +1,36 @@
-INCLUDE("${CMAKE_CURRENT_LIST_DIR}/../Modules/CMakeMacroSetCCache.cmake")
+# This is a util script intended to be included by darwin toolchains
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR NOT CMAKE_SYSTEM_PROCESSOR)
+    message(FATAL_ERROR "Cannot use this toolchain file directly. You have to set CMAKE_SYSTEM_* first!")
+endif()
 
 # specify the cross compiler
-SET_CCACHE(CMAKE_C_COMPILER i686-apple-darwin10-gcc)
-SET_CCACHE(CMAKE_CXX_COMPILER i686-apple-darwin10-g++)
-SET(CMAKE_RANLIB i686-apple-darwin10-ranlib CACHE STRING "" FORCE)
-SET(CMAKE_LIPO i686-apple-darwin10-lipo CACHE STRING "" FORCE)
+set(COMPILER_PREFIX i686-apple-darwin10)
+find_program(CMAKE_C_COMPILER NAMES ${COMPILER_PREFIX}-gcc)
+find_program(CMAKE_CXX_COMPILER NAMES ${COMPILER_PREFIX}-g++)
 
-SET(OSX104_SDK "/usr/lib/apple/SDKs/MacOSX10.4u.sdk")
-SET(OSX105_SDK "/usr/lib/apple/SDKs/MacOSX10.5.sdk")
-#SET(OSX106_SDK "/usr/lib/apple/SDKs/MacOSX10.6.sdk")
+set(OSX_SDKS "/usr/lib/apple/SDKs/MacOSX10.5.sdk" "/usr/lib/apple/SDKs/MacOSX10.4u.sdk")
+#list(OSX_SDKS INSERT 0 "/usr/lib/apple/SDKs/MacOSX10.6.sdk")
 
 # set SDK (use newest first)
 MESSAGE(STATUS "Getting SDK. Old deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}. Old sysroot: ${CMAKE_OSX_SYSROOT}")
-SET(CMAKE_OSX_DEPLOYMENT_TARGET )
-IF(EXISTS ${OSX105_SDK})
-	SET(CMAKE_OSX_SYSROOT ${OSX105_SDK})
-ELSEIF(EXISTS ${OSX104_SDK})
-	SET(CMAKE_OSX_SYSROOT ${OSX104_SDK})
-ELSE()
+unset(CMAKE_OSX_DEPLOYMENT_TARGET)
+unset(CMAKE_OSX_SYSROOT)
+foreach(SDK in LISTS OSX_SDKS)
+    IF(EXISTS ${SDK})
+        SET(CMAKE_OSX_SYSROOT ${SDK})
+        break()
+    endif()
+endforeach()
+if(NOT CMAKE_OSX_SYSROOT)
 	MESSAGE(FATAL_ERROR "No OSX SDK found!")
 ENDIF()
 SET(CMAKE_OSX_SYSROOT ${CMAKE_OSX_SYSROOT} CACHE PATH "Path to OSX SDK")
 MESSAGE(STATUS "Using OSX SDK at ${CMAKE_OSX_SYSROOT}")
 
-SET(CMAKE_PREFIX_PATH ${CMAKE_OSX_SYSROOT})
-SET(CMAKE_FIND_ROOT_PATH ${CMAKE_PREFIX_PATH})
-SET(BOOST_ROOT ${CMAKE_PREFIX_PATH})
+SET(CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT})
 
 # search for programs in the build host directories
-SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-
 # for libraries and headers in the target directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
