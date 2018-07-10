@@ -1,6 +1,13 @@
-include(CheckAndAddFlag)
-
-if(NOT MSVC)
+if(MSVC)
+    include(CMakeMacroAddFlags)
+    # systemintern functions for faster code; Optimize whole program
+	add_flags(CMAKE_CXX_FLAGS_RELEASE /Oi /GL)
+	# Strip unused symbols and us COMDAT folding
+	add_flags(CMAKE_EXE_LINKER_FLAGS_RELEASE /OPT:REF /OPT:ICF)
+	add_flags(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL /OPT:REF /OPT:ICF)
+	add_flags(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO /OPT:REF /OPT:ICF) 
+else()
+    include(CheckAndAddFlag)
     if(NOT RTTR_OPTIMZATION_VECTOR_EXT_DEFAULT)
         set(RTTR_OPTIMZATION_VECTOR_EXT_DEFAULT SSE)
     endif()
