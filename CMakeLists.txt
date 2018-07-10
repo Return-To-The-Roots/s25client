@@ -213,8 +213,6 @@ endif()
 # Configure files
 ################################################################################
 
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build_paths.h.cmake" build_paths.h @ONLY)
-
 IF (NOT WIN32)
     include(ConfigureExecutable)
 	configure_executable("${CMAKE_CURRENT_SOURCE_DIR}/start.sh.cmake" . start.sh)
@@ -222,9 +220,6 @@ ENDIF()
 
 file(COPY "bugle" DESTINATION ".")
 file(WRITE "${RTTR_S2_PLACEHOLDER_PATH}" "put your S2-Installation in here")
-
-# add build directory to compiler search path for configured includes
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 enable_testing()
 
@@ -288,12 +283,6 @@ ADD_SUBDIRECTORY(libutil)
 
 # Then we need the version generator so we can depend on it
 ADD_SUBDIRECTORY(version)
-
-ADD_CUSTOM_TARGET(updateversion ALL
-				  COMMAND $<TARGET_FILE:version> "${CMAKE_SOURCE_DIR}"
-				  DEPENDS version
-				  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-)
 	
 # And the rest
 
