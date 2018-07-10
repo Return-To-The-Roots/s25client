@@ -9,6 +9,14 @@ IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	CMAKE_POLICY(SET CMP0053 NEW)
 ENDIF()
 
+#Check for ccache
+find_program(CCACHE_PROGRAM ccache)
+MARK_AS_ADVANCED(CCACHE_PROGRAM)
+if(CCACHE_PROGRAM)
+	MESSAGE(STATUS "Using ccache to speed up builds")
+	set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 PROJECT(s25client)
 
 ################################################################################
@@ -21,16 +29,10 @@ ENDIF()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" "${CMAKE_SOURCE_DIR}/libutil/cmake/Modules")
 
+# Just include required
 INCLUDE(CMakeMacroEnsureOutOfSourceBuild)
-ENSURE_OUT_OF_SOURCE_BUILD("${PROJECT_NAME} requires an out of source build. Please create a build directory and run cmake there.")
 
-INCLUDE(CMakeMacroAddFlags)
-INCLUDE(CMakeMacroForceAddFlags)
-INCLUDE(CMakeMacroCorrectLib)
-INCLUDE(CMakeDetectOsXArchs)
 include(CheckStructHasMember)
-INCLUDE(CheckCXXCompilerFlag)
-INCLUDE(CheckCCompilerFlag)
 INCLUDE(CheckIncludeFile)
 
 ################################################################################
@@ -41,18 +43,31 @@ STRING(TOLOWER ${CMAKE_SYSTEM_NAME} LOWER_SYSTEM_NAME)
 IF (CMAKE_CROSSCOMPILING)
 	MESSAGE(STATUS "Configuring for cross-compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
 	#Include cross-compile platform config
-	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/cmake/c.${LOWER_SYSTEM_NAME}.cmake")
-		MESSAGE(STATUS "Using cross-platform config cmake/c.${LOWER_SYSTEM_NAME}.cmake")
-		INCLUDE("cmake/c.${LOWER_SYSTEM_NAME}.cmake")
+    set(_config "cmake/c.${LOWER_SYSTEM_NAME}.cmake")
+	IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${_config}")
+		MESSAGE(STATUS "Using cross-platform config ${_config}")
+		INCLUDE("${_config}")
 	ENDIF()
 ELSE()
 	MESSAGE(STATUS "Configuring for native compiling to ${CMAKE_SYSTEM} on ${CMAKE_SYSTEM_PROCESSOR}")
 ENDIF()
 
 #Include generic platform config
+set(_config "cmake/${LOWER_SYSTEM_NAME}.cmake")
+IF (EXISTS "${CMAKE_CURRENT_LIST_DIR}/${_config}")
+    MESSAGE(STATUS "Using platform config ${_config}")
+    INCLUDE("${_config}")
+ENDIF()
+
 OPTION(RTTR_ENABLE_OPTIMIZATIONS "Build with optimizing flags (such as -O2 and -ffast-math added to CFLAGS and CXXFLAGS)" ON)
-MESSAGE(STATUS "Using platform config cmake/${LOWER_SYSTEM_NAME}.cmake")
-INCLUDE("cmake/${LOWER_SYSTEM_NAME}.cmake")
+if(RTTR_ENABLE_OPTIMIZATIONS)
+    include("cmake/optimizations.cmake")
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -ggdb")
+endif()
 
 ################################################################################
 # Add contrib libraries. Might need different compile flags
@@ -149,27 +164,26 @@ rttr_set_output_dir(LIBRARY ${RTTR_LIBDIR})
 
 # Do this before adding -Werror!
 check_struct_has_member("struct timespec" tv_sec time.h HAVE_STRUCT_TIMESPEC)
+ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
 
-MACRO(CheckAndAddFlag flag)
-	# We cannot check for -Wno-foo as this won't throw a warning so we must check for the -Wfoo option directly
-	# http://stackoverflow.com/questions/38785168/cc1plus-unrecognized-command-line-option-warning-on-any-other-warning
-	STRING(REGEX REPLACE "^-Wno-" "-W" checkedFlag ${flag})
-    # Remove special chars
-    string(MAKE_C_IDENTIFIER ${checkedFlag} VarName)
-	CHECK_CXX_COMPILER_FLAG(${checkedFlag} CXX_FLAG_${VarName}_SUPPORTED)
-	CHECK_C_COMPILER_FLAG(${checkedFlag} C_FLAG_${VarName}_SUPPORTED)
-	IF (CXX_FLAG_${VarName}_SUPPORTED)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
-	ENDIF ()
-	IF (C_FLAG_${VarName}_SUPPORTED)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}")
-	ENDIF ()
-	unset(VarName)
-	unset(checkedFlag)
-ENDMACRO()
+CHECK_INCLUDE_FILE(valgrind/memcheck.h HAVE_MEMCHECK_H)
+IF(HAVE_MEMCHECK_H)
+	ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
+ENDIF()
+
+# Clang bug workaround
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
+	if(NOT ${CHECK_CLANG_INLINE})
+		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
+	endif()
+
+	# Some workaround flags for execssive warnings in clang
+	CheckAndAddFlag(-Wno-unused-local-typedefs)
+endif()
 
 OPTION(RTTR_ENABLE_WERROR "Build with warnings turned into errors" ON)
-IF (MSVC)
+IF(MSVC)
 	add_compile_options(/W3)
 	add_compile_options(/MP) # parallel compilation
 	# Signed/Unsigned operations
@@ -177,13 +191,13 @@ IF (MSVC)
 	IF(RTTR_ENABLE_WERROR)
 		add_compile_options(/WX) # warning = error
 	ENDIF()
-ELSE ()
+ELSE()
+    include(CheckAndAddFlag)
 	CheckAndAddFlag("-Wall")
 	IF(RTTR_ENABLE_WERROR)
 		CheckAndAddFlag("-Werror")
 	ENDIF()
-	CheckAndAddFlag("-pedantic")
-	CheckAndAddFlag("-Wpedantic")
+	CheckAndAddFlags("-pedantic" "-Wpedantic")
 	CheckAndAddFlag("-Wparentheses")
 	CheckAndAddFlag("-Wno-error=type-limits")
 	CheckAndAddFlag("-Wfloat-conversion")
@@ -199,40 +213,15 @@ ELSE ()
 		int main() {}
 		#endif" COMPILER_IN_CXX11_MODE)
 	IF(COMPILER_IN_CXX11_MODE)
-		CheckAndAddFlag("-Wsuggest-override")
-		CheckAndAddFlag("-Wno-error=suggest-override")
+		CheckAndAddFlags("-Wsuggest-override" "-Wno-error=suggest-override")
 	else()
 		ADD_DEFINITIONS(-Doverride=)
-	ENDIF(COMPILER_IN_CXX11_MODE)
+	ENDIF()
 	
 	# Variadic macros are part of C99 but supported by all big compilers in C++03
 	CheckAndAddFlag("-Wno-variadic-macros")
 	CheckAndAddFlag("-Wno-c99-extensions")
-ENDIF (MSVC)
-
-ADD_DEFINITIONS(-DBOOST_PP_VARIADICS=1)
-
-IF (WIN32)
-	# Enforce unicode
-	ADD_DEFINITIONS(-DUNICODE)
-	ADD_DEFINITIONS(-D_UNICODE)
 ENDIF()
-
-CHECK_INCLUDE_FILE(valgrind/memcheck.h HAVE_MEMCHECK_H)
-IF(HAVE_MEMCHECK_H)
-	ADD_DEFINITIONS(-DHAVE_MEMCHECK_H)
-ENDIF()
-
-# Clang bug workaround
-if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-	try_compile(CHECK_CLANG_INLINE "${CMAKE_CURRENT_BINARY_DIR}/cxx" "${CMAKE_SOURCE_DIR}/cmake/checkclang.cpp")
-	if(NOT ${CHECK_CLANG_INLINE})
-		add_definitions("-D__extern_always_inline=extern __always_inline __attribute__ ((__gnu_inline__))")
-	endif()
-
-	# Some workaround flags for execssive warnings in clang
-	CheckAndAddFlag(-Wno-unused-local-typedefs)
-endif()
 
 ################################################################################
 # Code coverage
@@ -246,12 +235,12 @@ if(NOT MSVC)
 			message(FATAL_ERROR "Coverage requires a debug build or you get false positives")
 		endif()
 		# Note: "--coverage" instead of "-coverage" makes this work with ccache
-		add_flags(CMAKE_CXX_FLAGS_DEBUG -O0 --coverage)
+		add_compile_options(-O0 --coverage)
 		if(CMAKE_COMPILER_IS_GNUCXX)
 			# Inlining makes the coverage statistic much harder to read and may lead to lots of partials
 			# However expect a slowdown!
 			message(STATUS "Enabled no-inline for better coverage statistics")
-			add_flags(CMAKE_CXX_FLAGS_DEBUG -fno-inline -fno-inline-small-functions -fno-default-inline)
+			add_compile_options(-fno-inline -fno-inline-small-functions -fno-default-inline)
 		else()
 			message(STATUS "Using default inlining which probably influences coverage statistics")
 		endif()
@@ -357,9 +346,6 @@ if(RTTR_BUILD_UPDATER)
 	ADD_SUBDIRECTORY(s25update)
 endif()
 
-if(HAVE_STRUCT_TIMESPEC)
-	add_definitions(-DHAVE_STRUCT_TIMESPEC)
-endif()
 add_subdirectory(common)
 ADD_SUBDIRECTORY(driver)
 ADD_SUBDIRECTORY(rttrConfig)

@@ -45,7 +45,8 @@ def transformIntoStep(arch, wspwd) {
                                     cat build_version_defines.h'
                               fi
                               BUILD_CMD="mkdir build && cd build && \
-                                cmake .. -DCMAKE_PREFIX_PATH=. \$TOOLCHAIN -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
+                                cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \$TOOLCHAIN \
+                                -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
                                 \$PREBUILD_COMMANDS && \
                                 make \$MAKE_TARGET"
                               echo "Executing: \$BUILD_CMD"

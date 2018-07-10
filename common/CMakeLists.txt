@@ -13,6 +13,10 @@ target_include_directories(s25Common PUBLIC include)
 target_link_libraries(s25Common s25util)
 SET_PROPERTY(TARGET s25Common PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+if(HAVE_STRUCT_TIMESPEC)
+	target_compile_definitions(s25Common PUBLIC -DHAVE_STRUCT_TIMESPEC)
+endif()
+
 if(ClangFormat_FOUND)
     add_ClangFormat_files(${ALL_SRC})
 endif()
