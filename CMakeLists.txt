@@ -198,6 +198,7 @@ if(NOT MSVC)
 		endif()
 		# Note: "--coverage" instead of "-coverage" makes this work with ccache
 		add_compile_options(-O0 --coverage)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 		if(CMAKE_COMPILER_IS_GNUCXX)
 			# Inlining makes the coverage statistic much harder to read and may lead to lots of partials
 			# However expect a slowdown!
