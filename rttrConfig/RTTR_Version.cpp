@@ -17,20 +17,6 @@
 
 #include "build_version_defines.h"
 #include "RTTR_Version.h"
-#include <algorithm>
-#include <cstring>
-
-/// Copy the string from src into dst ensuring zero termination
-/// Contrary to std::strncpy the destination size may be smaller than the string
-template<size_t N>
-void mystrncpy(char (&dst)[N], const char* src)
-{
-    if(N == 0u)
-        return;
-    size_t len = std::min(N - 1u, std::strlen(src));
-    std::memcpy(dst, src, len);
-    dst[len] = 0;
-}
 
 std::string RTTR_Version::GetTitle()
 {
@@ -39,31 +25,23 @@ std::string RTTR_Version::GetTitle()
 
 std::string RTTR_Version::GetVersionDate()
 {
-    static char version[256];
-    mystrncpy(version, WINDOW_VERSION);
-    return version;
+    return WINDOW_VERSION;
 }
 
 std::string RTTR_Version::GetRevision()
 {
-    static char revision[256];
-    mystrncpy(revision, WINDOW_REVISION);
-    return revision;
+    return WINDOW_REVISION;
 }
 
 std::string RTTR_Version::GetShortRevision()
 {
-    static char revision[8];
-    mystrncpy(revision, WINDOW_REVISION);
-    return revision;
+    return std::string(WINDOW_REVISION).substr(0, 7);
 }
 
 std::string RTTR_Version::GetYear()
 {
     // nasty but works, if versioning principle changes, we should make it use date function
-    static char year[5];
-    mystrncpy(year, WINDOW_VERSION);
-    return year;
+    return std::string(WINDOW_REVISION).substr(0, 4);
 }
 
 std::string RTTR_Version::GetReadableVersion()
