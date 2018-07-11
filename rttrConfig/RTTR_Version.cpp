@@ -34,9 +34,7 @@ void mystrncpy(char (&dst)[N], const char* src)
 
 std::string RTTR_Version::GetTitle()
 {
-    static char title[256];
-    mystrncpy(title, WINDOW_TITLE);
-    return title;
+    return "Return To The Roots";
 }
 
 std::string RTTR_Version::GetVersionDate()

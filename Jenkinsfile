@@ -30,7 +30,7 @@ def transformIntoStep(arch, wspwd) {
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
                                   -v /srv/backup/www/s25client:/archive \
                                   "
-                              PREBUILD_COMMANDS=
+                              ADDITIONAL_CMAKE_FLAGS=
 
                               if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
                                   VOLUMES=""
@@ -38,16 +38,12 @@ def transformIntoStep(arch, wspwd) {
                                   MAKE_TARGET=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
                                   MAKE_TARGET=create_stable
-                                  PREBUILD_COMMANDS='&& rm -f build_version_defines.h.force && \
-                                    make updateversion && \
-                                    sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && \
-                                    touch build_version_defines.h.force && \
-                                    cat build_version_defines.h'
+                                  ADDITIONAL_CMAKE_FLAGS=-DRTTR_VERSION=\$(cat ../.stable-version)
                               fi
                               BUILD_CMD="mkdir build && cd build && \
                                 cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \$TOOLCHAIN \
                                 -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
-                                \$PREBUILD_COMMANDS && \
+                                \$ADDITIONAL_CMAKE_FLAGS && \
                                 make \$MAKE_TARGET"
                               echo "Executing: \$BUILD_CMD"
                               docker run --rm -u jenkins -v \$(pwd):/workdir \

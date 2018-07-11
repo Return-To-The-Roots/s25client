@@ -278,14 +278,7 @@ ELSE()
 	ENDIF()
 ENDIF()
 
-# Add this first as it defines dependencies for other projects (e.g. nowide and utf8)
 ADD_SUBDIRECTORY(libutil)
-
-# Then we need the version generator so we can depend on it
-ADD_SUBDIRECTORY(version)
-	
-# And the rest
-
 ADD_SUBDIRECTORY(libendian)
 ADD_SUBDIRECTORY(mygettext)
 ADD_SUBDIRECTORY(libsiedler2)

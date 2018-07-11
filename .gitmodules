@@ -19,9 +19,6 @@
 [submodule "s25update"]
 	url = https://github.com/Return-To-The-Roots/s25update.git
 	path = s25update
-[submodule "version"]
-	url = https://github.com/Return-To-The-Roots/version.git
-	path = version
 [submodule "RTTR/languages"]
 	url = https://github.com/Return-To-The-Roots/languages.git
 	path = RTTR/languages

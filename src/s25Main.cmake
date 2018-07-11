@@ -42,9 +42,6 @@ AddDirectory(postSystem)
 AddDirectory(random)
 AddDirectory(world)
 
-INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${CMAKE_CURRENT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
-
 SET(s25Main_SRCS
 	${SOURCES_OTHER}
 	${SOURCES_SUBDIRS}
