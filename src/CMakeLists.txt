@@ -36,7 +36,7 @@ if(APPLE)
 	INCLUDE_DIRECTORIES(SYSTEM ${SDL_INCLUDE_DIR})
 
 	LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/macos)
-	ADD_FLAGS(CMAKE_EXE_LINKER_FLAGS -framework OpenGL)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework OpenGL")
 ENDif()
 
 ################################################################################

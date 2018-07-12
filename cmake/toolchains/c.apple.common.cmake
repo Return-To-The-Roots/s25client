@@ -15,7 +15,7 @@ set(OSX_SDKS "/usr/lib/apple/SDKs/MacOSX10.5.sdk" "/usr/lib/apple/SDKs/MacOSX10.
 MESSAGE(STATUS "Getting SDK. Old deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}. Old sysroot: ${CMAKE_OSX_SYSROOT}")
 unset(CMAKE_OSX_DEPLOYMENT_TARGET)
 unset(CMAKE_OSX_SYSROOT)
-foreach(SDK in LISTS OSX_SDKS)
+foreach(SDK IN LISTS OSX_SDKS)
     IF(EXISTS ${SDK})
         SET(CMAKE_OSX_SYSROOT ${SDK})
         break()

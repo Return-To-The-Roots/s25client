@@ -22,8 +22,13 @@ IF(NOT CHOOSEN_OSX_ARCHS)
 ENDIF()
 
 list(REMOVE_DUPLICATES CHOOSEN_OSX_ARCHS)
+list(FIND OSX_POSSIBLE_ARCHS "i386" _index)
+list(FIND OSX_POSSIBLE_ARCHS "i686" _index2)
+if(_index GREATER -1 AND _index2 GREATER -1)
+    list(REMOVE_ITEM CHOOSEN_OSX_ARCHS i686) # Not both!
+endif()
 # Filter by flags and print status
-foreach(arch in LISTS CHOOSEN_OSX_ARCHS)
+foreach(arch IN LISTS CHOOSEN_OSX_ARCHS)
     if(RTTR_NO${arch})
         list(REMOVE_ITEM CHOOSEN_OSX_ARCHS ${arch})
     endif()
