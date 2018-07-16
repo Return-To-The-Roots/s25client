@@ -35,13 +35,13 @@ Coverage:
 Most of them can be installed with the package manager.
 
 ### Prerequisite MacOSX:
- - cmake
- - git
- - boost
- - sdl
- - sdl_mixer
- - gettext (make sure it is in your path with e.g. `brew link --force gettext`)
- - miniupnpc
+- cmake
+- git
+- boost
+- sdl
+- sdl_mixer
+- gettext (make sure it is in your path with e.g. `brew link --force gettext`)
+- miniupnpc
 All of them can be installed via homebrew
 
 ### Steps:
@@ -49,11 +49,17 @@ All of them can be installed via homebrew
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
 mkdir build && cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```
 
-MacOSX defaults to XCode generator. If you don't have XCode installed, use `cmake .. -G "Unix Makefiles"` instead.
+### Optimizations:
+There are various CMake options to control the build and optimization including ARM (Rasberry PI etc.) related ones. Examples:
+- RTTR_ENABLE_OPTIMIZATIONS/RTTR_ENABLE_WERROR
+- RTTR_OPTIMZATION_VECTOR_EXT (Non-Windows x86/x64 only)
+- RTTR_OPTIMZATION_TUNE (Non-Windows only)
+- RTTR_TARGET_BOARD (ARM only)
+See the description in CMake-GUI/ccmake for details.
 
 Note that due to the use of submodules you always need to `git pull && git submodule update --init --recursive` to get the latest version.
 (The `--init` and `--recursive` arguments are only required should we add *new* submodules to the existing set.)
@@ -108,5 +114,4 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 --
 
-for advanced info or help see INSTALL file the [FAQ in the wiki](
- https://github.com/Return-To-The-Roots/s25client/wiki/%5BFAQ%5D-Compiling) or http://www.rttr.info 
+for advanced info or help see INSTALL file in the [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info 
