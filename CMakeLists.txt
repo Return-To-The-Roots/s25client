@@ -2,11 +2,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 IF(NOT CMAKE_VERSION VERSION_LESS 3.0)
 	# RPath enabled by default. Rpath only supported in CMake >2.8.12
-	CMAKE_POLICY(SET CMP0042 OLD)
+	cmake_policy(SET CMP0042 OLD)
 ENDIF()
 IF(NOT CMAKE_VERSION VERSION_LESS 3.1)
 	# Simplified variable expansion. No change for usual variable references so use faster one
-	CMAKE_POLICY(SET CMP0053 NEW)
+	cmake_policy(SET CMP0053 NEW)
+	# Only interpret if() arguments as variables or keywords when unquoted. 
+	cmake_policy(SET CMP0054 NEW)
 ENDIF()
 
 #Check for ccache
