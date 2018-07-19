@@ -1,5 +1,4 @@
 
-ADD_SUBDIRECTORY( WinAPI )
-ADD_SUBDIRECTORY( SDL )
-
-#################################################################################
+add_subdirectory(WinAPI)
+add_subdirectory(SDL)
+add_subdirectory(SDL2)
