@@ -57,7 +57,7 @@ public:
     AIResource GetSurfaceResource(const MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
-    int CalcResourceValue(const MapPoint pt, AIResource res, char direction = -1, int lastval = 0xffff) const;
+    int CalcResourceValue(const MapPoint pt, AIResource res, int8_t direction = -1, int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
     int GetResourceRating(const MapPoint pt, AIResource res) const;
     /// Test whether a given point is part of the border or not
