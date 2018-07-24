@@ -11,9 +11,9 @@ if(MSVC)
     add_definitions(/FC)
 endif()
 
-get_filename_component(RTTR_BASE_DIR ${CMAKE_SOURCE_DIR} ABSOLUTE)
-set(RTTR_LIBSIEDLER2_TEST_FILES_DIR ${RTTR_BASE_DIR}/libsiedler2/examples/test/testFiles)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake" ${CMAKE_BINARY_DIR}/test/testConfig.h @ONLY)
+get_filename_component(RTTR_BASE_DIR "${CMAKE_SOURCE_DIR}" ABSOLUTE)
+set(RTTR_LIBSIEDLER2_TEST_FILES_DIR "${RTTR_BASE_DIR}/libsiedler2/examples/test/testFiles")
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/testConfig.h.cmake" include/test/testConfig.h @ONLY)
 unset(RTTR_BASE_DIR)
 unset(RTTR_LIBSIEDLER2_TEST_FILES_DIR)
 
@@ -29,8 +29,8 @@ target_link_libraries(Test
                         videoMockup
 						${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 					  )
-
-add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+target_include_directories(Test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
+add_test(NAME MainTest COMMAND Test WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 file(GLOB TEST_CASES test*.cpp)
 source_group(testCases FILES ${TEST_CASES})

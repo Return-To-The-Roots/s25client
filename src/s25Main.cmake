@@ -42,16 +42,12 @@ AddDirectory(postSystem)
 AddDirectory(random)
 AddDirectory(world)
 
-INCLUDE(AddFileDependencies)
-ADD_FILE_DEPENDENCIES(${CMAKE_CURRENT_SOURCE_DIR}/RTTR_Version.cpp ${CMAKE_BINARY_DIR}/build_version_defines.h)
-
 SET(s25Main_SRCS
 	${SOURCES_OTHER}
 	${SOURCES_SUBDIRS}
 )
 
 ADD_LIBRARY(s25Main STATIC ${s25Main_SRCS})
-ADD_DEPENDENCIES(s25Main updateversion)
 target_include_directories(s25Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} PRIVATE ${UTF8_INCLUDE_DIR})
 TARGET_LINK_LIBRARIES(s25Main PUBLIC
 	siedler2

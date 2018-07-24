@@ -106,7 +106,7 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
     return 0;
 }
 
-int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, char direction, int lastval) const
+int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t direction, int lastval) const
 {
     int returnVal;
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)

@@ -22,26 +22,29 @@ def transformIntoStep(arch, wspwd) {
                               echo "Git status for main and sub repos:"
                               git status
                               git submodule foreach git status
-                              BARCH=--arch=c.${arch}
-                              if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" = "${arch}" ] ; then
-                                  BARCH=
+                              TOOLCHAIN=
+                              if [ "\$(uname -s | tr "[:upper:]" "[:lower:]").\$(uname -m)" != "${arch}" ] ; then
+                                  TOOLCHAIN=-DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/c.${arch}.cmake
                               fi
-                              PARAMS=
+                              MAKE_TARGET=
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
                                   -v /srv/backup/www/s25client:/archive \
                                   "
-                              COMMANDS=
+                              ADDITIONAL_CMAKE_FLAGS=
 
                               if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
                                   VOLUMES=""
                               elif [ "${env.BRANCH_NAME}" == "master" ] ; then
-                                  PARAMS=create_nightly
+                                  MAKE_TARGET=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
-                                  PARAMS=create_stable
-                                  COMMANDS='&& rm -f build_version_defines.h.force && make updateversion && sed -i -e "s/WINDOW_VERSION \\\"[0-9]*\\\"/WINDOW_VERSION \\\"\$(cat ../.stable-version)\\\"/g" build_version_defines.h && touch build_version_defines.h.force && cat build_version_defines.h'
+                                  MAKE_TARGET=create_stable
+                                  ADDITIONAL_CMAKE_FLAGS=-DRTTR_VERSION=\$(cat ../.stable-version)
                               fi
-                              DIR_CFG="-DRTTR_EXTRA_BINDIR=libexec/s25rttr"
-                              BUILD_CMD="cd build && ./cmake.sh --prefix=. \$BARCH -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON \$DIR_CFG \$COMMANDS && make \$PARAMS"
+                              BUILD_CMD="mkdir build && cd build && \
+                                cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \$TOOLCHAIN \
+                                -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
+                                \$ADDITIONAL_CMAKE_FLAGS && \
+                                make \$MAKE_TARGET"
                               echo "Executing: \$BUILD_CMD"
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
@@ -99,7 +102,7 @@ catchError() {
     milestone label: 'Checkout complete'
 
     stage("Building") {
-        String[] archs = ["windows.i386", "windows.x86_64", "linux.i386", "linux.x86_64", "apple.universal" ]
+        String[] archs = ["windows.i686", "windows.x86_64", "linux.i686", "linux.x86_64", "apple.universal" ]
         def parallel_map = [:]
 
         for(int i = 0; i < archs.size(); i++) {
