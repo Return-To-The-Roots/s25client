@@ -22,7 +22,6 @@
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
 #include "libutil/Singleton.h"
-#include <boost/array.hpp>
 #include <string>
 
 class IVideoDriver;
@@ -116,8 +115,7 @@ private:
     /// (Some) OpenGL can be disabled for testing
     bool isOglEnabled_;
 
-    boost::array<unsigned, 100000> texture_list;
-    unsigned texture_pos;
+    std::vector<unsigned> texture_list;
     unsigned texture_current;
 };
 

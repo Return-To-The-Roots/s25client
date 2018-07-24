@@ -26,6 +26,7 @@
 #include "mygettext/mygettext.h"
 #include "libutil/Log.h"
 #include "libutil/error.h"
+#include <boost/static_assert.hpp>
 #include <algorithm>
 #include <ctime>
 #include <glad/glad.h>
@@ -43,7 +44,7 @@ typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
 
 PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
 
-VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), loadedFromDll(false), isOglEnabled_(false), texture_pos(0), texture_current(0)
+VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
 {
     std::fill(texture_list.begin(), texture_list.end(), 0);
 }
@@ -260,11 +261,10 @@ bool VideoDriverWrapper::hasExtension(const std::string& extension)
  */
 void VideoDriverWrapper::CleanUp()
 {
-    if(isOglEnabled_)
-        glDeleteTextures(texture_pos, (const GLuint*)&texture_list.front());
+    if(isOglEnabled_ && !texture_list.empty())
+        glDeleteTextures(texture_list.size(), (const GLuint*)&texture_list.front());
 
-    std::fill(texture_list.begin(), texture_list.end(), 0);
-    texture_pos = 0;
+    texture_list.clear();
 }
 
 unsigned VideoDriverWrapper::GenerateTexture()
@@ -272,21 +272,15 @@ unsigned VideoDriverWrapper::GenerateTexture()
     if(!isOglEnabled_)
         return 0;
 
-    if(texture_pos >= texture_list.size())
-    {
-        s25util::fatal_error("Texture-limit reached!\n");
-        return 0;
-    }
-
     GLuint newTexture = 0;
     glGenTextures(1, &newTexture);
 #if !defined(NDEBUG) && defined(HAVE_MEMCHECK_H)
     VALGRIND_MAKE_MEM_DEFINED(&newTexture, sizeof(newTexture));
 #endif
 
-    texture_list[texture_pos] = newTexture;
-
-    return texture_list[texture_pos++];
+    BOOST_STATIC_ASSERT(sizeof(newTexture) == sizeof(texture_list[0]));
+    texture_list.push_back(newTexture);
+    return texture_list.back();
 }
 
 void VideoDriverWrapper::BindTexture(unsigned t)
