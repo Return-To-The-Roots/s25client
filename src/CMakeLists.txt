@@ -2,7 +2,6 @@
 
 FIND_PACKAGE(BZip2 REQUIRED)
 gather_dll(BZIP2)
-FIND_PACKAGE(OpenGL REQUIRED)
 FIND_PACKAGE(Gettext REQUIRED)
 FIND_PACKAGE(Boost 1.55.0 REQUIRED COMPONENTS filesystem iostreams system program_options locale chrono)
 
@@ -15,7 +14,6 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/driver/include)
 INCLUDE_DIRECTORIES(SYSTEM
 	${BZIP2_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
-	${OPENGL_INCLUDE_DIR}
 	)
 
 ################################################################################
@@ -29,7 +27,6 @@ GETTEXT_CREATE_TRANSLATIONS(../RTTR/languages/rttr.pot ALL
 ################################################################################
 
 if(APPLE)
-	CORRECT_LIB(OPENGL_gl_LIBRARY OpenGL)
 	CORRECT_LIB(SDL_LIBRARY SDL)
 
 	# Add the SDL-include flags to an apple build

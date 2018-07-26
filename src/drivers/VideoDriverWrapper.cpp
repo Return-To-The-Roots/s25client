@@ -24,6 +24,7 @@
 #include "driver/VideoInterface.h"
 #include "helpers/roundToNextPow2.h"
 #include "mygettext/mygettext.h"
+#include "openglCfg.hpp"
 #include "libutil/Log.h"
 #include "libutil/error.h"
 #include <boost/static_assert.hpp>
@@ -423,14 +424,23 @@ void VideoDriverWrapper::RenewViewport()
  */
 bool VideoDriverWrapper::LoadAllExtensions()
 {
+#if RTTR_OPENGL_ES
+    if(!gladLoadGLES2Loader(videodriver->GetLoaderFunction()))
+    {
+        return false;
+    }
+#else
     if(!gladLoadGLLoader(videodriver->GetLoaderFunction()))
     {
         return false;
     }
+#endif
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
-    if(!GLAD_GL_VERSION_1_3)
+    if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
     {
-        s25util::fatal_error(_("OpenGL 1.3 is not supported. Try updating your GPU drivers or hardware!"));
+        boost::format errorMsg(_("OpenGL %1% %2%.%3% is not supported. Try updating your GPU drivers or hardware!"));
+        errorMsg % (RTTR_OGL_ES ? "ES" : "") % RTTR_OGL_MAJOR % RTTR_OGL_MINOR;
+        s25util::fatal_error(errorMsg.str());
         return false;
     }
 // auf VSync-Extension testen
@@ -441,7 +451,7 @@ bool VideoDriverWrapper::LoadAllExtensions()
     wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"));
 #endif
     GLOBALVARS.hasVSync = wglSwapIntervalEXT != NULL;
-    GLOBALVARS.hasVBO = GLAD_GL_ARB_vertex_buffer_object != 0;
+    GLOBALVARS.hasVBO = true;
 
     return true;
 }

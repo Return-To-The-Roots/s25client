@@ -19,7 +19,7 @@ E. Summary: Updates and changelog
 
 A. Reference Note
 
-  The game requires an OpenGL-compatible graphics card with at
+  The game requires an OpenGL2.1-compatible graphics card with at
   least 64 MB graphics-memory. A CPU with 800Mhz will suffice.
 
   Further on you will need an installed version of "The Settlers 2 

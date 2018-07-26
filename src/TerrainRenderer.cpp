@@ -70,7 +70,7 @@ TerrainRenderer::~TerrainRenderer()
     if(vboBuffersUsed)
     {
         const GLuint vbos[3] = {vbo_vertices, vbo_texcoords, vbo_colors};
-        glDeleteBuffersARB(3, vbos);
+        glDeleteBuffers(3, vbos);
     }
 }
 
@@ -356,27 +356,27 @@ void TerrainRenderer::GenerateOpenGL(const GameWorldViewer& gwv)
     {
         // Create and fill the 3 VBOs for vertices, texCoords and colors
         GLuint vbos[3];
-        glGenBuffersARB(3, vbos);
+        glGenBuffers(3, vbos);
         BOOST_STATIC_ASSERT_MSG(sizeof(vbo_vertices) >= sizeof(GLuint), "Cannot store Gluint in vbo variable!");
         if(!vbos[0] || !vbos[1] || !vbos[2])
-            glDeleteBuffersARB(3, vbos);
+            glDeleteBuffers(3, vbos);
         else
         {
             vbo_vertices = vbos[0];
             vbo_texcoords = vbos[1];
             vbo_colors = vbos[2];
 
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-            glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_vertices.size() * sizeof(Triangle), &gl_vertices.front(), GL_STATIC_DRAW_ARB);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+            glBufferData(GL_ARRAY_BUFFER, gl_vertices.size() * sizeof(Triangle), &gl_vertices.front(), GL_STATIC_DRAW);
 
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-            glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_texcoords.size() * sizeof(Triangle), &gl_texcoords.front(), GL_STATIC_DRAW_ARB);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo_texcoords);
+            glBufferData(GL_ARRAY_BUFFER, gl_texcoords.size() * sizeof(Triangle), &gl_texcoords.front(), GL_STATIC_DRAW);
 
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-            glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+            glBufferData(GL_ARRAY_BUFFER, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW);
 
             // Unbind VBO to not interfere with other program parts
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
             vboBuffersUsed = true;
         }
     }
@@ -398,9 +398,9 @@ void TerrainRenderer::UpdateTrianglePos(const MapPoint pt, bool updateVBO)
 
     if(updateVBO && vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_vertices[pos - 1]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, (pos - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_vertices[pos - 1]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -426,9 +426,9 @@ void TerrainRenderer::UpdateTriangleColor(const MapPoint pt, bool updateVBO)
 
     if(updateVBO && vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (pos - 1) * sizeof(ColorTriangle), 2 * sizeof(ColorTriangle), &gl_colors[pos - 1]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+        glBufferSubData(GL_ARRAY_BUFFER, (pos - 1) * sizeof(ColorTriangle), 2 * sizeof(ColorTriangle), &gl_colors[pos - 1]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -444,9 +444,9 @@ void TerrainRenderer::UpdateTriangleTerrain(const MapPoint pt, bool updateVBO)
 
     if(updateVBO && vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, (triangleIdx - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_texcoords[triangleIdx - 1]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_texcoords);
+        glBufferSubData(GL_ARRAY_BUFFER, (triangleIdx - 1) * sizeof(Triangle), 2 * sizeof(Triangle), &gl_texcoords[triangleIdx - 1]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -522,10 +522,9 @@ void TerrainRenderer::UpdateBorderTrianglePos(const MapPoint pt, bool updateVBO)
 
     if(updateVBO && vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle),
-                           &gl_vertices[first_offset]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
+        glBufferSubData(GL_ARRAY_BUFFER, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_vertices[first_offset]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -602,10 +601,10 @@ void TerrainRenderer::UpdateBorderTriangleColor(const MapPoint pt, bool updateVB
 
     if(updateVBO && vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(ColorTriangle), count_borders * sizeof(ColorTriangle),
-                           &gl_colors[first_offset]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+        glBufferSubData(GL_ARRAY_BUFFER, first_offset * sizeof(ColorTriangle), count_borders * sizeof(ColorTriangle),
+                        &gl_colors[first_offset]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -687,10 +686,9 @@ void TerrainRenderer::UpdateBorderTriangleTerrain(const MapPoint pt, bool update
 
     if(updateVBO && vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
-        glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle),
-                           &gl_texcoords[first_offset]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_texcoords);
+        glBufferSubData(GL_ARRAY_BUFFER, first_offset * sizeof(Triangle), count_borders * sizeof(Triangle), &gl_texcoords[first_offset]);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
@@ -805,13 +803,13 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
     if(vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_vertices);
         glVertexPointer(2, GL_FLOAT, 0, 0);
 
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_texcoords);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_texcoords);
         glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
         glColorPointer(3, GL_FLOAT, 0, 0);
     } else
     {
@@ -882,7 +880,7 @@ void TerrainRenderer::Draw(const Position& firstPt, const Position& lastPt, cons
 
     // unbind VBO
     if(vboBuffersUsed)
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     DrawWays(sorted_roads);
 
@@ -1159,9 +1157,9 @@ void TerrainRenderer::UpdateAllColors(const GameWorldViewer& gwv)
 
     if(vboBuffersUsed)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_colors);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW_ARB);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+        glBufferData(GL_ARRAY_BUFFER, gl_colors.size() * sizeof(ColorTriangle), &gl_colors.front(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 
