@@ -1,5 +1,6 @@
 # Add Icon to Application
 if(WIN32)
+    include(CMakeMacroAddFlags)
     if(CMAKE_HOST_WIN32)
         SET(s25client_RC "${CMAKE_SOURCE_DIR}/win32/s25client.rc")
         if(MSVC)
