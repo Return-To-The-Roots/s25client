@@ -64,7 +64,7 @@ rm -vf ${DESTDIR}${RTTR_DRIVERDIR}/audio/libaudio*.{a,lib}
 extract_debug_symbols()
 {
 	local FILE=$1
-	
+
 	if [ "$SYSTEM_NAME" == "Darwin" ]; then
 		# Can't extract symbols for apple, so just strip them
 		i686-apple-darwin10-strip -S ${DESTDIR}$FILE
@@ -91,7 +91,7 @@ extract_debug_symbols()
 	objcopyTarget=""
 	case "$SYSTEM_NAME" in
 		Windows)
-			objcopyTarget="-pc-mingw32"
+			objcopyTarget="-w64-mingw32"
 		;;
 		Linux)
 			objcopyTarget="-pc-linux-gnu"
@@ -112,10 +112,31 @@ extract_debug_symbols()
 		# Use fallback
 		case "$SYSTEM_NAME" in
 			Windows)
-				objcopyTarget="-mingw32"
+				objcopyTarget="-pc-mingw32"
 			;;
 			Linux)
 				objcopyTarget="-linux-gnu"
+			;;
+			*)
+				echo "$SYSTEM_NAME is missing objcopy" >&2
+				return 1
+			;;
+		esac
+		objcopy="${objcopyArch}${objcopyTarget}-objcopy"
+	fi
+
+	# Set if not yet set
+	: ${objcopy:=${objcopyArch}${objcopyTarget}-objcopy}
+
+	if ! `${objcopy} -V >/dev/null 2>&1`; then
+		# Use fallback
+		case "$SYSTEM_NAME" in
+			Windows)
+				objcopyTarget="-mingw32"
+			;;
+			*)
+				echo "$SYSTEM_NAME is missing objcopy" >&2
+				return 1
 			;;
 		esac
 		objcopy="${objcopyArch}${objcopyTarget}-objcopy"
@@ -220,7 +241,7 @@ case "$SYSTEM_NAME" in
 		mv -v ${DESTDIR}bin/* ${macOSPath}/bin/ || exit 1
 		mv -v ${DESTDIR}libexec/* ${macOSPath}/libexec/ || exit 1
 		mv -v ${DESTDIR}lib/* ${macOSPath}/lib/ || exit 1
-		
+
 		chmod +x ${macOSPath}/rttr.command || exit 1
 		chmod +x ${macOSPath}/bin/* || exit 1
 		chmod +x ${macOSPath}/libexec/s25rttr/* || exit 1
@@ -238,7 +259,9 @@ case "$SYSTEM_NAME" in
 		lua=""
 		case "$SYSTEM_ARCH" in
 			i686|*86)
-				if [ -d /usr/i686-pc-mingw32 ]; then
+				if [ -d /usr/i686-w64-mingw32 ]; then
+					mingw=/usr/i686-w64-mingw32
+				elif [ -d /usr/i686-pc-mingw32 ]; then
 					mingw=/usr/i686-pc-mingw32
 				else
 					mingw=/usr/i686-mingw32
@@ -246,7 +269,9 @@ case "$SYSTEM_NAME" in
 				lua=win32
 			;;
 			x86_64|*64)
-				if [ -d /usr/i686-pc-mingw32 ]; then
+				if [ -d /usr/i686-w64-mingw32 ]; then
+					mingw=/usr/x86_64-w64-mingw32
+				elif [ -d /usr/i686-pc-mingw32 ]; then
 					mingw=/usr/x86_64-pc-mingw32
 				else
 					mingw=/usr/x86_64-mingw32
@@ -254,21 +279,34 @@ case "$SYSTEM_NAME" in
 				lua=win64
 			;;
 		esac
-		
+
 		cp -v ${RTTR_SRCDIR}/external/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+
+		if [ -f ${mingw}/bin/libgcc_s_sjlj-1.dll ] ; then
+			cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
+			cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
+
+			cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
+			cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
+			cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+		else
+			cp -v ${mingw}/bin/libgcc_s_seh-1.dll ${DESTDIR} || exit 1
+			cp -v ${mingw}/bin/libstdc++-6.dll ${DESTDIR} || exit
+
+			cp -v ${mingw}/bin/libgcc_s_seh-1.dll ${DESTDIR}RTTR || exit 1
+			cp -v ${mingw}/bin/libstdc++-6.dll ${DESTDIR}RTTR || exit
+			cp -v ${mingw}/bin/libminiupnpc.dll ${DESTDIR} || exit 1
+		fi
+
 		cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+
 		cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+		cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
 		cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
 		cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
-		
-		cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
+
 		cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
-		cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 
         if [ -d ${DESTDIR}S2 ]; then
             rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
