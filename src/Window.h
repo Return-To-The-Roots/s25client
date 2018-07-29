@@ -188,12 +188,12 @@ public:
                             glArchivItem_Font* font, unsigned parameters, ...);
     ctrlPreviewMinimap* AddPreviewMinimap(const unsigned id, const DrawPoint& pos, const Extent& size, glArchivItem_Map* const map);
 
-    /// Zeichnet einen 3D-Rahmen.
-    /// type 0 / 1 elevated border
-    /// type 2: deepened border
-    /// type 1 content texture is lighter than the other 2
-    static void Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool illuminated = false, bool drawContent = true,
-                       unsigned color = COLOR_WHITE);
+    /// Draw a 3D rectangle (e.g. button)
+    static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false, bool illuminated = false,
+                       unsigned contentColor = COLOR_WHITE);
+    static void Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
+    static void Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false, bool illuminated = false,
+                              unsigned contentColor = COLOR_WHITE);
     /// Zeichnet ein Rechteck
     static void DrawRectangle(const Rect& rect, unsigned color);
     /// Zeichnet eine Linie
@@ -261,8 +261,7 @@ protected:
     {
         BUTTON_UP = 0,
         BUTTON_HOVER,
-        BUTTON_PRESSED,
-        BUTTON_UNKNOWN = 0xFF
+        BUTTON_PRESSED
     };
     typedef std::map<unsigned, Window*> ControlMap;
 

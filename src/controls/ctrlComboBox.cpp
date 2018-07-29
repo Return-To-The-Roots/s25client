@@ -242,7 +242,7 @@ void ctrlComboBox::Draw_()
     ctrlList* liste = GetCtrl<ctrlList>(0);
 
     // Box
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
     // Namen des selektierten Strings in der Box anzeigen
     if(liste->GetNumLines() > 0)

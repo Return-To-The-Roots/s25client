@@ -21,14 +21,14 @@
 #include "glArchivItem_Bitmap.h"
 #include <glad/glad.h>
 
-void OpenGLRenderer::DrawRect3D(const Rect& rect, bool elevated, glArchivItem_Bitmap& borderImg, glArchivItem_Bitmap* contentImg,
-                                bool illuminated, unsigned contentColor)
+void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture)
 {
     const Extent rectSize = rect.getSize();
     if(rectSize.x < 4 || rectSize.y < 4)
         return;
 
     DrawPoint origin = rect.getOrigin();
+
     // Position of the horizontal and vertical image border
     DrawPoint horImgBorderPos(origin);
     DrawPoint vertImgBorderPos(origin);
@@ -41,8 +41,8 @@ void OpenGLRenderer::DrawRect3D(const Rect& rect, bool elevated, glArchivItem_Bi
         vertImgBorderPos += DrawPoint(rectSize.x - 2, 0);
     }
     // Draw img borders
-    borderImg.DrawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
-    borderImg.DrawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
+    texture.DrawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
+    texture.DrawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
 
     // Draw black borders over the img borders
     glDisable(GL_TEXTURE_2D);
@@ -71,8 +71,12 @@ void OpenGLRenderer::DrawRect3D(const Rect& rect, bool elevated, glArchivItem_Bi
     }
     glEnd();
     glEnable(GL_TEXTURE_2D);
+}
 
-    if(!contentImg)
+void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color)
+{
+    const Extent rectSize = rect.getSize();
+    if(rectSize.x < 4 || rectSize.y < 4)
         return;
 
     if(illuminated)
@@ -82,15 +86,15 @@ void OpenGLRenderer::DrawRect3D(const Rect& rect, bool elevated, glArchivItem_Bi
         glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
     }
 
-    DrawPoint contentPos = origin + DrawPoint(2, 2);
+    DrawPoint contentPos = rect.getOrigin() + DrawPoint(2, 2);
     Extent contentSize(rectSize - Extent(4, 4));
     DrawPoint contentOffset(0, 0);
     if(elevated)
     {
-        // Move the content a bit to left upper for elevated version
+        // Move a bit to left upper for elevated version
         contentOffset = DrawPoint(2, 2);
     }
-    contentImg->DrawPart(Rect(contentPos, contentSize), contentOffset, contentColor);
+    texture.DrawPart(Rect(contentPos, contentSize), contentOffset, color);
 
     if(illuminated)
     {

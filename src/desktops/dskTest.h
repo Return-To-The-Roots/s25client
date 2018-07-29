@@ -31,6 +31,7 @@ public:
     void Msg_EditChange(const unsigned ctrl_id) override;
     void Msg_ComboSelectItem(const unsigned ctrl_id, const int selection) override;
     void Msg_ButtonClick(const unsigned ctrl_id) override;
+    bool Msg_RightUp(const MouseCoords& mc) override;
 
     void ToggleCtrlVisibility();
 

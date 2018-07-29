@@ -252,7 +252,7 @@ void ctrlTable::SortRows(int column, bool* direction)
  */
 void ctrlTable::Draw_()
 {
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
     DrawControls();
 

@@ -25,8 +25,8 @@ class glArchivItem_Bitmap;
 class OpenGLRenderer : public IRenderer
 {
 public:
-    void DrawRect3D(const Rect& rect, bool elevated, glArchivItem_Bitmap& borderImg, glArchivItem_Bitmap* contentImg, bool illuminated,
-                    unsigned contentColor) override;
+    void Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) override;
+    void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color) override;
     void DrawRect(const Rect& rect, unsigned color) override;
     void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color) override;
 };

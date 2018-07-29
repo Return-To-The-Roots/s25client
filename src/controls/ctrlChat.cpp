@@ -115,7 +115,7 @@ void ctrlChat::Resize(const Extent& newSize)
 void ctrlChat::Draw_()
 {
     // Box malen
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
     // Scrolleiste zeichnen
     DrawControls();

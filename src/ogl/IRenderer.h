@@ -31,14 +31,16 @@ protected:
     virtual ~IRenderer(){};
 
 public:
-    /// Draw a rect with 3D effect
-    /// elevated: true for elevated, false for deepened effect
-    /// borderImg: Texture to use for border
-    /// contentImg: Texture to use for content or NULL to skip
-    /// illuminated: Draw content illuminated
-    /// contentColor: Color for the content
-    virtual void DrawRect3D(const Rect& rect, bool elevated, glArchivItem_Bitmap& borderImg, glArchivItem_Bitmap* contentImg,
-                            bool illuminated, unsigned contentColor) = 0;
+    /// Draw a border around rect with 3D effect
+    /// @param elevated true for elevated, false for deepened effect
+    /// @param texture Texture to use
+    virtual void Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) = 0;
+    /// Draw the content with 3D effect
+    /// @param elevated true for elevated, false for deepened effect
+    /// @param texture Texture to use
+    /// @param illuminated Draw illuminated
+    /// @param color Color for the content
+    virtual void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color) = 0;
     virtual void DrawRect(const Rect& rect, unsigned color) = 0;
     virtual void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color) = 0;
 };

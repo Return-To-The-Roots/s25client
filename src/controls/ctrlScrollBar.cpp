@@ -194,13 +194,13 @@ void ctrlScrollBar::Draw_()
         return;
     DrawPoint pos = GetDrawPos();
     // Leiste
-    Draw3D(Rect(pos + DrawPoint(0, button_height - 2), GetSize().x, GetSize().y - button_height * 2 + 4), tc, 2);
+    Draw3D(Rect(pos + DrawPoint(0, button_height - 2), GetSize().x, GetSize().y - button_height * 2 + 4), tc, false);
 
     // Buttons
     DrawControls();
 
     // Scrollbar
-    Draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), GetSize().x, sliderHeight), tc, 0);
+    Draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), GetSize().x, sliderHeight), tc, true);
 }
 
 void ctrlScrollBar::UpdatePosFromSlider()

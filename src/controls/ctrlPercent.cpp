@@ -51,7 +51,7 @@ void ctrlPercent::Draw_()
         color = COLOR_0_PERCENT;
 
     // Box zeichnen
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
     // Fortschritt zeichnen
     Extent progSize = GetSize() - Extent(8, 8);

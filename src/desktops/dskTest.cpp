@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskTest.h"
+#include "CollisionDetection.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "animation/BlinkButtonAnim.h"
@@ -167,9 +168,24 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
                 repeat = Animation::RPT_Repeat;
             GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
             GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
+            break;
         }
         case ID_btHideCtrls: ToggleCtrlVisibility();
     }
+}
+
+bool dskTest::Msg_RightUp(const MouseCoords& mc)
+{
+    std::vector<ctrlButton*> bts = GetCtrls<ctrlButton>();
+    BOOST_FOREACH(ctrlButton* bt, bts)
+    {
+        if(IsPointInRect(mc.GetPos(), bt->GetDrawRect()))
+        {
+            bt->SetChecked(!bt->GetCheck());
+            return true;
+        }
+    }
+    return dskMenuBase::Msg_RightUp(mc);
 }
 
 void dskTest::ToggleCtrlVisibility()

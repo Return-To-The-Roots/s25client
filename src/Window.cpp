@@ -458,17 +458,26 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint
     return AddCtrl(new ctrlPreviewMinimap(this, id, ScaleIf(pos), ScaleIf(size), map));
 }
 
-/**
- *  Zeichnet einen 3D-Rahmen.
- */
-void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool illuminated, bool drawContent, unsigned color)
+void Window::Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted, bool illuminated, unsigned contentColor)
+{
+    Draw3DBorder(rect, tc, elevated);
+    Draw3DContent(rect, tc, elevated, highlighted, illuminated, contentColor);
+}
+
+void Window::Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated)
 {
     if(tc == TC_INVISIBLE)
         return;
-
     glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + tc);
-    glArchivItem_Bitmap* contentImg = drawContent ? LOADER.GetImageN("io", (type == 1) ? tc * 2 : tc * 2 + 1) : NULL;
-    VIDEODRIVER.GetRenderer()->DrawRect3D(rect, type <= 1, *borderImg, contentImg, illuminated, color);
+    VIDEODRIVER.GetRenderer()->Draw3DBorder(rect, elevated, *borderImg);
+}
+
+void Window::Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted, bool illuminated, unsigned contentColor)
+{
+    if(tc == TC_INVISIBLE)
+        return;
+    glArchivItem_Bitmap* contentImg = LOADER.GetImageN("io", tc * 2 + (highlighted ? 0 : 1));
+    VIDEODRIVER.GetRenderer()->Draw3DContent(rect, elevated, *contentImg, illuminated, contentColor);
 }
 
 void Window::DrawRectangle(const Rect& rect, unsigned color)

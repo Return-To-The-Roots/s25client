@@ -143,7 +143,7 @@ void ctrlTab::Draw_()
     int headerSize = tab_count * 36;
     LOADER.GetImageN("io", 3)->DrawPart(Rect(GetDrawPos() + DrawPoint(headerSize, 0), Extent(GetSize().x - headerSize, 45)));
 
-    Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TC_GREEN1, 0);
+    Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TC_GREEN1, true);
 
     ctrlButton* button = GetCtrl<ctrlButton>(tab_selection);
     if(button)

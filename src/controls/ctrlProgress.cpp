@@ -73,7 +73,7 @@ void ctrlProgress::Draw_()
     // Offset by button size
     barPos.x += GetSize().y;
     Extent barSize(CalcBarWidth(), GetSize().y - 2 * padding_.y);
-    Draw3D(Rect(barPos, barSize), tc, 2);
+    Draw3D(Rect(barPos, barSize), tc, false);
 
     // Buttons
     DrawControls();

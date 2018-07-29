@@ -25,7 +25,8 @@ class glArchivItem_Bitmap;
 class DummyRenderer : public IRenderer
 {
 public:
-    void DrawRect3D(const Rect&, bool, glArchivItem_Bitmap&, glArchivItem_Bitmap*, bool, unsigned) override {}
+    void Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) override {}
+    void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color) override {}
     void DrawRect(const Rect&, unsigned) override {}
     void DrawLine(DrawPoint, DrawPoint, unsigned, unsigned) override {}
 };

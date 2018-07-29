@@ -166,7 +166,7 @@ void ctrlList::Draw_()
         return;
 
     // Box malen
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, 2);
+    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
 
     // Scrolleiste zeichnen
     DrawControls();
