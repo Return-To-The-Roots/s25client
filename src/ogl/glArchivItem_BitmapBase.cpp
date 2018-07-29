@@ -31,10 +31,10 @@
  *  OpenGL-Textur des Bildes.
  */
 
-glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), filter(GL_NEAREST) {}
+glArchivItem_BitmapBase::glArchivItem_BitmapBase() : texture(0), textureSize_(0, 0), interpolateTexture_(true) {}
 
 glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& item)
-    : ArchivItem_BitmapBase(item), texture(0), textureSize_(item.textureSize_), filter(item.filter)
+    : ArchivItem_BitmapBase(item), texture(0), textureSize_(item.textureSize_), interpolateTexture_(item.interpolateTexture_)
 {}
 
 glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
@@ -58,19 +58,15 @@ unsigned glArchivItem_BitmapBase::GetTexture()
 void glArchivItem_BitmapBase::DeleteTexture()
 {
     VIDEODRIVER.DeleteTexture(texture);
-    // glDeleteTextures(1, (const GLuint*)&texture);
     texture = 0;
 }
 
-/**
- *  Setzt den Texturfilter auf einen bestimmten Wert.
- */
-void glArchivItem_BitmapBase::setFilter(unsigned filter)
+void glArchivItem_BitmapBase::setInterpolateTexture(bool interpolate)
 {
-    if(this->filter == filter)
+    if(interpolateTexture_ == interpolate)
         return;
 
-    this->filter = filter;
+    interpolateTexture_ = interpolate;
 
     // neugenerierung der Textur anstoßen
     if(texture != 0)
@@ -101,6 +97,7 @@ void glArchivItem_BitmapBase::GenerateTexture()
 
     VIDEODRIVER.BindTexture(texture);
 
+    GLint filter = interpolateTexture_ ? GL_NEAREST : GL_LINEAR;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 

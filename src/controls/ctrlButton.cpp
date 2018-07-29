@@ -22,7 +22,6 @@
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "ogl/glArchivItem_Bitmap.h"
-#include <glad/glad.h>
 
 ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const std::string& tooltip)
     : Window(parent, id, pos, size), ctrlBaseTooltip(tooltip), tc(tc), state(BUTTON_UP), hasBorder(true), isChecked(false),

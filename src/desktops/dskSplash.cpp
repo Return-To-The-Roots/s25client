@@ -29,11 +29,10 @@
 #include "ingameWindows/iwMusicPlayer.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "libutil/error.h"
-#include <glad/glad.h>
 
 dskSplash::dskSplash(glArchivItem_Bitmap* splashImg) : Desktop(splashImg), isLoading(false), isLoaded(false)
 {
-    background->setFilter(GL_LINEAR);
+    background->setInterpolateTexture(false);
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 }
 

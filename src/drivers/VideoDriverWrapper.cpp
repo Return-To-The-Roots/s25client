@@ -56,13 +56,6 @@ VideoDriverWrapper::~VideoDriverWrapper()
     UnloadDriver();
 }
 
-/**
- *  Wählt und lädt einen Displaytreiber.
- *
- *  @param[in] second @p true wenn 2te Chance aktiv, @p false wenn 2te Chance ausgeführt werden soll.
- *
- *  @return liefert @p true bei Erfolg, @p false bei Fehler
- */
 bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 {
     loadedFromDll = existingDriver == NULL;

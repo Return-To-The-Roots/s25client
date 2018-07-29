@@ -19,7 +19,6 @@
 #include "Minimap.h"
 #include "Loader.h"
 #include "libsiedler2/PixelBufferARGB.h"
-#include <glad/glad.h>
 
 Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize) {}
 
@@ -41,7 +40,7 @@ void Minimap::CreateMapTexture()
         }
     }
 
-    map.setFilter(GL_LINEAR);
+    map.setInterpolateTexture(false);
     map.create(buffer);
 }
 

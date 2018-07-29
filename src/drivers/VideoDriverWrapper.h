@@ -38,6 +38,7 @@ public:
     ~VideoDriverWrapper() override;
 
     /// Loads a new driver. Takes the existing one, if given
+    /// Do not use this class unless this returned true!
     bool LoadDriver(IVideoDriver* existingDriver = NULL);
     void UnloadDriver();
     IVideoDriver* GetDriver() const { return videodriver; }

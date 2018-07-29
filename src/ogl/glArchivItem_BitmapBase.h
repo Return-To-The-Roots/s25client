@@ -35,7 +35,7 @@ public:
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
     virtual void DeleteTexture();
     /// Setzt den Texturfilter auf einen bestimmten Wert.
-    virtual void setFilter(unsigned filter);
+    virtual void setInterpolateTexture(bool interpolate);
 
     /// Return the "Null point"
     DrawPoint GetOrigin() const { return DrawPoint(nx_, ny_); }
@@ -46,9 +46,9 @@ private:
     /// Erzeugt die Textur.
     void GenerateTexture();
 
-    unsigned texture;    /// Das GL-Textur-Handle
-    Extent textureSize_; /// The size of the texture. Only valid when texture exists
-    unsigned filter;     /// Der aktuell gewählte Texturfilter
+    unsigned texture;         /// Das GL-Textur-Handle
+    Extent textureSize_;      /// The size of the texture. Only valid when texture exists
+    bool interpolateTexture_; /// Whether the texture (color) should be interpolated or taken from the nearest pixel
 
 protected:
     /// Returns the internal texure format
