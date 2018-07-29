@@ -25,6 +25,7 @@
 #include <string>
 
 class IVideoDriver;
+class IRenderer;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -56,6 +57,8 @@ public:
     unsigned GenerateTexture();
     void BindTexture(unsigned t);
     void DeleteTexture(unsigned t);
+
+    IRenderer* GetRenderer() { return renderer_; }
 
     /// Swapped den Buffer
     bool SwapBuffers();
@@ -111,6 +114,7 @@ private:
 private:
     DriverWrapper driver_wrapper;
     IVideoDriver* videodriver;
+    IRenderer* renderer_;
     bool loadedFromDll;
     /// (Some) OpenGL can be disabled for testing
     bool isOglEnabled_;

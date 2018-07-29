@@ -24,11 +24,12 @@
 #include "driver/VideoInterface.h"
 #include "helpers/roundToNextPow2.h"
 #include "mygettext/mygettext.h"
+#include "ogl/DummyRenderer.h"
+#include "ogl/OpenGLRenderer.h"
 #include "openglCfg.hpp"
 #include "libutil/Log.h"
 #include "libutil/error.h"
 #include <boost/static_assert.hpp>
-#include <algorithm>
 #include <ctime>
 #include <glad/glad.h>
 #include <sstream>
@@ -45,10 +46,9 @@ typedef int (*PFNWGLSWAPINTERVALFARPROC)(int);
 
 PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = NULL;
 
-VideoDriverWrapper::VideoDriverWrapper() : videodriver(NULL), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
-{
-    std::fill(texture_list.begin(), texture_list.end(), 0);
-}
+VideoDriverWrapper::VideoDriverWrapper()
+    : videodriver(NULL), renderer_(NULL), loadedFromDll(false), isOglEnabled_(false), texture_current(0)
+{}
 
 VideoDriverWrapper::~VideoDriverWrapper()
 {
@@ -94,6 +94,10 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
     LOG.write(_("Loaded video driver \"%1%\"\n")) % GetName();
 
     isOglEnabled_ = videodriver->IsOpenGL();
+    if(isOglEnabled_)
+        renderer_ = new OpenGLRenderer;
+    else
+        renderer_ = new DummyRenderer;
 
     return true;
 }

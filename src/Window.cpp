@@ -24,10 +24,10 @@
 #include "driver/MouseCoords.h"
 #include "drivers/ScreenResizeEvent.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "ogl/IRenderer.h"
 #include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <cstdarg>
-#include <glad/glad.h>
 
 Window::Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size)
     : parent_(parent), id_(id), pos_(pos), size_(size), active_(false), visible_(true), scale_(false), isInMouseRelay(false),
@@ -463,120 +463,22 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint
  */
 void Window::Draw3D(const Rect& rect, TextureColor tc, unsigned short type, bool illuminated, bool drawContent, unsigned color)
 {
-    const Extent rectSize = rect.getSize();
-    if(rectSize.x < 4 || rectSize.y < 4 || tc == TC_INVISIBLE)
+    if(tc == TC_INVISIBLE)
         return;
 
-    DrawPoint origin = rect.getOrigin();
-    // Position of the horizontal and vertical image border
-    DrawPoint horImgBorderPos(origin);
-    DrawPoint vertImgBorderPos(origin);
-
-    if(type > 1)
-    {
-        // For deepened effect the img border is at bottom and right
-        // else it stays top and left
-        horImgBorderPos += DrawPoint(0, rectSize.y - 2);
-        vertImgBorderPos += DrawPoint(rectSize.x - 2, 0);
-    }
-    // Draw img borders
     glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + tc);
-    borderImg->DrawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
-    borderImg->DrawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
-
-    // Draw black borders over the img borders
-    glDisable(GL_TEXTURE_2D);
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_TRIANGLE_STRIP);
-    // Left lower point
-    DrawPoint lbPt = rect.getOrigin() + DrawPoint(rectSize);
-    if(type <= 1)
-    {
-        // Bottom line with edge in left top and right line with little edge on left top
-        glVertex2i(lbPt.x, origin.y);
-        glVertex2i(lbPt.x - 2, origin.y + 1);
-        glVertex2i(lbPt.x, lbPt.y);
-        glVertex2i(lbPt.x - 2, lbPt.y - 2);
-        glVertex2i(origin.x, lbPt.y);
-        glVertex2i(origin.x + 1, lbPt.y - 2);
-    } else
-    {
-        // Top line with edge on right and left line with edge on bottom
-        glVertex2i(origin.x, lbPt.y);
-        glVertex2i(origin.x + 2, lbPt.y - 1);
-        glVertex2i(origin.x, origin.y);
-        glVertex2i(origin.x + 2, origin.y + 2);
-        glVertex2i(lbPt.x, origin.y);
-        glVertex2i(lbPt.x - 1, origin.y + 2);
-    }
-    glEnd();
-    glEnable(GL_TEXTURE_2D);
-
-    if(!drawContent)
-        return;
-
-    if(illuminated)
-    {
-        // Modulate2x anmachen
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
-    }
-
-    DrawPoint contentPos = origin + DrawPoint(2, 2);
-    Extent contentSize(rectSize - Extent(4, 4));
-    DrawPoint contentOffset(0, 0);
-    if(type <= 1)
-    {
-        // Move the content a bit to left upper for non-deepened version
-        contentOffset = DrawPoint(2, 2);
-    }
-    unsigned texture = (type == 1) ? tc * 2 : tc * 2 + 1;
-    LOADER.GetImageN("io", texture)->DrawPart(Rect(contentPos, contentSize), contentOffset, color);
-
-    if(illuminated)
-    {
-        // Modulate2x wieder ausmachen
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    }
+    glArchivItem_Bitmap* contentImg = drawContent ? LOADER.GetImageN("io", (type == 1) ? tc * 2 : tc * 2 + 1) : NULL;
+    VIDEODRIVER.GetRenderer()->DrawRect3D(rect, type <= 1, *borderImg, contentImg, illuminated, color);
 }
-/**
- *  zeichnet ein Rechteck.
- *
- *  @param[in] x X-Koordinate
- */
+
 void Window::DrawRectangle(const Rect& rect, unsigned color)
 {
-    glDisable(GL_TEXTURE_2D);
-
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-
-    glBegin(GL_QUADS);
-    glVertex2i(rect.left, rect.top);
-    glVertex2i(rect.left, rect.bottom);
-    glVertex2i(rect.right, rect.bottom);
-    glVertex2i(rect.right, rect.top);
-    glEnd();
-
-    glEnable(GL_TEXTURE_2D);
+    VIDEODRIVER.GetRenderer()->DrawRect(rect, color);
 }
 
-/**
- *  zeichnet eine Linie.
- *
- *  @param[in] x X-Koordinate
- */
 void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color)
 {
-    glDisable(GL_TEXTURE_2D);
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
-
-    glLineWidth(width);
-    glBegin(GL_LINES);
-    glVertex2i(pt1.x, pt1.y);
-    glVertex2i(pt2.x, pt2.y);
-    glEnd();
-
-    glEnable(GL_TEXTURE_2D);
+    VIDEODRIVER.GetRenderer()->DrawLine(pt1, pt2, width, color);
 }
 
 void Window::Msg_PaintBefore()
