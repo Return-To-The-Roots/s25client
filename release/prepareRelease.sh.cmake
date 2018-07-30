@@ -3,7 +3,7 @@
 set -euxo pipefail
 
 # Editable Variables
-CMAKE_COMMAND=cmake
+CMAKE_COMMAND=@CMAKE_COMMAND@
 
 ###############################################################################
 
@@ -26,6 +26,9 @@ mecho()
 SYSTEM_NAME=@CMAKE_SYSTEM_NAME@
 SYSTEM_ARCH=@PLATFORM_ARCH@
 IS_CROSS_COMPILE=@CMAKE_CROSSCOMPILING@
+SYSROOT=@CMAKE_FIND_ROOT_PATH@
+OBJCOPY=@CMAKE_OBJCOPY@
+STRIP=@CMAKE_STRIP@
 RTTR_BINDIR=@RTTR_BINDIR@
 RTTR_EXTRA_BINDIR=@RTTR_EXTRA_BINDIR@
 RTTR_DATADIR=@RTTR_DATADIR@
@@ -36,6 +39,16 @@ RTTR_SRCDIR=@RTTR_SRCDIR@
 
 if [ -z "${RTTR_SRCDIR}" ] ; then
 	echo "RTTR_SRCDIR was not set" >&2
+	exit 1
+fi
+
+if [ -z "$(type -p $OBJCOPY)" ] ; then
+	echo "You have to install objcopy" >&2
+	exit 1
+fi
+
+if [ -z "$(type -p $STRIP)" ] ; then
+	echo "You have to install strip" >&2
 	exit 1
 fi
 
@@ -67,89 +80,18 @@ extract_debug_symbols()
 
 	if [ "$SYSTEM_NAME" == "Darwin" ]; then
 		# Can't extract symbols for apple, so just strip them
-		i686-apple-darwin10-strip -S ${DESTDIR}$FILE
+		$STRIP -S ${DESTDIR}$FILE
 		return 0
-	fi
-
-	objcopyArch=""
-	case "$SYSTEM_ARCH" in
-		i686|*86)
-			objcopyArch="i686"
-		;;
-		x86_64|*64)
-			objcopyArch="x86_64"
-		;;
-		powerpc|ppc)
-			objcopyArch="powerpc"
-		;;
-		*)
-			echo "$SYSTEM_ARCH not supported" >&2
-			return 1
-		;;
-	esac
-
-	objcopyTarget=""
-	case "$SYSTEM_NAME" in
-		Windows)
-			objcopyTarget="-w64-mingw32"
-		;;
-		Linux)
-			objcopyTarget="-pc-linux-gnu"
-		;;
-		FreeBSD)
-			objcopy="objcopy"  # no cross-build support for FreeBSD
-		;;
-		*)
-			echo "$SYSTEM_NAME not supported" >&2
-			return 1
-		;;
-	esac
-
-	# Set if not yet set
-	: ${objcopy:=${objcopyArch}${objcopyTarget}-objcopy}
-
-	if ! `${objcopy} -V >/dev/null 2>&1`; then
-		# Use fallback
-		case "$SYSTEM_NAME" in
-			Windows)
-				objcopyTarget="-pc-mingw32"
-			;;
-			Linux)
-				objcopyTarget="-linux-gnu"
-			;;
-			*)
-				echo "$SYSTEM_NAME is missing objcopy" >&2
-				return 1
-			;;
-		esac
-		objcopy="${objcopyArch}${objcopyTarget}-objcopy"
-	fi
-
-	# Set if not yet set
-	: ${objcopy:=${objcopyArch}${objcopyTarget}-objcopy}
-
-	if ! `${objcopy} -V >/dev/null 2>&1`; then
-		# Use fallback
-		case "$SYSTEM_NAME" in
-			Windows)
-				objcopyTarget="-mingw32"
-			;;
-			*)
-				echo "$SYSTEM_NAME is missing objcopy" >&2
-				return 1
-			;;
-		esac
-		objcopy="${objcopyArch}${objcopyTarget}-objcopy"
 	fi
 
 	pushd ${DESTDIR}
 	mkdir -vp dbg/$(dirname $FILE)
-	echo "${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg"
-	${objcopy} --only-keep-debug $FILE dbg/$FILE.dbg
-	echo "${objcopy} --strip-debug $FILE"
-	${objcopy} --strip-debug $FILE
-	echo "${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
-	${objcopy} --add-gnu-debuglink=dbg/$FILE.dbg $FILE
+	echo "$OBJCOPY --only-keep-debug $FILE dbg/$FILE.dbg"
+	$OBJCOPY --only-keep-debug $FILE dbg/$FILE.dbg
+	echo "$OBJCOPY --strip-debug $FILE"
+	$OBJCOPY --strip-debug $FILE
+	echo "$OBJCOPY --add-gnu-debuglink=dbg/$FILE.dbg $FILE"
+	$OBJCOPY --add-gnu-debuglink=dbg/$FILE.dbg $FILE
 	popd
 }
 
@@ -255,58 +197,51 @@ case "$SYSTEM_NAME" in
 		mv -v ${DESTDIR}share ${macOSPath}/ || exit 1
 	;;
 	Windows)
-		mingw=/usr
 		lua=""
 		case "$SYSTEM_ARCH" in
 			i686|*86)
-				if [ -d /usr/i686-w64-mingw32 ]; then
-					mingw=/usr/i686-w64-mingw32
-				elif [ -d /usr/i686-pc-mingw32 ]; then
-					mingw=/usr/i686-pc-mingw32
-				else
-					mingw=/usr/i686-mingw32
-				fi
 				lua=win32
 			;;
 			x86_64|*64)
-				if [ -d /usr/i686-w64-mingw32 ]; then
-					mingw=/usr/x86_64-w64-mingw32
-				elif [ -d /usr/i686-pc-mingw32 ]; then
-					mingw=/usr/x86_64-pc-mingw32
-				else
-					mingw=/usr/x86_64-mingw32
-				fi
 				lua=win64
 			;;
 		esac
 
 		cp -v ${RTTR_SRCDIR}/contrib/lua/${lua}/lua52.dll ${DESTDIR} || exit 1
 
-		if [ -f ${mingw}/bin/libgcc_s_sjlj-1.dll ] ; then
-			cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
-			cp -v ${mingw}/bin/libintl-8.dll ${DESTDIR} || exit 1
-
-			cp -v ${mingw}/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
-			cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
-			cp -v ${mingw}/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+		if [ -f $SYSROOT/bin/libgcc_s_sjlj-1.dll ] ; then
+			cp -v $SYSROOT/bin/libgcc_s_sjlj-1.dll ${DESTDIR} || exit 1
+			cp -v $SYSROOT/bin/libgcc_s_sjlj-1.dll ${DESTDIR}RTTR || exit 1
 		else
-			cp -v ${mingw}/bin/libgcc_s_seh-1.dll ${DESTDIR} || exit 1
-			cp -v ${mingw}/bin/libstdc++-6.dll ${DESTDIR} || exit
-
-			cp -v ${mingw}/bin/libgcc_s_seh-1.dll ${DESTDIR}RTTR || exit 1
-			cp -v ${mingw}/bin/libstdc++-6.dll ${DESTDIR}RTTR || exit
-			cp -v ${mingw}/bin/libminiupnpc.dll ${DESTDIR} || exit 1
+			cp -v $SYSROOT/bin/libgcc_s_seh-1.dll ${DESTDIR} || exit 1
+			cp -v $SYSROOT/bin/libgcc_s_seh-1.dll ${DESTDIR}RTTR || exit 1
+		fi
+		
+		if [ -f $SYSROOT/bin/libintl-8.dll ] ; then
+			cp -v $SYSROOT/bin/libintl-8.dll ${DESTDIR} || exit 1
+		fi
+		
+		if [ -f $SYSROOT/bin/libminiupnpc-5.dll ] ; then
+			cp -v $SYSROOT/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
+			cp -v $SYSROOT/bin/libminiupnpc-5.dll ${DESTDIR} || exit 1
+		else
+			cp -v $SYSROOT/bin/libminiupnpc.dll ${DESTDIR} || exit 1
+		fi
+		
+		if [ -f $SYSROOT/bin/libstdc++-6.dll ] ; then
+			cp -v $SYSROOT/bin/libstdc++-6.dll ${DESTDIR} || exit
+			cp -v $SYSROOT/bin/libstdc++-6.dll ${DESTDIR}RTTR || exit
 		fi
 
-		cp -v ${mingw}/bin/libiconv-2.dll ${DESTDIR} || exit 1
+		cp -v $SYSROOT/bin/libiconv-2.dll ${DESTDIR} || exit 1
 
-		cp -v ${mingw}/bin/SDL.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/SDL_mixer.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libogg-0.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libvorbis-0.dll ${DESTDIR} || exit 1
-		cp -v ${mingw}/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
+		cp -v $SYSROOT/bin/SDL.dll ${DESTDIR} || exit 1
+		cp -v $SYSROOT/bin/SDL_mixer.dll ${DESTDIR} || exit 1
+		cp -v $SYSROOT/bin/libogg-0.dll ${DESTDIR} || exit 1
+		cp -v $SYSROOT/bin/libvorbis-0.dll ${DESTDIR} || exit 1
+		cp -v $SYSROOT/bin/libvorbisfile-3.dll ${DESTDIR} || exit 1
 
-		cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
+		cp -v $SYSROOT/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
 
 		rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2 || true
 	;;
