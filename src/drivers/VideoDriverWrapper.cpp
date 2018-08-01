@@ -448,7 +448,6 @@ bool VideoDriverWrapper::LoadAllExtensions()
     wglSwapIntervalEXT = pto2ptf<PFNWGLSWAPINTERVALFARPROC>(loadExtension("glXSwapIntervalSGI"));
 #endif
     GLOBALVARS.hasVSync = wglSwapIntervalEXT != NULL;
-    GLOBALVARS.hasVBO = true;
 
     return true;
 }

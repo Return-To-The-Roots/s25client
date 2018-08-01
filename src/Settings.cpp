@@ -66,7 +66,7 @@ bool Settings::LoadDefaults()
         video.fullscreen = false;
     }
     video.vsync = 0;
-    video.vbo = false;
+    video.vbo = true;
     video.shared_textures = true;
     // }
 

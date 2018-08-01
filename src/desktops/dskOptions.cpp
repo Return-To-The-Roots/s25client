@@ -179,10 +179,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupGrafik->AddText(54, DrawPoint(80, 230), _("Vertex Buffer Objects:"), COLOR_YELLOW, 0, NormalFont);
     optiongroup = groupGrafik->AddOptionGroup(55, ctrlOptionGroup::CHECK);
 
-    if(!GLOBALVARS.hasVBO) // VBO unterstützt?
-        optiongroup->AddText(56, DrawPoint(280, 230), _("not supported"), COLOR_YELLOW, 0, NormalFont);
-    else
-        optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
+    optiongroup->AddTextButton(56, DrawPoint(280, 225), Extent(190, 22), TC_GREY, _("On"), NormalFont);
     optiongroup->AddTextButton(57, DrawPoint(480, 225), Extent(190, 22), TC_GREY, _("Off"), NormalFont);
 
     // "Grafiktreiber"
@@ -311,10 +308,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     // "VBO" setzen
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(55);
-    if(GLOBALVARS.hasVBO)
-        optiongroup->SetSelection((SETTINGS.video.vbo ? 56 : 57));
-    else
-        optiongroup->SetSelection(57);
+    optiongroup->SetSelection((SETTINGS.video.vbo ? 56 : 57));
 
     optiongroup = groupGrafik->GetCtrl<ctrlOptionGroup>(75);
     optiongroup->SetSelection((SETTINGS.video.shared_textures ? 76 : 77));

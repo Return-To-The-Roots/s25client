@@ -19,6 +19,7 @@
 
 #include "Point.h"
 #include "helpers/Deleter.h"
+#include "ogl/VBO.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include "gameData/DescIdx.h"
@@ -145,10 +146,9 @@ private:
     std::vector<Triangle> gl_texcoords;
     std::vector<ColorTriangle> gl_colors;
 
-    unsigned vbo_vertices;
-    unsigned vbo_texcoords;
-    unsigned vbo_colors;
-    bool vboBuffersUsed;
+    ogl::VBO<Triangle> vbo_vertices;
+    ogl::VBO<Triangle> vbo_texcoords;
+    ogl::VBO<ColorTriangle> vbo_colors;
 
     std::vector<Borders> borders;
 

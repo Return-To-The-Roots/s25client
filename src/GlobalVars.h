@@ -25,11 +25,10 @@
 class GlobalVars : public Singleton<GlobalVars>
 {
 public:
-    GlobalVars() : notdone(true), hasVBO(false), hasVSync(false) {}
+    GlobalVars() : notdone(true), hasVSync(false) {}
 
 public:
     bool notdone;
-    bool hasVBO;
     bool hasVSync;
 };
 
