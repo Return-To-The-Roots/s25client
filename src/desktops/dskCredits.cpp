@@ -23,11 +23,13 @@
 #include "controls/ctrlButton.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
 #include "ogl/MusicItem.h"
 #include "ogl/glArchivItem_Bob.h"
 #include "ogl/glArchivItem_Font.h"
 #include "gameData/JobConsts.h"
+#include "gameData/WorldDescription.h"
 #include <boost/array.hpp>
 #include <cstdlib>
 
@@ -149,9 +151,14 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0))
     entry.lines.push_back(_("Thank you!"));
     entries.push_back(entry);
 
+    WorldDescription worldDesc;
+    GameDataLoader gdLoader(worldDesc);
+    if(!gdLoader.Load())
+        throw std::runtime_error("Failed to load game data");
+
     std::vector<bool> nations(NUM_NATIVE_NATS, true);
 
-    LOADER.LoadFilesAtGame(0, false, nations);
+    LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations);
 
     this->itCurEntry = entries.begin();
 
