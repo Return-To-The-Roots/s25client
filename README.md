@@ -18,6 +18,17 @@ Coverage:
  / 
 [![codecov](https://codecov.io/gh/Return-To-The-Roots/s25client/branch/master/graph/badge.svg)](https://codecov.io/gh/Return-To-The-Roots/s25client)
 
+# How to install
+
+- Download the game for your OS at [siedler25.org](https://www.siedler25.org/index.php?com=dynamic&mod=2)
+    - stable: Usually more stable
+    - nightly: Latest features and bug fixes, but might be broken sometimes
+- Extract into a folder of your choice
+- Locate the file `put your S2-Installation in here` in that folder (usually at the root or in S2)
+- Copy the DATA and GFX folder from the original The Settlers II Gold into the folder containing the above file
+- Start `rttr.bat`/`rttr.sh` or the bundle (OSX only) to auto-update and start the game
+    - Alternatively start `s25client` directly, but updates and music might be missing
+
 # How to build
 
 ## On Linux or Darwin/MacOSX
@@ -114,4 +125,4 @@ Note that due to the use of submodules you always need to `git pull && git submo
 
 --
 
-for advanced info or help see INSTALL file in the [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info 
+for advanced info or help see [FAQ in the wiki](https://github.com/Return-To-The-Roots/s25client/wiki/How-to-install-RttR) or http://www.rttr.info 
