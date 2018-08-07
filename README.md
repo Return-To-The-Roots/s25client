@@ -48,7 +48,7 @@ All of them can be installed via homebrew
 ```
 git clone --recursive https://github.com/Return-To-The-Roots/s25client s25client
 cd s25client
-mkdir build && cd build
+mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ```

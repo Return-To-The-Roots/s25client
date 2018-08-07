@@ -136,7 +136,7 @@ script:
     - lcov --version 2>/dev/null || true
     # Fail if any command failed
     - set -e
-    - mkdir build && cd build
+    - mkdir -p build && cd build
     - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DRTTR_ENABLE_WERROR=ON -DRTTR_EDITOR_ADMINMODE=ON -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" -G "Unix Makefiles" ${ADDITIONAL_CMAKE_FLAGS}
     # Travis uses 2 cores
     - make -j2

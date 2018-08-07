@@ -24,7 +24,7 @@ build/Makefile:
 	dh_testdir
 
 	# Add here commands to configure the package.
-	mkdir build && cd build && \
+	mkdir -p build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr $(CMAKE_VERBOSE) $(CMAKE_ARCH) $(CMAKE_RTTR_VERSION) -DCMAKE_C_FLAGS="$(CFLAGS)" -DCMAKE_LD_FLAGS="-Wl,-z,defs" -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" -DCMAKE_SKIP_RPATH=ON
 
 # and make

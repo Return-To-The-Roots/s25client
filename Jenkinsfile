@@ -40,7 +40,7 @@ def transformIntoStep(arch, wspwd) {
                                   MAKE_TARGET=create_stable
                                   ADDITIONAL_CMAKE_FLAGS=-DRTTR_VERSION=\$(cat ../.stable-version)
                               fi
-                              BUILD_CMD="mkdir build && cd build && \
+                              BUILD_CMD="mkdir -p build && cd build && \
                                 cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \$TOOLCHAIN \
                                 -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
                                 \$ADDITIONAL_CMAKE_FLAGS && \
