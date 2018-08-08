@@ -30,7 +30,14 @@ def transformIntoStep(arch, wspwd) {
                               VOLUMES="-v /srv/apache2/siedler25.org/nightly:/www \
                                   -v /srv/backup/www/s25client:/archive \
                                   "
-                              ADDITIONAL_CMAKE_FLAGS=
+                              
+                              BUILD_TYPE=RelWithDebInfo
+                              if [[ "${arch}" == "apple.universal" ]]; then
+                                  # Current apple compiler doesn't work with debug info and we can't extract them anyway
+                                  BUILD_TYPE=Release
+                              fi
+                              # Auto detect version and revision
+                              ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=OFF -DRTTR_REVISION=OFF"
 
                               if [[ "${env.BRANCH_NAME}" == PR-* ]] ; then
                                   VOLUMES=""
@@ -38,21 +45,19 @@ def transformIntoStep(arch, wspwd) {
                                   MAKE_TARGET=create_nightly
                               elif [ "${env.BRANCH_NAME}" == "stable" ] ; then
                                   MAKE_TARGET=create_stable
-                                  ADDITIONAL_CMAKE_FLAGS=-DRTTR_VERSION=\$(cat ../.stable-version)
+                                  ADDITIONAL_CMAKE_FLAGS="-DRTTR_VERSION=\$(cat ../.stable-version) -DRTTR_REVISION=OFF"
                               fi
-                              BUILD_CMD="mkdir -p build && cd build && \
-                                cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo \$TOOLCHAIN \
-                                -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
-                                \$ADDITIONAL_CMAKE_FLAGS && \
-                                make \$MAKE_TARGET"
-                              echo "Executing: \$BUILD_CMD"
                               docker run --rm -u jenkins -v \$(pwd):/workdir \
                                                          -v ~/.ssh:/home/jenkins/.ssh \
                                                          -v ~/.ccache:/workdir/.ccache \
                                                          \$VOLUMES \
                                                          --name "${env.BUILD_TAG}-${arch}" \
                                                          git.ra-doersch.de:5005/rttr/docker-precise:master -c \
-                                                         "\$BUILD_CMD"
+                                                        "mkdir -p build && cd build && \
+                                                        cmake .. -DCMAKE_BUILD_TYPE=\$BUILD_TYPE \$TOOLCHAIN \
+                                                        -DRTTR_ENABLE_WERROR=ON -DRTTR_USE_STATIC_BOOST=ON -DRTTR_EXTRA_BINDIR=libexec/s25rttr \
+                                                        \$ADDITIONAL_CMAKE_FLAGS && \
+                                                        make \$MAKE_TARGET"
                               EXIT=\$?
                               echo "Exiting with error code \$EXIT"
                               exit \$EXIT

@@ -188,8 +188,8 @@ case "$SYSTEM_NAME" in
 		cp -r ${srcFrameworksPath}/SDL_mixer.framework ${frameworksPath} || exit 1
 
 		# remove headers and additional libraries from the frameworks
-		find ${frameworksPath}/ -name Headers -exec rm -rf {} \;
-		find ${frameworksPath}/ -name Resources -exec rm -rf {} \;
+		find ${frameworksPath}/ -name Headers -exec rm -rf {} \; || true
+		find ${frameworksPath}/ -name Resources -exec rm -rf {} \; || true
 
 		SDK=/Developer/SDKs/MacOSX10.5.sdk
 		if [ ! -d $SDK ] ; then
@@ -226,9 +226,9 @@ case "$SYSTEM_NAME" in
 		chmod +x ${macOSPath}/libexec/s25rttr/* || exit 1
 
 		# remove dirs if empty
-		rmdir ${DESTDIR}bin
-		rmdir ${DESTDIR}lib
-		rmdir ${DESTDIR}libexec
+		rmdir ${DESTDIR}bin || true
+		rmdir ${DESTDIR}lib || true
+		rmdir ${DESTDIR}libexec || true
 
 		# RTTR-Ordner kopieren
 		mv -v ${DESTDIR}share ${macOSPath}/ || exit 1
@@ -270,7 +270,9 @@ case "$SYSTEM_NAME" in
 		cp -v ${mingw}/bin/libcurl-4.dll ${DESTDIR}RTTR || exit 1
 		cp -v ${mingw}/bin/zlib1.dll ${DESTDIR}RTTR || exit 1
 
-		rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
+        if [ -d ${DESTDIR}S2 ]; then
+            rmdir --ignore-fail-on-non-empty -v ${DESTDIR}S2
+        fi
 	;;
 	Linux)
 		miniupnpc=/usr/lib/libminiupnpc.so

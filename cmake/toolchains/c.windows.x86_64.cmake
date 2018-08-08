@@ -9,6 +9,8 @@ find_program(CMAKE_RC_COMPILER NAMES ${COMPILER_PREFIX}-windres)
 
 # set search prefix
 SET(CMAKE_FIND_ROOT_PATH "/usr/${COMPILER_PREFIX}")
+# CMake <= 3.0 workaround -.-
+set(ENV{SDLDIR} ${CMAKE_FIND_ROOT_PATH})
 
 # search for programs in the build host directories
 # for libraries and headers in the target directories

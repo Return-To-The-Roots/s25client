@@ -350,7 +350,7 @@ IF(NOT CMAKE_HOST_WIN32 AND PLATFORM_ARCH)
 
 	# Create nightly release
 	ADD_CUSTOM_TARGET(create_nightly
-					  COMMAND "${CMAKE_CURRENT_BINARY_DIR_DIR}/create_release.sh" nightly
+					  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/create_release.sh" nightly
 					  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 

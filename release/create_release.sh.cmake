@@ -24,14 +24,14 @@ error()
 	exit 1
 }
 
-if [[ $# != 1 }] ; then
+if [[ $# != 1 ]] ; then
 	usage
 fi
 
 TYPE=$1
 
 # Configured by CMake
-SRCDRC=@CMAKE_SOURCE_DIR@
+SRCDIR=@CMAKE_SOURCE_DIR@
 PLATFORM_NAME=@PLATFORM_NAME@
 PLATFORM_ARCH=@PLATFORM_ARCH@
 
@@ -70,12 +70,12 @@ echo "Building $TYPE for $ARCH in $SRCDIR"
 make || error
 
 # get version
-VERSION=$(grep WINDOW_VERSION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
+VERSION=$(grep WINDOW_VERSION rttrConfig/build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
 # get revision
-REVISION=$(grep WINDOW_REVISION build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
+REVISION=$(grep WINDOW_REVISION rttrConfig/build_version_defines.h | cut -d ' ' -f 3 | cut -d \" -f 2)
 
-if [[ $1 =~ "^[0-9]+$" ]] && [ $REVISION -eq 0 ] ; then
+if [ $REVISION -eq 0 ] ; then
 	echo "error: revision is null"
 	error
 fi
@@ -90,14 +90,8 @@ unpackedPath=$ARCHNEWDIR/unpacked/s25rttr_$VERSION
 
 rm -rf "${unpackedPath}"
 
-# save build version
-cp -v build_version_defines.h build_version_defines.h.bak
-
 # Install into this folder
-cmake . -DCMAKE_INSTALL_PREFIX="${unpackedPath}" || error
-
-# restore build version, so that it stays definitly the same
-cp -v build_version_defines.h.bak build_version_defines.h
+cmake . -DCMAKE_INSTALL_PREFIX="${unpackedPath}" -DRTTR_VERSION="${VERSION}" -DRTTR_REVISION="${REVISION}" || error
 
 make install || error
 DESTDIR="${unpackedPath}" ./prepareRelease.sh
@@ -108,11 +102,10 @@ fi
 
 # do they differ?
 CHANGED=1
-if [ "$FORCE" = "1" ] ; then
+if [ "${FORCE:-0}" = "1" ] ; then
 	echo "FORCE is set - forcing update"
 elif [ -d $ARCHDIR/unpacked/s25rttr_$VERSION ] ; then
-	diff -qrN $ARCHDIR/unpacked/s25rttr_$VERSION $unpackedPath
-	CHANGED=$?
+	diff -qrN $ARCHDIR/unpacked/s25rttr_$VERSION $unpackedPath && CHANGED=0 || CHANGED=1
 fi
 
 FORMAT=".tar.bz2"
@@ -179,10 +172,9 @@ if [ $CHANGED -eq 1 ] || [ ! -f $ARCHDIR/packed/s25rttr$FORMAT ] ; then
 	fi
 
 	# do upload
-	if [ ! "$NOUPLOAD" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
-		if [ -z "$UPLOADTO" ] ; then
-			UPLOADTO="$VERSION/"
-		fi
+    UPLOADTARGET="${UPLOADTARGET:-}"
+	if [ ! "${NOUPLOAD:-0}" = "1" ] && [ ! -z "$UPLOADTARGET" ] ; then
+        UPLOADTO="${UPLOADTO:-$VERSION/}"
 		
 		echo "uploading file to $UPLOADTARGET$UPLOADTO"
 		ssh $UPLOADHOST "mkdir -vp $UPLOADPATH$UPLOADTO" || echo "mkdir $UPLOADPATH$UPLOADTO failed"
