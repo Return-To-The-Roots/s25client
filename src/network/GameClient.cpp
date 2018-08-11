@@ -1352,7 +1352,7 @@ void GameClient::OnGameStart()
 {
     if(state == CS_LOADED)
     {
-        GAMEMANAGER.ResetAverageFPS();
+        GAMEMANAGER.ResetAverageGFPS();
         framesinfo.lastTime = FramesInfo::UsedClock::now();
         state = CS_GAME;
         if(ci)

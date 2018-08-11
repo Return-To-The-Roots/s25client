@@ -98,12 +98,6 @@ void WindowManager::Draw()
     curDesktop->Msg_PaintAfter();
 }
 
-void WindowManager::UpdateFps(unsigned newFps)
-{
-    if(curDesktop)
-        curDesktop->UpdateFps(newFps);
-}
-
 /**
  *  liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
  *

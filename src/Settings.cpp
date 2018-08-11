@@ -31,13 +31,11 @@
 #include "libutil/error.h"
 #include <boost/filesystem/operations.hpp>
 
-const unsigned Settings::SETTINGS_VERSION = 12;
-const unsigned Settings::SETTINGS_SECTIONS = 11;
-const std::string Settings::SETTINGS_SECTION_NAMES[] = {"global", "video", "language",  "driver", "sound", "lobby",
-                                                        "server", "proxy", "interface", "ingame", "addons"};
+const int Settings::VERSION = 13;
+const boost::array<std::string, 11> Settings::SECTION_NAMES = {
+  {"global", "video", "language", "driver", "sound", "lobby", "server", "proxy", "interface", "ingame", "addons"}};
 
-const unsigned char Settings::NUM_SCREEN_REFRESH_RATESS = 14;
-const unsigned short Settings::SCREEN_REFRESH_RATES[] = {0, 1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240};
+const boost::array<short, 13> Settings::SCREEN_REFRESH_RATES = {{-1, 25, 30, 50, 60, 75, 80, 100, 120, 150, 180, 200, 240}};
 
 Settings::Settings() //-V730
 {}
@@ -136,7 +134,7 @@ bool Settings::Load()
 {
     libsiedler2::Archiv settings;
     std::string settingsPath = RTTRCONFIG.ExpandPath(FILE_PATHS[0]);
-    if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SETTINGS_SECTIONS)
+    if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() != SECTION_NAMES.size())
     {
         s25util::warning(std::string("No or corrupt \"") + settingsPath + "\" found, using default values.");
         return LoadDefaults();
@@ -158,13 +156,14 @@ bool Settings::Load()
 
         // ist eine der Kategorien nicht vorhanden?
         if(!iniGlobal || !iniVideo || !iniLanguage || !iniDriver || !iniSound || !iniLobby || !iniServer || !iniProxy || !iniInterface
-           || !iniIngame || !iniAddons ||
-           // stimmt die Settingsversion?
-           ((unsigned)iniGlobal->getValueI("version") != SETTINGS_VERSION))
+           || !iniIngame || !iniAddons)
         {
-            // nein, dann Standardeinstellungen laden
-            s25util::warning(settingsPath + " found, but its corrupted or has wrong version. Loading default values.");
-            return LoadDefaults();
+            throw std::runtime_error("Missing section");
+        }
+        // stimmt die Settingsversion?
+        if(iniGlobal->getValueI("version") != VERSION)
+        {
+            throw std::runtime_error("Wrong version");
         }
 
         // global
@@ -278,9 +277,9 @@ bool Settings::Load()
         }
         // }
 
-    } catch(s25util::ConversionError& e)
+    } catch(std::runtime_error& e)
     {
-        s25util::warning(std::string("Corrupt \"") + settingsPath + "\" found, using default values. Error: " + e.what());
+        s25util::warning(std::string("Could not use settings from \"") + settingsPath + "\", using default values. Error: " + e.what());
         return LoadDefaults();
     }
 
@@ -292,9 +291,9 @@ bool Settings::Load()
 void Settings::Save()
 {
     libsiedler2::Archiv settings;
-    settings.alloc(SETTINGS_SECTIONS);
-    for(unsigned i = 0; i < SETTINGS_SECTIONS; ++i)
-        settings.set(i, new libsiedler2::ArchivItem_Ini(SETTINGS_SECTION_NAMES[i]));
+    settings.alloc(SECTION_NAMES.size());
+    for(unsigned i = 0; i < SECTION_NAMES.size(); ++i)
+        settings.set(i, new libsiedler2::ArchivItem_Ini(SECTION_NAMES[i]));
 
     libsiedler2::ArchivItem_Ini* iniGlobal = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("global"));
     libsiedler2::ArchivItem_Ini* iniVideo = static_cast<libsiedler2::ArchivItem_Ini*>(settings.find("video"));
@@ -314,7 +313,7 @@ void Settings::Save()
 
     // global
     // {
-    iniGlobal->setValue("version", SETTINGS_VERSION);
+    iniGlobal->setValue("version", VERSION);
     iniGlobal->setValue("gameversion", RTTR_Version::GetRevision());
     iniGlobal->setValue("submit_debug_data", global.submit_debug_data);
     iniGlobal->setValue("use_upnp", global.use_upnp);

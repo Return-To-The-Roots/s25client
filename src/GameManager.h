@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "FrameCounter.h"
 #include "libutil/Singleton.h"
 
 // Die verschiedenen Cursor mit ihren Indizes in resource.idx
@@ -46,24 +47,10 @@ public:
     bool ShowMenu();
 
     /// Average FPS Zähler zurücksetzen.
-    void ResetAverageFPS()
-    {
-        run_time = 0;
-        frame_count = 0;
-    }
-
-    unsigned GetRuntime() { return run_time; }
-
-    unsigned GetNumFrames() { return frame_count; }
-
-    unsigned GetAverageFPS()
-    {
-        if(run_time == 0)
-            return 0;
-        return (frame_count / run_time);
-    }
-
-    unsigned GetFPS() { return framerate; }
+    void ResetAverageGFPS();
+    FrameCounter::clock::duration GetRuntime() { return gfCounter_.getCurIntervalLength(); }
+    unsigned GetNumFrames() { return gfCounter_.getCurNumFrames(); }
+    unsigned GetAverageGFPS() { return gfCounter_.getCurFrameRate(); }
 
     void SetCursor(CursorType cursor = CURSOR_HAND, bool once = false);
 
@@ -71,12 +58,8 @@ private:
     bool ShowSplashscreen();
     void DrawCursor();
 
-    unsigned frames;
-    unsigned frame_count;
-    unsigned framerate;
-    unsigned frame_time;
-    unsigned run_time;
-    unsigned last_time;
+    FrameCounter gfCounter_;
+
     unsigned skipgf_last_time;
     unsigned skipgf_last_report_gf;
     CursorType cursor_;

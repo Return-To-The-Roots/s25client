@@ -27,10 +27,8 @@ class glArchivItem_Bitmap;
 /// Abstracts away the used algorithms
 class IRenderer
 {
-protected:
-    virtual ~IRenderer(){};
-
 public:
+    virtual ~IRenderer(){};
     /// Draw a border around rect with 3D effect
     /// @param elevated true for elevated, false for deepened effect
     /// @param texture Texture to use

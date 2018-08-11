@@ -141,6 +141,8 @@ dskGameInterface::dskGameInterface(boost::shared_ptr<Game> game, bool initOGL)
     InitPlayer();
     if(initOGL)
         worldViewer.InitTerrainRenderer();
+
+    VIDEODRIVER.setTargetFramerate(SETTINGS.video.vsync); // Use requested setting for ingame
 }
 
 void dskGameInterface::InitPlayer()

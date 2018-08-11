@@ -17,6 +17,7 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "VideoDriverWrapper.h"
+#include "FrameCounter.h"
 #include "GlobalVars.h"
 #include "RTTR_Version.h"
 #include "Settings.h"
@@ -88,9 +89,11 @@ bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver /*= NULL*/)
 
     isOglEnabled_ = videodriver->IsOpenGL();
     if(isOglEnabled_)
-        renderer_ = new OpenGLRenderer;
+        renderer_.reset(new OpenGLRenderer);
     else
-        renderer_ = new DummyRenderer;
+        renderer_.reset(new DummyRenderer);
+    frameCtr_.reset(new FrameCounter);
+    frameLimiter_.reset(new FrameLimiter);
 
     return true;
 }
@@ -146,8 +149,7 @@ bool VideoDriverWrapper::CreateScreen(const unsigned short screen_width, const u
     WINDOWMANAGER.Msg_ScreenResize(Extent(screen_width, screen_height));
 
     // VSYNC ggf abschalten/einschalten
-    if(GLOBALVARS.hasVSync)
-        setVsync(SETTINGS.video.vsync == 1);
+    setHwVSync(SETTINGS.video.vsync == 0);
 
     return true;
 }
@@ -212,10 +214,16 @@ bool VideoDriverWrapper::DestroyScreen()
     return true;
 }
 
-void VideoDriverWrapper::setVsync(bool enabled)
+void VideoDriverWrapper::setTargetFramerate(int target)
 {
-    if(wglSwapIntervalEXT)
-        wglSwapIntervalEXT(enabled ? 1 : 0);
+    frameLimiter_->setTargetFramerate(target);
+    if(!setHwVSync(target == 0) && target == 0) // Fallback if no HW vsync but was requested
+        frameLimiter_->setTargetFramerate(60);
+}
+
+unsigned VideoDriverWrapper::GetFPS() const
+{
+    return frameCtr_->getFrameRate();
 }
 
 /**
@@ -307,15 +315,18 @@ KeyEvent VideoDriverWrapper::GetModKeyState() const
     return ke;
 }
 
-bool VideoDriverWrapper::SwapBuffers()
+void VideoDriverWrapper::SwapBuffers()
 {
     if(!videodriver)
     {
         s25util::fatal_error("No video driver selected!\n");
-        return false;
+        return;
     }
-
-    return videodriver->SwapBuffers();
+    frameLimiter_->sleepTillNextFrame(FrameCounter::clock::now());
+    videodriver->SwapBuffers();
+    FrameCounter::clock::time_point now = FrameCounter::clock::now();
+    frameLimiter_->update(now);
+    frameCtr_->update(now);
 }
 
 void VideoDriverWrapper::ClearScreen()
@@ -355,6 +366,13 @@ bool VideoDriverWrapper::Initialize()
     SwapBuffers();
 
     return true;
+}
+
+bool VideoDriverWrapper::setHwVSync(bool enabled)
+{
+    if(!wglSwapIntervalEXT)
+        return false;
+    return wglSwapIntervalEXT(enabled ? 1 : 0) != 0;
 }
 
 /**

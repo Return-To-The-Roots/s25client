@@ -1,4 +1,4 @@
-// Copyright (c) 2005 - 2017 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
 //
 // This file is part of Return To The Roots.
 //
@@ -19,8 +19,8 @@
 
 #pragma once
 
-#ifdef _WIN32
 #include <ctime>
+#ifdef _WIN32
 
 #ifndef HAVE_STRUCT_TIMESPEC
 struct timespec

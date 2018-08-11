@@ -36,7 +36,6 @@ public:
     virtual void Msg_WindowClosed(IngameWindow& wnd){};
     /// Show or hide the fps
     void SetFpsDisplay(bool show);
-    void UpdateFps(unsigned newFps);
 
     /// ID of the fps display text
     static const unsigned fpsDisplayId;
@@ -45,6 +44,11 @@ protected:
     void Draw_() override;
 
     glArchivItem_Bitmap* background;
+
+private:
+    void UpdateFps(unsigned newFps);
+
+    unsigned lastFPS_;
 };
 
 #endif // !DESKTOP_H_INCLUDED

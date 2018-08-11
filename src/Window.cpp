@@ -460,8 +460,13 @@ ctrlPreviewMinimap* Window::AddPreviewMinimap(const unsigned id, const DrawPoint
 
 void Window::Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted, bool illuminated, unsigned contentColor)
 {
+    const Extent rectSize = rect.getSize();
+    if(rectSize.x < 4 || rectSize.y < 4)
+        return;
     Draw3DBorder(rect, tc, elevated);
-    Draw3DContent(rect, tc, elevated, highlighted, illuminated, contentColor);
+    // Move content inside border
+    Rect contentRect(rect.getOrigin() + Position(2, 2), rectSize - Extent(4, 4));
+    Draw3DContent(contentRect, tc, elevated, highlighted, illuminated, contentColor);
 }
 
 void Window::Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated)

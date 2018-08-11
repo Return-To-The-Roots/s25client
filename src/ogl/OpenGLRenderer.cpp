@@ -75,10 +75,6 @@ void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_
 
 void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated, unsigned color)
 {
-    const Extent rectSize = rect.getSize();
-    if(rectSize.x < 4 || rectSize.y < 4)
-        return;
-
     if(illuminated)
     {
         // Modulate2x anmachen
@@ -86,15 +82,13 @@ void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem
         glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 2.0f);
     }
 
-    DrawPoint contentPos = rect.getOrigin() + DrawPoint(2, 2);
-    Extent contentSize(rectSize - Extent(4, 4));
     DrawPoint contentOffset(0, 0);
     if(elevated)
     {
         // Move a bit to left upper for elevated version
         contentOffset = DrawPoint(2, 2);
     }
-    texture.DrawPart(Rect(contentPos, contentSize), contentOffset, color);
+    texture.DrawPart(rect, contentOffset, color);
 
     if(illuminated)
     {

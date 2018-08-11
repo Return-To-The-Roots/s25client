@@ -21,11 +21,15 @@
 #include "Point.h"
 #include "driver/KeyEvent.h"
 #include "driver/VideoMode.h"
+#include "helpers/Deleter.h"
 #include "libutil/Singleton.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <string>
 
 class IVideoDriver;
 class IRenderer;
+class FrameCounter;
+class FrameLimiter;
 
 ///////////////////////////////////////////////////////////////////////////////
 // DriverWrapper
@@ -51,7 +55,6 @@ public:
     void RenewViewport();
     /// zerstört das Fenster.
     bool DestroyScreen();
-    void setVsync(bool enabled);
     /// räumt die Texturen auf
     void CleanUp();
     /// erstellt eine Textur
@@ -59,10 +62,10 @@ public:
     void BindTexture(unsigned t);
     void DeleteTexture(unsigned t);
 
-    IRenderer* GetRenderer() { return renderer_; }
+    IRenderer* GetRenderer() { return renderer_.get(); }
 
     /// Swapped den Buffer
-    bool SwapBuffers();
+    void SwapBuffers();
     /// Clears the screen (glClear)
     void ClearScreen();
     // liefert den Mausstatus (sollte nur beim Zeichnen der Maus verwendet werden, für alles andere die Mausmessages
@@ -92,6 +95,10 @@ public:
     bool Run();
 
     unsigned GetTickCount();
+    /// Set framerate target (FPS)
+    /// negative for unlimited, 0 for hardware VSync
+    void setTargetFramerate(int target);
+    unsigned GetFPS() const;
 
     std::string GetName() const;
     bool IsLoaded() const { return videodriver != NULL; }
@@ -102,6 +109,7 @@ public:
 private:
     // Viewpoint und Co initialisieren
     bool Initialize();
+    bool setHwVSync(bool enabled);
 
     // prüft ob eine Extension verfügbar ist
     bool hasExtension(const std::string& extension);
@@ -115,7 +123,9 @@ private:
 private:
     DriverWrapper driver_wrapper;
     IVideoDriver* videodriver;
-    IRenderer* renderer_;
+    boost::interprocess::unique_ptr<IRenderer, Deleter<IRenderer> > renderer_;
+    boost::interprocess::unique_ptr<FrameCounter, Deleter<FrameCounter> > frameCtr_;
+    boost::interprocess::unique_ptr<FrameLimiter, Deleter<FrameLimiter> > frameLimiter_;
     bool loadedFromDll;
     /// (Some) OpenGL can be disabled for testing
     bool isOglEnabled_;
