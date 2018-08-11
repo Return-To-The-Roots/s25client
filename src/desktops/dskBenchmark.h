@@ -1,0 +1,65 @@
+// Copyright (c) 2005 - 2018 Settlers Freaks (sf-team at siedler25.org)
+//
+// This file is part of Return To The Roots.
+//
+// Return To The Roots is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Return To The Roots is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Return To The Roots. If not, see <http://www.gnu.org/licenses/>.
+
+#pragma once
+
+#ifndef dskBenchmark_h__
+#define dskBenchmark_h__
+
+#include "desktops/dskMenuBase.h"
+#include <boost/chrono.hpp>
+#include <vector>
+#include "FrameCounter.h"
+
+class dskBenchmark : public dskMenuBase
+{
+    typedef boost::chrono::steady_clock clock;
+    enum Test
+    {
+        TEST_NONE,
+        TEST_TEXT,
+        TEST_PRIMITIVES
+    };
+    struct ColoredRect
+    {
+        Rect rect;
+        unsigned clr;
+    };
+    struct ColoredLine
+    {
+        Position p1, p2;
+        unsigned width, clr;
+    };
+
+public:
+    dskBenchmark();
+
+    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void Msg_PaintAfter() override;
+
+private:
+    Test curTest_;
+    int numInstances_;
+    FrameCounter frameCtr_;
+    std::vector<ColoredRect> rects_;
+    std::vector<ColoredLine> lines_;
+
+    void startTest(Test test);
+    void finishTest();
+};
+
+#endif // dskBenchmark_h__

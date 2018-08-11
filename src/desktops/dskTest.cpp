@@ -28,6 +28,7 @@
 #include "controls/ctrlText.h"
 #include "desktops/dskMainMenu.h"
 #include "desktops/dskTextureTest.h"
+#include "dskBenchmark.h"
 #include "files.h"
 #include "ogl/FontStyle.h"
 #include "libutil/colors.h"
@@ -46,11 +47,11 @@ enum
     ID_btAnimateRepeat,
     ID_btAnimateOscillate,
     ID_btTextureTest,
-    ID_btBack,
     ID_edtTest,
     ID_txtTest,
     ID_cbTxtSize,
-    ID_btHideCtrls
+    ID_btHideCtrls,
+    ID_btShowBenchmark
 };
 }
 
@@ -108,8 +109,8 @@ dskTest::dskTest() : curBGIdx(FILE_LOAD_IDS.size())
     AddTextButton(ID_btAnimateRepeat, DrawPoint(250, 540), Extent(110, 22), TC_GREEN1, "Animate-Repeat", NormalFont);
     AddTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TC_GREEN1, "Animate-Oscillate", NormalFont);
     AddTextButton(ID_btHideCtrls, DrawPoint(480, 540), Extent(140, 22), TC_GREEN1, "Hide all elements (H)", NormalFont);
-    AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(110, 22), TC_GREEN1, "Texture test", NormalFont);
-    AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TC_RED1, _("Back"), NormalFont);
+    AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(90, 22), TC_GREEN1, "Texture test", NormalFont);
+    AddTextButton(ID_btShowBenchmark, DrawPoint(720, 540), Extent(80, 22), TC_GREEN1, "Benchmark", NormalFont);
 }
 
 void dskTest::Msg_EditChange(const unsigned ctrl_id)
@@ -135,8 +136,8 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack: WINDOWMANAGER.Switch(new dskMainMenu); break;
         case ID_btTextureTest: WINDOWMANAGER.Switch(new dskTextureTest); break;
+        case ID_btShowBenchmark: WINDOWMANAGER.Switch(new dskBenchmark); break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
@@ -210,7 +211,9 @@ bool dskTest::Msg_KeyDown(const KeyEvent& ke)
     {
         curBGIdx = (curBGIdx < FILE_LOAD_IDS.size() - 1) ? curBGIdx + 1 : 0;
         background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
-    } else
+    } else if(ke.kt == KT_ESCAPE)
+        WINDOWMANAGER.Switch(new dskMainMenu);
+    else
         return false;
     return true;
 }
