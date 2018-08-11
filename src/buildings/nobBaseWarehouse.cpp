@@ -759,7 +759,7 @@ void nobBaseWarehouse::CheckUsesForNewWare(const GoodType gt)
     // Wenn es ein Werkzeug war, evtl neuen Job suchen, der jetzt erzeugt werden könnte..
     if(gt >= GD_TONGS && gt <= GD_BOAT)
     {
-        for(unsigned i = 0; i < 30; ++i)
+        for(unsigned i = 0; i < NUM_JOB_TYPES; ++i)
         {
             if(JOB_CONSTS[i].tool == gt)
                 gwg->GetPlayer(player).FindWarehouseForAllJobs(Job(i));
