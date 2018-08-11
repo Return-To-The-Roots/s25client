@@ -106,7 +106,7 @@ void ctrlButton::Draw_()
     {
         unsigned color = isEnabled ? COLOR_WHITE : 0xFF666666;
         bool isCurIlluminated = isIlluminated || (!isEnabled && isChecked);
-        bool isElevated = isChecked || state != BUTTON_PRESSED;
+        bool isElevated = !isChecked && state != BUTTON_PRESSED;
         bool isHighlighted = isEnabled && !isChecked && state == BUTTON_HOVER;
         if(hasBorder)
             Draw3D(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
