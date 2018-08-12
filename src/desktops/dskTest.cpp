@@ -55,7 +55,7 @@ enum
 };
 }
 
-dskTest::dskTest() : curBGIdx(FILE_LOAD_IDS.size())
+dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 {
     AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     boost::array<TextureColor, 4> textures = {{TC_GREEN1, TC_GREEN2, TC_RED1, TC_GREY}};
@@ -205,12 +205,12 @@ bool dskTest::Msg_KeyDown(const KeyEvent& ke)
         ToggleCtrlVisibility();
     else if(ke.kt == KT_LEFT)
     {
-        curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : FILE_LOAD_IDS.size() - 1;
-        background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
+        curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : LOAD_SCREENS.size() - 1;
+        background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
     } else if(ke.kt == KT_RIGHT)
     {
-        curBGIdx = (curBGIdx < FILE_LOAD_IDS.size() - 1) ? curBGIdx + 1 : 0;
-        background = LOADER.GetImageN(FILE_LOAD_IDS[curBGIdx], 0);
+        curBGIdx = (curBGIdx < LOAD_SCREENS.size() - 1) ? curBGIdx + 1 : 0;
+        background = LOADER.GetImageN(LOAD_SCREENS[curBGIdx], 0);
     } else if(ke.kt == KT_ESCAPE)
         WINDOWMANAGER.Switch(new dskMainMenu);
     else

@@ -32,21 +32,17 @@
 #include "dskLobby.h"
 #include "dskSinglePlayer.h"
 #include "files.h"
-#include "helpers/containerUtils.h"
 #include "ingameWindows/iwMsgbox.h"
 #include "network/GameClient.h"
 #include "ogl/FontStyle.h"
-#include "world/GameWorldBase.h"
 #include "liblobby/LobbyClient.h"
-#include <set>
-#include <vector>
 
 /**
  *  Konstruktor von @p dskGameLoader.
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(boost::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(FILE_LOAD_IDS[rand() % NUM_FILE_LOAD_IDS], 0)), position(0), game(game), nextDesktop(NULL)
+    : Desktop(LOADER.GetImageN(LOAD_SCREENS[rand() % LOAD_SCREENS.size()], 0)), position(0), loader_(game)
 {
     GAMEMANAGER.SetCursor(CURSOR_NONE);
 
