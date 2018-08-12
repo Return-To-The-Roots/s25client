@@ -31,18 +31,17 @@ struct TerrainDesc;
 /// Creates an empty world, with meadow terrain and the given number of players
 struct CreateEmptyWorld
 {
-    CreateEmptyWorld(const MapExtent& size, unsigned numPlayers);
+    explicit CreateEmptyWorld(const MapExtent& size);
     bool operator()(GameWorldGame& world) const;
 
 private:
     MapExtent size_;
-    std::vector<Nation> playerNations_;
 };
 
 /// Create an uninitalized world (terrain, BQ etc not set. only nodes and size)
 struct CreateUninitWorld
 {
-    CreateUninitWorld(const MapExtent& size, unsigned numPlayers);
+    explicit CreateUninitWorld(const MapExtent& size);
     bool operator()(GameWorldGame& world) const;
 
 private:

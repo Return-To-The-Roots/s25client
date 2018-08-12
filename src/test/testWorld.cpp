@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(LoadSaveMap)
 namespace {
 struct UninitializedWorldCreator
 {
-    UninitializedWorldCreator(const MapExtent& size, unsigned numPlayers) {}
+    explicit UninitializedWorldCreator(const MapExtent& size) {}
     bool operator()(GameWorldBase& world) { return true; }
 };
 
@@ -73,23 +73,19 @@ struct LoadWorldFromFileCreator : MapTestFixture
 {
     glArchivItem_Map map;
     std::vector<MapPoint> hqs;
-    const unsigned numPlayers_;
 
-    LoadWorldFromFileCreator(const MapExtent& size, unsigned numPlayers) : numPlayers_(numPlayers) {}
+    explicit LoadWorldFromFileCreator(const MapExtent& size) {}
     bool operator()(GameWorldBase& world)
     {
         bnw::ifstream mapFile(testMapPath, std::ios::binary);
         if(map.load(mapFile, false) != 0)
             throw std::runtime_error("Could not load file " + testMapPath);
-        std::vector<Nation> nations;
-        for(unsigned i = 0; i < numPlayers_; i++)
-            nations.push_back(world.GetPlayer(i).nation);
-        MapLoader loader(world, nations);
+        MapLoader loader(world);
         if(!loader.Load(map, EXP_FOGOFWAR))
             throw std::runtime_error("Could not load map");
         if(!loader.PlaceHQs(world, false))
             throw std::runtime_error("Could not place HQs");
-        for(unsigned i = 0; i < numPlayers_; i++)
+        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
             hqs.push_back(loader.GetHQPos(i));
         return true;
     }
@@ -116,8 +112,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     BOOST_CHECK_EQUAL(header.getHeight(), 80);
     BOOST_CHECK_EQUAL(header.getNumPlayers(), 4);
 
-    std::vector<Nation> nations(0);
-    MapLoader loader(world, nations);
+    MapLoader loader(world);
     BOOST_REQUIRE(loader.Load(map, EXP_FOGOFWAR));
     BOOST_CHECK_EQUAL(world.GetWidth(), map.getHeader().getWidth());
     BOOST_CHECK_EQUAL(world.GetHeight(), map.getHeader().getHeight());

@@ -119,7 +119,7 @@ public:
         std::vector<Nation> playerNations;
         playerNations.push_back(world.GetPlayer(0).nation);
         playerNations.push_back(world.GetPlayer(1).nation);
-        BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations, false));
+        BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
     }
 
     virtual GameWorldGame& GetWorld() override { return world; }

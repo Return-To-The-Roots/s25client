@@ -24,7 +24,7 @@
 #include <boost/foreach.hpp>
 #include <boost/test/test_tools.hpp>
 
-CreateSeaWorld::CreateSeaWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS) {}
+CreateSeaWorld::CreateSeaWorld(const MapExtent& size) : size_(size) {}
 
 namespace {
 bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbors)
@@ -165,7 +165,7 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
 
     BOOST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
 
-    if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
+    if(!MapLoader::PlaceHQs(world, hqPositions, false))
         return false;
     world.InitAfterLoad();
 
@@ -187,14 +187,12 @@ bool CreateSeaWorld::operator()(GameWorldGame& world) const
     return true;
 }
 
-CreateWaterWorld::CreateWaterWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_ROMANS)
-{
-    // Only 2 players supported
-    RTTR_Assert(numPlayers <= 2u);
-}
+CreateWaterWorld::CreateWaterWorld(const MapExtent& size) : size_(size) {}
 
 bool CreateWaterWorld::operator()(GameWorldGame& world) const
 {
+    // Only 2 players supported
+    RTTR_Assert(world.GetNumPlayers() <= 2u);
     loadGameData(world.GetDescriptionWriteable());
     world.Init(size_);
     // Set everything to water
@@ -213,7 +211,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
     const unsigned landRadius = 8;
     std::vector<MapPoint> hqPositions;
     hqPositions.push_back(MapPoint(10, 10));
-    if(playerNations_.size() > 1)
+    if(world.GetNumPlayers() > 1)
         hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2));
     t = DescIdx<TerrainDesc>(0);
     for(; t.value < desc.terrain.size(); t.value++)
@@ -230,7 +228,7 @@ bool CreateWaterWorld::operator()(GameWorldGame& world) const
             node.t1 = node.t2 = t;
         }
     }
-    BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, playerNations_, false));
+    BOOST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
 
     std::vector<MapPoint> harbors;
     BOOST_FOREACH(MapPoint hqPos, hqPositions)

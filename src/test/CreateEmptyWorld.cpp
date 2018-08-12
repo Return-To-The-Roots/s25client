@@ -23,7 +23,7 @@
 #include "test/initTestHelpers.h"
 #include <stdexcept>
 
-CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size, unsigned numPlayers) : size_(size), playerNations_(numPlayers, NAT_AFRICANS) {}
+CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}
 
 bool CreateEmptyWorld::operator()(GameWorldGame& world) const
 {
@@ -45,10 +45,10 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
         MapNode& node = world.GetNodeWriteable(pt);
         node.t1 = node.t2 = t;
     }
-    if(!playerNations_.empty())
+    unsigned numPlayers = world.GetNumPlayers();
+    if(numPlayers > 0)
     {
         // Distribute player HQs evenly across map
-        unsigned numPlayers = playerNations_.size();
         Point<unsigned> numPlayersPerDim;
         numPlayersPerDim.x = static_cast<unsigned>(ceil(sqrt(numPlayers)));
         numPlayersPerDim.y = static_cast<unsigned>(ceil(float(numPlayers) / numPlayersPerDim.x));
@@ -69,21 +69,19 @@ bool CreateEmptyWorld::operator()(GameWorldGame& world) const
             }
             curPt.y += playerDist.y;
         }
-        if(!MapLoader::PlaceHQs(world, hqPositions, playerNations_, false))
+        if(!MapLoader::PlaceHQs(world, hqPositions, false))
             return false;
     }
     world.InitAfterLoad();
     return true;
 }
 
-CreateUninitWorld::CreateUninitWorld(const MapExtent& size, unsigned numPlayers) : size_(size)
-{
-    if(numPlayers > 0)
-        throw std::logic_error("Cannot have players for uninitialized world");
-}
+CreateUninitWorld::CreateUninitWorld(const MapExtent& size) : size_(size) {}
 
 bool CreateUninitWorld::operator()(GameWorldGame& world) const
 {
+    if(world.GetNumPlayers() > 0)
+        throw std::logic_error("Cannot have players for uninitialized world");
     // For consistent results
     doInitGameRNG(0);
 

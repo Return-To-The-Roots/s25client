@@ -17,6 +17,8 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "world/MapLoader.h"
+#include "GamePlayer.h"
+#include "GameWorldBase.h"
 #include "PointOutput.h"
 #include "buildings/nobHQ.h"
 #include "factories/BuildingFactory.h"
@@ -44,7 +46,7 @@
 class noBase;
 class nobBaseWarehouse;
 
-MapLoader::MapLoader(World& world, const std::vector<Nation>& playerNations) : world_(world), playerNations_(playerNations) {}
+MapLoader::MapLoader(World& world) : world_(world) {}
 
 bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 {
@@ -76,14 +78,14 @@ bool MapLoader::Load(const glArchivItem_Map& map, Exploration exploration)
 
     // If we have explored FoW, create the FoW objects
     if(exploration == EXP_FOGOFWARE_EXPLORED)
-        SetMapExplored(world_, playerNations_.size());
+        SetMapExplored(world_);
 
     return true;
 }
 
 bool MapLoader::PlaceHQs(GameWorldBase& world, bool randomStartPos)
 {
-    return PlaceHQs(world, hqPositions_, playerNations_, randomStartPos);
+    return PlaceHQs(world, hqPositions_, randomStartPos);
 }
 
 void MapLoader::InitShadows(World& world)
@@ -92,12 +94,12 @@ void MapLoader::InitShadows(World& world)
         world.RecalcShadow(pt);
 }
 
-void MapLoader::SetMapExplored(World& world, unsigned numPlayers)
+void MapLoader::SetMapExplored(World& world)
 {
     RTTR_FOREACH_PT(MapPoint, world.GetSize())
     {
         // For every player
-        for(unsigned i = 0; i < numPlayers; ++i)
+        for(unsigned i = 0; i < MAX_PLAYERS; ++i)
         {
             // If we have FoW here, save it
             if(world.GetNode(pt).fow[i].visibility == VIS_FOW)
@@ -403,8 +405,7 @@ void MapLoader::PlaceAnimals(const glArchivItem_Map& map)
     }
 }
 
-bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, const std::vector<Nation>& playerNations,
-                         bool randomStartPos)
+bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions, bool randomStartPos)
 {
     // random locations? -> randomize them :)
     if(randomStartPos)
@@ -413,10 +414,10 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
         std::random_shuffle(hqPositions.begin(), hqPositions.end(), random);
     }
 
-    for(unsigned i = 0; i < playerNations.size(); ++i)
+    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
     {
         // Skip unused slots
-        if(playerNations[i] == NAT_INVALID)
+        if(!world.GetPlayer(i).isUsed())
             continue;
 
         // Does the HQ have a position?
@@ -426,7 +427,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, std::vector<MapPoint> hqPositions
             return false;
         }
 
-        BuildingFactory::CreateBuilding(world, BLD_HEADQUARTERS, hqPositions[i], i, playerNations[i]);
+        BuildingFactory::CreateBuilding(world, BLD_HEADQUARTERS, hqPositions[i], i, world.GetPlayer(i).nation);
     }
     return true;
 }
