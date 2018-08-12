@@ -20,10 +20,12 @@
 #pragma once
 
 #include "Desktop.h"
+#include "GameLoader.h"
+#include "helpers/Deleter.h"
 #include "network/ClientInterface.h"
 #include "liblobby/LobbyInterface.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 
-class GameWorldBase;
 class dskGameInterface;
 
 class dskGameLoader : public Desktop, public ClientInterface, public LobbyInterface
@@ -39,11 +41,10 @@ public:
 private:
     void Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr) override;
     void Msg_Timer(const unsigned ctrl_id) override;
-    std::vector<std::string> GatherRequiredTexturePaths() const;
 
     unsigned position;
-    boost::shared_ptr<Game> game;
-    dskGameInterface* nextDesktop;
+    GameLoader loader_;
+    boost::interprocess::unique_ptr<dskGameInterface, Deleter<dskGameInterface> > gameInterface;
 };
 
 #endif // !dskGAMELOADER_H_INCLUDED
