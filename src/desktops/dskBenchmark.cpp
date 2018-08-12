@@ -17,17 +17,27 @@
 
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "dskBenchmark.h"
+#include "Game.h"
+#include "GameLoader.h"
 #include "Loader.h"
+#include "PlayerInfo.h"
 #include "WindowManager.h"
 #include "boost/foreach.hpp"
 #include "controls/ctrlText.h"
+#include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
 #include "helpers/converters.h"
+#include "helpers/mathFuncs.h"
+#include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
+#include "world/GameWorld.h"
+#include "world/GameWorldView.h"
+#include "world/GameWorldViewer.h"
+#include "world/MapLoader.h"
+#include "gameTypes/RoadBuildState.h"
 #include "libutil/Log.h"
 #include "libutil/strFuncs.h"
 #include <boost/random.hpp>
-#include "drivers/VideoDriverWrapper.h"
 
 namespace {
 enum
@@ -38,12 +48,21 @@ enum
 };
 }
 
+struct dskBenchmark::GameView
+{
+    GameWorldViewer viewer;
+    GameWorldView view;
+    GameView(GameWorldBase& gw, Extent size) : viewer(0u, gw), view(viewer, Position(0, 0), size) { viewer.InitTerrainRenderer(); }
+};
+
 dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
 {
-    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F2 to start benchmark, NUM_n to set amount of instances", COLOR_YELLOW, FontStyle::LEFT,
+    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F3 to start benchmark, NUM_n to set amount of instances", COLOR_YELLOW, FontStyle::LEFT,
             LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
 }
+
+dskBenchmark::~dskBenchmark() {}
 
 bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
 {
@@ -52,6 +71,7 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
         case KT_ESCAPE: WINDOWMANAGER.Switch(new dskMainMenu); break;
         case KT_F1: startTest(TEST_TEXT); break;
         case KT_F2: startTest(TEST_PRIMITIVES); break;
+        case KT_F3: startTest(TEST_GAME); break;
         case KT_CHAR:
             if(ke.c >= '0' && ke.c <= '9')
             {
@@ -71,6 +91,12 @@ void dskBenchmark::Msg_PaintAfter()
         DrawRectangle(rect.rect, rect.clr);
     BOOST_FOREACH(const ColoredLine& line, lines_)
         DrawLine(line.p1, line.p2, line.width, line.clr);
+    if(gameView_)
+    {
+        RoadBuildState roadState;
+        roadState.mode = RM_DISABLED;
+        gameView_->view.Draw(roadState, MapPoint::Invalid(), false);
+    }
     if(curTest_ != TEST_NONE)
     {
         frameCtr_.update();
@@ -78,6 +104,12 @@ void dskBenchmark::Msg_PaintAfter()
             finishTest();
     }
     dskMenuBase::Msg_PaintAfter();
+}
+
+void dskBenchmark::SetActive(bool activate)
+{
+    dskMenuBase::SetScale(activate);
+    VIDEODRIVER.ResizeScreen(1600, 900, false);
 }
 
 void dskBenchmark::startTest(Test test)
@@ -110,11 +142,12 @@ void dskBenchmark::startTest(Test test)
         }
     } else if(test == TEST_PRIMITIVES)
     {
+        Extent screenSize = VIDEODRIVER.GetScreenSize();
         boost::random::uniform_int_distribution<unsigned> distSize(5, 50);
         boost::random::uniform_int_distribution<unsigned> distClr(0, 0xFF);
         boost::random::uniform_int_distribution<unsigned> distrMove(10, 50);
-        boost::random::uniform_int_distribution<unsigned> distrPosX(0, 800);
-        boost::random::uniform_int_distribution<unsigned> distrPosY(0, 600);
+        boost::random::uniform_int_distribution<unsigned> distrPosX(0, screenSize.x);
+        boost::random::uniform_int_distribution<unsigned> distrPosY(0, screenSize.y);
         boost::random::uniform_int_distribution<unsigned> distrWidth(1, 10);
         DrawPoint pt(0, 0);
         for(int i = 0; i < numInstances_; i++)
@@ -127,11 +160,11 @@ void dskBenchmark::startTest(Test test)
             rect.clr = MakeColor(alpha, clr, clr, clr);
             rects_.push_back(rect);
             pt.y += distrMove(rng);
-            if(pt.y >= 580)
+            if(pt.y >= static_cast<int>(screenSize.y) - 20)
             {
                 pt.y = 0;
                 pt.x += 150 + distrMove(rng) / 3;
-                if(pt.x >= 780)
+                if(pt.x >= static_cast<int>(screenSize.x) - 20)
                     pt.x = distrMove(rng);
             }
             ColoredLine line;
@@ -141,6 +174,11 @@ void dskBenchmark::startTest(Test test)
             line.clr = MakeColor(alpha, clr, clr, clr);
             lines_.push_back(line);
         }
+    } else if(test == TEST_GAME)
+    {
+        createGame();
+        if(!gameView_)
+            return;
     }
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;
@@ -161,6 +199,70 @@ void dskBenchmark::finishTest()
     }
     rects_.clear();
     lines_.clear();
+    gameView_.reset();
+    game_.reset();
     SetFpsDisplay(true);
     VIDEODRIVER.setTargetFramerate(0);
+}
+
+void dskBenchmark::createGame()
+{
+    std::vector<PlayerInfo> players;
+    PlayerInfo p;
+    p.ps = PS_OCCUPIED;
+    p.nation = NAT_AFRICANS;
+    p.color = PLAYER_COLORS[0];
+    players.push_back(p);
+    p.color = PLAYER_COLORS[1];
+    players.push_back(p);
+    game_.reset(new Game(GlobalGameSettings(), 0u, players));
+    try
+    {
+        GameDataLoader gdLoader(game_->world.GetDescriptionWriteable());
+        if(!gdLoader.Load())
+            throw "Game data";
+        game_->world.Init(MapExtent(128, 128));
+        const WorldDescription& desc = game_->world.GetDescription();
+        DescIdx<TerrainDesc> lastTerrain(0);
+        int lastHeight = 10;
+        boost::random::mt19937 rng(42);
+        using boost::random::uniform_int_distribution;
+        uniform_int_distribution<int> percentage(0, 100);
+        uniform_int_distribution<int> randTerrain(0, desc.terrain.size() - 1);
+        RTTR_FOREACH_PT(MapPoint, game_->world.GetSize())
+        {
+            MapNode& node = game_->world.GetNodeWriteable(pt);
+            DescIdx<TerrainDesc> t;
+            // 50% chance of using the same terrain
+            if(percentage(rng) <= 50)
+                t = lastTerrain;
+            else
+                t.value = randTerrain(rng);
+            node.t1 = t;
+            lastTerrain = t;
+            if(percentage(rng) <= 50)
+                t = lastTerrain;
+            else
+                t.value = randTerrain(rng);
+            node.t2 = t;
+            lastTerrain = t;
+            if(percentage(rng) <= 50)
+                lastHeight = helpers::clamp(lastHeight + uniform_int_distribution<int>(-1, 1)(rng), 0, 20);
+            node.altitude = lastHeight;
+        }
+        MapLoader::InitShadows(game_->world);
+        MapLoader::SetMapExplored(game_->world);
+        std::vector<MapPoint> hqs(2, MapPoint(0, 0));
+        hqs[1].x += 30;
+        MapLoader::PlaceHQs(game_->world, hqs, false);
+
+        GameLoader loader(game_);
+        if(!loader.load())
+            throw "GUI";
+        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetScreenSize()));
+    } catch(...)
+    {
+        game_.reset();
+        gameView_.reset();
+    }
 }
