@@ -23,13 +23,18 @@
 #include "PlayerInfo.h"
 #include "WindowManager.h"
 #include "boost/foreach.hpp"
+#include "buildings/nobMilitary.h"
 #include "controls/ctrlText.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "dskMainMenu.h"
+#include "factories/BuildingFactory.h"
+#include "figures/nofPassiveSoldier.h"
+#include "figures/nofPassiveWorker.h"
 #include "helpers/converters.h"
 #include "helpers/mathFuncs.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
+#include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
@@ -52,17 +57,28 @@ struct dskBenchmark::GameView
 {
     GameWorldViewer viewer;
     GameWorldView view;
-    GameView(GameWorldBase& gw, Extent size) : viewer(0u, gw), view(viewer, Position(0, 0), size) { viewer.InitTerrainRenderer(); }
+    GameView(GameWorldBase& gw, Extent size) : viewer(0u, gw), view(viewer, Position(0, 0), size)
+    {
+        viewer.InitTerrainRenderer();
+        view.MoveToMapPt(MapPoint(0, 0));
+        view.ToggleShowBQ();
+        view.ToggleShowNames();
+    }
 };
 
-dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
+dskBenchmark::dskBenchmark() : curTest_(TEST_NONE), runAll_(false), numInstances_(1000), frameCtr_(FrameCounter::clock::duration::max())
 {
-    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F3 to start benchmark, NUM_n to set amount of instances", COLOR_YELLOW, FontStyle::LEFT,
-            LargeFont);
+    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances", COLOR_YELLOW,
+            FontStyle::LEFT, LargeFont);
     AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
+    BOOST_FOREACH(boost::chrono::milliseconds& t, testDurations_)
+        t = t.zero();
 }
 
-dskBenchmark::~dskBenchmark() {}
+dskBenchmark::~dskBenchmark()
+{
+    printTimes();
+}
 
 bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
 {
@@ -71,7 +87,13 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
         case KT_ESCAPE: WINDOWMANAGER.Switch(new dskMainMenu); break;
         case KT_F1: startTest(TEST_TEXT); break;
         case KT_F2: startTest(TEST_PRIMITIVES); break;
-        case KT_F3: startTest(TEST_GAME); break;
+        case KT_F3: startTest(TEST_EMPTY_GAME); break;
+        case KT_F4: startTest(TEST_BASIC_GAME); break;
+        case KT_F5: startTest(TEST_FULL_GAME); break;
+        case KT_F10:
+            runAll_ = true;
+            startTest(TEST_TEXT);
+            break;
         case KT_CHAR:
             if(ke.c >= '0' && ke.c <= '9')
             {
@@ -100,7 +122,7 @@ void dskBenchmark::Msg_PaintAfter()
     if(curTest_ != TEST_NONE)
     {
         frameCtr_.update();
-        if(frameCtr_.getCurNumFrames() >= 150)
+        if(frameCtr_.getCurNumFrames() >= 500)
             finishTest();
     }
     dskMenuBase::Msg_PaintAfter();
@@ -108,78 +130,142 @@ void dskBenchmark::Msg_PaintAfter()
 
 void dskBenchmark::SetActive(bool activate)
 {
-    dskMenuBase::SetScale(activate);
-    VIDEODRIVER.ResizeScreen(1600, 900, false);
+    if(!IsActive() && activate)
+        VIDEODRIVER.ResizeScreen(1600, 900, false);
+    dskMenuBase::SetActive(activate);
 }
 
 void dskBenchmark::startTest(Test test)
 {
     uint32_t seed = 0x1337;
     boost::random::mt19937 rng(seed);
-    if(test == TEST_TEXT)
+    switch(test)
     {
-        static const std::string charset =
-          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()`~-_=+[{]{\\|;:'\",<.>/? ";
+        case TEST_NONE:
+        case TEST_CT: return;
+        case TEST_TEXT:
+        {
+            static const std::string charset =
+              "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()`~-_=+[{]{\\|;:'\",<.>/? ";
 
-        boost::random::uniform_int_distribution<unsigned> distr(1, 30);
-        boost::random::uniform_int_distribution<unsigned> distr2(0, 100000);
-        boost::random::uniform_int_distribution<unsigned> distrMove(10, 25);
-        DrawPoint pt(0, 0);
-        glArchivItem_Font* fnt = NormalFont;
-        for(int i = 0; i < numInstances_; i++)
-        {
-            std::string txt = createRandString(distr(rng), charset, seed);
-            seed += distr2(rng);
-            pt.y += distrMove(rng);
-            if(pt.y >= 580)
+            boost::random::uniform_int_distribution<unsigned> distr(1, 30);
+            boost::random::uniform_int_distribution<unsigned> distr2(0, 100000);
+            boost::random::uniform_int_distribution<unsigned> distrMove(10, 25);
+            DrawPoint pt(0, 0);
+            glArchivItem_Font* fnt = NormalFont;
+            for(int i = 0; i < numInstances_; i++)
             {
-                pt.y = 0;
-                pt.x += 150 + distrMove(rng) / 3;
-                if(pt.x >= 780)
-                    pt.x = distrMove(rng);
+                std::string txt = createRandString(distr(rng), charset, seed);
+                seed += distr2(rng);
+                pt.y += distrMove(rng);
+                if(pt.y >= 580)
+                {
+                    pt.y = 0;
+                    pt.x += 150 + distrMove(rng) / 3;
+                    if(pt.x >= 780)
+                        pt.x = distrMove(rng);
+                }
+                AddText(ID_first + i, pt, txt, COLOR_YELLOW, FontStyle::LEFT, fnt);
             }
-            AddText(ID_first + i, pt, txt, COLOR_YELLOW, FontStyle::LEFT, fnt);
+            break;
         }
-    } else if(test == TEST_PRIMITIVES)
-    {
-        Extent screenSize = VIDEODRIVER.GetScreenSize();
-        boost::random::uniform_int_distribution<unsigned> distSize(5, 50);
-        boost::random::uniform_int_distribution<unsigned> distClr(0, 0xFF);
-        boost::random::uniform_int_distribution<unsigned> distrMove(10, 50);
-        boost::random::uniform_int_distribution<unsigned> distrPosX(0, screenSize.x);
-        boost::random::uniform_int_distribution<unsigned> distrPosY(0, screenSize.y);
-        boost::random::uniform_int_distribution<unsigned> distrWidth(1, 10);
-        DrawPoint pt(0, 0);
-        for(int i = 0; i < numInstances_; i++)
+        case TEST_PRIMITIVES:
         {
-            ColoredRect rect;
-            rect.rect.move(pt);
-            rect.rect.setSize(Extent(distSize(rng), distSize(rng)));
-            unsigned clr = distClr(rng);
-            unsigned alpha = std::min((distClr(rng) + 10u) * 10u, 0xFFu);
-            rect.clr = MakeColor(alpha, clr, clr, clr);
-            rects_.push_back(rect);
-            pt.y += distrMove(rng);
-            if(pt.y >= static_cast<int>(screenSize.y) - 20)
+            Extent screenSize = VIDEODRIVER.GetScreenSize();
+            boost::random::uniform_int_distribution<unsigned> distSize(5, 50);
+            boost::random::uniform_int_distribution<unsigned> distClr(0, 0xFF);
+            boost::random::uniform_int_distribution<unsigned> distrMove(10, 50);
+            boost::random::uniform_int_distribution<unsigned> distrPosX(0, screenSize.x);
+            boost::random::uniform_int_distribution<unsigned> distrPosY(0, screenSize.y);
+            boost::random::uniform_int_distribution<unsigned> distrWidth(1, 10);
+            DrawPoint pt(0, 0);
+            for(int i = 0; i < numInstances_; i++)
             {
-                pt.y = 0;
-                pt.x += 150 + distrMove(rng) / 3;
-                if(pt.x >= static_cast<int>(screenSize.x) - 20)
-                    pt.x = distrMove(rng);
+                ColoredRect rect;
+                rect.rect.move(pt);
+                rect.rect.setSize(Extent(distSize(rng), distSize(rng)));
+                unsigned clr = distClr(rng);
+                unsigned alpha = std::min((distClr(rng) + 10u) * 10u, 0xFFu);
+                rect.clr = MakeColor(alpha, clr, clr, clr);
+                rects_.push_back(rect);
+                pt.y += distrMove(rng);
+                if(pt.y >= static_cast<int>(screenSize.y) - 20)
+                {
+                    pt.y = 0;
+                    pt.x += 150 + distrMove(rng) / 3;
+                    if(pt.x >= static_cast<int>(screenSize.x) - 20)
+                        pt.x = distrMove(rng);
+                }
+                ColoredLine line;
+                line.p1 = Position(distrPosX(rng), distrPosY(rng));
+                line.p2 = Position(distrPosX(rng), distrPosY(rng));
+                line.width = distrWidth(rng);
+                line.clr = MakeColor(alpha, clr, clr, clr);
+                lines_.push_back(line);
             }
-            ColoredLine line;
-            line.p1 = Position(distrPosX(rng), distrPosY(rng));
-            line.p2 = Position(distrPosX(rng), distrPosY(rng));
-            line.width = distrWidth(rng);
-            line.clr = MakeColor(alpha, clr, clr, clr);
-            lines_.push_back(line);
+            break;
         }
-    } else if(test == TEST_GAME)
-    {
-        createGame();
-        if(!gameView_)
-            return;
+        case TEST_EMPTY_GAME:
+            createGame();
+            if(!game_)
+                return;
+            RTTR_FOREACH_PT(MapPoint, game_->world.GetSize())
+            {
+                game_->world.SetVisibility(pt, 0, VIS_VISIBLE);
+            }
+            break;
+        case TEST_BASIC_GAME:
+        {
+            createGame();
+            if(!game_)
+                return;
+            std::vector<MapPoint> hqs(2, MapPoint(0, 0));
+            hqs[1].x += 30;
+            MapLoader::PlaceHQs(game_->world, hqs, false);
+            break;
+        }
+        case TEST_FULL_GAME:
+        {
+            createGame();
+            if(!game_)
+                return;
+            std::vector<MapPoint> hqs(2, MapPoint(0, 0));
+            hqs[1].x += 30;
+            MapLoader::PlaceHQs(game_->world, hqs, false);
+            for(unsigned i = 0; i < hqs.size(); i++)
+            {
+                std::vector<MapPoint> pts = game_->world.GetPointsInRadius(hqs[i], 15);
+                boost::random::bernoulli_distribution<> dist(numInstances_ / 1000.f);
+                boost::random::bernoulli_distribution<> distEqual;
+                boost::array<BuildingType, 5> blds = {{BLD_BARRACKS, BLD_MILL, BLD_IRONMINE, BLD_SLAUGHTERHOUSE, BLD_BAKERY}};
+                boost::random::uniform_int_distribution<unsigned> getBld(0, blds.size() - 1);
+                boost::random::uniform_int_distribution<unsigned> getJob(0, NUM_JOB_TYPES - 1);
+                boost::random::uniform_int_distribution<int> getDir(0, Direction::COUNT - 1);
+                BOOST_FOREACH(MapPoint pt, pts)
+                {
+                    MapPoint flagPt = game_->world.GetNeighbour(pt, Direction::SOUTHEAST);
+                    if(game_->world.GetNode(pt).obj || game_->world.GetNode(flagPt).obj || !dist(rng))
+                        continue;
+                    BuildingType bldType = blds[getBld(rng)];
+                    noBuilding* bld =
+                      BuildingFactory::CreateBuilding(game_->world, bldType, pt, i, distEqual(rng) ? NAT_AFRICANS : NAT_JAPANESE);
+                    if(bldType == BLD_BARRACKS)
+                    {
+                        nobMilitary* mil = static_cast<nobMilitary*>(bld);
+                        nofPassiveSoldier* sld = new nofPassiveSoldier(pt, i, mil, mil, 0);
+                        mil->AddPassiveSoldier(sld);
+                    }
+                    nofPassiveWorker* figure = new nofPassiveWorker(Job(getJob(rng)), flagPt, i, NULL);
+                    game_->world.AddFigure(flagPt, figure);
+                    figure->StartWandering();
+                    figure->StartWalking(Direction::fromInt(getDir(rng)));
+                }
+            }
+            break;
+        }
     }
+    if(game_)
+        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetScreenSize()));
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;
     frameCtr_ = FrameCounter(frameCtr_.getUpdateInterval());
@@ -190,7 +276,11 @@ void dskBenchmark::finishTest()
     using namespace boost::chrono;
     LOG.write("Benchmark #%1% took %2%. -> %3%/frame\n") % curTest_ % duration_cast<duration<float> >(frameCtr_.getCurIntervalLength())
       % duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames());
-    curTest_ = TEST_NONE;
+    if(testDurations_[curTest_] == milliseconds::zero())
+        testDurations_[curTest_] = duration_cast<milliseconds>(frameCtr_.getCurIntervalLength());
+    else
+        testDurations_[curTest_] = duration_cast<milliseconds>(testDurations_[curTest_] + frameCtr_.getCurIntervalLength()) / 2;
+
     std::vector<Window*> ctrls = GetCtrls<Window>();
     BOOST_FOREACH(Window* ctrl, ctrls)
     {
@@ -203,16 +293,28 @@ void dskBenchmark::finishTest()
     game_.reset();
     SetFpsDisplay(true);
     VIDEODRIVER.setTargetFramerate(0);
+    if(!runAll_)
+        curTest_ = TEST_NONE;
+    else
+    {
+        curTest_ = Test(curTest_ + 1);
+        if(curTest_ == TEST_CT)
+            curTest_ = TEST_NONE;
+        else
+            startTest(curTest_);
+    }
 }
 
 void dskBenchmark::createGame()
 {
+    RANDOM.Init(42);
     std::vector<PlayerInfo> players;
     PlayerInfo p;
     p.ps = PS_OCCUPIED;
     p.nation = NAT_AFRICANS;
     p.color = PLAYER_COLORS[0];
     players.push_back(p);
+    p.nation = NAT_JAPANESE;
     p.color = PLAYER_COLORS[1];
     players.push_back(p);
     game_.reset(new Game(GlobalGameSettings(), 0u, players));
@@ -228,41 +330,48 @@ void dskBenchmark::createGame()
         boost::random::mt19937 rng(42);
         using boost::random::uniform_int_distribution;
         uniform_int_distribution<int> percentage(0, 100);
-        uniform_int_distribution<int> randTerrain(0, desc.terrain.size() - 1);
+        uniform_int_distribution<int> randTerrain(0, desc.terrain.size() / 2);
         RTTR_FOREACH_PT(MapPoint, game_->world.GetSize())
         {
             MapNode& node = game_->world.GetNodeWriteable(pt);
             DescIdx<TerrainDesc> t;
-            // 50% chance of using the same terrain
-            if(percentage(rng) <= 50)
+            // 90% chance of using the same terrain
+            if(percentage(rng) <= 90)
                 t = lastTerrain;
             else
                 t.value = randTerrain(rng);
             node.t1 = t;
             lastTerrain = t;
-            if(percentage(rng) <= 50)
+            if(percentage(rng) <= 90)
                 t = lastTerrain;
             else
                 t.value = randTerrain(rng);
             node.t2 = t;
             lastTerrain = t;
-            if(percentage(rng) <= 50)
-                lastHeight = helpers::clamp(lastHeight + uniform_int_distribution<int>(-1, 1)(rng), 0, 20);
+            if(percentage(rng) <= 70)
+                lastHeight = helpers::clamp(lastHeight + uniform_int_distribution<int>(-1, 1)(rng), 8, 13);
             node.altitude = lastHeight;
         }
         MapLoader::InitShadows(game_->world);
         MapLoader::SetMapExplored(game_->world);
-        std::vector<MapPoint> hqs(2, MapPoint(0, 0));
-        hqs[1].x += 30;
-        MapLoader::PlaceHQs(game_->world, hqs, false);
 
         GameLoader loader(game_);
         if(!loader.load())
             throw "GUI";
-        gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetScreenSize()));
     } catch(...)
     {
         game_.reset();
-        gameView_.reset();
     }
+}
+
+void dskBenchmark::printTimes() const
+{
+    using namespace boost::chrono;
+    milliseconds total(0);
+    for(unsigned i = 1; i < testDurations_.size(); i++)
+    {
+        LOG.write("Benchmark #%1% took %2%.\n") % i % duration_cast<duration<float> >(testDurations_[i]);
+        total += testDurations_[i];
+    }
+    LOG.write("Total benchmark time; %1%.\n") % duration_cast<duration<float> >(total);
 }

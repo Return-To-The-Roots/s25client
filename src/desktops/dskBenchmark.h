@@ -38,7 +38,10 @@ class dskBenchmark : public dskMenuBase
         TEST_NONE,
         TEST_TEXT,
         TEST_PRIMITIVES,
-        TEST_GAME
+        TEST_EMPTY_GAME,
+        TEST_BASIC_GAME,
+        TEST_FULL_GAME,
+        TEST_CT
     };
     struct ColoredRect
     {
@@ -62,16 +65,19 @@ public:
 
 private:
     Test curTest_;
+    bool runAll_;
     int numInstances_;
     FrameCounter frameCtr_;
     std::vector<ColoredRect> rects_;
     std::vector<ColoredLine> lines_;
     boost::shared_ptr<Game> game_;
     boost::interprocess::unique_ptr<GameView, Deleter<GameView> > gameView_;
+    boost::array<boost::chrono::milliseconds, TEST_CT> testDurations_;
 
     void startTest(Test test);
     void finishTest();
     void createGame();
+    void printTimes() const;
 };
 
 #endif // dskBenchmark_h__
