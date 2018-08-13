@@ -21,6 +21,11 @@
 #include "glArchivItem_Bitmap.h"
 #include <glad/glad.h>
 
+void OpenGLRenderer::synchronize()
+{
+    glFinish();
+}
+
 void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture)
 {
     const Extent rectSize = rect.getSize();

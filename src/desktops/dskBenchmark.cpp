@@ -34,6 +34,7 @@
 #include "helpers/mathFuncs.h"
 #include "lua/GameDataLoader.h"
 #include "ogl/FontStyle.h"
+#include "ogl/IRenderer.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldView.h"
@@ -52,6 +53,8 @@ enum
     ID_first
 };
 }
+
+static const unsigned numTestFrames = 500u;
 
 struct dskBenchmark::GameView
 {
@@ -121,8 +124,10 @@ void dskBenchmark::Msg_PaintAfter()
     }
     if(curTest_ != TEST_NONE)
     {
+        if(frameCtr_.getCurNumFrames() + 1u >= numTestFrames)
+            VIDEODRIVER.GetRenderer()->synchronize();
         frameCtr_.update();
-        if(frameCtr_.getCurNumFrames() >= 500)
+        if(frameCtr_.getCurNumFrames() >= numTestFrames)
             finishTest();
     }
     dskMenuBase::Msg_PaintAfter();
@@ -266,6 +271,7 @@ void dskBenchmark::startTest(Test test)
     }
     if(game_)
         gameView_.reset(new GameView(game_->world, VIDEODRIVER.GetScreenSize()));
+    VIDEODRIVER.GetRenderer()->synchronize();
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;
     frameCtr_ = FrameCounter(frameCtr_.getUpdateInterval());
@@ -370,8 +376,10 @@ void dskBenchmark::printTimes() const
     milliseconds total(0);
     for(unsigned i = 1; i < testDurations_.size(); i++)
     {
-        LOG.write("Benchmark #%1% took %2%.\n") % i % duration_cast<duration<float> >(testDurations_[i]);
+        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % i % duration_cast<duration<float> >(testDurations_[i])
+          % duration_cast<milliseconds>(testDurations_[i] / numTestFrames);
         total += testDurations_[i];
     }
-    LOG.write("Total benchmark time; %1%.\n") % duration_cast<duration<float> >(total);
+    LOG.write("Total benchmark time; %1% -> %2%/frame\n") % duration_cast<duration<float> >(total)
+      % duration_cast<milliseconds>(total / numTestFrames);
 }
