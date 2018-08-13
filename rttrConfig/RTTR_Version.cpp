@@ -41,7 +41,7 @@ std::string RTTR_Version::GetShortRevision()
 std::string RTTR_Version::GetYear()
 {
     // nasty but works, if versioning principle changes, we should make it use date function
-    return std::string(WINDOW_REVISION).substr(0, 4);
+    return std::string(WINDOW_VERSION).substr(0, 4);
 }
 
 std::string RTTR_Version::GetReadableVersion()

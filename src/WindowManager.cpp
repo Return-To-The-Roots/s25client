@@ -427,7 +427,7 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
             // und die Fenster darunter auch
             curDesktop->RelayMouseMessage(&Window::Msg_LeftUp, mc);
-        } else if(windows.back())
+        } else if(!windows.empty())
         {
             // ja, dann Msg_LeftUp aufrufen
             IngameWindow& activeWnd = *windows.back();

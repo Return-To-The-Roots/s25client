@@ -337,10 +337,8 @@ void dskGameInterface::Msg_PaintAfter()
     if(isCheatModeOn)
     {
         glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
-        const DrawPoint drawPos(iconPos);
-
+        cheatingImg->DrawFull(iconPos);
         iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
-        cheatingImg->DrawFull(drawPos);
     }
 
     // Draw speed indicator icon
@@ -350,30 +348,28 @@ void dskGameInterface::Msg_PaintAfter()
     if(speedStep != 0)
     {
         glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
-        const DrawPoint drawPos(iconPos);
 
-        iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
-        runnerImg->DrawFull(drawPos);
+        runnerImg->DrawFull(iconPos);
 
         if(speedStep != 1)
         {
             std::string multiplier = helpers::toString(std::abs(speedStep));
-            NormalFont->Draw(drawPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
+            NormalFont->Draw(iconPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
                              speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
         }
+        iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
     }
 
     // Draw zoom level indicator icon
     if(gwv.GetCurrentTargetZoomFactor() != 1.f) //-V550
     {
         glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
-        const DrawPoint drawPos(iconPos);
 
-        iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
-        magnifierImg->DrawFull(drawPos);
+        magnifierImg->DrawFull(iconPos);
 
         std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
-        NormalFont->Draw(drawPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER, COLOR_YELLOW);
+        NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER, COLOR_YELLOW);
+        iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
     }
 }
 

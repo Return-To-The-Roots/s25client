@@ -77,6 +77,17 @@ void GameObject::SendPostMessage(unsigned player, PostMsg* msg)
     gwg->GetPostMgr().SendMsg(player, msg);
 }
 
+void GameObject::DetachWorld(GameWorldGame* gameWorld)
+{
+    if(gwg == gameWorld)
+        gwg = NULL;
+}
+
+void GameObject::AttachWorld(GameWorldGame* gameWorld)
+{
+    gwg = gameWorld;
+}
+
 std::string GameObject::ToString() const
 {
     std::stringstream s;

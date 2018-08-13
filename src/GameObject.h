@@ -68,8 +68,10 @@ private:
 
     // Static members
 public:
-    /// Setzt Pointer auf GameWorld und EventManager
-    static void SetPointers(GameWorldGame* const gameWorld) { GameObject::gwg = gameWorld; }
+    /// Set the currently active world for all game objects
+    static void AttachWorld(GameWorldGame* gameWorld);
+    /// Remove the world from all game objects
+    static void DetachWorld(GameWorldGame* gameWorld);
     /// Return the number of objects alive
     static unsigned GetNumObjs() { return objCounter_; }
     /// Gibt Obj-ID-Counter zurück
