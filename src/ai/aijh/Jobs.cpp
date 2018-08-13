@@ -179,9 +179,11 @@ void BuildJob::BuildMainRoad()
     const noBuildingSite* bld = aiInterface.gwb.GetSpecObj<noBuildingSite>(target);
     if(!bld)
     {
-        // Prüfen ob sich vielleicht die BQ geändert hat und damit Bau unmöglich ist
+        // We don't have a building site where it should be. Maybe the BQ has changed due to another object next to it
+        // If so, we update the BQ (TODO: Check if required, shouldn't be) and readd the build job
+        // Note: If the BQ still allows construction it might as well be that the command was not executed yet
         BuildingQuality bq = aiInterface.GetBuildingQuality(target);
-        if(canUseBq(bq, BUILDING_SIZE[type]))
+        if(!canUseBq(bq, BUILDING_SIZE[type]))
         {
             state = JOB_FAILED;
 #ifdef DEBUG_AI
@@ -190,7 +192,6 @@ void BuildJob::BuildMainRoad()
 #endif
             aijh.GetAINode(target).bq = bq;
             aijh.AddBuildJob(type, around);
-            return;
         }
         return;
     }
