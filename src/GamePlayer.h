@@ -307,7 +307,6 @@ public:
     unsigned GetToolsOrdered(unsigned toolIdx) const;
     /// Changes the current visual tool order by the given amount. Return true if anything was changed (tool order is clamped to [0,100])
     bool ChangeToolOrderVisual(unsigned toolIdx, int changeAmount) const;
-    const int8_t* GetToolOrderDelta() const { return &tools_ordered_delta.front(); }
     unsigned GetToolPriority(unsigned toolIdx) const;
     /// Called when a ordered tool was finished
     void ToolOrderProcessed(unsigned toolIdx);

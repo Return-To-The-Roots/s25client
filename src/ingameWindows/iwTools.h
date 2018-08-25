@@ -22,6 +22,7 @@
 #include "IngameWindow.h"
 #include "notifications/Subscribtion.h"
 #include "gameTypes/GoodTypes.h"
+#include <boost/array.hpp>
 
 class GameCommandFactory;
 class GameWorldViewer;
@@ -36,6 +37,8 @@ public:
 private:
     const GameWorldViewer& gwv;
     GameCommandFactory& gcFactory;
+    /// How the order for each tool should be changed (pending actual transmission)
+    boost::array<int8_t, NUM_TOOLS> pendingOrderChanges;
     /// Einstellungen nach dem letzten Netzwerk-Versenden nochmal verändert?
     bool settings_changed, ordersChanged;
     bool shouldUpdateTexts;

@@ -27,6 +27,7 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlProgress.h"
 #include "helpers/converters.h"
+#include "helpers/mathFuncs.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
 #include "notifications/NotificationManager.h"
@@ -60,6 +61,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
             AddImageButton(101 + i * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TC_GREY, LOADER.GetImageN("io", 34), "-1");
             AddTextDeepening(200 + i, DrawPoint(151, 4 + bt->GetPos().y), Extent(20, 18), TC_GREY, "", NormalFont, COLOR_YELLOW);
         }
+        pendingOrderChanges.fill(0);
         UpdateTexts();
     }
 
@@ -103,11 +105,30 @@ void iwTools::TransmitSettings()
         // Einstellungen speichern
         ToolSettings newSettings;
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
-            newSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(i)->GetPosition();
+            newSettings[i] = static_cast<uint8_t>(GetCtrl<ctrlProgress>(i)->GetPosition());
 
-        if(gcFactory.ChangeTools(newSettings, ordersChanged ? gwv.GetPlayer().GetToolOrderDelta() : NULL))
+        int8_t* orderDelta = NULL;
+        if(ordersChanged)
+        {
+            orderDelta = &pendingOrderChanges[0];
+            const GamePlayer& localPlayer = gwv.GetPlayer();
+            for(unsigned i = 0; i < NUM_TOOLS; ++i)
+            {
+                int curOrder = static_cast<int>(localPlayer.GetToolsOrderedVisual(i));
+                pendingOrderChanges[i] = helpers::clamp<int>(pendingOrderChanges[i], -curOrder, 100 - curOrder);
+            }
+        }
+
+        if(gcFactory.ChangeTools(newSettings, orderDelta))
         {
             GAMECLIENT.visual_settings.tools_settings = newSettings;
+            if(ordersChanged)
+            {
+                const GamePlayer& localPlayer = gwv.GetPlayer();
+                for(unsigned i = 0; i < NUM_TOOLS; ++i)
+                    localPlayer.ChangeToolOrderVisual(i, pendingOrderChanges[i]);
+                pendingOrderChanges.fill(0);
+            }
             settings_changed = false;
             ordersChanged = false;
         }
@@ -122,7 +143,8 @@ void iwTools::UpdateTexts()
         for(unsigned i = 0; i < NUM_TOOLS; ++i)
         {
             ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + i);
-            field->SetText(helpers::toString(isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i)));
+            int curOrders = isReplay ? localPlayer.GetToolsOrdered(i) : localPlayer.GetToolsOrderedVisual(i) + pendingOrderChanges[i];
+            field->SetText(helpers::toString(curOrders));
         }
     }
 }
@@ -146,15 +168,23 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
     if(ctrl_id >= 100 && ctrl_id < (100 + 2 * NUM_TOOLS))
     {
         unsigned tool = (ctrl_id - 100) / 2;
-        const GamePlayer& me = gwv.GetPlayer();
+        int curOrders = gwv.GetPlayer().GetToolsOrderedVisual(tool) + pendingOrderChanges[tool];
 
         if(ctrl_id & 0x1)
-            ordersChanged |= me.ChangeToolOrderVisual(tool, -1);
+        {
+            if(curOrders < 1)
+                return;
+            --pendingOrderChanges[tool];
+            --curOrders;
+        } else if(curOrders > 99)
+            return;
         else
-            ordersChanged |= me.ChangeToolOrderVisual(tool, +1);
-
-        ctrlBaseText* field = GetCtrl<ctrlBaseText>(200 + tool);
-        field->SetText(helpers::toString(me.GetToolsOrderedVisual(tool)));
+        {
+            ++pendingOrderChanges[tool];
+            ++curOrders;
+        }
+        ordersChanged = true;
+        GetCtrl<ctrlBaseText>(200 + tool)->SetText(helpers::toString(curOrders));
     } else
         switch(ctrl_id)
         {

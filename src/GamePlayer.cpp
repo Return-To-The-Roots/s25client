@@ -33,6 +33,7 @@
 #include "figures/nofCarrier.h"
 #include "figures/nofFlagWorker.h"
 #include "helpers/containerUtils.h"
+#include "helpers/mathFuncs.h"
 #include "lua/LuaInterfaceGame.h"
 #include "notifications/ToolNote.h"
 #include "pathfinding/RoadPathFinder.h"
@@ -1334,7 +1335,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings, const b
 
     for(unsigned i = 0; i < NUM_TOOLS; ++i)
     {
-        tools_ordered[i] = std::max(std::min(tools_ordered[i] + orderChanges[i], 99), 0);
+        tools_ordered[i] = helpers::clamp(tools_ordered[i] + orderChanges[i], 0, 100);
         tools_ordered_delta[i] -= orderChanges[i];
 
         if(orderChanges[i] != 0)
