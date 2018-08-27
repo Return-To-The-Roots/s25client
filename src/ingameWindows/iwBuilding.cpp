@@ -18,6 +18,7 @@
 #include "rttrDefines.h" // IWYU pragma: keep
 #include "iwBuilding.h"
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "WindowManager.h"
 #include "buildings/nobShipYard.h"
@@ -102,28 +103,31 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
 
     AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
 
-    if(BuildingProperties::IsMine(building->GetBuildingType()))
-	{
-		Resource::Type res;
-		switch(building->GetBuildingType())
+    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::SHOWRESOURCES))
+    {
+		if(BuildingProperties::IsMine(building->GetBuildingType()))
 		{
-			case BLD_GOLDMINE: res = Resource::Type::Gold; break;
-			case BLD_IRONMINE: res = Resource::Type::Iron; break;
-			case BLD_COALMINE: res = Resource::Type::Coal; break;
-			default: res = Resource::Type::Granite;
+			Resource::Type res;
+			switch(building->GetBuildingType())
+			{
+				case BLD_GOLDMINE: res = Resource::Type::Gold; break;
+				case BLD_IRONMINE: res = Resource::Type::Iron; break;
+				case BLD_COALMINE: res = Resource::Type::Coal; break;
+				default: res = Resource::Type::Granite;
+			}
+			const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(res);
+			char text[256];
+			snprintf(text, sizeof(text), _("%d"), value);
+			AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
 		}
-		const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(res);
-		char text[256];
-		snprintf(text, sizeof(text), _("%d"), value);
-		AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
-	}
-	else if(building->GetBuildingType() == BLD_WELL)
-	{
-		const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(Resource::Type::Water);
-		char text[256];
-		snprintf(text, sizeof(text), _("%d"), value);
-		AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
-	}
+		else if(building->GetBuildingType() == BLD_WELL)
+		{
+			const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(Resource::Type::Water);
+			char text[256];
+			snprintf(text, sizeof(text), _("%d"), value);
+			AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
+		}
+    }
 
     // "Go to next" (building of same type)
     AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));

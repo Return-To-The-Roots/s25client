@@ -24,9 +24,11 @@
 class nobUsual;
 class GameWorldView;
 class GameCommandFactory;
+class GlobalGameSettings;
 
 class iwBuilding : public IngameWindow
 {
+private:
     GameWorldView& gwv;
     GameCommandFactory& gcFactory;
     nobUsual* const building; /// Das zugehörige Gebäudeobjekt
