@@ -128,6 +128,8 @@ void GlobalGameSettings::registerAllAddons()
     registerAddon(new AddonFrontierDistanceReachable);
     registerAddon(new AddonCoinsCapturedBld);
     registerAddon(new AddonDemolishBldWORes);
+
+    registerAddon(new AddonShowResources);
 }
 
 void GlobalGameSettings::resetAddons()

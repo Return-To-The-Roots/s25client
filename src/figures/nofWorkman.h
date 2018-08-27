@@ -58,6 +58,9 @@ public:
     nofWorkman(const Job job, const MapPoint pt, const unsigned char player, nobBaseWarehouse* goalWh);
     nofWorkman(SerializedGameData& sgd, const unsigned obj_id);
 
+    /// Retruns the total available resources
+    unsigned GetTotalResource(Resource::Type type) const;
+
     /// Serialisierungsfunktionen
 protected:
     void Serialize_nofWorkman(SerializedGameData& sgd) const;

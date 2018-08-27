@@ -23,6 +23,7 @@
 #include "world/GameWorldGame.h"
 #include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
+#include "desktops/dskGameInterface.h"
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofBuildingWorker(job, pos, player, workplace)
@@ -127,4 +128,19 @@ MapPoint nofWorkman::FindPointWithResource(Resource::Type type) const
     workplace->OnOutOfResources();
 
     return MapPoint::Invalid();
+}
+
+unsigned nofWorkman::GetTotalResource(Resource::Type type) const
+{
+    // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
+    std::vector<MapPoint> pts = gwg->GetPointsInRadius<100>(pos, MINER_RADIUS, Identity<MapPoint>(), NodeHasResource(*gwg, type), true);
+    if(pts.empty())
+        return 0;
+    std::vector<MapPoint>::const_iterator i;
+    unsigned totalValue = 0;
+    for(i=pts.begin(); i!=pts.end(); ++i){
+    	totalValue += gwg->GetNode(*i).resources.getAmount();
+    }
+
+    return totalValue;
 }

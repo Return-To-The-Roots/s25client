@@ -24,6 +24,8 @@
 #include "controls/ctrlImageButton.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlText.h"
+#include "figures/nofWorkman.h"
+#include "addons/const_addons.h"
 #include "iwDemolishBuilding.h"
 #include "iwHelp.h"
 #include "network/GameClient.h"
@@ -99,6 +101,29 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         productivity->SetVisible(false);
 
     AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
+
+    if(BuildingProperties::IsMine(building->GetBuildingType()))
+	{
+		Resource::Type res;
+		switch(building->GetBuildingType())
+		{
+			case BLD_GOLDMINE: res = Resource::Type::Gold; break;
+			case BLD_IRONMINE: res = Resource::Type::Iron; break;
+			case BLD_COALMINE: res = Resource::Type::Coal; break;
+			default: res = Resource::Type::Granite;
+		}
+		const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(res);
+		char text[256];
+		snprintf(text, sizeof(text), _("%d"), value);
+		AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
+	}
+	else if(building->GetBuildingType() == BLD_WELL)
+	{
+		const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(Resource::Type::Water);
+		char text[256];
+		snprintf(text, sizeof(text), _("%d"), value);
+		AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
+	}
 
     // "Go to next" (building of same type)
     AddImageButton(12, DrawPoint(179, 115), Extent(30, 32), TC_GREY, LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));

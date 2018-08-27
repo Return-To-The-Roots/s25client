@@ -37,6 +37,7 @@
 // 00B Ribosom
 // 00C Flamefire
 // 00D Shawn8901
+// 00E gggfreak2003
 
 // Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -78,7 +79,9 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  NUM_SCOUTS_EXPLORATION = 0x00C00000,
 
-                 FRONTIER_DISTANCE_REACHABLE = 0x00D0000, COINS_CAPTURED_BLD = 0x00D0001, DEMOLISH_BLD_WO_RES = 0x00D0002)
+                 FRONTIER_DISTANCE_REACHABLE = 0x00D0000, COINS_CAPTURED_BLD = 0x00D0001, DEMOLISH_BLD_WO_RES = 0x00D0002,
+
+				 SHOWRESOURCES = 0x00E00000)
 //-V:AddonId:801
 
 enum AddonGroup
