@@ -690,7 +690,7 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                     isCheatModeOn = !isCheatModeOn;
                     curCheatTxt.clear();
                     char text[256];
-                    snprintf(text, sizeof(text), "Cheat mode is on");
+                    snprintf(text, sizeof(text), _("Cheat mode is %s"), isCheatModeOn ? _("on") : _("off"));
                     messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
                 }
             } else
@@ -1019,7 +1019,8 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
             const_cast<GameWorld&>(game_->world).GetDescriptionWriteable() = newDesc;
             worldViewer.InitTerrainRenderer();
         }
-    } else if(cmd == "ironore")	cheatAdd(GD_IRONORE, 10, cmd);
+    }
+    else if(cmd == "ironore")	cheatAdd(GD_IRONORE, 10, cmd);
     else if(cmd == "beer") cheatAdd(GD_BEER, 10, cmd);
     else if(cmd == "tongs") cheatAdd(GD_TONGS, 10, cmd);
     else if(cmd == "hammer") cheatAdd(GD_HAMMER, 10, cmd);
