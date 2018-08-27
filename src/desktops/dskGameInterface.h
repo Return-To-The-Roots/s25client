@@ -31,6 +31,7 @@
 #include "world/GameWorldView.h"
 #include "world/GameWorldViewer.h"
 #include "gameTypes/MapCoordinates.h"
+#include "gameTypes/GoodTypes.h"
 #include "gameTypes/RoadBuildState.h"
 #include "liblobby/LobbyInterface.h"
 #include <boost/array.hpp>
@@ -112,6 +113,10 @@ public:
     const GameWorldViewer& GetViewer() const { return worldViewer; }
 
     void OnChatCommand(const std::string& cmd) override;
+
+    /// Cheaten: Gibt dem aktuellen Spieler ein paar Waren
+    void cheatAdd(GoodType type, unsigned value, const std::string& type_string);
+    void cheatAddAll();
 
 private:
     /// Initializes player specific stuff after start or player swap

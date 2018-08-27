@@ -689,6 +689,9 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
                 {
                     isCheatModeOn = !isCheatModeOn;
                     curCheatTxt.clear();
+                    char text[256];
+                    snprintf(text, sizeof(text), "Cheat mode is on");
+                    messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
                 }
             } else
                 curCheatTxt.clear();
@@ -1016,7 +1019,75 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
             const_cast<GameWorld&>(game_->world).GetDescriptionWriteable() = newDesc;
             worldViewer.InitTerrainRenderer();
         }
-    }
+    } else if(cmd == "ironore")	cheatAdd(GD_IRONORE, 10, cmd);
+    else if(cmd == "beer") cheatAdd(GD_BEER, 10, cmd);
+    else if(cmd == "tongs") cheatAdd(GD_TONGS, 10, cmd);
+    else if(cmd == "hammer") cheatAdd(GD_HAMMER, 10, cmd);
+    else if(cmd == "axe") cheatAdd(GD_AXE, 10, cmd);
+    else if(cmd == "saw") cheatAdd(GD_SAW, 10, cmd);
+    else if(cmd == "pickaxe") cheatAdd(GD_PICKAXE, 10, cmd);
+    else if(cmd == "shovel") cheatAdd(GD_SHOVEL, 10, cmd);
+    else if(cmd == "crucible") cheatAdd(GD_CRUCIBLE, 10, cmd);
+    else if(cmd == "rodandline") cheatAdd(GD_RODANDLINE, 10, cmd);
+    else if(cmd == "scythe") cheatAdd(GD_SCYTHE, 10, cmd);
+    else if(cmd == "cleaver") cheatAdd(GD_CLEAVER, 10, cmd);
+    else if(cmd == "rollingpin") cheatAdd(GD_ROLLINGPIN, 10, cmd);
+    else if(cmd == "bow") cheatAdd(GD_BOW, 10, cmd);
+    else if(cmd == "boat") cheatAdd(GD_BOAT, 10, cmd);
+    else if(cmd == "iron") cheatAdd(GD_IRON, 10, cmd);
+    else if(cmd == "flour") cheatAdd(GD_FLOUR, 10, cmd);
+    else if(cmd == "fish") cheatAdd(GD_FISH, 10, cmd);
+    else if(cmd == "bread") cheatAdd(GD_BREAD, 10, cmd);
+    else if(cmd == "wood") cheatAdd(GD_WOOD, 10, cmd);
+    else if(cmd == "boards") cheatAdd(GD_BOARDS, 10, cmd);
+    else if(cmd == "stones") cheatAdd(GD_STONES, 10, cmd);
+    else if(cmd == "grain") cheatAdd(GD_GRAIN, 10, cmd);
+    else if(cmd == "coins") cheatAdd(GD_COINS, 10, cmd);
+    else if(cmd == "gold") cheatAdd(GD_GOLD, 10, cmd);
+    else if(cmd == "coal") cheatAdd(GD_COAL, 10, cmd);
+    else if(cmd == "meat") cheatAdd(GD_MEAT, 10, cmd);
+    else if(cmd == "ham") cheatAdd(GD_HAM, 10, cmd);
+    else if(cmd == "water") cheatAdd(GD_WATER, 10, cmd);
+    else if(cmd == "givemeall") cheatAddAll();
+}
+
+void dskGameInterface::cheatAdd(GoodType type, unsigned value, const std::string& type_string) {
+	if(isCheatModeOn) {
+		GameWorldBase& world = worldViewer.GetWorldNonConst();
+		GamePlayer& player = world.GetPlayer(worldViewer.GetPlayerId());
+
+		nobBaseWarehouse* wh = player.GetFirstWH();
+		Inventory goods;
+		goods.Add(type, value);
+		wh->AddGoods(goods, true);
+
+		if(type_string.length() != 0) {
+			char text[256];
+			snprintf(text, sizeof(text), _("Cheat: Added %d %s"), value, type_string.c_str());
+			messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
+		}
+	}
+}
+
+void dskGameInterface::cheatAddAll(){
+	if(isCheatModeOn) {
+		GoodType arr[] = { GD_IRONORE, GD_BEER, GD_TONGS, GD_HAMMER, GD_AXE, GD_SAW,
+				GD_PICKAXE, GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE, GD_SCYTHE,
+				GD_CLEAVER, GD_ROLLINGPIN, GD_BOW, GD_BOAT, GD_IRON, GD_FLOUR,
+				GD_FISH, GD_BREAD, GD_WOOD, GD_BOARDS, GD_STONES, GD_GRAIN,
+				GD_COINS, GD_GOLD, GD_COAL, GD_MEAT, GD_HAM, GD_WATER };
+
+		// Create a list and initialize it with vector
+		std::list<GoodType> listOfInts(arr, arr + sizeof(arr) / sizeof(int));
+
+		// Iterate over the list and display numbers
+		for (GoodType val : listOfInts)
+			cheatAdd(val, 10, "");
+
+		char text[256];
+		snprintf(text, sizeof(text), "Cheat: Added 10 of all goods");
+		messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
+	}
 }
 
 void dskGameInterface::GI_BuildRoad()
