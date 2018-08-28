@@ -105,24 +105,19 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
 
     if(gwv.GetWorld().GetGGS().isEnabled(AddonId::SHOWRESOURCES))
     {
-		if(BuildingProperties::IsMine(building->GetBuildingType()))
+		Resource::Type res;
+		switch(building->GetBuildingType())
 		{
-			Resource::Type res;
-			switch(building->GetBuildingType())
-			{
-				case BLD_GOLDMINE: res = Resource::Type::Gold; break;
-				case BLD_IRONMINE: res = Resource::Type::Iron; break;
-				case BLD_COALMINE: res = Resource::Type::Coal; break;
-				default: res = Resource::Type::Granite;
-			}
-			const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(res);
-			char text[256];
-			snprintf(text, sizeof(text), _("%d"), value);
-			AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
+			case BLD_GOLDMINE: res = Resource::Type::Gold; break;
+			case BLD_IRONMINE: res = Resource::Type::Iron; break;
+			case BLD_COALMINE: res = Resource::Type::Coal; break;
+			case BLD_WELL: res = Resource::Type::Water; break;
+			case BLD_GRANITEMINE: res = Resource::Type::Granite; break;
+			default: res = Resource::Type::Nothing;
 		}
-		else if(building->GetBuildingType() == BLD_WELL)
+		if(res != Resource::Type::Nothing)
 		{
-			const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(Resource::Type::Water);
+			const unsigned value = static_cast<const nofWorkman*>(building->GetWorker())->GetTotalResource(res);
 			char text[256];
 			snprintf(text, sizeof(text), _("%d"), value);
 			AddText(11, DrawPoint(200, 55), text, COLOR_RED, FontStyle::CENTER, NormalFont);
