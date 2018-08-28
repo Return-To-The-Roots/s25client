@@ -116,7 +116,7 @@ public:
 
     /// Cheaten: Gibt dem aktuellen Spieler ein paar Waren
     void cheatAdd(GoodType type, unsigned value, const std::string& type_string);
-    void cheatAddAll();
+    void cheatAddAll(unsigned value=10);
 
 private:
     /// Initializes player specific stuff after start or player swap

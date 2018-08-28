@@ -1020,7 +1020,7 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
             worldViewer.InitTerrainRenderer();
         }
     }
-    else if(cmd == "ironore")	cheatAdd(GD_IRONORE, 10, cmd);
+    else if(cmd == "ironore") cheatAdd(GD_IRONORE, 10, cmd);
     else if(cmd == "beer") cheatAdd(GD_BEER, 10, cmd);
     else if(cmd == "tongs") cheatAdd(GD_TONGS, 10, cmd);
     else if(cmd == "hammer") cheatAdd(GD_HAMMER, 10, cmd);
@@ -1070,7 +1070,7 @@ void dskGameInterface::cheatAdd(GoodType type, unsigned value, const std::string
 	}
 }
 
-void dskGameInterface::cheatAddAll(){
+void dskGameInterface::cheatAddAll(unsigned value=10){
 	if(isCheatModeOn) {
 		GoodType arr[] = { GD_IRONORE, GD_BEER, GD_TONGS, GD_HAMMER, GD_AXE, GD_SAW,
 				GD_PICKAXE, GD_SHOVEL, GD_CRUCIBLE, GD_RODANDLINE, GD_SCYTHE,
@@ -1083,10 +1083,10 @@ void dskGameInterface::cheatAddAll(){
 
 		// Iterate over the list and display numbers
 		for (GoodType val : listOfInts)
-			cheatAdd(val, 10, "");
+			cheatAdd(val, value, "");
 
 		char text[256];
-		snprintf(text, sizeof(text), "Cheat: Added 10 of all goods");
+		snprintf(text, sizeof(text), _("Cheat: Added %d of all goods"), value);
 		messenger.AddMessage("", 0, CD_SYSTEM, text, COLOR_RED);
 	}
 }
