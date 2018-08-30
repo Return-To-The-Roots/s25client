@@ -73,6 +73,6 @@ void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
     {
         if(chat_dest != CD_ALL && chat_dest != CD_ALLIES && chat_dest != CD_ENEMIES)
             chat_dest = CD_ALL;
-        GAMECLIENT.Command_Chat(edit->GetText(), ChatDestination(chat_dest));
+        GAMECLIENT.Command_Chat(text, ChatDestination(chat_dest));
     }
 }

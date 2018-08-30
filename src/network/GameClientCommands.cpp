@@ -33,7 +33,7 @@
 void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
 {
     // Replaymodus oder kein Text --> nichts senden
-    if(GAMECLIENT.IsReplayModeOn() || text.length() == 0)
+    if(IsReplayModeOn() || text.empty())
         return;
 
     mainPlayer.sendMsgAsync(new GameMessage_Chat(0xff, cd, text));
