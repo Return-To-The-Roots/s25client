@@ -45,8 +45,7 @@ BOOST_SCOPED_ENUM_DECLARE_BEGIN(TerritoryChangeReason){
   class GameWorldGame : public GameWorldBase
 {
     /// Destroys player belongings if that pint does not belong to the player anymore
-    void DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception,
-                            bool allowdestructionofmilbuildings = true);
+    void DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception);
 
     /// Return if there are deco-objects that can be removed when building roads
     bool HasRemovableObjForRoad(const MapPoint pt) const;

@@ -55,6 +55,7 @@
 #include <boost/math/special_functions/round.hpp>
 #include <algorithm>
 #include <functional>
+#include <set>
 #include <stdexcept>
 
 inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorldGame& gwg)
@@ -424,6 +425,13 @@ void GameWorldGame::RecalcBorderStones(Position startPt, Extent areaSize)
 #endif
 }
 
+namespace {
+struct MapPointComp
+{
+    bool operator()(const MapPoint& lhs, const MapPoint& rhs) const { return (lhs.y < rhs.y) || ((lhs.y == rhs.y) && (lhs.x < rhs.x)); }
+};
+} // namespace
+
 void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason)
 {
     // Additional radius to eliminate border stones or odd remaining territory parts
@@ -436,9 +444,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
 
     const TerritoryRegion region = CreateTerritoryRegion(building, militaryRadius + ADD_RADIUS, reason);
 
-    // Set to true, where owner has changed (initially all false)
-    std::vector<bool> ownerChanged(region.size.x * region.size.y, false);
-
+    std::vector<MapPoint> ptsWithChangedOwners;
     std::vector<int> sizeChanges(GetNumPlayers());
 
     // Copy owners from territory region to map and do the bookkeeping
@@ -453,7 +459,7 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             continue;
 
         SetOwner(curMapPt, newOwner);
-        ownerChanged[region.GetIdx(pt)] = true;
+        ptsWithChangedOwners.push_back(curMapPt);
         if(newOwner != 0)
             sizeChanges[newOwner - 1]++;
         if(oldOwner != 0)
@@ -464,32 +470,33 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             GetLua().EventOccupied(newOwner - 1, curMapPt);
     }
 
+    std::set<MapPoint, MapPointComp> ptsHandled;
     // Destroy everything from old player on all nodes where the owner has changed
-    RTTR_FOREACH_PT(Position, region.size)
+    BOOST_FOREACH(const MapPoint& curMapPt, ptsWithChangedOwners)
     {
-        if(!ownerChanged[region.GetIdx(pt)])
-            continue;
-
-        MapPoint curMapPt = MakeMapPoint(pt + region.startPt);
-
         // Destroy everything around this point as this is at best a border node where nothing should be around
         // Do not destroy the triggering building or its flag
-        // TODO: What about this point? Maybe make a set to handle each node only once
-        for(unsigned i = 0; i < Direction::COUNT; ++i)
+        // TODO: What about this point?
+        const uint8_t owner = GetNode(curMapPt).owner;
+        BOOST_FOREACH(Direction dir, Direction())
         {
-            MapPoint neighbourPt = GetNeighbour(curMapPt, Direction::fromInt(i));
-
-            DestroyPlayerRests(neighbourPt, GetNode(curMapPt).owner, &building, false);
-
-            // BQ neu berechnen
-            RecalcBQ(neighbourPt);
-            // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
-            if(GetNeighbourNode(neighbourPt, Direction::NORTHWEST).bq != BQ_NOTHING)
-                RecalcBQ(GetNeighbour(neighbourPt, Direction::NORTHWEST));
+            MapPoint neighbourPt = GetNeighbour(curMapPt, dir);
+            if(ptsHandled.insert(neighbourPt).second)
+                DestroyPlayerRests(neighbourPt, owner, &building);
         }
 
         if(gi)
             gi->GI_UpdateMinimap(curMapPt);
+    }
+
+    BOOST_FOREACH(const MapPoint& pt, ptsHandled)
+    {
+        // BQ neu berechnen
+        RecalcBQ(pt);
+        // ggf den noch darüber, falls es eine Flagge war (kann ja ein Gebäude entstehen)
+        const MapPoint neighbourPt = GetNeighbour(pt, Direction::NORTHWEST);
+        if(GetNode(neighbourPt).bq != BQ_NOTHING)
+            RecalcBQ(neighbourPt);
     }
 
     RecalcBorderStones(region.startPt, region.size);
@@ -519,12 +526,9 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
     // Notify script
     if(HasLua())
     {
-        RTTR_FOREACH_PT(Position, region.size)
+        BOOST_FOREACH(const MapPoint& pt, ptsWithChangedOwners)
         {
-            if(!ownerChanged[region.GetIdx(pt)])
-                continue;
-
-            const uint8_t newOwner = region.GetOwner(pt);
+            const uint8_t newOwner = GetNode(pt).owner;
             // Event for map scripting
             if(newOwner != 0)
                 GetLua().EventOccupied(newOwner - 1, MakeMapPoint(pt + region.startPt));
@@ -684,40 +688,40 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
     }
 }
 
-void GameWorldGame::DestroyPlayerRests(const MapPoint pt, const unsigned char newOwner, const noBaseBuilding* exception,
-                                       bool allowDestructionOfMilBuildings)
+void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
 {
     noBase* no = GetNO(pt);
+    if(no == exception)
+        return;
 
-    // Flaggen, Gebäude und Baustellen zerstören, aber keine übernommenen und nicht die Ausahme oder dessen Flagge!
-    if((no->GetType() == NOP_FLAG || no->GetType() == NOP_BUILDING || no->GetType() == NOP_BUILDINGSITE) && exception != no)
+    // Destroy only flags, buildings and building sites
+    const NodalObjectType noType = no->GetType();
+    if(noType != NOP_FLAG && noType != NOP_BUILDING && noType != NOP_BUILDINGSITE)
+        return;
+
+    // is the building on a node with a different owner?
+    if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 == newOwner)
+        return;
+
+    // Do not destroy military buildings that hold territory on their own
+    // Normally they will be on players territory but it can happen that they don't
+    // Examples: Improved alliances or expedition building sites
+    const noBase* noCheckMil = (noType == NOP_FLAG) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
+    const GO_Type goType = noCheckMil->GetGOT();
+    if(goType == GOT_NOB_HQ || goType == GOT_NOB_HARBORBUILDING
+       || (goType == GOT_NOB_MILITARY && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
+       || (noCheckMil->GetType() == NOP_BUILDINGSITE && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
     {
-        // Wurde das Objekt auch nicht vom Gegner übernommen?
-        if(static_cast<noRoadNode*>(no)->GetPlayer() + 1 != newOwner)
-        {
-            // maybe buildings that push territory should not be destroyed right now?- can happen with improved alliances addon or in rare
-            // cases even without the addon so allow those buildings & their flag to survive.
-            if(!allowDestructionOfMilBuildings)
-            {
-                const noBase* noCheckMil = (no->GetType() == NOP_FLAG) ? GetNO(GetNeighbour(pt, Direction::NORTHWEST)) : no;
-                if(noCheckMil->GetGOT() == GOT_NOB_HQ || noCheckMil->GetGOT() == GOT_NOB_HARBORBUILDING
-                   || (noCheckMil->GetGOT() == GOT_NOB_MILITARY && !static_cast<const nobMilitary*>(noCheckMil)->IsNewBuilt())
-                   || (noCheckMil->GetType() == NOP_BUILDINGSITE
-                       && static_cast<const noBuildingSite*>(noCheckMil)->IsHarborBuildingSiteFromSea()))
-                {
-                    // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type,
-                    // %i \n", x, y, no->GetType());
-                    return;
-                }
-            }
-            // vorher Bescheid sagen
-            if(no->GetType() == NOP_FLAG && (!exception || no != exception->GetFlag()))
-                static_cast<noFlag*>(no)->DestroyAttachedBuilding();
-
-            DestroyNO(pt, false);
-            return;
-        }
+        // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y, %i type,
+        // %i \n", x, y, noType);
+        return;
     }
+
+    // If it is a flag, destroy the building
+    if(noType == NOP_FLAG && (!exception || no != exception->GetFlag()))
+        static_cast<noFlag*>(no)->DestroyAttachedBuilding();
+
+    DestroyNO(pt, false);
 }
 
 void GameWorldGame::RoadNodeAvailable(const MapPoint pt)
