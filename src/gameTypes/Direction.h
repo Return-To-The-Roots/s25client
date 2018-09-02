@@ -18,6 +18,8 @@
 #ifndef Direction_h__
 #define Direction_h__
 
+#include <iterator>
+
 /// "Enum" to represent one of the 6 directions from each node
 struct Direction
 {
@@ -49,7 +51,12 @@ struct Direction
     Direction operator++(int);
     Direction& operator--();
     Direction operator--(int);
-    // TODO: Add iterator to iterate over all values from a given value
+
+    struct iterator;
+    typedef iterator const_iterator;
+    const_iterator begin() const;
+    const_iterator end() const;
+
 private:
     // prevent automatic conversion for any other built-in types such as bool, int, etc
     template<typename T>
@@ -136,6 +143,43 @@ inline bool operator!=(const Direction::Type& lhs, const Direction& rhs)
 inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
 {
     return Direction::Type(lhs) != rhs;
+}
+
+struct Direction::iterator
+{
+    typedef std::forward_iterator_tag iterator_category;
+    typedef Direction value_type;
+    typedef Direction reference;
+    typedef const Direction* pointer;
+    typedef std::ptrdiff_t difference_type;
+
+    explicit iterator(unsigned value) : value_(value) {}
+    iterator& operator++()
+    {
+        ++value_;
+        return *this;
+    }
+    iterator operator++(int)
+    {
+        iterator retval = *this;
+        ++(*this);
+        return retval;
+    }
+    bool operator==(iterator other) const { return value_ == other.value_; }
+    bool operator!=(iterator other) const { return !(*this == other); }
+    Direction operator*() const { return Direction::fromInt(value_ < COUNT ? value_ : value_ - COUNT); }
+
+private:
+    unsigned value_;
+};
+
+inline Direction::const_iterator Direction::begin() const
+{
+    return const_iterator(t_);
+}
+inline Direction::const_iterator Direction::end() const
+{
+    return const_iterator(t_ + COUNT);
 }
 
 #endif // Direction_h__
