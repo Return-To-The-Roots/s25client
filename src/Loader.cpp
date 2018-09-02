@@ -227,7 +227,7 @@ bool Loader::LoadFilesAtStart()
 bool ConvertSounds(const std::string& outputFilepath)
 {
     std::stringstream cmdss;
-    cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
+    cmdss << "\"" << RTTRCONFIG.ExpandPath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
 
 // name anhängen
 #ifdef _WIN32
@@ -237,7 +237,7 @@ bool ConvertSounds(const std::string& outputFilepath)
 #endif
 
     // parameter anhängen
-    cmdss << " -s \"";
+    cmdss << "\" -s \"";
     cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[56]); // script
     cmdss << "\" -f \"";
     cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[49]); // quelle
