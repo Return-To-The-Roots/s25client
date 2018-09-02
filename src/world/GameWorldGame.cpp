@@ -489,6 +489,20 @@ void GameWorldGame::RecalcTerritory(const noBaseBuilding& building, TerritoryCha
             gi->GI_UpdateMinimap(curMapPt);
     }
 
+    // Destroy remaining roads going through non-owned territory
+    BOOST_FOREACH(const MapPoint& curMapPt, ptsWithChangedOwners)
+    {
+        // Skip if there is an object. We are looking only for roads going through, not ending here
+        // (objects here are already destroyed and if the road ended there it would have been as well)
+        if(GetNode(curMapPt).obj)
+            continue;
+        Direction dir;
+        noFlag* flag = GetRoadFlag(curMapPt, dir);
+        if(!flag || flag->GetPlayer() + 1 == GetNode(curMapPt).owner)
+            continue;
+        flag->DestroyRoad(dir);
+    }
+
     BOOST_FOREACH(const MapPoint& pt, ptsHandled)
     {
         // BQ neu berechnen
@@ -690,8 +704,8 @@ void GameWorldGame::CleanTerritoryRegion(TerritoryRegion& region, TerritoryChang
 
 void GameWorldGame::DestroyPlayerRests(const MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception)
 {
-    noBase* no = GetNO(pt);
-    if(no == exception)
+    noBase* no = GetNode(pt).obj;
+    if(!no || no == exception)
         return;
 
     // Destroy only flags, buildings and building sites

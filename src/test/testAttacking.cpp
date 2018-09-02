@@ -377,16 +377,6 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     AddSoldiersWithRank(milBld1Pos, 1, 1);
     BuildRoadForBlds(milBld0Pos, hqPos[0]);
 
-    // Build 2 roads to attack building to test that destroying them does not cause a bug
-    curPlayer = 1;
-    // Bld -> Flag
-    BuildRoadForBlds(milBld1Pos, world.MakeMapPoint(milBld1Pos + Position(2, 0)));
-    // Flag -> Bld
-    const MapPoint flagPt = world.MakeMapPoint(milBld1Pos - Position(2, 0));
-    this->SetFlag(flagPt);
-    BuildRoadForBlds(world.GetNeighbour(flagPt, Direction::NORTHWEST), milBld1Pos);
-    curPlayer = 0;
-
     // Finish recruiting, carrier outhousing etc.
     RTTR_SKIP_GFS(400);
     // Start attack ->1 (weak one first)
@@ -780,6 +770,52 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     BOOST_REQUIRE_EQUAL(milBld1->GetNumCoins(), 1u);
     // Door closed after carrier left it
     RTTR_EXEC_TILL(40, !milBld1->IsDoorOpen());
+}
+
+typedef AttackFixture<2, 24> DestroyRoadsOnConquerFixture;
+BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
+{
+    MapPoint leftBldPos = world.MakeMapPoint(milBld1Pos + Position(-5, 2));
+    noBuilding* leftBld = BuildingFactory::CreateBuilding(world, BLD_BARRACKS, leftBldPos, 1, NAT_BABYLONIANS);
+    BOOST_REQUIRE(leftBld);
+    MapPoint rightBldPos = world.MakeMapPoint(milBld1Pos + Position(5, 2));
+    noBuilding* rightBld = BuildingFactory::CreateBuilding(world, BLD_BARRACKS, rightBldPos, 1, NAT_BABYLONIANS);
+    BOOST_REQUIRE(rightBld);
+
+    AddSoldiersWithRank(leftBldPos, 1, 0);
+    AddSoldiersWithRank(rightBldPos, 1, 0);
+    AddSoldiersWithRank(milBld1Pos, 1, 0);
+    AddSoldiersWithRank(milBld0Pos, 6, 4);
+
+    curPlayer = 1;
+    // Build 2 roads to attack building to test that destroying them does not cause a bug
+    // Bld -> Flag
+    BuildRoadForBlds(milBld1Pos, world.MakeMapPoint(milBld1Pos + Position(2, 0)));
+    // Flag -> Bld
+    const MapPoint flagPt = world.MakeMapPoint(milBld1Pos - Position(2, 0));
+    this->SetFlag(flagPt);
+    BuildRoadForBlds(world.GetNeighbour(flagPt, Direction::NORTHWEST), milBld1Pos);
+    // Build a long road connecting left&right w/o any flag inbetween (See #863)
+    BuildRoadForBlds(leftBldPos, rightBldPos);
+    BOOST_REQUIRE_GE(leftBld->GetFlag()->GetRoute(Direction::EAST)->GetLength(), 10u);
+
+    curPlayer = 0;
+    this->Attack(milBld1Pos, 5, true);
+    RTTR_EXEC_TILL(2000, milBld1->GetPlayer() == curPlayer);
+    boost::array<MapPoint, 3> bldPts = {{leftBldPos, rightBldPos, milBld1Pos}};
+    BOOST_FOREACH(const MapPoint& bldPt, bldPts)
+    {
+        MapPoint flagPt = world.GetNeighbour(bldPt, Direction::SOUTHEAST);
+        BOOST_FOREACH(Direction i, Direction())
+        {
+            // No routes except the main road
+            if(i != Direction::NORTHWEST)
+            {
+                BOOST_REQUIRE(!world.GetSpecObj<noRoadNode>(flagPt)->GetRoute(i));
+                BOOST_REQUIRE_EQUAL(world.GetPointRoad(flagPt, i), 0u);
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
