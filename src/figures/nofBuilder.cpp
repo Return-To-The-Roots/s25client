@@ -173,7 +173,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                     gwg->RemoveFigure(pos, this);
 
                     // Evtl Träger aus dem HQ wieder verwenden
-                    owner.FindWarehouseForAllRoads();
+                    owner.FindCarrierForAllRoads();
                     owner.FindWarehouseForAllJobs(JOB_HELPER);
 
                     // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen

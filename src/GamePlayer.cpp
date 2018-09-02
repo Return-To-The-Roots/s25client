@@ -477,13 +477,13 @@ void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
         TestDefeat();
 }
 
-void GamePlayer::NewRoadConnection(RoadSegment* const rs)
+void GamePlayer::NewRoadConnection(RoadSegment* rs)
 {
     // Zu den Straßen hinzufgen, da's ja ne neue ist
     roads.push_back(rs);
 
     // Alle Straßen müssen nun gucken, ob sie einen Weg zu einem Warehouse finden
-    FindWarehouseForAllRoads();
+    FindCarrierForAllRoads();
 
     // Alle Straßen müssen gucken, ob sie einen Esel bekommen können
     BOOST_FOREACH(RoadSegment* rs, roads)
@@ -505,6 +505,17 @@ void GamePlayer::NewRoadConnection(RoadSegment* const rs)
         mil->RegulateTroops();
         mil->SearchCoins();
     }
+}
+
+void GamePlayer::AddRoad(RoadSegment* rs)
+{
+    roads.push_back(rs);
+}
+
+void GamePlayer::DeleteRoad(RoadSegment* rs)
+{
+    RTTR_Assert(helpers::contains(roads, rs));
+    roads.remove(rs);
 }
 
 void GamePlayer::FindClientForLostWares()
@@ -601,12 +612,6 @@ void GamePlayer::RoadDestroyed()
     }
 }
 
-void GamePlayer::DeleteRoad(RoadSegment* rs)
-{
-    RTTR_Assert(helpers::contains(roads, rs));
-    roads.remove(rs);
-}
-
 bool GamePlayer::FindCarrierForRoad(RoadSegment* rs)
 {
     RTTR_Assert(rs->GetF1() != NULL && rs->GetF2() != NULL);
@@ -699,7 +704,7 @@ void GamePlayer::RecalcDistributionOfWare(const GoodType ware)
     distribution[ware].selected_goal = 0;
 }
 
-void GamePlayer::FindWarehouseForAllRoads()
+void GamePlayer::FindCarrierForAllRoads()
 {
     BOOST_FOREACH(RoadSegment* rs, roads)
     {

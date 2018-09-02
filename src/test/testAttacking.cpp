@@ -376,6 +376,17 @@ BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
     AddSoldiersWithRank(milBld1Pos, 1, 0);
     AddSoldiersWithRank(milBld1Pos, 1, 1);
     BuildRoadForBlds(milBld0Pos, hqPos[0]);
+
+    // Build 2 roads to attack building to test that destroying them does not cause a bug
+    curPlayer = 1;
+    // Bld -> Flag
+    BuildRoadForBlds(milBld1Pos, world.MakeMapPoint(milBld1Pos + Position(2, 0)));
+    // Flag -> Bld
+    const MapPoint flagPt = world.MakeMapPoint(milBld1Pos - Position(2, 0));
+    this->SetFlag(flagPt);
+    BuildRoadForBlds(world.GetNeighbour(flagPt, Direction::NORTHWEST), milBld1Pos);
+    curPlayer = 0;
+
     // Finish recruiting, carrier outhousing etc.
     RTTR_SKIP_GFS(400);
     // Start attack ->1 (weak one first)

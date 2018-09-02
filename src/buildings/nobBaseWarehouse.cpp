@@ -521,7 +521,7 @@ void nobBaseWarehouse::HandleProduceHelperEvent()
         {
             // Wenn vorher keine Träger da waren, müssen alle unbesetzen Wege gucken, ob sie nen Weg hierher finden, könnte ja sein, dass
             // vorher nich genug Träger da waren
-            owner.FindWarehouseForAllRoads();
+            owner.FindCarrierForAllRoads();
             // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
             owner.FindWarehouseForAllJobs(JOB_NOTHING);
         }
@@ -810,7 +810,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
             if(job == JOB_HELPER && inventory[JOB_HELPER] == 1)
             {
                 // evtl als Träger auf Straßen schicken
-                owner.FindWarehouseForAllRoads();
+                owner.FindCarrierForAllRoads();
                 // evtl Träger mit Werkzeug kombiniert -> neuer Beruf
                 owner.FindWarehouseForAllJobs(JOB_NOTHING);
             }
