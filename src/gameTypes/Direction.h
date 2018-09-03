@@ -42,7 +42,8 @@ struct Direction
     /// Convert an UInt to a Direction without checking its value. Use only when this is actually a Direction
     static Direction fromInt(unsigned t) { return Type(t); }
     static Direction fromInt(int t) { return Type(t); }
-    operator Type() const { return t_; }
+    /// Use this for use in switches
+    Type native_value() const { return t_; }
     /// Return the Direction as an UInt
     unsigned toUInt() const { return t_; }
     Direction& operator+=(unsigned i);
@@ -58,9 +59,6 @@ struct Direction
     const_iterator end() const;
 
 private:
-    // prevent automatic conversion for any other built-in types such as bool, int, etc
-    template<typename T>
-    operator T() const;
     // Disallow int operators
     Direction& operator+=(int i);
     Direction& operator-=(int i);
@@ -73,13 +71,13 @@ private:
 
 inline Direction& Direction::operator+=(unsigned i)
 {
-    t_ = Direction(static_cast<unsigned>(t_) + i);
+    t_ = Direction(static_cast<unsigned>(t_) + i).t_;
     return *this;
 }
 
 inline Direction& Direction::operator-=(unsigned i)
 {
-    t_ = Direction(static_cast<unsigned>(t_) + COUNT - (i % COUNT));
+    t_ = Direction(static_cast<unsigned>(t_) + COUNT - (i % COUNT)).t_;
     return *this;
 }
 
@@ -119,7 +117,7 @@ inline Direction Direction::operator--(int)
 
 inline bool operator==(const Direction& lhs, const Direction& rhs)
 {
-    return Direction::Type(lhs) == Direction::Type(rhs);
+    return lhs.t_ == rhs.t_;
 }
 
 inline bool operator!=(const Direction& lhs, const Direction& rhs)
@@ -130,19 +128,19 @@ inline bool operator!=(const Direction& lhs, const Direction& rhs)
 // Comparison operators to avoid ambiguity
 inline bool operator==(const Direction::Type& lhs, const Direction& rhs)
 {
-    return lhs == Direction::Type(rhs);
+    return lhs == rhs.t_;
 }
 inline bool operator==(const Direction& lhs, const Direction::Type& rhs)
 {
-    return Direction::Type(lhs) == rhs;
+    return lhs.t_ == rhs;
 }
 inline bool operator!=(const Direction::Type& lhs, const Direction& rhs)
 {
-    return lhs != Direction::Type(rhs);
+    return lhs != rhs.t_;
 }
 inline bool operator!=(const Direction& lhs, const Direction::Type& rhs)
 {
-    return Direction::Type(lhs) != rhs;
+    return lhs.t_ != rhs;
 }
 
 struct Direction::iterator
