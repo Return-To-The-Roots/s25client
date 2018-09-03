@@ -25,7 +25,7 @@
 
 inline std::ostream& operator<<(std::ostream& os, const Direction& dir)
 {
-    switch(Direction::Type(dir))
+    switch(dir.native_value())
     {
         case Direction::WEST: os << "WEST"; break;
         case Direction::NORTHWEST: os << "NORTHWEST"; break;

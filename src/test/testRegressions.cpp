@@ -69,6 +69,7 @@ BOOST_AUTO_TEST_CASE(DirectionCmp)
     BOOST_REQUIRE_NE(east, west);
     BOOST_REQUIRE_NE(east, Direction::WEST);
     BOOST_REQUIRE_NE(Direction::WEST, east2);
+    Direction dir;
 }
 
 BOOST_AUTO_TEST_CASE(DirectionIncDec)
@@ -109,6 +110,23 @@ BOOST_AUTO_TEST_CASE(DirectionIncDec)
             BOOST_REQUIRE_EQUAL(resultDir2 -= diff, expectedDir);
             BOOST_REQUIRE_EQUAL(resultDir2, expectedDir);
         }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(DirectionIterator)
+{
+    for(unsigned i = 0; i < Direction::COUNT; i++)
+    {
+        Direction dir(i);
+        unsigned ct = 0;
+        Direction expectedDir(dir);
+        for(Direction::iterator it = dir.begin(); it != dir.end(); ++it, ++expectedDir)
+        {
+            BOOST_REQUIRE_EQUAL(*it, expectedDir);
+            ++ct;
+        }
+        unsigned expectedCt = Direction::COUNT;
+        BOOST_REQUIRE_EQUAL(ct, expectedCt);
     }
 }
 

@@ -104,9 +104,9 @@ public:
     const BuildingRegister& GetBuildingRegister() const { return buildings; }
 
     /// Notify that a new road connection exists (not only an existing road splitted)
-    void NewRoadConnection(RoadSegment* const rs);
+    void NewRoadConnection(RoadSegment* rs);
     /// Neue Straße hinzufügen
-    void AddRoad(RoadSegment* const rs) { roads.push_back(rs); }
+    void AddRoad(RoadSegment* rs);
     /// Gibt dem Spieler bekannt, das eine Straße abgerissen wurde
     void RoadDestroyed();
     /// (Unbesetzte) Straße aus der Liste entfernen
@@ -125,7 +125,7 @@ public:
     nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, const bool to_wh,
                                     const bool use_boat_roads, unsigned* const length = 0, const RoadSegment* const forbidden = NULL) const;
     /// Für alle unbesetzen Straßen Weg neu berechnen
-    void FindWarehouseForAllRoads();
+    void FindCarrierForAllRoads();
     /// Versucht für alle Arbeitsplätze eine Arbeitskraft zu suchen
     void FindWarehouseForAllJobs(const Job job);
 

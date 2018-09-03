@@ -173,7 +173,7 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                     gwg->RemoveFigure(pos, this);
 
                     // Evtl Träger aus dem HQ wieder verwenden
-                    owner.FindWarehouseForAllRoads();
+                    owner.FindCarrierForAllRoads();
                     owner.FindWarehouseForAllJobs(JOB_HELPER);
 
                     // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen
@@ -263,7 +263,7 @@ void nofBuilder::StartFreewalk()
     // Zukünftigen Platz berechnen
     nextOffsetSite = offsetSite;
 
-    switch(Direction::Type(GetCurMoveDir()))
+    switch(GetCurMoveDir().native_value())
     {
         case Direction::WEST: nextOffsetSite.x -= FREEWALK_LENGTH[waiting_walk]; break;
         case Direction::NORTHWEST:

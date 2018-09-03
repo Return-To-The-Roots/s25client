@@ -47,7 +47,7 @@ MapPoint MapBase::GetNeighbour(const MapPoint pt, const Direction dir) const
     */
 
     MapPoint res;
-    switch(static_cast<Direction::Type>(dir))
+    switch(dir.native_value())
     {
         case Direction::WEST: // -1|0   -1|0
             res.x = ((pt.x == 0) ? size_.x : pt.x) - 1;

@@ -94,7 +94,7 @@ bool CreateUninitWorld::operator()(GameWorldGame& world) const
 
 void setRightTerrain(GameWorldGame& world, const MapPoint& pt, Direction dir, DescIdx<TerrainDesc> t)
 {
-    switch(Direction::Type(dir))
+    switch(dir.native_value())
     {
         case Direction::WEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t1 = t; break;
         case Direction::NORTHWEST: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NORTHWEST)).t2 = t; break;

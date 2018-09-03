@@ -76,6 +76,8 @@ void GameClient::ExecuteGameFrame_Replay()
 
                     // and pause the game for further investigation
                     framesinfo.isPaused = true;
+                    if(skiptogf)
+                        skiptogf = curGF;
                 }
 
                 replayinfo->async++;
@@ -110,5 +112,7 @@ void GameClient::ExecuteGameFrame_Replay()
 
         replayinfo->end = true;
         framesinfo.isPaused = true;
+        if(skiptogf)
+            skiptogf = curGF;
     }
 }
