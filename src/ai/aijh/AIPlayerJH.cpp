@@ -1108,7 +1108,11 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
             if(foundPos.isValid() && IsInvalidShipyardPosition(foundPos))
                 foundPos = MapPoint::Invalid();
             break;
-        case BLD_FARM: foundPos = FindBestPosition(around, AIResource::PLANTSPACE, BUILDING_SIZE[type], 85, 11, true); break;
+        case BLD_FARM:
+            foundPos = FindBestPosition(around, AIResource::PLANTSPACE, BUILDING_SIZE[type], 85, 11, true);
+            if(foundPos.isValid())
+                foundPos = FindBestPosition(around, AIResource::PLANTSPACE, BUILDING_SIZE[type], 85, 11, true);
+            break;
         case BLD_CATAPULT:
             foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], 11);
             if(foundPos.isValid() && BuildingNearby(foundPos, BLD_CATAPULT, 8))
@@ -1370,44 +1374,48 @@ void AIPlayerJH::HandleNoMoreResourcesReachable(const MapPoint pt, BuildingType 
 {
     // Destroy old building (once)
 
-    if(aii.IsObjectTypeOnNode(pt, NOP_BUILDING))
+    if(!aii.IsObjectTypeOnNode(pt, NOP_BUILDING))
+        return;
+    // keep 2 woodcutters for each forester even if they sometimes run out of trees
+    if(bld == BLD_WOODCUTTER)
     {
-        // keep 2 woodcutters for each forester even if they sometimes run out of trees
-        if(bld == BLD_WOODCUTTER)
+        BOOST_FOREACH(const nobUsual* forester, aii.GetBuildings(BLD_FORESTER))
         {
-            BOOST_FOREACH(const nobUsual* forester, aii.GetBuildings(BLD_FORESTER))
+            // is the forester somewhat close?
+            if(gwb.CalcDistance(pt, forester->GetPos()) <= RES_RADIUS[static_cast<unsigned>(AIResource::WOOD)])
             {
-                // is the forester somewhat close?
-                if(gwb.CalcDistance(pt, forester->GetPos()) < 6)
                 // then find it's 2 woodcutters
+                unsigned maxdist = gwb.CalcDistance(pt, forester->GetPos());
+                int betterwoodcutters = 0;
+                BOOST_FOREACH(const nobUsual* woodcutter, aii.GetBuildings(BLD_WOODCUTTER))
                 {
-                    unsigned maxdist = gwb.CalcDistance(pt, forester->GetPos());
-                    int betterwoodcutters = 0;
-                    BOOST_FOREACH(const nobUsual* woodcutter, aii.GetBuildings(BLD_WOODCUTTER))
+                    // dont count the woodcutter in question
+                    if(pt == woodcutter->GetPos())
+                        continue;
+                    // TODO: We currently don't take the distance to the forester into account when placing a woodcutter
+                    // This leads to points beeing equally good for placing but later it will be destroyed. Avoid that
+                    // by checking only close woddcutters
+                    if(gwb.CalcDistance(woodcutter->GetPos(), pt) > RES_RADIUS[static_cast<unsigned>(AIResource::WOOD)])
+                        continue;
+                    // closer or equally close to forester than woodcutter in question?
+                    if(gwb.CalcDistance(woodcutter->GetPos(), forester->GetPos()) <= maxdist)
                     {
-                        // dont count the woodcutter in question
-                        if(pt == woodcutter->GetPos())
-                            continue;
-                        // closer or equally close to forester than woodcutter in question?
-                        if(gwb.CalcDistance(woodcutter->GetPos(), forester->GetPos()) <= maxdist)
-                        {
-                            betterwoodcutters++;
-                            if(betterwoodcutters >= 2)
-                                break;
-                        }
+                        betterwoodcutters++;
+                        if(betterwoodcutters >= 2)
+                            break;
                     }
-                    // couldnt find 2 closer woodcutter -> keep it alive
-                    if(betterwoodcutters < 2)
-                        return;
                 }
+                // couldnt find 2 closer woodcutter -> keep it alive
+                if(betterwoodcutters < 2)
+                    return;
             }
         }
-        aii.DestroyBuilding(pt);
-        if(bld == BLD_FISHERY) // fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this
-                               // location again
-            SetResourceMap(AIResource::FISH, pt, 0);
-    } else
-        return;
+    }
+    aii.DestroyBuilding(pt);
+    // fishery cant find fish? set fish value at location to 0 so we dont have to calculate the value for this location again
+    if(bld == BLD_FISHERY)
+        SetResourceMap(AIResource::FISH, pt, 0);
+
     UpdateNodesAround(pt, 11); // todo: fix radius
     RemoveUnusedRoad(*gwb.GetSpecObj<noFlag>(gwb.GetNeighbour(pt, Direction::SOUTHEAST)), 1, true);
 

@@ -115,7 +115,7 @@ MapPoint AIResourceMap::FindGoodPosition(const MapPoint& pt, int threshold, Buil
     if(radius == -1)
         radius = 30;
 
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadius(pt, radius);
+    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
     BOOST_FOREACH(const MapPoint& curPt, pts)
     {
         const unsigned idx = map.GetIdx(curPt);
@@ -142,7 +142,7 @@ MapPoint AIResourceMap::FindBestPosition(const MapPoint& pt, BuildingQuality siz
     MapPoint best = MapPoint::Invalid();
     int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadius(pt, radius);
+    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
     BOOST_FOREACH(const MapPoint& curPt, pts)
     {
         const unsigned idx = map.GetIdx(curPt);
