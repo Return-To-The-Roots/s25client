@@ -1559,7 +1559,7 @@ void GameClient::SkipGF(unsigned gf, GameWorldView& gwv)
     skiptogf = gf;
 
     // GFs überspringen
-    for(unsigned i = GetGFNumber(); i < gf; ++i)
+    for(unsigned i = GetGFNumber(); i < skiptogf; ++i)
     {
         if(i % 1000 == 0)
         {
