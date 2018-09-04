@@ -91,11 +91,20 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
         {
             return RES_RADIUS[boost::underlying_cast<unsigned>(res)];
         }
-        // another building using our "resource"? reduce rating!
-        if(res == AIResource::WOOD && IsBuildingOnNode(pt, BLD_WOODCUTTER))
-            return -40;
-        if(res == AIResource::PLANTSPACE && IsBuildingOnNode(pt, BLD_FORESTER))
-            return -40;
+        // Adjust based on building on node (if any)
+        if(res == AIResource::WOOD)
+        {
+            if(IsBuildingOnNode(pt, BLD_WOODCUTTER))
+                return -40;
+            if(IsBuildingOnNode(pt, BLD_FORESTER))
+                return 20;
+        } else if(res == AIResource::PLANTSPACE)
+        {
+            if(IsBuildingOnNode(pt, BLD_FORESTER))
+                return -40;
+            if(IsBuildingOnNode(pt, BLD_FARM))
+                return -20;
+        }
     }
     // so it's a subsurface resource or something we dont calculate (multiple,blocked,nothing)
     else
@@ -112,11 +121,9 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, int8_t dir
     if(direction == -1) // calculate complete value from scratch (3n^2+3n+1)
     {
         returnVal = 0;
-        std::vector<MapPoint> pts = gwb.GetPointsInRadius(pt, RES_RADIUS[boost::underlying_cast<unsigned>(res)]);
+        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, RES_RADIUS[boost::underlying_cast<unsigned>(res)]);
         for(std::vector<MapPoint>::const_iterator it = pts.begin(); it != pts.end(); ++it)
             returnVal += GetResourceRating(*it, res);
-        // add the center point value
-        returnVal += GetResourceRating(pt, res);
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
         returnVal = lastval;

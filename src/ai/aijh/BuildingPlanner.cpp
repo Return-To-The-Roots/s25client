@@ -151,19 +151,23 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         buildingsWanted[BLD_HUNTER] = 0;
         buildingsWanted[BLD_FARM] = 0;
         buildingsWanted[BLD_CHARBURNER] = 0;
-    } else // at least some expansion happened -> more buildings wanted
-           // building wanted usually limited by profession workers+tool for profession with some arbitrary limit. Some buildings which are
-           // linked to others in a chain / profession-tool-rivalry have additional limits.
+    } else
     {
+        // at least some expansion happened -> more buildings wanted
+        // building wanted usually limited by profession workers+tool for profession with some arbitrary limit. Some buildings which are
+        // linked to others in a chain / profession-tool-rivalry have additional limits.
         const Inventory& inventory = aijh.player.GetInventory();
 
         // foresters
-        unsigned max_available_forester = inventory.people[JOB_FORESTER] + inventory.goods[GD_SHOVEL];
+        unsigned max_available_forester = inventory[JOB_FORESTER] + inventory[GD_SHOVEL];
         unsigned additional_forester = GetNumBuildings(BLD_CHARBURNER);
 
         // 1 mil -> 1 forester, 2 mil -> 2 forester, 4 mil -> 3 forester, 8 mil -> 4 forester, 16 mil -> 5 forester, ... wanted
         if(numMilitaryBlds > 0)
             buildingsWanted[BLD_FORESTER] = (unsigned)(1.45 * log(numMilitaryBlds) + 1);
+        // If we are low on wood, we need more foresters
+        if(aijh.player.GetBuildingRegister().GetBuildingSites().size() > (inventory[GD_BOARDS] + inventory[GD_WOOD]) * 2)
+            additional_forester++;
 
         buildingsWanted[BLD_FORESTER] += additional_forester;
         buildingsWanted[BLD_FORESTER] = std::min(max_available_forester, buildingsWanted[BLD_FORESTER]);

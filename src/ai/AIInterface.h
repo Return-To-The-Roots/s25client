@@ -71,9 +71,9 @@ public:
     /// Test whether there is specific building on a spot
     bool IsBuildingOnNode(const MapPoint pt, BuildingType bld) const
     {
-        return (gwb.GetNO(pt)->GetType() == NOP_BUILDING || gwb.GetNO(pt)->GetType() == NOP_BUILDINGSITE) ?
-                 (gwb.GetSpecObj<noBaseBuilding>(pt)->GetBuildingType() == bld) :
-                 false;
+        const noBase* no = gwb.GetNO(pt);
+        const NodalObjectType noType = no->GetType();
+        return (noType == NOP_BUILDING || noType == NOP_BUILDINGSITE) && (static_cast<const noBaseBuilding*>(no)->GetBuildingType() == bld);
     }
     /// Test whether the ai player can see a point
     bool IsVisible(const MapPoint pt) const { return gwb.CalcVisiblityWithAllies(pt, playerID_) == VIS_VISIBLE; }
