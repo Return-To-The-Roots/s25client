@@ -22,36 +22,57 @@
 #include "factories/BuildingFactory.h"
 #include "test/WorldWithGCExecution.h"
 #include <boost/test/unit_test.hpp>
+#include <stdexcept>
 
 BOOST_AUTO_TEST_SUITE(FrontierDistance)
 
-typedef WorldWithGCExecution<2, 20u, 20u> FrontierWorldSmall;
-typedef WorldWithGCExecution<2, 38u, 38u> FrontierWorldMiddle;
-typedef WorldWithGCExecution<2, 60u, 60u> FrontierWorldBig;
-
-BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
+template<unsigned T_width, unsigned T_height>
+struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
 {
-    GamePlayer& p0 = world.GetPlayer(0);
-    MapPoint milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
-    GamePlayer& p1 = world.GetPlayer(1);
-    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
-    nobMilitary* milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_ROMANS));
-    nobMilitary* milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
+    MapPoint milBld0Pos, milBld1Pos;
+    nobMilitary *milBld0, *milBld1;
 
+    FrontierWorld()
+    {
+        const GamePlayer& p0 = world.GetPlayer(0);
+        const GamePlayer& p1 = world.GetPlayer(1);
+        milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
+        milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
+        // Assumed by distributions and sizes
+        BOOST_REQUIRE_EQUAL(milBld0Pos.y, milBld1Pos.y);
+        // Destroy HQs so only blds are checked
+        world.DestroyNO(p0.GetHQPos());
+        world.DestroyNO(p1.GetHQPos());
+        milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_BARRACKS, milBld0Pos, 0, NAT_ROMANS));
+        milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
+    }
+};
+typedef FrontierWorld<34u, 20u> FrontierWorldSmall;
+typedef FrontierWorld<38u, 20u> FrontierWorldMiddle;
+typedef FrontierWorld<60u, 20u> FrontierWorldBig;
+
+DescIdx<TerrainDesc> GetWaterTerrain(const GameWorld& world)
+{
     DescIdx<TerrainDesc> tWater(0);
     for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
     {
         TerrainDesc fieldDesc = world.GetDescription().get(tWater);
         if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
-            break;
+            return tWater;
     }
+    throw std::logic_error("No water");
+}
+
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
+{
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
     for(int y = 1; y < world.GetHeight(); y++)
     {
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == milBld1Pos)
             {
                 continue;
             }
@@ -65,26 +86,20 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        p0.RecalcMilitaryFlags();
-        p1.RecalcMilitaryFlags();
+        world.GetPlayer(0).RecalcMilitaryFlags();
+        world.GetPlayer(1).RecalcMilitaryFlags();
 
         unsigned distance0 = milBld0->GetFrontierDistance();
         unsigned distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 100, (i == 0 ? 3u : 0u) + i * 100); // near if addon is inactive, otherwise inland
+        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, (i == 0 ? nobMilitary::DIST_NEAR : nobMilitary::DIST_FAR)
+                                                   + i * 10u); // near if addon is inactive, otherwise inland
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
 {
-    GamePlayer& p0 = world.GetPlayer(0);
-    MapPoint milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
-    GamePlayer& p1 = world.GetPlayer(1);
-    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
-    nobMilitary* milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_ROMANS));
-    nobMilitary* milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
-
     for(int terrain = 0; terrain < 2; terrain++)
     {
         TerrainKind searchedTerrain = terrain == 1 ? TerrainKind::LAVA : TerrainKind::SNOW;
@@ -101,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
             for(int x = 1; x < world.GetWidth(); x++)
             {
                 MapPoint curPoint(x, y);
-                if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
+                if(curPoint == milBld0Pos || curPoint == milBld1Pos)
                 {
                     continue;
                 }
@@ -115,41 +130,29 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
         for(int i = 0; i <= 1; i++)
         {
             this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-            p0.RecalcMilitaryFlags();
-            p1.RecalcMilitaryFlags();
+            world.GetPlayer(0).RecalcMilitaryFlags();
+            world.GetPlayer(1).RecalcMilitaryFlags();
 
             unsigned distance0 = milBld0->GetFrontierDistance();
             unsigned distance1 = milBld1->GetFrontierDistance();
 
             BOOST_REQUIRE_EQUAL(distance0, distance1);
-            BOOST_REQUIRE_EQUAL(distance0 + i * 100, (i == 0 ? 3u : 0u) + i * 100); // near if addon is inactive, otherwise inland
+            BOOST_REQUIRE_EQUAL(distance0 + i * 10u, (i == 0 ? nobMilitary::DIST_NEAR : nobMilitary::DIST_FAR)
+                                                       + i * 10u); // near if addon is inactive, otherwise inland
         }
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
 {
-    GamePlayer& p0 = world.GetPlayer(0);
-    MapPoint milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
-    GamePlayer& p1 = world.GetPlayer(1);
-    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
-    nobMilitary* milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_ROMANS));
-    nobMilitary* milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
-
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
-            break;
-    }
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
     for(int y = 1; y < world.GetHeight(); y++)
     {
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == milBld1Pos)
             {
                 continue;
             }
@@ -163,40 +166,28 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        p0.RecalcMilitaryFlags();
-        p1.RecalcMilitaryFlags();
+        world.GetPlayer(0).RecalcMilitaryFlags();
+        world.GetPlayer(1).RecalcMilitaryFlags();
 
         unsigned distance0 = milBld0->GetFrontierDistance();
         unsigned distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 100, (i == 0 ? 1u : 0u) + i * 100); // middle if addon is inactive, otherwise inland
+        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, (i == 0 ? nobMilitary::DIST_MID : nobMilitary::DIST_FAR)
+                                                   + i * 10u); // middle if addon is inactive, otherwise inland
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
 {
-    GamePlayer& p0 = world.GetPlayer(0);
-    MapPoint milBld0Pos = p0.GetHQPos() - MapPoint(0, 2);
-    GamePlayer& p1 = world.GetPlayer(1);
-    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(0, 2);
-    nobMilitary* milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_ROMANS));
-    nobMilitary* milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
-
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
-            break;
-    }
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
     for(int y = 1; y < world.GetHeight(); y++)
     {
         for(int x = 1; x < world.GetWidth(); x++)
         {
             MapPoint curPoint(x, y);
-            if(curPoint == milBld0Pos || curPoint == p0.GetHQPos() || curPoint == milBld1Pos || curPoint == p1.GetHQPos())
+            if(curPoint == milBld0Pos || curPoint == milBld1Pos)
             {
                 continue;
             }
@@ -210,36 +201,24 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        p0.RecalcMilitaryFlags();
-        p1.RecalcMilitaryFlags();
+        world.GetPlayer(0).RecalcMilitaryFlags();
+        world.GetPlayer(1).RecalcMilitaryFlags();
 
         unsigned distance0 = milBld0->GetFrontierDistance();
         unsigned distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 100, 0u + i * 100); // everytime inland
+        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, nobMilitary::DIST_FAR + i * 10u); // everytime inland
     }
 }
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 {
-    GamePlayer& p0 = world.GetPlayer(0);
-    MapPoint milBld0Pos = p0.GetHQPos() + MapPoint(5, 0);
-    GamePlayer& p1 = world.GetPlayer(1);
-    MapPoint milBld1Pos = p1.GetHQPos() - MapPoint(5, 0);
-    nobMilitary* milBld0 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld0Pos, 0, NAT_ROMANS));
-    nobMilitary* milBld1 = dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, milBld1Pos, 1, NAT_VIKINGS));
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
-            break;
-    }
-
+    // Little bit, but walkable water between the 2 buildings (middle of map)
+    // and around the border big water
     unsigned middle = world.GetWidth() / 2;
-
     for(int y = 1; y < world.GetHeight(); y++)
     {
         for(int x = 1; x < world.GetWidth(); x++)
@@ -259,21 +238,21 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        p0.RecalcMilitaryFlags();
-        p1.RecalcMilitaryFlags();
+        world.GetPlayer(0).RecalcMilitaryFlags();
+        world.GetPlayer(1).RecalcMilitaryFlags();
 
         unsigned distance0 = milBld0->GetFrontierDistance();
         unsigned distance1 = milBld1->GetFrontierDistance();
 
         BOOST_REQUIRE_EQUAL(distance0, distance1);
-        BOOST_REQUIRE_EQUAL(distance0 + i * 100, 3u + i * 100); // near
+        BOOST_REQUIRE_EQUAL(distance0 + i * 10u, nobMilitary::DIST_MID + i * 10u);
     }
 }
 
 //
 //  Bug #815 can be simplified to the following setup. Players HQ don't matter.
-//  In general its a simple island, with a T seperating the players HQs.
-//  The design is used, to have both P1s military buildings within the LookForMilitaryBuilding calucation
+//  In general its a simple island, with a T separating the players HQs.
+//  The design is used, to have both P1s military buildings within the LookForMilitaryBuilding calculation
 //  and get a FRONTIER_DISTANCE_UNREACHABLE - behavior because of the terrain.
 //
 //  - and | represent water fields.
@@ -294,20 +273,15 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 //  |                   ||                      |
 //  ---------------------------------------------
 //
-BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
+typedef WorldWithGCExecution<2u, 60u, 60u> WorldBig;
+BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 {
     this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, 1);
 
     GamePlayer& p0 = world.GetPlayer(0);
     GamePlayer& p1 = world.GetPlayer(1);
 
-    DescIdx<TerrainDesc> tWater(0);
-    for(; tWater.value < world.GetDescription().terrain.size(); tWater.value++)
-    {
-        TerrainDesc fieldDesc = world.GetDescription().get(tWater);
-        if(fieldDesc.kind == TerrainKind::WATER && !fieldDesc.Is(ETerrain::Walkable))
-            break;
-    }
+    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world);
 
     unsigned middle = world.GetWidth() / 2;
 
@@ -361,11 +335,11 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, FrontierWorldBig)
     nobMilitary* milBld0 =
       dynamic_cast<nobMilitary*>(BuildingFactory::CreateBuilding(world, BLD_WATCHTOWER, p0Near, p0.GetPlayerId(), NAT_ROMANS));
 
-    unsigned distance0 = milBld0->GetFrontierDistance();
-    unsigned distance1 = milBld1->GetFrontierDistance();
+    nobMilitary::FrontierDistance distance0 = milBld0->GetFrontierDistance();
+    nobMilitary::FrontierDistance distance1 = milBld1->GetFrontierDistance();
 
-    BOOST_REQUIRE_EQUAL(distance0, 3u);
-    BOOST_REQUIRE_EQUAL(distance1, 3u);
+    BOOST_REQUIRE_EQUAL(distance0, nobMilitary::DIST_NEAR);
+    BOOST_REQUIRE_EQUAL(distance1, nobMilitary::DIST_NEAR);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
