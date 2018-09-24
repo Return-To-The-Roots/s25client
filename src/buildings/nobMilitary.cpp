@@ -303,8 +303,7 @@ void nobMilitary::HandleEvent(const unsigned id)
 
 unsigned nobMilitary::GetMilitaryRadius() const
 {
-    // If it was never occupied, it does not hold land
-    return (new_built) ? 0 : MILITARY_RADIUS[size];
+    return MILITARY_RADIUS[size];
 }
 
 unsigned nobMilitary::GetMaxCoinCt() const
