@@ -29,6 +29,8 @@ BOOST_AUTO_TEST_SUITE(FrontierDistance)
 template<unsigned T_width, unsigned T_height>
 struct FrontierWorld : public WorldWithGCExecution<2, T_width, T_height>
 {
+    using WorldWithGCExecution<2, T_width, T_height>::world;
+
     MapPoint milBld0Pos, milBld1Pos;
     nobMilitary *milBld0, *milBld1;
 
