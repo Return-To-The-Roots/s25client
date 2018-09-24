@@ -84,7 +84,7 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
     {
         unsigned short bottomSliderPos = button_height + sliderPos + sliderHeight;
 
-        if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().x + bottomSliderPos, GetSize().x,
+        if(IsPointInRect(mc.GetPos(), Rect(GetDrawPos().x, GetDrawPos().y + bottomSliderPos, GetSize().x,
                                            GetSize().y - (bottomSliderPos + button_height))))
         {
             // Clicked below slider -> Move half a slider height down

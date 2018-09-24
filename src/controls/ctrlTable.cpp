@@ -368,12 +368,13 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
             int selection = GetSelectionFromMouse(mc);
             SetSelection(selection);
             if(selection_ >= 0 && selection == selection_)
+            {
                 GetParent()->Msg_TableChooseItem(this->GetID(), selection_);
+                return true;
+            }
         }
-
-        return true;
-    } else
-        return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    }
+    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
 }
 
 bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
