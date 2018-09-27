@@ -48,6 +48,7 @@
 #include "libsiedler2/libsiedler2.h"
 #include "libutil/Log.h"
 #include "libutil/StringConversion.h"
+#include "libutil/System.h"
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/filesystem.hpp>
@@ -226,32 +227,24 @@ bool Loader::LoadFilesAtStart()
 
 bool ConvertSounds(const std::string& outputFilepath)
 {
-    std::stringstream cmdss;
-    cmdss << "\"" << RTTRCONFIG.ExpandPath(FILE_PATHS[57]); // pfad zum sound-converter hinzufügen
-
-// name anhängen
+    bfs::path soundConverterPath = bfs::path(RTTRCONFIG.ExpandPath(FILE_PATHS[57])) / "sound-convert";
 #ifdef _WIN32
-    cmdss << "\\sound-convert.exe";
-#else
-    cmdss << "/sound-convert";
+    soundConverterPath.replace_extension(".exe");
 #endif
+    std::stringstream sArguments;
+    sArguments << "-s \"";
+    sArguments << RTTRCONFIG.ExpandPath(FILE_PATHS[56]); // script
+    sArguments << "\" -f \"";
+    sArguments << RTTRCONFIG.ExpandPath(FILE_PATHS[49]); // quelle
+    sArguments << "\" -t \"";
+    sArguments << outputFilepath; // ziel
+    sArguments << "\"";
 
-    // parameter anhängen
-    cmdss << "\" -s \"";
-    cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[56]); // script
-    cmdss << "\" -f \"";
-    cmdss << RTTRCONFIG.ExpandPath(FILE_PATHS[49]); // quelle
-    cmdss << "\" -t \"";
-    cmdss << outputFilepath; // ziel
-    cmdss << "\"";
-
-    std::string cmd = cmdss.str();
-#ifdef _WIN32
-    std::replace(cmd.begin(), cmd.end(), '/', '\\'); // Slash in Backslash verwandeln, sonst will "system" unter win nicht
-#endif                                               // _WIN32
+    const std::string arguments = sArguments.str();
 
     LOG.write(_("Starting Sound-Converter...\n"));
-    if(system(cmd.c_str()) == -1)
+    LOG.writeToFile("Executing %1% %2%\n") % soundConverterPath % arguments;
+    if(!System::execute(soundConverterPath, arguments))
         return false;
 
     return bfs::exists(outputFilepath);
